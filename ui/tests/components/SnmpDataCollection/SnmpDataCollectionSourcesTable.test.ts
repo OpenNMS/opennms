@@ -23,7 +23,8 @@ const mockEnableDisableSnmpDataCollectionSources = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   downloadSnmpDataCollectionById: (...args: any[]) => mockDownloadSnmpDataCollectionById(...args),
   deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args),
-  enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args)
+  enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args),
+  getAllSnmpCollectionProfiles: vi.fn().mockResolvedValue([])
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -483,22 +484,27 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Columns Configuration', () => {
-    it('has correct columns defined', () => {
-      const columns = wrapper.vm.columns
-      expect(columns).toEqual([
-        { id: 'name', label: 'Source' },
-        { id: 'enabled', label: 'Status' }
-      ])
+    it('renders a Profiles header in addition to the existing ones', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const ths = wrapper.findAll('thead th')
+      // Source (sortable), Profiles (plain), Status (sortable), Actions (plain) = 4 headers.
+      expect(ths.length).toBe(4)
+      const labels = ths.map((th) => th.text().trim())
+      expect(labels).toContain('Profiles')
+      expect(labels).toContain('Actions')
     })
 
-    it.each([
-      { id: 'name', label: 'Source' },
-      { id: 'enabled', label: 'Status' }
-    ])('has column with id "$id" and label "$label"', ({ id, label }) => {
-      const columns = wrapper.vm.columns
-      const column = columns.find((col: any) => col.id === id)
-      expect(column).toBeDefined()
-      expect(column.label).toBe(label)
+    it('keeps Source and Status as sortable headers', async () => {
+      // The table (and thus sort headers) only renders when sources exist.
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      const properties = sortHeaders.map((h) => h.props('property'))
+      expect(properties).toContain('name')
+      expect(properties).toContain('enabled')
     })
 
     it('each sort header has correct property prop', async () => {
@@ -1618,14 +1624,14 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Row Data Correctness', () => {
-    it('renders all 2 data columns per row', async () => {
+    it('renders all 3 data columns per row', async () => {
       store.sources = [mockSource]
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
       const tds = rows[0].findAll('td')
-      // 2 data columns + 1 actions column
-      expect(tds).toHaveLength(3)
+      // 3 data columns (Source / Profiles / Status) + 1 actions column
+      expect(tds).toHaveLength(4)
     })
 
     it('renders data in correct column order', async () => {
@@ -1636,7 +1642,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const tds = rows[0].findAll('td')
 
       expect(tds[0].text()).toBe('Test Source')
-      expect(tds[1].text()).toBe('Enabled')
+      // tds[1] is the Profiles cell. With no profiles loaded it shows '—'.
+      expect(tds[2].text()).toBe('Enabled')
     })
 
     it('renders disabled source data in correct column order', async () => {
@@ -1647,7 +1654,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const tds = rows[0].findAll('td')
 
       expect(tds[0].text()).toBe('Disabled Source')
-      expect(tds[1].text()).toBe('Disabled')
+      expect(tds[2].text()).toBe('Disabled')
     })
   })
 

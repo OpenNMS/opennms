@@ -124,7 +124,7 @@ public class DataCollectionConfRestServiceIT {
     @Test
     public void testUploadSnmpDataCollectionConfFiles_Success() throws Exception {
         List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, securityContext);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
 
@@ -142,7 +142,7 @@ public class DataCollectionConfRestServiceIT {
 
     @Test
     public void testEmptyAttachments_ShouldReturnEmptyLists() throws Exception {
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(Collections.emptyList(), securityContext);
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(Collections.emptyList(), null, securityContext);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
 
@@ -155,7 +155,7 @@ public class DataCollectionConfRestServiceIT {
     @Test
     public void testNullSecurityContext_ShouldUseUnknownUser() throws Exception {
         List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null);
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, null);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
     }
@@ -1021,7 +1021,7 @@ public class DataCollectionConfRestServiceIT {
 
         final List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
 
-        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
+        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
         SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("Dell");

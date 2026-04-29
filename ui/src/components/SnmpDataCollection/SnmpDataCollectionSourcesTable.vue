@@ -47,14 +47,21 @@
         <thead>
           <tr>
             <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
               scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
+              property="name"
+              :sort="(sort as any).name"
               v-on:sort-changed="sortChanged"
             >
-              {{ col.label }}
+              Source
+            </FeatherSortHeader>
+            <th scope="col">Profiles</th>
+            <FeatherSortHeader
+              scope="col"
+              property="enabled"
+              :sort="(sort as any).enabled"
+              v-on:sort-changed="sortChanged"
+            >
+              Status
             </FeatherSortHeader>
             <th>Actions</th>
           </tr>
@@ -68,6 +75,24 @@
             :key="source.id"
           >
             <td>{{ source.name }}</td>
+            <td>
+              <div
+                class="profile-chips"
+                :data-test="`profiles-cell-${source.name}`"
+              >
+                <FeatherChip
+                  v-for="name in profilesForSource(source.name)"
+                  :key="name"
+                  class="profile-tag"
+                >
+                  {{ name }}
+                </FeatherChip>
+                <span
+                  v-if="profilesForSource(source.name).length === 0"
+                  class="empty-profiles"
+                >—</span>
+              </div>
+            </td>
             <td>
               <div class="tag">
                 <FeatherChip
@@ -170,8 +195,9 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
+import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources, getAllSnmpCollectionProfiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -199,10 +225,21 @@ const emptyListContent = {
   msg: 'No results found.'
 }
 
-const columns = computed(() => [
-  { id: 'name', label: 'Source' },
-  { id: 'enabled', label: 'Status' }
-])
+const availableProfiles = ref<SnmpCollectionProfile[]>([])
+
+// Profiles are derived (a source is "in" a profile if its name appears in
+// that profile's source_names JSON). Comparison is case-insensitive to match
+// the upload contract.
+const profilesForSource = (sourceName: string): string[] => {
+  const target = sourceName.toLowerCase()
+  return availableProfiles.value
+    .filter((p) => p.sourceNames?.some((n) => n.toLowerCase() === target))
+    .map((p) => p.name)
+}
+
+onMounted(async () => {
+  availableProfiles.value = await getAllSnmpCollectionProfiles()
+})
 
 const sort = reactive({
   name: SORT.NONE,
@@ -387,6 +424,22 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .profile-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          align-items: center;
+
+          .profile-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+          }
+
+          .empty-profiles {
+            color: var(--feather-secondary-text-on-surface);
+          }
         }
 
         .tag {

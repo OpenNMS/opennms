@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
+import org.opennms.netmgt.model.SnmpCollectionProfileDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
@@ -66,7 +67,133 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid xml or request")
     })
     Response uploadSnmpDataCollectionConfFiles(@Multipart("upload") List<Attachment> attachments,
+                                  @Multipart(value = "profileNames", required = false) List<Attachment> profileNames,
                                   @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("/profiles")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "List all SNMP collection profiles",
+            description = "Returns id, name, enabled, sourceNames, and other config for every profile.",
+            operationId = "listSnmpCollectionProfiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profiles returned", content = @Content)
+    })
+    Response listSnmpCollectionProfiles(@Context SecurityContext securityContext);
+
+    @GET
+    @Path("/profiles/{profileId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get a single SNMP collection profile",
+            operationId = "getSnmpCollectionProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile returned"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    Response getSnmpCollectionProfile(@PathParam("profileId") Integer profileId,
+                                      @Context SecurityContext securityContext);
+
+    @POST
+    @Path("/profiles")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Create a new SNMP collection profile",
+            operationId = "createSnmpCollectionProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Profile created; body contains the new id"),
+            @ApiResponse(responseCode = "400", description = "Invalid profile body or name already in use")
+    })
+    Response createSnmpCollectionProfile(SnmpCollectionProfileDto profile,
+                                         @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/profiles/{profileId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Update an SNMP collection profile",
+            operationId = "updateSnmpCollectionProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid profile body or name conflict"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    Response updateSnmpCollectionProfile(@PathParam("profileId") Integer profileId,
+                                         SnmpCollectionProfileDto profile,
+                                         @Context SecurityContext securityContext);
+
+    @DELETE
+    @Path("/profiles")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Bulk-delete SNMP collection profiles",
+            operationId = "deleteSnmpCollectionProfiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deletion complete"),
+            @ApiResponse(responseCode = "400", description = "Empty id list")
+    })
+    Response deleteSnmpCollectionProfiles(List<Integer> ids,
+                                          @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/profiles/enable")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Bulk enable/disable SNMP collection profiles",
+            operationId = "enableDisableSnmpCollectionProfiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profiles updated"),
+            @ApiResponse(responseCode = "400", description = "Empty id list")
+    })
+    Response enableDisableSnmpCollectionProfiles(@QueryParam("enabled") boolean enabled,
+                                                 List<Integer> ids,
+                                                 @Context SecurityContext securityContext);
+
+    @POST
+    @Path("/profiles/{profileId}/sources")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a source to a profile",
+            description = "Appends the given source name to the profile's source_names (idempotent).",
+            operationId = "addSourceToProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Source added"),
+            @ApiResponse(responseCode = "400", description = "Invalid profileId or empty sourceName"),
+            @ApiResponse(responseCode = "404", description = "Profile or source not found")
+    })
+    Response addSourceToProfile(@PathParam("profileId") Integer profileId,
+                                String sourceName,
+                                @Context SecurityContext securityContext);
+
+    @DELETE
+    @Path("/profiles/{profileId}/sources/{sourceName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Remove a source from a profile",
+            description = "Removes the given source name from the profile's source_names (no-op if absent).",
+            operationId = "removeSourceFromProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Source removed (or already absent)"),
+            @ApiResponse(responseCode = "400", description = "Invalid profileId"),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    Response removeSourceFromProfile(@PathParam("profileId") Integer profileId,
+                                     @PathParam("sourceName") String sourceName,
+                                     @Context SecurityContext securityContext);
 
     @GET
     @Path("filter/collectsources")

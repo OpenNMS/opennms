@@ -21,9 +21,14 @@
  */
 package org.opennms.web.rest.v2;
 
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.IpList;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
@@ -36,6 +41,7 @@ import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
+import org.opennms.netmgt.model.SnmpCollectionProfileDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
@@ -49,13 +55,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,7 +88,8 @@ public class DataCollectionConfPersistenceService {
     public Integer addDataCollectionConfig(final String fileName,
                                            final String userName,
                                            DatacollectionGroup dataCollectionGroup,
-                                           Date now) {
+                                           Date now,
+                                           List<String> profileNames) {
 
         if (dataCollectionGroup == null) {
             throw new IllegalArgumentException("DatacollectionGroup must not be null");
@@ -94,8 +106,20 @@ public class DataCollectionConfPersistenceService {
         persistMibGroups(source, dataCollectionGroup);
         persistSystemDefs(source, dataCollectionGroup);
 
-        // Add source to default profile's source_names if not already present
-        addSourceToDefaultProfile(source.getName());
+        if (profileNames != null) {
+            for (final String profileName : profileNames) {
+                if (profileName == null || profileName.isBlank()) {
+                    continue;
+                }
+                final SnmpCollectionProfile profile = snmpCollectionProfileDao.findByName(profileName);
+                if (profile == null) {
+                    LOG.warn("Profile '{}' not found — source '{}' will not be added to it.",
+                            profileName, source.getName());
+                    continue;
+                }
+                appendSourceToProfile(profile, source.getName());
+            }
+        }
 
         LOG.info("Added data collection config for source '{}'.", fileName);
         return source.getId();
@@ -484,29 +508,475 @@ public class DataCollectionConfPersistenceService {
     }
 
     /**
-     * Add a source name to the default profile's source_names if not already present.
-     * This ensures newly uploaded sources are automatically included in SNMP collection.
+     * Append a source name to a profile's source_names JSON list (idempotent).
      */
-    private void addSourceToDefaultProfile(final String sourceName) {
-        final SnmpCollectionProfile defaultProfile = snmpCollectionProfileDao.findByName("default");
-        if (defaultProfile == null) {
-            LOG.warn("No 'default' profile found — source '{}' will not be added to any profile.", sourceName);
-            return;
-        }
-
+    private void appendSourceToProfile(final SnmpCollectionProfile profile, final String sourceName) {
         List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                defaultProfile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
-        if (sourceNames == null) {
-            sourceNames = new ArrayList<>();
-        } else {
-            sourceNames = new ArrayList<>(sourceNames);
-        }
+                profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+        sourceNames = (sourceNames == null) ? new ArrayList<>() : new ArrayList<>(sourceNames);
 
         if (!sourceNames.contains(sourceName)) {
             sourceNames.add(sourceName);
-            defaultProfile.setSourceNames(DatacollectionJsonHelper.toJson(sourceNames));
-            snmpCollectionProfileDao.saveOrUpdate(defaultProfile);
-            LOG.info("Added source '{}' to default profile's source_names.", sourceName);
+            profile.setSourceNames(DatacollectionJsonHelper.toJson(sourceNames));
+            snmpCollectionProfileDao.saveOrUpdate(profile);
+            LOG.info("Added source '{}' to profile '{}' source_names.", sourceName, profile.getName());
+        }
+    }
+
+    public List<SnmpCollectionProfile> getAllProfiles() {
+        return snmpCollectionProfileDao.findAll();
+    }
+
+    @Transactional
+    public void addSourceToProfile(final Integer profileId, final String sourceName) {
+        final SnmpCollectionProfile profile = requireProfile(profileId);
+        if (sourceName == null || sourceName.isBlank()) {
+            throw new IllegalArgumentException("sourceName must not be empty");
+        }
+        if (snmpCollectionSourceDao.findByName(sourceName) == null) {
+            // The URI's profile exists; the body just references a source that doesn't.
+            // Caller's input is invalid → 400, not 404 (which would conflate with a missing profile).
+            throw new IllegalArgumentException("Unknown source name: " + sourceName);
+        }
+        appendSourceToProfile(profile, sourceName);
+    }
+
+    @Transactional
+    public void removeSourceFromProfile(final Integer profileId, final String sourceName) {
+        final SnmpCollectionProfile profile = requireProfile(profileId);
+        List<String> sourceNames = DatacollectionJsonHelper.fromJson(
+                profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+        if (sourceNames == null || !sourceNames.contains(sourceName)) {
+            return;
+        }
+        sourceNames = new ArrayList<>(sourceNames);
+        sourceNames.remove(sourceName);
+        profile.setSourceNames(DatacollectionJsonHelper.toJson(sourceNames));
+        snmpCollectionProfileDao.saveOrUpdate(profile);
+        LOG.info("Removed source '{}' from profile '{}' source_names.", sourceName, profile.getName());
+    }
+
+    private SnmpCollectionProfile requireProfile(final Integer profileId) {
+        if (profileId == null || profileId <= 0) {
+            throw new IllegalArgumentException("profileId must be a positive integer");
+        }
+        final SnmpCollectionProfile profile = snmpCollectionProfileDao.get(profileId);
+        if (profile == null) {
+            throw new EntityNotFoundException("Profile not found for id: " + profileId);
+        }
+        return profile;
+    }
+
+    public SnmpCollectionProfile getProfileById(final Integer profileId) {
+        return requireProfile(profileId);
+    }
+
+    /**
+     * Create a new profile from the given DTO. Validates fields, ensures the
+     * name is unique, and that every {@code sourceNames} entry refers to an
+     * existing source row.
+     *
+     * @return the new profile's id
+     */
+    @Transactional
+    public Integer createProfile(final SnmpCollectionProfileDto dto, final Date now) {
+        validateProfileDto(dto, /*forCreate=*/true, /*currentName=*/null);
+
+        final SnmpCollectionProfile profile = new SnmpCollectionProfile();
+        applyDtoToEntity(dto, profile);
+        profile.setCreatedTime(now);
+        profile.setLastModified(now);
+        snmpCollectionProfileDao.saveOrUpdate(profile);
+        LOG.info("Created profile '{}'.", profile.getName());
+        return profile.getId();
+    }
+
+    @Transactional
+    public void updateProfile(final Integer profileId, final SnmpCollectionProfileDto dto, final Date now) {
+        final SnmpCollectionProfile profile = requireProfile(profileId);
+        validateProfileDto(dto, /*forCreate=*/false, /*currentName=*/profile.getName());
+        applyDtoToEntity(dto, profile);
+        profile.setLastModified(now);
+        snmpCollectionProfileDao.saveOrUpdate(profile);
+        LOG.info("Updated profile '{}' (id={}).", profile.getName(), profileId);
+    }
+
+    @Transactional
+    public void deleteProfiles(final List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+            final SnmpCollectionProfile p = snmpCollectionProfileDao.get(id);
+            if (p == null) {
+                continue;
+            }
+            snmpCollectionProfileDao.delete(p);
+            LOG.info("Deleted profile '{}' (id={}).", p.getName(), id);
+        }
+    }
+
+    @Transactional
+    public void enableDisableProfiles(final boolean enabled, final List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+            final SnmpCollectionProfile p = snmpCollectionProfileDao.get(id);
+            if (p == null) {
+                continue;
+            }
+            p.setEnabled(enabled);
+            snmpCollectionProfileDao.saveOrUpdate(p);
+        }
+    }
+
+    /**
+     * Validate a profile DTO. {@code forCreate} controls uniqueness checking
+     * against an existing row; on update, name collision with the *same* row
+     * is permitted but with a *different* row is not.
+     */
+    private void validateProfileDto(final SnmpCollectionProfileDto dto,
+                                    final boolean forCreate,
+                                    final String currentName) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Profile body must not be null");
+        }
+        if (dto.getName() == null || dto.getName().isBlank()) {
+            throw new IllegalArgumentException("Profile name must not be empty");
+        }
+        if (dto.getRrdStep() == null || dto.getRrdStep() <= 0) {
+            throw new IllegalArgumentException("rrdStep must be a positive integer");
+        }
+        if (dto.getRrdRras() == null || dto.getRrdRras().isEmpty()) {
+            throw new IllegalArgumentException("At least one RRA is required");
+        }
+        if (dto.getStorageFlag() == null
+                || !(dto.getStorageFlag().equals("select") || dto.getStorageFlag().equals("all"))) {
+            throw new IllegalArgumentException("storageFlag must be 'select' or 'all'");
+        }
+
+        // Name uniqueness
+        final SnmpCollectionProfile clash = snmpCollectionProfileDao.findByName(dto.getName());
+        if (clash != null && (forCreate || !dto.getName().equals(currentName))) {
+            throw new IllegalArgumentException("A profile with name '" + dto.getName() + "' already exists");
+        }
+
+        // Source-name references must exist (skip the synthetic __inline_*
+        // sources, which the migration may have created and we don't expect
+        // users to manage by name).
+        if (dto.getSourceNames() != null) {
+            final List<String> unknown = new ArrayList<>();
+            for (final String n : dto.getSourceNames()) {
+                if (n == null || n.isBlank()) continue;
+                if (n.startsWith("__inline_")) continue;
+                if (snmpCollectionSourceDao.findByName(n) == null) {
+                    unknown.add(n);
+                }
+            }
+            if (!unknown.isEmpty()) {
+                throw new IllegalArgumentException("Unknown source names: " + String.join(", ", unknown));
+            }
+        }
+    }
+
+    private void applyDtoToEntity(final SnmpCollectionProfileDto dto, final SnmpCollectionProfile entity) {
+        entity.setName(dto.getName());
+        entity.setRrdStep(dto.getRrdStep());
+        entity.setRrdRras(DatacollectionJsonHelper.toJson(dto.getRrdRras()));
+        entity.setStorageFlag(dto.getStorageFlag());
+        entity.setSourceNames(DatacollectionJsonHelper.toJson(
+                dto.getSourceNames() == null ? new ArrayList<String>() : dto.getSourceNames()));
+        entity.setMaxVarsPerPdu(dto.getMaxVarsPerPdu());
+        entity.setEnabled(dto.getEnabled() == null ? Boolean.TRUE : dto.getEnabled());
+    }
+
+    /** Result returned to the REST layer for bulk upload. */
+    public static final class BulkUploadResult {
+        public final List<String> sources = new ArrayList<>();
+        public final List<String> profiles = new ArrayList<>();
+        public final List<String> errors = new ArrayList<>();
+    }
+
+    private static final String INLINE_SOURCE_PREFIX = "__inline_";
+    private static final String BULK_USER_FALLBACK = "bulk-upload";
+
+    /**
+     * Upsert all sources from {@code uploadedGroups} (creating or replacing
+     * children) and, when {@code uploadedConfig} is non-null, upsert all
+     * profiles from its {@code <snmp-collection>} entries. Sources are written
+     * before profiles so that include-collection references resolve.
+     *
+     * <p>Per-file errors are collected into the result; a single bad file does
+     * not abort the whole transaction. The caller must schedule a reload after
+     * a successful return.
+     */
+    @Transactional
+    public BulkUploadResult bulkUploadConfig(final List<DatacollectionGroup> uploadedGroups,
+                                             final DatacollectionConfig uploadedConfig,
+                                             final String userName,
+                                             final Date now) {
+        final BulkUploadResult result = new BulkUploadResult();
+        final String user = (userName == null || userName.isBlank()) ? BULK_USER_FALLBACK : userName;
+
+        // The whole bulk upload is one transaction: any exception thrown by
+        // a child mutation (deleteBySourceId / saveOrUpdate / etc.) propagates
+        // out so Spring rolls back, instead of leaving the DB with half-written
+        // sources whose children were already wiped. Soft conditions (missing
+        // include-collection references, malformed regex) accumulate into
+        // result.errors via resolveIncludes — those don't throw.
+        final Map<String, DatacollectionGroup> groupsByName = new LinkedHashMap<>();
+        if (uploadedGroups != null) {
+            for (final DatacollectionGroup g : uploadedGroups) {
+                if (g == null || g.getName() == null || g.getName().isBlank()) {
+                    result.errors.add("Skipped a datacollection-group with no name attribute");
+                    continue;
+                }
+                addDataCollectionConfig(g.getName(), user, g, now, List.of());
+                groupsByName.put(g.getName(), g);
+                result.sources.add(g.getName());
+            }
+        }
+
+        if (uploadedConfig != null && uploadedConfig.getSnmpCollections() != null) {
+            for (final SnmpCollection coll : uploadedConfig.getSnmpCollections()) {
+                if (coll == null || coll.getName() == null || coll.getName().isBlank()) {
+                    result.errors.add("Skipped a snmp-collection with no name attribute");
+                    continue;
+                }
+                upsertProfileFromSnmpCollection(coll, groupsByName, user, now, result);
+                result.profiles.add(coll.getName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Upsert a single profile from a parsed {@code <snmp-collection>}.
+     * Resolves include-collection entries the same way the migration does, so
+     * exclude-filter and systemDef= forms route surviving content through the
+     * synthetic {@code __inline_<name>} source. Plain
+     * {@code dataCollectionGroup="X"} references go straight into source_names.
+     *
+     * <p>Inline source rows are upserted (delete-then-recreate child rows) just
+     * like {@link #addDataCollectionConfig}.
+     */
+    private void upsertProfileFromSnmpCollection(final SnmpCollection coll,
+                                                 final Map<String, DatacollectionGroup> groupsByName,
+                                                 final String userName,
+                                                 final Date now,
+                                                 final BulkUploadResult result) {
+        final ResolvedIncludes resolved = resolveIncludes(coll, groupsByName, result);
+
+        // Materialize inline source if there's any pulled or seeded content.
+        if (!resolved.inlineGroups.isEmpty()
+                || !resolved.inlineSystemDefs.isEmpty()
+                || !resolved.inlineResourceTypes.isEmpty()) {
+            final String inlineName = INLINE_SOURCE_PREFIX + coll.getName();
+            final DatacollectionGroup inlineGroup = new DatacollectionGroup();
+            inlineGroup.setName(inlineName);
+            inlineGroup.setGroups(resolved.inlineGroups);
+            inlineGroup.setSystemDefs(resolved.inlineSystemDefs);
+            inlineGroup.setResourceTypes(resolved.inlineResourceTypes);
+            addDataCollectionConfig(inlineName, userName, inlineGroup, now, List.of());
+            resolved.sourceNames.add(inlineName);
+        }
+
+        // Find or create the profile row.
+        SnmpCollectionProfile profile = snmpCollectionProfileDao.findByName(coll.getName());
+        final boolean isCreate = (profile == null);
+        if (isCreate) {
+            profile = new SnmpCollectionProfile();
+            profile.setName(coll.getName());
+            profile.setCreatedTime(now);
+            profile.setEnabled(Boolean.TRUE);
+        }
+
+        profile.setRrdStep(coll.getRrd() != null && coll.getRrd().getStep() != null
+                ? coll.getRrd().getStep() : 300);
+        final List<String> rras = (coll.getRrd() != null && coll.getRrd().getRras() != null)
+                ? coll.getRrd().getRras() : new ArrayList<>();
+        profile.setRrdRras(DatacollectionJsonHelper.toJson(rras));
+        profile.setStorageFlag(coll.getSnmpStorageFlag() != null ? coll.getSnmpStorageFlag() : "select");
+        profile.setMaxVarsPerPdu(coll.getMaxVarsPerPdu());
+        profile.setSourceNames(DatacollectionJsonHelper.toJson(resolved.sourceNames));
+        profile.setLastModified(now);
+
+        snmpCollectionProfileDao.saveOrUpdate(profile);
+        LOG.info("{} profile '{}' from bulk upload.", isCreate ? "Created" : "Updated", profile.getName());
+    }
+
+    /**
+     * Pure resolution of include-collection entries. Mirrors
+     * {@code SnmpDataCollectionMigration.resolveIncludes} — see that class for
+     * the rationale on each branch. References that can't be resolved (group
+     * not in the upload batch and not in DB, missing systemDef, etc.) are
+     * recorded in {@code result.errors} as warnings but do not abort.
+     */
+    private ResolvedIncludes resolveIncludes(final SnmpCollection coll,
+                                             final Map<String, DatacollectionGroup> groupsByName,
+                                             final BulkUploadResult result) {
+        final ResolvedIncludes r = new ResolvedIncludes();
+
+        // Seed with inline definitions declared directly under <snmp-collection>.
+        if (coll.getGroups() != null && coll.getGroups().getGroups() != null) {
+            for (final Group g : coll.getGroups().getGroups()) {
+                if (g.getName() != null && r.seenGroupNames.add(g.getName())) {
+                    r.inlineGroups.add(g);
+                }
+            }
+        }
+        if (coll.getSystems() != null && coll.getSystems().getSystemDefs() != null) {
+            for (final SystemDef sd : coll.getSystems().getSystemDefs()) {
+                if (sd.getName() != null && r.seenSystemDefNames.add(sd.getName())) {
+                    r.inlineSystemDefs.add(sd);
+                }
+            }
+        }
+        if (coll.getResourceTypes() != null) {
+            for (final org.opennms.netmgt.config.datacollection.ResourceType rt : coll.getResourceTypes()) {
+                if (rt.getName() != null && r.seenResourceTypeNames.add(rt.getName())) {
+                    r.inlineResourceTypes.add(rt);
+                }
+            }
+        }
+
+        for (final IncludeCollection inc : coll.getIncludeCollections()) {
+            if (inc.getDataCollectionGroup() != null && !inc.getDataCollectionGroup().isEmpty()) {
+                final String groupName = inc.getDataCollectionGroup();
+                final List<String> excludes = inc.getExcludeFilters();
+
+                if (excludes == null || excludes.isEmpty()) {
+                    r.sourceNames.add(groupName);
+                    continue;
+                }
+
+                final DatacollectionGroup dcGroup = groupsByName.get(groupName);
+                if (dcGroup == null) {
+                    final String msg = "snmp-collection '" + coll.getName() + "': include-collection group '"
+                            + groupName + "' has exclude-filter but the group is not in the upload batch — full group reference kept.";
+                    LOG.warn(msg);
+                    result.errors.add(msg);
+                    r.sourceNames.add(groupName);
+                    continue;
+                }
+
+                for (final SystemDef sd : dcGroup.getSystemDefs()) {
+                    if (matchesAnyRegex(sd.getName(), excludes)) {
+                        continue;
+                    }
+                    if (r.seenSystemDefNames.add(sd.getName())) {
+                        r.inlineSystemDefs.add(sd);
+                    }
+                    addReferencedGroups(sd, dcGroup, groupsByName, r);
+                }
+                if (dcGroup.getResourceTypes() != null) {
+                    for (final org.opennms.netmgt.config.datacollection.ResourceType rt : dcGroup.getResourceTypes()) {
+                        if (rt.getName() != null && r.seenResourceTypeNames.add(rt.getName())) {
+                            r.inlineResourceTypes.add(rt);
+                        }
+                    }
+                }
+            } else if (inc.getSystemDef() != null && !inc.getSystemDef().isEmpty()) {
+                final String systemDefName = inc.getSystemDef();
+                final SystemDefRef ref = findSystemDef(systemDefName, groupsByName);
+                if (ref == null) {
+                    final String msg = "snmp-collection '" + coll.getName() + "': systemDef='"
+                            + systemDefName + "' not found in upload batch — skipped.";
+                    LOG.warn(msg);
+                    result.errors.add(msg);
+                    continue;
+                }
+                if (r.seenSystemDefNames.add(ref.systemDef.getName())) {
+                    r.inlineSystemDefs.add(ref.systemDef);
+                }
+                addReferencedGroups(ref.systemDef, ref.owningGroup, groupsByName, r);
+            }
+        }
+
+        return r;
+    }
+
+    private void addReferencedGroups(final SystemDef systemDef,
+                                     final DatacollectionGroup preferredGroup,
+                                     final Map<String, DatacollectionGroup> allGroups,
+                                     final ResolvedIncludes r) {
+        if (systemDef.getCollect() == null || systemDef.getCollect().getIncludeGroups() == null) {
+            return;
+        }
+        for (final String name : systemDef.getCollect().getIncludeGroups()) {
+            final Group g = findGroup(name, preferredGroup, allGroups);
+            if (g == null) continue;
+            if (r.seenGroupNames.add(g.getName())) {
+                r.inlineGroups.add(g);
+            }
+        }
+    }
+
+    private Group findGroup(final String groupName,
+                            final DatacollectionGroup preferred,
+                            final Map<String, DatacollectionGroup> all) {
+        if (preferred != null && preferred.getGroups() != null) {
+            for (final Group g : preferred.getGroups()) {
+                if (groupName.equals(g.getName())) return g;
+            }
+        }
+        for (final DatacollectionGroup dg : all.values()) {
+            if (dg.getGroups() == null) continue;
+            for (final Group g : dg.getGroups()) {
+                if (groupName.equals(g.getName())) return g;
+            }
+        }
+        return null;
+    }
+
+    private SystemDefRef findSystemDef(final String name, final Map<String, DatacollectionGroup> all) {
+        for (final DatacollectionGroup dg : all.values()) {
+            if (dg.getSystemDefs() == null) continue;
+            for (final SystemDef sd : dg.getSystemDefs()) {
+                if (name.equals(sd.getName())) {
+                    return new SystemDefRef(sd, dg);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean matchesAnyRegex(final String candidate, final List<String> regexes) {
+        if (candidate == null || regexes == null) return false;
+        for (final String re : regexes) {
+            try {
+                if (Pattern.compile(re).matcher(candidate).matches()) return true;
+            } catch (PatternSyntaxException e) {
+                LOG.warn("Invalid exclude-filter regex '{}': {}", re, e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private static final class ResolvedIncludes {
+        final List<String> sourceNames = new ArrayList<>();
+        final List<Group> inlineGroups = new ArrayList<>();
+        final List<SystemDef> inlineSystemDefs = new ArrayList<>();
+        final List<org.opennms.netmgt.config.datacollection.ResourceType> inlineResourceTypes = new ArrayList<>();
+        final Set<String> seenGroupNames = new HashSet<>();
+        final Set<String> seenSystemDefNames = new HashSet<>();
+        final Set<String> seenResourceTypeNames = new HashSet<>();
+    }
+
+    private static final class SystemDefRef {
+        final SystemDef systemDef;
+        final DatacollectionGroup owningGroup;
+        SystemDefRef(final SystemDef sd, final DatacollectionGroup g) {
+            this.systemDef = sd;
+            this.owningGroup = g;
         }
     }
 

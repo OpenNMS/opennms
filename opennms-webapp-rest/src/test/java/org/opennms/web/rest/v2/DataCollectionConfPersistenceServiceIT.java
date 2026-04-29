@@ -112,7 +112,7 @@ public class DataCollectionConfPersistenceServiceIT {
         DatacollectionGroup dataCollectionGroup = build3ComDatacollectionGroup();
 
         Integer srcId = dataCollectionConfPersistenceService.addDataCollectionConfig(
-                fileName, userName, dataCollectionGroup, now);
+                fileName, userName, dataCollectionGroup, now, java.util.List.of());
 
         // Persisted source
         List<SnmpCollectionSource> sources = snmpCollectionSourceDao.findAll();

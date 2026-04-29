@@ -10,6 +10,7 @@ import {
 import {
   SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
+  SnmpCollectionProfile,
   SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
@@ -22,15 +23,25 @@ import {
 import { v2 } from './axiosInstances'
 
 /**
- * Uploads one or more data collection config files.
- * @param {File[]} files The files to upload.
- * @returns {Promise<SnmpDataCollectionSourceUploadResponse>} A promise that resolves to an object containing the list of data collection config files and any errors encountered during the upload process.
+ * Uploads one or more data collection config files and associates each created
+ * source with the given profile names.
+ *
+ * @param files The files to upload.
+ * @param profileNames Profile names that newly-created sources should be added to.
+ *                     The server no longer auto-attaches to "default", so an empty
+ *                     list means the source is created but not used by any profile.
  */
-export const uploadDataCollectionFiles = async (files: File[]): Promise<SnmpDataCollectionSourceUploadResponse> => {
+export const uploadDataCollectionFiles = async (
+  files: File[],
+  profileNames: string[] = []
+): Promise<SnmpDataCollectionSourceUploadResponse> => {
   const formData = new FormData()
   const endpoint = '/datacollectionconf/upload'
   files.forEach((file) => {
     formData.append('upload', file)
+  })
+  profileNames.forEach((name) => {
+    formData.append('profileNames', name)
   })
 
   try {
@@ -42,6 +53,20 @@ export const uploadDataCollectionFiles = async (files: File[]): Promise<SnmpData
   } catch (error) {
     console.error('Error uploading SNMP data collection files:', error)
     throw error
+  }
+}
+
+/**
+ * Fetches all SNMP collection profiles from the server.
+ */
+export const getAllSnmpCollectionProfiles = async (): Promise<SnmpCollectionProfile[]> => {
+  const endpoint = '/datacollectionconf/profiles'
+  try {
+    const response = await v2.get<SnmpCollectionProfile[]>(endpoint)
+    return Array.isArray(response.data) ? response.data : []
+  } catch (error) {
+    console.error('Error fetching SNMP collection profiles:', error)
+    return []
   }
 }
 

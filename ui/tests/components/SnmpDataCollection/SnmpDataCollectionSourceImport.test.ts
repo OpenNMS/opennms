@@ -13,7 +13,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the service
 vi.mock('@/services/snmpDataCollectionService', () => ({
-  uploadDataCollectionFiles: vi.fn()
+  uploadDataCollectionFiles: vi.fn(),
+  getAllSnmpCollectionProfiles: vi.fn().mockResolvedValue([
+    { id: 1, name: 'default', enabled: true, rrdStep: 300, rrdRras: [], storageFlag: 'select', sourceNames: [] }
+  ])
 }))
 
 // Mock the validator module
@@ -68,11 +71,16 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     mockFile2 = new File(['<xml>content2</xml>'], 'test-file-2.xml', { type: 'application/xml' })
     mockInvalidFile = new File(['invalid content'], 'invalid.xml', { type: 'application/xml' })
 
-    // Mock validator functions
-    vi.mocked(validateSnmpDataCollectionSourceFile).mockResolvedValue({
+    // Mock validator functions. The real validator parses the
+    // <datacollection-group name="..."> attribute; for tests we synthesize a
+    // group name from the file's basename so test fixtures can model the DB
+    // source name (which is the group attribute, NOT the filename).
+    vi.mocked(validateSnmpDataCollectionSourceFile).mockImplementation(async (file: File) => ({
       isValid: true,
-      errors: []
-    })
+      errors: [],
+      kind: 'group',
+      groupName: file.name.replace(/\.xml$/i, '')
+    }))
     vi.mocked(isDuplicateFile).mockReturnValue(false)
 
     // Mock upload service
@@ -103,6 +111,15 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     await flushPromises()
     await nextTick()
+
+    // Pre-select the 'default' profile so existing upload-enabled tests are not
+    // gated on the new "must pick at least one profile" rule. Tests that care
+    // about no-profile-selected behavior should toggle this off explicitly.
+    const cb = wrapper.findComponent<any>('[data-test="profile-checkbox-default"]')
+    if (cb.exists()) {
+      cb.vm.$emit('update:modelValue', true)
+      await nextTick()
+    }
   })
 
   afterEach(() => {
@@ -133,9 +150,16 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
   }
 
   const setSourceFiles = async (files: UploadSnmpDataCollectionFileType[]) => {
-    wrapper.vm.sourceFiles = files
+    // Tests use this helper to seed sourceFiles directly (bypassing the
+    // validator). Derive groupName from the filename basename so the
+    // watcher's name-based duplicate detection works without each test
+    // having to know about the groupName field.
+    wrapper.vm.sourceFiles = files.map((f) => ({
+      ...f,
+      groupName: f.groupName ?? f.file.name.replace(/\.xml$/i, '')
+    }))
     wrapper.vm.total = files.length
-    wrapper.vm.tableRecord = files.slice(0, wrapper.vm.pageSize)
+    wrapper.vm.tableRecord = wrapper.vm.sourceFiles.slice(0, wrapper.vm.pageSize)
     await wrapper.vm.$nextTick()
   }
 
@@ -209,7 +233,9 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(folderInput.attributes('type')).toBe('file')
     })
 
-    it('should render the data table with correct headers', () => {
+    it('should render the data table with correct headers when files are present', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+
       const table = wrapper.find('table.data-table')
       expect(table.exists()).toBe(true)
       const ths = table.findAll('th')
@@ -313,7 +339,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should mark file as duplicate if already uploaded to server', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFileInput([mockFile])
 
@@ -321,7 +347,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should mark file as duplicate case-insensitively', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'TEST-FILE.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'TEST-FILE' }]
 
       await triggerFileInput([mockFile])
 
@@ -411,7 +437,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should not mark non-duplicate file as duplicate', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'other-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'other-file' }]
 
       await triggerFileInput([mockFile])
 
@@ -437,7 +463,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should skip already uploaded files in folder upload', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFolderInput([mockFile])
 
@@ -449,7 +475,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should skip already uploaded files case-insensitively in folder upload', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'TEST-FILE.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'TEST-FILE' }]
 
       await triggerFolderInput([mockFile])
 
@@ -516,7 +542,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should still add non-uploaded files when mix is present', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 
@@ -830,7 +856,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
 
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile], ['default'])
     })
 
     it('should set isLoading to true during upload', async () => {
@@ -912,7 +938,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
 
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile], ['default'])
     })
 
     it('should display spinner when loading', async () => {
@@ -1058,7 +1084,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       })
 
       it('should check duplicate status after rename', async () => {
-        store.uploadedSourceNames = [{ id: 1, name: 'existing.xml' }]
+        store.uploadedSourceNames = [{ id: 1, name: 'existing' }]
         wrapper.vm.selectedIndex = 0
 
         await wrapper.vm.renameFile('existing.xml')
@@ -1114,7 +1140,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     it('should update isDuplicate when store.uploadedSourceNames changes', async () => {
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -1130,7 +1156,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         }
       ])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -1139,7 +1165,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     it('should maintain non-duplicate status for unique files', async () => {
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'different-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'different-file' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
@@ -1151,7 +1177,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         { file: mockFile2, isValid: true, errors: [], isDuplicate: false }
       ])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -1159,7 +1185,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should clear duplicate flags when uploadedSourceNames is emptied', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
 
       store.uploadedSourceNames = []
@@ -1350,14 +1376,19 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(buttons.length).toBeGreaterThan(0)
     })
 
-    it('should have semantic HTML structure', () => {
+    it('should have semantic HTML structure', async () => {
+      // Table only renders once at least one file is queued.
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+
       expect(wrapper.find('h3').exists()).toBe(true)
       expect(wrapper.find('table').exists()).toBe(true)
       expect(wrapper.find('thead').exists()).toBe(true)
       expect(wrapper.find('ul').exists()).toBe(true)
     })
 
-    it('should have table with aria-label', () => {
+    it('should have table with aria-label', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+
       const table = wrapper.find('table.data-table')
       expect(table.attributes('aria-label')).toBeDefined()
     })
@@ -1418,11 +1449,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
 
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile2])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile2], ['default'])
     })
 
     it('should handle duplicate detection and renaming flow', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       // Upload file
       await triggerFileInput([mockFile])
@@ -1442,7 +1473,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should handle duplicate detection and overwrite flow', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       // Upload file
       await triggerFileInput([mockFile])
@@ -1657,7 +1688,10 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         await setSourceFiles(files)
 
         const dialog = wrapper.findComponent({ name: 'UploadedFileRenameDialog' })
-        expect(dialog.props('fileBucket')).toEqual(files)
+        // setSourceFiles auto-derives groupName; the pass-through prop reflects that.
+        expect(dialog.props('fileBucket')).toEqual(
+          files.map((f) => ({ ...f, groupName: f.file.name.replace(/\.xml$/i, '') }))
+        )
       })
 
       it('should pass index of first duplicate file', async () => {
@@ -1875,7 +1909,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should update isDuplicate based on new name after rename', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'taken.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'taken' }]
 
       await wrapper.vm.renameFile('taken.xml')
       await flushPromises()
@@ -1884,7 +1918,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should clear isDuplicate if renamed to unique name', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'existing.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'existing' }]
 
       await wrapper.vm.renameFile('brand-new-name.xml')
       await flushPromises()
@@ -1921,7 +1955,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     it('should skip files that are both local duplicates and server duplicates', async () => {
       vi.mocked(isDuplicateFile).mockReturnValue(true)
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFolderInput([mockFile])
 
@@ -1930,7 +1964,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should handle multiple files in folder where some are already uploaded', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 
       const file3 = new File(['content3'], 'test-file-3.xml', { type: 'application/xml' })
@@ -1944,8 +1978,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     it('should show snackbar for each skipped already-uploaded file in folder', async () => {
       store.uploadedSourceNames = [
-        { id: 1, name: 'test-file.xml' },
-        { id: 2, name: 'test-file-2.xml' }
+        { id: 1, name: 'test-file' },
+        { id: 2, name: 'test-file-2' }
       ]
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 
@@ -1953,11 +1987,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
       expect(mockShowSnackBar).toHaveBeenCalledTimes(2)
       expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('test-file.xml has already been uploaded'),
+        msg: expect.stringContaining('test-file.xml'),
         error: true
       })
       expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('test-file-2.xml has already been uploaded'),
+        msg: expect.stringContaining('test-file-2.xml'),
         error: true
       })
     })
@@ -2003,10 +2037,12 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(rows.length).toBeGreaterThanOrEqual(2)
     })
 
-    it('should only render header row when no files', () => {
+    it('should not render the table at all when no files', () => {
+      // Table (and thus its header row) is hidden until files are queued so
+      // an empty Source/Action header bar isn't sitting above the empty-state.
+      expect(wrapper.find('table.data-table').exists()).toBe(false)
       const rows = wrapper.findAll('tr')
-      // only the header row in thead
-      expect(rows).toHaveLength(1)
+      expect(rows).toHaveLength(0)
     })
 
     it('should render correct number of data rows', async () => {
@@ -2086,7 +2122,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await flushPromises()
 
       // Filter sends empty array but still calls the service
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([], ['default'])
     })
 
     it('should clear source files after successful upload', async () => {
@@ -2676,7 +2712,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     it('should handle rename then upload flow', async () => {
       store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFileInput([mockFile])
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -2694,12 +2730,12 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
 
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([expect.objectContaining({ name: 'renamed-file.xml' })])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([expect.objectContaining({ name: 'renamed-file.xml' })], ['default'])
     })
 
     it('should handle overwrite then upload flow', async () => {
       store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFileInput([mockFile])
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -2716,7 +2752,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
 
-      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile])
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile], ['default'])
     })
   })
 
@@ -2804,7 +2840,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
       const originalFile = wrapper.vm.sourceFiles[0].file
 
-      store.uploadedSourceNames = [{ id: 1, name: 'other.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'other' }]
       await wrapper.vm.$nextTick()
 
       // The watcher creates new objects via spread, but file property should be same
@@ -2816,7 +2852,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         { file: mockFile, isValid: false, errors: ['Err1', 'Err2'], isDuplicate: false }
       ])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -2826,7 +2862,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     it('should handle watcher running on empty sourceFiles', async () => {
       wrapper.vm.sourceFiles = []
-      store.uploadedSourceNames = [{ id: 1, name: 'test.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles).toHaveLength(0)
@@ -2840,7 +2876,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       // Store has 'test.xml' → after replace('.xml','') = 'test'
       // File name 'test.xml.xml' → after replace('.xml','') = 'test.xml'
       // 'test' !== 'test.xml' → NOT duplicate
-      store.uploadedSourceNames = [{ id: 1, name: 'test.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'test' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
@@ -2850,7 +2886,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       const file = new File(['c'], 'myData.xml', { type: 'application/xml' })
       await setSourceFiles([{ file, isValid: true, errors: [], isDuplicate: false }])
 
-      store.uploadedSourceNames = [{ id: 1, name: 'MYDATA.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'MYDATA' }]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
@@ -2895,7 +2931,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should still check isDuplicate against server names after rename', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'taken-name.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'taken-name' }]
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
       wrapper.vm.selectedIndex = 0
 
@@ -2906,7 +2942,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should handle renameFile with case-insensitive server duplicate check', async () => {
-      store.uploadedSourceNames = [{ id: 1, name: 'EXISTING.xml' }]
+      store.uploadedSourceNames = [{ id: 1, name: 'EXISTING' }]
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
       wrapper.vm.selectedIndex = 0
 
@@ -3063,8 +3099,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
   describe('Folder Upload Input Reset After Skips', () => {
     it('should reset input even when all files are already uploaded (skipped)', async () => {
       store.uploadedSourceNames = [
-        { id: 1, name: 'test-file.xml' },
-        { id: 2, name: 'test-file-2.xml' }
+        { id: 1, name: 'test-file' },
+        { id: 2, name: 'test-file-2' }
       ]
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 

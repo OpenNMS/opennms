@@ -62,9 +62,43 @@
           </FeatherButton>
         </div>
       </div>
+      <div
+        class="profiles-row"
+        v-if="availableProfiles.length"
+        data-test="profiles-section"
+      >
+        <span class="profiles-label">Add to profiles:</span>
+        <div class="profiles-list">
+          <FeatherCheckbox
+            v-for="profile in availableProfiles"
+            :key="profile.id"
+            :modelValue="selectedProfileNames.includes(profile.name)"
+            :disabled="hasConfigFile"
+            :data-test="`profile-checkbox-${profile.name}`"
+            @update:modelValue="(checked: boolean | undefined) => toggleProfile(profile.name, checked === true)"
+          >
+            {{ profile.name }}
+          </FeatherCheckbox>
+        </div>
+        <span
+          v-if="hasConfigFile"
+          class="profiles-hint config-hint"
+          data-test="profiles-config-hint"
+        >
+          Profile assignments will be taken from the uploaded datacollection-config.xml.
+        </span>
+        <span
+          v-else-if="!selectedProfileNames.length"
+          class="profiles-hint"
+          data-test="profiles-hint"
+        >
+          Pick at least one profile to enable upload.
+        </span>
+      </div>
     </div>
     <div class="container">
       <table
+        v-if="tableRecord.length"
         class="data-table"
         aria-label="SNMP Data Collection Sources Table"
       >
@@ -87,6 +121,20 @@
               <div class="file">
                 <FeatherIcon :icon="Apps" />
                 <span>{{ ellipsify(file.file.name, 39) }}</span>
+                <FeatherChip
+                  v-if="file.kind === 'config'"
+                  class="kind-chip kind-config"
+                  :data-test="`kind-chip-${file.file.name}`"
+                >
+                  Profiles config{{ file.profileNames?.length ? ` (${file.profileNames.length})` : '' }}
+                </FeatherChip>
+                <FeatherChip
+                  v-else-if="file.kind === 'group'"
+                  class="kind-chip kind-source"
+                  :data-test="`kind-chip-${file.file.name}`"
+                >
+                  Source
+                </FeatherChip>
                 <FeatherChip
                   v-if="!file.isValid"
                   class="error-chip"
@@ -203,10 +251,11 @@
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
-import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
+import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
+import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
@@ -238,13 +287,41 @@ const tableRecord = ref<UploadSnmpDataCollectionFileType[]>([])
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const availableProfiles = ref<SnmpCollectionProfile[]>([])
+const selectedProfileNames = ref<string[]>([])
 const emptyListContent = {
   msg: 'No files selected for upload.'
 }
+
+const fetchProfiles = async () => {
+  availableProfiles.value = await getAllSnmpCollectionProfiles()
+}
+
+const toggleProfile = (name: string, checked: boolean) => {
+  if (checked) {
+    if (!selectedProfileNames.value.includes(name)) {
+      selectedProfileNames.value = [...selectedProfileNames.value, name]
+    }
+  } else {
+    selectedProfileNames.value = selectedProfileNames.value.filter((n) => n !== name)
+  }
+}
+
+onMounted(() => {
+  fetchProfiles()
+})
+const hasConfigFile = computed(() =>
+  sourceFiles.value.some((f) => f.kind === 'config')
+)
+
 const shouldUploadDisabled = computed(() => {
   return (
     sourceFiles.value.length === 0 ||
     isLoading.value ||
+    // Profile picker is required only when uploading source files alone.
+    // When a <datacollection-config> is queued, its <snmp-collection> entries
+    // drive profile assignment, so the picker becomes irrelevant.
+    (!hasConfigFile.value && selectedProfileNames.value.length === 0) ||
     !sourceFiles.value.every(f => f.isValid) ||
     sourceFiles.value.some(f => f.isDuplicate)
   )
@@ -276,6 +353,12 @@ const onPageSizeChange = (newPageSize: number) => {
   tableRecord.value = sourceFiles.value.slice(0, pageSize.value)
 }
 
+const isExistingSourceName = (groupName: string | undefined): boolean => {
+  if (!groupName) return false
+  const target = groupName.toLowerCase()
+  return store.uploadedSourceNames.some((s) => s.name.toLowerCase() === target)
+}
+
 const handleSourceFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
@@ -285,12 +368,17 @@ const handleSourceFileUpload = async (event: Event) => {
         if (isDuplicateFile(file.name, sourceFiles.value)) {
           continue
         }
-        const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
+        const { isValid, errors, kind, groupName, profileNames } = await validateSnmpDataCollectionSourceFile(file)
         sourceFiles.value.push({
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
+          kind,
+          groupName,
+          profileNames,
+          // Config files don't have a group name and the server upserts them
+          // by profile name, so duplicate-against-uploaded-sources doesn't apply.
+          isDuplicate: kind === 'group' && isExistingSourceName(groupName)
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -322,26 +410,33 @@ const handleSourceFolderUpload = async (event: Event) => {
     const files = Array.from(input.files)
     for (const file of files) {
       try {
+        // Folder uploads include every file in the directory (READMEs,
+        // .DS_Store, archives, etc.). Quietly skip anything that's not .xml
+        // so the table stays focused on candidate sources.
+        if (!file.name.toLowerCase().endsWith('.xml')) {
+          continue
+        }
         if (isDuplicateFile(file.name, sourceFiles.value)) {
           continue
         }
-        const isAlreadyUploaded = store.uploadedSourceNames
-          .map(source => source.name.replace('.xml', '').toLowerCase())
-          .includes(file.name.replace('.xml', '').toLowerCase())
-
-        if (isAlreadyUploaded) {
+        const { isValid, errors, kind, groupName, profileNames } = await validateSnmpDataCollectionSourceFile(file)
+        // Skip already-uploaded sources only for source files; config files
+        // are upserted on the server by profile name.
+        if (kind === 'group' && isExistingSourceName(groupName)) {
           snackbar.showSnackBar({
-            msg: `File ${file.name} has already been uploaded. Skipping.`,
+            msg: `${file.name} (source '${groupName}') has already been uploaded. Skipping.`,
             error: true
           })
           continue
         }
-        const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
         sourceFiles.value.push({
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
+          kind,
+          groupName,
+          profileNames,
+          isDuplicate: false
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -380,7 +475,10 @@ const uploadFiles = async () => {
   }
   isLoading.value = true
   try {
-    const response = await uploadDataCollectionFiles(sourceFiles.value.filter(f => f.isValid).map(f => f.file))
+    const response = await uploadDataCollectionFiles(
+      sourceFiles.value.filter(f => f.isValid).map(f => f.file),
+      selectedProfileNames.value
+    )
     uploadFilesReport.value = {
       errors: [...response.errors],
       success: [...response.success]
@@ -427,11 +525,15 @@ const renameFile = async (newFileName: string) => {
     const fileToRename = sourceFiles.value[selectedIndex.value]
     const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
     const validationResult = await validateSnmpDataCollectionSourceFile(newFile)
+    // Renaming the file does not change the <datacollection-group name>
+    // inside the XML, so duplicate state is determined by the parsed
+    // groupName, not the new filename.
     sourceFiles.value[selectedIndex.value] = {
       file: newFile,
       isValid: validationResult.isValid,
       errors: validationResult.errors,
-      isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
+      groupName: validationResult.groupName,
+      isDuplicate: isExistingSourceName(validationResult.groupName)
     }
     closeRenameDialog()
   } else {
@@ -451,9 +553,10 @@ const overwriteFile = () => {
 watch(
   () => store.uploadedSourceNames,
   (newNames) => {
-    sourceFiles.value = sourceFiles.value.map(file => ({
+    const existing = new Set(newNames.map((s) => s.name.toLowerCase()))
+    sourceFiles.value = sourceFiles.value.map((file) => ({
       ...file,
-      isDuplicate: newNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
+      isDuplicate: !!file.groupName && existing.has(file.groupName.toLowerCase())
     }))
   }, { immediate: true, deep: true }
 )
@@ -494,7 +597,8 @@ onMounted(async () => {
     .action-container {
       display: flex;
       justify-content: space-between;
-      padding: 40px 0px 20px 0px;
+      align-items: center;
+      padding: 40px 0px 12px 0px;
 
       .section-left {
         display: flex;
@@ -507,7 +611,7 @@ onMounted(async () => {
 
       .section-right {
         display: flex;
-        gap: 10px;
+        align-items: center;
 
         button {
           :deep(.spinner) {
@@ -515,6 +619,35 @@ onMounted(async () => {
             width: 1.5rem !important;
           }
         }
+      }
+    }
+
+    // Profiles row sits directly beneath the action row, with no separator,
+    // so the "Add to profiles" controls read as part of the upload flow.
+    .profiles-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      padding: 0 0 20px 0;
+
+      .profiles-label {
+        @include typography.subtitle2;
+        flex-shrink: 0;
+        color: var(--feather-primary-text-on-surface);
+      }
+
+      .profiles-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 16px;
+      }
+
+      .profiles-hint {
+        @include typography.body-small;
+        color: var(--feather-secondary-text-on-surface);
+        margin-left: auto;
       }
     }
   }
@@ -548,6 +681,22 @@ onMounted(async () => {
           display: flex;
           align-items: center;
           gap: 10px;
+
+          .kind-chip {
+            min-width: none;
+            max-width: none;
+            border-radius: 4px;
+
+            &.kind-source {
+              background-color: #0B720C1F;
+              :deep(span) { color: #0B720C !important; }
+            }
+
+            &.kind-config {
+              background-color: #1976D21F;
+              :deep(span) { color: #1976D2 !important; }
+            }
+          }
 
           .error-chip {
             background-color: #A5021F33;
