@@ -427,6 +427,12 @@ const isExistingSourceName = (groupName: string | undefined): boolean => {
   return store.uploadedSourceNames.some((s) => s.name.toLowerCase() === target)
 }
 
+const isExistingSourceName = (groupName: string | undefined): boolean => {
+  if (!groupName) return false
+  const target = groupName.toLowerCase()
+  return store.uploadedSourceNames.some((s) => s.name.toLowerCase() === target)
+}
+
 const handleSourceFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
