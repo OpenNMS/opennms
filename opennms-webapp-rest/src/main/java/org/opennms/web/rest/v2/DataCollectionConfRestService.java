@@ -217,17 +217,19 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             }
         } else {
             // Sources-only path: existing per-file behavior, profileNames from
-            // the form drives attachment.
+            // the form drives attachment. The "file" field on success/error
+            // entries has historically been the parsed <datacollection-group>
+            // name rather than the upload form's filename — preserved here so
+            // older clients that deserialize the response shape don't regress.
             for (final Map.Entry<String, DatacollectionGroup> entry
                     : parsedSources.entrySet()) {
                 final String sourceName = entry.getKey();
                 final var dcg = entry.getValue();
-                final String fileName = sourceNameToFile.getOrDefault(sourceName, sourceName);
                 try {
                     dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, profileNames);
-                    successList.add(buildSuccessResponse(fileName, dcg));
+                    successList.add(buildSuccessResponse(sourceName, dcg));
                 } catch (Exception e) {
-                    errorList.add(buildErrorResponse(fileName, e));
+                    errorList.add(buildErrorResponse(sourceName, e));
                 }
             }
         }

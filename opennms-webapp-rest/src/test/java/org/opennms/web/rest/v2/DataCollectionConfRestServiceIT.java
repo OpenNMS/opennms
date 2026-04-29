@@ -124,7 +124,8 @@ public class DataCollectionConfRestServiceIT {
     @Test
     public void testUploadSnmpDataCollectionConfFiles_Success() throws Exception {
         List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, securityContext);
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                attachments, List.of(profileNamesPart("default")), securityContext);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
 
@@ -142,7 +143,10 @@ public class DataCollectionConfRestServiceIT {
 
     @Test
     public void testEmptyAttachments_ShouldReturnEmptyLists() throws Exception {
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(Collections.emptyList(), null, securityContext);
+        // No attachments at all → the profileNames guard does NOT fire because
+        // there are no parsed sources to attach.
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                Collections.emptyList(), null, securityContext);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
 
@@ -155,9 +159,22 @@ public class DataCollectionConfRestServiceIT {
     @Test
     public void testNullSecurityContext_ShouldUseUnknownUser() throws Exception {
         List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
-        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, null);
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                attachments, List.of(profileNamesPart("default")), null);
 
         assertEquals("Expected OK status", Response.Status.OK.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    public void testSourceUpload_RequiresProfileNames() throws Exception {
+        // Source-only uploads must include at least one profileNames value;
+        // the server returns 400 instead of leaving sources unattached.
+        List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
+        Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                attachments, null, securityContext);
+
+        assertEquals("Expected 400 when source-only upload omits profileNames",
+                Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
     }
 
     @Test
@@ -1021,7 +1038,8 @@ public class DataCollectionConfRestServiceIT {
 
         final List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
 
-        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, null, securityContext);
+        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                attachments, List.of(profileNamesPart("default")), securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
         SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("Dell");
@@ -1733,6 +1751,13 @@ public class DataCollectionConfRestServiceIT {
         when(cd.getParameter("filename")).thenReturn(name);
         when(att.getContentDisposition()).thenReturn(cd);
         when(att.getObject(InputStream.class)).thenReturn(is);
+        return att;
+    }
+
+    /** Builds a multipart "profileNames" part whose String value is the given name. */
+    private Attachment profileNamesPart(final String value) {
+        Attachment att = mock(Attachment.class);
+        when(att.getObject(String.class)).thenReturn(value);
         return att;
     }
 }

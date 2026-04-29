@@ -59,12 +59,20 @@ public interface DataCollectionConfRestApi {
     @Produces("application/json")
     @Operation(
             summary = "Upload datacollectionconf files",
-            description = "Upload one or more  data collection config files.",
+            description = "Upload one or more data collection config files. Each `upload` part must "
+                    + "be an XML file whose root element is either `<datacollection-group>` (a source "
+                    + "definition) or `<datacollection-config>` (a profile-driver file with "
+                    + "`<snmp-collection>` entries). At most one `<datacollection-config>` is allowed "
+                    + "per request. The `profileNames` field is required when uploading source files "
+                    + "without a `<datacollection-config>`; sources will be attached to the named "
+                    + "profiles. When a `<datacollection-config>` is present, `profileNames` is "
+                    + "ignored because the config's `<include-collection>` entries drive attachment.",
             operationId = "uploadSnmpDataCollectionConfFiles"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Upload successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid xml or request")
+            @ApiResponse(responseCode = "200", description = "Upload processed (per-file results in success/errors arrays)"),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid XML, missing required profileNames for source-only uploads, or other request error")
     })
     Response uploadSnmpDataCollectionConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Multipart(value = "profileNames", required = false) List<Attachment> profileNames,
