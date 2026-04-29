@@ -172,23 +172,34 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             if (timeoutCount >= maxTimeoutRetries_) {
                                 throw e;
                             }
-                            // It didn't get our ack. Resend it.
-                            LOG.debug("Resending missed ack to '{}'", twrp.getAddress());
-                            transferTftp_.bufferedSend(lastSentAck);
+                            // Maybe the client didn't get our ack. If there is no blksize option, resend the last ack
+                            if (! twrpOptions.containsKey("blksize")) {
+                                LOG.debug("Resending missed ack to '{}'", twrp.getAddress());
+                                transferTftp_.bufferedSend(lastSentAck);
+                                }
+                            if (lastSentAck.getBlockNumber() == 0 && twrpOptions.containsKey("blksize")) {
+                                // if we haven't received any data block yet, we should resend the OACK
+                                LOG.debug("Resending missed OACK to '{}'", twrp.getAddress());
+                                DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
+                                sendOAckPacket(transferTftp_, oackPacket);
+                            }
                             timeoutCount++;
                             continue;
                         }
                     }
 
                     if (dataPacket instanceof TFTPWriteRequestPacket) {
-                        // It must have missed our initial response. Resend the
-                        // same packet we sent before so option negotiation state
-                        // is preserved (for example, OACK vs ACK(0)).
-                        LOG.debug("Resending WRQ response to '{}'", twrp.getAddress());
-                        if (lastSentAck == null) {
+                        // Client must have missed our initial ack. If this is a WRQ and
+                        // contains a blksize option, we need to resend the OACK.
+                        if (((TFTPWriteRequestPacket)dataPacket).getOptions().containsKey("blksize")) {
+                            DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
+                            LOG.debug("Resending WRQ OACK to '{}'", twrp.getAddress());
+                            sendOAckPacket(transferTftp_, oackPacket);
+                        } else {
                             lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
+                            LOG.debug("Resending WRQ ack to '{}'", twrp.getAddress());
+                            transferTftp_.bufferedSend(lastSentAck);
                         }
-                        transferTftp_.bufferedSend(lastSentAck);
                     } else if (dataPacket == null || !(dataPacket instanceof TFTPDataPacket)) {
                         if (!shutdownTransfer) {
                             statistics.incErrors();
@@ -210,7 +221,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             statistics.incBytesReceived(dataLength);
                             if (bytesReceived > maximumReceiveSize) {
                                 statistics.incErrors();
-                                LOG.error("Maximum receive size exceeded - address: {}, fileName: {}; max: {}; received: ", twrp.getAddress(), twrp.getFilename(), maximumReceiveSize, bytesReceived);
+                                LOG.error("Maximum receive size exceeded - address: '{}', fileName: '{}'; max: '{}'; received: '{}'", twrp.getAddress(), twrp.getFilename(), maximumReceiveSize, bytesReceived);
                                 // make sure it was from the right client...
                                 transferTftp_
                                         .bufferedSend(new TFTPErrorPacket(dataPacket
