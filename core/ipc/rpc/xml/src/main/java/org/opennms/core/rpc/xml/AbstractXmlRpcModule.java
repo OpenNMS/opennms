@@ -94,14 +94,14 @@ public abstract class AbstractXmlRpcModule<S extends RpcRequest,T extends RpcRes
 
     private <W> XmlHandler<W> createXmlHandler(Class<W> clazz) {
         try {
-            return new XmlHandler<>(clazz);
+            return XmlHandler.forWire(clazz);
         } catch (Throwable t) {
             // NMS-8793: This is a work-around for some failure in the Minion container
             // When invoked for the first time, the creation may fail due to
             // errors of the form "invalid protocol handler: mvn", but subsequent
             // calls always seem to work
             LOG.warn("Creating the XmlHandler failed. Retrying.", t);
-            return new XmlHandler<>(clazz);
+            return XmlHandler.forWire(clazz);
         }
     }
 }
