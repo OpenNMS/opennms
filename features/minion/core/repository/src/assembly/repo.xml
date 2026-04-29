@@ -11,6 +11,8 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
       <excludes>
+        <exclude>**/com/fasterxml/jackson/core/jackson-*/2.14.1</exclude>
+        <exclude>**/com/fasterxml/jackson/core/jackson-*/2.14.1/*</exclude>
         <exclude>**/zookeeper/3.4.14</exclude>
         <exclude>**/zookeeper/3.4.14/*</exclude>
         <exclude>io/netty/netty-*/4.1.22.Final</exclude>
