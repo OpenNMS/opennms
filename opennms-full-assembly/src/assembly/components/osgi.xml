@@ -40,6 +40,8 @@
         <exclude>com/fasterxml/jackson/core/jackson-core/2.13.*/*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*/*</exclude>
+        <exclude>com/fasterxml/jackson/core/jackson-databind/2.9.*</exclude>
+        <exclude>com/fasterxml/jackson/core/jackson-databind/2.9.*/*</exclude>
         <exclude>io/netty/netty-*/4.1.22.Final</exclude>
         <exclude>io/netty/netty-*/4.1.22.Final/*</exclude>
         <exclude>org/ops4j/pax/logging/pax-logging-log4j2/1.10.2</exclude>
