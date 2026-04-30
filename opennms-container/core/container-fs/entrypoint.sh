@@ -31,8 +31,8 @@ OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - Configuration is managed via environment variables
+# - Default config is at /opt/prom-jmx-exporter/config.yaml; override with PROM_JMX_EXPORTER_CONFIG
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -100,9 +100,64 @@ configTester() {
   ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
 }
 
-processConfdTemplates() {
-  echo "Processing confd templates using /etc/confd/confd.toml"
-  confd -onetime
+processEnvConfig() {
+  echo "Processing environment variable configuration"
+
+  local CONTAINER_CONFIG_ETC="/opt/opennms/container-fs/etc"
+
+  # Copy static config files; Karaf resolves ${env:VAR:-default} at load time
+  mkdir -p "${OPENNMS_HOME}/etc/opennms.properties.d"
+  rsync -r "${CONTAINER_CONFIG_ETC}/opennms.properties.d/" "${OPENNMS_HOME}/etc/opennms.properties.d/"
+  cp "${CONTAINER_CONFIG_ETC}/org.apache.karaf.shell.cfg" "${OPENNMS_HOME}/etc/"
+
+  # Remove legacy confd-generated property files to prevent stale/duplicate settings
+  rm -f "${OPENNMS_HOME}/etc/opennms.properties.d/"_confd.*.properties
+
+  # Process service-configuration.xml from template with defaults for unset variables
+  (
+    export CORE_SERVICE_ALARMD_ENABLED="${CORE_SERVICE_ALARMD_ENABLED:-true}"
+    export CORE_SERVICE_BSMD_ENABLED="${CORE_SERVICE_BSMD_ENABLED:-true}"
+    export CORE_SERVICE_TICKETER_ENABLED="${CORE_SERVICE_TICKETER_ENABLED:-true}"
+    export CORE_SERVICE_CORRELATOR_ENABLED="${CORE_SERVICE_CORRELATOR_ENABLED:-false}"
+    export CORE_SERVICE_QUEUED_ENABLED="${CORE_SERVICE_QUEUED_ENABLED:-true}"
+    export CORE_SERVICE_ACTIOND_ENABLED="${CORE_SERVICE_ACTIOND_ENABLED:-true}"
+    export CORE_SERVICE_NOTIFD_ENABLED="${CORE_SERVICE_NOTIFD_ENABLED:-true}"
+    export CORE_SERVICE_SCRIPTD_ENABLED="${CORE_SERVICE_SCRIPTD_ENABLED:-true}"
+    export CORE_SERVICE_RTCD_ENABLED="${CORE_SERVICE_RTCD_ENABLED:-true}"
+    export CORE_SERVICE_POLLERD_ENABLED="${CORE_SERVICE_POLLERD_ENABLED:-true}"
+    export CORE_SERVICE_SNMPPOLLER_ENABLED="${CORE_SERVICE_SNMPPOLLER_ENABLED:-false}"
+    export CORE_SERVICE_ENHANCEDLINKD_ENABLED="${CORE_SERVICE_ENHANCEDLINKD_ENABLED:-true}"
+    export CORE_SERVICE_COLLECTD_ENABLED="${CORE_SERVICE_COLLECTD_ENABLED:-true}"
+    export CORE_SERVICE_DISCOVERY_ENABLED="${CORE_SERVICE_DISCOVERY_ENABLED:-true}"
+    export CORE_SERVICE_VACUUMD_ENABLED="${CORE_SERVICE_VACUUMD_ENABLED:-true}"
+    export CORE_SERVICE_EVENTTRANSLATOR_ENABLED="${CORE_SERVICE_EVENTTRANSLATOR_ENABLED:-true}"
+    export CORE_SERVICE_PASSIVESTATUSD_ENABLED="${CORE_SERVICE_PASSIVESTATUSD_ENABLED:-true}"
+    export CORE_SERVICE_STATSD_ENABLED="${CORE_SERVICE_STATSD_ENABLED:-true}"
+    export CORE_SERVICE_PROVISIOND_ENABLED="${CORE_SERVICE_PROVISIOND_ENABLED:-true}"
+    export CORE_SERVICE_ACKD_ENABLED="${CORE_SERVICE_ACKD_ENABLED:-true}"
+    export CORE_SERVICE_JETTYSERVER_ENABLED="${CORE_SERVICE_JETTYSERVER_ENABLED:-true}"
+    export CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED="${CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED:-true}"
+    export CORE_SERVICE_SYSLOGD_ENABLED="${CORE_SERVICE_SYSLOGD_ENABLED:-false}"
+    export CORE_SERVICE_TELEMETRYD_ENABLED="${CORE_SERVICE_TELEMETRYD_ENABLED:-true}"
+    export CORE_SERVICE_TRAPD_ENABLED="${CORE_SERVICE_TRAPD_ENABLED:-true}"
+    export CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED="${CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED:-true}"
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/service-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/service-configuration.xml"
+  )
+
+  # Process trapd-configuration.xml from template with defaults for unset variables
+  (
+    export OPENNMS_TRAPD_ADDRESS="${OPENNMS_TRAPD_ADDRESS:-*}"
+    export OPENNMS_TRAPD_PORT="${OPENNMS_TRAPD_PORT:-1162}"
+    export OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP="${OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP:-false}"
+    export OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE="${OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE:-false}"
+    export OPENNMS_TRAPD_THREADS="${OPENNMS_TRAPD_THREADS:-0}"
+    export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-10000}"
+    export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-1000}"
+    export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-500}"
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/trapd-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/trapd-configuration.xml"
+  )
 }
 
 # Initialize database and configure Karaf
@@ -196,7 +251,7 @@ fi
 while getopts "fhist" flag; do
   case ${flag} in
     f)
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       start
@@ -208,7 +263,7 @@ while getopts "fhist" flag; do
       ;;
     i)
       initConfigWhenEmpty
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       initOrUpdate -dis
@@ -216,7 +271,7 @@ while getopts "fhist" flag; do
       ;;
     s)
       initConfigWhenEmpty
-      processConfdTemplates
+      processEnvConfig
       applyOverlayConfig
       configTester -a
       initOrUpdate -dis
