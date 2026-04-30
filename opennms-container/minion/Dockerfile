@@ -26,7 +26,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.5.b357-jre-21"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.3.b335-jre-21"
 
 FROM ${BASE_IMAGE} AS minion-base
 
@@ -59,7 +59,7 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_RPMS="hostname uuid gettext"
 
 # Collect generic steps in a layer for caching
 
@@ -95,12 +95,10 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
-COPY --chown=10001:0 --from=minion-plugins /opt/usr-plugins /opt/minion/deploy
 
-# Install confd.io configuration files and scripts and ensure they are executable
-COPY ./container-fs/confd/ /opt/minion/confd/
-RUN chmod +x /opt/minion/confd/scripts/*
-COPY ./minion-config-schema.yml /opt/minion/confd/
+# Overlay container-specific etc files (config files and featuresBoot templates)
+COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
+COPY --chown=10001:0 --from=minion-plugins /opt/usr-plugins /opt/minion/deploy
 
 # Create the directory for server certificates
 RUN install -d -m 750 /opt/minion/server-certs

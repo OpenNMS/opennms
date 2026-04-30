@@ -1,5 +1,0 @@
-{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
-are used by this template. */ -}}
-{{if or (exists "/system/properties/JAEGER_AGENT_HOST") (exists "/system/properties/JAEGER_ENDPOINT") -}}
-opennms-core-tracing-jaeger
-{{end -}}
