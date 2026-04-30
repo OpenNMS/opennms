@@ -167,14 +167,35 @@ public class DataCollectionConfRestServiceIT {
 
     @Test
     public void testSourceUpload_RequiresProfileNames() throws Exception {
-        // Source-only uploads must include at least one profileNames value;
-        // the server returns 400 instead of leaving sources unattached.
+        // Source-only uploads with at least one *new* source must include
+        // profileNames; the server returns 400 to prevent orphaned sources.
+        // (The fresh DB has no source named "Dell" yet, so this is new.)
         List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
         Response resp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
                 attachments, null, securityContext);
 
-        assertEquals("Expected 400 when source-only upload omits profileNames",
+        assertEquals("Expected 400 when source-only upload of a new source omits profileNames",
                 Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    public void testPureUpdateUpload_AllowsEmptyProfileNames() throws Exception {
+        // Once a source already exists in the DB, re-uploading the same XML
+        // is an update — the server should accept it without profileNames
+        // since the source's existing profile memberships are preserved.
+        List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
+
+        // First upload: new source, requires profileNames
+        Response createResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                attachments, List.of(profileNamesPart("default")), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), createResp.getStatus());
+
+        // Second upload: same source name, no profileNames → 200 (pure update)
+        List<Attachment> reuploadAttachments = List.of(createMockedAttachment(FILENAME));
+        Response updateResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(
+                reuploadAttachments, null, securityContext);
+        assertEquals("Pure update should be allowed without profileNames",
+                Response.Status.OK.getStatusCode(), updateResp.getStatus());
     }
 
     @Test

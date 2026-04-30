@@ -718,8 +718,8 @@ public class DataCollectionConfPersistenceServiceIT {
         dto.setName("LinuxSystem");
         dto.setSysoid(".1.3.6.1.2.1.1");
         dto.setSysoidMask("255.255.255.0");
-        dto.setIpAddresses("192.168.1.0,10.0.0.1");
-        dto.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        dto.setIpAddresses(java.util.List.of("192.168.1.0", "10.0.0.1"));
+        dto.setIpAddressMasks(java.util.List.of("255.255.255.0", "255.0.0.0"));
         dto.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
         dto.setEnabled(true);
 
@@ -737,8 +737,16 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals("LinuxSystem", persisted.getName());
         assertEquals(".1.3.6.1.2.1.1", persisted.getSysoid());
         assertEquals("255.255.255.0", persisted.getSysoidMask());
-        assertEquals("192.168.1.0,10.0.0.1", persisted.getIpAddresses());
-        assertEquals("255.255.255.0,255.0.0.0", persisted.getIpAddressMasks());
+        // The persistence service serialises ipAddresses + ipAddressMasks
+        // into the canonical IpList JSON the runtime loader expects, so the
+        // entity column now holds JSON, not the raw comma-separated string.
+        // Assert the round-trip rather than the exact bytes.
+        final org.opennms.netmgt.config.datacollection.IpList persistedIpList =
+                org.opennms.netmgt.config.api.DatacollectionJsonHelper
+                        .fromJsonToIpList(persisted.getIpAddresses());
+        assertNotNull(persistedIpList);
+        assertEquals(java.util.List.of("192.168.1.0", "10.0.0.1"), persistedIpList.getIpAddresses());
+        assertEquals(java.util.List.of("255.255.255.0", "255.0.0.0"), persistedIpList.getIpAddressMasks());
         assertEquals("MIB-GROUP-1,MIB-GROUP-2", persisted.getMibGroupNames());
     }
 
@@ -870,8 +878,8 @@ public class DataCollectionConfPersistenceServiceIT {
         dto.setName("NewSystem");
         dto.setSysoid(".1.3.6.1.2.1.2");
         dto.setSysoidMask("255.255.255.0");
-        dto.setIpAddresses("192.168.1.0,10.0.0.2");
-        dto.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        dto.setIpAddresses(java.util.List.of("192.168.1.0", "10.0.0.2"));
+        dto.setIpAddressMasks(java.util.List.of("255.255.255.0", "255.0.0.0"));
         dto.setMibGroupNames("NEW-GROUP-1,NEW-GROUP-2");
         dto.setEnabled(true);
 
@@ -886,8 +894,14 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals("NewSystem", updated.getName());
         assertEquals(".1.3.6.1.2.1.2", updated.getSysoid());
         assertEquals("255.255.255.0", updated.getSysoidMask());
-        assertEquals("192.168.1.0,10.0.0.2", updated.getIpAddresses());
-        assertEquals("255.255.255.0,255.0.0.0", updated.getIpAddressMasks());
+        // ipAddresses column now holds canonical IpList JSON (see addSystemDef
+        // assertions above) — round-trip via the helper instead of comparing bytes.
+        final org.opennms.netmgt.config.datacollection.IpList updatedIpList =
+                org.opennms.netmgt.config.api.DatacollectionJsonHelper
+                        .fromJsonToIpList(updated.getIpAddresses());
+        assertNotNull(updatedIpList);
+        assertEquals(java.util.List.of("192.168.1.0", "10.0.0.2"), updatedIpList.getIpAddresses());
+        assertEquals(java.util.List.of("255.255.255.0", "255.0.0.0"), updatedIpList.getIpAddressMasks());
         assertEquals("NEW-GROUP-1,NEW-GROUP-2", updated.getMibGroupNames());
     }
     @Test

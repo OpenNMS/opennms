@@ -106,6 +106,9 @@ public class DataCollectionConfPersistenceService {
         persistMibGroups(source, dataCollectionGroup);
         persistSystemDefs(source, dataCollectionGroup);
 
+        // The whether-to-apply policy lives in the REST layer (which sees the
+        // whole batch's new-vs-update composition). If callers pass non-empty
+        // profileNames here, attach the source to all of them — idempotent.
         if (profileNames != null) {
             for (final String profileName : profileNames) {
                 if (profileName == null || profileName.isBlank()) {
@@ -186,7 +189,7 @@ public class DataCollectionConfPersistenceService {
             final SnmpCollectionSource snmpCollectionSource,
             final SnmpCollectionSystemDefDto request) {
 
-        final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
+        final var entity = applySystemDefDtoToEntity(request, new SnmpCollectionSystemDef());
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionSystemDefDao.save(entity);
     }
@@ -241,7 +244,7 @@ public class DataCollectionConfPersistenceService {
             );
         }
 
-        final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
+        final var entity = applySystemDefDtoToEntity(request, snmpCollectionSystemDefEntity);
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
     }
 
@@ -684,6 +687,81 @@ public class DataCollectionConfPersistenceService {
                 throw new IllegalArgumentException("Unknown source names: " + String.join(", ", unknown));
             }
         }
+    }
+
+    /**
+     * Convert an {@link SnmpCollectionSystemDef} entity into the wire DTO.
+     * The entity's {@code ip_addresses} column holds a JSON-encoded
+     * {@link IpList}; we decode it once here so the response always exposes
+     * structured {@code List<String>} fields, regardless of whether the row
+     * was created via XML migration, multipart upload, or direct CRUD.
+     */
+    public SnmpCollectionSystemDefDto toSystemDefDto(final SnmpCollectionSystemDef entity) {
+        if (entity == null) {
+            return null;
+        }
+        final IpList ipList = DatacollectionJsonHelper.fromJsonToIpList(entity.getIpAddresses());
+        final List<String> addresses = ipList != null ? new ArrayList<>(ipList.getIpAddresses()) : new ArrayList<>();
+        final List<String> masks = ipList != null ? new ArrayList<>(ipList.getIpAddressMasks()) : new ArrayList<>();
+        return new SnmpCollectionSystemDefDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getSysoid(),
+                entity.getSysoidMask(),
+                addresses,
+                masks,
+                entity.getMibGroupNames(),
+                entity.getEnabled(),
+                entity.getCollectionSource() != null ? entity.getCollectionSource().getId() : null,
+                entity.getCollectionSource() != null ? entity.getCollectionSource().getName() : null
+        );
+    }
+
+    public List<SnmpCollectionSystemDefDto> toSystemDefDtos(final List<SnmpCollectionSystemDef> entities) {
+        if (entities == null) {
+            return List.of();
+        }
+        return entities.stream().map(this::toSystemDefDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Apply a {@link SnmpCollectionSystemDefDto} onto an entity, building the
+     * canonical {@link IpList} JSON the runtime loader expects from the
+     * structured wire fields. This is the single place the JSON shape of the
+     * {@code ip_addresses} / {@code ip_address_masks} columns is produced for
+     * REST CRUD writes — keeping it consistent with the XML migration and
+     * multipart upload paths.
+     */
+    private SnmpCollectionSystemDef applySystemDefDtoToEntity(final SnmpCollectionSystemDefDto dto,
+                                                              final SnmpCollectionSystemDef entity) {
+        if (dto == null) {
+            return null;
+        }
+        entity.setName(dto.getName());
+        entity.setSysoid(dto.getSysoid());
+        entity.setSysoidMask(dto.getSysoidMask());
+
+        final IpList ipList = new IpList();
+        if (dto.getIpAddresses() != null) {
+            ipList.setIpAddresses(new ArrayList<>(dto.getIpAddresses()));
+        }
+        if (dto.getIpAddressMasks() != null) {
+            ipList.setIpAddressMasks(new ArrayList<>(dto.getIpAddressMasks()));
+        }
+        // Empty IpList → store null so the loader's null-safe path handles it.
+        final boolean hasAny = !ipList.getIpAddresses().isEmpty() || !ipList.getIpAddressMasks().isEmpty();
+        entity.setIpAddresses(hasAny ? DatacollectionJsonHelper.toJson(ipList) : null);
+        // ip_address_masks is a redundant column populated by the existing
+        // upload + migration paths for the old REST DTO. Keep it in sync so
+        // consumers that read it directly (legacy tooling) stay consistent.
+        entity.setIpAddressMasks(
+                ipList.getIpAddressMasks().isEmpty()
+                        ? null
+                        : DatacollectionJsonHelper.toJson(ipList.getIpAddressMasks()));
+
+        entity.setMibGroupNames(dto.getMibGroupNames());
+        entity.setEnabled(dto.getEnabled());
+        return entity;
     }
 
     private void applyDtoToEntity(final SnmpCollectionProfileDto dto, final SnmpCollectionProfile entity) {

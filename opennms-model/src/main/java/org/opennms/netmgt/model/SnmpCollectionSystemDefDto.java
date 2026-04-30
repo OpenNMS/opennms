@@ -23,16 +23,28 @@
 package org.opennms.netmgt.model;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Wire-format DTO for {@link SnmpCollectionSystemDef}.
+ *
+ * <p>{@code ipAddresses} and {@code ipAddressMasks} are exposed as
+ * {@link List List&lt;String&gt;} on the wire — the entity column itself stores
+ * a JSON-encoded {@code IpList} object, but the JSON ↔ list conversion is
+ * done in the REST persistence layer (see
+ * {@code DataCollectionConfPersistenceService.toSystemDefDto} /
+ * {@code applySystemDefDtoToEntity}). That keeps this module free of a
+ * Jackson dependency and ensures every write path produces the canonical
+ * JSON shape the runtime loader expects, regardless of whether the row was
+ * created via XML migration, multipart upload, or direct REST CRUD.
+ */
 public class SnmpCollectionSystemDefDto {
 
     private Integer id;
     private String name;
     private String sysoid;
     private String sysoidMask;
-    private String ipAddresses;
-    private String ipAddressMasks;
+    private List<String> ipAddresses;
+    private List<String> ipAddressMasks;
     private String mibGroupNames;
     private Boolean enabled;
 
@@ -48,8 +60,8 @@ public class SnmpCollectionSystemDefDto {
             String name,
             String sysoid,
             String sysoidMask,
-            String ipAddresses,
-            String ipAddressMasks,
+            List<String> ipAddresses,
+            List<String> ipAddressMasks,
             String mibGroupNames,
             Boolean enabled,
             Integer collectionSourceId,
@@ -101,19 +113,19 @@ public class SnmpCollectionSystemDefDto {
         this.sysoidMask = sysoidMask;
     }
 
-    public String getIpAddresses() {
+    public List<String> getIpAddresses() {
         return ipAddresses;
     }
 
-    public void setIpAddresses(String ipAddresses) {
+    public void setIpAddresses(List<String> ipAddresses) {
         this.ipAddresses = ipAddresses;
     }
 
-    public String getIpAddressMasks() {
+    public List<String> getIpAddressMasks() {
         return ipAddressMasks;
     }
 
-    public void setIpAddressMasks(String ipAddressMasks) {
+    public void setIpAddressMasks(List<String> ipAddressMasks) {
         this.ipAddressMasks = ipAddressMasks;
     }
 
@@ -147,44 +159,5 @@ public class SnmpCollectionSystemDefDto {
 
     public void setCollectionSourceName(String collectionSourceName) {
         this.collectionSourceName = collectionSourceName;
-    }
-
-    public static List<SnmpCollectionSystemDefDto> fromEntity(
-            List<SnmpCollectionSystemDef> entities) {
-
-        return entities.stream()
-                .map(e -> new SnmpCollectionSystemDefDto(
-                        e.getId(),
-                        e.getName(),
-                        e.getSysoid(),
-                        e.getSysoidMask(),
-                        e.getIpAddresses(),
-                        e.getIpAddressMasks(),
-                        e.getMibGroupNames(),
-                        e.getEnabled(),
-                        e.getCollectionSource() != null
-                                ? e.getCollectionSource().getId()
-                                : null,
-                        e.getCollectionSource() != null
-                                ? e.getCollectionSource().getName()
-                                : null
-                ))
-                .collect(Collectors.toList());
-    }
-
-    public static SnmpCollectionSystemDef updateEntity(SnmpCollectionSystemDef entity, final SnmpCollectionSystemDefDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        entity.setName(dto.getName());
-        entity.setSysoid(dto.getSysoid());
-        entity.setSysoidMask(dto.getSysoidMask());
-        entity.setIpAddresses(dto.getIpAddresses());
-        entity.setIpAddressMasks(dto.getIpAddressMasks());
-        entity.setMibGroupNames(dto.getMibGroupNames());
-        entity.setEnabled(dto.getEnabled());
-
-        return entity;
     }
 }

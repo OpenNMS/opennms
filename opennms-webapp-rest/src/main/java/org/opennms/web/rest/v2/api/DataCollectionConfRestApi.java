@@ -63,10 +63,20 @@ public interface DataCollectionConfRestApi {
                     + "be an XML file whose root element is either `<datacollection-group>` (a source "
                     + "definition) or `<datacollection-config>` (a profile-driver file with "
                     + "`<snmp-collection>` entries). At most one `<datacollection-config>` is allowed "
-                    + "per request. The `profileNames` field is required when uploading source files "
-                    + "without a `<datacollection-config>`; sources will be attached to the named "
-                    + "profiles. When a `<datacollection-config>` is present, `profileNames` is "
-                    + "ignored because the config's `<include-collection>` entries drive attachment.",
+                    + "per request.\n\n"
+                    + "How `profileNames` is applied depends on the batch composition:\n"
+                    + "- **Pure-new batch** (every source is new): `profileNames` is required; new "
+                    + "sources are attached to those profiles.\n"
+                    + "- **Pure-update batch** (every source already exists in the DB): `profileNames` "
+                    + "is optional. If non-empty, it is applied additively to every source — treat as "
+                    + "an explicit \"also associate these updates with these profiles\" intent.\n"
+                    + "- **Mixed batch** (≥1 new and ≥1 update): `profileNames` is required (for the "
+                    + "new sources) and is applied **only to the new sources**. Updates keep their "
+                    + "existing profile memberships untouched. To change an existing source's "
+                    + "memberships in this case, use the dedicated `/profiles/{profileId}/sources` "
+                    + "endpoints.\n"
+                    + "- **`<datacollection-config>` present**: `profileNames` is ignored; the "
+                    + "`<include-collection>` entries in the config drive attachment.",
             operationId = "uploadSnmpDataCollectionConfFiles"
     )
     @ApiResponses(value = {

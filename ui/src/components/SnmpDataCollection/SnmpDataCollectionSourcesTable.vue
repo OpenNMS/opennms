@@ -237,9 +237,25 @@ const profilesForSource = (sourceName: string): string[] => {
     .map((p) => p.name)
 }
 
-onMounted(async () => {
+const refreshAvailableProfiles = async () => {
   availableProfiles.value = await getAllSnmpCollectionProfiles()
-})
+}
+
+onMounted(refreshAvailableProfiles)
+
+// Tabs in this page (Sources / Import) are kept-alive, so onMounted only
+// fires once. After the user uploads in the Import tab, profile.source_names
+// has changed but our snapshot is stale — re-fetch every time this tab
+// becomes active so the Profiles column reflects the latest attachments.
+watch(
+  () => store.activeTab,
+  (tab) => {
+    // Tab index 0 = the Sources table (this component).
+    if (tab === 0) {
+      refreshAvailableProfiles()
+    }
+  }
+)
 
 const sort = reactive({
   name: SORT.NONE,
@@ -306,7 +322,17 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
       })
-      await store.fetchSnmpCollectionSources()
+      await Promise.all([
+        store.fetchSnmpCollectionSources(),
+        // Refresh the all-source-names cache so the Import tab's
+        // duplicate-detection no longer treats the just-deleted source
+        // as a "will update" row.
+        store.fetchAllSourcesNames(),
+        // Profile.source_names lists shrink when a source is deleted (the
+        // backend removes it from every profile). Refresh so the Profiles
+        // column reflects that.
+        refreshAvailableProfiles()
+      ])
       selectedCollectionSource.value = null
       isDeleteDialogVisible.value = false
       router.push({ name: 'SNMP Data Collection' })
@@ -337,7 +363,10 @@ const changeCollectionSourceStatus = async (selected: { id: number; name: string
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
       })
-      await store.fetchSnmpCollectionSources()
+      await Promise.all([
+        store.fetchSnmpCollectionSources(),
+        store.fetchAllSourcesNames()
+      ])
       selectedCollectionSource.value = null
       isChangeStatusDialogVisible.value = false
     } else {

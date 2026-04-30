@@ -462,28 +462,25 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.sourceFiles.length).toBe(2)
     })
 
-    it('should skip already uploaded files in folder upload', async () => {
+    it('should mark already-uploaded files as updates in folder upload', async () => {
       store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFolderInput([mockFile])
 
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('has already been uploaded'),
-        error: true
-      })
-      expect(wrapper.vm.sourceFiles.length).toBe(0)
+      // Re-uploaded sources are accepted as edits/updates rather than skipped
+      // — the server upserts them — so they show up in the table marked
+      // `isDuplicate: true` (rendered as a blue "Will update" chip).
+      expect(wrapper.vm.sourceFiles.length).toBe(1)
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
     })
 
-    it('should skip already uploaded files case-insensitively in folder upload', async () => {
+    it('should mark already-uploaded files as updates case-insensitively', async () => {
       store.uploadedSourceNames = [{ id: 1, name: 'TEST-FILE' }]
 
       await triggerFolderInput([mockFile])
 
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('has already been uploaded. Skipping'),
-        error: true
-      })
-      expect(wrapper.vm.sourceFiles.length).toBe(0)
+      expect(wrapper.vm.sourceFiles.length).toBe(1)
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
     })
 
     it('should skip duplicate files in folder upload', async () => {
@@ -541,16 +538,22 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(inputElement.files).toBeNull()
     })
 
-    it('should still add non-uploaded files when mix is present', async () => {
+    it('should add both already-uploaded (as update) and new files when mix is present', async () => {
       store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 
       await triggerFolderInput([mockFile, mockFile2])
 
-      // test-file.xml is skipped because already uploaded; test-file-2.xml is added
-      expect(wrapper.vm.sourceFiles.length).toBe(1)
-      expect(wrapper.vm.sourceFiles[0].file.name).toBe('test-file-2.xml')
+      // Both files end up in the queue: test-file.xml as an update (existing
+      // source name), test-file-2.xml as new.
+      expect(wrapper.vm.sourceFiles.length).toBe(2)
+      const byName = wrapper.vm.sourceFiles.reduce(
+        (acc: Record<string, any>, f: any) => ({ ...acc, [f.file.name]: f }),
+        {} as Record<string, any>
+      )
+      expect(byName['test-file.xml'].isDuplicate).toBe(true)
+      expect(byName['test-file-2.xml'].isDuplicate).toBe(false)
     })
 
     it('should not do anything when folder input has no files', async () => {
@@ -619,11 +622,15 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(errorIcons.length).toBe(1)
     })
 
-    it('should display warning icon for duplicate file', async () => {
+    it('should display update icon for re-uploaded (duplicate) source file', async () => {
+      // Re-uploaded sources are upserts on the server, so the row gets a
+      // calm "update" icon rather than a blocking warning.
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
 
-      const warningIcons = wrapper.findAll('.warning-icon')
-      expect(warningIcons.length).toBe(1)
+      const updateIcons = wrapper.findAll('.update-icon')
+      expect(updateIcons.length).toBe(1)
+      // Old warning treatment is gone for duplicates.
+      expect(wrapper.findAll('.warning-icon').length).toBe(0)
     })
 
     it('should not display success icon for invalid file', async () => {
@@ -648,12 +655,14 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(errorChip.text()).toBe('Error 1. Error 2')
     })
 
-    it('should display warning chip for duplicate file', async () => {
-      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
+    it('should display update chip for re-uploaded (duplicate) source file', async () => {
+      await setSourceFiles([
+        { file: mockFile, isValid: true, errors: [], isDuplicate: true, kind: 'group', groupName: 'Dell' }
+      ])
 
-      const warningChip = wrapper.find('.warning-chip')
-      expect(warningChip.exists()).toBe(true)
-      expect(warningChip.text()).toContain('File with the same name already exists')
+      const updateChip = wrapper.find('.update-chip')
+      expect(updateChip.exists()).toBe(true)
+      expect(updateChip.text()).toContain('Will update existing source')
     })
 
     it('should not display error chip for valid file', async () => {
@@ -677,11 +686,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.find('.error-chip').exists()).toBe(true)
     })
 
-    it('should display both warning icon and warning chip for duplicate file', async () => {
+    it('should display both update icon and update chip for re-uploaded source file', async () => {
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
 
-      expect(wrapper.find('.warning-icon').exists()).toBe(true)
-      expect(wrapper.find('.warning-chip').exists()).toBe(true)
+      expect(wrapper.find('.update-icon').exists()).toBe(true)
+      expect(wrapper.find('.update-chip').exists()).toBe(true)
     })
 
     it('should display error chip with joined error messages separated by period+space', async () => {
@@ -702,14 +711,16 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
       expect(wrapper.findAll('.success-icon').length).toBe(1)
       expect(wrapper.findAll('.error-icon').length).toBe(1)
-      expect(wrapper.findAll('.warning-icon').length).toBe(1)
+      expect(wrapper.findAll('.update-icon').length).toBe(1)
     })
 
-    it('should display both error icon and warning icon when file is invalid and duplicate', async () => {
+    it('should display only error icon when file is invalid (even if duplicate)', async () => {
+      // Invalid takes precedence: the row needs fixing before the upload can
+      // do anything, so we don't muddy it with the update indicator.
       await setSourceFiles([{ file: mockFile, isValid: false, errors: ['Invalid'], isDuplicate: true }])
 
       expect(wrapper.find('.error-icon').exists()).toBe(true)
-      expect(wrapper.find('.warning-icon').exists()).toBe(true)
+      expect(wrapper.find('.update-icon').exists()).toBe(false)
       expect(wrapper.find('.success-icon').exists()).toBe(false)
     })
   })
@@ -791,10 +802,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.shouldUploadDisabled).toBe(true)
     })
 
-    it('should be disabled when file is duplicate', async () => {
+    it('should be enabled when file is a re-uploaded (duplicate) source', async () => {
+      // Duplicates are accepted as updates, so they no longer block upload.
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
 
-      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
     })
 
     it('should be disabled when one valid and one invalid file', async () => {
@@ -806,13 +818,14 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.shouldUploadDisabled).toBe(true)
     })
 
-    it('should be disabled when one valid and one duplicate file', async () => {
+    it('should be enabled when one new and one re-uploaded source', async () => {
+      // Mix of new + update is fine; both are valid upserts.
       await setSourceFiles([
         { file: mockFile, isValid: true, errors: [], isDuplicate: false },
         { file: mockFile2, isValid: true, errors: [], isDuplicate: true }
       ])
 
-      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
     })
 
     it('should be enabled when files are valid and not duplicates', async () => {
@@ -985,12 +998,14 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
       })
 
-      it('should open rename dialog when warning icon is clicked', async () => {
+      it('should not auto-open rename dialog for re-uploaded sources', async () => {
+        // Duplicates render the calm "update" icon now; the rename dialog
+        // is no longer wired into the duplicate icon. The rename helper
+        // is still exposed programmatically (next test) for callers that
+        // need it.
         await wrapper.vm.$nextTick()
-        const warningIcon = wrapper.find('.warning-icon')
-        await warningIcon.trigger('click')
-
-        expect(wrapper.vm.displayRenameDialog).toBe(true)
+        expect(wrapper.find('.warning-icon').exists()).toBe(false)
+        expect(wrapper.vm.displayRenameDialog).toBe(false)
       })
 
       it('should set selectedIndex when opening rename dialog', () => {
@@ -1472,21 +1487,15 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.displayRenameDialog).toBe(false)
     })
 
-    it('should handle duplicate detection and overwrite flow', async () => {
+    it('should detect duplicates as updates and keep upload enabled', async () => {
       store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
-      // Upload file
+      // Upload a file whose group name matches an existing source.
       await triggerFileInput([mockFile])
 
-      // Verify duplicate detected
+      // The row is flagged as a duplicate (= "will update"), and that no
+      // longer disables the Upload button — the server upserts.
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
-      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
-
-      // Overwrite
-      wrapper.vm.selectedIndex = 0
-      wrapper.vm.overwriteFile()
-
-      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
       expect(wrapper.vm.shouldUploadDisabled).toBe(false)
     })
 
@@ -1963,20 +1972,22 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.sourceFiles.length).toBe(0)
     })
 
-    it('should handle multiple files in folder where some are already uploaded', async () => {
+    it('should add all folder files including already-uploaded ones (as updates)', async () => {
       store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
       vi.mocked(isDuplicateFile).mockReturnValue(false)
 
       const file3 = new File(['content3'], 'test-file-3.xml', { type: 'application/xml' })
       await triggerFolderInput([mockFile, mockFile2, file3])
 
-      // test-file.xml skipped (already uploaded), test-file-2.xml and test-file-3.xml added
-      expect(wrapper.vm.sourceFiles.length).toBe(2)
-      expect(wrapper.vm.sourceFiles[0].file.name).toBe('test-file-2.xml')
-      expect(wrapper.vm.sourceFiles[1].file.name).toBe('test-file-3.xml')
+      // All three files are queued. test-file.xml is marked as an update.
+      expect(wrapper.vm.sourceFiles.length).toBe(3)
+      const dup = wrapper.vm.sourceFiles.find((f: any) => f.file.name === 'test-file.xml')
+      expect(dup.isDuplicate).toBe(true)
     })
 
-    it('should show snackbar for each skipped already-uploaded file in folder', async () => {
+    it('should not snackbar already-uploaded files in folder upload', async () => {
+      // No more "skipping" snackbars — re-uploaded sources are accepted as
+      // updates and the user sees them in the table.
       store.uploadedSourceNames = [
         { id: 1, name: 'test-file' },
         { id: 2, name: 'test-file-2' }
@@ -1985,15 +1996,9 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
       await triggerFolderInput([mockFile, mockFile2])
 
-      expect(mockShowSnackBar).toHaveBeenCalledTimes(2)
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('test-file.xml'),
-        error: true
-      })
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: expect.stringContaining('test-file-2.xml'),
-        error: true
-      })
+      expect(mockShowSnackBar).not.toHaveBeenCalled()
+      expect(wrapper.vm.sourceFiles.length).toBe(2)
+      expect(wrapper.vm.sourceFiles.every((f: any) => f.isDuplicate)).toBe(true)
     })
 
     it('should add invalid folder files to sourceFiles with errors', async () => {
@@ -2464,19 +2469,17 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.selectedIndex).toBe(5)
     })
 
-    it('should open dialog with correct index when warning icon is clicked', async () => {
+    it('should not render a warning icon for re-uploaded sources', async () => {
+      // Duplicates show the calm "update" icon now and don't auto-trigger
+      // the rename dialog. Rename can still be invoked programmatically
+      // via openFileRenameDialog() if a future UI surfaces it.
       await setSourceFiles([
         { file: mockFile, isValid: true, errors: [], isDuplicate: false },
         { file: mockFile2, isValid: true, errors: [], isDuplicate: true }
       ])
 
-      const warningIcons = wrapper.findAll('.warning-icon')
-      expect(warningIcons).toHaveLength(1)
-      await warningIcons[0].trigger('click')
-
-      expect(wrapper.vm.displayRenameDialog).toBe(true)
-      // The index is the table row index (1 for second file in the rendered list)
-      expect(wrapper.vm.selectedIndex).toBe(1)
+      expect(wrapper.findAll('.warning-icon')).toHaveLength(0)
+      expect(wrapper.findAll('.update-icon')).toHaveLength(1)
     })
   })
 
@@ -2576,13 +2579,13 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
   // ─── Error icon click does NOT open dialog ───────────────────────────
   describe('Icon Click Behavior', () => {
-    it('should open rename dialog when warning icon is clicked', async () => {
+    it('should not render a clickable warning icon for re-uploaded sources', async () => {
+      // The duplicate-row icon is now a non-clickable "update" indicator.
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
 
-      const warningIcon = wrapper.find('.warning-icon')
-      await warningIcon.trigger('click')
-
-      expect(wrapper.vm.displayRenameDialog).toBe(true)
+      expect(wrapper.find('.warning-icon').exists()).toBe(false)
+      expect(wrapper.find('.update-icon').exists()).toBe(true)
+      expect(wrapper.vm.displayRenameDialog).toBe(false)
     })
 
     it('should NOT open rename dialog when error icon exists', async () => {
@@ -2618,16 +2621,41 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.shouldUploadDisabled).toBe(true)
     })
 
-    it('should be disabled when all files are duplicate even if valid', async () => {
+    it('should be enabled when all files are duplicates (all updates) and valid', async () => {
+      // A batch entirely of re-uploaded sources is a valid update flow.
       await setSourceFiles([
         { file: mockFile, isValid: true, errors: [], isDuplicate: true },
         { file: mockFile2, isValid: true, errors: [], isDuplicate: true }
       ])
 
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+    })
+
+    it('should be enabled for pure-update batch even with no profile selected', async () => {
+      // Updates don't need a profile pick: existing memberships are preserved.
+      // The picker becomes optional ("also add to these profiles") for updates.
+      wrapper.vm.selectedProfileNames = []
+      await setSourceFiles([
+        { file: mockFile, isValid: true, errors: [], isDuplicate: true, kind: 'group' }
+      ])
+
+      expect(wrapper.vm.selectedProfileNames.length).toBe(0)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+    })
+
+    it('should be disabled for mixed batch (new + update) when no profile selected', async () => {
+      // A new source still needs a profile to avoid being orphaned, even if
+      // the batch also contains an update.
+      wrapper.vm.selectedProfileNames = []
+      await setSourceFiles([
+        { file: mockFile, isValid: true, errors: [], isDuplicate: false, kind: 'group' },
+        { file: mockFile2, isValid: true, errors: [], isDuplicate: true, kind: 'group' }
+      ])
+
       expect(wrapper.vm.shouldUploadDisabled).toBe(true)
     })
 
-    it('should be disabled when file is both invalid and duplicate', async () => {
+    it('should be disabled when file is invalid (regardless of duplicate state)', async () => {
       await setSourceFiles([
         { file: mockFile, isValid: false, errors: ['err'], isDuplicate: true }
       ])
@@ -2646,9 +2674,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.shouldUploadDisabled).toBe(false)
     })
 
-    it('should transition from disabled to enabled when duplicate is resolved', async () => {
+    it('should keep upload enabled regardless of the duplicate flag', async () => {
+      // Duplicates no longer affect upload-disabled state — toggling the
+      // flag has no effect on the button.
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
-      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
 
       wrapper.vm.sourceFiles[0].isDuplicate = false
       await wrapper.vm.$nextTick()
@@ -2710,21 +2740,22 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.vm.total).toBe(2)
     })
 
-    it('should handle rename then upload flow', async () => {
+    it('should still support rename → upload (programmatic) for users who want a new source', async () => {
+      // The rename helper is still exposed even though the duplicate icon
+      // no longer surfaces it; this test pins that path so it doesn't bit-rot.
       store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
       store.uploadedSourceNames = [{ id: 1, name: 'test-file' }]
 
       await triggerFileInput([mockFile])
+      // Default behavior: duplicate is accepted as an update, upload enabled.
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
-      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
 
-      // Rename
+      // Rename: produces a fresh file with a new name; isDuplicate clears.
       wrapper.vm.selectedIndex = 0
       await wrapper.vm.renameFile('renamed-file.xml')
       await flushPromises()
-
       expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
-      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
 
       // Upload
       await wrapper.vm.uploadFiles()
@@ -3097,7 +3128,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
   // ─── Folder Upload Input Reset After Skipped Files ───────────────────
   describe('Folder Upload Input Reset After Skips', () => {
-    it('should reset input even when all files are already uploaded (skipped)', async () => {
+    it('should reset input after a folder of all-already-uploaded files', async () => {
       store.uploadedSourceNames = [
         { id: 1, name: 'test-file' },
         { id: 2, name: 'test-file-2' }
@@ -3116,9 +3147,11 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await flushPromises()
       await wrapper.vm.$nextTick()
 
-      // All files skipped but input should still be reset
+      // All files now queue as updates (the server will upsert) and the
+      // input is still reset so the user can pick another folder.
       expect(inputElement.files).toBeNull()
-      expect(wrapper.vm.sourceFiles).toHaveLength(0)
+      expect(wrapper.vm.sourceFiles).toHaveLength(2)
+      expect(wrapper.vm.sourceFiles.every((f: any) => f.isDuplicate)).toBe(true)
     })
 
     it('should reset input after processing errors in folder upload', async () => {

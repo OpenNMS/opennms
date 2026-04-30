@@ -145,8 +145,8 @@ export interface SnmpCollectionSystemDef {
   name: string
   sysoid: string
   sysoidMask: string
-  ipAddresses: string
-  ipAddressMasks: string
+  ipAddresses: string[]
+  ipAddressMasks: string[]
   mibGroupNames: string[]
   enabled: boolean
   collectionSourceId: number
@@ -158,8 +158,8 @@ export interface SnmpCollectionSystemDefPayload {
   name: string
   sysoid: string
   sysoidMask: string
-  ipAddresses: string
-  ipAddressMasks: string
+  ipAddresses: string[]
+  ipAddressMasks: string[]
   mibGroupNames: string
   enabled: boolean
 }

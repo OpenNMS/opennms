@@ -169,14 +169,22 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             }
         }
 
-        // If only sources were uploaded (the existing flow), retain the
-        // "must pick at least one profile" contract so newly-created sources
-        // don't end up orphaned. When a <datacollection-config> is part of
-        // the upload, it drives source-to-profile attachment instead.
+        // The "must pick at least one profile" contract exists to prevent
+        // newly-created sources from being orphaned (no profile references
+        // them, so collectd never schedules them). It does NOT apply when:
+        //   - a <datacollection-config> is in the upload (its
+        //     <include-collection> entries drive attachment), OR
+        //   - every uploaded source is already in the DB — those are pure
+        //     updates and they keep their existing profile memberships.
         if (parsedConfig == null && !parsedSources.isEmpty() && profileNames.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "At least one profileNames value is required to upload sources."))
-                    .build();
+            final boolean anyNewSource = parsedSources.keySet().stream()
+                    .anyMatch(name -> snmpCollectionSourceDao.findByName(name) == null);
+            if (anyNewSource) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error",
+                                "At least one profileNames value is required when uploading new source files."))
+                        .build();
+            }
         }
 
         if (parsedConfig != null) {
@@ -216,8 +224,23 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                 errorList.add(entry);
             }
         } else {
-            // Sources-only path: existing per-file behavior, profileNames from
-            // the form drives attachment. The "file" field on success/error
+            // Sources-only path: profileNames is applied per-source based on
+            // the batch's new-vs-update composition.
+            //   * pure-new batch       → picker is required; apply to every source
+            //   * pure-update batch    → picker is optional; if user picked, treat as
+            //                            explicit "associate these updates with these
+            //                            profiles" and apply to every source
+            //   * mixed batch          → picker is required for the new source(s).
+            //                            Apply only to new ones; leave update memberships
+            //                            untouched (the picker may have been filled just
+            //                            to satisfy the gate, not to broaden existing
+            //                            sources).
+            // To change an existing source's profile membership in a mixed batch,
+            // use POST/DELETE on /profiles/{id}/sources directly.
+            final boolean batchHasNewSource = parsedSources.keySet().stream()
+                    .anyMatch(name -> snmpCollectionSourceDao.findByName(name) == null);
+
+            // The "file" field on success/error
             // entries has historically been the parsed <datacollection-group>
             // name rather than the upload form's filename — preserved here so
             // older clients that deserialize the response shape don't regress.
@@ -225,8 +248,16 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     : parsedSources.entrySet()) {
                 final String sourceName = entry.getKey();
                 final var dcg = entry.getValue();
+                final boolean isNewSource = snmpCollectionSourceDao.findByName(sourceName) == null;
+                // In a mixed batch, the picker exists for the new source(s); skip
+                // applying it to updates so we don't silently broaden existing
+                // sources' profile memberships. In a pure-update batch, treat
+                // the picker as explicit user intent.
+                final List<String> applyProfiles = (isNewSource || !batchHasNewSource)
+                        ? profileNames
+                        : List.of();
                 try {
-                    dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, profileNames);
+                    dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, applyProfiles);
                     successList.add(buildSuccessResponse(sourceName, dcg));
                 } catch (Exception e) {
                     errorList.add(buildErrorResponse(sourceName, e));
@@ -540,7 +571,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         List<SnmpCollectionSystemDefDto> dtoList =
-                SnmpCollectionSystemDefDto.fromEntity(result.getRecords());
+                dataCollectionConfPersistenceService.toSystemDefDtos(result.getRecords());
 
         // Build response
         return Response.ok(Map.of("totalRecords", result.getTotalRecords(), "dataCollectionSystemDefsList", dtoList))

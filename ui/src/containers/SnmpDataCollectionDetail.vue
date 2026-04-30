@@ -147,6 +147,7 @@ import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/System
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteSnmpCollectionSources, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
@@ -157,6 +158,7 @@ import { capitalize } from 'lodash'
 const router = useRouter()
 const route = useRoute()
 const store = useSnmpDataCollectionDetailStore()
+const sourcesStore = useSnmpDataCollectionStore()
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
 const selectedCollectionSource = ref<{ id: number; name: string, enabled: boolean } | null>(null)
@@ -195,6 +197,10 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
       })
+      // Refresh the all-source-names cache used by the Import tab's
+      // duplicate detection — otherwise this just-deleted source still
+      // appears as a "will update" row when re-uploaded.
+      await sourcesStore.fetchAllSourcesNames()
       router.push({ name: 'SNMP Data Collection' })
     } else {
       snackbar.showSnackBar({

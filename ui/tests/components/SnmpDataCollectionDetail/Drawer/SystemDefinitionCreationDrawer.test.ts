@@ -33,8 +33,8 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     name: 'Test System',
     sysoid: '.1.3.6.1.4.1.8072',
     sysoidMask: '',
-    ipAddresses: '[]',
-    ipAddressMasks: '[]',
+    ipAddresses: [],
+    ipAddressMasks: [],
     mibGroupNames: ['mib-group-1', 'mib-group-2'],
     enabled: true,
     collectionSourceId: 1,
@@ -1640,7 +1640,11 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       expect(call[0].sysoidMask).toBe('')
     })
 
-    it('should map ipAddresses as empty string', async () => {
+    it('should map ipAddresses as an empty array', async () => {
+      // The wire format for ipAddresses / ipAddressMasks is now string[];
+      // the server serialises them into the canonical IpList JSON for
+      // storage. The form sends empty arrays when the user has not added
+      // any entries.
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
 
       wrapper.vm.name = 'Test'
@@ -1651,8 +1655,8 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       await wrapper.vm.saveSystemDef()
       const call = vi.mocked(createSystemDefinition).mock.calls[0]
 
-      expect(call[0].ipAddresses).toBe('')
-      expect(call[0].ipAddressMasks).toBe('')
+      expect(call[0].ipAddresses).toEqual([])
+      expect(call[0].ipAddressMasks).toEqual([])
     })
   })
 })

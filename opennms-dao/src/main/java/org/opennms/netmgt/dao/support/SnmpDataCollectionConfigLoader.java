@@ -117,7 +117,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
     public void reloadDataCollectionConfigFromDb() {
         final List<SnmpCollectionProfile> profiles = snmpCollectionProfileDao.findAllEnabled();
         if (profiles == null || profiles.isEmpty()) {
-            LOG.info("No SNMP collection profiles in database — keeping XML-based config.");
+            // No XML fallback in this design: an empty profile table means
+            // collection is inactive until profiles + sources are uploaded
+            // through the REST/UI path. Operators see this in manager.log.
+            LOG.info("No SNMP collection profiles in the database — SNMP data collection is "
+                    + "inactive until profiles and sources are uploaded.");
             return;
         }
 
