@@ -124,6 +124,18 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static Scope secureCredentialsVaultScope;
 
     /**
+     * Lazily initializes {@link #secureCredentialsVaultScope}. Must not use
+     * {@code synchronized (SnmpPeerFactory.class)} here: {@link BeanUtils#getBean} can
+     * take {@code ContextRegistry}'s lock while Spring still holds that lock and invokes
+     * {@link #init()}, which needs the class monitor (deadlock with SNMP interface poller).
+     */
+    private static final Object secureCredentialsScopeInitLock = new Object();
+
+    public SnmpPeerFactory() {
+        LOG.debug("creating new instance: {}", this);
+    }
+
+    /** 
      * <p>Constructor for SnmpPeerFactory.</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
@@ -278,8 +290,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    private static synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
+    private static Scope getSecureCredentialsScope() {
+        Scope scope = secureCredentialsVaultScope;
+        if (scope != null) {
+            return scope;
+        }
+        synchronized (secureCredentialsScopeInitLock) {
+            if (secureCredentialsVaultScope != null) {
+                return secureCredentialsVaultScope;
+            }
             try {
                 final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
 
@@ -291,9 +310,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             } catch (FatalBeanException e) {
                 LOG.warn("SnmpPeerFactory: Error retrieving EntityScopeProvider bean");
             }
+            return secureCredentialsVaultScope;
         }
-
-        return secureCredentialsVaultScope;
     }
 
     /**
