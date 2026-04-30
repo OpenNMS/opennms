@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.5.b357-jre-21"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.3.b335-jre-21"
 
 FROM ${BASE_IMAGE} AS sentinel-tarball
 
@@ -98,9 +98,8 @@ COPY container-fs/health.sh /
 # Install a default JMX Prometheus configuration
 COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
-# Install confd.io configuration files and scripts and ensure they are executable
-COPY ./container-fs/confd/ /opt/sentinel/confd/
-RUN chmod +x /opt/sentinel/confd/scripts/*
+# Overlay container-specific etc files (config files and featuresBoot templates)
+COPY --chown=10001:0 container-fs/etc/ /opt/sentinel/etc/
 
 VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
