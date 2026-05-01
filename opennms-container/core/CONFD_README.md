@@ -26,12 +26,12 @@ Config written to `etc/opennms.properties.d/_container.timeseries.properties`.
 
 | Environment Variable | Config key | Default |
 |:---------------------|:-----------|:--------|
-| `CASSANDRA_HOSTNAME` | `org.opennms.newts.config.hostname` | `hostname` |
-| `CASSANDRA_KEYSPACE` | `org.opennms.newts.config.keyspace` | `newts` |
-| `CASSANDRA_PORT` | `org.opennms.newts.config.port` | `9042` |
-| `CASSANDRA_USERNAME` | `org.opennms.newts.config.username` | `cassandra` |
-| `CASSANDRA_PASSWORD` | `org.opennms.newts.config.password` | `cassandra` |
-| `CASSANDRA_DATACENTER` | `org.opennms.newts.config.datacenter` | `datacenter1` |
+| `OPENNMS_CASSANDRA_HOSTNAME` | `org.opennms.newts.config.hostname` | `hostname` |
+| `OPENNMS_CASSANDRA_KEYSPACE` | `org.opennms.newts.config.keyspace` | `newts` |
+| `OPENNMS_CASSANDRA_PORT` | `org.opennms.newts.config.port` | `9042` |
+| `OPENNMS_CASSANDRA_USERNAME` | `org.opennms.newts.config.username` | `cassandra` |
+| `OPENNMS_CASSANDRA_PASSWORD` | `org.opennms.newts.config.password` | `cassandra` |
+| `OPENNMS_CASSANDRA_DATACENTER` | `org.opennms.newts.config.datacenter` | `datacenter1` |
 
 Config written to `etc/opennms.properties.d/_container.newts.properties`.
 
