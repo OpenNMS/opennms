@@ -115,6 +115,34 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
 
 
     public void reloadDataCollectionConfigFromDb() {
+        final MaterializedConfig materialized = materializeFromDb();
+        if (materialized == null) {
+            return;
+        }
+
+        try {
+            DataCollectionConfigLookupUtils.validateResourceTypes(
+                    materialized.config.getSnmpCollections(),
+                    materialized.allResourceTypes.keySet());
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Resource type validation warning during DB config load: {}", e.getMessage());
+        }
+
+        dataCollectionConfigDao.loadFromDatabase(
+                materialized.config, materialized.allResourceTypes, materialized.allGroups);
+        LOG.info("Loaded SNMP data collection config from DB: {} profiles, {} resource types, {} sources",
+                materialized.profileCount, materialized.allResourceTypes.size(), materialized.allGroups.size());
+    }
+
+    /**
+     * Build the in-memory {@link DatacollectionConfig} from the DB without
+     * publishing it. Returns {@code null} if there are no enabled profiles
+     * (collection is inactive in that case — the caller decides what to do).
+     *
+     * <p>Package-private so the parity test can capture the config directly
+     * without spying on {@link DataCollectionConfigDao#loadFromDatabase}.
+     */
+    MaterializedConfig materializeFromDb() {
         final List<SnmpCollectionProfile> profiles = snmpCollectionProfileDao.findAllEnabled();
         if (profiles == null || profiles.isEmpty()) {
             // No XML fallback in this design: an empty profile table means
@@ -122,7 +150,7 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
             // through the REST/UI path. Operators see this in manager.log.
             LOG.info("No SNMP collection profiles in the database — SNMP data collection is "
                     + "inactive until profiles and sources are uploaded.");
-            return;
+            return null;
         }
 
         LOG.info("Loading SNMP data collection config from database ({} profiles)...", profiles.size());
@@ -210,16 +238,25 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
         }
 
         config.insertSnmpCollection(rtCollection);
+        return new MaterializedConfig(config, allResourceTypes, allGroups, profiles.size());
+    }
 
-        try {
-            DataCollectionConfigLookupUtils.validateResourceTypes(config.getSnmpCollections(), allResourceTypes.keySet());
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Resource type validation warning during DB config load: {}", e.getMessage());
+    /** Bundle of values produced by {@link #materializeFromDb()}. */
+    static final class MaterializedConfig {
+        final DatacollectionConfig config;
+        final Map<String, ResourceType> allResourceTypes;
+        final List<String> allGroups;
+        final int profileCount;
+
+        MaterializedConfig(final DatacollectionConfig config,
+                           final Map<String, ResourceType> allResourceTypes,
+                           final List<String> allGroups,
+                           final int profileCount) {
+            this.config = config;
+            this.allResourceTypes = allResourceTypes;
+            this.allGroups = allGroups;
+            this.profileCount = profileCount;
         }
-
-        dataCollectionConfigDao.loadFromDatabase(config, allResourceTypes, allGroups);
-        LOG.info("Loaded SNMP data collection config from DB: {} profiles, {} resource types, {} sources",
-                profiles.size(), allResourceTypes.size(), allGroups.size());
     }
 
     /**
@@ -266,8 +303,14 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
             final Group g = new Group();
             g.setName(e.getName());
             g.setIfType(e.getIfType());
-            g.setMibObjs(DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects()));
-            g.setProperties(DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties()));
+            // Preserve JAXB's empty-list defaults when the JSON is null/empty.
+            // DataCollectionConfigLookupUtils#processGroupForProperties (and
+            // similar collectd hot-path code) calls getProperties().forEach
+            // without a null check, so a null here would NPE at runtime.
+            final var mibObjs = DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects());
+            if (mibObjs != null) g.setMibObjs(mibObjs);
+            final var props = DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties());
+            if (props != null) g.setProperties(props);
             final List<String> includeGroups = DatacollectionJsonHelper.fromJson(
                     e.getMibGroupNames(), new TypeReference<List<String>>() {});
             if (includeGroups != null) {
