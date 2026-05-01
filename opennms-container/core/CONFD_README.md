@@ -15,9 +15,9 @@ Overlay config files (mounted to `/opt/opennms-etc-overlay`) are applied afterwa
 | Environment Variable | Config key | Default |
 |:---------------------|:-----------|:--------|
 | `OPENNMS_TIMESERIES_STRATEGY` | `org.opennms.timeseries.strategy` | `rrd` |
-| `OPENNMS_RRD_STORE_BY_FOREIGN_SOURCE` | `org.opennms.rrd.storeByForeignSource` | `true` |
-| `OPENNMS_RRD_STRATEGY_CLASS` | `org.opennms.rrd.strategyClass` | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy` |
-| `OPENNMS_RRD_INTERFACE_JAR` | `org.opennms.rrd.interfaceJar` | `/usr/share/java/jrrd2.jar` |
+| `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | `org.opennms.rrd.storeByForeignSource` | `true` |
+| `OPENNMS_RRD_STRATEGYCLASS` | `org.opennms.rrd.strategyClass` | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy` |
+| `OPENNMS_RRD_INTERFACEJAR` | `org.opennms.rrd.interfaceJar` | `/usr/share/java/jrrd2.jar` |
 | `OPENNMS_LIBRARY_JRRD2` | `opennms.library.jrrd2` | `/usr/lib/jni/libjrrd2.so` |
 
 Config written to `etc/opennms.properties.d/_container.timeseries.properties`.
