@@ -7,8 +7,8 @@ Overlay config files (mounted to `/opt/opennms-etc-overlay`) are applied afterwa
 
 | Environment Variable | Config key | Default |
 |:---------------------|:-----------|:--------|
-| `KARAF_SSH_PORT` | `sshPort` in `org.apache.karaf.shell.cfg` | `8101` |
-| `KARAF_SSH_HOST` | `sshHost` in `org.apache.karaf.shell.cfg` | `0.0.0.0` |
+| `OPENNMS_KARAF_SSH_PORT` | `sshPort` in `org.apache.karaf.shell.cfg` | `8101` |
+| `OPENNMS_KARAF_SSH_HOST` | `sshHost` in `org.apache.karaf.shell.cfg` | `0.0.0.0` |
 
 ## Timeseries / RRD
 
