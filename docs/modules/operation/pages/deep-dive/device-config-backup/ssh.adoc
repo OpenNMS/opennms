@@ -15,10 +15,15 @@ You will reference these scripts when you xref:deep-dive/device-config-backup/dc
 
 == SSH scripting engine
 
-The scripting engine supports two commands:
+The scripting engine supports the following commands:
 
 * `send: ...`: Sends the given string to the device.
 * `await: ...`: Waits for a response from the device that matches the given string.
+* `capture:`: Marks the current position in the device's output as the start of the configuration to capture.
+  When an `await:` command matches after a `capture:`, the matched line is automatically excluded from the captured output.
+  No TFTP server or file transfer is involved; the captured bytes are stored directly.
+* `capture: <string>`: Same as `capture:`, but first waits for `<string>` to appear in the output before setting the capture start point.
+  Use this form to skip the device's echo of the preceding `send:` command.
 
 Scripts can reference the following variables by using `$\{varname}` notation:
 
@@ -64,6 +69,28 @@ send: put juniper.conf.gz juniper.conf.gz${filenameSuffix}
 await: tftp>
 send: exit
 ----
+
+=== Inline capture example
+
+Some devices support retrieving configuration output directly from the SSH session without a separate file transfer.
+The following example retrieves the running configuration from a Cisco IOS device using inline capture.
+
+[source, script]
+----
+await: #
+send: terminal length 0
+await: #
+send: show running-config
+capture: show running-config
+await: #
+----
+
+`terminal length 0` disables paging so the full configuration is returned in a single output block.
+`capture: show running-config` waits for the device to echo the command back, then starts recording the output.
+The final `await: #` waits for the prompt that signals the end of the output; the prompt line is excluded from the stored configuration.
+
+NOTE: The `filenameSuffix`, `tftpServerIp`, and `tftpServerPort` variables are not used in capture-based scripts.
+The `configType` variable is still used to identify the configuration type that is stored.
 
 == Vendor TFTP support
 

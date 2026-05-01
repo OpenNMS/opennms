@@ -28,8 +28,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -234,6 +237,127 @@ public class RetrieverImplTest {
 
         verify(tftpServer, times(1)).unregister(receiver);
     }
+
+    // =========================================================================
+    // SSH capture tests
+    // =========================================================================
+
+    @Test
+    public void shouldRetrieveConfigViaSshCapture() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+
+        var capturedBytes = "hostname router\ninterface eth0\n".getBytes();
+        var configType = "running.cfg";
+        // Script contains 'capture:' — inline capture path is taken regardless of protocol
+        var script = "send: show running-config\ncapture:\nawait: #";
+
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(SshScriptingService.Result.success("Success", "", "", "ssh-debug-output", Optional.of(capturedBytes)));
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, script, "", "", null,
+                new InetSocketAddress("host", 22), null, null, configType,
+                Collections.emptyMap(), Duration.ofSeconds(30)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isRight());
+
+        var success = either.get();
+        assertThat(success.config, is(capturedBytes));
+        assertThat(success.filename, is(configType));
+        assertThat(success.scriptOutput, is("ssh-debug-output"));
+
+        // TFTP server must not be touched when script contains capture:
+        verify(tftpServer, never()).register(any());
+        verify(tftpServer, never()).unregister(any());
+    }
+
+    @Test
+    public void shouldFailWhenCapturedConfigIsEmpty() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+
+        // Script contains capture: but SshScriptingService returns empty capturedConfig
+        var script = "capture:";
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(SshScriptingService.Result.success("Success", "", "", "debug-output", Optional.empty()));
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, script, "", "", null,
+                new InetSocketAddress("host", 22), null, null, "running.cfg",
+                Collections.emptyMap(), Duration.ofSeconds(30)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+        assertThat(either.getLeft().message, containsString("capture:"));
+    }
+
+    @Test
+    public void shouldHandleSshScriptFailure() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+
+        var failureMessage = "auth failed";
+        var script = "capture:";
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(SshScriptingService.Result.failure(failureMessage));
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, script, "", "", null,
+                new InetSocketAddress("host", 22), null, null, "running.cfg",
+                Collections.emptyMap(), Duration.ofSeconds(30)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+        assertThat(either.getLeft().message,
+                containsString(RetrieverImpl.scriptingFailureMsg(new InetSocketAddress("host", 22), failureMessage)));
+    }
+
+    @Test
+    public void shouldHandleSshScriptException() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+
+        var scriptingException = new RuntimeException("connection reset");
+        var script = "capture:";
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(scriptingException);
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, script, "", "", null,
+                new InetSocketAddress("host", 22), null, null, "running.cfg",
+                Collections.emptyMap(), Duration.ofSeconds(30)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+        assertThat(either.getLeft().message,
+                containsString(RetrieverImpl.scriptingFailureMsg(new InetSocketAddress("host", 22), "connection reset")));
+    }
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
 
     private <T> T waitFor(ArgumentCaptor<T> captor) {
         return await().until(() -> captor.getValue(), t -> true);
