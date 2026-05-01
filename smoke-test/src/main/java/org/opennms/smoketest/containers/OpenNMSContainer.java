@@ -152,9 +152,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
-        if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
-        }
+        this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
 
         final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
