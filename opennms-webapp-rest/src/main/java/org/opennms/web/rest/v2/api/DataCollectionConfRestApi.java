@@ -705,4 +705,31 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
+    @GET
+    @Path("/config/download")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Download the top-level datacollection-config",
+            description = """
+            Returns the top-level <datacollection-config> assembled from the
+            current profile rows: one <snmp-collection> per enabled profile,
+            with rrd metadata, storage flag, max-vars-per-pdu, and one
+            <include-collection dataCollectionGroup="..."> per source name in
+            the profile's source_names. Pair with /collectsources/{id}/download
+            to obtain the matching <datacollection-group> files. Re-uploadable
+            as a multipart batch via /upload.
+            """,
+            operationId = "downloadDatacollectionConfig"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "datacollection-config downloaded",
+                    content = @Content(mediaType = "application/xml")),
+            @ApiResponse(responseCode = "400", description = "Invalid format"),
+            @ApiResponse(responseCode = "500", description = "Marshal error")
+    })
+    Response downloadDatacollectionConfig(
+            @QueryParam("format") String format,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
 }

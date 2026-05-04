@@ -128,8 +128,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(store.fetchSnmpCollectionSources).toHaveBeenCalled()
     })
 
-    it('renders the Create New Data Collection Source button text', () => {
-      expect(wrapper.text()).toContain('Create New Data Collection Source')
+    it('does not render the Create New Data Collection Source button (hidden until create flow is reconciled with upload contract)', () => {
+      expect(wrapper.text()).not.toContain('Create New Data Collection Source')
     })
 
     it('renders search input', () => {
@@ -146,9 +146,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.snmp-data-collection-source-table').exists()).toBe(true)
     })
 
-    it('renders header with section-left and section-right', () => {
+    it('renders header with section-left (section-right hidden while create button is hidden)', () => {
       expect(wrapper.find('.header .section-left').exists()).toBe(true)
-      expect(wrapper.find('.header .section-right').exists()).toBe(true)
+      expect(wrapper.find('.header .section-right').exists()).toBe(false)
     })
 
     it('renders search-container within section-left', () => {
@@ -159,9 +159,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.section-left .refresh').exists()).toBe(true)
     })
 
-    it('renders add button inside section-right .add container', () => {
-      const sectionRight = wrapper.find('.section-right')
-      expect(sectionRight.find('.add').exists()).toBe(true)
+    it('does not render section-right .add container while create button is hidden', () => {
+      expect(wrapper.find('.section-right').exists()).toBe(false)
+      expect(wrapper.find('.add').exists()).toBe(false)
     })
 
     it('renders DeleteConfirmationDialog component', () => {
@@ -197,11 +197,11 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
 
-    it('should still show header with create button, search and refresh when empty', () => {
+    it('should still show header with search and refresh when empty (create button is hidden)', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
-      expect(wrapper.text()).toContain('Create New Data Collection Source')
+      expect(wrapper.text()).not.toContain('Create New Data Collection Source')
     })
 
     it('shows table then hides when data is cleared', async () => {
@@ -1312,14 +1312,15 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Create Source Button', () => {
-    it('navigates to SNMP Data Collection Create when clicked', async () => {
+    // The Create-source button is currently hidden in the template (v-if="false")
+    // until the handwritten create flow is reconciled with the upload contract.
+    // Function-level tests remain — flipping the v-if back on should restore
+    // the rendered-button test below without further changes.
+    it('does not render the create button while it is hidden', () => {
       const createButton = wrapper
         .findAllComponents(FeatherButton)
         .find((btn: any) => btn.text().includes('Create New Data Collection Source'))
-      expect(createButton).toBeDefined()
-      await createButton!.trigger('click')
-
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+      expect(createButton).toBeUndefined()
     })
 
     it('calls goToCreateSource function to navigate', () => {
@@ -1665,9 +1666,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.refresh').exists()).toBe(true)
     })
 
-    it('renders section-right with create button', () => {
-      expect(wrapper.find('.section-right').exists()).toBe(true)
-      expect(wrapper.find('.add').exists()).toBe(true)
+    it('does not render section-right while create button is hidden', () => {
+      expect(wrapper.find('.section-right').exists()).toBe(false)
+      expect(wrapper.find('.add').exists()).toBe(false)
     })
   })
 

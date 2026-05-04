@@ -606,6 +606,30 @@ export const downloadSnmpDataCollectionById = async (collectionSourceId: number,
 }
 
 /**
+ * Download the top-level <datacollection-config> assembled from current
+ * profile rows. Pair with downloadSnmpDataCollectionById per source for a
+ * full round-trippable export.
+ * @param {string} format 'xml' or 'json'.
+ * @returns {Promise<Blob>} The serialized config as a Blob.
+ */
+export const downloadDatacollectionConfig = async (format: string): Promise<Blob> => {
+  const endpoint = '/datacollectionconf/config/download'
+  try {
+    const response = await v2.get(endpoint, {
+      params: { format },
+      responseType: 'blob'
+    })
+    if (response.status === 200) {
+      return new Blob([response.data], { type: response.headers['content-type'] })
+    }
+    throw new Error(`Unexpected response status: ${response.status}`)
+  } catch (error) {
+    console.error('Error downloading datacollection-config:', error)
+    throw error
+  }
+}
+
+/**
  * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP data collection sources.
  * @param {boolean} enabled Whether to enable (true) or disable (false) the SNMP data collection sources.
  * @param {number[]} sourceIds The IDs of the SNMP data collection sources to enable or disable.

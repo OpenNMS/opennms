@@ -235,6 +235,82 @@ public class DataCollectionConfLifecycleIT {
     }
 
     /**
+     * After upload, the {@code /config/download} and
+     * {@code /collectsources/{id}/download} endpoints must return XML that
+     * (a) re-parses cleanly via the same JAXB types the upload path uses,
+     * and (b) re-uploads cleanly into a wiped DB and produces an in-memory
+     * config equivalent to the original.
+     *
+     * <p>This is the operator-visible round-trip the migration enables: pull
+     * the post-migration state out as XML, edit, push back via {@code /upload}.
+     */
+    @Test
+    public void downloadConfigAndSources_roundTripsThroughUpload() throws Exception {
+        uploadBaseline();
+
+        // Snapshot the baseline in-memory state for comparison after re-upload.
+        final java.util.Map<String, Set<String>> beforePerCollection = perCollectionGroupNames();
+        assertTrue("Pre-condition: baseline produced at least one user collection",
+                !beforePerCollection.isEmpty());
+
+        // 1) GET /config/download — assemble main config from DB.
+        final Response cfgResp = rest.downloadDatacollectionConfig("xml", securityContext);
+        assertEquals("Config download should return 200", 200, cfgResp.getStatus());
+        final byte[] configBytes = (byte[]) cfgResp.getEntity();
+        // Sanity: re-parses as DatacollectionConfig and has expected shape.
+        final org.opennms.netmgt.config.datacollection.DatacollectionConfig reparsed =
+                org.opennms.core.xml.JaxbUtils.unmarshal(
+                        org.opennms.netmgt.config.datacollection.DatacollectionConfig.class,
+                        new String(configBytes, java.nio.charset.StandardCharsets.UTF_8));
+        assertNotNull(reparsed);
+        assertTrue("Re-parsed config should have at least one snmp-collection",
+                reparsed.getSnmpCollections() != null && !reparsed.getSnmpCollections().isEmpty());
+
+        // 2) GET /collectsources/{id}/download for every source in the DB.
+        final java.util.Map<String, byte[]> sourceXmlBySourceName = new java.util.LinkedHashMap<>();
+        for (final SnmpCollectionSource src : sourceDao.findAll()) {
+            final Response srcResp = rest.downloadSnmpDataCollectionById(src.getId(), "xml", securityContext);
+            assertEquals("Source download for '" + src.getName() + "' should return 200",
+                    200, srcResp.getStatus());
+            sourceXmlBySourceName.put(src.getName(), (byte[]) srcResp.getEntity());
+        }
+        assertEquals("Should have downloaded one XML per source",
+                sourceDao.findAll().size(), sourceXmlBySourceName.size());
+
+        // 3) Wipe the DB so the re-upload starts from empty state. Delete in
+        //    dependency order: profiles first (so source_names FKs don't
+        //    block sources), then sources.
+        rest.deleteSnmpCollectionProfiles(
+                profileDao.findAll().stream().map(SnmpCollectionProfile::getId).collect(Collectors.toList()),
+                securityContext);
+        rest.deleteSnmpDataCollectionSources(
+                sourceDao.findAll().stream().map(SnmpCollectionSource::getId).collect(Collectors.toList()),
+                securityContext);
+        await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
+                .until(() -> sourceDao.findAll().isEmpty() && profileDao.findAll().isEmpty());
+
+        // 4) Re-upload: the downloaded config + every source XML in one batch.
+        final List<Attachment> attachments = new ArrayList<>();
+        attachments.add(byteAttachment("datacollection-config.xml", configBytes));
+        for (final var entry : sourceXmlBySourceName.entrySet()) {
+            attachments.add(byteAttachment(entry.getKey() + ".xml", entry.getValue()));
+        }
+        final Response reuploadResp = rest.uploadSnmpDataCollectionConfFiles(
+                attachments, null, securityContext);
+        assertEquals("Re-upload should succeed", 200, reuploadResp.getStatus());
+
+        // 5) Wait for the post-reupload reload to publish, then assert the
+        //    per-collection group sets match the original snapshot. This is
+        //    the round-trip equivalence — what collectd will collect after a
+        //    download/edit/upload cycle is unchanged from before.
+        await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
+                .until(() -> perCollectionGroupNames().equals(beforePerCollection));
+        assertEquals("Round-trip via /config/download + /collectsources/{id}/download + /upload must "
+                        + "produce the same per-collection group composition",
+                beforePerCollection, perCollectionGroupNames());
+    }
+
+    /**
      * Deleting a referenced source removes its groups from memory after
      * reload (the loader simply doesn't find the source row when materializing).
      */
@@ -366,6 +442,21 @@ public class DataCollectionConfLifecycleIT {
     }
 
     /**
+     * In-memory equivalent of {@link #fileAttachment} for the round-trip
+     * test, where the bytes come back from a download response rather than
+     * a disk file.
+     */
+    private static Attachment byteAttachment(final String filename, final byte[] bytes) {
+        final InputStream is = new java.io.ByteArrayInputStream(bytes);
+        final Attachment att = mock(Attachment.class);
+        final ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(att.getContentDisposition()).thenReturn(cd);
+        when(att.getObject(InputStream.class)).thenReturn(is);
+        return att;
+    }
+
+    /**
      * Build a CXF {@link Attachment} mock that the upload handler reads via
      * {@code getObject(InputStream.class)} and {@code getContentDisposition().getParameter("filename")}.
      * Mirrors the helper used by {@link DataCollectionConfRestServiceIT}.
@@ -399,6 +490,32 @@ public class DataCollectionConfLifecycleIT {
         dao.setConfigDirectory(dcDir.getAbsolutePath());
         dao.afterPropertiesSet();
         return dao;
+    }
+
+    /**
+     * Snapshot the in-memory state per user snmp-collection: collection name
+     * → set of group names. Excludes the synthetic
+     * {@code __resource_type_collection} since it isn't a runtime user
+     * collection. Used by the round-trip test to assert "what each
+     * snmp-collection produces" is preserved across download/upload.
+     */
+    private java.util.Map<String, Set<String>> perCollectionGroupNames() {
+        final java.util.Map<String, Set<String>> out = new java.util.TreeMap<>();
+        final org.opennms.netmgt.config.datacollection.DatacollectionConfig cfg =
+                dataCollectionConfigDao.getRootDataCollection();
+        if (cfg == null || cfg.getSnmpCollections() == null) return out;
+        for (final SnmpCollection sc : cfg.getSnmpCollections()) {
+            if (sc == null || sc.getName() == null) continue;
+            if ("__resource_type_collection".equals(sc.getName())) continue;
+            final Set<String> groups = new TreeSet<>();
+            if (sc.getGroups() != null && sc.getGroups().getGroups() != null) {
+                for (final Group g : sc.getGroups().getGroups()) {
+                    if (g.getName() != null) groups.add(g.getName());
+                }
+            }
+            out.put(sc.getName(), groups);
+        }
+        return out;
     }
 
     /** Snapshot of every group name visible in the in-memory config, across all snmp-collections. */
