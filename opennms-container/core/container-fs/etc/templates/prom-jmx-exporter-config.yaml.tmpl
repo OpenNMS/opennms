@@ -1,7 +1,7 @@
-startDelaySeconds: 0
-lowercaseOutputName: true
-lowercaseOutputLabelNames: true
-autoExcludeObjectNameAttributes: true
+startDelaySeconds: ${PROM_JMX_START_DELAY_SECONDS:-0}
+lowercaseOutputName: ${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}
+lowercaseOutputLabelNames: ${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}
+autoExcludeObjectNameAttributes: ${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}
 
 includeObjectNames:
   - "java.lang:*"

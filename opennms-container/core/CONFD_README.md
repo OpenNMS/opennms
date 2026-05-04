@@ -121,9 +121,13 @@ The JMX exporter is disabled by default. Enable it with `PROM_JMX_EXPORTER_ENABL
 | `PROM_JMX_EXPORTER_PORT` | Port to expose metrics on | `9299` |
 | `PROM_JMX_EXPORTER_JAR` | Path to the agent JAR | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar` |
 | `PROM_JMX_EXPORTER_CONFIG` | Path to the config YAML | `/opt/prom-jmx-exporter/config.yaml` |
+| `PROM_JMX_START_DELAY_SECONDS` | Seconds to wait before collecting metrics | `0` |
+| `PROM_JMX_LOWERCASE_OUTPUT_NAME` | Lowercase metric names | `true` |
+| `PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES` | Lowercase label names | `true` |
+| `PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES` | Auto-exclude non-numeric MBean attributes | `true` |
 
-The default config at `/opt/prom-jmx-exporter/config.yaml` exposes `java.lang:*`, `OpenNMS:*`, `org.opennms.*:*`, and `com.zaxxer.hikari:*`.
-Mount a custom YAML file and point `PROM_JMX_EXPORTER_CONFIG` at it to override the full configuration.
+The default config at `/opt/prom-jmx-exporter/config.yaml` is generated at startup from a template and exposes `java.lang:*`, `OpenNMS:*`, `org.opennms.*:*`, and `com.zaxxer.hikari:*`.
+To customise `includeObjectNames`, `excludeObjectNames`, or `rules`, mount a full YAML file and point `PROM_JMX_EXPORTER_CONFIG` at it.
 
 ## Migration from confd
 
@@ -131,3 +135,4 @@ If you are upgrading from a version that used `horizon-config.yaml` / confd:
 
 - The `horizon-config.yaml` mount is no longer used. Switch to environment variables using the tables above.
 - Legacy `_confd.*.properties` files left in a mounted `etc/` volume are automatically removed at startup to prevent stale settings.
+- All boolean, integer, and address environment variables are validated at startup. An invalid value (e.g. `"yes"` instead of `"true"`) will print a clear `ERROR:` message and abort before any config files are written.

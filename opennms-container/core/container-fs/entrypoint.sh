@@ -100,6 +100,31 @@ configTester() {
   ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
 }
 
+validateBool() {
+  local name="$1" value="$2"
+  if [[ ! "$value" =~ ^(true|false)$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid boolean. Expected 'true' or 'false'." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
+validateInt() {
+  local name="$1" value="$2"
+  if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid non-negative integer." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
+validateAddress() {
+  local name="$1" value="$2"
+  # Accept wildcard, IPv4, or IPv6
+  if [[ "$value" != "*" && ! "$value" =~ ^[0-9a-fA-F:.]+$ ]]; then
+    echo "ERROR: ${name}='${value}' is not a valid address. Expected '*' or an IP address." >&2
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
 processEnvConfig() {
   echo "Processing environment variable configuration"
 
@@ -141,6 +166,34 @@ processEnvConfig() {
     export CORE_SERVICE_TELEMETRYD_ENABLED="${CORE_SERVICE_TELEMETRYD_ENABLED:-true}"
     export CORE_SERVICE_TRAPD_ENABLED="${CORE_SERVICE_TRAPD_ENABLED:-true}"
     export CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED="${CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED:-true}"
+
+    validateBool CORE_SERVICE_ALARMD_ENABLED              "$CORE_SERVICE_ALARMD_ENABLED"
+    validateBool CORE_SERVICE_BSMD_ENABLED                "$CORE_SERVICE_BSMD_ENABLED"
+    validateBool CORE_SERVICE_TICKETER_ENABLED            "$CORE_SERVICE_TICKETER_ENABLED"
+    validateBool CORE_SERVICE_CORRELATOR_ENABLED          "$CORE_SERVICE_CORRELATOR_ENABLED"
+    validateBool CORE_SERVICE_QUEUED_ENABLED              "$CORE_SERVICE_QUEUED_ENABLED"
+    validateBool CORE_SERVICE_ACTIOND_ENABLED             "$CORE_SERVICE_ACTIOND_ENABLED"
+    validateBool CORE_SERVICE_NOTIFD_ENABLED              "$CORE_SERVICE_NOTIFD_ENABLED"
+    validateBool CORE_SERVICE_SCRIPTD_ENABLED             "$CORE_SERVICE_SCRIPTD_ENABLED"
+    validateBool CORE_SERVICE_RTCD_ENABLED                "$CORE_SERVICE_RTCD_ENABLED"
+    validateBool CORE_SERVICE_POLLERD_ENABLED             "$CORE_SERVICE_POLLERD_ENABLED"
+    validateBool CORE_SERVICE_SNMPPOLLER_ENABLED          "$CORE_SERVICE_SNMPPOLLER_ENABLED"
+    validateBool CORE_SERVICE_ENHANCEDLINKD_ENABLED       "$CORE_SERVICE_ENHANCEDLINKD_ENABLED"
+    validateBool CORE_SERVICE_COLLECTD_ENABLED            "$CORE_SERVICE_COLLECTD_ENABLED"
+    validateBool CORE_SERVICE_DISCOVERY_ENABLED           "$CORE_SERVICE_DISCOVERY_ENABLED"
+    validateBool CORE_SERVICE_VACUUMD_ENABLED             "$CORE_SERVICE_VACUUMD_ENABLED"
+    validateBool CORE_SERVICE_EVENTTRANSLATOR_ENABLED     "$CORE_SERVICE_EVENTTRANSLATOR_ENABLED"
+    validateBool CORE_SERVICE_PASSIVESTATUSD_ENABLED      "$CORE_SERVICE_PASSIVESTATUSD_ENABLED"
+    validateBool CORE_SERVICE_STATSD_ENABLED              "$CORE_SERVICE_STATSD_ENABLED"
+    validateBool CORE_SERVICE_PROVISIOND_ENABLED          "$CORE_SERVICE_PROVISIOND_ENABLED"
+    validateBool CORE_SERVICE_ACKD_ENABLED                "$CORE_SERVICE_ACKD_ENABLED"
+    validateBool CORE_SERVICE_JETTYSERVER_ENABLED         "$CORE_SERVICE_JETTYSERVER_ENABLED"
+    validateBool CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED "$CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED"
+    validateBool CORE_SERVICE_SYSLOGD_ENABLED             "$CORE_SERVICE_SYSLOGD_ENABLED"
+    validateBool CORE_SERVICE_TELEMETRYD_ENABLED          "$CORE_SERVICE_TELEMETRYD_ENABLED"
+    validateBool CORE_SERVICE_TRAPD_ENABLED               "$CORE_SERVICE_TRAPD_ENABLED"
+    validateBool CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED   "$CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED"
+
     envsubst < "${CONTAINER_CONFIG_ETC}/templates/service-configuration.xml.tmpl" \
               > "${OPENNMS_HOME}/etc/service-configuration.xml"
   )
@@ -155,8 +208,36 @@ processEnvConfig() {
     export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-10000}"
     export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-1000}"
     export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-500}"
+
+    validateAddress OPENNMS_TRAPD_ADDRESS              "$OPENNMS_TRAPD_ADDRESS"
+    validateInt     OPENNMS_TRAPD_PORT                 "$OPENNMS_TRAPD_PORT"
+    validateBool    OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP  "$OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP"
+    validateBool    OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE  "$OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE"
+    validateInt     OPENNMS_TRAPD_THREADS              "$OPENNMS_TRAPD_THREADS"
+    validateInt     OPENNMS_TRAPD_QUEUE_SIZE           "$OPENNMS_TRAPD_QUEUE_SIZE"
+    validateInt     OPENNMS_TRAPD_BATCH_SIZE           "$OPENNMS_TRAPD_BATCH_SIZE"
+    validateInt     OPENNMS_TRAPD_BATCH_INTERVAL       "$OPENNMS_TRAPD_BATCH_INTERVAL"
+
     envsubst < "${CONTAINER_CONFIG_ETC}/templates/trapd-configuration.xml.tmpl" \
               > "${OPENNMS_HOME}/etc/trapd-configuration.xml"
+  )
+
+  # Process prom-jmx-exporter config from template; only scalar knobs are exposed.
+  # To customise includeObjectNames/excludeObjectNames/rules, mount a full YAML and
+  # set PROM_JMX_EXPORTER_CONFIG to its path.
+  (
+    export PROM_JMX_START_DELAY_SECONDS="${PROM_JMX_START_DELAY_SECONDS:-0}"
+    export PROM_JMX_LOWERCASE_OUTPUT_NAME="${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}"
+    export PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES="${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}"
+    export PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES="${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}"
+
+    validateInt  PROM_JMX_START_DELAY_SECONDS                  "$PROM_JMX_START_DELAY_SECONDS"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_NAME                "$PROM_JMX_LOWERCASE_OUTPUT_NAME"
+    validateBool PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES         "$PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES"
+    validateBool PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES  "$PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/prom-jmx-exporter-config.yaml.tmpl" \
+              > /opt/prom-jmx-exporter/config.yaml
   )
 }
 

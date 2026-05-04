@@ -118,9 +118,8 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 COPY --chown=10001:0 ./container-fs/health.sh /
 COPY --chown=10001:0 ./container-fs/etc/ /opt/opennms/container-fs/etc/
 
-# Create prom-jmx-exporter directory and install default config
+# Create prom-jmx-exporter directory; config.yaml is generated at startup from the template in container-fs/etc/templates/
 RUN install -d -m 770 -o 10001 -g 0 /opt/prom-jmx-exporter
-COPY --chown=10001:0 ./container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /opt/opennms/etc
