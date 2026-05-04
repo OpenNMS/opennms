@@ -127,7 +127,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
                 if (scriptResult.capturedConfig.isEmpty()) {
                     return Either.<Failure, Success>left(new Failure(
-                            "no config captured - script must include a 'capture:' statement - target: " + target,
+                            "Script 'capture: ' statement parsed but captured no output - target: " + target,
                             scriptResult.stdout, scriptResult.stderr, scriptResult.scriptOutput));
                 }
 
@@ -265,7 +265,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
     static boolean scriptContainsCapture(String script) {
         return Stream.of(script.split("\\\\n|\\n"))
                 .map(String::trim)
-                .anyMatch(line -> line.equals("capture:") || line.startsWith("capture:"));
+                .anyMatch(line -> line.startsWith("capture:"));
     }
 
     static String scriptingFailureMsg(final SocketAddress target, String msg) {
