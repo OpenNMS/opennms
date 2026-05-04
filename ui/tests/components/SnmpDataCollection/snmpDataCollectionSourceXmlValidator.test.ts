@@ -197,7 +197,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
     })
 
     describe('Root Element Validation', () => {
-      it('should reject file missing datacollection-group root element', async () => {
+      it('should reject file with neither datacollection-group nor datacollection-config root', async () => {
         const xml = `<?xml version="1.0"?>
 <root>
   <group name="testGroup" ifType="all">
@@ -208,7 +208,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         const result = await validateSnmpDataCollectionSourceFile(file)
 
         expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing <datacollection-group> root element')
+        expect(result.errors).toContain('Expected <datacollection-group> or <datacollection-config> as root element')
       })
 
       it('should allow file with missing namespace', async () => {

@@ -83,6 +83,19 @@
             data-test="source-name"
           />
         </div>
+        <div class="profile-picker">
+          <FeatherAutocomplete
+            label="Add to profiles"
+            type="multi"
+            v-model="selectedProfileItems"
+            :results="profileResults"
+            :allow-new="false"
+            :error="sourceCreationErrors?.profiles"
+            text-prop="_text"
+            data-test="profile-picker"
+            @search="searchProfiles"
+          />
+        </div>
       </div>
       <template v-slot:footer>
         <FeatherButton
@@ -112,7 +125,9 @@ import ResourceTypeForm from '@/components/SnmpDataCollectionCreate/ResourceType
 import ResourceTypeTable from '@/components/SnmpDataCollectionCreate/ResourceTypeTable.vue'
 import SystemDefForm from '@/components/SnmpDataCollectionCreate/SystemDefForm.vue'
 import SystemDefTable from '@/components/SnmpDataCollectionCreate/SystemDefTable.vue'
+import { getAllSnmpCollectionProfiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
+import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
@@ -127,6 +142,9 @@ const store = useSnmpDataCollectionCreationStore()
 const selectedCollectionSource = ref<IAutocompleteItemType>()
 const configName = ref('')
 const sourceCreationDialogState = ref(false)
+const availableProfiles = ref<SnmpCollectionProfile[]>([])
+const selectedProfileItems = ref<IAutocompleteItemType[]>([])
+const profileResults = ref<IAutocompleteItemType[]>([])
 const labels = {
   title: 'Create New Data Collection Source'
 }
@@ -155,21 +173,37 @@ const setSelectedCollectionSource = (item: IAutocompleteItemType) => {
 }
 
 const sourceCreationErrors = computed(() => {
-  let error: any = {}
+  const error: Record<string, string> = {}
   if (configName.value.trim() === '') {
     error.name = 'Configuration name is required.'
+  }
+  if (selectedProfileItems.value.length === 0) {
+    error.profiles = 'Pick at least one profile.'
   }
   return Object.keys(error).length > 0 ? error : null
 })
 
 const showSourceCreationDialog = () => {
   configName.value = ''
+  selectedProfileItems.value = []
+  profileResults.value = profilesToItems(availableProfiles.value)
   sourceCreationDialogState.value = true
 }
 
 const handleSourceCreationCancel = () => {
   sourceCreationDialogState.value = false
   configName.value = ''
+  selectedProfileItems.value = []
+}
+
+const profilesToItems = (profiles: SnmpCollectionProfile[]): IAutocompleteItemType[] =>
+  profiles.map((p) => ({ _text: p.name, _value: p.id }))
+
+const searchProfiles = (query: string) => {
+  const q = (query ?? '').toLowerCase()
+  profileResults.value = profilesToItems(
+    availableProfiles.value.filter((p) => p.name.toLowerCase().includes(q))
+  )
 }
 
 const handleSourceCreationSave = () => {
@@ -178,6 +212,8 @@ const handleSourceCreationSave = () => {
 
 onMounted(async () => {
   await store.initializeCreationForm()
+  availableProfiles.value = await getAllSnmpCollectionProfiles()
+  profileResults.value = profilesToItems(availableProfiles.value)
   if (store.selectedCollectionSource) {
     nextTick(() => {
       selectedCollectionSource.value = {

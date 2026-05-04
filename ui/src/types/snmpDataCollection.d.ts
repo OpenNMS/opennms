@@ -22,6 +22,19 @@ export interface SnmpCollectionSource {
   uploadedBy: string
 }
 
+export interface SnmpCollectionProfile {
+  id: number
+  name: string
+  rrdStep: number
+  rrdRras: string[]
+  storageFlag: string
+  sourceNames: string[]
+  maxVarsPerPdu?: number
+  enabled: boolean
+  createdTime?: string
+  lastModified?: string
+}
+
 export interface SnmpDataCollectionSourceUploadResponse {
   errors: [
     {
@@ -41,6 +54,16 @@ export interface UploadSnmpDataCollectionFileType {
   isValid: boolean
   errors: string[]
   isDuplicate: boolean
+  // Root element kind. 'group' for <datacollection-group> source files,
+  // 'config' for <datacollection-config> profile-driver files.
+  kind?: 'group' | 'config'
+  // Group name parsed from <datacollection-group name="...">; used for
+  // duplicate detection because the DB stores sources by group name, not
+  // by filename basename. Only set when kind === 'group'.
+  groupName?: string
+  // <snmp-collection> names parsed from a <datacollection-config>. Only set
+  // when kind === 'config'.
+  profileNames?: string[]
 }
 
 export interface SnmpCollectionDetailStoreState {
@@ -122,8 +145,8 @@ export interface SnmpCollectionSystemDef {
   name: string
   sysoid: string
   sysoidMask: string
-  ipAddresses: string
-  ipAddressMasks: string
+  ipAddresses: string[]
+  ipAddressMasks: string[]
   mibGroupNames: string[]
   enabled: boolean
   collectionSourceId: number
@@ -135,8 +158,8 @@ export interface SnmpCollectionSystemDefPayload {
   name: string
   sysoid: string
   sysoidMask: string
-  ipAddresses: string
-  ipAddressMasks: string
+  ipAddresses: string[]
+  ipAddressMasks: string[]
   mibGroupNames: string
   enabled: boolean
 }

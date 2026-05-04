@@ -7,61 +7,101 @@ export const MAX_FILES_UPLOAD = 100
 // Valid ifType values for groups
 const VALID_IF_TYPES = ['all', 'ignore']
 
-export const validateSnmpDataCollectionSourceFile = async (file: File) => {
+const DATACOLLECTION_NAMESPACE = 'http://xmlns.opennms.org/xsd/config/datacollection'
+
+export interface ValidateSnmpDataCollectionSourceFileResult {
+  isValid: boolean
+  errors: string[]
+  kind?: 'group' | 'config'
+  groupName?: string
+  profileNames?: string[]
+}
+
+export const validateSnmpDataCollectionSourceFile = async (
+  file: File
+): Promise<ValidateSnmpDataCollectionSourceFileResult> => {
   const validationErrors: string[] = []
+  let parsedGroupName: string | undefined
+  let parsedProfileNames: string[] | undefined
+  let kind: 'group' | 'config' | undefined
 
   try {
     const text = await file.text()
 
     if (text.trim().length === 0) {
       validationErrors.push('File is empty')
-      return { isValid: false, errors: validationErrors }
+      return { isValid: false, errors: validationErrors, kind }
     }
 
     if (!file.name.endsWith('.xml')) {
       validationErrors.push('File must have .xml extension')
-      return { isValid: false, errors: validationErrors }
+      return { isValid: false, errors: validationErrors, kind }
     }
 
-    if (validationErrors.length === 0) {
-      let parser: any
-      try {
-        parser = new (DOMParser as any)()
-      } catch (e) {
-        parser = (DOMParser as any)()
-      }
-      const xmlDoc = parser.parseFromString(text, 'application/xml')
-      const result = XMLValidator.validate(text)
-      if (xmlDoc.querySelector('parsererror')) {
-        validationErrors.push('Invalid XML format - file contains syntax errors')
-        return { isValid: false, errors: validationErrors }
-      }
-      if (result !== true) {
-        validationErrors.push('Invalid XML format - file contains syntax errors')
-        return { isValid: false, errors: validationErrors }
-      }
+    let parser: any
+    try {
+      parser = new (DOMParser as any)()
+    } catch (e) {
+      parser = (DOMParser as any)()
+    }
+    const xmlDoc = parser.parseFromString(text, 'application/xml')
+    const result = XMLValidator.validate(text)
+    if (xmlDoc.querySelector('parsererror')) {
+      validationErrors.push('Invalid XML format - file contains syntax errors')
+      return { isValid: false, errors: validationErrors, kind }
+    }
+    if (result !== true) {
+      validationErrors.push('Invalid XML format - file contains syntax errors')
+      return { isValid: false, errors: validationErrors, kind }
+    }
 
-      const datacollectionGroup = xmlDoc.querySelector('datacollection-group')
-      if (!datacollectionGroup) {
-        validationErrors.push('Missing <datacollection-group> root element')
-        return { isValid: false, errors: validationErrors }
+    // Server's /upload accepts two root elements:
+    //   <datacollection-group>   → a single source definition
+    //   <datacollection-config>  → a profiles file driving include-collection
+    const groupRoot = xmlDoc.querySelector('datacollection-group')
+    const configRoot = xmlDoc.querySelector('datacollection-config')
+
+    if (configRoot) {
+      kind = 'config'
+      const xmlns = configRoot.getAttribute('xmlns') || ''
+      if (xmlns && xmlns !== DATACOLLECTION_NAMESPACE) {
+        validationErrors.push('Invalid OpenNMS namespace in <datacollection-config> element')
+        return { isValid: false, errors: validationErrors, kind }
       }
-      const xmlns = datacollectionGroup.getAttribute('xmlns') || ''
-      if (xmlns && xmlns !== 'http://xmlns.opennms.org/xsd/config/datacollection') {
+      const snmpCollections = configRoot.querySelectorAll('snmp-collection')
+      if (snmpCollections.length === 0) {
+        validationErrors.push('<datacollection-config> must contain at least one <snmp-collection>')
+        return { isValid: false, errors: validationErrors, kind }
+      }
+      const names: string[] = []
+      for (const [idx, sc] of (Array.from(snmpCollections as any[]) as Element[]).entries()) {
+        const name = sc.getAttribute('name')
+        if (!name || name.trim().length === 0) {
+          validationErrors.push(`<snmp-collection> ${idx + 1}: missing "name" attribute`)
+          return { isValid: false, errors: validationErrors, kind }
+        }
+        names.push(name.trim())
+      }
+      parsedProfileNames = names
+    } else if (groupRoot) {
+      kind = 'group'
+      const xmlns = groupRoot.getAttribute('xmlns') || ''
+      if (xmlns && xmlns !== DATACOLLECTION_NAMESPACE) {
         validationErrors.push('Invalid OpenNMS namespace in <datacollection-group> element')
-        return { isValid: false, errors: validationErrors }
+        return { isValid: false, errors: validationErrors, kind }
       }
 
-      const groupName = datacollectionGroup.getAttribute('name')
+      const groupName = groupRoot.getAttribute('name')
       if (!groupName || groupName.trim().length === 0) {
         validationErrors.push('<datacollection-group> element must have a non-empty "name" attribute')
-        return { isValid: false, errors: validationErrors }
+        return { isValid: false, errors: validationErrors, kind }
       }
+      parsedGroupName = groupName.trim()
 
-      const resourceTypes = datacollectionGroup.querySelectorAll('resourceType')
-      const groups = datacollectionGroup.querySelectorAll('group')
-      const systemDefs = datacollectionGroup.querySelectorAll('systemDef')
-      const childElements = datacollectionGroup.children
+      const resourceTypes = groupRoot.querySelectorAll('resourceType')
+      const groups = groupRoot.querySelectorAll('group')
+      const systemDefs = groupRoot.querySelectorAll('systemDef')
+      const childElements = groupRoot.children
 
       if (childElements.length && resourceTypes.length === 0 && groups.length === 0 && systemDefs.length === 0) {
         const childNames = Array.from(childElements as any[])
@@ -70,12 +110,12 @@ export const validateSnmpDataCollectionSourceFile = async (file: File) => {
         validationErrors.push(
           `<datacollection-group> element contains ${childNames} but no <resourceType>, <group>, or <systemDef> elements`
         )
-        return { isValid: false, errors: validationErrors }
+        return { isValid: false, errors: validationErrors, kind }
       } else if (resourceTypes.length === 0 && groups.length === 0 && systemDefs.length === 0) {
         validationErrors.push(
           'No <resourceType>, <group>, or <systemDef> entries found within <datacollection-group> element'
         )
-        return { isValid: false, errors: validationErrors }
+        return { isValid: false, errors: validationErrors, kind }
       } else {
         try {
           // Validate resourceType elements
@@ -84,7 +124,7 @@ export const validateSnmpDataCollectionSourceFile = async (file: File) => {
             const resourceTypeError = validateResourceTypeElement(resourceType as any, idx + 1)
             if (resourceTypeError) {
               validationErrors.push(resourceTypeError)
-              return { isValid: false, errors: validationErrors }
+              return { isValid: false, errors: validationErrors, kind }
             }
           }
 
@@ -94,7 +134,7 @@ export const validateSnmpDataCollectionSourceFile = async (file: File) => {
             const groupError = validateGroupElement(group as any, idx + 1)
             if (groupError) {
               validationErrors.push(groupError)
-              return { isValid: false, errors: validationErrors }
+              return { isValid: false, errors: validationErrors, kind }
             }
           }
 
@@ -104,24 +144,30 @@ export const validateSnmpDataCollectionSourceFile = async (file: File) => {
             const systemDefError = validateSystemDefElement(systemDef as any, idx + 1)
             if (systemDefError) {
               validationErrors.push(systemDefError)
-              return { isValid: false, errors: validationErrors }
+              return { isValid: false, errors: validationErrors, kind }
             }
           }
         } catch (error) {
           validationErrors.push(
             `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
-          return { isValid: false, errors: validationErrors }
+          return { isValid: false, errors: validationErrors, kind }
         }
       }
+    } else {
+      validationErrors.push('Expected <datacollection-group> or <datacollection-config> as root element')
+      return { isValid: false, errors: validationErrors, kind }
     }
   } catch (error) {
     validationErrors.push(`Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    return { isValid: false, errors: validationErrors }
+    return { isValid: false, errors: validationErrors, kind }
   }
   return {
     isValid: validationErrors.length === 0,
-    errors: validationErrors
+    errors: validationErrors,
+    kind,
+    groupName: parsedGroupName,
+    profileNames: parsedProfileNames
   }
 }
 

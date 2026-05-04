@@ -47,14 +47,21 @@
         <thead>
           <tr>
             <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
               scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
+              property="name"
+              :sort="(sort as any).name"
               v-on:sort-changed="sortChanged"
             >
-              {{ col.label }}
+              Source
+            </FeatherSortHeader>
+            <th scope="col">Profiles</th>
+            <FeatherSortHeader
+              scope="col"
+              property="enabled"
+              :sort="(sort as any).enabled"
+              v-on:sort-changed="sortChanged"
+            >
+              Status
             </FeatherSortHeader>
             <th>Actions</th>
           </tr>
@@ -68,6 +75,24 @@
             :key="source.id"
           >
             <td>{{ source.name }}</td>
+            <td>
+              <div
+                class="profile-chips"
+                :data-test="`profiles-cell-${source.name}`"
+              >
+                <FeatherChip
+                  v-for="name in profilesForSource(source.name)"
+                  :key="name"
+                  class="profile-tag"
+                >
+                  {{ name }}
+                </FeatherChip>
+                <span
+                  v-if="profilesForSource(source.name).length === 0"
+                  class="empty-profiles"
+                >—</span>
+              </div>
+            </td>
             <td>
               <div class="tag">
                 <FeatherChip
@@ -170,8 +195,9 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
+import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources, getAllSnmpCollectionProfiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -199,10 +225,37 @@ const emptyListContent = {
   msg: 'No results found.'
 }
 
-const columns = computed(() => [
-  { id: 'name', label: 'Source' },
-  { id: 'enabled', label: 'Status' }
-])
+const availableProfiles = ref<SnmpCollectionProfile[]>([])
+
+// Profiles are derived (a source is "in" a profile if its name appears in
+// that profile's source_names JSON). Comparison is case-insensitive to match
+// the upload contract.
+const profilesForSource = (sourceName: string): string[] => {
+  const target = sourceName.toLowerCase()
+  return availableProfiles.value
+    .filter((p) => p.sourceNames?.some((n) => n.toLowerCase() === target))
+    .map((p) => p.name)
+}
+
+const refreshAvailableProfiles = async () => {
+  availableProfiles.value = await getAllSnmpCollectionProfiles()
+}
+
+onMounted(refreshAvailableProfiles)
+
+// Tabs in this page (Sources / Import) are kept-alive, so onMounted only
+// fires once. After the user uploads in the Import tab, profile.source_names
+// has changed but our snapshot is stale — re-fetch every time this tab
+// becomes active so the Profiles column reflects the latest attachments.
+watch(
+  () => store.activeTab,
+  (tab) => {
+    // Tab index 0 = the Sources table (this component).
+    if (tab === 0) {
+      refreshAvailableProfiles()
+    }
+  }
+)
 
 const sort = reactive({
   name: SORT.NONE,
@@ -269,7 +322,17 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
       })
-      await store.fetchSnmpCollectionSources()
+      await Promise.all([
+        store.fetchSnmpCollectionSources(),
+        // Refresh the all-source-names cache so the Import tab's
+        // duplicate-detection no longer treats the just-deleted source
+        // as a "will update" row.
+        store.fetchAllSourcesNames(),
+        // Profile.source_names lists shrink when a source is deleted (the
+        // backend removes it from every profile). Refresh so the Profiles
+        // column reflects that.
+        refreshAvailableProfiles()
+      ])
       selectedCollectionSource.value = null
       isDeleteDialogVisible.value = false
       router.push({ name: 'SNMP Data Collection' })
@@ -300,7 +363,10 @@ const changeCollectionSourceStatus = async (selected: { id: number; name: string
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
       })
-      await store.fetchSnmpCollectionSources()
+      await Promise.all([
+        store.fetchSnmpCollectionSources(),
+        store.fetchAllSourcesNames()
+      ])
       selectedCollectionSource.value = null
       isChangeStatusDialogVisible.value = false
     } else {
@@ -387,6 +453,22 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .profile-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          align-items: center;
+
+          .profile-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+          }
+
+          .empty-profiles {
+            color: var(--feather-secondary-text-on-surface);
+          }
         }
 
         .tag {

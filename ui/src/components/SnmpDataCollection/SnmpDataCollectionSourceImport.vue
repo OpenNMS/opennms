@@ -62,9 +62,75 @@
           </FeatherButton>
         </div>
       </div>
+      <div
+        class="profiles-row"
+        v-if="availableProfiles.length"
+        :class="{ 'profiles-row--required-empty': profileSelectionIsRequired && !selectedProfileNames.length }"
+        data-test="profiles-section"
+      >
+        <div class="profiles-header">
+          <span class="profiles-label">
+            Add to profiles
+            <span
+              v-if="profileSelectionIsRequired"
+              class="required-marker"
+              aria-hidden="true"
+            >*</span>
+          </span>
+          <span
+            v-if="!hasConfigFile"
+            class="profiles-count"
+            data-test="profiles-count"
+          >
+            {{ selectedProfileNames.length }} of {{ availableProfiles.length }} selected
+          </span>
+        </div>
+        <div class="profiles-list">
+          <FeatherCheckbox
+            v-for="profile in availableProfiles"
+            :key="profile.id"
+            :modelValue="selectedProfileNames.includes(profile.name)"
+            :disabled="hasConfigFile"
+            :data-test="`profile-checkbox-${profile.name}`"
+            @update:modelValue="(checked: boolean | undefined) => toggleProfile(profile.name, checked === true)"
+          >
+            {{ profile.name }}
+          </FeatherCheckbox>
+        </div>
+        <span
+          v-if="hasConfigFile"
+          class="profiles-hint config-hint"
+          data-test="profiles-config-hint"
+        >
+          Profile assignments will be taken from the uploaded datacollection-config.xml.
+        </span>
+        <span
+          v-else-if="hasNewSource && !selectedProfileNames.length"
+          class="profiles-hint required-hint"
+          data-test="profiles-hint"
+        >
+          Pick at least one profile — newly uploaded sources need a profile to land in.
+        </span>
+        <span
+          v-else-if="sourceFiles.length && !hasNewSource && selectedProfileNames.length"
+          class="profiles-hint update-only-hint"
+          data-test="profiles-update-only-hint"
+        >
+          Picked profiles will also be added to these existing sources.
+        </span>
+        <span
+          v-else-if="sourceFiles.length && !hasNewSource"
+          class="profiles-hint update-only-hint"
+          data-test="profiles-update-only-empty-hint"
+        >
+          Profile selection is optional for update-only uploads; existing sources keep their current
+          profile memberships.
+        </span>
+      </div>
     </div>
     <div class="container">
       <table
+        v-if="tableRecord.length"
         class="data-table"
         aria-label="SNMP Data Collection Sources Table"
       >
@@ -88,6 +154,20 @@
                 <FeatherIcon :icon="Apps" />
                 <span>{{ ellipsify(file.file.name, 39) }}</span>
                 <FeatherChip
+                  v-if="file.kind === 'config'"
+                  class="kind-chip kind-config"
+                  :data-test="`kind-chip-${file.file.name}`"
+                >
+                  Profiles config{{ file.profileNames?.length ? ` (${file.profileNames.length})` : '' }}
+                </FeatherChip>
+                <FeatherChip
+                  v-else-if="file.kind === 'group'"
+                  class="kind-chip kind-source"
+                  :data-test="`kind-chip-${file.file.name}`"
+                >
+                  Source
+                </FeatherChip>
+                <FeatherChip
                   v-if="!file.isValid"
                   class="error-chip"
                 >
@@ -95,9 +175,10 @@
                 </FeatherChip>
                 <FeatherChip
                   v-if="file.isDuplicate"
-                  class="warning-chip"
+                  class="update-chip"
+                  :data-test="`update-chip-${file.file.name}`"
                 >
-                  File with the same name already exists. Please rename or choose to overwrite.
+                  Will update existing source '{{ file.groupName }}'
                 </FeatherChip>
                 <FeatherIcon
                   v-if="!file.isValid"
@@ -105,10 +186,9 @@
                   class="error-icon"
                 />
                 <FeatherIcon
-                  v-if="file.isDuplicate"
-                  :icon="Warning"
-                  class="warning-icon"
-                  @click="openFileRenameDialog(index)"
+                  v-if="file.isValid && file.isDuplicate"
+                  :icon="Refresh"
+                  class="update-icon"
                 />
                 <FeatherIcon
                   v-if="file.isValid && !file.isDuplicate"
@@ -203,10 +283,11 @@
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
-import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
+import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
+import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
@@ -214,6 +295,7 @@ import Delete from '@featherds/icon/action/Delete'
 import UploadFile from '@featherds/icon/action/UploadFile'
 import FolderAdd from '@featherds/icon/file/FolderAdd'
 import Apps from '@featherds/icon/navigation/Apps'
+import Refresh from '@featherds/icon/navigation/Refresh'
 import Error from '@featherds/icon/notification/Error'
 import Warning from '@featherds/icon/notification/Warning'
 import { FeatherPagination } from '@featherds/pagination'
@@ -238,23 +320,86 @@ const tableRecord = ref<UploadSnmpDataCollectionFileType[]>([])
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const availableProfiles = ref<SnmpCollectionProfile[]>([])
+const selectedProfileNames = ref<string[]>([])
 const emptyListContent = {
   msg: 'No files selected for upload.'
 }
+
+// Display order: new sources at the top so they're easy to scan, then update
+// rows below. Within each group preserve insertion order. The Source-of-truth
+// array stays in insertion order so the rest of the code (pagination math,
+// removeFile by index) keeps working off the same indices it always did.
+const orderedSourceFiles = computed<UploadSnmpDataCollectionFileType[]>(() => {
+  const newOnes: UploadSnmpDataCollectionFileType[] = []
+  const updates: UploadSnmpDataCollectionFileType[] = []
+  for (const f of sourceFiles.value) {
+    if (f.isDuplicate) updates.push(f)
+    else newOnes.push(f)
+  }
+  return [...newOnes, ...updates]
+})
+
+const fetchProfiles = async () => {
+  availableProfiles.value = await getAllSnmpCollectionProfiles()
+}
+
+const toggleProfile = (name: string, checked: boolean) => {
+  if (checked) {
+    if (!selectedProfileNames.value.includes(name)) {
+      selectedProfileNames.value = [...selectedProfileNames.value, name]
+    }
+  } else {
+    selectedProfileNames.value = selectedProfileNames.value.filter((n) => n !== name)
+  }
+}
+
+onMounted(() => {
+  fetchProfiles()
+})
+const hasConfigFile = computed(() =>
+  sourceFiles.value.some((f) => f.kind === 'config')
+)
+
+// "New" sources = group files whose name doesn't already exist in the DB.
+// These are the only ones that need a profile pick to avoid orphaning;
+// updates keep their existing profile memberships.
+const hasNewSource = computed(() =>
+  sourceFiles.value.some((f) => f.kind === 'group' && !f.isDuplicate)
+)
+
+// True when the picker is gating the Upload button (i.e., at least one new
+// source is queued and there's no config file driving attachment instead).
+// Drives the visual emphasis on the picker.
+const profileSelectionIsRequired = computed(
+  () => !hasConfigFile.value && hasNewSource.value
+)
+
 const shouldUploadDisabled = computed(() => {
   return (
     sourceFiles.value.length === 0 ||
     isLoading.value ||
-    !sourceFiles.value.every(f => f.isValid) ||
-    sourceFiles.value.some(f => f.isDuplicate)
+    // Profile picker is required only when uploading new (non-update)
+    // source files. A <datacollection-config> drives attachment via its
+    // <include-collection> entries, so it bypasses the requirement.
+    // Pure-update batches also bypass: the sources keep their existing
+    // profile memberships on the server.
+    (!hasConfigFile.value && hasNewSource.value && selectedProfileNames.value.length === 0) ||
+    !sourceFiles.value.every(f => f.isValid)
   )
 })
 
 const removeFile = (index: number) => {
-  const sourceIndex = (page.value - 1) * pageSize.value + index
+  // tableRecord is sliced from orderedSourceFiles (sorted: new before
+  // updates), so its row index doesn't line up with sourceFiles. Resolve
+  // back through the File reference to find the actual array position.
+  const target = tableRecord.value[index]?.file
+  if (!target) return
+  const sourceIndex = sourceFiles.value.findIndex((f) => f.file === target)
+  if (sourceIndex < 0) return
   sourceFiles.value.splice(sourceIndex, 1)
   total.value = sourceFiles.value.length
-  tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+  tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 
 const openFileDialog = () => {
@@ -267,13 +412,19 @@ const openFolderDialog = () => {
 
 const onPageChange = (newPage: number) => {
   page.value = newPage
-  tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+  tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 
 const onPageSizeChange = (newPageSize: number) => {
   pageSize.value = newPageSize
   page.value = 1
-  tableRecord.value = sourceFiles.value.slice(0, pageSize.value)
+  tableRecord.value = orderedSourceFiles.value.slice(0, pageSize.value)
+}
+
+const isExistingSourceName = (groupName: string | undefined): boolean => {
+  if (!groupName) return false
+  const target = groupName.toLowerCase()
+  return store.uploadedSourceNames.some((s) => s.name.toLowerCase() === target)
 }
 
 const handleSourceFileUpload = async (event: Event) => {
@@ -285,12 +436,17 @@ const handleSourceFileUpload = async (event: Event) => {
         if (isDuplicateFile(file.name, sourceFiles.value)) {
           continue
         }
-        const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
+        const { isValid, errors, kind, groupName, profileNames } = await validateSnmpDataCollectionSourceFile(file)
         sourceFiles.value.push({
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
+          kind,
+          groupName,
+          profileNames,
+          // Config files don't have a group name and the server upserts them
+          // by profile name, so duplicate-against-uploaded-sources doesn't apply.
+          isDuplicate: kind === 'group' && isExistingSourceName(groupName)
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -307,7 +463,7 @@ const handleSourceFileUpload = async (event: Event) => {
       }
     }
     total.value = sourceFiles.value.length
-    tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+    tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
     input.files = null
@@ -322,26 +478,29 @@ const handleSourceFolderUpload = async (event: Event) => {
     const files = Array.from(input.files)
     for (const file of files) {
       try {
+        // Folder uploads include every file in the directory (READMEs,
+        // .DS_Store, archives, etc.). Quietly skip anything that's not .xml
+        // so the table stays focused on candidate sources.
+        if (!file.name.toLowerCase().endsWith('.xml')) {
+          continue
+        }
         if (isDuplicateFile(file.name, sourceFiles.value)) {
           continue
         }
-        const isAlreadyUploaded = store.uploadedSourceNames
-          .map(source => source.name.replace('.xml', '').toLowerCase())
-          .includes(file.name.replace('.xml', '').toLowerCase())
-
-        if (isAlreadyUploaded) {
-          snackbar.showSnackBar({
-            msg: `File ${file.name} has already been uploaded. Skipping.`,
-            error: true
-          })
-          continue
-        }
-        const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
+        const { isValid, errors, kind, groupName, profileNames } = await validateSnmpDataCollectionSourceFile(file)
+        // Re-uploaded sources go into the table just like new ones, marked
+        // as updates so the user can see what will be overwritten on the
+        // server. Config files don't have a group name, so the existence
+        // check doesn't apply to them.
+        const isExistingUpdate = kind === 'group' && isExistingSourceName(groupName)
         sourceFiles.value.push({
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
+          kind,
+          groupName,
+          profileNames,
+          isDuplicate: isExistingUpdate
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -358,7 +517,7 @@ const handleSourceFolderUpload = async (event: Event) => {
       }
     }
     total.value = sourceFiles.value.length
-    tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+    tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
@@ -380,7 +539,10 @@ const uploadFiles = async () => {
   }
   isLoading.value = true
   try {
-    const response = await uploadDataCollectionFiles(sourceFiles.value.filter(f => f.isValid).map(f => f.file))
+    const response = await uploadDataCollectionFiles(
+      sourceFiles.value.filter(f => f.isValid).map(f => f.file),
+      selectedProfileNames.value
+    )
     uploadFilesReport.value = {
       errors: [...response.errors],
       success: [...response.success]
@@ -427,11 +589,15 @@ const renameFile = async (newFileName: string) => {
     const fileToRename = sourceFiles.value[selectedIndex.value]
     const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
     const validationResult = await validateSnmpDataCollectionSourceFile(newFile)
+    // Renaming the file does not change the <datacollection-group name>
+    // inside the XML, so duplicate state is determined by the parsed
+    // groupName, not the new filename.
     sourceFiles.value[selectedIndex.value] = {
       file: newFile,
       isValid: validationResult.isValid,
       errors: validationResult.errors,
-      isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
+      groupName: validationResult.groupName,
+      isDuplicate: isExistingSourceName(validationResult.groupName)
     }
     closeRenameDialog()
   } else {
@@ -451,9 +617,10 @@ const overwriteFile = () => {
 watch(
   () => store.uploadedSourceNames,
   (newNames) => {
-    sourceFiles.value = sourceFiles.value.map(file => ({
+    const existing = new Set(newNames.map((s) => s.name.toLowerCase()))
+    sourceFiles.value = sourceFiles.value.map((file) => ({
       ...file,
-      isDuplicate: newNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
+      isDuplicate: !!file.groupName && existing.has(file.groupName.toLowerCase())
     }))
   }, { immediate: true, deep: true }
 )
@@ -461,6 +628,20 @@ watch(
 onMounted(async () => {
   await store.fetchAllSourcesNames()
 })
+
+// Tabs are kept-alive in this page, so onMounted only fires once. Re-fetch
+// the source-names cache every time this tab becomes active so that any
+// deletes/uploads done in the Sources tab are reflected in duplicate
+// detection here.
+watch(
+  () => store.activeTab,
+  (tab) => {
+    // Tab index 1 = Import Data Collection Sources
+    if (tab === 1) {
+      store.fetchAllSourcesNames()
+    }
+  }
+)
 </script>
 
 <style scoped lang="scss">
@@ -494,7 +675,8 @@ onMounted(async () => {
     .action-container {
       display: flex;
       justify-content: space-between;
-      padding: 40px 0px 20px 0px;
+      align-items: center;
+      padding: 40px 0px 12px 0px;
 
       .section-left {
         display: flex;
@@ -507,7 +689,7 @@ onMounted(async () => {
 
       .section-right {
         display: flex;
-        gap: 10px;
+        align-items: center;
 
         button {
           :deep(.spinner) {
@@ -515,6 +697,71 @@ onMounted(async () => {
             width: 1.5rem !important;
           }
         }
+      }
+    }
+
+    // Profiles row sits directly beneath the action row. The card surface is
+    // intentionally subtle (light neutral fill, thin neutral border) so it
+    // reads as a deliberate control group without competing with the table
+    // below. When picker selection is required but empty we shift to a pale
+    // warning tint + amber left-edge — visible but not jarring, with text
+    // contrast preserved on the lighter background.
+    .profiles-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin: 12px 0 16px;
+      padding: 12px 14px;
+      background-color: rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--feather-border-on-surface);
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+
+      &--required-empty {
+        // Pale amber tint (~9% alpha) so checkbox borders and labels stay
+        // legible regardless of the underlying theme. Border-left uses the
+        // matching warning hue so the eye lands on the gating control.
+        background-color: rgba(255, 193, 7, 0.09);
+        border-left-color: #F57C00;
+      }
+
+      .profiles-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .profiles-label {
+        @include typography.subtitle2;
+        color: var(--feather-primary-text-on-surface);
+
+        .required-marker {
+          color: #C62828;
+          margin-left: 2px;
+        }
+      }
+
+      .profiles-count {
+        @include typography.caption;
+        color: var(--feather-secondary-text-on-surface);
+      }
+
+      .profiles-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 16px;
+      }
+
+      .profiles-hint {
+        @include typography.body-small;
+        color: var(--feather-secondary-text-on-surface);
+      }
+
+      .profiles-hint.required-hint {
+        color: #C62828;
       }
     }
   }
@@ -549,6 +796,22 @@ onMounted(async () => {
           align-items: center;
           gap: 10px;
 
+          .kind-chip {
+            min-width: none;
+            max-width: none;
+            border-radius: 4px;
+
+            &.kind-source {
+              background-color: #0B720C1F;
+              :deep(span) { color: #0B720C !important; }
+            }
+
+            &.kind-config {
+              background-color: #1976D21F;
+              :deep(span) { color: #1976D2 !important; }
+            }
+          }
+
           .error-chip {
             background-color: #A5021F33;
             color: #A5021F;
@@ -562,6 +825,23 @@ onMounted(async () => {
             min-width: none;
             max-width: none;
 
+          }
+
+          // Re-uploaded source files are upserts, not errors. Use a calm
+          // info-blue treatment so it reads as "this will update an existing
+          // record" rather than "you have a problem".
+          .update-chip {
+            background-color: #1976D21F;
+            min-width: none;
+            max-width: none;
+            border-radius: 4px;
+            :deep(span) { color: #1976D2 !important; }
+          }
+
+          .update-icon {
+            color: #1976D2;
+            height: 2em;
+            width: 2em;
           }
 
           .success-icon {

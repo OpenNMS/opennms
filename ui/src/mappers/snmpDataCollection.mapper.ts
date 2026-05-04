@@ -132,13 +132,16 @@ export const mapSnmpDataCollectionSystemDefPayloadToServer = (
   name: string,
   sysoid: string,
   sysoidMask: string,
-  ipAddresses: string,
-  ipAddressMasks: string,
+  ipAddresses: string[],
+  ipAddressMasks: string[],
   mibGroupNames: string[],
   enabled: boolean,
   selectedSystemDefId: number,
   isEditMode: CreateEditMode
 ): SnmpCollectionSystemDefPayload => {
+  // ipAddresses / ipAddressMasks are now structured arrays on the wire — the
+  // server normalises them into the canonical IpList JSON internally so every
+  // write path produces the same on-disk shape the runtime loader expects.
   const payload = {
     name: name,
     sysoid: sysoid,

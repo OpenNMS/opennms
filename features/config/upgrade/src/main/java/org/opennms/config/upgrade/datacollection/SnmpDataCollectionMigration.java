@@ -55,9 +55,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Migrates SNMP data collection XML configuration from filesystem
@@ -179,38 +183,34 @@ public class SnmpDataCollectionMigration {
 
     /**
      * Migrate a single snmp-collection element to a profile row.
+     *
+     * <p>Include-collection semantics (matching DataCollectionConfigParser):
+     * <ul>
+     *   <li>{@code dataCollectionGroup="X"} with no excludes → add "X" to {@code source_names}</li>
+     *   <li>{@code dataCollectionGroup="X"} with {@code <exclude-filter>} entries →
+     *       pull surviving systemDefs (+ their MIB groups) into the synthetic
+     *       {@code __inline_<collection>} source; drop "X" from {@code source_names}</li>
+     *   <li>{@code systemDef="Y"} → resolve Y across all parsed groups, pull it and
+     *       its referenced MIB groups into the synthetic inline source</li>
+     * </ul>
      */
     private void migrateSnmpCollection(final Connection conn,
                                        final SnmpCollection snmpCollection,
                                        final Map<String, DatacollectionGroup> groupsByName) throws SQLException {
 
-        final List<String> sourceNames = new ArrayList<>();
+        final ResolvedIncludes resolved = resolveIncludes(snmpCollection, groupsByName);
 
-        // Process include-collection references
-        for (final IncludeCollection include : snmpCollection.getIncludeCollections()) {
-            if (include.getDataCollectionGroup() != null && !include.getDataCollectionGroup().isEmpty()) {
-                final String groupName = include.getDataCollectionGroup();
-                if (include.getExcludeFilters() != null && !include.getExcludeFilters().isEmpty()) {
-                    LOG.warn("snmp-collection '{}': exclude-filter on include-collection for '{}' " +
-                            "is not supported in DB migration — importing full group.",
-                            snmpCollection.getName(), groupName);
-                }
-                sourceNames.add(groupName);
-            } else if (include.getSystemDef() != null && !include.getSystemDef().isEmpty()) {
-                LOG.warn("snmp-collection '{}': systemDef-targeted include-collection '{}' " +
-                        "is not supported in DB migration — skipping.",
-                        snmpCollection.getName(), include.getSystemDef());
-            }
-        }
-
-        // Handle inline definitions (groups/systems/resourceTypes directly in snmp-collection)
-        if (hasInlineDefinitions(snmpCollection)) {
+        // Write synthetic inline source if we accumulated anything
+        if (!resolved.inlineGroups.isEmpty()
+                || !resolved.inlineSystemDefs.isEmpty()
+                || !resolved.inlineResourceTypes.isEmpty()) {
             final String inlineSourceName = INLINE_SOURCE_PREFIX + snmpCollection.getName();
-            migrateInlineDefinitions(conn, snmpCollection, inlineSourceName);
-            sourceNames.add(inlineSourceName);
+            writeInlineSource(conn, snmpCollection.getName(), inlineSourceName,
+                    resolved.inlineGroups, resolved.inlineSystemDefs, resolved.inlineResourceTypes);
+            resolved.sourceNames.add(inlineSourceName);
         }
 
-        final String sourceNamesJson = DataCollectionGroupMapper.mapSourceNames(sourceNames);
+        final String sourceNamesJson = DataCollectionGroupMapper.mapSourceNames(resolved.sourceNames);
         final String rrdRrasJson = DataCollectionGroupMapper.mapRras(snmpCollection.getRrd());
         final int rrdStep = DataCollectionGroupMapper.mapRrdStep(snmpCollection);
 
@@ -224,52 +224,226 @@ public class SnmpDataCollectionMigration {
     }
 
     /**
-     * Check if an SnmpCollection has inline group/system/resourceType definitions.
+     * Pure function over JAXB input: partitions a snmp-collection's includes
+     * into {@code source_names} entries (for reuse-by-reference) and content
+     * that must be materialized into the synthetic inline source. Does no I/O
+     * and is package-private for testing.
      */
-    private boolean hasInlineDefinitions(final SnmpCollection coll) {
-        if (coll.getGroups() != null && coll.getGroups().getGroups() != null
-                && !coll.getGroups().getGroups().isEmpty()) {
-            return true;
+    ResolvedIncludes resolveIncludes(final SnmpCollection snmpCollection,
+                                     final Map<String, DatacollectionGroup> groupsByName) {
+        final ResolvedIncludes r = new ResolvedIncludes();
+
+        // Seed with inline definitions declared directly under <snmp-collection>
+        if (snmpCollection.getGroups() != null && snmpCollection.getGroups().getGroups() != null) {
+            for (final Group g : snmpCollection.getGroups().getGroups()) {
+                if (g.getName() != null && r.seenGroupNames.add(g.getName())) {
+                    r.inlineGroups.add(g);
+                }
+            }
         }
-        if (coll.getSystems() != null && coll.getSystems().getSystemDefs() != null
-                && !coll.getSystems().getSystemDefs().isEmpty()) {
-            return true;
+        if (snmpCollection.getSystems() != null && snmpCollection.getSystems().getSystemDefs() != null) {
+            for (final SystemDef sd : snmpCollection.getSystems().getSystemDefs()) {
+                if (sd.getName() != null && r.seenSystemDefNames.add(sd.getName())) {
+                    r.inlineSystemDefs.add(sd);
+                }
+            }
         }
-        return coll.getResourceTypes() != null && !coll.getResourceTypes().isEmpty();
+        if (snmpCollection.getResourceTypes() != null) {
+            for (final ResourceType rt : snmpCollection.getResourceTypes()) {
+                if (rt.getName() != null && r.seenResourceTypeNames.add(rt.getName())) {
+                    r.inlineResourceTypes.add(rt);
+                }
+            }
+        }
+
+        for (final IncludeCollection include : snmpCollection.getIncludeCollections()) {
+            if (include.getDataCollectionGroup() != null && !include.getDataCollectionGroup().isEmpty()) {
+                final String groupName = include.getDataCollectionGroup();
+                final List<String> excludes = include.getExcludeFilters();
+
+                if (excludes == null || excludes.isEmpty()) {
+                    r.sourceNames.add(groupName);
+                    continue;
+                }
+
+                final DatacollectionGroup dcGroup = groupsByName.get(groupName);
+                if (dcGroup == null) {
+                    LOG.warn("snmp-collection '{}': include-collection references missing group '{}' — skipping.",
+                            snmpCollection.getName(), groupName);
+                    continue;
+                }
+
+                LOG.info("snmp-collection '{}': applying exclude-filter on group '{}' — merging survivors into inline source.",
+                        snmpCollection.getName(), groupName);
+                for (final SystemDef sd : dcGroup.getSystemDefs()) {
+                    if (matchesAnyRegex(sd.getName(), excludes)) {
+                        LOG.debug("snmp-collection '{}': excluding systemDef '{}' from group '{}'.",
+                                snmpCollection.getName(), sd.getName(), groupName);
+                        continue;
+                    }
+                    if (r.seenSystemDefNames.add(sd.getName())) {
+                        r.inlineSystemDefs.add(sd);
+                    }
+                    addReferencedGroups(sd, dcGroup, groupsByName, r.inlineGroups, r.seenGroupNames);
+                }
+                // exclude-filter only filters systemDefs in the legacy parser; resource types
+                // from the referenced group are always imported globally (see
+                // DefaultDataCollectionConfigDao#L149). Preserve that behavior so MIB objects
+                // whose instance names reference custom resource types still resolve.
+                if (dcGroup.getResourceTypes() != null) {
+                    for (final ResourceType rt : dcGroup.getResourceTypes()) {
+                        if (rt.getName() != null && r.seenResourceTypeNames.add(rt.getName())) {
+                            r.inlineResourceTypes.add(rt);
+                        }
+                    }
+                }
+            } else if (include.getSystemDef() != null && !include.getSystemDef().isEmpty()) {
+                final String systemDefName = include.getSystemDef();
+                final SystemDefRef ref = findSystemDef(systemDefName, groupsByName);
+                if (ref == null) {
+                    LOG.warn("snmp-collection '{}': include-collection systemDef='{}' not found in any datacollection group — skipping.",
+                            snmpCollection.getName(), systemDefName);
+                    continue;
+                }
+
+                LOG.info("snmp-collection '{}': resolving systemDef='{}' (from group '{}') into inline source.",
+                        snmpCollection.getName(), systemDefName, ref.owningGroup.getName());
+                if (r.seenSystemDefNames.add(ref.systemDef.getName())) {
+                    r.inlineSystemDefs.add(ref.systemDef);
+                }
+                addReferencedGroups(ref.systemDef, ref.owningGroup, groupsByName,
+                        r.inlineGroups, r.seenGroupNames);
+            }
+        }
+
+        return r;
+    }
+
+    /** Result bundle for {@link #resolveIncludes}. Package-private for testing. */
+    static final class ResolvedIncludes {
+        final List<String> sourceNames = new ArrayList<>();
+        final List<Group> inlineGroups = new ArrayList<>();
+        final List<SystemDef> inlineSystemDefs = new ArrayList<>();
+        final List<ResourceType> inlineResourceTypes = new ArrayList<>();
+        private final Set<String> seenGroupNames = new HashSet<>();
+        private final Set<String> seenSystemDefNames = new HashSet<>();
+        private final Set<String> seenResourceTypeNames = new HashSet<>();
     }
 
     /**
-     * Extract inline definitions from an SnmpCollection into a synthetic source.
+     * Persist the synthetic __inline_<collection> source with its accumulated content.
      */
-    private void migrateInlineDefinitions(final Connection conn,
-                                          final SnmpCollection coll,
-                                          final String sourceName) throws SQLException {
-
-        LOG.info("Extracting inline definitions from snmp-collection '{}' to source '{}'",
-                coll.getName(), sourceName);
+    private void writeInlineSource(final Connection conn,
+                                   final String collectionName,
+                                   final String inlineSourceName,
+                                   final List<Group> groups,
+                                   final List<SystemDef> systemDefs,
+                                   final List<ResourceType> resourceTypes) throws SQLException {
+        LOG.info("Writing inline source '{}' for snmp-collection '{}' ({} groups, {} systemDefs, {} resourceTypes)",
+                inlineSourceName, collectionName, groups.size(), systemDefs.size(), resourceTypes.size());
 
         final int sourceId = SnmpDataCollectionSqlHelper.insertSource(
-                conn, sourceName, null, "Inline definitions from snmp-collection " + coll.getName(),
+                conn, inlineSourceName, null,
+                "Inline definitions from snmp-collection " + collectionName,
                 MIGRATION_USER);
 
-        // Inline groups
-        final List<Group> inlineGroups = (coll.getGroups() != null && coll.getGroups().getGroups() != null)
-                ? coll.getGroups().getGroups()
-                : Collections.emptyList();
-        SnmpDataCollectionSqlHelper.batchInsertMibGroups(conn, sourceId, inlineGroups);
+        SnmpDataCollectionSqlHelper.batchInsertMibGroups(conn, sourceId, groups);
+        SnmpDataCollectionSqlHelper.batchInsertSystemDefs(conn, sourceId, systemDefs);
+        SnmpDataCollectionSqlHelper.batchInsertResourceTypes(conn, sourceId, resourceTypes);
+    }
 
-        // Inline system defs
-        final List<SystemDef> inlineSystemDefs = (coll.getSystems() != null
-                && coll.getSystems().getSystemDefs() != null)
-                ? coll.getSystems().getSystemDefs()
-                : Collections.emptyList();
-        SnmpDataCollectionSqlHelper.batchInsertSystemDefs(conn, sourceId, inlineSystemDefs);
+    /**
+     * Resolve the MIB groups referenced by a systemDef's <collect><includeGroup>
+     * entries and accumulate them into the inline source, deduplicated by name.
+     * Mirrors DataCollectionConfigParser.addSystemDef() group resolution.
+     */
+    private void addReferencedGroups(final SystemDef systemDef,
+                                     final DatacollectionGroup preferredGroup,
+                                     final Map<String, DatacollectionGroup> allGroups,
+                                     final List<Group> accumulator,
+                                     final Set<String> seenNames) {
+        if (systemDef.getCollect() == null || systemDef.getCollect().getIncludeGroups() == null) {
+            return;
+        }
+        for (final String groupName : systemDef.getCollect().getIncludeGroups()) {
+            final Group g = findGroup(groupName, preferredGroup, allGroups);
+            if (g == null) {
+                LOG.warn("systemDef '{}' references group '{}' that does not exist — skipping.",
+                        systemDef.getName(), groupName);
+                continue;
+            }
+            if (seenNames.add(g.getName())) {
+                accumulator.add(g);
+            }
+        }
+    }
 
-        // Inline resource types
-        final List<ResourceType> inlineResourceTypes = coll.getResourceTypes() != null
-                ? coll.getResourceTypes()
-                : Collections.emptyList();
-        SnmpDataCollectionSqlHelper.batchInsertResourceTypes(conn, sourceId, inlineResourceTypes);
+    /**
+     * Look up a MIB group by name, preferring the systemDef's owning group first.
+     * Mirrors DataCollectionConfigParser.getMibObjectGroup().
+     */
+    private Group findGroup(final String groupName,
+                            final DatacollectionGroup preferred,
+                            final Map<String, DatacollectionGroup> all) {
+        if (preferred != null && preferred.getGroups() != null) {
+            for (final Group g : preferred.getGroups()) {
+                if (groupName.equals(g.getName())) {
+                    return g;
+                }
+            }
+        }
+        for (final DatacollectionGroup dg : all.values()) {
+            if (dg.getGroups() == null) continue;
+            for (final Group g : dg.getGroups()) {
+                if (groupName.equals(g.getName())) {
+                    return g;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a named systemDef across all parsed datacollection groups.
+     * Mirrors DataCollectionConfigParser.getSystemDef().
+     */
+    private SystemDefRef findSystemDef(final String systemDefName,
+                                       final Map<String, DatacollectionGroup> groupsByName) {
+        for (final DatacollectionGroup dg : groupsByName.values()) {
+            if (dg.getSystemDefs() == null) continue;
+            for (final SystemDef sd : dg.getSystemDefs()) {
+                if (systemDefName.equals(sd.getName())) {
+                    return new SystemDefRef(sd, dg);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean matchesAnyRegex(final String candidate, final List<String> regexes) {
+        if (candidate == null || regexes == null) {
+            return false;
+        }
+        for (final String re : regexes) {
+            try {
+                if (Pattern.compile(re).matcher(candidate).matches()) {
+                    return true;
+                }
+            } catch (PatternSyntaxException e) {
+                LOG.warn("Invalid exclude-filter regex '{}': {}", re, e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private static final class SystemDefRef {
+        final SystemDef systemDef;
+        final DatacollectionGroup owningGroup;
+
+        SystemDefRef(final SystemDef systemDef, final DatacollectionGroup owningGroup) {
+            this.systemDef = systemDef;
+            this.owningGroup = owningGroup;
+        }
     }
 
     /**

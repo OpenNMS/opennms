@@ -34,6 +34,7 @@ import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -48,7 +49,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Tests for the SNMP data collection migration components:
@@ -370,7 +373,155 @@ public class SnmpDataCollectionMigrationTest {
         }
     }
 
+    // --- Include-collection resolution tests ---
+
+    @Test
+    public void testResolveIncludesPlainInclude() {
+        // <include-collection dataCollectionGroup="MIB2"/> with no excludes
+        // stays as a source-name reference; nothing pulled inline.
+        final Map<String, DatacollectionGroup> groups = new LinkedHashMap<>();
+        groups.put("MIB2", buildGroup("MIB2",
+                List.of(systemDef("Net-SNMP", List.of("mib2-interfaces"))),
+                List.of(mibGroup("mib2-interfaces")),
+                List.of(resourceType("hrStorageIndex"))));
+
+        final SnmpCollection coll = collectionWithInclude("default",
+                plainInclude("MIB2"));
+
+        final SnmpDataCollectionMigration.ResolvedIncludes r =
+                new SnmpDataCollectionMigration().resolveIncludes(coll, groups);
+
+        assertEquals(List.of("MIB2"), r.sourceNames);
+        assertTrue(r.inlineGroups.isEmpty());
+        assertTrue(r.inlineSystemDefs.isEmpty());
+        assertTrue(r.inlineResourceTypes.isEmpty());
+    }
+
+    @Test
+    public void testResolveIncludesExcludeFilterPreservesResourceTypes() {
+        // <include-collection dataCollectionGroup="MIB2"><exclude-filter>Windows.*</exclude-filter>/> —
+        // drops "MIB2" from source_names, inlines surviving systemDefs + their referenced
+        // MIB groups, AND inlines ALL resource types from MIB2 (matches legacy
+        // DefaultDataCollectionConfigDao behavior).
+        final Map<String, DatacollectionGroup> groups = new LinkedHashMap<>();
+        groups.put("MIB2", buildGroup("MIB2",
+                List.of(
+                        systemDef("Net-SNMP", List.of("mib2-interfaces")),
+                        systemDef("Windows-Host", List.of("mib2-windows"))
+                ),
+                List.of(
+                        mibGroup("mib2-interfaces"),
+                        mibGroup("mib2-windows")
+                ),
+                List.of(resourceType("hrStorageIndex"))));
+
+        final IncludeCollection inc = plainInclude("MIB2");
+        inc.setExcludeFilters(List.of("Windows.*"));
+
+        final SnmpCollection coll = collectionWithInclude("default", inc);
+
+        final SnmpDataCollectionMigration.ResolvedIncludes r =
+                new SnmpDataCollectionMigration().resolveIncludes(coll, groups);
+
+        // Source dropped — replaced by inline content
+        assertTrue("MIB2 should not appear in source_names when excludes apply",
+                r.sourceNames.isEmpty());
+        // Only Net-SNMP survived; Windows-Host excluded
+        assertEquals(1, r.inlineSystemDefs.size());
+        assertEquals("Net-SNMP", r.inlineSystemDefs.get(0).getName());
+        // Only the group referenced by the surviving systemDef is pulled in
+        assertEquals(1, r.inlineGroups.size());
+        assertEquals("mib2-interfaces", r.inlineGroups.get(0).getName());
+        // All resource types are preserved regardless of systemDef excludes
+        assertEquals(1, r.inlineResourceTypes.size());
+        assertEquals("hrStorageIndex", r.inlineResourceTypes.get(0).getName());
+    }
+
+    @Test
+    public void testResolveIncludesSystemDefRef() {
+        // <include-collection systemDef="Net-SNMP"/> — resolves that systemDef plus its
+        // referenced MIB groups into inline; no resource types pulled from owning group
+        // (matches legacy addSystemDef behavior).
+        final Map<String, DatacollectionGroup> groups = new LinkedHashMap<>();
+        groups.put("MIB2", buildGroup("MIB2",
+                List.of(systemDef("Net-SNMP", List.of("mib2-interfaces"))),
+                List.of(mibGroup("mib2-interfaces")),
+                List.of(resourceType("hrStorageIndex"))));
+
+        final IncludeCollection inc = new IncludeCollection();
+        inc.setSystemDef("Net-SNMP");
+
+        final SnmpCollection coll = collectionWithInclude("default", inc);
+
+        final SnmpDataCollectionMigration.ResolvedIncludes r =
+                new SnmpDataCollectionMigration().resolveIncludes(coll, groups);
+
+        assertTrue(r.sourceNames.isEmpty());
+        assertEquals(1, r.inlineSystemDefs.size());
+        assertEquals("Net-SNMP", r.inlineSystemDefs.get(0).getName());
+        assertEquals(1, r.inlineGroups.size());
+        assertEquals("mib2-interfaces", r.inlineGroups.get(0).getName());
+        // systemDef= include does NOT pull resource types (legacy parser parity)
+        assertTrue("systemDef includes should not pull resource types from owning group",
+                r.inlineResourceTypes.isEmpty());
+    }
+
     // --- Helper methods ---
+
+    private SnmpCollection collectionWithInclude(final String name, final IncludeCollection include) {
+        final SnmpCollection c = new SnmpCollection();
+        c.setName(name);
+        c.setSnmpStorageFlag("select");
+        final Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        c.setRrd(rrd);
+        c.addIncludeCollection(include);
+        return c;
+    }
+
+    private IncludeCollection plainInclude(final String groupName) {
+        final IncludeCollection inc = new IncludeCollection();
+        inc.setDataCollectionGroup(groupName);
+        return inc;
+    }
+
+    private DatacollectionGroup buildGroup(final String name,
+                                           final List<SystemDef> sds,
+                                           final List<Group> mibs,
+                                           final List<ResourceType> rts) {
+        final DatacollectionGroup g = new DatacollectionGroup();
+        g.setName(name);
+        sds.forEach(g::addSystemDef);
+        mibs.forEach(g::addGroup);
+        rts.forEach(g::addResourceType);
+        return g;
+    }
+
+    private SystemDef systemDef(final String name, final List<String> includeGroups) {
+        final SystemDef sd = new SystemDef();
+        sd.setName(name);
+        sd.setSysoidMask(".1.3.6.1.4.1.");
+        final Collect collect = new Collect();
+        includeGroups.forEach(collect::addIncludeGroup);
+        sd.setCollect(collect);
+        return sd;
+    }
+
+    private Group mibGroup(final String name) {
+        final Group g = new Group();
+        g.setName(name);
+        g.setIfType("all");
+        return g;
+    }
+
+    private ResourceType resourceType(final String name) {
+        final ResourceType rt = new ResourceType();
+        rt.setName(name);
+        rt.setLabel(name);
+        return rt;
+    }
+
+    // --- Original helper methods ---
 
     private File getTestResource(final String path) {
         final URL url = getClass().getClassLoader().getResource(path);
