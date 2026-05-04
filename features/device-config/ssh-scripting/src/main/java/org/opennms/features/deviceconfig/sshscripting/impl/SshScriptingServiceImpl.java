@@ -425,16 +425,7 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             if (captureStart < 0) {
                 return Optional.empty();
             }
-            var allBytes = stdout.toByteArray();
-            int end = (captureEnd >= captureStart) ? captureEnd : allBytes.length;
-            // Trim backwards to the preceding newline so the prompt line that triggered
-            // captureEnd is fully excluded, not just the matched substring within it.
-            // e.g. await: # on "router#" leaves captureEnd before '#'; trimming removes
-            // "router" too, ending the capture at the '\n' before the prompt line.
-            while (end > captureStart && allBytes[end - 1] != (byte) 0x0A) { // 0x0A == \n
-                end--;
-            }
-            return Optional.of(Arrays.copyOfRange(allBytes, captureStart, end));
+            return Optional.of(SshScriptingServiceImpl.extractCapturedBytes(stdout.toByteArray(), captureStart, captureEnd));
         }
 
         String getDebugOutput() {
@@ -445,6 +436,23 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 return debugOutput.toString(StandardCharsets.UTF_8);
             }
         }
+    }
+
+    /**
+     * Extracts the captured bytes from a stdout snapshot.
+     * <p>
+     * When {@code captureEnd >= captureStart} it marks the position in stdout just before the
+     * last awaited string (e.g. a device prompt); the method scans backwards from that point to
+     * the preceding {@code 0x0A} so the entire prompt line is excluded, not only the matched
+     * substring.  When {@code captureEnd < captureStart} (still -1 because no await fired after
+     * capture) the full tail of the buffer from {@code captureStart} is returned.
+     */
+    static byte[] extractCapturedBytes(byte[] allBytes, int captureStart, int captureEnd) {
+        int end = (captureEnd >= captureStart) ? captureEnd : allBytes.length;
+        while (end > captureStart && allBytes[end - 1] != (byte) 0x0A) {
+            end--;
+        }
+        return Arrays.copyOfRange(allBytes, captureStart, end);
     }
 
     static boolean matchAndConsume(ByteArrayOutputStream awaitStdout, byte[] search) {
