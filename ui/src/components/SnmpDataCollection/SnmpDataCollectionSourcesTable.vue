@@ -27,7 +27,12 @@
           </FeatherButton>
         </div>
       </div>
-      <div class="section-right">
+      <!-- Create-source action hidden for now: the only supported entry point
+           for new sources is the multipart upload on the Import tab, which
+           drives the parser/validator and the profile-attachment policy. The
+           handwritten create flow is preserved in the codebase but not
+           surfaced until it's reconciled with the upload contract. -->
+      <div class="section-right" v-if="false">
         <div class="add">
           <FeatherButton
             secondary
@@ -111,6 +116,16 @@
                   @click="onSourceClick(source)"
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
+                </FeatherButton>
+                <!-- Quick-download in XML (the round-trippable format the
+                     /upload endpoint accepts). JSON is still reachable via
+                     the dropdown below for users who want it. -->
+                <FeatherButton
+                  :icon="`Download ${source.name} XML`"
+                  data-test="download-xml-button"
+                  @click="downloadCollectionSource(source, 'xml')"
+                >
+                  <FeatherIcon :icon="DownloadIcon" />
                 </FeatherButton>
                 <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
@@ -202,6 +217,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
+import DownloadIcon from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'

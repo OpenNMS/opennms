@@ -26,8 +26,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
+import org.opennms.netmgt.config.datacollection.Rrd;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
 import org.opennms.netmgt.model.SnmpCollectionProfile;
@@ -94,6 +99,12 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Autowired
     private SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
+
+    @Autowired
+    private SnmpCollectionProfileDao snmpCollectionProfileDao;
+
+    @Autowired
+    private DataCollectionConfigDao dataCollectionConfigDao;
 
     @Override
     public Response uploadSnmpDataCollectionConfFiles(List<Attachment> attachments,
@@ -1156,6 +1167,105 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
         return buildXmlError(Response.Status.BAD_REQUEST,
                 "Invalid format: " + format + ". Supported values: xml, json");
+    }
+
+    /**
+     * Assemble a {@link DatacollectionConfig} from the persisted profile rows
+     * and serve it for download. Mirrors the on-disk
+     * {@code datacollection-config.xml} an operator would have edited
+     * pre-migration: one {@code <snmp-collection>} per enabled profile,
+     * each carrying rrd/storage metadata and an
+     * {@code <include-collection dataCollectionGroup="...">} per source name.
+     *
+     * <p>Disabled profiles are deliberately omitted — the runtime loader
+     * uses {@code findAllEnabled} too, so the export reflects what collectd
+     * would actually consume. The {@code rrdRepository} attribute is copied
+     * from the live in-memory config so the round-trip stays intelligible
+     * even though the upload path doesn't read it back.
+     */
+    @Override
+    public Response downloadDatacollectionConfig(final String format, final SecurityContext securityContext) throws Exception {
+        final String normalizedFormat = (format == null || format.isBlank()) ? "xml" : format.trim();
+        if (!"xml".equalsIgnoreCase(normalizedFormat) && !"json".equalsIgnoreCase(normalizedFormat)) {
+            return buildXmlError(Response.Status.BAD_REQUEST,
+                    "Invalid format: " + format + ". Supported values: xml, json");
+        }
+
+        // rrdRepository is required by the datacollection-config XSD even
+        // though the upload path doesn't consume it (the runtime loader
+        // derives the RRD path from system properties at startup). We surface
+        // the live runtime value so the export looks like the on-disk config
+        // an operator would have edited pre-migration.
+        final DatacollectionConfig config = new DatacollectionConfig();
+        config.setRrdRepository(dataCollectionConfigDao.getRrdPath());
+
+        for (final SnmpCollectionProfile profile : snmpCollectionProfileDao.findAllEnabled()) {
+            final SnmpCollection sc = new SnmpCollection();
+            sc.setName(profile.getName());
+            if (profile.getStorageFlag() != null) {
+                sc.setSnmpStorageFlag(profile.getStorageFlag());
+            }
+            if (profile.getMaxVarsPerPdu() != null) {
+                sc.setMaxVarsPerPdu(profile.getMaxVarsPerPdu());
+            }
+            if (profile.getRrdStep() != null) {
+                final Rrd rrd = new Rrd();
+                rrd.setStep(profile.getRrdStep());
+                final List<String> rras = DatacollectionJsonHelper.fromJson(
+                        profile.getRrdRras(), new TypeReference<List<String>>() {});
+                if (rras != null) {
+                    rras.forEach(rrd::addRra);
+                }
+                sc.setRrd(rrd);
+            }
+
+            final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
+                    profile.getSourceNames(), new TypeReference<List<String>>() {});
+            if (sourceNames != null) {
+                for (final String name : sourceNames) {
+                    if (name == null || name.isBlank()) continue;
+                    final IncludeCollection inc = new IncludeCollection();
+                    inc.setDataCollectionGroup(name);
+                    sc.addIncludeCollection(inc);
+                }
+            }
+            config.addSnmpCollection(sc);
+        }
+
+        final String filenameStem = "datacollection-config";
+
+        if ("json".equalsIgnoreCase(normalizedFormat)) {
+            try {
+                final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+                final byte[] jsonBytes = mapper.writeValueAsBytes(config);
+                return Response.ok(jsonBytes, MediaType.APPLICATION_JSON)
+                        .header("Content-Disposition",
+                                "attachment; filename=\"" + filenameStem + ".json\"")
+                        .build();
+            } catch (Exception e) {
+                LOG.error("Failed to serialize datacollection-config as JSON", e);
+                return buildXmlError(Response.Status.INTERNAL_SERVER_ERROR,
+                        "Failed to generate JSON: " + e.getMessage());
+            }
+        }
+
+        // xml
+        final byte[] xmlBytes;
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             final OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
+             final BufferedWriter writer = new BufferedWriter(osw)) {
+            JaxbUtils.marshal(config, writer);
+            writer.flush();
+            xmlBytes = baos.toByteArray();
+        } catch (Exception e) {
+            LOG.error("Failed to marshal datacollection-config", e);
+            return buildXmlError(Response.Status.INTERNAL_SERVER_ERROR,
+                    "Failed to generate XML: " + e.getMessage());
+        }
+        return Response.ok(xmlBytes, MediaType.APPLICATION_XML)
+                .header("Content-Disposition",
+                        "attachment; filename=\"" + filenameStem + ".xml\"")
+                .build();
     }
 
     private static final String DATACOLLECTION_NAMESPACE = "http://xmlns.opennms.org/xsd/config/datacollection";
