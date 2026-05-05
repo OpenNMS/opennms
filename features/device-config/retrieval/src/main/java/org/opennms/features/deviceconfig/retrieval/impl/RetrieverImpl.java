@@ -125,9 +125,9 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                             scriptResult.stdout, scriptResult.stderr, scriptResult.scriptOutput));
                 }
 
-                if (scriptResult.capturedConfig.isEmpty()) {
+                if (scriptResult.capturedConfig.isEmpty() || !hasPrintableContent(scriptResult.capturedConfig.get())) {
                     return Either.<Failure, Success>left(new Failure(
-                            "Script 'capture: ' statement parsed but captured no output - target: " + target,
+                            "Script 'capture:' statement parsed but captured no output or no printable characters - target: " + target,
                             scriptResult.stdout, scriptResult.stderr, scriptResult.scriptOutput));
                 }
 
@@ -260,6 +260,15 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 }
             }
         }
+    }
+
+    static boolean hasPrintableContent(byte[] bytes) {
+        for (byte b : bytes) {
+            if (b >= 0x21 && b <= 0x7E) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean scriptContainsCapture(String script) {

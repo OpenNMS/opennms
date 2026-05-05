@@ -329,6 +329,66 @@ public class RetrieverImplTest {
     }
 
     @Test
+    public void shouldFailWhenCapturedConfigHasNoPrintableContent() throws Exception {
+        var sshScriptingService = mock(SshScriptingService.class);
+        var tftpServer = mock(TftpServer.class);
+
+        var script = "capture:";
+        // Only whitespace / control characters — no printable ASCII content
+        var whitespaceOnly = new byte[]{'\n', '\r', ' ', '\t'};
+        when(sshScriptingService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(SshScriptingService.Result.success("Success", "", "", "debug-output", Optional.of(whitespaceOnly)));
+
+        var retriever = new RetrieverImpl(sshScriptingService, tftpServer);
+
+        var future = retriever.retrieveConfig(
+                Retriever.Protocol.TFTP, script, "", "", null,
+                new InetSocketAddress("host", 22), null, null, "running.cfg",
+                Collections.emptyMap(), Duration.ofSeconds(30)
+        ).toCompletableFuture();
+
+        await().until(future::isDone);
+
+        var either = future.get();
+        assertTrue(either.isLeft());
+        assertThat(either.getLeft().message, containsString("whitespace or control characters"));
+    }
+
+    // =========================================================================
+    // hasPrintableContent unit tests
+    // =========================================================================
+
+    @Test
+    public void hasPrintableContentReturnsFalseForEmptyArray() {
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{}), is(false));
+    }
+
+    @Test
+    public void hasPrintableContentReturnsFalseForWhitespaceOnly() {
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{' ', '\t', '\n', '\r'}), is(false));
+    }
+
+    @Test
+    public void hasPrintableContentReturnsFalseForControlsOnly() {
+        // 0x00–0x1F are control characters; 0x7F is DEL
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{0x00, 0x01, 0x1F, 0x7F}), is(false));
+    }
+
+    @Test
+    public void hasPrintableContentReturnsTrueWhenPrintablePresent() {
+        // 'a' (0x61) is printable ASCII
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{'\n', 'a', '\n'}), is(true));
+    }
+
+    @Test
+    public void hasPrintableContentTreatsSpaceAsNonPrintable() {
+        // 0x20 is space — whitespace, not printable by our definition
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{0x20}), is(false));
+        // 0x21 is '!' — first printable character
+        assertThat(RetrieverImpl.hasPrintableContent(new byte[]{0x21}), is(true));
+    }
+
+    @Test
     public void shouldHandleSshScriptException() throws Exception {
         var sshScriptingService = mock(SshScriptingService.class);
         var tftpServer = mock(TftpServer.class);
