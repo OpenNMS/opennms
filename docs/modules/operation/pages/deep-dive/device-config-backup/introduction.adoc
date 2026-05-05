@@ -11,6 +11,7 @@ Through the UI, users can:
 * Create a user-defined schedule to automate configuration backups.
 * Trigger backups to occur when a device’s configuration changes, to ensure you always have a copy of the active device configuration.
 * View backup history, download configurations, search, and compare configurations for specific devices at different points in time.
+* Monitor device configurations for expected or unexpected changes
 
 Only users with the xref:operation:deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles[ROLE_DEVICE_CONFIG_BACKUP role] can perform and monitor device configuration backups.
 
