@@ -65,6 +65,11 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
 
     @Override
     public void replaceConfig(TrapdConfiguration config) {
+        if (config == null) {
+            return;
+        }
+        // Stamp ids onto any new/id-less SNMPv3 users before persisting (covers PUT and uploads).
+        config.ensureSnmpv3UserIds();
         this.updateConfig(this.getDefaultConfigId(), ConfigConvertUtil.objectToJson(config), true);
     }
 }

@@ -18,4 +18,13 @@
         <cm:importConfig schemaId="trapd-config" filePath="trapd-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="stheleman" id="36.0.0-upgrade-schema-trapd-config-1.1">
+        <!-- Upgrades the trapd-config schema to v1.1, adding the optional 'id' attribute to
+             snmpv3-user (NMS-19723). The v1.0 register changeSet above stays byte-for-byte as
+             shipped; this new changeSet is the only place the id-bearing schema is introduced.
+             Fresh installs run register (v1.0) then this upgrade (v1.1); existing 36.0.x installs
+             run only this changeSet. -->
+        <cm:importSchemaFromXsd id="trapd-config" xsdFileName="trapd-configuration-1.1.xsd" xsdFileHash="ac286bc4218126caec9417a20fb71bf957ce78810379a4fe29654dc31a68807f" rootElement="trapd-configuration"/>
+    </changeSet>
+
 </databaseChangeLog>

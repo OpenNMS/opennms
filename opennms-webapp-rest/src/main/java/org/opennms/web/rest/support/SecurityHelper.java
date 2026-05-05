@@ -21,6 +21,9 @@
  */
 package org.opennms.web.rest.support;
 
+import java.lang.reflect.Field;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,6 +32,15 @@ import javax.ws.rs.core.SecurityContext;
 import org.opennms.web.api.Authentication;
 
 public class SecurityHelper {
+    public static final String MASKED_PASSWORD = "******";
+    // Mirrors the SCV_REGEX / SCV_SUBKEY rules in ui/src/lib/scvValidator.ts:
+    //   alias  = [a-zA-Z0-9_] optionally followed by [a-zA-Z0-9_.-]* and a trailing [a-zA-Z0-9_]
+    //   :key   = same format, optional
+    //   |default = any chars except | and }, optional
+    private static final Pattern SCV_PATTERN = Pattern.compile(
+            "^\\$\\{scv:[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?" +
+            "(?::[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?)?" +
+            "(?:\\|[^|}]+)?\\}$");
 
     public static void assertUserReadCredentials(SecurityContext securityContext) {
         final String currentUser = securityContext.getUserPrincipal().getName();
@@ -70,4 +82,90 @@ public class SecurityHelper {
         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'").type(MediaType.TEXT_PLAIN).build());
     }
 
+    public static boolean isMaskedPassword(final String value) {
+        return MASKED_PASSWORD.equals(value);
+    }
+
+    public static boolean isScvExpression(final String value) {
+        return value != null && SCV_PATTERN.matcher(value).matches();
+    }
+
+    /**
+     * Replaces each {@link MaskedCredential}-annotated field on {@code dto} with
+     * {@link #MASKED_PASSWORD}. Null fields and SCV expressions ({@code ${scv:...}})
+     * are left unchanged. Only the declared fields of the object's own class are inspected.
+     */
+    public static void maskCredentials(final Object dto) {
+        if (dto == null) {
+            return;
+        }
+        for (Field field : dto.getClass().getDeclaredFields()) {
+            if (!field.isAnnotationPresent(MaskedCredential.class)) {
+                continue;
+            }
+            field.setAccessible(true);
+            try {
+                final Object value = field.get(dto);
+                if (value instanceof String strValue && !isScvExpression(strValue)) {
+                    field.set(dto, MASKED_PASSWORD);
+                }
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Failed to mask credential field: " + field.getName(), e);
+            }
+        }
+    }
+
+    /**
+     * For each {@link MaskedCredential}-annotated field on {@code incomingDto}: if the
+     * field value is a mask (per {@link #isMaskedPassword}), the supplier is called to
+     * obtain the existing entity and the real value is copied from the matching field name
+     * on that entity. Non-masked values (including SCV placeholders) are left unchanged.
+     *
+     * <p>The supplier is lazy: it is only invoked the first time a masked field is
+     * encountered. If the supplier returns {@code null} and a masked field is found,
+     * an {@link IllegalArgumentException} is thrown — callers should surface this as a
+     * 400 response.</p>
+     *
+     * @throws IllegalArgumentException if a masked value is found but the supplier
+     *                                  returns {@code null} (no existing entity to look up)
+     */
+    public static void resolveCredentials(final Object incomingDto, final Supplier<?> existingEntitySupplier) {
+        if (incomingDto == null) {
+            return;
+        }
+        Object existing = null;
+        boolean existingLoaded = false;
+        for (Field field : incomingDto.getClass().getDeclaredFields()) {
+            if (!field.isAnnotationPresent(MaskedCredential.class)) {
+                continue;
+            }
+            field.setAccessible(true);
+            try {
+                final Object value = field.get(incomingDto);
+                if (!(value instanceof String) || !isMaskedPassword((String) value)) {
+                    continue;
+                }
+                if (!existingLoaded) {
+                    existing = existingEntitySupplier.get();
+                    existingLoaded = true;
+                }
+                if (existing == null) {
+                    throw new IllegalArgumentException(
+                        "Cannot use a masked passphrase for a new entry: no existing record to retrieve field '"
+                            + field.getName() + "' from");
+                }
+                try {
+                    Field entityField = existing.getClass().getDeclaredField(field.getName());
+                    entityField.setAccessible(true);
+                    field.set(incomingDto, entityField.get(existing));
+                } catch (NoSuchFieldException e) {
+                    throw new IllegalArgumentException(
+                        "Cannot resolve masked field '" + field.getName() + "': no matching field on entity "
+                            + existing.getClass().getSimpleName(), e);
+                }
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Failed to resolve credential field: " + field.getName(), e);
+            }
+        }
+    }
 }

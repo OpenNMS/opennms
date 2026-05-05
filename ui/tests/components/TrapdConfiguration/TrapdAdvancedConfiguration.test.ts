@@ -21,6 +21,10 @@ vi.mock('@/composables/useDownload', () => ({
   default: () => ({ downloadFile: downloadFileMock })
 }))
 
+vi.mock('@/composables/useRole', () => ({
+  default: () => ({ adminRole: true, filesystemEditorRole: false, dcbRole: false, snmpRole: true, rolesAreLoaded: true })
+}))
+
 vi.mock('@/composables/useSpinner', () => ({
   default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() })
 }))
