@@ -351,7 +351,7 @@ public class RetrieverImplTest {
 
         var either = future.get();
         assertTrue(either.isLeft());
-        assertThat(either.getLeft().message, containsString("whitespace or control characters"));
+        assertThat(either.getLeft().message, containsString("captured no output or no printable characters"));
     }
 
     // =========================================================================
