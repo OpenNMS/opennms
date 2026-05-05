@@ -91,20 +91,20 @@ VALUES      (Nextval('eventconf_events_id_seq'),
              15,
              'uei.opennms.org/deviceconfig/configChanged',
              'OpenNMS-defined node event: configChanged',
-             '<p>Config backup changed on %service%
-            during the last poll on interface %interface%.</p>',
+             '&lt;p>Config backup changed on %service%
+            during the last poll on interface %interface%.&lt;/p>',
              TRUE,
-             '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
-   <uei>uei.opennms.org/deviceconfig/configChanged</uei>
-   <event-label>OpenNMS-defined node event: configChanged</event-label>
-   <descr>&lt;p>Config backup changed on %service%
-            during the last poll on interface %interface%.&lt;/p></descr>
-   <logmsg dest="logndisplay">
+             '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    &lt;uei>uei.opennms.org/deviceconfig/configChanged&lt;/uei>
+        &lt;event-label>OpenNMS-defined node event: configChanged&lt;/event-label>
+    &lt;descr>&lt;p>Config backup changed on %service%
+            during the last poll on interface %interface%.&lt;/p>&lt;/descr>
+        &lt;logmsg dest="logndisplay">
             %service% config backup changed on interface %interface%.
-        </logmsg>
-   <severity>Warning</severity>
-   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
-</event>',
+        &lt;/logmsg>
+        &lt;severity>Warning&lt;/severity>
+        &lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+        &lt;/event>',
              Current_timestamp,
              Current_timestamp,
              'system-migration',
