@@ -194,10 +194,35 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSystemDefDao.save(entity);
     }
 
+    /**
+     * Reject DTO updates whose embedded {@code id} or {@code collectionSourceId}
+     * disagree with the path-derived ones. Both fields are silently ignored by
+     * the {@code updateEntity} helpers, so a mismatch from the client would be
+     * a no-op success today — surface it as a 400 instead, and prevent a future
+     * refactor from quietly turning the no-op into a mass-assignment bug.
+     */
+    private static void requirePathMatchesDto(
+            final String entityKind,
+            final Integer pathId, final Integer pathSourceId,
+            final Integer dtoId, final Integer dtoSourceId) {
+        if (dtoId != null && !dtoId.equals(pathId)) {
+            throw new IllegalArgumentException(entityKind + " id in body (" + dtoId
+                    + ") does not match path id (" + pathId + ")");
+        }
+        if (dtoSourceId != null && !dtoSourceId.equals(pathSourceId)) {
+            throw new IllegalArgumentException(entityKind + " collectionSourceId in body (" + dtoSourceId
+                    + ") does not match path collectionSourceId (" + pathSourceId
+                    + "); reparenting via update is not supported");
+        }
+    }
+
     @Transactional
     public void updateMibGroup(
             final Integer id, final Integer snmpCollectionSourceId,
             final SnmpCollectionMibGroupDto request) {
+
+        requirePathMatchesDto("MibGroup", id, snmpCollectionSourceId,
+                request.getId(), request.getCollectionSourceId());
 
         final var snmpCollectionMibGroupEntity = snmpCollectionMibGroupDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
 
@@ -215,6 +240,9 @@ public class DataCollectionConfPersistenceService {
             final Integer id,
             final Integer snmpCollectionSourceId,
             final SnmpCollectionResourceTypeDto request) {
+
+        requirePathMatchesDto("ResourceType", id, snmpCollectionSourceId,
+                request.getId(), request.getCollectionSourceId());
 
         final var snmpCollectionResourceTypeEntity =
                 snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
@@ -234,6 +262,9 @@ public class DataCollectionConfPersistenceService {
             final Integer id,
             final Integer snmpCollectionSourceId,
             final SnmpCollectionSystemDefDto request) {
+
+        requirePathMatchesDto("SystemDef", id, snmpCollectionSourceId,
+                request.getId(), request.getCollectionSourceId());
 
         final var snmpCollectionSystemDefEntity =
                 snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);

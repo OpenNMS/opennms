@@ -276,16 +276,18 @@ public class SnmpDataCollectionMigration {
 
                 LOG.info("snmp-collection '{}': applying exclude-filter on group '{}' — merging survivors into inline source.",
                         snmpCollection.getName(), groupName);
-                for (final SystemDef sd : dcGroup.getSystemDefs()) {
-                    if (matchesAnyRegex(sd.getName(), excludes)) {
-                        LOG.debug("snmp-collection '{}': excluding systemDef '{}' from group '{}'.",
-                                snmpCollection.getName(), sd.getName(), groupName);
-                        continue;
+                if (dcGroup.getSystemDefs() != null) {
+                    for (final SystemDef sd : dcGroup.getSystemDefs()) {
+                        if (matchesAnyRegex(sd.getName(), excludes)) {
+                            LOG.debug("snmp-collection '{}': excluding systemDef '{}' from group '{}'.",
+                                    snmpCollection.getName(), sd.getName(), groupName);
+                            continue;
+                        }
+                        if (r.seenSystemDefNames.add(sd.getName())) {
+                            r.inlineSystemDefs.add(sd);
+                        }
+                        addReferencedGroups(sd, dcGroup, groupsByName, r.inlineGroups, r.seenGroupNames);
                     }
-                    if (r.seenSystemDefNames.add(sd.getName())) {
-                        r.inlineSystemDefs.add(sd);
-                    }
-                    addReferencedGroups(sd, dcGroup, groupsByName, r.inlineGroups, r.seenGroupNames);
                 }
                 // exclude-filter only filters systemDefs in the legacy parser; resource types
                 // from the referenced group are always imported globally (see

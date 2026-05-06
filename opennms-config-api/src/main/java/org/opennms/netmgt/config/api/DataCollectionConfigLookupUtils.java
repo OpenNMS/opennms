@@ -24,6 +24,7 @@ package org.opennms.netmgt.config.api;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,6 +130,19 @@ public final class DataCollectionConfigLookupUtils {
                                         final int ifType,
                                         final List<MibObject> mibObjectList,
                                         final Map<String, ResourceType> resourceTypes) {
+        processGroupName(groupMap, groupName, ifType, mibObjectList, resourceTypes, new HashSet<>());
+    }
+
+    private static void processGroupName(final Map<String, Group> groupMap,
+                                         final String groupName,
+                                         final int ifType,
+                                         final List<MibObject> mibObjectList,
+                                         final Map<String, ResourceType> resourceTypes,
+                                         final Set<String> visited) {
+        if (!visited.add(groupName)) {
+            LOG.warn("processGroupName: cycle detected at group '{}'; skipping to prevent infinite recursion.", groupName);
+            return;
+        }
         final Group group = groupMap.get(groupName);
         if (group == null) {
             LOG.warn("processGroupName: unable to retrieve group '{}': check DataCollection config.", groupName);
@@ -137,11 +151,16 @@ public final class DataCollectionConfigLookupUtils {
 
         // Process sub-groups
         for (final String includeGroup : group.getIncludeGroups()) {
-            processGroupName(groupMap, includeGroup, ifType, mibObjectList, resourceTypes);
+            processGroupName(groupMap, includeGroup, ifType, mibObjectList, resourceTypes, visited);
         }
 
         final String ifTypeStr = String.valueOf(ifType);
         String groupIfType = group.getIfType();
+        if (groupIfType == null) {
+            // DB column is nullable and the XSD doesn't always require ifType.
+            // Treat missing as "ignore" (skip group) rather than NPE on indexOf.
+            return;
+        }
 
         boolean addGroupObjects = false;
         if (ifType == DataCollectionConfigDao.NODE_ATTRIBUTES) {
@@ -188,13 +207,24 @@ public final class DataCollectionConfigLookupUtils {
     public static void processGroupForProperties(final Map<String, Group> groupMap,
                                                   final String groupName,
                                                   final List<MibObjProperty> mibObjProperties) {
+        processGroupForProperties(groupMap, groupName, mibObjProperties, new HashSet<>());
+    }
+
+    private static void processGroupForProperties(final Map<String, Group> groupMap,
+                                                  final String groupName,
+                                                  final List<MibObjProperty> mibObjProperties,
+                                                  final Set<String> visited) {
+        if (!visited.add(groupName)) {
+            LOG.warn("processGroupForProperties: cycle detected at group '{}'; skipping to prevent infinite recursion.", groupName);
+            return;
+        }
         final Group group = groupMap.get(groupName);
         if (group == null) {
             LOG.warn("processGroupForProperties: unable to retrieve group '{}': check DataCollection config.", groupName);
             return;
         }
         for (final String includeGroup : group.getIncludeGroups()) {
-            processGroupForProperties(groupMap, includeGroup, mibObjProperties);
+            processGroupForProperties(groupMap, includeGroup, mibObjProperties, visited);
         }
         group.getProperties().forEach(p -> p.setGroupName(groupName));
         mibObjProperties.addAll(group.getProperties());

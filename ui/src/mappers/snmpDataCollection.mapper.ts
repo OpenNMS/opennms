@@ -168,7 +168,10 @@ export const mapSnmpDataCollectionMibGroupPayloadToServer = (
   selectedMibGroupId: number,
   isEditMode: CreateEditMode
 ): SnmpCollectionMibGroupPayload => {
-  const names = isEditMode === CreateEditMode.Edit ? JSON.stringify(mibGroupNames) : JSON.stringify([name])
+  // New MIB groups have no nested include-groups; writing [name] would make the
+  // group self-include via mib_group_names → Group.includeGroups, causing infinite
+  // recursion in processGroupName once a SystemDef references it.
+  const names = isEditMode === CreateEditMode.Edit ? JSON.stringify(mibGroupNames) : JSON.stringify([])
   const payload = {
     name: name,
     ifType: ifType,

@@ -76,6 +76,7 @@ import javax.ws.rs.core.SecurityContext;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -90,6 +91,14 @@ import java.util.Date;
 public class DataCollectionConfRestService  implements DataCollectionConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfRestService.class);
+
+    private static final int MAX_PAGE_SIZE = 1000;
+
+    /** Per-attachment cap for multipart uploads — guards against authenticated-user OOM. */
+    private static final long MAX_PER_FILE_BYTES = 16L * 1024 * 1024;   // 16 MiB
+
+    /** Aggregate cap across an entire upload batch — guards against many-files DoS. */
+    private static final long MAX_TOTAL_BATCH_BYTES = 64L * 1024 * 1024; // 64 MiB
 
     @Autowired
     private DataCollectionConfPersistenceService dataCollectionConfPersistenceService;
@@ -150,13 +159,22 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         DatacollectionConfig parsedConfig = null;
         String parsedConfigFileName = null;
 
+        long totalBytes = 0L;
         for (final String fileName : orderedFiles) {
             final Attachment attachment = fileMap.get(fileName);
             if (attachment == null) {
                 continue;
             }
             try (InputStream stream = attachment.getObject(InputStream.class)) {
-                final byte[] bytes = stream.readAllBytes();
+                final byte[] bytes = readAllBytesCapped(stream, MAX_PER_FILE_BYTES, fileName);
+                totalBytes += bytes.length;
+                if (totalBytes > MAX_TOTAL_BATCH_BYTES) {
+                    errorList.add(buildErrorResponse(fileName,
+                            new IllegalArgumentException(
+                                    "Upload batch exceeds maximum total size of "
+                                            + MAX_TOTAL_BATCH_BYTES + " bytes")));
+                    break;
+                }
                 final String rootElement = peekRootElement(bytes);
                 if ("datacollection-config".equals(rootElement)) {
                     if (parsedConfig != null) {
@@ -292,9 +310,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .toList();
             return Response.ok(dtos).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -329,9 +345,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -345,9 +359,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -364,9 +376,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -383,9 +393,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SNMP collection profiles deleted.").build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -403,9 +411,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SNMP collection profiles updated.").build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -427,9 +433,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -446,9 +450,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -476,10 +478,12 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response filterSnmpCollectionSources(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
-        // Return 400 Bad Request if offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1) {
+        // Return 400 Bad Request if offset < 0, limit < 1, or limit > MAX_PAGE_SIZE
+        if (Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1
+                || Objects.requireNonNullElse(limit, 0) > MAX_PAGE_SIZE) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid offset/limit values"))
+                    .entity(Map.of("error", "Invalid offset/limit values (limit must be 1.." + MAX_PAGE_SIZE + ")"))
                     .build();
         }
 
@@ -504,11 +508,13 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response filterDataCollectionMibGroupByCollectionSourceId(Integer collectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
-        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(limit, 0) < 1) {
+        // Return 400 Bad Request if sourceId is null/invalid, offset < 0, limit < 1, or limit > MAX_PAGE_SIZE
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0
+                || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1
+                || Objects.requireNonNullElse(limit, 0) > MAX_PAGE_SIZE) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values (limit must be 1.." + MAX_PAGE_SIZE + ")"))
                     .build();
         }
 
@@ -533,11 +539,13 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response filterDataCollectionResourceTypeByCollectionSourceId(Integer collectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
-        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(limit, 0) < 1) {
+        // Return 400 Bad Request if sourceId is null/invalid, offset < 0, limit < 1, or limit > MAX_PAGE_SIZE
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0
+                || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1
+                || Objects.requireNonNullElse(limit, 0) > MAX_PAGE_SIZE) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values (limit must be 1.." + MAX_PAGE_SIZE + ")"))
                     .build();
         }
 
@@ -562,11 +570,13 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response filterDataCollectionSystemDefByCollectionSourceId(Integer collectionSourceId, String systemDefFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
-        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(limit, 0) < 1) {
+        // Return 400 Bad Request if sourceId is null/invalid, offset < 0, limit < 1, or limit > MAX_PAGE_SIZE
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0
+                || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1
+                || Objects.requireNonNullElse(limit, 0) > MAX_PAGE_SIZE) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values (limit must be 1.." + MAX_PAGE_SIZE + ")"))
                     .build();
         }
 
@@ -611,9 +621,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity(Map.of("error", e.getMessage()))
                     .build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(Map.of("error", "Unexpected error occurred: " + e.getMessage()))
-                    .build();
+            return internalServerError(e);
         }
     }
 
@@ -694,7 +702,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid Mib object payload: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return internalServerError(ex);
         }
     }
 
@@ -742,7 +750,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid ResourceType payload: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return internalServerError(ex);
         }
     }
 
@@ -790,8 +798,8 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid SystemDef payload: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
-       }
+            return internalServerError(ex);
+        }
     }
 
     @Override
@@ -807,7 +815,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("MibGroup was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return internalServerError(ex);
         }
     }
 
@@ -824,7 +832,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("ResourceType was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return internalServerError(ex);
         }
     }
 
@@ -841,7 +849,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("SystemDef was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return internalServerError(ex);
         }
     }
 
@@ -935,9 +943,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid request: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -980,9 +986,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid request: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -1025,9 +1029,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid request: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -1069,9 +1071,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .entity("Invalid request: " + ex.getMessage())
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred: " + ex.getMessage())
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -1093,9 +1093,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     .build();
 
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred")
-                    .build();
+            return internalServerError(ex);
         }
     }
 
@@ -1406,6 +1404,37 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         return Response.status(status)
                 .entity("<error>%s</error>".formatted(message))
                 .type(MediaType.APPLICATION_XML)
+                .build();
+    }
+
+    /**
+     * Read all bytes from {@code in} into memory, throwing if {@code cap}
+     * is exceeded. Prevents authenticated-user OOM via huge multipart parts.
+     */
+    private static byte[] readAllBytesCapped(final InputStream in, final long cap, final String fileName) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final byte[] buf = new byte[8192];
+        long total = 0;
+        int n;
+        while ((n = in.read(buf)) != -1) {
+            total += n;
+            if (total > cap) {
+                throw new IOException("Attachment '" + fileName + "' exceeds maximum size of " + cap + " bytes");
+            }
+            out.write(buf, 0, n);
+        }
+        return out.toByteArray();
+    }
+
+    /**
+     * Canonical 500 response: log the exception server-side (with stack trace
+     * for operator debugging) and return a generic message to the client to
+     * avoid leaking JDBC/Hibernate constraint names or schema details.
+     */
+    private Response internalServerError(final Exception ex) {
+        LOG.error("Unhandled error in DataCollectionConfRestService", ex);
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(Map.of("error", "Unexpected error occurred"))
                 .build();
     }
 

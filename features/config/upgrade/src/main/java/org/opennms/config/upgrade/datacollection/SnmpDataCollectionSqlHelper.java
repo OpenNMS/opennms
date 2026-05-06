@@ -181,7 +181,11 @@ public final class SnmpDataCollectionSqlHelper {
             for (final ResourceType rt : resourceTypes) {
                 ps.setInt(1, sourceId);
                 ps.setString(2, rt.getName());
-                ps.setString(3, rt.getLabel());
+                // label is NOT NULL in DDL but XSD-loose XML in the wild can omit it.
+                // Fall back to name so migration doesn't abort on otherwise-valid rows.
+                final String label = (rt.getLabel() != null && !rt.getLabel().isBlank())
+                        ? rt.getLabel() : rt.getName();
+                ps.setString(3, label);
                 setNullableString(ps, 4, rt.getResourceLabel());
                 setNullableString(ps, 5, DataCollectionGroupMapper.mapPersistenceSelectorStrategy(rt));
                 setNullableString(ps, 6, DataCollectionGroupMapper.mapPersistenceSelectorParams(rt));
