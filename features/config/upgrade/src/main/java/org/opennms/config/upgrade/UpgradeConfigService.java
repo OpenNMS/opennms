@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.opennms.config.upgrade.datacollection.SnmpDataCollectionMigration;
+import org.opennms.core.logging.Logging;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +64,12 @@ public class UpgradeConfigService implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         if (!skipConfigUpgrades) {
-            new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
-            migrateSnmpDataCollection();
+            // Pin upgrade-time logging to manager.log so messages don't leak into
+            // whichever subsystem's MDC prefix happens to be active on Main.
+            try (Logging.MDCCloseable ignored = Logging.withPrefixCloseable("manager")) {
+                new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+                migrateSnmpDataCollection();
+            }
         }
     }
 

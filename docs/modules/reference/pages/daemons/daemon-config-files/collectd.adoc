@@ -22,14 +22,14 @@ The reload event loads changed configuration parameters of existing collectors b
 | yes
 
 | datacollection-config.xml
-| Defines data collections via SNMP.
-Configuration is reprocessed when the file is modified.
+| Schema for SNMP data collection imports. +
+SNMP data collection is managed in the database via *Admin -> Manage SNMP Data Collection Config*; this file is read only at first-boot migration if present.
 | no
 | no
 
 | datacollection/*.xml
-| Defines data collections via SNMP.
-Files in this folder must be specified as an include directive in `datacollection-config.xml`.
+| Datacollection groups for SNMP. +
+SNMP data collection is managed in the database via *Admin -> Manage SNMP Data Collection Config*; these files are read only at first-boot migration if present.
 | no
 | no
 
