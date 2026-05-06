@@ -67,8 +67,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     
     private String m_configDirectory;
 
-    private List<String> dataCollectionGroups = new ArrayList<>();
-    private Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>();
+    private volatile List<String> dataCollectionGroups = List.of();
+    private volatile Map<String, ResourceType> resourceTypes = Map.of();
     private ConfigReloadContainer<DataCollectionGroups> m_extContainer;
 
     private volatile DatacollectionConfig dbConfig;
@@ -106,7 +106,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     protected DatacollectionConfig translateConfig(final DatacollectionConfig config) {
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
-        resourceTypes.clear();
+        final Map<String, ResourceType> localResourceTypes = new HashMap<>();
 
         Map<String,DatacollectionGroup> externalGroupMap = parser.loadExternalGroupMap();
         // Create a special collection to hold all resource types, because they should be defined only once.
@@ -141,7 +141,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             // Save local resource types
             for (final ResourceType rt : collection.getResourceTypes()) {
                 resourceTypeCollection.addResourceType(rt);
-                resourceTypes.put(rt.getName(), rt);
+                localResourceTypes.put(rt.getName(), rt);
             }
 
             // Remove local resource types
@@ -152,7 +152,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     DatacollectionGroup group = externalGroupMap.get(include.getDataCollectionGroup());
                     for (final ResourceType rt : group.getResourceTypes()) {
                         resourceTypeCollection.addResourceType(rt);
-                        resourceTypes.put(rt.getName(), rt);
+                        localResourceTypes.put(rt.getName(), rt);
                     }
                 }
             }
@@ -161,10 +161,12 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
         config.insertSnmpCollection(resourceTypeCollection);
-        dataCollectionGroups.clear();
-        dataCollectionGroups.addAll(externalGroupMap.keySet());
 
-        DataCollectionConfigLookupUtils.validateResourceTypes(config.getSnmpCollections(), resourceTypes.keySet());
+        // Atomic publish — readers see either the old snapshot or the new one, never half-built state.
+        this.resourceTypes = Map.copyOf(localResourceTypes);
+        this.dataCollectionGroups = List.copyOf(externalGroupMap.keySet());
+
+        DataCollectionConfigLookupUtils.validateResourceTypes(config.getSnmpCollections(), localResourceTypes.keySet());
 
         return config;
     }
@@ -377,16 +379,14 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
 
     @Override
-    public synchronized void loadFromDatabase(final DatacollectionConfig config,
+    public void loadFromDatabase(final DatacollectionConfig config,
                                  final Map<String, ResourceType> configuredResourceTypes,
                                  final List<String> groups) {
         LOG.info("Loading SNMP data collection config from database ({} collections, {} resource types, {} groups)",
                 config.getSnmpCollections().size(), configuredResourceTypes.size(), groups.size());
         this.dbConfig = config;
-        this.resourceTypes.clear();
-        this.resourceTypes.putAll(configuredResourceTypes);
-        this.dataCollectionGroups.clear();
-        this.dataCollectionGroups.addAll(groups);
+        this.resourceTypes = Map.copyOf(configuredResourceTypes);
+        this.dataCollectionGroups = List.copyOf(groups);
         this.lastDbUpdate = new Date();
     }
 

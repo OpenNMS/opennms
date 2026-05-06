@@ -51,10 +51,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -88,6 +91,8 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
     private final ExecutorService dataCollectionReloadExecutor =
             Executors.newSingleThreadExecutor(r -> new Thread(r, "load-DataCollection-Config"));
 
+    private volatile boolean hasPublishedFromDb = false;
+
     @Override
     public void afterPropertiesSet() {
         try {
@@ -96,6 +101,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
             LOG.error("Failed to load SNMP data collection config from DB at startup — "
                     + "collection will not work until config is reloaded.", e);
         }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        dataCollectionReloadExecutor.shutdownNow();
     }
 
     /**
@@ -116,7 +126,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
 
     public void reloadDataCollectionConfigFromDb() {
         final MaterializedConfig materialized = materializeFromDb();
-        if (materialized == null) {
+
+        // First-time load with no DB profiles: don't clobber XML-loaded state.
+        // The "admin cleared all profiles" case (publish empty to drop stale DB state)
+        // is gated on a previous successful DB publish having happened.
+        if (materialized.profileCount == 0 && !hasPublishedFromDb) {
             return;
         }
 
@@ -130,30 +144,20 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
 
         dataCollectionConfigDao.loadFromDatabase(
                 materialized.config, materialized.allResourceTypes, materialized.allGroups);
+        hasPublishedFromDb = true;
         LOG.info("Loaded SNMP data collection config from DB: {} profiles, {} resource types, {} sources",
                 materialized.profileCount, materialized.allResourceTypes.size(), materialized.allGroups.size());
     }
 
     /**
      * Build the in-memory {@link DatacollectionConfig} from the DB without
-     * publishing it. Returns {@code null} if there are no enabled profiles
-     * (collection is inactive in that case — the caller decides what to do).
+     * publishing it. When there are no enabled profiles, returns an empty
+     * config so the caller can replace any stale in-memory state on reload.
      *
-     * <p>Package-private so the parity test can capture the config directly
-     * without spying on {@link DataCollectionConfigDao#loadFromDatabase}.
+     * <p>Package-private for tests
      */
     MaterializedConfig materializeFromDb() {
         final List<SnmpCollectionProfile> profiles = snmpCollectionProfileDao.findAllEnabled();
-        if (profiles == null || profiles.isEmpty()) {
-            // No XML fallback in this design: an empty profile table means
-            // collection is inactive until profiles + sources are uploaded
-            // through the REST/UI path. Operators see this in manager.log.
-            LOG.info("No SNMP collection profiles in the database — SNMP data collection is "
-                    + "inactive until profiles and sources are uploaded.");
-            return null;
-        }
-
-        LOG.info("Loading SNMP data collection config from database ({} profiles)...", profiles.size());
 
         final DatacollectionConfig config = new DatacollectionConfig();
         String rrdPath = dataCollectionConfigDao.getRrdPath();
@@ -163,6 +167,14 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
         config.setRrdRepository(rrdPath);
         final Map<String, ResourceType> allResourceTypes = new HashMap<>();
         final List<String> allGroups = new ArrayList<>();
+
+        if (profiles == null || profiles.isEmpty()) {
+            LOG.info("No SNMP collection profiles in the database — publishing empty config; "
+                    + "SNMP data collection is inactive until profiles and sources are uploaded.");
+            return new MaterializedConfig(config, allResourceTypes, allGroups, 0);
+        }
+
+        LOG.info("Loading SNMP data collection config from database ({} profiles)...", profiles.size());
 
         final SnmpCollection rtCollection = new SnmpCollection();
         rtCollection.setName(RESOURCE_TYPE_COLLECTION_NAME);
@@ -193,11 +205,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
 
             // Dedupe by name as we merge content from multiple sources into this collection.
             // Mirrors DataCollectionConfigParser.addSystemDef's contains-check behavior.
-            final java.util.Set<String> addedGroupNames = new java.util.HashSet<>();
-            final java.util.Set<String> addedSystemDefNames = new java.util.HashSet<>();
+            final Set<String> addedGroupNames = new HashSet<>();
+            final Set<String> addedSystemDefNames = new HashSet<>();
 
             final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                    profile.getSourceNames(), new TypeReference<List<String>>() {});
+                    profile.getSourceNames(), new TypeReference<>() {});
             if (sourceNames != null) {
                 for (final String sourceName : sourceNames) {
                     final SnmpCollectionSource source = snmpCollectionSourceDao.findByName(sourceName);
@@ -321,21 +333,31 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
 
         final List<SnmpCollectionSystemDef> sdEntities =
                 snmpCollectionSystemDefDao.findAllEnabledBySource(source.getId());
-        group.setSystemDefs(sdEntities.stream().map(e -> {
+        group.setSystemDefs(sdEntities.stream()
+                .filter(e -> {
+                    final boolean hasSysoid = e.getSysoid() != null && !e.getSysoid().isBlank();
+                    final boolean hasSysoidMask = e.getSysoidMask() != null && !e.getSysoidMask().isBlank();
+                    if (!hasSysoid && !hasSysoidMask) {
+                        LOG.warn("Skipping SystemDef '{}' (id={}) in source '{}': no sysoid or sysoidMask in DB.",
+                                e.getName(), e.getId(), source.getName());
+                        return false;
+                    }
+                    return true;
+                })
+                .map(e -> {
             final SystemDef sd = new SystemDef();
             sd.setName(e.getName());
             if (e.getSysoid() != null && !e.getSysoid().isBlank()) {
                 sd.setSysoid(e.getSysoid());
-            } else if (e.getSysoidMask() != null && !e.getSysoidMask().isBlank()) {
-                sd.setSysoidMask(e.getSysoidMask());
             } else {
-                throw new IllegalStateException("SystemDef '" + e.getName()
-                        + "' has no sysoid or sysoidMask in DB; cannot generate valid XML.");
+                sd.setSysoidMask(e.getSysoidMask());
             }
             final List<String> includeGroups = DatacollectionJsonHelper.fromJson(
                     e.getMibGroupNames(), new TypeReference<List<String>>() {});
             final Collect collect = new Collect();
-            collect.setIncludeGroups(includeGroups);
+            if (includeGroups != null) {
+                collect.setIncludeGroups(includeGroups);
+            }
             sd.setCollect(collect);
             sd.setIpList(DatacollectionJsonHelper.fromJsonToIpList(e.getIpAddresses()));
             return sd;

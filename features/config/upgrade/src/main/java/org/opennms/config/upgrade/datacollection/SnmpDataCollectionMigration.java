@@ -55,6 +55,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -163,18 +164,18 @@ public class SnmpDataCollectionMigration {
     }
 
     /**
-     * Check if migration should run: tables exist and are empty.
+     * Check if migration should run: tables exist and no profiles have been migrated yet.
      */
     private boolean shouldRun(final Connection conn) {
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT COUNT(*) FROM snmp_collection_sources");
+                "SELECT COUNT(*) FROM snmp_collection_profiles");
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
             // Table doesn't exist yet — schema not applied
-            LOG.debug("snmp_collection_sources table not accessible — migration will be skipped: {}",
+            LOG.debug("snmp_collection_profiles table not accessible — migration will be skipped: {}",
                     e.getMessage());
             return false;
         }
@@ -463,10 +464,18 @@ public class SnmpDataCollectionMigration {
         }
 
         final Map<String, DatacollectionGroup> groups = new LinkedHashMap<>();
+        final Map<String, String> sourceFiles = new HashMap<>();
         for (final File xmlFile : xmlFiles) {
             try {
                 final DatacollectionGroup group = unmarshal(DatacollectionGroup.class, xmlFile);
                 if (group.getName() != null) {
+                    final String previousFile = sourceFiles.put(group.getName(), xmlFile.getName());
+                    if (previousFile != null) {
+                        LOG.warn("Datacollection group '{}' is declared in both '{}' and '{}'; "
+                                + "the latter overwrites the former (last-wins, matching legacy behavior). "
+                                + "Dedupe these files before migration to avoid losing definitions.",
+                                group.getName(), previousFile, xmlFile.getName());
+                    }
                     groups.put(group.getName(), group);
                     LOG.debug("Parsed datacollection group '{}' from {}", group.getName(), xmlFile.getName());
                 } else {
@@ -592,7 +601,11 @@ public class SnmpDataCollectionMigration {
                 LOG.info("Archived {} to {}", dcDirSource, dcDirTarget);
             }
         } catch (IOException e) {
-            LOG.warn("Failed to archive datacollection files: {}", e.getMessage(), e);
+            LOG.error("SNMP datacollection archival failed after successful DB migration. "
+                    + "DB is populated and runtime is using it; legacy XML files remain in {}. "
+                    + "Verify the migrated config in the UI and delete the stale files manually, "
+                    + "or re-upload via the UI if anything is wrong. Cause: {}",
+                    etcDir, e.getMessage(), e);
         }
     }
 
