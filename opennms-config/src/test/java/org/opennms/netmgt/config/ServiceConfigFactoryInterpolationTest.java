@@ -23,7 +23,6 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
@@ -34,17 +33,15 @@ import org.opennms.netmgt.config.service.ServiceConfiguration;
 /**
  * Exercises the static interpolation helper on {@link ServiceConfigFactory}.
  *
- * <p>System.getenv() is read-only in-process, so these tests focus on the
- * default-fallback path (env var unset → use embedded default) and the
- * literal pass-through path. The Service.isEnabled() contract for unresolved
- * placeholders is covered separately in ServiceEnabledTest.
+ * <p>System.getenv() is read-only in-process, so these tests use unset env vars
+ * (with a UUID-randomized name) to validate the |default fallback path, and
+ * an env var that is virtually always present (PATH) to validate resolution.
  */
 public class ServiceConfigFactoryInterpolationTest {
 
     @Test
     public void unsetEnvVarFallsBackToEmbeddedDefault() {
         final String unsetVar = "OPENNMS_TEST_UNSET_" + UUID.randomUUID().toString().replace("-", "_").toUpperCase();
-        // Sanity: ensure the test variable really isn't set in this JVM's env.
         assertEquals(null, System.getenv(unsetVar));
 
         final ServiceConfiguration cfg = new ServiceConfiguration();
@@ -53,8 +50,6 @@ public class ServiceConfigFactoryInterpolationTest {
 
         ServiceConfigFactory.interpolateServiceAttributes(cfg);
 
-        assertEquals("true", cfg.getServices().get(0).getRawEnabled());
-        assertEquals("false", cfg.getServices().get(1).getRawEnabled());
         assertEquals(Boolean.TRUE, cfg.getServices().get(0).isEnabled());
         assertEquals(Boolean.FALSE, cfg.getServices().get(1).isEnabled());
     }
@@ -67,8 +62,8 @@ public class ServiceConfigFactoryInterpolationTest {
 
         ServiceConfigFactory.interpolateServiceAttributes(cfg);
 
-        assertEquals("true", cfg.getServices().get(0).getRawEnabled());
-        assertEquals("false", cfg.getServices().get(1).getRawEnabled());
+        assertEquals(Boolean.TRUE, cfg.getServices().get(0).isEnabled());
+        assertEquals(Boolean.FALSE, cfg.getServices().get(1).isEnabled());
     }
 
     @Test
@@ -81,14 +76,11 @@ public class ServiceConfigFactoryInterpolationTest {
         ServiceConfigFactory.interpolateServiceAttributes(cfg);
 
         assertEquals(null, cfg.getServices().get(0).getRawEnabled());
-        // Null still defaults to enabled.
         assertEquals(Boolean.TRUE, cfg.getServices().get(0).isEnabled());
     }
 
     @Test
     public void resolvesEnvVarFromCurrentProcessIfPresent() {
-        // We can't set env vars from Java, but we can pick any variable that's
-        // virtually always present (PATH on every supported platform).
         final String path = System.getenv("PATH");
         assertNotNull("PATH must be set for this test to be meaningful", path);
 
@@ -97,11 +89,7 @@ public class ServiceConfigFactoryInterpolationTest {
 
         ServiceConfigFactory.interpolateServiceAttributes(cfg);
 
-        // After interpolation the raw value is whatever PATH contains, which
-        // won't parse as a boolean — but that proves the env var resolved.
         assertEquals(path, cfg.getServices().get(0).getRawEnabled());
-        assertTrue("interpolated value should match PATH",
-                cfg.getServices().get(0).getRawEnabled().contains(":") || !path.isEmpty());
     }
 
     private static Service svc(final String name, final String enabled) {

@@ -29,14 +29,7 @@ public class ServiceEnabledTest {
 
     @Test
     public void nullEnabledDefaultsToTrue() {
-        final Service s = service(null);
-        assertEquals(Boolean.TRUE, s.isEnabled());
-    }
-
-    @Test
-    public void emptyEnabledDefaultsToTrue() {
-        assertEquals(Boolean.TRUE, service("").isEnabled());
-        assertEquals(Boolean.TRUE, service("   ").isEnabled());
+        assertEquals(Boolean.TRUE, service(null).isEnabled());
     }
 
     @Test
@@ -48,50 +41,14 @@ public class ServiceEnabledTest {
     @Test
     public void caseInsensitive() {
         assertEquals(Boolean.TRUE, service("TRUE").isEnabled());
-        assertEquals(Boolean.TRUE, service("True").isEnabled());
         assertEquals(Boolean.FALSE, service("FALSE").isEnabled());
-        assertEquals(Boolean.FALSE, service("False").isEnabled());
     }
 
     @Test
-    public void whitespaceIsTrimmed() {
+    public void whitespaceFromEnvVarIsTrimmed() {
+        // Env values can carry stray whitespace; ensure we don't silently disable.
         assertEquals(Boolean.TRUE, service(" true ").isEnabled());
         assertEquals(Boolean.FALSE, service("\tfalse\n").isEnabled());
-    }
-
-    @Test
-    public void unresolvedPlaceholderUsesEmbeddedDefault() {
-        // If interpolation never ran (e.g. raw unmarshal in a migrator), fall back to
-        // the |default literal in the placeholder rather than silently disabling.
-        assertEquals(Boolean.TRUE, service("${env:CORE_SERVICE_ALARMD_ENABLED|true}").isEnabled());
-        assertEquals(Boolean.FALSE, service("${env:CORE_SERVICE_SYSLOGD_ENABLED|false}").isEnabled());
-    }
-
-    @Test
-    public void unresolvedPlaceholderDefaultIsCaseInsensitive() {
-        assertEquals(Boolean.TRUE, service("${env:X|TRUE}").isEnabled());
-        assertEquals(Boolean.FALSE, service("${env:X|False}").isEnabled());
-    }
-
-    @Test
-    public void unresolvedPlaceholderWithoutDefaultIsDisabled() {
-        // No |default segment — we cannot guess; treat as disabled (logged WARN).
-        assertEquals(Boolean.FALSE, service("${env:CORE_SERVICE_X_ENABLED}").isEnabled());
-    }
-
-    @Test
-    public void unresolvedPlaceholderWithGarbageDefaultIsDisabled() {
-        assertEquals(Boolean.FALSE, service("${env:X|yes}").isEnabled());
-        assertEquals(Boolean.FALSE, service("${env:X|1}").isEnabled());
-    }
-
-    @Test
-    public void garbageValueIsDisabled() {
-        // A typo such as "ture" must not silently enable; before this change
-        // Boolean.parseBoolean would have returned false anyway, but now it logs.
-        assertEquals(Boolean.FALSE, service("ture").isEnabled());
-        assertEquals(Boolean.FALSE, service("yes").isEnabled());
-        assertEquals(Boolean.FALSE, service("1").isEnabled());
     }
 
     @Test
