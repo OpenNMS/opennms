@@ -47,14 +47,6 @@ RUN chmod -R g-w /opt/minion && \
         -type d -print0 | xargs -0 chmod 2775
 
 ##
-# Download plugins
-##
-FROM ${BASE_IMAGE} AS minion-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
-
-##
 # Prod image with minimal image size
 ##
 FROM ${BASE_IMAGE}
@@ -95,7 +87,6 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
-# COPY --chown=10001:0 --from=minion-plugins /opt/usr-plugins /opt/minion/deploy
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/

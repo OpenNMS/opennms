@@ -44,15 +44,6 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} AS core-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
-
-
 FROM ${BASE_IMAGE} AS core-base
 
 ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
@@ -77,8 +68,6 @@ RUN groupadd \
 # If you copy from /opt/opennms to /opt/opennms the permissions are not preserved
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /opt
-
-# COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
