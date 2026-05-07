@@ -21,10 +21,8 @@
  */
 package org.opennms.netmgt.config;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
@@ -84,8 +82,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpPeerFactory.class);
 
     private static final int VERSION_UNSPECIFIED = -1;
-    private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
-    protected static final String ENCRYPTION_ENABLED = "org.opennms.snmp.encryption.enabled";
 
     protected static volatile SnmpConfigDao snmpConfigDao;
 
@@ -109,10 +105,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private FileReloadContainer<SnmpConfig> m_container;
 
     private FileReloadCallback<SnmpConfig> m_callback;
-
-    private TextEncryptor textEncryptor;
-
-    private final Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
 
     private static Scope secureCredentialsVaultScope;
 
@@ -143,18 +135,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public static synchronized void init() throws IOException {
         if (s_singleton == null) {
             s_singleton = new SnmpPeerFactory();
-        }
-
-        if (s_singleton.encryptionEnabled) {
-            s_singleton.encryptSnmpConfig();
-        }
-    }
-
-    private void encryptSnmpConfig() {
-        initializeTextEncryptor();
-
-        if (textEncryptor != null) {
-            s_singleton.saveCurrent();
         }
     }
 
@@ -242,9 +222,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         getWriteLock().lock();
 
         try {
-            encryptSnmpConfig(snmpConfig);
             getSnmpConfigDao().updateConfig(snmpConfig, true);
-
             // repopulate m_config from the DAO to make sure it is in sync with what is saved
             this.m_config = getSnmpConfigDao().getConfig();
         } finally {
@@ -499,7 +477,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     @Override
     public SnmpConfig getSnmpConfig() {
         m_config = getSnmpConfigDao().getConfig();
-        decryptSnmpConfig(m_config);
         return m_config;
     }
 
@@ -788,7 +765,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         String marshalledConfig = null;
         StringWriter writer = null;
         SnmpConfig snmpConfig = getSnmpConfig();
-        encryptSnmpConfig(snmpConfig);
 
         try {
             writer = new StringWriter();
@@ -814,111 +790,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    private void encryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!encryptionEnabled) {
-            return;
-        }
-
-        initializeTextEncryptor();
-
-        if (textEncryptor == null) {
-            return;
-        }
-
-        encryptConfig(snmpConfig);
-        snmpConfig.getDefinitions().forEach(this::encryptConfig);
-
-        if (snmpConfig.getSnmpProfiles() != null) {
-            snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::encryptConfig);
-        }
-    }
-
-    private void decryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!encryptionEnabled) {
-            return;
-        }
-
-        initializeTextEncryptor();
-
-        if (textEncryptor == null) {
-            return;
-        }
-
-        decryptConfig(snmpConfig);
-
-        snmpConfig.getDefinitions().forEach(this::decryptConfig);
-
-        if (snmpConfig.getSnmpProfiles() != null) {
-            snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::decryptConfig);
-        }
-    }
-
-    private void decryptConfig(Configuration config) {
-        if (!config.getEncrypted()) {
-            return;
-        }
-
-        try {
-            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-                String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
-                config.setAuthPassphrase(authPassPhrase);
-            }
-            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-                String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
-                config.setPrivacyPassphrase(privPassPhrase);
-            }
-            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-                String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
-                config.setReadCommunity(readCommunity);
-            }
-            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-                String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
-                config.setWriteCommunity(writeCommunity);
-            }
-            config.setEncrypted(false);
-        } catch (Exception e) {
-            LOG.error("Exception while trying to decrypt snmp config", e);
-        }
-    }
-
-    private void encryptConfig(Configuration config) {
-        if (config.getEncrypted()) {
-            return;
-        }
-
-        try {
-            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-                String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
-                config.setAuthPassphrase(authPassPhrase);
-            }
-            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-                String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
-                config.setPrivacyPassphrase(privPassPhrase);
-            }
-            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-                String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
-                config.setReadCommunity(readCommunity);
-            }
-            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-                String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
-                config.setWriteCommunity(writeCommunity);
-            }
-            config.setEncrypted(true);
-        } catch (Exception e) {
-            LOG.error("Exception while trying to encrypt snmp config", e);
-        }
-    }
-
-    private void initializeTextEncryptor() {
-        if (textEncryptor == null) {
-            try {
-                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
-            } catch (Exception e) {
-                LOG.warn("Exception while trying to get textEncryptor", e);
-            }
-        }
-    }
-
     private void setConfigurationParams(SnmpConfig snmpConfig, Configuration config) {
         snmpConfig.setPort(config.getPort());
         snmpConfig.setRetry(config.getRetry());
@@ -941,16 +812,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         snmpConfig.setPrivacyProtocol(config.getPrivacyProtocol());
         snmpConfig.setEnterpriseId(config.getEnterpriseId());
         snmpConfig.setTTL(config.getTTL());
-    }
-
-    @VisibleForTesting
-    Boolean getEncryptionEnabled() {
-        return encryptionEnabled;
-    }
-
-    @VisibleForTesting
-    void setTextEncryptor(TextEncryptor textEncryptor) {
-        this.textEncryptor = textEncryptor;
     }
 
     private static Definition createDefinition(Definition matchingDefinition) {

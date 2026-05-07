@@ -848,13 +848,7 @@
     <servlet-name>snmpManageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
   </servlet>
-  <servlet>
-    <!-- servlet for configuring SNMP parameters -->
-    <servlet-name>snmpConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
-  </servlet>
-
-  <!--servlet for updating the notify flag in the ifservices table -->
+  <!-- servlet for updating the notify flag in the ifservices table -->
   <servlet>
         <servlet-name>updateServiceNotify</servlet-name>
         <servlet-class>org.opennms.web.admin.notification.ServiceNoticeUpdateServlet</servlet-class>
@@ -1095,10 +1089,6 @@
   <servlet-mapping>
     <servlet-name>snmpManageNodes</servlet-name>
     <url-pattern>/admin/changeCollectStatus</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpConfig</servlet-name>
-    <url-pattern>/admin/snmpConfig</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

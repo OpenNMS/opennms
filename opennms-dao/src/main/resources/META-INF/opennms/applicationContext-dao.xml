@@ -22,6 +22,8 @@
 
   -->
   <import resource="applicationContext-shared.xml"/>
+  <import resource="applicationContext-jceks-scv.xml"/>
+  <import resource="applicationContext-encrypt-util.xml"/>
 
   <!-- NOTE: FROM HERE ON, only contains OpenNMS Runtime Environment-specific beans -->
 

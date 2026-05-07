@@ -53,12 +53,6 @@
 
 	<!--  collectd config factory is now init'd in the dao context -->
 
-    <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
-	</bean>
-
-	<bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="init-wmiPeerFactory" factory-method="getInstance"/>
-
 	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
 	</bean>
 
