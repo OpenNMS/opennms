@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service to be launched by the manager.
@@ -41,6 +43,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @ValidateUsing("service-configuration.xsd")
 public class Service implements Serializable {
     private static final long serialVersionUID = 2L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(Service.class);
 
     @XmlAttribute(name = "enabled")
     private String m_enabled;
@@ -79,12 +83,42 @@ public class Service implements Serializable {
 
     @XmlTransient
     public Boolean isEnabled() {
-        // Default to true if not specified
         if (m_enabled == null) {
             return Boolean.TRUE;
         }
-        // Parse the string value - interpolation should happen before this is called
-        return Boolean.parseBoolean(m_enabled);
+        final String trimmed = m_enabled.trim();
+        if (trimmed.isEmpty()) {
+            return Boolean.TRUE;
+        }
+        if ("true".equalsIgnoreCase(trimmed)) {
+            return Boolean.TRUE;
+        }
+        if ("false".equalsIgnoreCase(trimmed)) {
+            return Boolean.FALSE;
+        }
+        // Unresolved ${...|default} placeholder: extract the default literal so the
+        // service does not silently flip to disabled if interpolation never ran
+        // (e.g. when JaxbUtils.unmarshal is called outside ServiceConfigFactory).
+        if (trimmed.startsWith("${") && trimmed.endsWith("}")) {
+            final int pipe = trimmed.lastIndexOf('|');
+            if (pipe > 0) {
+                final String fallback = trimmed.substring(pipe + 1, trimmed.length() - 1).trim();
+                LOG.warn("Service '{}' enabled attribute '{}' was not interpolated; using embedded default '{}'",
+                        m_name, m_enabled, fallback);
+                if ("true".equalsIgnoreCase(fallback)) {
+                    return Boolean.TRUE;
+                }
+                if ("false".equalsIgnoreCase(fallback)) {
+                    return Boolean.FALSE;
+                }
+            }
+            LOG.warn("Service '{}' enabled attribute '{}' is an unresolved placeholder with no usable default; treating as disabled",
+                    m_name, m_enabled);
+            return Boolean.FALSE;
+        }
+        LOG.warn("Service '{}' enabled attribute '{}' is not a valid boolean; treating as disabled",
+                m_name, m_enabled);
+        return Boolean.FALSE;
     }
 
     public void setEnabled(final Boolean enabled) {

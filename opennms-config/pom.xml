@@ -31,7 +31,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Private-Package>org.opennms.features.scv.jceks</Private-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -153,13 +152,9 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.scv</groupId>
-      <artifactId>org.opennms.features.scv.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
