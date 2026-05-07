@@ -16,9 +16,9 @@ pip3 install --upgrade cloudsmith-cli
 cd "$DEPLOY_FOLDER" || exit 
 if [ "$CORTEX_VERSION" == "latest" ]
 then
- artifact_urls=$(curl -sS https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+ artifact_urls=$(curl -sS https://api.github.com/repos/OpenNMS-Plugins/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
 else
- artifact_urls=$(curl -sS https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
+ artifact_urls=$(curl -sS https://api.github.com/repos/OpenNMS-Plugins/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
 fi
 if [ -n "$artifact_urls" ]; then
  for url in $artifact_urls; do
