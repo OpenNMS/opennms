@@ -78,7 +78,7 @@ RUN groupadd \
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /opt
 
-COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
+# COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
