@@ -68,6 +68,18 @@
   <bean id="upgradeConfigService" class = "org.opennms.config.upgrade.UpgradeConfigService"/>
   <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
 
+  <!-- SNMP data collection config loader — must run after upgradeConfigService populates the DB -->
+  <bean id="snmpDataCollectionConfigLoader" class="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader"
+        depends-on="upgradeConfigService">
+      <property name="dataCollectionConfigDao"        ref="dataCollectionConfigDao" />
+      <property name="snmpCollectionProfileDao"       ref="snmpCollectionProfileDao" />
+      <property name="snmpCollectionSourceDao"        ref="snmpCollectionSourceDao" />
+      <property name="snmpCollectionResourceTypeDao"  ref="snmpCollectionResourceTypeDao" />
+      <property name="snmpCollectionMibGroupDao"      ref="snmpCollectionMibGroupDao" />
+      <property name="snmpCollectionSystemDefDao"     ref="snmpCollectionSystemDefDao" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader" ref="snmpDataCollectionConfigLoader" />
+
   <!-- Configuration File DAOs -->
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />

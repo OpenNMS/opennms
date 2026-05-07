@@ -62,6 +62,7 @@
     "@featherds/table": "0.12.43",
     "@featherds/tabs": "0.12.43",
     "@featherds/textarea": "0.12.43",
+    "@featherds/toggle-button": "^0.12.43",
     "@featherds/tooltip": "0.12.43",
     "@featherds/utils": "0.12.43",
     "@primevue/themes": "^4.5.4",

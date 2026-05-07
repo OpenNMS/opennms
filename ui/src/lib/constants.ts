@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { ISelectItemType } from '@featherds/select'
+
 export const DEFAULT_MONITORING_LOCATION = 'Default'
 
 export const SCV_GET_ALL_ALIAS = '_all'
@@ -42,6 +44,71 @@ export const DEFAULT_SNMP_V3_AUTH_PASSPHRASE = '0p3nNMSv3'
 export const DEFAULT_SNMP_V3_AUTH_PROTOCOL = 'MD5'
 export const DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE = '0p3nNMSv3'
 export const DEFAULT_SNMP_V3_PRIVACY_PROTOCOL = 'DES'
+
+// SNMP Data Collection Constants
+const OID_TYPE_SINGLE = 'single'
+const OID_TYPE_MASK = 'mask'
+
+export const OID_TYPE_OPTIONS = [
+  { name: 'Single', value: OID_TYPE_SINGLE },
+  { name: 'Mask', value: OID_TYPE_MASK }
+]
+
+export const DEFAULT_OID_TYPE = OID_TYPE_SINGLE
+
+export const STATUS_OPTIONS = [
+  { name: 'Enabled', value: true },
+  { name: 'Disabled', value: false }
+]
+
+export const DEFAULT_STATUS = true
+
+export const KEY_PATTERN = /^[\w-]+$/
+
+export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
+
+export const OID_MASK_PATTERN = /^\.?\d+(\.\d+)*\.?$/
+
+const IF_TYPE_ALL = 'all'
+const IF_TYPE_IGNORE = 'ignore'
+
+export const DEFAULT_IF_TYPE_FILTER: ISelectItemType = { _text: 'Ignore', _value: IF_TYPE_IGNORE }
+
+export const IF_TYPE_FILTERS_OPTIONS: ISelectItemType[] = [
+  { _text: 'Ignore', _value: IF_TYPE_IGNORE },
+  { _text: 'All', _value: IF_TYPE_ALL }
+]
+
+export const VALID_MIB_OBJ_TYPES = [
+  'counter',
+  'counter32',
+  'counter64',
+  'gauge',
+  'gauge32',
+  'gauge64',
+  'integer',
+  'integer32',
+  'timeticks',
+  'string',
+  'octetstring',
+  'opaque'
+]
+
+export const DEFAULT_MIB_OBJ_TYPE: ISelectItemType = { _text: 'gauge', _value: 'gauge' }
+
+export const MIB_OBJECT_DATA_TYPE_OPTIONS: ISelectItemType[] = [
+  ...VALID_MIB_OBJ_TYPES.map((type) => ({ _text: type, _value: type }))
+]
+
+export const PERSISTENCE_SELECTOR_STRATEGY_OPTIONS: string[] = [
+  'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy',
+  'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy'
+]
+
+export const STORAGE_STRATEGY_OPTIONS: string[] = [
+  'org.opennms.netmgt.collection.support.IndexStorageStrategy',
+  'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy'
+]
 
 // Trapd Defaults
 export const DEFAULT_TRAPD_PORT = 10162

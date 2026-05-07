@@ -11,6 +11,14 @@ The WMI monitor, detector and collector had been removed, as the WS-Man integrat
 The contents of the file `eventconf.xml` will be stored in the database during the upgrade process and all files in `etc/events` will be moved to `etc_archive`.
 These events will not be imported into the database. Please refer to the OpenNMS documentation for information on how to migrate custom events to the database.
 
+=== SNMP datacollection config moved to DB
+The contents of `etc/datacollection-config.xml` and `etc/datacollection/*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
+After upgrade, manage SNMP data collection through the *Admin -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
+Direct edits to the archived XML files no longer take effect.
+
+To verify the migration succeeded, open *Admin -> Manage SNMP Data Collection Config* and confirm your sources and profiles are listed.
+If the post-commit archival step fails (for example, due to filesystem permissions), an `ERROR` is logged in `manager.log` naming the directory that was left in place; the database is already populated and runtime is using it, so re-upload through the admin page or delete the stale files manually as needed.
+
 === JoeSNMP removed
 The SNMP implementation JoeSNMP was removed in Horizon 36.
 

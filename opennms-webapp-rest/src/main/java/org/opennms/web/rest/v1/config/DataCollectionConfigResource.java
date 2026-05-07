@@ -21,17 +21,25 @@
  */
 package org.opennms.web.rest.v1.config;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.annotation.Resource;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,7 +60,6 @@ public class DataCollectionConfigResource implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_dataCollectionConfigDao, "DataCollectionConfigDao must be set!");
-        Assert.isTrue(m_dataCollectionConfigDao instanceof AbstractJaxbConfigDao<?,?>);
     }
 
     @GET
@@ -60,13 +67,84 @@ public class DataCollectionConfigResource implements InitializingBean {
     public Response getDataCollectionConfiguration() throws ConfigurationResourceException {
         LOG.debug("getDatacollectionConfigurationForLocation()");
 
-        @SuppressWarnings("unchecked")
-        final AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig> dao = (AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig>)m_dataCollectionConfigDao;
-        final DatacollectionConfig dcc = dao.getContainer().getObject();
+        final DatacollectionConfig dcc = m_dataCollectionConfigDao.getRootDataCollection();
         if (dcc == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
 
         return Response.ok(dcc.toDataCollectionConfig()).build();
+    }
+
+    /**
+     * Diagnostic endpoint: returns the MIB objects that would be collected
+     * for a given sysoid, IP address, collection name, and interface type.
+     *
+     * Example: /rest/config/datacollection/lookup?sysoid=.1.3.6.1.4.1.8072.3.2.10&address=127.0.0.1
+     */
+    @GET
+    @Path("/lookup")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response lookupMibObjects(
+            @QueryParam("sysoid") final String sysoid,
+            @QueryParam("address") @DefaultValue("127.0.0.1") final String address,
+            @QueryParam("collection") @DefaultValue("default") final String collection,
+            @QueryParam("ifType") @DefaultValue("-1") final int ifType) {
+
+        if (sysoid == null || sysoid.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity("sysoid parameter is required").build();
+        }
+
+        final List<MibObject> mibObjects = m_dataCollectionConfigDao.getMibObjectList(collection, sysoid, address, ifType);
+
+        final Map<String, Object> result = new LinkedHashMap<>();
+        result.put("sysoid", sysoid);
+        result.put("address", address);
+        result.put("collection", collection);
+        result.put("ifType", ifType);
+        result.put("matchedObjectCount", mibObjects.size());
+        result.put("objects", mibObjects.stream().map(obj -> {
+            final Map<String, String> m = new LinkedHashMap<>();
+            m.put("group", obj.getGroupName());
+            m.put("oid", obj.getOid());
+            m.put("alias", obj.getAlias());
+            m.put("type", obj.getType());
+            m.put("instance", obj.getInstance());
+            return m;
+        }).collect(Collectors.toList()));
+
+        return Response.ok(result).build();
+    }
+
+    /**
+     * Diagnostic endpoint: returns a summary of the in-memory config.
+     */
+    @GET
+    @Path("/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getConfigStatus() {
+        final Map<String, Object> status = new LinkedHashMap<>();
+        status.put("availableCollectionGroups", m_dataCollectionConfigDao.getAvailableDataCollectionGroups());
+        status.put("availableSystemDefs", m_dataCollectionConfigDao.getAvailableSystemDefs().size());
+        status.put("availableMibGroups", m_dataCollectionConfigDao.getAvailableMibGroups().size());
+        status.put("configuredResourceTypes", m_dataCollectionConfigDao.getConfiguredResourceTypes().size());
+        status.put("lastUpdate", m_dataCollectionConfigDao.getLastUpdate());
+
+        final DatacollectionConfig config = m_dataCollectionConfigDao.getRootDataCollection();
+        if (config != null) {
+            status.put("snmpCollections", config.getSnmpCollections().stream()
+                    .filter(c -> !"__resource_type_collection".equals(c.getName()))
+                    .map(c -> {
+                        final Map<String, Object> coll = new LinkedHashMap<>();
+                        coll.put("name", c.getName());
+                        coll.put("storageFlag", c.getSnmpStorageFlag());
+                        coll.put("rrdStep", c.getRrd() != null ? c.getRrd().getStep() : null);
+                        coll.put("groups", c.getGroups() != null ? c.getGroups().getGroups().size() : 0);
+                        coll.put("systemDefs", c.getSystems() != null ? c.getSystems().getSystemDefs().size() : 0);
+                        coll.put("resourceTypes", c.getResourceTypes().size());
+                        return coll;
+                    }).collect(Collectors.toList()));
+        }
+
+        return Response.ok(status).build();
     }
 }
