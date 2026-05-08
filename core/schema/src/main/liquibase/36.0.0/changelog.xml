@@ -298,4 +298,50 @@
         </sql>
     </changeSet>
 
+    <changeSet author="dino2gnt" id="36.0.0-dcb-configchanged-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events
+                    WHERE uei = 'uei.opennms.org/deviceconfig/configChanged'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            INSERT INTO eventconf_events
+            (id,
+             source_id,
+             uei,
+             event_label,
+             description,
+             enabled,
+             xml_content,
+             created_time,
+             last_modified,
+             modified_by,
+             severity)
+VALUES      (Nextval('eventconf_events_id_seq'),
+             15,
+             'uei.opennms.org/deviceconfig/configChanged',
+             'OpenNMS-defined node event: configChanged',
+             '&lt;p>Config backup changed on %service%
+            during the last poll on interface %interface%.&lt;/p>',
+             TRUE,
+             '&lt;event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+&lt;uei>uei.opennms.org/deviceconfig/configChanged&lt;/uei>
+&lt;event-label>OpenNMS-defined node event: configChanged&lt;/event-label>
+&lt;descr>&amp;lt;p>Config backup changed on %service% during the last poll on interface %interface%.&amp;lt;/p>&lt;/descr>
+&lt;logmsg dest="logndisplay">
+    %service% config backup changed on interface %interface%.
+&lt;/logmsg>
+&lt;severity>Warning&lt;/severity>
+&lt;alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+&lt;/event>',
+             Current_timestamp,
+             Current_timestamp,
+             'system-migration',
+             'Warning');
+        </sql>
+    </changeSet>
 </databaseChangeLog>
