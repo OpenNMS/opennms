@@ -30,7 +30,6 @@ package org.opennms.netmgt.measurements.filters.impl;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.integrations.R.RScriptException;
 
