@@ -10,11 +10,11 @@
 == New features and important changes
 
 === SNMP datacollection config moved to DB with new UI
-The contents of `etc/datacollection-config.xml` and `etc/datacollection/*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
+The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
 Direct edits to the archived XML files no longer take effect.
 
-=== File `snmp-config.xml` moved to DB with new UI
+=== Snmp Config file `snmp-config.xml` moved to DB with new UI
 The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
 and the original file is moved to `etc_archive/`.
 
@@ -30,7 +30,7 @@ For protecting SNMP credentials, use Secure Credentials Vault (SCV) metadata exp
 
 See xref:development:rest/snmp_configuration.adoc[SNMP Configuration REST API] for details.
 
-=== File `trapd-configuration.xml` moved to DB with new UI
+=== Trapd Config file `trapd-configuration.xml` moved to DB with new UI
 The contents of `trapd-configuration.xml` are migrated into the database during the upgrade process,
 and the original file is moved to `etc_archive/`.
 
