@@ -320,6 +320,7 @@ org.jolokia.authMode=jaas
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle dependency="true">wrap:mvn:io.netty/netty-common/${netty4Version}$overwrite=merge&amp;Import-Package=com.oracle.svm.core.annotate;resolution:=optional</bundle>

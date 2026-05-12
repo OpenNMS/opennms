@@ -343,6 +343,8 @@
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml/aalto-xml/${aaltoXmlVersion}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-xml/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
