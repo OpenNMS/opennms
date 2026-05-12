@@ -14,9 +14,12 @@
           </FeatherBackButton>
         </div>
         <div class="title">
-          <h1>{{ capitalize(store.selectedCollectionSource.name) }} Source Details</h1>
+          <h1>{{ isCreateMode ? 'Create New Source' : `Source Details for ${store.selectedCollectionSource.name}` }}</h1>
         </div>
-        <div class="tag">
+        <div
+          v-if="!isCreateMode"
+          class="tag"
+        >
           <FeatherChip
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
@@ -33,7 +36,10 @@
           </FeatherChip>
         </div>
       </div>
-      <div class="action-container">
+      <div
+        v-if="!isCreateMode"
+        class="action-container"
+      >
         <FeatherButton
           v-if="!store.selectedCollectionSource.enabled"
           secondary
@@ -68,7 +74,18 @@
         <div class="config-row">
           <div class="config-field">
             <span class="field-label">Source:</span>
-            <span class="field-value">{{ store.selectedCollectionSource.name }}</span>
+            <FeatherInput
+              v-if="isCreateMode"
+              label="Source Name"
+              v-model="localSourceName"
+              :error="sourceNameError"
+              data-test="source-name-input"
+              class="source-name-input"
+            />
+            <span
+              v-else
+              class="field-value"
+            >{{ store.selectedCollectionSource.name }}</span>
           </div>
           <div class="config-field">
             <span class="field-label">Uploaded By:</span>
@@ -87,8 +104,44 @@
               format(store.selectedCollectionSource.lastModified, 'MM/dd/yyyy') }}</span>
           </div>
         </div>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="field-label">Profiles:</span>
+            <div class="profiles-field-content">
+              <span class="field-value profiles-chips">
+                <PChip
+                  v-for="profile in drawerProfiles"
+                  :key="profile.id"
+                  :label="profile.name"
+                />
+                <span
+                  v-if="drawerProfiles.length === 0"
+                  class="no-profiles-text"
+                >None</span>
+              </span>
+              <span
+                v-if="isCreateMode && profilesError"
+                class="profiles-error"
+              >{{ profilesError }}</span>
+            </div>
+          </div>
+          <div class="config-field">
+            <PButton
+              outlined
+              label="Edit Profiles..."
+              icon="pi pi-pen-to-square"
+              iconPos="right"
+              class="edit-profiles-btn"
+              data-test="edit-profiles-button"
+              @click="isProfilesDrawerVisible = true"
+            />
+          </div>
+        </div>
       </div>
-      <div class="tab-container">
+      <div
+        v-if="!isCreateMode"
+        class="tab-container"
+      >
         <FeatherTabContainer v-model="store.activeTab">
           <template v-slot:tabs>
             <FeatherTab>System Definitions</FeatherTab>
@@ -105,6 +158,18 @@
             <ResourceTypesTable />
           </FeatherTabPanel>
         </FeatherTabContainer>
+      </div>
+      <div
+        v-if="isCreateMode"
+        class="create-action-row"
+      >
+        <FeatherButton
+          primary
+          data-test="create-source-button"
+          @click="onSaveSource"
+        >
+          Create Source
+        </FeatherButton>
       </div>
     </TableCard>
   </div>
@@ -135,25 +200,40 @@
     @close="closeChangeStatusDialog"
     @confirm="changeCollectionSourceStatus"
   />
+  <SnmpDataCollectionSourceProfilesDrawer
+    :visible="isProfilesDrawerVisible"
+    :source-name="store.selectedCollectionSource?.name ?? ''"
+    :profiles="drawerProfiles"
+    @close="isProfilesDrawerVisible = false"
+    @saved="onProfilesSaved"
+  />
 </template>
 
 <script setup lang="ts">
 import TableCard from '@/components/Common/TableCard.vue'
 import DeleteConfirmationDialog from '@/components/SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import SnmpDataCollectionChangeStatusDialog from '@/components/SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
-import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
-import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
-import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
+import MibGroupsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/MibGroupsTable.vue'
+import ResourceTypesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/ResourceTypesTable.vue'
+import SystemDefinitionsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/SystemDefinitionsTable.vue'
+import SnmpDataCollectionSourceProfilesDrawer from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/Drawer/SnmpDataCollectionSourceProfilesDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
+import { deleteSnmpCollectionSources, enableDisableSnmpDataCollectionSources, updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import { CreateEditMode } from '@/types'
+import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
+import { FeatherInput } from '@featherds/input'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import { format } from 'date-fns-tz'
-import { capitalize } from 'lodash'
+import ChipComponent from 'primevue/chip'
+import ButtonComponent from 'primevue/button'
+
+const PChip = ChipComponent
+const PButton = ButtonComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -163,6 +243,93 @@ const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
 const selectedCollectionSource = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
+const isProfilesDrawerVisible = ref(false)
+
+const mode = ref<CreateEditMode>(CreateEditMode.Edit)
+const isCreateMode = computed(() => mode.value === CreateEditMode.Create)
+const localSourceName = ref('')
+const sourceNameError = ref('')
+const profilesError = ref('')
+const createModeProfiles = ref<SnmpCollectionProfile[]>([])
+
+const drawerProfiles = computed(() =>
+  isCreateMode.value
+    ? createModeProfiles.value
+    : sourcesStore.profilesForSource(store.selectedCollectionSource?.name ?? '')
+)
+
+const onSaveSource = async () => {
+  sourceNameError.value = ''
+  profilesError.value = ''
+
+  let isValid = true
+
+  if (!localSourceName.value.trim()) {
+    sourceNameError.value = 'Source Name is required.'
+    isValid = false
+  } else if (sourcesStore.sources.some((s: SnmpCollectionSource) => s.name === localSourceName.value.trim())) {
+    sourceNameError.value = 'A Source with this name already exists.'
+    isValid = false
+  }
+
+  if (createModeProfiles.value.length === 0) {
+    profilesError.value = 'At least 1 Profile is required.'
+    isValid = false
+  }
+
+  if (isValid) {
+    const profileNames = createModeProfiles.value.map((p: SnmpCollectionProfile) => p.name)
+    const newId = await sourcesStore.createSnmpDataCollectionSource(localSourceName.value.trim(), profileNames)
+
+    if (newId !== null) {
+      snackbar.showSnackBar({ msg: `Source '${localSourceName.value.trim()}' created successfully.` })
+      mode.value = CreateEditMode.Edit
+      await Promise.all([
+        store.fetchCollectionSourceById(String(newId)),
+        sourcesStore.fetchAllSourcesNames(),
+        sourcesStore.fetchSnmpCollectionProfiles()
+      ])
+      router.push({ name: 'SNMP Data Collection Source Detail', params: { id: newId } })
+    } else {
+      snackbar.showSnackBar({ msg: `Failed to create Source '${localSourceName.value.trim()}'.`, error: true })
+    }
+  }
+}
+
+const onProfilesSaved = async (newProfiles: SnmpCollectionProfile[]) => {
+  isProfilesDrawerVisible.value = false
+
+  if (isCreateMode.value) {
+    createModeProfiles.value = newProfiles
+    return
+  }
+
+  const sourceName = store.selectedCollectionSource?.name ?? ''
+  const originalProfiles = sourcesStore.profilesForSource(sourceName)
+  const originalIds = new Set(originalProfiles.map((p: SnmpCollectionProfile) => p.id))
+  const newIds = new Set(newProfiles.map((p: SnmpCollectionProfile) => p.id))
+
+  const toAdd = newProfiles.filter((p: SnmpCollectionProfile) => !originalIds.has(p.id))
+  const toRemove = originalProfiles.filter((p: SnmpCollectionProfile) => !newIds.has(p.id))
+
+  const results: boolean[] = []
+
+  for (const profile of toAdd) {
+    results.push(await updateDataCollectionProfile({ ...profile, sourceNames: [...profile.sourceNames, sourceName] }))
+  }
+  for (const profile of toRemove) {
+    results.push(await updateDataCollectionProfile({ ...profile, sourceNames: profile.sourceNames.filter((n: string) => n !== sourceName) }))
+  }
+
+  await sourcesStore.fetchSnmpCollectionProfiles()
+
+  if (results.length > 0 && !results.every(r => r)) {
+    snackbar.showSnackBar({
+      msg: 'Failed to update one or more profiles. The list has been refreshed to reflect the current server state.',
+      error: true
+    })
+  }
+}
 
 const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string, enabled: boolean } | null) => {
   selectedCollectionSource.value = collectionSource
@@ -246,10 +413,38 @@ const changeCollectionSourceStatus = async (selected: { id: number; name: string
   }
 }
 
+const initPage = async (id: string | string[]) => {
+  const idStr = Array.isArray(id) ? id[0] : id
 
-onMounted(async () => {
-  if (route.params.id) {
-    await store.fetchCollectionSourceById(route.params.id as string)
+  if (idStr === 'create') {
+    mode.value = CreateEditMode.Create
+    createModeProfiles.value = []
+    store.selectedCollectionSource = {
+      id: 0,
+      name: '',
+      vendor: '',
+      description: '',
+      enabled: true,
+      createdTime: new Date(),
+      lastModified: new Date(),
+      uploadedBy: ''
+    } as SnmpCollectionSource
+  } else if (Number(idStr) > 0) {
+    mode.value = CreateEditMode.Edit
+  }
+
+  if (idStr) {
+    await store.fetchCollectionSourceById(idStr)
+  }
+
+  await sourcesStore.fetchSnmpCollectionProfiles()
+}
+
+onMounted(() => initPage(route.params.id))
+
+watch(() => route.params.id, (id: string | string[]) => {
+  if (id) {
+    initPage(id)
   }
 })
 </script>
@@ -337,12 +532,37 @@ onMounted(async () => {
           .field-label {
             @include headline4;
             margin-right: 10px;
-            color: #1E1E1E;
+            color: var(--feather-secondary-text-on-surface);
             min-width: 80px;
           }
 
           .field-value {
             @include body-large;
+          }
+
+          .profiles-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+
+            :deep(.p-chip-label) {
+              color: var(--feather-primary-text-on-surface);
+            }
+          }
+
+          .no-profiles-text {
+            color: var(--feather-secondary-text-on-surface);
+          }
+
+          .profiles-field-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          }
+
+          .profiles-error {
+            @include body-small;
+            color: var(--feather-error);
           }
         }
 
@@ -364,6 +584,20 @@ onMounted(async () => {
       margin-top: 25px;
       padding: 10px;
     }
+
+    .create-action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--feather-border-on-surface);
+    }
+  }
+
+  .source-name-input {
+    max-width: 20em;
+    min-width: 16em;
+    margin-top: 1.5em;
   }
 }
 
@@ -380,5 +614,18 @@ onMounted(async () => {
     margin: 0;
   }
 }
-</style>
 
+.edit-profiles-btn {
+  text-transform: uppercase;
+  letter-spacing: var(--feather-button-letter-spacing);
+  border-color: var(--feather-border-on-surface) !important;
+  color: var(--feather-primary) !important;
+  font-size: var(--feather-button-font-size);
+  font-weight: var(--feather-button-font-weight);
+
+  :deep(.p-button-label) {
+    font-weight: var(--feather-button-font-weight);
+    font-size: var(--feather-button-font-size);
+  }
+}
+</style>

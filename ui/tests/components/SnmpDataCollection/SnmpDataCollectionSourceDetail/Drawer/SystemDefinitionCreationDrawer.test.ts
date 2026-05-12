@@ -1,4 +1,4 @@
-import SystemDefinitionCreationDrawer from '@/components/SnmpDataCollectionDetail/Drawer/SystemDefinitionCreationDrawer.vue'
+import SystemDefinitionCreationDrawer from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/Drawer/SystemDefinitionCreationDrawer.vue'
 import { createSystemDefinition, updateSystemDefinition } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'

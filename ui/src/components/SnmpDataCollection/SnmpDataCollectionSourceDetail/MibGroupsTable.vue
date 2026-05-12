@@ -1,5 +1,5 @@
 <template>
-  <div class="resource-types-table-container">
+  <div class="mib-groups-table-container">
     <div class="header">
       <div class="section-left">
         <div class="search-container">
@@ -7,8 +7,8 @@
             label="Search"
             type="search"
             data-test="search-input"
-            v-model.trim="store.resourceTypesSearchTerm"
-            :hint="'Search by Name or Label'"
+            v-model.trim="store.mibGroupsSearchTerm"
+            :hint="'Search by Name or Interface Type'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -20,7 +20,7 @@
           <FeatherButton
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.resetResourceTypesFilters"
+            @click="store.resetMibGroupsFilters"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -30,10 +30,10 @@
         <div class="add">
           <FeatherButton
             secondary
-            data-test="add-resource-type-button"
-            @click="store.openResourceTypeCreationDrawer(null, CreateEditMode.Create)"
+            data-test="add-mib-group-button"
+            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
           >
-            Add Resource Type
+            Add MIB Group
           </FeatherButton>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <table
         class="data-table"
         aria-label="Events Table"
-        v-if="store.resourceTypes.length"
+        v-if="store.mibGroups.length"
       >
         <thead>
           <tr>
@@ -64,20 +64,19 @@
           tag="tbody"
         >
           <template
-            v-for="resourceType in store.resourceTypes"
-            :key="resourceType.id"
+            v-for="mibGroup in store.mibGroups"
+            :key="mibGroup.id"
           >
             <tr>
-              <td>{{ resourceType.name }}</td>
-              <td>{{ resourceType.label }}</td>
-              <td>{{ resourceType.resourceLabel }}</td>
+              <td>{{ mibGroup.name }}</td>
+              <td>{{ mibGroup.ifType }}</td>
               <td>
                 <div class="tag">
                   <FeatherChip
-                    :class="resourceType.enabled ? 'enabled-tag' : 'disabled-tag'"
+                    :class="mibGroup.enabled ? 'enabled-tag' : 'disabled-tag'"
                     data-test="status-tag"
                   >
-                    {{ resourceType.enabled ? 'Enabled' : 'Disabled' }}
+                    {{ mibGroup.enabled ? 'Enabled' : 'Disabled' }}
                   </FeatherChip>
                 </div>
               </td>
@@ -85,9 +84,9 @@
                 <div class="action-container">
                   <FeatherButton
                     icon="Edit"
-                    :title="`Edit ${resourceType.name}`"
+                    :title="`Edit ${mibGroup.name}`"
                     data-test="edit-button"
-                    @click="onResourceTypeEditClicked(resourceType)"
+                    @click="onMibGroupEditClicked(mibGroup)"
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
@@ -105,28 +104,28 @@
                     </template>
                     <FeatherDropdownItem
                       data-test="change-status-button"
-                      @click="openChangeStatusDialog(resourceType)"
+                      @click="openChangeStatusDialog(mibGroup)"
                     >
-                      {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
+                      {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
-                      data-test="delete-resource-type-button"
-                      @click="openResourceTypeDeleteDialog(resourceType)"
+                      data-test="delete-mib-group-button"
+                      @click="openDeleteMibGroupDialog(mibGroup)"
                     >
-                      Delete Resource Type
+                      Delete MIB Group
                     </FeatherDropdownItem>
                   </FeatherDropdown>
                   <FeatherButton
                     primary
-                    :icon="`${expandedRows.includes(resourceType.id)
+                    :icon="`${expandedRows.includes(mibGroup.id)
                     ? 'Expand Less'
                     : 'Expand More'
                     }`"
-                    @click="toggleExpand(resourceType.id)"
+                    @click="toggleExpand(mibGroup.id)"
                   >
                     <FeatherIcon
                       :icon="ExpandLess"
-                      v-if="expandedRows.includes(resourceType.id)"
+                      v-if="expandedRows.includes(mibGroup.id)"
                     />
                     <FeatherIcon
                       :icon="ExpandMore"
@@ -137,14 +136,27 @@
               </td>
             </tr>
             <tr
-              v-if="expandedRows.includes(resourceType.id)"
+              v-if="expandedRows.includes(mibGroup.id)"
               class="expanded-content"
             >
               <td :colspan="5">
-                <h6>Storage Strategy:</h6>
-                <p class="description">{{ resourceType.storageStrategy }}</p>
-                <h6>Persistence Selector Strategy:</h6>
-                <p class="description">{{ resourceType.persistenceSelectorStrategy }}</p>
+                <h5>MIB Group Names</h5>
+                <p class="description">{{ mibGroup.mibGroupNames?.join(', ') }}</p>
+                <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
+                  <h5>MIB Objects:</h5>
+                  <div
+                    v-for="(value, index) in JSON.parse(mibGroup.mibObjects)"
+                    :key="value.alias"
+                  >
+                    <h6>Object {{ Number(index) + 1 }}</h6>
+                    <div>
+                      <strong>Alias:</strong> {{ value.alias }} <br />
+                      <strong>OID:</strong> {{ value.oid }} <br />
+                      <strong>Instance:</strong> {{ value.instance }} <br />
+                      <strong>Data Type:</strong> {{ value.type }}
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
           </template>
@@ -152,47 +164,43 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="store.resourceTypes.length"
+        v-if="store.mibGroups.length"
       >
         <FeatherPagination
-          :modelValue="store.resourceTypesPagination.page"
-          :pageSize="store.resourceTypesPagination.pageSize"
-          :total="store.resourceTypesPagination.total"
+          :modelValue="store.mibGroupsPagination.page"
+          :pageSize="store.mibGroupsPagination.pageSize"
+          :total="store.mibGroupsPagination.total"
           :pageSizes="[10, 20, 30]"
-          @update:modelValue="store.onResourceTypesPageChange"
-          @update:pageSize="store.onResourceTypesPageSizeChange"
+          @update:modelValue="store.onMibGroupsPageChange"
+          @update:pageSize="store.onMibGroupsPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
     </div>
-    <div v-if="!store.resourceTypes.length">
-      <EmptyList :content="{ msg: 'No Resource Types found.' }" />
+    <div v-if="!store.mibGroups.length">
+      <EmptyList :content="{ msg: 'No MIB Groups found.' }" />
     </div>
     <DeleteConfirmationDialog
       :visible="isDeleteDialogVisible"
-      :selected="selectedResourceType"
-      type="resource-type"
-      @close="closeDeleteResourceTypeDialog"
-      @confirm="deleteResourceType"
+      :selected="selectedMibGroup"
+      type="mib-group"
+      @close="closeDeleteMibGroupDialog"
+      @confirm="deleteMibGroup"
     />
     <SnmpDataCollectionChangeStatusDialog
       :visible="isChangeStatusDialogVisible"
-      :selected="selectedResourceType"
-      type="resource-type"
-      :status="selectedResourceType?.enabled ? 'Disable' : 'Enable'"
+      :selected="selectedMibGroup"
+      type="mib-group"
+      :status="selectedMibGroup?.enabled ? 'Disable' : 'Enable'"
       @close="closeChangeStatusDialog"
-      @confirm="changeResourceTypeStatus"
+      @confirm="changeMibGroupStatus"
     />
-    <ResourceTypeCreationDrawer />
+    <MibGroupCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
-import useSnackbar from '@/composables/useSnackbar'
-import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/snmpDataCollectionService'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
-import { CreateEditMode } from '@/types'
-import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
+import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -206,34 +214,36 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import { debounce } from 'lodash'
-import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
-import ResourceTypeCreationDrawer from './Drawer/ResourceTypeCreationDrawer.vue'
-import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
+import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
+import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
+import EmptyList from '../../Common/EmptyList.vue'
+import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
+import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
-const selectedResourceType = ref<{ id: number; name: string, enabled: boolean } | null>(null)
+const selectedMibGroup = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
-  { id: 'label', label: 'Label' },
-  { id: 'resourceLabel', label: 'Resource Label' },
+  { id: 'ifType', label: 'Interface Type' },
   { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
   name: SORT.NONE,
-  label: SORT.NONE,
-  resourceLabel: SORT.NONE,
+  ifType: SORT.NONE,
   enabled: SORT.NONE
 }) as any
 
-const onResourceTypeEditClicked = (resourceType: SnmpCollectionResourceType) => {
-  store.openResourceTypeCreationDrawer(resourceType, CreateEditMode.Edit)
+const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
+  store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
@@ -247,9 +257,9 @@ const toggleExpand = (id: number) => {
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onResourceTypesSortChange(sortObj.property, sortObj.value)
+    store.onMibGroupsSortChange(sortObj.property, sortObj.value)
   } else {
-    store.onResourceTypesSortChange('createdTime', 'desc')
+    store.onMibGroupsSortChange('createdTime', 'desc')
   }
 
   for (const prop in sort) {
@@ -259,85 +269,85 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 }
 
 const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeResourceTypesSearchTerm(value)
+  await store.onChangeMibGroupsSearchTerm(value)
 }, 500)
 
-const openResourceTypeDeleteDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
-  selectedResourceType.value = resourceType
+const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
+  selectedMibGroup.value = mibGroup
   isDeleteDialogVisible.value = true
 }
 
-const closeDeleteResourceTypeDialog = () => {
-  selectedResourceType.value = null
+const closeDeleteMibGroupDialog = () => {
+  selectedMibGroup.value = null
   isDeleteDialogVisible.value = false
 }
 
-const openChangeStatusDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
-  selectedResourceType.value = resourceType
+const openChangeStatusDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
+  selectedMibGroup.value = mibGroup
   isChangeStatusDialogVisible.value = true
 }
 
 const closeChangeStatusDialog = () => {
-  selectedResourceType.value = null
+  selectedMibGroup.value = null
   isChangeStatusDialogVisible.value = false
 }
 
-const deleteResourceType = async (selected: { id: number; name: string } | null, type: string) => {
+const deleteMibGroup = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'resource-type' &&
+    type === 'mib-group' &&
     selected?.id &&
-    selected?.id === selectedResourceType.value?.id &&
-    selected?.name === selectedResourceType.value?.name &&
+    selected?.id === selectedMibGroup.value?.id &&
+    selected?.name === selectedMibGroup.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const success = await deleteResourceTypes(store.selectedCollectionSource.id, [selected.id])
+    const success = await deleteMibGroups(store.selectedCollectionSource.id, [selected.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `Resource Type '${selected.name}' deleted successfully.`
+        msg: `MIB Group '${selected.name}' deleted successfully.`
       })
-      await store.fetchResourceTypes()
+      await store.fetchMibGroups()
+      selectedMibGroup.value = null
       isDeleteDialogVisible.value = false
-      selectedResourceType.value = null
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to delete Resource Type '${selected.name}'.`,
+        msg: `Failed to delete MIB Group '${selected.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to delete Resource Type '${selected?.name}'.`,
+      msg: `Failed to delete MIB Group '${selected?.name ?? ''}'.`,
       error: true
     })
   }
 }
 
-const changeResourceTypeStatus = async (selected: { id: number; name: string } | null, type: string) => {
+const changeMibGroupStatus = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'resource-type' &&
+    type === 'mib-group' &&
     selected?.id &&
-    selected?.id === selectedResourceType.value?.id &&
-    selected?.name === selectedResourceType.value?.name &&
+    selected?.id === selectedMibGroup.value?.id &&
+    selected?.name === selectedMibGroup.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const updatedStatus = !selectedResourceType.value?.enabled
-    const success = await enableDisableSnmpResourceTypes(store.selectedCollectionSource.id, updatedStatus, [selectedResourceType.value?.id])
+    const updatedStatus = !selectedMibGroup.value?.enabled
+    const success = await enableDisableSnmpMibGroups(store.selectedCollectionSource.id, updatedStatus, [selectedMibGroup.value?.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `Resource Type '${selectedResourceType.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+        msg: `MIB Group '${selectedMibGroup.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
       })
-      await store.fetchResourceTypes()
-      selectedResourceType.value = null
+      await store.fetchMibGroups()
+      selectedMibGroup.value = null
       isChangeStatusDialogVisible.value = false
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} Resource Type '${selectedResourceType.value?.name}'.`,
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} MIB Group '${selectedMibGroup.value?.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to change status for Resource Type '${selected?.name}'.`,
+      msg: `Failed to change status for MIB Group '${selected?.name}'.`,
       error: true
     })
   }
@@ -350,7 +360,7 @@ const changeResourceTypeStatus = async (selected: { id: number; name: string } |
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
 
-.resource-types-table-container {
+.mib-groups-table-container {
   margin-top: 10px;
 
   .header {
@@ -371,7 +381,6 @@ const changeResourceTypeStatus = async (selected: { id: number; name: string } |
       }
     }
   }
-
 
   .container {
     table {

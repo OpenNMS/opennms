@@ -59,10 +59,10 @@
         />
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div class="label">Mib Groups</div>
+        <div class="label">MIB Groups</div>
         <FeatherAutocomplete
           class="my-autocomplete"
-          label="Mib Groups"
+          label="MIB Groups"
           type="multi"
           v-model="mibGroupNames"
           :loading="loading"
@@ -107,7 +107,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { SwitchRender } from '@featherds/switch'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS } from '../../../lib/constants'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
 
 const store = useSnmpDataCollectionDetailStore()
 const oidType = ref<string>(DEFAULT_OID_TYPE)

@@ -6,6 +6,11 @@ export interface SnmpDataCollectionStoreState {
   sourcesPagination: Pagination
   sourcesSearchTerm: string
   sourcesSorting: Sorting
+  profiles: SnmpCollectionProfile[]
+  selectedProfile: SnmpCollectionProfile | null
+  profilesPagination: Pagination
+  profilesSearchTerm: string
+  profilesSorting: Sorting
   isLoading: boolean
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
   activeTab: number
@@ -22,12 +27,18 @@ export interface SnmpCollectionSource {
   uploadedBy: string
 }
 
+export enum SnmpProfileStorageFlagType {
+  SELECT = 'select',
+  PRIMARY = 'primary',
+  ALL = 'all'
+}
+
 export interface SnmpCollectionProfile {
   id: number
   name: string
   rrdStep: number
   rrdRras: string[]
-  storageFlag: string
+  storageFlag: string // SnmpProfileStorageFlagType
   sourceNames: string[]
   maxVarsPerPdu?: number
   enabled: boolean

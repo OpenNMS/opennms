@@ -1,5 +1,5 @@
 <template>
-  <div class="mib-groups-table-container">
+  <div class="system-definitions-table-container">
     <div class="header">
       <div class="section-left">
         <div class="search-container">
@@ -7,8 +7,8 @@
             label="Search"
             type="search"
             data-test="search-input"
-            v-model.trim="store.mibGroupsSearchTerm"
-            :hint="'Search by Name or Interface Type'"
+            v-model.trim="store.systemDefsSearchTerm"
+            :hint="'Search by Name'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -20,7 +20,7 @@
           <FeatherButton
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.resetMibGroupsFilters"
+            @click="store.resetSystemDefinitionsFilters"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -30,10 +30,10 @@
         <div class="add">
           <FeatherButton
             secondary
-            data-test="add-mib-group-button"
-            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
+            data-test="add-system-definition-button"
+            @click="store.openSystemDefCreationDrawer(null, CreateEditMode.Create)"
           >
-            Add MIB Group
+            Add System Definition
           </FeatherButton>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <table
         class="data-table"
         aria-label="Events Table"
-        v-if="store.mibGroups.length"
+        v-if="store.systemDefinitions.length"
       >
         <thead>
           <tr>
@@ -64,19 +64,20 @@
           tag="tbody"
         >
           <template
-            v-for="mibGroup in store.mibGroups"
-            :key="mibGroup.id"
+            v-for="systemDefinition in store.systemDefinitions"
+            :key="systemDefinition.id"
           >
             <tr>
-              <td>{{ mibGroup.name }}</td>
-              <td>{{ mibGroup.ifType }}</td>
+              <td>{{ systemDefinition.name }}</td>
+              <td>{{ systemDefinition.sysoid }}</td>
+              <td>{{ systemDefinition.sysoidMask }}</td>
               <td>
                 <div class="tag">
                   <FeatherChip
-                    :class="mibGroup.enabled ? 'enabled-tag' : 'disabled-tag'"
+                    :class="systemDefinition.enabled ? 'enabled-tag' : 'disabled-tag'"
                     data-test="status-tag"
                   >
-                    {{ mibGroup.enabled ? 'Enabled' : 'Disabled' }}
+                    {{ systemDefinition.enabled ? 'Enabled' : 'Disabled' }}
                   </FeatherChip>
                 </div>
               </td>
@@ -84,9 +85,9 @@
                 <div class="action-container">
                   <FeatherButton
                     icon="Edit"
-                    :title="`Edit ${mibGroup.name}`"
+                    :title="`Edit ${systemDefinition.name}`"
                     data-test="edit-button"
-                    @click="onMibGroupEditClicked(mibGroup)"
+                    @click="onSystemDefEditClicked(systemDefinition)"
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
@@ -104,28 +105,28 @@
                     </template>
                     <FeatherDropdownItem
                       data-test="change-status-button"
-                      @click="openChangeStatusDialog(mibGroup)"
+                      @click="openChangeStatusDialog(systemDefinition)"
                     >
-                      {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
+                      {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
-                      data-test="delete-mib-group-button"
-                      @click="openDeleteMibGroupDialog(mibGroup)"
+                      data-test="delete-definition-button"
+                      @click="openDeleteSystemDefDialog(systemDefinition)"
                     >
-                      Delete MIB Group
+                      Delete Definition
                     </FeatherDropdownItem>
                   </FeatherDropdown>
                   <FeatherButton
                     primary
-                    :icon="`${expandedRows.includes(mibGroup.id)
+                    :icon="`${expandedRows.includes(systemDefinition.id)
                     ? 'Expand Less'
                     : 'Expand More'
                     }`"
-                    @click="toggleExpand(mibGroup.id)"
+                    @click="toggleExpand(systemDefinition.id)"
                   >
                     <FeatherIcon
                       :icon="ExpandLess"
-                      v-if="expandedRows.includes(mibGroup.id)"
+                      v-if="expandedRows.includes(systemDefinition.id)"
                     />
                     <FeatherIcon
                       :icon="ExpandMore"
@@ -136,27 +137,12 @@
               </td>
             </tr>
             <tr
-              v-if="expandedRows.includes(mibGroup.id)"
+              v-if="expandedRows.includes(systemDefinition.id)"
               class="expanded-content"
             >
               <td :colspan="5">
-                <h5>Mib Group Names</h5>
-                <p class="description">{{ mibGroup.mibGroupNames.join(', ') }}</p>
-                <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
-                  <h5>Mib Objects:</h5>
-                  <div
-                    v-for="(value, index) in JSON.parse(mibGroup.mibObjects)"
-                    :key="value.alias"
-                  >
-                    <h6>Object {{ Number(index) + 1 }}</h6>
-                    <div>
-                      <strong>Alias:</strong> {{ value.alias }} <br />
-                      <strong>OID:</strong> {{ value.oid }} <br />
-                      <strong>Instance:</strong> {{ value.instance }} <br />
-                      <strong>Data Type:</strong> {{ value.type }}
-                    </div>
-                  </div>
-                </div>
+                <h6>MIB Group Names:</h6>
+                <p class="description">{{ systemDefinition.mibGroupNames?.join(', ') }}</p>
               </td>
             </tr>
           </template>
@@ -164,47 +150,47 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="store.mibGroups.length"
+        v-if="store.systemDefinitions.length"
       >
         <FeatherPagination
-          :modelValue="store.mibGroupsPagination.page"
-          :pageSize="store.mibGroupsPagination.pageSize"
-          :total="store.mibGroupsPagination.total"
+          :modelValue="store.systemDefsPagination.page"
+          :pageSize="store.systemDefsPagination.pageSize"
+          :total="store.systemDefsPagination.total"
           :pageSizes="[10, 20, 30]"
-          @update:modelValue="store.onMibGroupsPageChange"
-          @update:pageSize="store.onMibGroupsPageSizeChange"
+          @update:modelValue="store.onSystemDefsPageChange"
+          @update:pageSize="store.onSystemDefsPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
     </div>
-    <div v-if="!store.mibGroups.length">
-      <EmptyList :content="{ msg: 'No MIB Groups found.' }" />
+    <div v-if="!store.systemDefinitions.length">
+      <EmptyList :content="{ msg: 'No System Definitions found.' }" />
     </div>
     <DeleteConfirmationDialog
       :visible="isDeleteDialogVisible"
-      :selected="selectedMibGroup"
-      type="mib-group"
-      @close="closeDeleteMibGroupDialog"
-      @confirm="deleteMibGroup"
+      :selected="selectedSystemDef"
+      type="system-def"
+      @close="closeDeleteSystemDefDialog"
+      @confirm="deleteSystemDef"
     />
     <SnmpDataCollectionChangeStatusDialog
       :visible="isChangeStatusDialogVisible"
-      :selected="selectedMibGroup"
-      type="mib-group"
-      :status="selectedMibGroup?.enabled ? 'Disable' : 'Enable'"
+      :selected="selectedSystemDef"
+      type="system-def"
+      :status="selectedSystemDef?.enabled ? 'Disable' : 'Enable'"
       @close="closeChangeStatusDialog"
-      @confirm="changeMibGroupStatus"
+      @confirm="changeSystemDefStatus"
     />
-    <MibGroupCreationDrawer />
+    <SystemDefinitionCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
+import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
-import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
+import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -219,31 +205,33 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
-import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
-import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
-import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
+import EmptyList from '../../Common/EmptyList.vue'
+import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
+import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
-const selectedMibGroup = ref<{ id: number; name: string, enabled: boolean } | null>(null)
+const selectedSystemDef = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
-  { id: 'ifType', label: 'Interface Type' },
+  { id: 'sysoid', label: 'SysOID' },
+  { id: 'sysoidMask', label: 'SysOID Mask' },
   { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
   name: SORT.NONE,
-  ifType: SORT.NONE,
+  sysoid: SORT.NONE,
+  sysoidMask: SORT.NONE,
   enabled: SORT.NONE
 }) as any
 
-const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
-  store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
+const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
+  store.openSystemDefCreationDrawer(defs, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
@@ -257,9 +245,9 @@ const toggleExpand = (id: number) => {
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onMibGroupsSortChange(sortObj.property, sortObj.value)
+    store.onSystemDefsSortChange(sortObj.property, sortObj.value)
   } else {
-    store.onMibGroupsSortChange('createdTime', 'desc')
+    store.onSystemDefsSortChange('createdTime', 'desc')
   }
 
   for (const prop in sort) {
@@ -269,85 +257,85 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 }
 
 const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeMibGroupsSearchTerm(value)
+  await store.onChangeSystemDefsSearchTerm(value)
 }, 500)
 
-const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
-  selectedMibGroup.value = mibGroup
+const openDeleteSystemDefDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
+  selectedSystemDef.value = systemDef
   isDeleteDialogVisible.value = true
 }
 
-const closeDeleteMibGroupDialog = () => {
-  selectedMibGroup.value = null
+const closeDeleteSystemDefDialog = () => {
+  selectedSystemDef.value = null
   isDeleteDialogVisible.value = false
 }
 
-const openChangeStatusDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
-  selectedMibGroup.value = mibGroup
+const openChangeStatusDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
+  selectedSystemDef.value = systemDef
   isChangeStatusDialogVisible.value = true
 }
 
 const closeChangeStatusDialog = () => {
-  selectedMibGroup.value = null
+  selectedSystemDef.value = null
   isChangeStatusDialogVisible.value = false
 }
 
-const deleteMibGroup = async (selected: { id: number; name: string } | null, type: string) => {
+const deleteSystemDef = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'mib-group' &&
+    type === 'system-def' &&
     selected?.id &&
-    selected?.id === selectedMibGroup.value?.id &&
-    selected?.name === selectedMibGroup.value?.name &&
+    selected?.id === selectedSystemDef.value?.id &&
+    selected?.name === selectedSystemDef.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const success = await deleteMibGroups(store.selectedCollectionSource.id, [selected.id])
+    const success = await deleteSystemDefinitions(store.selectedCollectionSource.id, [selected.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `MIB Group '${selected.name}' deleted successfully.`
+        msg: `System Definition '${selected.name}' deleted successfully.`
       })
-      await store.fetchMibGroups()
-      selectedMibGroup.value = null
+      await store.fetchSystemDefinitions()
+      selectedSystemDef.value = null
       isDeleteDialogVisible.value = false
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to delete MIB Group '${selected.name}'.`,
+        msg: `Failed to delete System Definition '${selected.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to delete MIB Group '${selected?.name ?? ''}'.`,
+      msg: `Failed to delete System Definition '${selected?.name}'.`,
       error: true
     })
   }
 }
 
-const changeMibGroupStatus = async (selected: { id: number; name: string } | null, type: string) => {
+const changeSystemDefStatus = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'mib-group' &&
+    type === 'system-def' &&
     selected?.id &&
-    selected?.id === selectedMibGroup.value?.id &&
-    selected?.name === selectedMibGroup.value?.name &&
+    selected?.id === selectedSystemDef.value?.id &&
+    selected?.name === selectedSystemDef.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const updatedStatus = !selectedMibGroup.value?.enabled
-    const success = await enableDisableSnmpMibGroups(store.selectedCollectionSource.id, updatedStatus, [selectedMibGroup.value?.id])
+    const updatedStatus = !selectedSystemDef.value?.enabled
+    const success = await enableDisableSnmpSystemDefs(store.selectedCollectionSource.id, updatedStatus, [selectedSystemDef.value?.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `MIB Group '${selectedMibGroup.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+        msg: `System Definition '${selectedSystemDef.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
       })
-      await store.fetchMibGroups()
-      selectedMibGroup.value = null
+      await store.fetchSystemDefinitions()
+      selectedSystemDef.value = null
       isChangeStatusDialogVisible.value = false
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} MIB Group '${selectedMibGroup.value?.name}'.`,
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} System Definition '${selectedSystemDef.value?.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to change status for MIB Group '${selected?.name}'.`,
+      msg: `Failed to change status for System Definition '${selected?.name}'.`,
       error: true
     })
   }
@@ -360,7 +348,7 @@ const changeMibGroupStatus = async (selected: { id: number; name: string } | nul
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
 
-.mib-groups-table-container {
+.system-definitions-table-container {
   margin-top: 10px;
 
   .header {

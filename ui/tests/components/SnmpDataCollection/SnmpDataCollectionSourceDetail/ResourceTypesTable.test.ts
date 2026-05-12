@@ -1,4 +1,4 @@
-import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
+import ResourceTypesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/ResourceTypesTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'

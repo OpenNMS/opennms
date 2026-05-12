@@ -57,7 +57,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
     store.sourcesSorting = { sortKey: 'createdTime', sortOrder: 'desc' }
     store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
-    store.refreshSourcesfilters = vi.fn().mockResolvedValue(undefined)
+    store.fetchAllSourcesNames = vi.fn().mockResolvedValue(undefined)
+    store.refreshSourceFilters = vi.fn().mockResolvedValue(undefined)
     store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
@@ -128,8 +129,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(store.fetchSnmpCollectionSources).toHaveBeenCalled()
     })
 
-    it('does not render the Create New Data Collection Source button (hidden until create flow is reconciled with upload contract)', () => {
-      expect(wrapper.text()).not.toContain('Create New Data Collection Source')
+    it('renders the Create New Data Collection Source button', () => {
+      expect(wrapper.text()).toContain('Create New Data Collection Source')
     })
 
     it('renders search input', () => {
@@ -146,9 +147,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.snmp-data-collection-source-table').exists()).toBe(true)
     })
 
-    it('renders header with section-left (section-right hidden while create button is hidden)', () => {
+    it('renders header with section-left and section-right', () => {
       expect(wrapper.find('.header .section-left').exists()).toBe(true)
-      expect(wrapper.find('.header .section-right').exists()).toBe(false)
+      expect(wrapper.find('.header .section-right').exists()).toBe(true)
     })
 
     it('renders search-container within section-left', () => {
@@ -157,11 +158,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
     it('renders refresh container within section-left', () => {
       expect(wrapper.find('.section-left .refresh').exists()).toBe(true)
-    })
-
-    it('does not render section-right .add container while create button is hidden', () => {
-      expect(wrapper.find('.section-right').exists()).toBe(false)
-      expect(wrapper.find('.add').exists()).toBe(false)
     })
 
     it('renders DeleteConfirmationDialog component', () => {
@@ -197,11 +193,11 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
 
-    it('should still show header with search and refresh when empty (create button is hidden)', () => {
+    it('should still show header with search and refresh when empty', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
-      expect(wrapper.text()).not.toContain('Create New Data Collection Source')
+      expect(wrapper.text()).toContain('Create New Data Collection Source')
     })
 
     it('shows table then hides when data is cleared', async () => {
@@ -329,7 +325,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      expect(store.refreshSourcesfilters).toHaveBeenCalledTimes(1)
+      expect(store.refreshSourceFilters).toHaveBeenCalledTimes(1)
     })
 
     it('can click refresh button multiple times', async () => {
@@ -340,7 +336,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
 
-      expect(store.refreshSourcesfilters).toHaveBeenCalledTimes(3)
+      expect(store.refreshSourceFilters).toHaveBeenCalledTimes(3)
     })
   })
 
@@ -353,7 +349,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('navigates to detail page when view button is clicked', async () => {
       await wrapper.get('[data-test="view-button"]').trigger('click')
       expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
+        name: 'SNMP Data Collection Source Detail',
         params: { id: mockSource.id }
       })
     })
@@ -361,7 +357,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('handles view click via onSourceClick function', () => {
       wrapper.vm.onSourceClick(mockSource)
       expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
+        name: 'SNMP Data Collection Source Detail',
         params: { id: mockSource.id }
       })
     })
@@ -377,7 +373,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       wrapper.vm.onSourceClick(source)
       expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
+        name: 'SNMP Data Collection Source Detail',
         params: { id }
       })
     })
@@ -390,7 +386,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await viewButtons[1].trigger('click')
 
       expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
+        name: 'SNMP Data Collection Source Detail',
         params: { id: mockSource2.id }
       })
     })
@@ -1312,27 +1308,23 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Create Source Button', () => {
-    // The Create-source button is currently hidden in the template (v-if="false")
-    // until the handwritten create flow is reconciled with the upload contract.
-    // Function-level tests remain — flipping the v-if back on should restore
-    // the rendered-button test below without further changes.
-    it('does not render the create button while it is hidden', () => {
+    it('renders the create button', () => {
       const createButton = wrapper
         .findAllComponents(FeatherButton)
         .find((btn: any) => btn.text().includes('Create New Data Collection Source'))
-      expect(createButton).toBeUndefined()
+      expect(createButton).toBeDefined()
     })
 
     it('calls goToCreateSource function to navigate', () => {
       wrapper.vm.goToCreateSource()
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' } })
     })
 
     it('goToCreateSource can be called multiple times', () => {
       wrapper.vm.goToCreateSource()
       wrapper.vm.goToCreateSource()
       expect(mockPush).toHaveBeenCalledTimes(2)
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' } })
     })
   })
 
@@ -1666,9 +1658,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.refresh').exists()).toBe(true)
     })
 
-    it('does not render section-right while create button is hidden', () => {
-      expect(wrapper.find('.section-right').exists()).toBe(false)
-      expect(wrapper.find('.add').exists()).toBe(false)
+    it('renders section-right', () => {
+      expect(wrapper.find('.section-right').exists()).toBe(true)
+      expect(wrapper.find('.add').exists()).toBe(true)
     })
   })
 
@@ -1682,7 +1674,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       vi.advanceTimersByTime(250) // mid-debounce
 
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      expect(store.refreshSourcesfilters).toHaveBeenCalled()
+      expect(store.refreshSourceFilters).toHaveBeenCalled()
 
       // Complete the debounce
       vi.advanceTimersByTime(250)

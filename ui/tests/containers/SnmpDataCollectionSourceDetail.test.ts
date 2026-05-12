@@ -1,33 +1,35 @@
-import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
-import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
-import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
-import SnmpDataCollectionDetail from '@/containers/SnmpDataCollectionDetail.vue'
+import MibGroupsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/MibGroupsTable.vue'
+import ResourceTypesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/ResourceTypesTable.vue'
+import SystemDefinitionsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/SystemDefinitionsTable.vue'
+import SnmpDataCollectionSourceDetail from '@/containers/SnmpDataCollectionSourceDetail.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { format } from 'date-fns'
-import { capitalize } from 'lodash'
+import { format } from 'date-fns-tz'
 import { setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
-  useRoute: vi.fn(() => ({
-    params: { id: '1' }
-  })),
+  useRoute: vi.fn((...args: any[]) => mockUseRoute(...args)),
   useRouter: vi.fn(() => ({
     push: mockPush
   }))
+}))
+const mockUseRoute = vi.fn(() => ({
+  params: { id: '1' }
 }))
 
 const mockDeleteSnmpCollectionSources = vi.fn()
 const mockEnableDisableSnmpDataCollectionSources = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args),
-  enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args)
+  enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args),
+  updateDataCollectionProfile: vi.fn().mockResolvedValue(true)
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -43,7 +45,7 @@ vi.mock('@/composables/useSnackbar', () => ({
   })
 }))
 
-describe('SnmpDataCollectionDetail.vue', () => {
+describe('SnmpDataCollectionSourceDetail.vue', () => {
   let wrapper: VueWrapper
   let store: ReturnType<typeof useSnmpDataCollectionDetailStore>
 
@@ -71,7 +73,12 @@ describe('SnmpDataCollectionDetail.vue', () => {
   beforeEach(() => {
     setActivePinia(createTestingPinia())
     vi.clearAllMocks()
+    mockUseRoute.mockReturnValue({ params: { id: '1' } })
     store = useSnmpDataCollectionDetailStore()
+    const sourcesStore = useSnmpDataCollectionStore()
+    sourcesStore.profilesForSource = vi.fn().mockReturnValue([])
+    sourcesStore.fetchSnmpCollectionProfiles = vi.fn().mockResolvedValue(undefined)
+    sourcesStore.fetchAllSourcesNames = vi.fn().mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -86,7 +93,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
     store.selectedCollectionSource = selectedSource
     store.fetchCollectionSourceById = vi.fn()
 
-    wrapper = mount(SnmpDataCollectionDetail, {
+    wrapper = mount(SnmpDataCollectionSourceDetail, {
       global: {
         stubs: globalStubs
       }
@@ -113,13 +120,12 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(heading.text()).toContain('Source Details')
     })
 
-    it('renders heading with capitalize() applied to source name', async () => {
+    it('renders heading with source name in plain format', async () => {
       const source = { ...mockCollectionSource, name: 'test collection' }
       wrapper = await createWrapper(source)
 
       const heading = wrapper.find('h1')
-      expect(heading.text()).toContain(capitalize('test collection'))
-      expect(heading.text()).toContain('Test collection Source Details')
+      expect(heading.text()).toContain('Source Details for test collection')
     })
 
     it('renders config-details-box header with Source Details text', async () => {
@@ -180,11 +186,11 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.find('.tab-container').exists()).toBe(true)
     })
 
-    it('renders two config rows with two fields each', async () => {
+    it('renders three config rows with two fields each', async () => {
       wrapper = await createWrapper()
 
       const configRows = wrapper.findAll('.config-row')
-      expect(configRows.length).toBe(2)
+      expect(configRows.length).toBe(3)
       configRows.forEach((row) => {
         expect(row.findAll('.config-field').length).toBe(2)
       })
@@ -298,14 +304,15 @@ describe('SnmpDataCollectionDetail.vue', () => {
     })
 
     it.each([
-      { date: new Date('2024-01-15'), expectedFormat: '01/15/2024' },
-      { date: new Date('2024-12-31'), expectedFormat: '12/31/2024' },
-      { date: new Date('2023-03-20'), expectedFormat: '03/20/2023' }
-    ])('formats date $expectedFormat correctly', async ({ date, expectedFormat }) => {
+      { date: new Date('2024-01-15') },
+      { date: new Date('2024-12-31') },
+      { date: new Date('2023-03-20') }
+    ])('formats date $date correctly', async ({ date }) => {
       const source = { ...mockCollectionSource, createdTime: date, lastModified: date }
       wrapper = await createWrapper(source)
 
-      expect(wrapper.text()).toContain(expectedFormat)
+      const expected = format(date, 'MM/dd/yyyy')
+      expect(wrapper.text()).toContain(expected)
     })
 
     it.each([
@@ -344,7 +351,9 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('navigates back from not found page', async () => {
       wrapper = await createWrapper(null)
 
-      const goBackButton = wrapper.find('.not-found-container button')
+      // In the not-found state the detail container is hidden, so the only
+      // FeatherButton rendered is the Go Back button inside .not-found-container
+      const goBackButton = wrapper.findComponent(FeatherButton)
       await goBackButton.trigger('click')
 
       expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
@@ -380,7 +389,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('fetches collection source on mount when route has id', async () => {
       store.fetchCollectionSourceById = vi.fn()
 
-      wrapper = mount(SnmpDataCollectionDetail, {
+      wrapper = mount(SnmpDataCollectionSourceDetail, {
         global: {
           stubs: globalStubs
         }
@@ -396,10 +405,10 @@ describe('SnmpDataCollectionDetail.vue', () => {
       { id: 'test-id', description: 'string route id' },
       { id: 'uuid-1234-5678', description: 'UUID-style route id' }
     ])('passes $description to fetchCollectionSourceById', async ({ id }) => {
-      vi.mocked(useRoute).mockReturnValue({ params: { id } } as any)
+      mockUseRoute.mockReturnValue({ params: { id } })
       store.fetchCollectionSourceById = vi.fn()
 
-      wrapper = mount(SnmpDataCollectionDetail, {
+      wrapper = mount(SnmpDataCollectionSourceDetail, {
         global: {
           stubs: globalStubs
         }
@@ -413,7 +422,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       vi.mocked(useRoute).mockReturnValue({ params: {} } as any)
       store.fetchCollectionSourceById = vi.fn()
 
-      wrapper = mount(SnmpDataCollectionDetail, {
+      wrapper = mount(SnmpDataCollectionSourceDetail, {
         global: {
           stubs: globalStubs
         }
@@ -428,10 +437,10 @@ describe('SnmpDataCollectionDetail.vue', () => {
       { id: null, description: 'null' },
       { id: undefined, description: 'undefined' }
     ])('does not fetch when route id is $description', async ({ id }) => {
-      vi.mocked(useRoute).mockReturnValue({ params: { id } } as any)
+      mockUseRoute.mockReturnValue({ params: { id } })
       store.fetchCollectionSourceById = vi.fn()
 
-      wrapper = mount(SnmpDataCollectionDetail, {
+      wrapper = mount(SnmpDataCollectionSourceDetail, {
         global: {
           stubs: globalStubs
         }
@@ -507,13 +516,13 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.text()).toContain('new-user')
     })
 
-    it('updates heading capitalize when name changes', async () => {
+    it('updates heading when name changes', async () => {
       wrapper = await createWrapper({ ...mockCollectionSource, name: 'first name' })
-      expect(wrapper.find('h1').text()).toContain('First name Source Details')
+      expect(wrapper.find('h1').text()).toContain('Source Details for first name')
 
       store.selectedCollectionSource = { ...mockCollectionSource, name: 'second name' }
       await wrapper.vm.$nextTick()
-      expect(wrapper.find('h1').text()).toContain('Second name Source Details')
+      expect(wrapper.find('h1').text()).toContain('Source Details for second name')
     })
 
     it('recovers from not-found back to detail view when source is set', async () => {
@@ -1458,7 +1467,8 @@ describe('SnmpDataCollectionDetail.vue', () => {
       }
       wrapper = await createWrapper(source)
 
-      expect(wrapper.text()).toContain('12/31/2030')
+      const expected = format(source.createdTime, 'MM/dd/yyyy')
+      expect(wrapper.text()).toContain(expected)
     })
 
     it('handles very old dates', async () => {
@@ -1469,7 +1479,8 @@ describe('SnmpDataCollectionDetail.vue', () => {
       }
       wrapper = await createWrapper(source)
 
-      expect(wrapper.text()).toContain('01/01/1990')
+      const expected = format(source.createdTime, 'MM/dd/yyyy')
+      expect(wrapper.text()).toContain(expected)
     })
 
     it('mounts and unmounts without errors', async () => {
@@ -1503,15 +1514,17 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const configBox = wrapper.find('.config-details-box')
       const text = configBox.text()
       // Both dates should appear (even if the same value)
-      expect(text).toContain('06/15/2024')
+      const expected = format(sameDate, 'MM/dd/yyyy')
+      expect(text).toContain(expected)
     })
 
-    it('renders field-label and field-value spans in each config field', async () => {
+    it('renders field-label and field-value spans in each data config field', async () => {
       wrapper = await createWrapper()
 
       const configFields = wrapper.findAll('.config-field')
-      expect(configFields.length).toBe(4)
-      configFields.forEach((field) => {
+      expect(configFields.length).toBe(6)
+      // First 4 data fields (Source, Uploaded By, Creation Date, Last Modified) have both label and value
+      configFields.slice(0, 4).forEach((field: any) => {
         expect(field.find('.field-label').exists()).toBe(true)
         expect(field.find('.field-value').exists()).toBe(true)
       })

@@ -1,4 +1,4 @@
-import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import MibGroupsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/MibGroupsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
@@ -437,8 +437,8 @@ describe('MibGroupsTable.vue', () => {
 
     it('displays proper headers and structure', async () => {
       const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('Mib Group Names')
-      expect(expandedContent.text()).toContain('Mib Objects')
+      expect(expandedContent.text()).toContain('MIB Group Names')
+      expect(expandedContent.text()).toContain('MIB Objects')
 
       const td = expandedContent.find('td')
       expect(td.attributes('colspan')).toBe('5')
@@ -459,7 +459,7 @@ describe('MibGroupsTable.vue', () => {
       expect(expandedContent.text()).toContain('Data Type:')
     })
 
-    it('does not show Mib Objects section when no objects', async () => {
+    it('does not show MIB Objects section when no objects', async () => {
       store.mibGroups = [disabledMibGroup]
       await wrapper.vm.$nextTick()
 
@@ -468,7 +468,7 @@ describe('MibGroupsTable.vue', () => {
 
       const expandedContent = wrapper.find('.expanded-content')
       expect(expandedContent.text()).not.toContain('Object 1')
-      expect(expandedContent.text()).not.toContain('Mib Objects:')
+      expect(expandedContent.text()).not.toContain('MIB Objects:')
     })
   })
 

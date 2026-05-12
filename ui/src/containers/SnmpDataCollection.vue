@@ -45,12 +45,16 @@
         <template v-slot:tabs>
           <FeatherTab>Data Collection Sources</FeatherTab>
           <FeatherTab>Import Data Collection Sources</FeatherTab>
+          <FeatherTab>Profiles</FeatherTab>
         </template>
         <FeatherTabPanel>
           <SnmpDataCollectionSourcesTable />
         </FeatherTabPanel>
         <FeatherTabPanel>
           <SnmpDataCollectionSourceImport />
+        </FeatherTabPanel>
+        <FeatherTabPanel>
+          <SnmpDataCollectionProfilesTable />
         </FeatherTabPanel>
       </FeatherTabContainer>
     </div>
@@ -59,6 +63,7 @@
 
 <script lang="ts" setup>
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
 import SnmpDataCollectionSourcesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourcesTable.vue'
 import useSnackbar from '@/composables/useSnackbar'

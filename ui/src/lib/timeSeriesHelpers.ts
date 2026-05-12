@@ -20,30 +20,23 @@
 /// License.
 ///
 
-import PrimeVue from 'primevue/config'
-import OpenNMSPreset from './opennms-preset'
-import 'primeicons/primeicons.css'
+import { RRA } from '@/types/timeSeries'
 
-import type { App } from 'vue'
+export const rraToString = (rra: RRA): string => {
+  return `RRA:${rra.cf}:${rra.xff}:${rra.steps}:${rra.rows}`
+}
 
-export const setupPrimeVue = (app: App) => {
-  app.use(PrimeVue, {
-    theme: {
-      preset: OpenNMSPreset,
-      options: {
-        prefix: 'p',
-        darkModeSelector: '.open-dark',
-        cssLayer: {
-          name: 'primevue',
-          order: 'primevue'
-        }
-      }
-    },
-    zIndex: {
-      overlay: 1060,
-      menu: 1060,
-      modal: 1100,
-      tooltip: 1110
-    }
-  })
+export const rraFromString = (rraStr: string): RRA => {
+  const parts = rraStr.split(':')
+
+  if (parts.length !== 5 || parts[0] !== 'RRA') {
+    throw new Error(`Invalid RRA string: ${rraStr}`)
+  }
+
+  return {
+    cf: parts[1] as any,
+    xff: parseFloat(parts[2]),
+    steps: parseInt(parts[3], 10),
+    rows: parseInt(parts[4], 10)
+  }
 }

@@ -1,4 +1,4 @@
-import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
+import SystemDefinitionsTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/SystemDefinitionsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
@@ -432,7 +432,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('Mib Group Names')
+      expect(expandedContent.text()).toContain('MIB Group Names')
       expect(expandedContent.text()).toContain('mib2-interfaces')
       expect(expandedContent.text()).toContain('mib2-host-resources-storage')
     })
@@ -467,7 +467,7 @@ describe('SystemDefinitionsTable.vue', () => {
 
     it('displays proper headers and structure', async () => {
       const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('Mib Group Names')
+      expect(expandedContent.text()).toContain('MIB Group Names')
 
       const td = expandedContent.find('td')
       expect(td.attributes('colspan')).toBe('5')
@@ -482,7 +482,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('displays h6 header for section title', async () => {
       const h6 = wrapper.find('.expanded-content h6')
       expect(h6.exists()).toBe(true)
-      expect(h6.text()).toBe('Mib Group Names:')
+      expect(h6.text()).toBe('MIB Group Names:')
     })
 
     it('handles empty mib group names array', async () => {

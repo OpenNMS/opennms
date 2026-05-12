@@ -1,4 +1,4 @@
-import MibGroupCreationDrawer from '@/components/SnmpDataCollectionDetail/Drawer/MibGroupCreationDrawer.vue'
+import MibGroupCreationDrawer from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/Drawer/MibGroupCreationDrawer.vue'
 import { DEFAULT_IF_TYPE_FILTER, DEFAULT_MIB_OBJ_TYPE, IF_TYPE_FILTERS_OPTIONS, MIB_OBJECT_DATA_TYPE_OPTIONS } from '@/lib/constants'
 import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'

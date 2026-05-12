@@ -1,5 +1,5 @@
 <template>
-  <div class="system-definitions-table-container">
+  <div class="resource-types-table-container">
     <div class="header">
       <div class="section-left">
         <div class="search-container">
@@ -7,8 +7,8 @@
             label="Search"
             type="search"
             data-test="search-input"
-            v-model.trim="store.systemDefsSearchTerm"
-            :hint="'Search by Name'"
+            v-model.trim="store.resourceTypesSearchTerm"
+            :hint="'Search by Name or Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -20,7 +20,7 @@
           <FeatherButton
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.resetSystemDefinitionsFilters"
+            @click="store.resetResourceTypesFilters"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -30,10 +30,10 @@
         <div class="add">
           <FeatherButton
             secondary
-            data-test="add-system-definition-button"
-            @click="store.openSystemDefCreationDrawer(null, CreateEditMode.Create)"
+            data-test="add-resource-type-button"
+            @click="store.openResourceTypeCreationDrawer(null, CreateEditMode.Create)"
           >
-            Add System Definition
+            Add Resource Type
           </FeatherButton>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <table
         class="data-table"
         aria-label="Events Table"
-        v-if="store.systemDefinitions.length"
+        v-if="store.resourceTypes.length"
       >
         <thead>
           <tr>
@@ -64,20 +64,20 @@
           tag="tbody"
         >
           <template
-            v-for="systemDefinition in store.systemDefinitions"
-            :key="systemDefinition.id"
+            v-for="resourceType in store.resourceTypes"
+            :key="resourceType.id"
           >
             <tr>
-              <td>{{ systemDefinition.name }}</td>
-              <td>{{ systemDefinition.sysoid }}</td>
-              <td>{{ systemDefinition.sysoidMask }}</td>
+              <td>{{ resourceType.name }}</td>
+              <td>{{ resourceType.label }}</td>
+              <td>{{ resourceType.resourceLabel }}</td>
               <td>
                 <div class="tag">
                   <FeatherChip
-                    :class="systemDefinition.enabled ? 'enabled-tag' : 'disabled-tag'"
+                    :class="resourceType.enabled ? 'enabled-tag' : 'disabled-tag'"
                     data-test="status-tag"
                   >
-                    {{ systemDefinition.enabled ? 'Enabled' : 'Disabled' }}
+                    {{ resourceType.enabled ? 'Enabled' : 'Disabled' }}
                   </FeatherChip>
                 </div>
               </td>
@@ -85,9 +85,9 @@
                 <div class="action-container">
                   <FeatherButton
                     icon="Edit"
-                    :title="`Edit ${systemDefinition.name}`"
+                    :title="`Edit ${resourceType.name}`"
                     data-test="edit-button"
-                    @click="onSystemDefEditClicked(systemDefinition)"
+                    @click="onResourceTypeEditClicked(resourceType)"
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
@@ -105,28 +105,28 @@
                     </template>
                     <FeatherDropdownItem
                       data-test="change-status-button"
-                      @click="openChangeStatusDialog(systemDefinition)"
+                      @click="openChangeStatusDialog(resourceType)"
                     >
-                      {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
+                      {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
-                      data-test="delete-definition-button"
-                      @click="openDeleteSystemDefDialog(systemDefinition)"
+                      data-test="delete-resource-type-button"
+                      @click="openResourceTypeDeleteDialog(resourceType)"
                     >
-                      Delete Definition
+                      Delete Resource Type
                     </FeatherDropdownItem>
                   </FeatherDropdown>
                   <FeatherButton
                     primary
-                    :icon="`${expandedRows.includes(systemDefinition.id)
+                    :icon="`${expandedRows.includes(resourceType.id)
                     ? 'Expand Less'
                     : 'Expand More'
                     }`"
-                    @click="toggleExpand(systemDefinition.id)"
+                    @click="toggleExpand(resourceType.id)"
                   >
                     <FeatherIcon
                       :icon="ExpandLess"
-                      v-if="expandedRows.includes(systemDefinition.id)"
+                      v-if="expandedRows.includes(resourceType.id)"
                     />
                     <FeatherIcon
                       :icon="ExpandMore"
@@ -137,12 +137,14 @@
               </td>
             </tr>
             <tr
-              v-if="expandedRows.includes(systemDefinition.id)"
+              v-if="expandedRows.includes(resourceType.id)"
               class="expanded-content"
             >
               <td :colspan="5">
-                <h6>Mib Group Names:</h6>
-                <p class="description">{{ systemDefinition.mibGroupNames.join(', ') }}</p>
+                <h6>Storage Strategy:</h6>
+                <p class="description">{{ resourceType.storageStrategy }}</p>
+                <h6>Persistence Selector Strategy:</h6>
+                <p class="description">{{ resourceType.persistenceSelectorStrategy }}</p>
               </td>
             </tr>
           </template>
@@ -150,47 +152,47 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="store.systemDefinitions.length"
+        v-if="store.resourceTypes.length"
       >
         <FeatherPagination
-          :modelValue="store.systemDefsPagination.page"
-          :pageSize="store.systemDefsPagination.pageSize"
-          :total="store.systemDefsPagination.total"
+          :modelValue="store.resourceTypesPagination.page"
+          :pageSize="store.resourceTypesPagination.pageSize"
+          :total="store.resourceTypesPagination.total"
           :pageSizes="[10, 20, 30]"
-          @update:modelValue="store.onSystemDefsPageChange"
-          @update:pageSize="store.onSystemDefsPageSizeChange"
+          @update:modelValue="store.onResourceTypesPageChange"
+          @update:pageSize="store.onResourceTypesPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
     </div>
-    <div v-if="!store.systemDefinitions.length">
-      <EmptyList :content="{ msg: 'No System Definitions found.' }" />
+    <div v-if="!store.resourceTypes.length">
+      <EmptyList :content="{ msg: 'No Resource Types found.' }" />
     </div>
     <DeleteConfirmationDialog
       :visible="isDeleteDialogVisible"
-      :selected="selectedSystemDef"
-      type="system-def"
-      @close="closeDeleteSystemDefDialog"
-      @confirm="deleteSystemDef"
+      :selected="selectedResourceType"
+      type="resource-type"
+      @close="closeDeleteResourceTypeDialog"
+      @confirm="deleteResourceType"
     />
     <SnmpDataCollectionChangeStatusDialog
       :visible="isChangeStatusDialogVisible"
-      :selected="selectedSystemDef"
-      type="system-def"
-      :status="selectedSystemDef?.enabled ? 'Disable' : 'Enable'"
+      :selected="selectedResourceType"
+      type="resource-type"
+      :status="selectedResourceType?.enabled ? 'Disable' : 'Enable'"
       @close="closeChangeStatusDialog"
-      @confirm="changeSystemDefStatus"
+      @confirm="changeResourceTypeStatus"
     />
-    <SystemDefinitionCreationDrawer />
+    <ResourceTypeCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services/snmpDataCollectionService'
+import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
-import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
+import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -205,33 +207,33 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
-import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
-import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
-import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
+import EmptyList from '../../Common/EmptyList.vue'
+import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import ResourceTypeCreationDrawer from './Drawer/ResourceTypeCreationDrawer.vue'
+import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
-const selectedSystemDef = ref<{ id: number; name: string, enabled: boolean } | null>(null)
+const selectedResourceType = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
-  { id: 'sysoid', label: 'SysOID' },
-  { id: 'sysoidMask', label: 'SysOID Mask' },
+  { id: 'label', label: 'Label' },
+  { id: 'resourceLabel', label: 'Resource Label' },
   { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
   name: SORT.NONE,
-  sysoid: SORT.NONE,
-  sysoidMask: SORT.NONE,
+  label: SORT.NONE,
+  resourceLabel: SORT.NONE,
   enabled: SORT.NONE
 }) as any
 
-const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
-  store.openSystemDefCreationDrawer(defs, CreateEditMode.Edit)
+const onResourceTypeEditClicked = (resourceType: SnmpCollectionResourceType) => {
+  store.openResourceTypeCreationDrawer(resourceType, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
@@ -245,9 +247,9 @@ const toggleExpand = (id: number) => {
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onSystemDefsSortChange(sortObj.property, sortObj.value)
+    store.onResourceTypesSortChange(sortObj.property, sortObj.value)
   } else {
-    store.onSystemDefsSortChange('createdTime', 'desc')
+    store.onResourceTypesSortChange('createdTime', 'desc')
   }
 
   for (const prop in sort) {
@@ -257,85 +259,85 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 }
 
 const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeSystemDefsSearchTerm(value)
+  await store.onChangeResourceTypesSearchTerm(value)
 }, 500)
 
-const openDeleteSystemDefDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
-  selectedSystemDef.value = systemDef
+const openResourceTypeDeleteDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+  selectedResourceType.value = resourceType
   isDeleteDialogVisible.value = true
 }
 
-const closeDeleteSystemDefDialog = () => {
-  selectedSystemDef.value = null
+const closeDeleteResourceTypeDialog = () => {
+  selectedResourceType.value = null
   isDeleteDialogVisible.value = false
 }
 
-const openChangeStatusDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
-  selectedSystemDef.value = systemDef
+const openChangeStatusDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+  selectedResourceType.value = resourceType
   isChangeStatusDialogVisible.value = true
 }
 
 const closeChangeStatusDialog = () => {
-  selectedSystemDef.value = null
+  selectedResourceType.value = null
   isChangeStatusDialogVisible.value = false
 }
 
-const deleteSystemDef = async (selected: { id: number; name: string } | null, type: string) => {
+const deleteResourceType = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'system-def' &&
+    type === 'resource-type' &&
     selected?.id &&
-    selected?.id === selectedSystemDef.value?.id &&
-    selected?.name === selectedSystemDef.value?.name &&
+    selected?.id === selectedResourceType.value?.id &&
+    selected?.name === selectedResourceType.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const success = await deleteSystemDefinitions(store.selectedCollectionSource.id, [selected.id])
+    const success = await deleteResourceTypes(store.selectedCollectionSource.id, [selected.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `System Definition '${selected.name}' deleted successfully.`
+        msg: `Resource Type '${selected.name}' deleted successfully.`
       })
-      await store.fetchSystemDefinitions()
-      selectedSystemDef.value = null
+      await store.fetchResourceTypes()
       isDeleteDialogVisible.value = false
+      selectedResourceType.value = null
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to delete System Definition '${selected.name}'.`,
+        msg: `Failed to delete Resource Type '${selected.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to delete System Definition '${selected?.name}'.`,
+      msg: `Failed to delete Resource Type '${selected?.name}'.`,
       error: true
     })
   }
 }
 
-const changeSystemDefStatus = async (selected: { id: number; name: string } | null, type: string) => {
+const changeResourceTypeStatus = async (selected: { id: number; name: string } | null, type: string) => {
   if (
-    type === 'system-def' &&
+    type === 'resource-type' &&
     selected?.id &&
-    selected?.id === selectedSystemDef.value?.id &&
-    selected?.name === selectedSystemDef.value?.name &&
+    selected?.id === selectedResourceType.value?.id &&
+    selected?.name === selectedResourceType.value?.name &&
     store.selectedCollectionSource?.id
   ) {
-    const updatedStatus = !selectedSystemDef.value?.enabled
-    const success = await enableDisableSnmpSystemDefs(store.selectedCollectionSource.id, updatedStatus, [selectedSystemDef.value?.id])
+    const updatedStatus = !selectedResourceType.value?.enabled
+    const success = await enableDisableSnmpResourceTypes(store.selectedCollectionSource.id, updatedStatus, [selectedResourceType.value?.id])
     if (success) {
       snackbar.showSnackBar({
-        msg: `System Definition '${selectedSystemDef.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+        msg: `Resource Type '${selectedResourceType.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
       })
-      await store.fetchSystemDefinitions()
-      selectedSystemDef.value = null
+      await store.fetchResourceTypes()
+      selectedResourceType.value = null
       isChangeStatusDialogVisible.value = false
     } else {
       snackbar.showSnackBar({
-        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} System Definition '${selectedSystemDef.value?.name}'.`,
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} Resource Type '${selectedResourceType.value?.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: `Failed to change status for System Definition '${selected?.name}'.`,
+      msg: `Failed to change status for Resource Type '${selected?.name}'.`,
       error: true
     })
   }
@@ -348,7 +350,7 @@ const changeSystemDefStatus = async (selected: { id: number; name: string } | nu
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
 
-.system-definitions-table-container {
+.resource-types-table-container {
   margin-top: 10px;
 
   .header {
@@ -369,6 +371,7 @@ const changeSystemDefStatus = async (selected: { id: number; name: string } | nu
       }
     }
   }
+
 
   .container {
     table {

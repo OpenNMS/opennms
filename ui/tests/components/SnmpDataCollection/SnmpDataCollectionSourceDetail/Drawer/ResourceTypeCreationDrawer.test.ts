@@ -1,4 +1,4 @@
-import ResourceTypeCreationDrawer from '@/components/SnmpDataCollectionDetail/Drawer/ResourceTypeCreationDrawer.vue'
+import ResourceTypeCreationDrawer from '@/components/SnmpDataCollection/SnmpDataCollectionSourceDetail/Drawer/ResourceTypeCreationDrawer.vue'
 import { KEY_PATTERN, PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
 import { createResourceType, updateResourceType } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'

@@ -97,7 +97,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   })
 
   it('does not crash if dialog state is missing', async () => {
-    store.changeEventConfigSourceStatusDialogState = {} as any
+    store.changeEventConfigSourceStatusDialogState = { visible: false } as any
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })

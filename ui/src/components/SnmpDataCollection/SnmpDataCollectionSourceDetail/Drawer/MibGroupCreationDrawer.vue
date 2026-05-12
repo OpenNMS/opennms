@@ -67,7 +67,7 @@
           </div>
           <table
             class="data-table"
-            aria-label="Mib Objects Table"
+            aria-label="MIB Objects Table"
           >
             <thead>
               <tr>
