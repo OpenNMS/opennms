@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.collection</artifactId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.collection</groupId>
@@ -45,6 +45,14 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

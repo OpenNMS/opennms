@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
@@ -90,7 +90,6 @@
               org.opennms.netmgt.config.views.*;version="${project.version}",
               org.opennms.netmgt.config.viewsdisplay.*;version="${project.version}",
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
-              org.opennms.netmgt.config.wmi.*;version="${project.version}",
               org.opennms.netmgt.eventd.datablock.*;version="${project.version}",
               org.opennms.netmgt.xml.eventconf.*;version="${project.version}",
               org.opennms.netmgt.xml.rtc.*;version="${project.version}"

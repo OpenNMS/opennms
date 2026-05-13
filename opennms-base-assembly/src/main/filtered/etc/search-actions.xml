@@ -87,7 +87,7 @@
     </action>
     <action>
         <label>Configure SNMP Community Names by IP Address</label>
-        <url>admin/snmpConfig?action=default</url>
+        <url>ui/index.html#/snmp-config</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -108,7 +108,7 @@
     </action>
     <action>
         <label>Configure External Requisitions</label>
-        <url>ui/index.html/#/configuration</url>
+        <url>ui/index.html#/configuration</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -172,8 +172,18 @@
 
     <!-- Performance Measurement Card -->
     <action>
-        <label>Configure SNMP Collections and Data Collection Groups</label>
-        <url>admin/manageSnmpCollections.jsp</url>
+        <label>Manage SNMP Data Collection Config</label>
+        <url>ui/index.html#/snmp-data-collection</url>
+        <aliases>
+            <alias>SNMP Data Collection</alias>
+            <alias>SNMP Collection</alias>
+            <alias>Data Collection Config</alias>
+            <alias>Datacollection Config</alias>
+            <alias>MIB Groups</alias>
+            <alias>Resource Types</alias>
+            <alias>System Definitions</alias>
+            <alias>SystemDefs</alias>
+        </aliases>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -181,6 +191,13 @@
     <action>
         <label>Configure SNMP Data Collection per Interface</label>
         <url>admin/snmpGetNodes</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure SNMP Traps</label>
+        <url>ui/index.html#/trapd-config</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

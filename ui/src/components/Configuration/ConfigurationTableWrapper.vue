@@ -43,10 +43,16 @@
       :advancedKeyUpdate="advancedKeyUpdate"
       :helpState="helpState"
     />
-    <ConfigurationDoubleCheckModal
-      :optionSelected="doubleCheck"
-      :doubleCheckSelected="doubleCheckSelected"
-    />
+    <ConfirmationDialog
+      :visible="doubleCheck.active"
+      :title="`Delete ${doubleCheck.title}`"
+      @cancel="doubleCheckSelected(false)"
+      @ok="doubleCheckSelected(true)"
+    >
+      <template v-slot:content>
+        <p>This will delete the requisition: {{ doubleCheck.title }}. Are you sure?</p>
+      </template>
+    </ConfirmationDialog>
   </div>
 </template>
 
@@ -66,7 +72,7 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationTable from './ConfigurationTable.vue'
 import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
 import ConfigurationDrawer from './ConfigurationDrawer.vue'
-import ConfigurationDoubleCheckModal from './ConfigurationDoubleCheckModal.vue'
+import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import { RequisitionData } from './copy/requisitionTypes'
 
 const configurationStore = useConfigurationStore()

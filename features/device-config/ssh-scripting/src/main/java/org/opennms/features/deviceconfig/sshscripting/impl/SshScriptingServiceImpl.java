@@ -35,8 +35,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.output.TeeOutputStream;
@@ -127,7 +129,12 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                                 scriptDebugOutput = sshInteraction.getDebugOutput();
                                 prevStatement = statement;
                             }
-                            return Result.success("Script execution succeeded",  sshInteraction.stdout.toString(StandardCharsets.UTF_8),  sshInteraction.stderr.toString(StandardCharsets.UTF_8), sshInteraction.getDebugOutput());
+                            var capturedConfig = sshInteraction.getCapturedConfig();
+                            return Result.success("Script execution succeeded",
+                                    sshInteraction.stdout.toString(StandardCharsets.UTF_8),
+                                    sshInteraction.stderr.toString(StandardCharsets.UTF_8),
+                                    sshInteraction.getDebugOutput(),
+                                    capturedConfig);
                         }
                     } catch (Exception e) {
                         LOG.error("error with ssh interactions", e);
@@ -187,6 +194,16 @@ public class SshScriptingServiceImpl implements SshScriptingService {
         private final Instant timeoutInstant;
 
         private final boolean disableIOCollection;
+
+        /** Byte offset into {@code stdout} at which capture was started; -1 means not capturing. */
+        private int captureStart = -1;
+        /**
+         * Byte offset into {@code stdout} just before the last awaited string that ran while capture
+         * was active. -1 means use the full end of stdout. Updated by every {@link #await} call that
+         * fires after {@link #startCapture} or {@link #awaitAndCapture}, so the terminal prompt that
+         * the script waits on is automatically excluded from the captured config bytes.
+         */
+        private int captureEnd = -1;
 
         private SshInteractionImpl(
                 String user,
@@ -340,6 +357,42 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             while (Instant.now().isBefore(timeoutInstant)) {
                 synchronized (awaitStdout) {
                     if (matchAndConsume(awaitStdout, search)) {
+                        if (captureStart >= 0) {
+                            // The awaited string (e.g. a prompt) marks the end of the interesting
+                            // output. Record the position just before it so the prompt is excluded
+                            // from the captured config bytes. Updated on every await while capture
+                            // is active, so the last awaited prompt wins.
+                            captureEnd = stdout.size() - awaitStdout.size() - search.length;
+                        }
+                        if (!disableIOCollection) {
+                            debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+                            debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+                        }
+                        debugStdout.reset();
+                        debugStderr.reset();
+                        return;
+                    }
+                }
+                Thread.sleep(1000);
+            }
+            if (!disableIOCollection) {
+                debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
+                debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
+            }
+            throw new Exception("awaited output missing - expected: " + string);
+        }
+
+        @Override
+        public void awaitAndCapture(String string) throws Exception {
+            var search = string.getBytes(StandardCharsets.UTF_8);
+            while (Instant.now().isBefore(timeoutInstant)) {
+                synchronized (awaitStdout) {
+                    if (matchAndConsume(awaitStdout, search)) {
+                        // Set the capture point while still holding the lock so no incoming
+                        // bytes can widen the gap between the match position and captureStart.
+                        // stdout.size() - awaitStdout.size() is the position in stdout right
+                        // after the consumed match string.
+                        captureStart = stdout.size() - awaitStdout.size();
                         if (!disableIOCollection) {
                             debugOutput.write(debugStderr.toString().getBytes(StandardCharsets.UTF_8));
                             debugOutput.write(debugStdout.toString().getBytes(StandardCharsets.UTF_8));
@@ -363,6 +416,18 @@ public class SshScriptingServiceImpl implements SshScriptingService {
             return StrSubstitutor.replace(string, vars);
         }
 
+        @Override
+        public void startCapture() {
+            captureStart = stdout.size();
+        }
+
+        Optional<byte[]> getCapturedConfig() {
+            if (captureStart < 0) {
+                return Optional.empty();
+            }
+            return Optional.of(SshScriptingServiceImpl.extractCapturedBytes(stdout.toByteArray(), captureStart, captureEnd));
+        }
+
         String getDebugOutput() {
             if (disableIOCollection) {
                 return "Script IO collection is disabled";
@@ -371,6 +436,23 @@ public class SshScriptingServiceImpl implements SshScriptingService {
                 return debugOutput.toString(StandardCharsets.UTF_8);
             }
         }
+    }
+
+    /**
+     * Extracts the captured bytes from a stdout snapshot.
+     * <p>
+     * When {@code captureEnd >= captureStart} it marks the position in stdout just before the
+     * last awaited string (e.g. a device prompt); the method scans backwards from that point to
+     * the preceding {@code 0x0A} so the entire prompt line is excluded, not only the matched
+     * substring.  When {@code captureEnd < captureStart} (still -1 because no await fired after
+     * capture) the full tail of the buffer from {@code captureStart} is returned.
+     */
+    static byte[] extractCapturedBytes(byte[] allBytes, int captureStart, int captureEnd) {
+        int end = (captureEnd >= captureStart) ? captureEnd : allBytes.length;
+        while (end > captureStart && allBytes[end - 1] != (byte) 0x0A) {
+            end--;
+        }
+        return Arrays.copyOfRange(allBytes, captureStart, end);
     }
 
     static boolean matchAndConsume(ByteArrayOutputStream awaitStdout, byte[] search) {

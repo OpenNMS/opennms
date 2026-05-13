@@ -1,62 +1,96 @@
-[[releasenotes-35]]
+[[releasenotes-36]]
 
-= What's New in OpenNMS Horizon 35
+= What's New in OpenNMS {page-component-title} 36
 
-== System requirements and Dependencies ==
+== System requirements and Dependencies
 
-* Java 17: Horizon 35 requires JDK 17.
-* PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
-* Elasticsearch: Horizon 35 requires Elasticsearch 8 for flow processing.
+* Java 21: OpenNMS {page-component-title} requires JDK 21.
+* PostgreSQL 14 or higher: This version of OpenNMS {page-component-title} requires a supported version of PostgreSQL.
 
 == New features and important changes
 
+=== SNMP datacollection config moved to DB with new UI
+The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
+After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
+Direct edits to the archived XML files no longer take effect.
 
-=== Event Configuration Moved to Database
+=== Snmp Config file `snmp-config.xml` moved to DB with new UI
+The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
+and the original file is moved to `etc_archive/`.
 
-Event definitions are now stored in the database, enabling dynamic management without requiring eventd restarts. Core OpenNMS events are pre-loaded automatically. Vendor-specific event files are available in `$\{OPENNMS_HOME}/etc/examples/events/` and can be uploaded through the UI or REST API as needed.
+After upgrade, manage SNMP configuration through the *Integrations -> SNMP Agent Configuration* page
+(or the REST v2 API under `/api/v2/snmp-config`). Direct edits to the archived XML file no longer take effect.
 
-See xref:operation:deep-dive/events/event-configuration.adoc[Event Configuration] for details.
+The new UI supports definition lookup by IP address and location, profile management, and supports both IPv4 and IPv6.
 
-* Legacy file-based event configuration (`etc/eventconf.xml`) is deprecated; changes to these files are not reflected in the running system.
-* Vendor event files moved from `etc/events/` to `etc/examples/events/` and must be uploaded manually.
+The legacy file-based SNMP credential encryption feature (the `org.opennms.snmp.encryption.enabled` property
+and the `snmp-config-encrypt` / `snmp-config-decrypt` Karaf commands) has been removed.
+The upgrade handles existing encrypted configurations automatically.
+For protecting SNMP credentials, use Secure Credentials Vault (SCV) metadata expressions in your SNMP configuration.
 
-=== Simplified Datasource Configuration
+See xref:development:rest/snmp_configuration.adoc[SNMP Configuration REST API] for details.
 
-The `opennms-datasources.xml` configuration file has been simplified by making the `factory` and `class-name` attributes optional with sensible defaults. The `factory` attribute now defaults to `org.opennms.core.db.HikariCPConnectionFactory` and the `class-name` attribute defaults to `org.postgresql.Driver`. Existing configurations with these attributes explicitly set will continue to work unchanged. New installations and users updating their configurations can omit these attributes for cleaner, more maintainable configuration files.
+=== Trapd Config file `trapd-configuration.xml` moved to DB with new UI
+The contents of `trapd-configuration.xml` are migrated into the database during the upgrade process,
+and the original file is moved to `etc_archive/`.
 
-=== Simplified Service Configuration
+After upgrade, manage trapd configuration through the *Integrations -> Trap Configuration* page
+(or the REST v2 API under `/api/v2/trapd`). Direct edits to the archived XML file no longer take effect.
 
-The `service-configuration.xml` configuration file has been simplified by moving service implementation details (class names, attributes, and invoke methods) to defaults in the classpath. Users now only need to specify the service name and enabled status. A complete reference configuration is available in `etc/examples/service-configuration.xml.default`. Existing configurations continue to work unchanged.
+See xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)] for details.
 
-=== Removed TestLoadLibraries Service
+=== Environment variable support in service configuration
+Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
+using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`
+to disable Telemetryd without editing the configuration file.
 
-The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
+This is particularly useful for containerized deployments where service composition is controlled via environment.
+Existing `enabled="true|false"` values in the file remain the default when no environment variable is set.
 
-=== OpenConfig Support on Minion
+NOTE: The `Manager` and `Eventd` services must always be enabled and cannot be disabled via environment variable.
 
-OpenConfig telemetry streaming is now supported on Minion. See xref:reference:telemetryd/protocols/openconfig.adoc#minion-setup[Set up OpenConfig on Minion] for configuration details.
+=== Ticketing plugin is now automatic
 
+The `OSGiBasedTicketerPlugin` is now the default ticketer plugin.
+Ticketing is automatically enabled when an OSGi-based ticketer plugin is installed and disabled when it is removed.
+The `NullTicketerPlugin` and the `opennms.ticketer.plugin` property have been removed.
+
+If you have `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` in a custom properties file under `etc/opennms.properties.d/`, remove that entry before upgrading.
+If you previously set `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin`, that entry is now redundant and can be removed.
+The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
+
+=== Light and dark mode for the Vue UI
+The Vue-based web UI now supports a light/dark theme toggle, in addition to the system-default option.
+
+=== File `eventconf.xml` moved to DB
+The contents of the file `eventconf.xml` will be stored in the database during the upgrade process and all files in `etc/events` will be moved to `etc_archive`.
+These events will not be imported into the database.
+
+After upgrade, manage event configurations through the *Administration -> Manage Event Configurations* page
+(or the REST API under `/api/v2/eventconf`).
+
+See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
 == Breaking changes
 
-=== Debian path updates
+=== WMI integration removed
+The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
-With this release, we’re streamlining the installation process for OpenNMS on both Debian and RPM-based systems by standardizing the installation location to `/opt/opennms`. This update provides a consistent deployment path, simplifies future upgrades, and minimizes conflicts caused by differing directories.
+=== JoeSNMP removed
+The SNMP implementation JoeSNMP was removed in OpenNMS {page-component-title}.
 
-Before upgrading, we strongly recommend backing up your existing installation including configuration files, databases, and any custom scripts or integrations to prevent data loss or disruption.
+=== C3P0 connection pool removed
+The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) and
+`etc/c3p0.properties` have been removed. HikariCP is now the only supported pool, and has been the default since OpenNMS {page-component-title} 35.
 
-To preserve local changes in `/etc/opennms`, copy the folder to `/opt/opennms/etc` while keeping file ownership and permissions intact. 
+If your `opennms-datasources.xml` explicitly sets `factory="org.opennms.core.db.C3P0ConnectionFactory"`,
+remove that attribute before upgrading.
 
-Prepare `/opt/opennms/etc` with the following commands:
+=== At least PostgreSQL 14.0 is required
 
-```
-sudo install -d -o opennms -g opennms /opt/opennms/etc
-sudo -u opennms cp -r /etc/opennms/* /opt/opennms/etc
-```
-
-=== Removed JRobin implementation
-
-JRobin, the pure-Java RRD implementation has been removed.
-The class `org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy` is no longer available.
-The Utilities to convert and analyze JRobin files (`.jrb`) are still available and usable.
-
+OpenNMS {page-component-title} now requires PostgreSQL 14.x or newer.
+If you are running an older version, you must upgrade to PostgreSQL 14 or later.
+Attempting a schema upgrade with `install -dis` will result in an error.
+If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
+Use this only as a last resort, since it may affect compatibility.
+Be aware that doing so takes you beyond supported configurations — here be dragons.

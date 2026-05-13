@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp-rest</artifactId>
@@ -376,6 +376,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.daemon</artifactId>
       <version>${project.version}</version>
@@ -430,6 +435,26 @@
     <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -596,6 +621,12 @@
     <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.dao</groupId>
+      <artifactId>org.opennms.features.config.dao.api</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
   </dependencies>

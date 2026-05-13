@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-geoip-provisioning-adapter</artifactId>
@@ -106,6 +106,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>${byteBuddyVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

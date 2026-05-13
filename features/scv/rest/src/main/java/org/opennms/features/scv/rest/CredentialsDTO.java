@@ -24,7 +24,6 @@ package org.opennms.features.scv.rest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class CredentialsDTO {
 
@@ -88,9 +87,16 @@ public class CredentialsDTO {
     
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CredentialsDTO)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CredentialsDTO)) {
+            return false;
+        }
+
         CredentialsDTO dto = (CredentialsDTO) o;
+
         return Objects.equals(alias, dto.alias) && Objects.equals(username, dto.username) &&
                 Objects.equals(password, dto.password) && Objects.equals(attributes, dto.attributes);
     }

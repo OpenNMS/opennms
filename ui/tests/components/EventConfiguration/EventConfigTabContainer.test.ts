@@ -8,6 +8,10 @@ import EventConfigUploadFilesTab from '@/components/EventConfiguration/EventConf
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import { FeatherButton } from '@featherds/button'
 
+vi.mock('vue-router', () => ({
+  useRouter: () => vi.fn()
+}))
+
 describe('EventConfigTabContainer', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigStore>
@@ -16,10 +20,6 @@ describe('EventConfigTabContainer', () => {
     const pinia = createTestingPinia({
       createSpy: vi.fn
     })
-
-    vi.mock('vue-router', () => ({
-      useRouter: () => vi.fn()
-    }))
 
     store = useEventConfigStore(pinia)
     store.activeTab = 0

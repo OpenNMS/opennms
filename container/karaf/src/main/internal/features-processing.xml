@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featuresProcessing
+  xmlns="http://karaf.apache.org/xmlns/features-processing/v1.0.0"
+  xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
+>
+
+  <featureReplacements>
+    <replacement mode="replace">
+      <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">
+        <f:feature version="[4,6)">spring</f:feature>
+        <f:feature>aries-blueprint</f:feature>
+        <f:feature>activemq-combined-jms-spec</f:feature>
+        <f:bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.3_spec/1.0</f:bundle>
+        <f:bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</f:bundle>
+        <f:bundle dependency="true">mvn:org.jvnet.jaxb2_commons/jaxb2-basics-runtime/0.12.0</f:bundle>
+        <f:bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-runtime/2.3.2_1</f:bundle>
+        <f:bundle>mvn:org.apache.commons/commons-pool2/2.13.1</f:bundle>
+        <f:bundle>mvn:org.apache.activemq/activemq-osgi/${activemqVersion}</f:bundle>
+      </feature>
+    </replacement>
+  </featureReplacements>
+
+</featuresProcessing>

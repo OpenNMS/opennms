@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-api</artifactId>
@@ -37,6 +37,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
   </dependencies>
 </project>

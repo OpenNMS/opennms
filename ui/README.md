@@ -4,19 +4,17 @@ This template should help you start developing with Vue 3, Typescript 5, and Vit
 
 ## Build instructions
 
-This project requires Node 18+. Node 22+ is recommended. npm 10.8+ is recommended.
-
-You will also need [yarn](https://yarnpkg.com/getting-started/install)
+This project requires Node 18+. Node 22+ is recommended. pnpm 10.24+ is required.
 
 To install packages and build (see Developer workflow below for more):
 ```
-yarn install
-yarn build:all
+pnpm install
+pnpm run build:all
 ```
 
 Run unit tests
 ```
-yarn test
+pnpm test
 ```
 
 ## State management: pinia
@@ -41,9 +39,9 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 
 - write your code
 
-- any time you update dependencies, or on initial build, from your `~/projects/opennms/ui` directory, run `yarn install`
+- any time you update dependencies, or on initial build, from your `~/projects/opennms/ui` directory, run `pnpm install`
 
-- from your `~/projects/opennms/ui` directory, run `yarn build:all` (or `yarn build:all:dev` for non-minified mode)
+- from your `~/projects/opennms/ui` directory, run `pnpm run build:all` (or `pnpm run build:all:dev` for non-minified mode)
 
 - have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui` and `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui-components`
 
@@ -69,7 +67,7 @@ cp ~/projects/opennms/ui/src/menu/dist-menu/index.html .
 
 - often `console.log` or `console.dir` statements in the code are more helpful for debugging than the browser debugger
 
-- run `yarn lint` to check for any linting/formatting errors. `yarn lint --fix` may fix them, but you should always double check
+- run `pnpm lint` to check for any linting/formatting errors. `pnpm lint --fix` may fix them, but you should always double check
 
 ## Prettier
 Formatting should use the .prettierrc file. For VSCode, install the Prettier extension, go to the IDE Settings and set this formatter to take precedence.

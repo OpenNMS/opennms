@@ -141,14 +141,14 @@
         {
           "id": "alarms",
           "name": "Alarms",
-          "url": "alarm/index.htm",
+          "url": "alarm/list.htm",
           "locationMatch": "alarm",
           "roles": null
         },
         {
           "id": "events",
           "name": "Events",
-          "url": "event/index",
+          "url": "event/list",
           "locationMatch": "event",
           "roles": null
         },
@@ -281,9 +281,9 @@
           "roles": null
         },
         {
-          "id": "customizeDataCollectionGroups",
-          "name": "Customize Data Collection Groups",
-          "url": "admin/manageSnmpCollections.jsp",
+          "id": "manageSnmpDataCollection",
+          "name": "Manage SNMP Data Collection Config",
+          "url": "ui/index.html#/snmp-data-collection",
           "locationMatch": "",
           "roles": null
         },
@@ -449,9 +449,16 @@
         {
           "id": "snmpAgentConfiguration",
           "name": "SNMP Agent Configuration",
-          "url": "admin/snmpConfig",
+          "url": "ui/index.html#/snmp-config",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+        },
+        {
+          "id": "trapConfiguration",
+          "name": "Trap Configuration",
+          "url": "ui/index.html#/trapd-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "externalRequisitions",
@@ -488,6 +495,10 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pluginsMenu",
+      "type": "plugins"
     },
     {
       "id": "toolsMenu",

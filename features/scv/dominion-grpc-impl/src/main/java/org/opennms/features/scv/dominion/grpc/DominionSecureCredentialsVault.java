@@ -21,7 +21,9 @@
  */
 package org.opennms.features.scv.dominion.grpc;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -52,9 +54,27 @@ public class DominionSecureCredentialsVault implements SecureCredentialsVault {
     }
 
     @Override
+    public Map<String, Credentials> getAllCredentials() {
+        Map<String, Credentials> credentialsMap = new HashMap<>();
+
+        Set<String> aliases = getAliases();
+
+        aliases.forEach(alias -> {
+            DominionGrpc.ScvGetCredentialsResponse response = client.getCredentials(alias);
+            credentialsMap.put(alias, new Credentials(response.getUser(), response.getPassword(), response.getAttributesMap()));
+        });
+
+        return credentialsMap;
+    }
+
+    @Override
     public void setCredentials(String alias, Credentials credentials) {
         Objects.requireNonNull(alias);
         Objects.requireNonNull(credentials);
+
+        if (alias.equalsIgnoreCase(Credentials.GET_ALL_ALIAS)) {
+            throw new IllegalArgumentException("Cannot set credentials using alias '" + Credentials.GET_ALL_ALIAS + "'.");
+        }
         
         client.setCredentials(alias, credentials.getUsername(), credentials.getPassword(),
                 credentials.getAttributes());

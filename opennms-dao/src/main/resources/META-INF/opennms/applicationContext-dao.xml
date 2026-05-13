@@ -22,6 +22,8 @@
 
   -->
   <import resource="applicationContext-shared.xml"/>
+  <import resource="applicationContext-jceks-scv.xml"/>
+  <import resource="applicationContext-encrypt-util.xml"/>
 
   <!-- NOTE: FROM HERE ON, only contains OpenNMS Runtime Environment-specific beans -->
 
@@ -66,6 +68,18 @@
   <bean id="upgradeConfigService" class = "org.opennms.config.upgrade.UpgradeConfigService"/>
   <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
 
+  <!-- SNMP data collection config loader — must run after upgradeConfigService populates the DB -->
+  <bean id="snmpDataCollectionConfigLoader" class="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader"
+        depends-on="upgradeConfigService">
+      <property name="dataCollectionConfigDao"        ref="dataCollectionConfigDao" />
+      <property name="snmpCollectionProfileDao"       ref="snmpCollectionProfileDao" />
+      <property name="snmpCollectionSourceDao"        ref="snmpCollectionSourceDao" />
+      <property name="snmpCollectionResourceTypeDao"  ref="snmpCollectionResourceTypeDao" />
+      <property name="snmpCollectionMibGroupDao"      ref="snmpCollectionMibGroupDao" />
+      <property name="snmpCollectionSystemDefDao"     ref="snmpCollectionSystemDefDao" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader" ref="snmpDataCollectionConfigLoader" />
+
   <!-- Configuration File DAOs -->
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
@@ -102,7 +116,13 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
-  <!-- Other Non-Database DAOs -->
+  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSnmpConfigDao"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpConfigDao" ref="snmpConfigDao" />
+
+  <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TrapdConfigDao" ref="trapdConfigDao" />
+
+    <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory
             org.opennms.netmgt.dao.api.ResourceStorageDao

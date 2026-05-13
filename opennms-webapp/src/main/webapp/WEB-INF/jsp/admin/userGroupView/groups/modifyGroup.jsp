@@ -322,8 +322,8 @@
                             </td>
                             <td class="align-middle">
                                 <div>
-                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
-                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(-1)" title="Move Up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(1)" title="Move Down"><i class="fas fa-arrow-down"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -355,8 +355,8 @@
                             </td>
                             <td class="align-middle">
                                 <div>
-                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
-                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(-1)" title="Move Up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(1)" title="Move Down"><i class="fas fa-arrow-down"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -430,7 +430,7 @@
             <option value="6">6</option>
             <option value="7">7</option>
           </select>
-          <button id="addSchedule" class="btn btn-secondary" name="addSchedule" onclick="addGroupDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> New Schedules</button>
+          <button id="addSchedule" class="btn btn-secondary" name="addSchedule" onclick="addGroupDutySchedules()" title="Add This Many Schedules"><i class="fas fa-plus"></i> New Schedules</button>
       </div>
       </div> <!-- card-body -->
     </div> <!-- card -->

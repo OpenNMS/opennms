@@ -53,14 +53,17 @@
 <script type="text/javascript">
     /* apply maximal height in px */
     function refresh() {
-        var height = $(window).height() - $("#footer").outerHeight() - $("#header").outerHeight();
-        $("#map-container").height(height);
+        // jQuery returns undefined for outerHeight() on an empty selector,
+        // and arithmetic with undefined yields NaN -- which collapses
+        // #map-container to zero height. Default each chunk to 0 when
+        // the element isn't present (e.g. #header was removed when the
+        // top navbar moved to the side menu).
+        var winH = $(window).height();
+        var footerH = $("#footer").length ? $("#footer").outerHeight() : 0;
+        var headerH = $("#header").length ? $("#header").outerHeight() : 0;
+        $("#map-container").height(winH - footerH - headerH);
     }
 
-    $(window).resize(function() {
-        refresh();
-    });
-    $(document).ready(function() {
-        refresh();
-    });
+    $(window).on('resize', refresh);
+    $(document).ready(refresh);
 </script>

@@ -53,7 +53,7 @@
     <!-- Search Input -->
     <div class="input-group search-bar">
         <div class="input-group-prepend">
-            <div class="input-group-text"><i class="fa fa-search"></i></div>
+            <div class="input-group-text"><i class="fas fa-magnifying-glass"></i></div>
         </div>
         <label class="form-control">
             <input id="onms-search-query" ng-change="onQueryChange()" ng-focus="input.focus=true" ng-blur="input.focus=false" ng-model="query" type="text" class="form-control" placeholder="Search..." aria-label="Search">
@@ -69,11 +69,11 @@
         </div>
         <!-- Reset Search -->
         <div ng-if="performSearchExecuted === true && !showLoadingIndicator" class="input-group-append">
-            <button class="btn btn-secondary" type="button" title="Reset Search" ng-click="resetQuery()"><i class="fa fa-times"></i></button>
+            <button class="btn btn-secondary" type="button" title="Reset Search" ng-click="resetQuery()"><i class="fas fa-xmark"></i></button>
         </div>
         <!-- Cancel -->
         <div ng-if="showLoadingIndicator" class="input-group-append">
-            <button class="btn btn-secondary" type="button" title="Cancel Request" ng-click="cancelRequest()"><i class="fa fa-times"></i></button>
+            <button class="btn btn-secondary" type="button" title="Cancel Request" ng-click="cancelRequest()"><i class="fas fa-xmark"></i></button>
         </div>
     </div>
 
@@ -85,7 +85,7 @@
             </div>
             <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-if="item.type === 'More'" ng-click="item.loadMore()" class="list-group-item list-group-item-action" href ng-mouseover="select($index)">more...</a>
             <a id="onms-search-result-item-{{$index}}" ng-class="{'selected': item.selected}" ng-repeat-end ng-if="item.type === 'Item'" href="{{item.url}}" class="list-group-item list-group-item-action" ng-mouseover="select($index)" ng-click="resetQuery()">
-                <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}} <i style="-webkit-transform: scaleY(-1);transform: scaleY(-1);" class="fa fa-reply pull-right" ng-if="item.selected"></i></h6>
+                <h6 class="mb-0"><i class="{{item.icon}}" ng-if="item.icon">&nbsp;</i>{{item.label}} <i style="-webkit-transform: scaleY(-1);transform: scaleY(-1);" class="fas fa-reply pull-right" ng-if="item.selected"></i></h6>
                 <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-repeat="match in item.matches">{{match.label}}: {{match.value}}</small>
                 <br ng-if="item.info !== ''">
                 <small class="mr-4" ng-class="{'text-muted': !item.selected}" ng-if="item.info !== ''">{{item.info}}</small>

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao</artifactId>
@@ -78,6 +78,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.config.service</groupId>
@@ -161,6 +166,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.encrypt-util</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>

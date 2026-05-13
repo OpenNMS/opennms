@@ -84,6 +84,12 @@
                 "merge-poweredby-branch"
             ]
         },
+        "trivy-scan-analyze": {
+            "extends": [
+                "trivy-scan",
+                "trivy-analyze"
+            ]
+        },
         "weekly-coverage": {
             "extends": [
                 "build",
@@ -104,16 +110,11 @@
                 "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
-        "trivy-analyze": {
-            "extends": [
-                "horizon-image-single-arch-linux-amd64-trivy-analyze",
-                "sentinel-image-single-arch-linux-amd64-trivy-analyze",
-                "minion-image-single-arch-linux-amd64-trivy-analyze"
-            ]
-        },
         "experimental": {
             "extends": [
-                "empty"
+                "build",
+                "tarball-assembly-only",
+                "trivy-analyze"
             ]
         }
     },
@@ -154,8 +155,12 @@
                 "branches": {
                     "ignore": [
                         "/^merge-foundation.*/"
+                    ],
+                    "only": [
+                        "/^master-.*/"
                     ]
-                }
+                },
+                "user_overridable": false
             }
         },
         "build-rpm": {
@@ -170,8 +175,12 @@
                 "branches": {
                     "ignore": [
                         "/^merge-foundation.*/"
+                    ],
+                    "only": [
+                        "/^master-.*/"
                     ]
-                }
+                },
+                "user_overridable": false
             }
         },
         "docs": {
@@ -244,6 +253,17 @@
                 "sentinel-image-single-arch-linux-amd64"
             ]
         },
+        "smoke-test-flaky": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
         "tarball-assembly-only": {
             "context": [
                 "CircleCI"
@@ -269,7 +289,7 @@
             "requires": [
                 "tarball-assembly-only"
             ]
-        },        
+        },
         "minion-image-single-arch-linux-amd64-trivy-analyze": {
             "context": [
                 "CircleCI",
@@ -279,7 +299,7 @@
                 "minion-image-single-arch-linux-amd64-trivy",
                 "horizon-image-single-arch-linux-amd64-trivy-analyze"
             ]
-        },        
+        },
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -297,7 +317,7 @@
             "requires": [
                 "tarball-assembly-only"
             ]
-        },        
+        },
         "horizon-image-single-arch-linux-amd64-trivy-analyze": {
             "context": [
                 "CircleCI",
@@ -306,7 +326,7 @@
             "requires": [
                 "horizon-image-single-arch-linux-amd64-trivy"
             ]
-        },        
+        },
         "sentinel-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -324,7 +344,14 @@
             "requires": [
                 "tarball-assembly-only"
             ]
-        },        
+        },       
+        "trivy-analyze":{
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        }, 
         "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
             "context": [
                 "CircleCI",
@@ -335,7 +362,7 @@
                 "horizon-image-single-arch-linux-amd64-trivy-analyze",
                 "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
-        },        
+        },
         "minion-image-single-arch": {
             "context": [
                 "CircleCI",
@@ -348,7 +375,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^master-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
         },
         "horizon-image-single-arch": {
             "context": [
@@ -362,7 +397,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^master-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
         },
         "sentinel-image-single-arch": {
             "context": [
@@ -376,7 +419,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^master-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
         },
         "create-merge-foundation-branch": {
             "context": [
@@ -388,7 +439,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -421,10 +475,10 @@
         "create-merge-omega-branch": {
             "context": [
                 "CircleCI"
-            ],  
+            ],
             "requires": [
                 "tarball-assembly-only"
-            ],  
+            ],
             "filters": {
                 "branches": {
                     "only": [
@@ -432,8 +486,8 @@
                     ]
                 },
                 "user_overridable": false
-            }   
-        },      
+            }
+        },
         "create-merge-meridian-branch": {
             "context": [
                 "CircleCI"
@@ -444,7 +498,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -462,7 +519,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -488,13 +548,15 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
                     "only": [
-                        "/^master-.*/",
-                        "/^release-.*/"
+                        "/^master-.*/"
                     ]
                 },
                 "user_overridable": false
@@ -513,9 +575,7 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "develop",
-                        "/^master-.*/",
-                        "/^release-.*/"
+                        "/^master-.*/"
                     ]
                 },
                 "user_overridable": false

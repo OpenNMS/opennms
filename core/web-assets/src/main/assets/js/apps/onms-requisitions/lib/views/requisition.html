@@ -18,14 +18,14 @@
     <form class="form-inline pull-right" role="search">
       <div class="input-group ml-auto">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="fa fa-search"></i></div>
+          <div class="input-group-text"><i class="fas fa-magnifying-glass"></i></div>
         </div>
         <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter">
       </div>
       <div class="pl-1 ml-auto my-4">
         <div class="btn-group" uib-dropdown>
           <button type="button" class="btn btn-secondary" id="refresh" uib-dropdown-toggle ng-disabled="timingStatus.isRunning">
-            <span class="fa fa-refresh"></span> Refresh <span class="caret"></span>
+            <span class="fas fa-arrows-rotate"></span> Refresh <span class="caret"></span>
           </button>
           <ul uib-dropdown-menu role="menu" aria-labelledby="refresh">
             <li role="menuitem"><a id="refreshDeployedStats" ng-click="refreshDeployedStats()">Refresh Deployed Statistics</a></li>
@@ -33,16 +33,16 @@
           </ul>
         </div>
         <button type="button" class="btn btn-secondary" id="edit-foreign-source" ng-click="editForeignSource()">
-          <i class="fa fa-edit"></i> Edit Definition
+          <i class="fas fa-pen-to-square"></i> Edit Definition
         </button>
         <button type="button" class="btn btn-secondary" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
-          <i class="fa fa-exchange"></i> Synchronize
+          <i class="fas fa-right-left"></i> Synchronize
         </button>
         <button type="button" class="btn btn-secondary" id="add-node" ng-click="addNode()">
-          <i class="fa fa-plus"></i> Add Node
+          <i class="fas fa-plus"></i> Add Node
         </button>
         <button type="button" class="btn btn-primary" id="go-back" ng-click="goBack()">
-          <i class="fa fa-reply" aria-hidden="true"></i> Return
+          <i class="fas fa-reply" aria-hidden="true"></i> Return
         </button>
       </div>
     </form>
@@ -99,10 +99,10 @@
             <td>
               <span class="pull-right">
                 <button class="btn btn-secondary btn-sm" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
-                  <span class="fa fa-pencil"></span>
+                  <span class="fas fa-pencil"></span>
                 </button>
                 <button class="btn btn-secondary btn-sm" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
-                  <span class="fa fa-trash"></span>
+                  <span class="fas fa-trash-can"></span>
                 </button>
               </span>
             </td>

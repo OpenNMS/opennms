@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ticketing</artifactId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ticketing</groupId>
@@ -38,6 +38,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->

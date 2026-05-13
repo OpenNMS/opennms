@@ -147,4 +147,3 @@ export const validateEventElement = (event: Element, eventNumber: number): strin
 export const isDuplicateFile = (fileName: string, existingFiles: UploadEventFileType[]): boolean => {
   return !!existingFiles?.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
 }
-

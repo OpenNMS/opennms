@@ -69,12 +69,17 @@
       <constructor-arg ref="eventConfTestResource"/>
     </bean>
 
+    <bean id="eventConfGlobalSecurityList" class="org.opennms.netmgt.config.EventConfTestUtil" factory-method="parseResourcesAsEventConfGlobalSecurities">
+        <constructor-arg ref="eventConfTestResource"/>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventConfDao">
       <property name="targetObject" ref="eventConfDao"/>
       <property name="targetMethod" value="loadEventsFromDB"/>
       <property name="arguments">
         <list>
           <ref bean="eventConfEventList"/>
+          <ref bean="eventConfGlobalSecurityList"/>
         </list>
       </property>
     </bean>

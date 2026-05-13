@@ -46,6 +46,7 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPasswordGateIT.class);
 
     private static final String ALTERNATE_ADMIN_PASSWORD = "Admin!admin1";
+    private static final String INVALID_ADMIN_PASSWORD = "jwV5wddWoSCFS6Vn7JTRZVGvVGfgBaEL";
 
     @Before
     public void setUp() throws Exception {
@@ -86,6 +87,35 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         LOG.debug("Test admin login with default password and skip");
         logout();
         loginAndSkip();
+    }
+
+    /**
+     * Tests:
+     * - logging in as "admin/admin", then getting the Password Change gate.
+     * - attempting to change password to one which does not contain a special character
+     * - should be rejected on client side
+     */
+    @Test
+    public void testAdminPasswordGateWithInvalidPasswordHavingNoSpecialCharacters() {
+        // login with "admin/admin", do not skip the password gate but instead change the password
+        LOG.debug("Test admin login and password change with invalid password having no special characters.");
+        logout();
+
+        // login with "admin/admin", do not skip past the password gate, skip cookie deletion
+        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, false, false, true, true);
+
+        if (!driver.getCurrentUrl().contains("passwordGate.jsp")) {
+            fail("Failed to get password gate page after 'admin/admin' login attempt.");
+        }
+
+        // Change the admin password to an invalid one
+        enterText(By.name("oldpass"), PASSWORD_GATE_PASSWORD);
+        enterText(By.name("pass1"), INVALID_ADMIN_PASSWORD);
+        enterText(By.name("pass2"), INVALID_ADMIN_PASSWORD);
+        clickElement(By.name("btn_change_password"));
+
+        // should stay on page and get an alert message
+        handleAlert("Password complexity is not correct!", false);
     }
 
     @Ignore("Not currently working. RequestCache may not be saving correct page.")

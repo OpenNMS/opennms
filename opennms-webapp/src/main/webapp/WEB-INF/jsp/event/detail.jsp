@@ -100,8 +100,8 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Events")
-          .breadcrumb("Events", "event/index")
-          .breadcrumb("Event " + (event == null? "Not Found" : event.getId()))
+          .breadcrumb("Events", "event/list")
+          .breadcrumb("Event " + (event == null ? "Not Found" : event.getId()))
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
@@ -133,10 +133,10 @@
           </c:if>
         </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
-              <th class="col-1">Event Source Location</th>
-              <td class="col-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
-              <th class="col-1">Node Location</th>
+              <th class="col-1">Monitoring Location</th>
               <td class="col-3"><%= event.getNodeLocation() %></td>
+              <th class="col-1">&nbsp;</th>
+              <td class="col-3">&nbsp;</td>
           </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
           <th class="col-1">Time</th>

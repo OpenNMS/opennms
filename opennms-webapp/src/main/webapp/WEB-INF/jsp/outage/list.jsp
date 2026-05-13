@@ -68,10 +68,10 @@
 
 <%!
     //useful constant strings
-    public static final String ZOOM_IN_ICON = "<i class=\"fa fa-plus-square-o\"></i>";
-    public static final String DISCARD_ICON = "<i class=\"fa fa-minus-square-o\"></i>";
-    public static final String BEFORE_ICON  = "<i class=\"fa fa-toggle-right\"></i>";
-    public static final String AFTER_ICON   = "<i class=\"fa fa-toggle-left\"></i>";
+    public static final String ZOOM_IN_ICON = "<i class=\"far fa-square-plus\"></i>";
+    public static final String DISCARD_ICON = "<i class=\"far fa-square-minus\"></i>";
+    public static final String BEFORE_ICON  = "<i class=\"fas fa-square-caret-right\"></i>";
+    public static final String AFTER_ICON   = "<i class=\"fas fa-square-caret-left\"></i>";
     
     public static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
 %>

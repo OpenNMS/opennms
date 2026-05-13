@@ -26,6 +26,7 @@ const enum Roles {
   ROLE_ADMIN = 'ROLE_ADMIN',
   ROLE_USER = 'ROLE_USER',
   ROLE_REST = 'ROLE_REST',
+  ROLE_PROVISION = 'ROLE_PROVISION',
   ROLE_FILESYSTEM_EDITOR = 'ROLE_FILESYSTEM_EDITOR',
   ROLE_DEVICE_CONFIG_BACKUP = 'ROLE_DEVICE_CONFIG_BACKUP'
 }
@@ -50,8 +51,9 @@ const useRole = () => {
   const adminRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN))
   const filesystemEditorRole = computed<boolean>(() => hasOneOf(Roles.ROLE_FILESYSTEM_EDITOR))
   const dcbRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_REST, Roles.ROLE_DEVICE_CONFIG_BACKUP))
+  const snmpRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_PROVISION))
 
-  return { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded }
+  return { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded }
 }
 
 export default useRole

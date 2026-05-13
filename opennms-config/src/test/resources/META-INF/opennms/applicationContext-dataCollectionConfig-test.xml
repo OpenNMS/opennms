@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+    <!-- Test override: load data collection config from XML files -->
+    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
+        <property name="configResource" ref="dataCollectionConfigResourceLocation" />
+        <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
+        <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
+    </bean>
+
+</beans>

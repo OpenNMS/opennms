@@ -57,6 +57,7 @@ public class ScvSetCommand implements Action {
     @Override
     public Object execute() throws Exception {
         Map<String, String> properties = new HashMap<>();
+
         if (attributes != null) {
             for (String attributeKVPair : attributes) {
                 try {
@@ -71,6 +72,7 @@ public class ScvSetCommand implements Action {
         }
         final Credentials credentials = new Credentials(username, password, properties);
         secureCredentialsVault.setCredentials(alias, credentials);
+
         return null;
     }
 }

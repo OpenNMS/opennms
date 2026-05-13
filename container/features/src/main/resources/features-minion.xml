@@ -113,7 +113,6 @@
       <feature>opennms-provisioning</feature>
       <feature>opennms-vmware</feature>
       <feature>opennms-xml-collector</feature>
-      <feature>wmi-integration</feature>
       <feature>wsman-integration</feature>
 
       <feature>opennms-core-ipc-rpc-api</feature>
@@ -215,6 +214,7 @@
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
         <feature>health-api</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/${jettyVersion}</bundle>
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 

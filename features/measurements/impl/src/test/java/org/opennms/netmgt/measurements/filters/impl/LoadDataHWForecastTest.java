@@ -30,7 +30,6 @@ package org.opennms.netmgt.measurements.filters.impl;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.integrations.R.RScriptException;
 
@@ -80,7 +79,9 @@ public class LoadDataHWForecastTest extends LoadData {
         Assert.assertEquals(84, ts.size());
         Map<Long,Double> forecast = table.column("ForecastFit");
         Assert.assertEquals(10, forecast.size());
-        Assert.assertEquals(168, table.size());
+        Assert.assertEquals(10, table.column("ForecastLwr").size());
+        Assert.assertEquals(10, table.column("ForecastUpr").size());
+        Assert.assertEquals(188, table.size());
     }
 
     @Test
@@ -115,7 +116,9 @@ public class LoadDataHWForecastTest extends LoadData {
         Assert.assertEquals(83, ts.size());
         Map<Long,Double> forecast = table.column("ForecastFit");
         Assert.assertEquals(10, forecast.size());
-        Assert.assertEquals(167, table.size());
+        Assert.assertEquals(10, table.column("ForecastLwr").size());
+        Assert.assertEquals(10, table.column("ForecastUpr").size());
+        Assert.assertEquals(187, table.size());
     }
 
     @Test
@@ -158,7 +161,9 @@ public class LoadDataHWForecastTest extends LoadData {
         Assert.assertEquals(2442, ts.size());
         Map<Long,Double> forecast = table.column("ForecastFit");
         Assert.assertEquals(1000, forecast.size());
-        Assert.assertEquals(4884, table.size());
+        Assert.assertEquals(1000, table.column("ForecastLwr").size());
+        Assert.assertEquals(1000, table.column("ForecastUpr").size());
+        Assert.assertEquals(6884, table.size());
     }
 
 }

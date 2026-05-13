@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -35,6 +36,7 @@ import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import java.util.LinkedHashMap;
@@ -60,10 +62,10 @@ public class Snmp4JTrapHandlerIT extends TrapHandlerITCase {
 
     @Before
     public void setUp() throws Exception {
-        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
-                new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
         // Load into DB
-        eventConfDao.loadEventsFromDB(events);
+        eventConfDao.loadEventsFromDB(events, eventConfGlobalSecurityList);
         super.setUp();
     }
 

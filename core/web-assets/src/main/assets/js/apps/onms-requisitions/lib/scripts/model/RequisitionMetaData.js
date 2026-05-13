@@ -100,12 +100,8 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
    * that no longer exist.
    */
   self.removeEntriesForMissingScopedEntities = function() {
-    _.remove(self.requisition, function(entry) {
-      return !self.doesReferencedEntityExist(entry);
-    });
-    _.remove(self.other, function(entry) {
-      return !self.doesReferencedEntityExist(entry);
-    });
+    self.requisition = self.requisition.filter(function(entry) { return self.doesReferencedEntityExist(entry); });
+    self.other = self.other.filter(function(entry) { return self.doesReferencedEntityExist(entry); });
   };
 
   /**
@@ -114,14 +110,15 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
   self.doesReferencedEntityExist = function(entry) {
     if (entry.scope === Scope.INTERFACE || entry.scope === Scope.SERVICE) {
       // Does an interface exist with the given IP address
-      const iff = _.find(requisitionNode.interfaces, function(iff) { return iff.ipAddress === entry.scoped_interface.ipAddress; });
+      const iff = requisitionNode.interfaces.find(function(iff) { return iff.ipAddress === entry.scoped_interface.ipAddress; });
+
       if (iff === undefined) {
         return false;
       }
 
       if (entry.scope === Scope.SERVICE) {
         // Does a service exist with the given name?
-        const svc = _.find(iff.services, function(svc) { return svc.name === entry.scoped_service.name; });
+        const svc = iff.services.find(function(svc) { return svc.name === entry.scoped_service.name; });
         if (svc === undefined) {
           return false;
         }
@@ -139,12 +136,8 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
   };
 
   self.removeEntry = function(entry) {
-    _.remove(self.requisition, function(existingEntry) {
-      return existingEntry === entry;
-    });
-    _.remove(self.other, function(existingEntry) {
-      return existingEntry === entry;
-    });
+    self.requisition = self.requisition.filter(function(existingEntry) { return existingEntry !== entry; });
+    self.other = self.other.filter(function(existingEntry) { return existingEntry !== entry; });
   };
 
   angular.forEach(allEntries, function(entry) {
@@ -231,9 +224,7 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
       return true;
     });
 
-    return _.map(metaData, function(entry) {
-      return entry.key;
-    });
+    return metaData.map(function(entry) { return entry.key; });
   };
 
   self.className = 'RequisitionMetaData';

@@ -30,7 +30,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Advanced Search")
           .headTitle("Events")
-          .breadcrumb("Events", "event/index")
+          .breadcrumb("Events", "event/list")
           .breadcrumb("Advanced Event Search")
           .build(request);
 %>

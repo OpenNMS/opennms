@@ -23,7 +23,6 @@ package org.opennms.features.kafka.producer.collection;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -36,6 +35,9 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -47,15 +49,19 @@ public class KafkaPersister implements Persister {
 
     private static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
 
+    private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+
     private CollectionSetMapper collectionSetMapper;
 
     private final ServiceParameters m_params;
 
     private Producer<String, byte[]> producer;
-    
+
     private String topicName = "metrics";
 
     private Boolean disableMetricsSplitting = false;
+
+    private Expression metricFilterExpression;
 
     public KafkaPersister(ServiceParameters params) {
         m_params = params;
@@ -68,19 +74,19 @@ public class KafkaPersister implements Persister {
     /** {@inheritDoc} */
     @Override
     public void visitCollectionSet(CollectionSet collectionSet) {
-
-
         CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
                 .buildCollectionSetProtos(collectionSet, m_params);
         if (collectionSetProto != null) {
-            bisectAndSendMessageToKafka(collectionSetProto);
+            // Apply filtering if configured
+            CollectionSetProtos.CollectionSet filteredCollectionSetProto = applyMetricFilter(collectionSetProto);
+            if (filteredCollectionSetProto != null && filteredCollectionSetProto.getResourceCount() > 0) {
+                bisectAndSendMessageToKafka(filteredCollectionSetProto);
+            }
         }
     }
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
-
         if (!getDisableMetricsSplitting() && checkForMaxSize(collectionSetProto.toByteArray().length)) {
-
             if(collectionSetProto.getResourceCount() == 1) {
                 /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
                 CollectionSetProtos.CollectionSetResource collectionSetResource = collectionSetProto.getResource(0);
@@ -270,5 +276,173 @@ public class KafkaPersister implements Persister {
 
     public Boolean getDisableMetricsSplitting() {
         return disableMetricsSplitting;
+    }
+
+    public void setMetricFilter(final String metricFilter) {
+        if (Strings.isNullOrEmpty(metricFilter)) {
+            metricFilterExpression = null;
+        } else {
+            metricFilterExpression = SPEL_PARSER.parseExpression(metricFilter);
+        }
+    }
+
+    /**
+     * Apply metric filter to the CollectionSet.
+     * Filters resources based on the configured SpEL expression.
+     * If no filter is configured, returns the original CollectionSet unchanged.
+     */
+    private CollectionSetProtos.CollectionSet applyMetricFilter(final CollectionSetProtos.CollectionSet collectionSet) {
+        if (metricFilterExpression == null) {
+            // No filter configured, return original
+            return collectionSet;
+        }
+
+        // Filter resources based on the expression
+        final CollectionSetProtos.CollectionSet.Builder filteredBuilder = CollectionSetProtos.CollectionSet.newBuilder()
+                .setTimestamp(collectionSet.getTimestamp());
+
+        for (CollectionSetProtos.CollectionSetResource resource : collectionSet.getResourceList()) {
+            if (shouldForwardResource(resource)) {
+                filteredBuilder.addResource(resource);
+            }
+        }
+
+        return filteredBuilder.build();
+    }
+
+    /**
+     * Evaluate whether a resource should be forwarded based on the metrics filter.
+     */
+    private boolean shouldForwardResource(final CollectionSetProtos.CollectionSetResource resource) {
+        try {
+            // Create a context object with accessible properties for SpEL evaluation
+            final ResourceFilterContext context = new ResourceFilterContext(resource);
+            final Boolean result = metricFilterExpression.getValue(context, Boolean.class);
+            return result != null && result;
+        } catch (Exception e) {
+            LOG.error("Metric filter '{}' failed to evaluate for resource. The resource will be forwarded anyways.", metricFilterExpression.getExpressionString(), e);
+            return true; // Forward on error to avoid data loss
+        }
+    }
+
+    /**
+     * Context object that exposes resource properties for SpEL filtering.
+     * Provides access to node properties (nodeId, nodeLabel, foreignSource, foreignId, location)
+     * and resource properties (resourceType, resourceName).
+     */
+    public static class ResourceFilterContext {
+        private final CollectionSetProtos.CollectionSetResource resource;
+
+        public ResourceFilterContext(CollectionSetProtos.CollectionSetResource resource) {
+            this.resource = resource;
+        }
+
+        public Long getNodeId() {
+            if (resource.hasNode()) {
+                return resource.getNode().getNodeId();
+            } else if (resource.hasInterface() && resource.getInterface().hasNode()) {
+                return resource.getInterface().getNode().getNodeId();
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode()) {
+                return resource.getGeneric().getNode().getNodeId();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode()) {
+                return resource.getResponse().getNode().getNodeId();
+            }
+            return null;
+        }
+
+        public String getNodeLabel() {
+            String nodeLabel = null;
+            if (resource.hasNode() && !resource.getNode().getNodeLabel().isEmpty()) {
+                nodeLabel = resource.getNode().getNodeLabel();
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getNodeLabel().isEmpty()) {
+                nodeLabel = resource.getInterface().getNode().getNodeLabel();
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getNodeLabel().isEmpty()) {
+                nodeLabel = resource.getGeneric().getNode().getNodeLabel();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+                nodeLabel = resource.getResponse().getNode().getNodeLabel();
+            }
+            return nodeLabel;
+        }
+
+        public String getForeignSource() {
+            String foreignSource = null;
+            if (resource.hasNode() && !resource.getNode().getForeignSource().isEmpty()) {
+                foreignSource = resource.getNode().getForeignSource();
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignSource().isEmpty()) {
+                foreignSource = resource.getInterface().getNode().getForeignSource();
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignSource().isEmpty()) {
+                foreignSource = resource.getGeneric().getNode().getForeignSource();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignSource().isEmpty()) {
+                foreignSource = resource.getResponse().getNode().getForeignSource();
+            }
+            return foreignSource;
+        }
+
+        public String getForeignId() {
+            String foreignId = null;
+            if (resource.hasNode() && !resource.getNode().getForeignId().isEmpty()) {
+                foreignId = resource.getNode().getForeignId();
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignId().isEmpty()) {
+                foreignId = resource.getInterface().getNode().getForeignId();
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignId().isEmpty()) {
+                foreignId = resource.getGeneric().getNode().getForeignId();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignId().isEmpty()) {
+                foreignId = resource.getResponse().getNode().getForeignId();
+            }
+            return foreignId;
+        }
+
+        public String getLocation() {
+            String location = null;
+            if (resource.hasNode() && !resource.getNode().getLocation().isEmpty()) {
+                location = resource.getNode().getLocation();
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getLocation().isEmpty()) {
+                location = resource.getInterface().getNode().getLocation();
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getLocation().isEmpty()) {
+                location = resource.getGeneric().getNode().getLocation();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getLocation().isEmpty()) {
+                location = resource.getResponse().getLocation();
+            }
+            return location;
+        }
+
+        public String getResourceTypeName() {
+            if (resource.hasResponse()) {
+                return "responseTime";
+            } else if (resource.hasGeneric()) {
+                return resource.getGeneric().getType();
+            } else {
+                return resource.getResourceTypeName();
+            }
+        }
+
+        public String getResourceName() {
+            if (!resource.getResourceName().isEmpty()) {
+                return resource.getResourceName();
+            }
+            return null;
+        }
+
+        public Integer getIfIndex() {
+            if (resource.hasInterface()) {
+                return resource.getInterface().getIfIndex();
+            }
+            return null;
+        }
+
+        public String getResourceId() {
+            return resource.getResourceId();
+        }
+
+        public String getInstance() {
+            if (resource.hasGeneric()) {
+                return resource.getGeneric().getInstance();
+            } else if (resource.hasInterface()) {
+                return resource.getInterface().getInstance();
+            } else if (resource.hasResponse()) {
+                return resource.getResponse().getInstance();
+            }
+            return null;
+        }
     }
 }

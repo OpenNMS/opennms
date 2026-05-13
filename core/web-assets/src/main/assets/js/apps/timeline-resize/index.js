@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-const debounce = require('lodash').debounce;
+const debounce = require('lodash.debounce');
 
 const DEBOUNCE_RATE = 200; // ms
 const RELATIVE_SIZE = 0.5;

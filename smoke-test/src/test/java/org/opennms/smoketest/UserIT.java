@@ -110,14 +110,14 @@ public class UserIT extends OpenNMSSeleniumIT {
 
         findElementByLink("Group List").click();
         findElementById(GROUP_NAME + ".doDelete").click();
-        handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?");
+        handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?", true);
         assertElementDoesNotExist(By.id(GROUP_NAME));
 
         findElementByLink("Users and Groups").click();
         findElementByLink("Configure Users").click();
         findElementById("user-" + USER_NAME);
         findElementById("users(" + USER_NAME + ").doDelete").click();
-        handleAlert("Are you sure you want to delete the user " + USER_NAME + "?");
+        handleAlert("Are you sure you want to delete the user " + USER_NAME + "?", true);
         assertElementDoesNotExist(By.id(USER_NAME));
     }
 
@@ -311,7 +311,10 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Users").click();
 
-        findElementById("users(user).doDelete").click();
-        handleAlert("Are you sure you want to delete the user user?");
+        WebElement deleteGroupLink = findElementById("users(user).doDelete");
+        clickElementUsingScript(deleteGroupLink);
+
+        // findElementById("users(user).doDelete").click();
+        handleAlert("Are you sure you want to delete the user user?", true);
     }
 }

@@ -72,7 +72,7 @@
             <div class="input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">
-                  <span class="fa fa-search"></span>
+                  <span class="fas fa-magnifying-glass"></span>
                 </div>
               </div>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="reportFilter"></input>
@@ -134,7 +134,7 @@
             <div class="input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">
-                  <span class="fa fa-search"></span>
+                  <span class="fas fa-magnifying-glass"></span>
                 </div>
               </div>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>

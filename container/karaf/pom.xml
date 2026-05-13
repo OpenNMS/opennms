@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>35.0.5</version>
+        <version>36.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -25,6 +25,11 @@
             <resource>
                 <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/internal</directory>
+                <targetPath>${project.build.directory}/internal</targetPath>
             </resource>
         </resources>
 
@@ -86,6 +91,9 @@
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
 
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1</bundle>
@@ -121,7 +129,8 @@
                         <!-- OPENNMS: Add our custom branding JAR -->
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <javase>11</javase>
+                    <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                 </configuration>
             </plugin>
             <plugin>

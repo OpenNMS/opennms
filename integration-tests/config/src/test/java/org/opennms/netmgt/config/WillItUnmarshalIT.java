@@ -118,12 +118,9 @@ import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
-import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -275,8 +272,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, false, null);
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, false, null);
-        addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, true, null);
-        addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
 

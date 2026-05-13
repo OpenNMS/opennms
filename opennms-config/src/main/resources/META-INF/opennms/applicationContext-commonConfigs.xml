@@ -53,12 +53,6 @@
 
 	<!--  collectd config factory is now init'd in the dao context -->
 
-    <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
-	</bean>
-
-	<bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="init-wmiPeerFactory" factory-method="getInstance"/>
-
 	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
 	</bean>
 
@@ -96,10 +90,8 @@
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.CollectdConfigFactory" ref="collectdConfig" />
   
-   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
-    <property name="configResource" ref="dataCollectionConfigResourceLocation" />
-    <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
-    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
+   <!-- Config loaded from DB by DataCollectionConfPersistenceService at startup -->
+  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
   </bean>
 
   <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -132,15 +124,7 @@
   <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" />
   
   <onmsgi:service interface="org.opennms.netmgt.config.SyslogdConfig" ref="syslogdConfigFactory" />
-  
-  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
-  
-  <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
-  
   <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
   </bean>

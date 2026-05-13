@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -693,13 +693,6 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.commands</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-wmi</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

@@ -93,7 +93,7 @@
           <div class="table-responsive" ng-show="resources.length > 0 && level < 2">
             <div class="input-group">
               <span class="input-group-prepend">
-                <span class="input-group-text"><span class="fa fa-search"></span></span>
+                <span class="input-group-text"><span class="fas fa-magnifying-glass"></span></span>
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="resourceFilter"></input>
             </div>

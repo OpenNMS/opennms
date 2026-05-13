@@ -16,6 +16,15 @@
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
+        <bundle start-level="60">mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-common/${netty4Version}</bundle>
@@ -27,6 +36,7 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
 
@@ -36,6 +46,9 @@
         <feature>camel-amqp</feature>
     </feature>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
@@ -44,6 +57,9 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-forwarder/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-event-receiver" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Receiver">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
@@ -52,6 +68,9 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-receiver/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-alarm-northbounder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Alarm Northbounder">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature>opennms-core-camel</feature>
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
@@ -319,6 +338,8 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
+        <!-- netty-transport-classes-epoll must be loaded before camel-netty4 resolves io.netty.channel.epoll -->
+        <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
@@ -337,7 +358,6 @@
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
         <feature>atomikos</feature>
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-io</feature>
         <feature>postgresql</feature>
@@ -371,6 +391,7 @@
         <bundle start-level="8">mvn:javax.jms/javax.jms-api/${jmsApiVersion}</bundle>
         <bundle start-level="8">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
 
+        <bundle>mvn:org.apache.activemq/activemq-camel/${activemqCamelVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
     <feature name="opennms-model" version="${project.version}" description="OpenNMS :: Model">
@@ -432,7 +453,6 @@
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
     </feature>
     <feature name="opennms-config" version="${project.version}" description="OpenNMS :: Configuration">
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
@@ -721,7 +741,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
     </feature>
@@ -828,15 +847,6 @@
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
     </feature>
-    <feature name="wmi-integration" version="${project.version}" description="OpenNMS :: Features :: WMI Integration">
-        <feature>commons-cli</feature>
-        <feature>opennms-collection-api</feature>
-        <feature>opennms-provisioning-api</feature>
-        <feature>jcifs</feature>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng&amp;Bundle-Version=${jinteropVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng.deps&amp;Bundle-Version=${jinteropVersion}</bundle>
-        <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
-    </feature>
     <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
         <feature>opennms-core-web</feature>
         <feature>opennms-collection-api</feature>
@@ -871,7 +881,6 @@
         <feature>opennms-icmp-api</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>wsman-integration</feature>
-        <feature>wmi-integration</feature>
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-bsf/${project.version}</bundle>
@@ -962,7 +971,7 @@
 
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
         <feature>jax-rs-connector</feature>
-        <feature>pax-http</feature>
+        <feature>pax-web-http-jetty</feature>
         <feature>opennms-alarm-history-api</feature>
         <feature>opennms-es-rest</feature>
         <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/${project.version}</bundle>
@@ -1232,7 +1241,11 @@
         <details>Core module which provides features to install to listen for rest related services,
             such as @Path annotated interfaces.</details>
         <feature>jax-rs-connector</feature>
-        <feature>jax-rs-provider-jackson</feature>
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
+        <bundle>mvn:com.eclipsesource.jaxrs/provider-jackson/${osgiJaxRsVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
         <bundle>mvn:org.opennms.container.bridge/org.opennms.container.bridge.rest/${project.version}</bundle>
     </feature>
@@ -1728,6 +1741,19 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
     </feature>
 
+    <feature name="netty4" version="${netty4Version}" description="Netty">
+        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+    </feature>
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
         <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
@@ -1913,7 +1939,7 @@
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <bundle dependency="true" start-level="${systemStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
-        <capability>http-service;provider:=pax-http</capability>
+        <capability>http-service;provider:=pax-web-http-jetty</capability>
         <conditional>
             <condition>webconsole</condition>
             <bundle start-level="${earlyStartLevel}">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/${karafVersion}</bundle>

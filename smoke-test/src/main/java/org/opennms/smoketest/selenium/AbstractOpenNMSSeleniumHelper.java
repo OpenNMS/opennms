@@ -24,6 +24,8 @@ package org.opennms.smoketest.selenium;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
@@ -82,6 +84,7 @@ import org.junit.runner.Description;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -500,17 +503,21 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected String handleAlert() {
-        return handleAlert(null);
+        return handleAlert(null, true);
     }
 
-    protected String handleAlert(final String expectedText) {
+    protected String handleAlert(final String expectedText, final boolean exactMatch) {
         LOG.debug("handleAlert: expectedText={}", expectedText);
 
         try {
             final Alert alert = getDriver().switchTo().alert();
             final String alertText = alert.getText();
             if (expectedText != null) {
-                assertEquals(expectedText, alertText);
+                if (exactMatch) {
+                    assertEquals(expectedText, alertText);
+                } else {
+                    assertThat(alertText, containsString(expectedText));
+                }
             }
             alert.dismiss();
             return alertText;
@@ -744,11 +751,19 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public WebElement clickElement(final By by) {
         return waitUntil(new Callable<WebElement>() {
             @Override public WebElement call() throws Exception {
-                final WebElement el = getElementImmediately(by);
+                final WebElement el = scrollToElement(by);
+                if (isCenterPointObscured(el)) {
+                    throw new ElementClickInterceptedException("Element is currently obscured: " + by);
+                }
                 el.click();
                 return el;
             }
         });
+    }
+
+    private boolean isCenterPointObscured(final WebElement element) {
+        final JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        return ElementClickGuards.isCenterPointObscured(executor, element);
     }
 
     /**

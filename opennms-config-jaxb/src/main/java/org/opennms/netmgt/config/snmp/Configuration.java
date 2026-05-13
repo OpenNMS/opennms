@@ -21,7 +21,10 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,23 +36,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Configuration implements Serializable {
     private static final long serialVersionUID = 6018795999027969844L;
 
+    protected static final String MASKED_PASSWORD = "******";
+
     /**
      * The proxy host to use when communicating with this agent
      */
+    @JsonProperty("proxyHost")
     @XmlAttribute(name="proxy-host")
-    private String m_proxyHost;
+    private String proxyHost;
 
     /**
      * Number of variables to send per SNMP request.
      */
+    @JsonProperty("maxVarsPerPdu")
     @XmlAttribute(name="max-vars-per-pdu")
-    private Integer m_maxVarsPerPdu;
+    private Integer maxVarsPerPdu;
 
     /**
      * Number of repetitions to send per get-bulk request.
      */
+    @JsonProperty("maxRepetitions")
     @XmlAttribute(name="max-repetitions")
-    private Integer m_maxRepetitions;
+    private Integer maxRepetitions;
 
     /**
      * (SNMP4J specific) Specifies the maximum number of bytes that may be
@@ -57,113 +65,132 @@ public class Configuration implements Serializable {
      * means to limit the size of outgoing PDU requests. Default is 65535,
      * must be at least 484.
      */
+    @JsonProperty("maxRequestSize")
     @XmlAttribute(name="max-request-size")
-    private Integer m_maxRequestSize;
+    private Integer maxRequestSize;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("securityName")
     @XmlAttribute(name="security-name")
-    private String m_securityName;
+    private String securityName;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("securityLevel")
     @XmlAttribute(name="security-level")
-    private Integer m_securityLevel;
+    private Integer securityLevel;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("authPassphrase")
     @XmlAttribute(name="auth-passphrase")
-    private String m_authPassphrase;
+    private String authPassphrase;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("authProtocol")
     @XmlAttribute(name="auth-protocol")
-    private String m_authProtocol;
+    private String authProtocol;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("engineId")
     @XmlAttribute(name="engine-id")
-    private String m_engineId;
+    private String engineId;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("contextEngineId")
     @XmlAttribute(name="context-engine-id")
-    private String m_contextEngineId;
+    private String contextEngineId;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("contextName")
     @XmlAttribute(name="context-name")
-    private String m_contextName;
+    private String contextName;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("privacyPassphrase")
     @XmlAttribute(name="privacy-passphrase")
-    private String m_privacyPassphrase;
+    private String privacyPassphrase;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("privacyProtocol")
     @XmlAttribute(name="privacy-protocol")
-    private String m_privacyProtocol;
+    private String privacyProtocol;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("enterpriseId")
     @XmlAttribute(name="enterprise-id")
-    private String m_enterpriseId;
+    private String enterpriseId;
 
     /**
      * If set, forces SNMP data collection to the specified version.
      */
+    @JsonProperty("version")
     @XmlAttribute(name="version")
-    private String m_version;
+    private String version;
 
     /**
      * Default write community string
      */
+    @JsonProperty("writeCommunity")
     @XmlAttribute(name="write-community")
-    private String m_writeCommunity;
+    private String writeCommunity;
 
     /**
      * Default read community string
      */
+    @JsonProperty("readCommunity")
     @XmlAttribute(name="read-community")
-    private String m_readCommunity;
+    private String readCommunity;
 
     /**
      * Default timeout (in milliseconds)
      */
+    @JsonProperty("timeout")
     @XmlAttribute(name="timeout")
-    private Integer m_timeout;
+    private Integer timeout;
 
     /**
      * Default number of retries
      */
+    @JsonProperty("retry")
     @XmlAttribute(name="retry")
-    private Integer m_retry;
+    private Integer retry;
 
     /**
      * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
      * requests are sent.
      */
+    @JsonProperty("port")
     @XmlAttribute(name="port")
-    private Integer m_port;
+    private Integer port;
 
 
+    @JsonProperty("ttl")
     @XmlAttribute(name="ttl")
-    private Long m_ttl;
+    private Long ttl;
 
 
+    @JsonProperty("encrypted")
     @XmlAttribute(name = "encrypted")
-    private Boolean m_encrypted;
+    private Boolean encrypted;
 
     public Configuration() {
         super();
@@ -214,31 +241,31 @@ public class Configuration implements Serializable {
     }
 
     public void deleteMaxRepetitions() {
-        m_maxRepetitions = null;
+        maxRepetitions = null;
     }
 
     public void deleteMaxRequestSize() {
-        m_maxRequestSize = null;
+        maxRequestSize = null;
     }
 
     public void deleteMaxVarsPerPdu() {
-        m_maxVarsPerPdu = null;
+        maxVarsPerPdu = null;
     }
 
     public void deletePort() {
-        m_port = null;
+        port = null;
     }
 
     public void deleteRetry() {
-        m_retry = null;
+        retry = null;
     }
 
     public void deleteSecurityLevel() {
-        m_securityLevel = null;
+        securityLevel = null;
     }
 
     public void deleteTimeout() {
-        m_timeout = null;
+        timeout = null;
     }
 
 
@@ -249,7 +276,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'AuthPassphrase'.
      */
     public final String getAuthPassphrase() {
-        return m_authPassphrase;
+        return authPassphrase;
     }
 
     /**
@@ -259,7 +286,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'AuthProtocol'.
      */
     public final String getAuthProtocol() {
-        return m_authProtocol;
+        return authProtocol;
     }
 
     /**
@@ -269,7 +296,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ContextEngineId'.
      */
     public final String getContextEngineId() {
-        return m_contextEngineId;
+        return contextEngineId;
     }
 
     /**
@@ -279,7 +306,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ContextName'.
      */
     public final String getContextName() {
-        return m_contextName;
+        return contextName;
     }
 
     /**
@@ -289,7 +316,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'EngineId'.
      */
     public final String getEngineId() {
-        return m_engineId;
+        return engineId;
     }
 
     /**
@@ -299,7 +326,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'EnterpriseId'.
      */
     public final String getEnterpriseId() {
-        return m_enterpriseId;
+        return enterpriseId;
     }
 
     /**
@@ -311,7 +338,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxRepetitions'.
      */
     public final Integer getMaxRepetitions() {
-        return m_maxRepetitions == null? 2 : m_maxRepetitions;
+        return maxRepetitions == null? 2 : maxRepetitions;
     }
 
     /**
@@ -324,7 +351,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxRequestSize'.
      */
     public final Integer getMaxRequestSize() {
-        return m_maxRequestSize == null? 65535 : m_maxRequestSize;
+        return maxRequestSize == null? 65535 : maxRequestSize;
     }
 
     /**
@@ -335,7 +362,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxVarsPerPdu'.
      */
     public final Integer getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu == null? 10 : m_maxVarsPerPdu;
+        return maxVarsPerPdu == null? 10 : maxVarsPerPdu;
     }
 
     /**
@@ -346,7 +373,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Port'.
      */
     public final Integer getPort() {
-        return m_port == null? 161 : m_port;
+        return port == null? 161 : port;
     }
 
     /**
@@ -356,7 +383,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'PrivacyPassphrase'.
      */
     public final String getPrivacyPassphrase() {
-        return m_privacyPassphrase;
+        return privacyPassphrase;
     }
 
     /**
@@ -366,7 +393,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'PrivacyProtocol'.
      */
     public final String getPrivacyProtocol() {
-        return m_privacyProtocol;
+        return privacyProtocol;
     }
 
     /**
@@ -377,7 +404,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ProxyHost'.
      */
     public final String getProxyHost() {
-        return m_proxyHost;
+        return proxyHost;
     }
 
     /**
@@ -387,7 +414,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ReadCommunity'.
      */
     public final String getReadCommunity() {
-        return m_readCommunity;
+        return readCommunity;
     }
 
     /**
@@ -397,17 +424,20 @@ public class Configuration implements Serializable {
      * @return the value of field 'Retry'.
      */
     public final Integer getRetry() {
-        return m_retry == null? 0 : m_retry;
+        return retry == null? 0 : retry;
     }
 
     /**
      * Returns the value of field 'securityLevel'. The field 'securityLevel' has
-     * the following description: SNMPv3
-     * 
+     * the following description: SNMPv3.
+     * Note, this will return null if field is null.
+     * Valid values are 1-3, so we do not want to return 0 if the field is null.
+     * Calling code should check 'hasSecurityLevel()' and substitute a default integer value if desired.
+     *
      * @return the value of field 'SecurityLevel'.
      */
     public final Integer getSecurityLevel() {
-        return m_securityLevel == null? 0 : m_securityLevel;
+        return securityLevel;
     }
 
     /**
@@ -417,7 +447,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'SecurityName'.
      */
     public final String getSecurityName() {
-        return m_securityName;
+        return securityName;
     }
 
     /**
@@ -427,7 +457,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Timeout'.
      */
     public final Integer getTimeout() {
-        return m_timeout == null? 0 : m_timeout;
+        return timeout == null? 0 : timeout;
     }
 
     /**
@@ -438,7 +468,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Version'.
      */
     public final String getVersion() {
-        return m_version;
+        return version;
     }
 
     /**
@@ -448,7 +478,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'WriteCommunity'.
      */
     public final String getWriteCommunity() {
-        return m_writeCommunity;
+        return writeCommunity;
     }
 
     /**
@@ -457,7 +487,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxRepetitions has been added
      */
     public boolean hasMaxRepetitions() {
-        return m_maxRepetitions != null;
+        return maxRepetitions != null;
     }
 
     /**
@@ -466,7 +496,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxRequestSize has been added
      */
     public boolean hasMaxRequestSize() {
-        return m_maxRequestSize != null;
+        return maxRequestSize != null;
     }
 
     /**
@@ -475,7 +505,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxVarsPerPdu has been added
      */
     public boolean hasMaxVarsPerPdu() {
-        return m_maxVarsPerPdu != null;
+        return maxVarsPerPdu != null;
     }
 
     /**
@@ -484,7 +514,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Port has been added
      */
     public boolean hasPort() {
-        return m_port != null;
+        return port != null;
     }
 
     /**
@@ -493,7 +523,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Retry has been added
      */
     public boolean hasRetry() {
-        return m_retry != null;
+        return retry != null;
     }
 
     /**
@@ -502,7 +532,7 @@ public class Configuration implements Serializable {
      * @return true if at least one SecurityLevel has been added
      */
     public boolean hasSecurityLevel() {
-        return m_securityLevel != null;
+        return securityLevel != null;
     }
 
     /**
@@ -511,7 +541,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Timeout has been added
      */
     public boolean hasTimeout() {
-        return m_timeout != null;
+        return timeout != null;
     }
 
 
@@ -520,7 +550,7 @@ public class Configuration implements Serializable {
      * @return true if there is ttl defined
      */
     public boolean hasTTL() {
-        return m_ttl != null;
+        return ttl != null;
     }
 
     /**
@@ -531,7 +561,7 @@ public class Configuration implements Serializable {
      *            the value of field 'authPassphrase'.
      */
     public final void setAuthPassphrase(final String authPassphrase) {
-        m_authPassphrase = authPassphrase == null? null : authPassphrase.intern();
+        this.authPassphrase = authPassphrase == null? null : authPassphrase.intern();
     }
 
     /**
@@ -542,7 +572,7 @@ public class Configuration implements Serializable {
      *            the value of field 'authProtocol'.
      */
     public final void setAuthProtocol(final String authProtocol) {
-        m_authProtocol = authProtocol == null? null : authProtocol.intern();
+        this.authProtocol = authProtocol == null? null : authProtocol.intern();
     }
 
     /**
@@ -553,7 +583,7 @@ public class Configuration implements Serializable {
      *            the value of field 'contextEngineId'.
      */
     public final void setContextEngineId(final String contextEngineId) {
-        m_contextEngineId = contextEngineId == null? null : contextEngineId.intern();
+        this.contextEngineId = contextEngineId == null? null : contextEngineId.intern();
     }
 
     /**
@@ -564,7 +594,7 @@ public class Configuration implements Serializable {
      *            the value of field 'contextName'.
      */
     public final void setContextName(final String contextName) {
-        m_contextName = contextName == null? null : contextName.intern();
+        this.contextName = contextName == null? null : contextName.intern();
     }
 
     /**
@@ -575,7 +605,7 @@ public class Configuration implements Serializable {
      *            the value of field 'engineId'.
      */
     public final void setEngineId(final String engineId) {
-        m_engineId = engineId == null? null : engineId.intern();
+        this.engineId = engineId == null? null : engineId.intern();
     }
 
     /**
@@ -586,7 +616,7 @@ public class Configuration implements Serializable {
      *            the value of field 'enterpriseId'.
      */
     public final void setEnterpriseId(final String enterpriseId) {
-        m_enterpriseId = enterpriseId == null? null : enterpriseId.intern();
+        this.enterpriseId = enterpriseId == null? null : enterpriseId.intern();
     }
 
     /**
@@ -599,7 +629,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxRepetitions'.
      */
     public final void setMaxRepetitions(final Integer maxRepetitions) {
-        m_maxRepetitions = maxRepetitions;
+        this.maxRepetitions = maxRepetitions;
     }
 
     /**
@@ -613,7 +643,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxRequestSize'.
      */
     public final void setMaxRequestSize(final Integer maxRequestSize) {
-        m_maxRequestSize = maxRequestSize;
+        this.maxRequestSize = maxRequestSize;
     }
 
     /**
@@ -625,7 +655,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxVarsPerPdu'.
      */
     public final void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
+        this.maxVarsPerPdu = maxVarsPerPdu;
     }
 
     /**
@@ -637,7 +667,7 @@ public class Configuration implements Serializable {
      *            the value of field 'port'.
      */
     public final void setPort(final Integer port) {
-        m_port = port;
+        this.port = port;
     }
 
     /**
@@ -648,7 +678,7 @@ public class Configuration implements Serializable {
      *            the value of field 'privacyPassphrase'.
      */
     public final void setPrivacyPassphrase(final String privacyPassphrase) {
-        m_privacyPassphrase = privacyPassphrase == null? null : privacyPassphrase.intern();
+        this.privacyPassphrase = privacyPassphrase == null? null : privacyPassphrase.intern();
     }
 
     /**
@@ -659,7 +689,7 @@ public class Configuration implements Serializable {
      *            the value of field 'privacyProtocol'.
      */
     public final void setPrivacyProtocol(final String privacyProtocol) {
-        m_privacyProtocol = privacyProtocol == null? null : privacyProtocol.intern();
+        this.privacyProtocol = privacyProtocol == null? null : privacyProtocol.intern();
     }
 
     /**
@@ -671,7 +701,7 @@ public class Configuration implements Serializable {
      *            the value of field 'proxyHost'.
      */
     public final void setProxyHost(final String proxyHost) {
-        m_proxyHost = proxyHost == null? null : proxyHost.intern();
+        this.proxyHost = proxyHost == null? null : proxyHost.intern();
     }
 
     /**
@@ -682,7 +712,7 @@ public class Configuration implements Serializable {
      *            the value of field 'readCommunity'.
      */
     public final void setReadCommunity(final String readCommunity) {
-        m_readCommunity = readCommunity == null? null : readCommunity.intern();
+        this.readCommunity = readCommunity == null? null : readCommunity.intern();
     }
 
     /**
@@ -693,18 +723,23 @@ public class Configuration implements Serializable {
      *            the value of field 'retry'.
      */
     public final void setRetry(final Integer retry) {
-        m_retry = retry;
+        this.retry = retry;
     }
 
     /**
      * Sets the value of field 'securityLevel'. The field 'securityLevel' has
      * the following description: SNMPv3
+     * This can be set to null or else a valid value from 1-3.
      * 
      * @param securityLevel
      *            the value of field 'securityLevel'.
      */
     public final void setSecurityLevel(final Integer securityLevel) {
-        m_securityLevel = securityLevel;
+        if (securityLevel == null) {
+            this.securityLevel = null;
+        } else {
+            this.securityLevel = (securityLevel >= 1 && securityLevel <= 3) ? securityLevel : 1;
+        }
     }
 
     /**
@@ -715,7 +750,7 @@ public class Configuration implements Serializable {
      *            the value of field 'securityName'.
      */
     public final void setSecurityName(final String securityName) {
-        m_securityName = securityName == null? null : securityName.intern();
+        this.securityName = securityName == null? null : securityName.intern();
     }
 
     /**
@@ -726,7 +761,7 @@ public class Configuration implements Serializable {
      *            the value of field 'timeout'.
      */
     public final void setTimeout(final Integer timeout) {
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     /**
@@ -738,7 +773,7 @@ public class Configuration implements Serializable {
      *            the value of field 'version'.
      */
     public final void setVersion(final String version) {
-        m_version = version == null? null : version.intern();
+        this.version = version == null? null : version.intern();
     }
 
     /**
@@ -749,52 +784,32 @@ public class Configuration implements Serializable {
      *            the value of field 'writeCommunity'.
      */
     public final void setWriteCommunity(final String writeCommunity) {
-        m_writeCommunity = writeCommunity == null? null : writeCommunity.intern();
+        this.writeCommunity = writeCommunity == null? null : writeCommunity.intern();
     }
 
     public Long getTTL() {
-        return m_ttl;
+        return ttl;
     }
 
     public void setTTL(Long ttl) {
-        m_ttl = ttl;
+        this.ttl = ttl;
     }
 
 
     public Boolean getEncrypted() {
-        return m_encrypted != null ? m_encrypted : false;
+        return encrypted != null ? encrypted : false;
     }
 
     public void setEncrypted(Boolean encrypted) {
-        m_encrypted = encrypted;
+        this.encrypted = encrypted;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_authPassphrase == null) ? 0 : m_authPassphrase.hashCode());
-        result = prime * result + ((m_authProtocol == null) ? 0 : m_authProtocol.hashCode());
-        result = prime * result + ((m_contextEngineId == null) ? 0 : m_contextEngineId.hashCode());
-        result = prime * result + ((m_contextName == null) ? 0 : m_contextName.hashCode());
-        result = prime * result + ((m_engineId == null) ? 0 : m_engineId.hashCode());
-        result = prime * result + ((m_enterpriseId == null) ? 0 : m_enterpriseId.hashCode());
-        result = prime * result + ((m_maxRepetitions == null) ? 0 : m_maxRepetitions.hashCode());
-        result = prime * result + ((m_maxRequestSize == null) ? 0 : m_maxRequestSize.hashCode());
-        result = prime * result + ((m_maxVarsPerPdu == null) ? 0 : m_maxVarsPerPdu.hashCode());
-        result = prime * result + ((m_port == null) ? 0 : m_port.hashCode());
-        result = prime * result + ((m_privacyPassphrase == null) ? 0 : m_privacyPassphrase.hashCode());
-        result = prime * result + ((m_privacyProtocol == null) ? 0 : m_privacyProtocol.hashCode());
-        result = prime * result + ((m_proxyHost == null) ? 0 : m_proxyHost.hashCode());
-        result = prime * result + ((m_readCommunity == null) ? 0 : m_readCommunity.hashCode());
-        result = prime * result + ((m_retry == null) ? 0 : m_retry.hashCode());
-        result = prime * result + ((m_securityLevel == null) ? 0 : m_securityLevel.hashCode());
-        result = prime * result + ((m_securityName == null) ? 0 : m_securityName.hashCode());
-        result = prime * result + ((m_timeout == null) ? 0 : m_timeout.hashCode());
-        result = prime * result + ((m_version == null) ? 0 : m_version.hashCode());
-        result = prime * result + ((m_writeCommunity == null) ? 0 : m_writeCommunity.hashCode());
-        result = prime * result + ((m_ttl == null) ? 0 : m_ttl.hashCode());
-        return result;
+        return Objects.hash(authPassphrase, authProtocol, contextEngineId, contextName, engineId,
+                enterpriseId, maxRepetitions, maxRequestSize, maxVarsPerPdu, port, privacyPassphrase,
+                privacyProtocol, proxyHost, readCommunity, retry, securityLevel, securityName, timeout,
+                version, writeCommunity, ttl, encrypted);
     }
 
     @Override
@@ -809,163 +824,66 @@ public class Configuration implements Serializable {
             return false;
         }
         final Configuration other = (Configuration) obj;
-        if (m_authPassphrase == null) {
-            if (other.m_authPassphrase != null) {
-                return false;
-            }
-        } else if (!m_authPassphrase.equals(other.m_authPassphrase)) {
-            return false;
-        }
-        if (m_authProtocol == null) {
-            if (other.m_authProtocol != null) {
-                return false;
-            }
-        } else if (!m_authProtocol.equals(other.m_authProtocol)) {
-            return false;
-        }
-        if (m_contextEngineId == null) {
-            if (other.m_contextEngineId != null) {
-                return false;
-            }
-        } else if (!m_contextEngineId.equals(other.m_contextEngineId)) {
-            return false;
-        }
-        if (m_contextName == null) {
-            if (other.m_contextName != null) {
-                return false;
-            }
-        } else if (!m_contextName.equals(other.m_contextName)) {
-            return false;
-        }
-        if (m_engineId == null) {
-            if (other.m_engineId != null) {
-                return false;
-            }
-        } else if (!m_engineId.equals(other.m_engineId)) {
-            return false;
-        }
-        if (m_enterpriseId == null) {
-            if (other.m_enterpriseId != null) {
-                return false;
-            }
-        } else if (!m_enterpriseId.equals(other.m_enterpriseId)) {
-            return false;
-        }
-        if (m_maxRepetitions == null) {
-            if (other.m_maxRepetitions != null) {
-                return false;
-            }
-        } else if (!m_maxRepetitions.equals(other.m_maxRepetitions)) {
-            return false;
-        }
-        if (m_maxRequestSize == null) {
-            if (other.m_maxRequestSize != null) {
-                return false;
-            }
-        } else if (!m_maxRequestSize.equals(other.m_maxRequestSize)) {
-            return false;
-        }
-        if (m_maxVarsPerPdu == null) {
-            if (other.m_maxVarsPerPdu != null) {
-                return false;
-            }
-        } else if (!m_maxVarsPerPdu.equals(other.m_maxVarsPerPdu)) {
-            return false;
-        }
-        if (m_port == null) {
-            if (other.m_port != null) {
-                return false;
-            }
-        } else if (!m_port.equals(other.m_port)) {
-            return false;
-        }
-        if (m_privacyPassphrase == null) {
-            if (other.m_privacyPassphrase != null) {
-                return false;
-            }
-        } else if (!m_privacyPassphrase.equals(other.m_privacyPassphrase)) {
-            return false;
-        }
-        if (m_privacyProtocol == null) {
-            if (other.m_privacyProtocol != null) {
-                return false;
-            }
-        } else if (!m_privacyProtocol.equals(other.m_privacyProtocol)) {
-            return false;
-        }
-        if (m_proxyHost == null) {
-            if (other.m_proxyHost != null) {
-                return false;
-            }
-        } else if (!m_proxyHost.equals(other.m_proxyHost)) {
-            return false;
-        }
-        if (m_readCommunity == null) {
-            if (other.m_readCommunity != null) {
-                return false;
-            }
-        } else if (!m_readCommunity.equals(other.m_readCommunity)) {
-            return false;
-        }
-        if (m_retry == null) {
-            if (other.m_retry != null) {
-                return false;
-            }
-        } else if (!m_retry.equals(other.m_retry)) {
-            return false;
-        }
-        if (m_securityLevel == null) {
-            if (other.m_securityLevel != null) {
-                return false;
-            }
-        } else if (!m_securityLevel.equals(other.m_securityLevel)) {
-            return false;
-        }
-        if (m_securityName == null) {
-            if (other.m_securityName != null) {
-                return false;
-            }
-        } else if (!m_securityName.equals(other.m_securityName)) {
-            return false;
-        }
-        if (m_timeout == null) {
-            if (other.m_timeout != null) {
-                return false;
-            }
-        } else if (!m_timeout.equals(other.m_timeout)) {
-            return false;
-        }
-        if (m_version == null) {
-            if (other.m_version != null) {
-                return false;
-            }
-        } else if (!m_version.equals(other.m_version)) {
-            return false;
-        }
-        if (m_writeCommunity == null) {
-            if (other.m_writeCommunity != null) {
-                return false;
-            }
-        } else if (!m_writeCommunity.equals(other.m_writeCommunity)) {
-            return false;
-        }
-        if (m_ttl == null) {
-            if (other.m_ttl != null) {
-                return false;
-            }
-        } else if (!m_ttl.equals(other.m_ttl)) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(authPassphrase, other.authPassphrase)
+                && Objects.equals(authProtocol, other.authProtocol)
+                && Objects.equals(contextEngineId, other.contextEngineId)
+                && Objects.equals(contextName, other.contextName)
+                && Objects.equals(engineId, other.engineId)
+                && Objects.equals(enterpriseId, other.enterpriseId)
+                && Objects.equals(maxRepetitions, other.maxRepetitions)
+                && Objects.equals(maxRequestSize, other.maxRequestSize)
+                && Objects.equals(maxVarsPerPdu, other.maxVarsPerPdu)
+                && Objects.equals(port, other.port)
+                && Objects.equals(privacyPassphrase, other.privacyPassphrase)
+                && Objects.equals(privacyProtocol, other.privacyProtocol)
+                && Objects.equals(proxyHost, other.proxyHost)
+                && Objects.equals(readCommunity, other.readCommunity)
+                && Objects.equals(retry, other.retry)
+                && Objects.equals(securityLevel, other.securityLevel)
+                && Objects.equals(securityName, other.securityName)
+                && Objects.equals(timeout, other.timeout)
+                && Objects.equals(version, other.version)
+                && Objects.equals(writeCommunity, other.writeCommunity)
+                && Objects.equals(ttl, other.ttl)
+                && Objects.equals(encrypted, other.encrypted);
     }
 
     @Override
     public String toString() {
-        return "Configuration [proxyHost=" + m_proxyHost + ", maxVarsPerPdu=" + m_maxVarsPerPdu + ", maxRepetitions=" + m_maxRepetitions + ", maxRequestSize=" + m_maxRequestSize + ", securityName="
-                + m_securityName + ", securityLevel=" + m_securityLevel + ", authPassphrase=" + m_authPassphrase + ", authProtocol=" + m_authProtocol + ", engineId=" + m_engineId
-                + ", contextEngineId=" + m_contextEngineId + ", contextName=" + m_contextName + ", privacyPassphrase=" + m_privacyPassphrase + ", privacyProtocol=" + m_privacyProtocol
-                + ", enterpriseId=" + m_enterpriseId + ", version=" + m_version + ", writeCommunity=" + m_writeCommunity + ", readCommunity=" + m_readCommunity + ", timeout=" + m_timeout
-                + ", retry=" + m_retry + ", port=" + m_port + ", ttl=" + m_ttl + ", encrypted=" + m_encrypted + "]";
+        return "Configuration [" +
+                "proxyHost=" + proxyHost +
+                ", maxVarsPerPdu=" + maxVarsPerPdu +
+                ", maxRepetitions=" + maxRepetitions +
+                ", maxRequestSize=" + maxRequestSize +
+                ", securityName=" + securityName +
+                ", securityLevel=" + securityLevel +
+                ", authPassphrase=" + MASKED_PASSWORD +
+                ", authProtocol=" + authProtocol +
+                ", engineId=" + engineId +
+                ", contextEngineId=" + contextEngineId +
+                ", contextName=" + contextName +
+                ", privacyPassphrase=" + MASKED_PASSWORD +
+                ", privacyProtocol=" + privacyProtocol +
+                ", enterpriseId=" + enterpriseId +
+                ", version=" + version +
+                ", writeCommunity=" + MASKED_PASSWORD +
+                ", readCommunity=" + MASKED_PASSWORD +
+                ", timeout=" + timeout +
+                ", retry=" + retry +
+                ", port=" + port +
+                ", ttl=" + ttl +
+                ", encrypted=" + encrypted +
+                "]";
     }
 
+    /**
+     * Security level needs to be between 1-3. See org.opennms.netmgt.snmp.SnmpConfiguration for valid values.
+     * This sets it to null if it is an invalid value such as 0.
+     */
+    public void fixSecurityLevel() {
+        if (securityLevel != null && (securityLevel < 1 || securityLevel > 3)) {
+            securityLevel = null;
+        }
+    }
 }

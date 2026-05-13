@@ -1,0 +1,65 @@
+[[ga-snmp-datacollection-config-rest-api]]
+= SNMP Data Collection Config REST API (v2)
+:description: Manage SNMP data collection config (sources, profiles, MIB groups, resource types, system definitions) through the OpenNMS REST v2 API.
+
+You can manage SNMP data collection over REST.
+The same surface is used by the *Admin -> Manage SNMP Data Collection Config* page; the API is useful for automation, bulk imports, and version-controlled tooling.
+
+The base path is `/api/v2/datacollectionconf`.
+
+== Upload XML
+
+Use this endpoint to import legacy `datacollection-config.xml` and `etc/datacollection/*.xml` files, or any externally version-controlled SNMP data collection definition.
+
+Each `upload` part must be an XML file whose root element is either:
+
+* `<datacollection-group>` — a source definition (registered as a new source on first upload, updated on subsequent uploads).
+* `<datacollection-config>` — a profile-driver file with `<snmp-collection>` entries. At most one is allowed per request; its `<include-collection>` entries drive how new sources are attached.
+
+How `profileNames` is applied depends on the batch composition:
+
+[options="header"]
+|===
+| Batch composition | `profileNames` requirement
+
+| All-new sources
+| Required. New sources are attached to the named profiles.
+
+| All-update sources (every source already exists in the DB)
+| Optional. If non-empty, applied additively to every source.
+
+| Mixed (≥1 new and ≥1 update)
+| Required for the new sources; ignored for updates. Use `/profiles/{profileId}/sources` to change existing memberships.
+
+| `<datacollection-config>` present in the batch
+| Ignored — the config's `<include-collection>` entries drive attachment.
+|===
+
+.Upload one or more source XML files and attach them to the `default` profile
+[source, bash]
+----
+curl -u admin:admin \
+  -X POST "http://localhost:8980/opennms/api/v2/datacollectionconf/upload" \
+  -F "upload=@/opt/opennms/etc_archive/datacollection/cisco.xml;type=application/xml" \
+  -F "upload=@/opt/opennms/etc_archive/datacollection/juniper.xml;type=application/xml" \
+  -F "profileNames=default"
+----
+
+The response body contains per-file `success` and `errors` arrays so partial failures are visible without rolling back the whole batch.
+
+[options="header"]
+|===
+| Status | Meaning
+
+| `200 OK`
+| Upload processed. Inspect the response body for per-file success/error details.
+
+| `400 Bad Request`
+| Invalid XML, missing required `profileNames` for an all-new source-only upload, or other request error.
+|===
+
+== Other endpoints
+
+The full set of endpoints (CRUD for profiles, sources, MIB groups, resource types, system definitions; pagination and filter helpers) is exposed under the same `/api/v2/datacollectionconf` base path.
+
+The OpenAPI definition is published at `/api/v2/openapi.json` and is the authoritative reference; the admin page consumes the same endpoints, so any operation surfaced in the UI has a corresponding REST call.

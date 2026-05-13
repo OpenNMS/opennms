@@ -68,6 +68,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -504,7 +505,8 @@ public class BsmdIT {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // Remove Alarm Data
         REQUIRED_EVENT_UEIS.forEach(eventUei -> eventConfDao.getEvents(eventUei).get(0).setAlarmData(null));
@@ -527,7 +529,8 @@ public class BsmdIT {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // change reduction key
         REQUIRED_EVENT_UEIS.forEach(uei -> eventConfDao.getEvents(uei).get(0).getAlarmData().setReductionKey("custom"));

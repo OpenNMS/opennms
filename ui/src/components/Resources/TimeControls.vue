@@ -172,6 +172,8 @@ const applyCustomTime = () => {
 .graph-controls {
   .menu {
     max-width: 550px;
+    position: relative;
+    min-width: 40em;
   }
   .menu-name {
     display: none !important;

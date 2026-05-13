@@ -231,7 +231,7 @@ If the successMatch expression is not found on the page, then the page fails.
 
 If the monitor was able to successfully log in, then the next page is processed.
 
-In the example, the monitor navigates to the Event page, to ensure that it finds the text "Event Queries" on the page.
+In the example, the monitor navigates to the Event list page, to ensure that it finds the text "View all events" on the page.
 Finally, the monitor calls the URL of the logout page to close the session.
 Using the locationMatch parameter verifies that the logout was successful and a redirect was triggered.
 
@@ -265,9 +265,9 @@ Note that you must include the `monitor` section for each service in your defini
       <page path="/opennms/index.jsp" <1>
             port="8980" <2>
             successMatch="Log Out" /> <3>
-      <page path="/opennms/event/index" <1>
+      <page path="/opennms/event/list" <1>
             port="8980" <2>
-            successMatch="Event Queries" /> <3>
+            successMatch="View all events" /> <3>
       <page path="/opennms/j_spring_security_logout" <1>
             port="8980" <2>
             method="POST" <4>
@@ -383,10 +383,10 @@ Note that you must include the `monitor` section for each service in your defini
         <parameter key="j_password"
                    value="${password}" />
       </page>
-      <page path="/opennms/event/index.jsp" <2>
+      <page path="/opennms/event/list" <2>
             port="80" <3>
             virtual-host="demo.opennms.org" <4>
-            successMatch="Event Queries" /> <5>
+            successMatch="View all events" /> <5>
       <page path="/opennms/j_acegi_logout" <2>
             port="80" <3>
             virtual-host="demo.opennms.org" <4>
@@ -459,7 +459,7 @@ Note that you must include the `monitor` section for each service in your defini
       <page path="/opennms/acegilogin.jsp" <1>
             port="8980" <2>
             ds-name="login-page"/> <3>
-      <page path="/opennms/event/index.jsp" <1>
+      <page path="/opennms/event/list" <1>
             port="8980" <2>
             ds-name="event-page"/> <3>
     </page-sequence>

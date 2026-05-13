@@ -21,7 +21,6 @@
     <include-collection dataCollectionGroup="Printers"/>
     <include-collection dataCollectionGroup="Routers"/>
     <include-collection dataCollectionGroup="SUN Microsystems"/>
-    <include-collection dataCollectionGroup="WMI"/>
 
     <groups>
       <group name="cisco-frame-relay" ifType="all">

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
@@ -71,8 +71,7 @@ describe('EventConfigFilesUploadReportDialog', () => {
   it('renders the dialog when visible is true', () => {
     expect(wrapper.findComponent(FeatherDialog).exists()).toBe(true)
     expect(wrapper.findComponent(FeatherDialog).props('labels')).toEqual({
-      title: 'Upload Report',
-      close: 'Close'
+      title: 'Upload Report'
     })
   })
 
@@ -132,18 +131,18 @@ describe('EventConfigFilesUploadReportDialog', () => {
   })
 
   it('calls fetchEventConfigs and closes dialog when Close button is clicked', async () => {
-    const closeButton = wrapper.findAllComponents(FeatherButton).at(0)
-    expect(closeButton.exists()).toBe(true)
-    await closeButton.trigger('click')
+    const closeButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Close'))
+    expect(closeButton?.exists()).toBe(true)
+    await closeButton?.trigger('click')
     await flushPromises()
     expect(store.fetchEventConfigs).toHaveBeenCalled()
     expect(store.$state.uploadedEventConfigFilesReportDialogState.visible).toBe(false)
   })
 
   it('calls fetchEventConfigs, resets active tab, and closes dialog when View Uploaded Files button is clicked', async () => {
-    const viewButton = wrapper.findAllComponents(FeatherButton).at(1)
-    expect(viewButton.exists()).toBe(true)
-    await viewButton.trigger('click')
+    const viewButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('View Uploaded Files'))
+    expect(viewButton?.exists()).toBe(true)
+    await viewButton?.trigger('click')
     await flushPromises()
     expect(store.fetchEventConfigs).toHaveBeenCalled()
     expect(store.resetActiveTab).toHaveBeenCalled()

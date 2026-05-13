@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.measurements</artifactId>
-    <version>35.0.5</version>
+    <version>36.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.measurements</groupId>
@@ -23,8 +23,8 @@
             </goals>
             <configuration>
               <!-- To load the jar file into jaspersoft studio it is required to be Java 1.7 compatible -->
-              <source>1.7</source>
-              <target>1.7</target>
+              <source>1.8</source>
+              <target>1.8</target>
             </configuration>
           </execution>
         </executions>

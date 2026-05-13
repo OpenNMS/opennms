@@ -44,7 +44,7 @@ export default defineConfig({
       '~@featherds': '@featherds',
       './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
     },
-    dedupe: ['vue']
+    dedupe: ['vue', 'primevue']
   },
   plugins: [
     vue({
@@ -65,9 +65,6 @@ export default defineConfig({
       }
     })
   ],
-  define: {
-    'process.env': process.env
-  },
   test: {
     dir: './tests',
     globals: true,
@@ -80,7 +77,8 @@ export default defineConfig({
         // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
         // https://github.com/vitest-dev/vitest/issues/3862
         inline: [
-          /@featherds\/\w+/
+          /@featherds\/\w+/,
+          /primevue/
         ]
       }
     }

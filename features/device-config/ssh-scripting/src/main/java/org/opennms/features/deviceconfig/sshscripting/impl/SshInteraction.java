@@ -27,6 +27,23 @@ public interface SshInteraction {
 
     void await(String string) throws Exception;
 
+    /**
+     * Marks the current position in the SSH session's stdout stream as the start of the
+     * device configuration capture.  All output received after this point (up to the end
+     * of the script) is returned in {@link org.opennms.features.deviceconfig.sshscripting.SshScriptingService.Result#capturedConfig}.
+     */
+    void startCapture() throws Exception;
+
+    /**
+     * Awaits the given string in the session output, then atomically marks the position
+     * immediately after the match as the capture start point.  Unlike calling
+     * {@link #await(String)} followed by {@link #startCapture()}, this method sets the
+     * capture position while still holding the internal lock on the await buffer, so bytes
+     * that arrive between the match and the capture-point record cannot push the start past
+     * the actual config output.
+     */
+    void awaitAndCapture(String string) throws Exception;
+
     String replaceVars(String string);
 
 }

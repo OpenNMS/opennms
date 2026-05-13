@@ -4,7 +4,7 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@featherds/dialog', () => ({
@@ -20,6 +20,7 @@ describe('DeleteEventConfigSourceDialog', () => {
   let store: ReturnType<typeof useEventConfigStore>
 
   beforeEach(async () => {
+    vi.clearAllMocks()
     const pinia = createTestingPinia({
       createSpy: vi.fn,
       stubActions: false
@@ -83,7 +84,7 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('calls hideDeleteEventConfigSourceModal when Cancel button is clicked', async () => {
-    const cancelButton = wrapper.findAllComponents(FeatherButton).at(0)
+    const cancelButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Cancel'))
     expect(cancelButton.exists()).toBe(true)
     await cancelButton.trigger('click')
     expect(store.hideDeleteEventConfigSourceModal).toHaveBeenCalled()
@@ -96,7 +97,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       totalRecords: 0
     })
     vi.spyOn(eventConfigService, 'getAllSourceNames').mockResolvedValue([])
-    const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
+    const deleteButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
     expect(deleteButton.exists()).toBe(true)
     await deleteButton.trigger('click')
     await flushPromises()
@@ -158,3 +159,5 @@ describe('DeleteEventConfigSourceDialog', () => {
     expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
   })
 })
+
+

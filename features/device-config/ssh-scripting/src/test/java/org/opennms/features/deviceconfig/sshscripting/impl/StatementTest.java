@@ -22,6 +22,7 @@
 package org.opennms.features.deviceconfig.sshscripting.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -48,6 +49,37 @@ public class StatementTest {
         assertThat(either.get().get(0).string, is("abc"));
         assertThat(either.get().get(1).statementType, is(Statement.StatementType.await));
         assertThat(either.get().get(1).string, is("123"));
+    }
+
+    @Test
+    public void parsesCapture() {
+        var stmt = Statement.parseStatement("capture:");
+        assertThat(stmt, notNullValue());
+        assertThat(stmt.statementType, is(Statement.StatementType.capture));
+    }
+
+    @Test
+    public void parsesScriptWithCapture() {
+        var either = Statement.parseScript("send: show running-config\ncapture:\nawait: #");
+        assertThat(either.isRight(), is(true));
+        assertThat(either.get().size(), is(3));
+        assertThat(either.get().get(0).statementType, is(Statement.StatementType.send));
+        assertThat(either.get().get(1).statementType, is(Statement.StatementType.capture));
+        assertThat(either.get().get(2).statementType, is(Statement.StatementType.await));
+    }
+
+    @Test
+    public void captureWithArgument() {
+        var stmt = Statement.parseStatement("capture: show running-config");
+        assertThat(stmt, notNullValue());
+        assertThat(stmt.statementType, is(Statement.StatementType.capture));
+        assertThat(stmt.string, is("show running-config"));
+    }
+
+    @Test
+    public void captureWithoutColonIsNotRecognized() {
+        var stmt = Statement.parseStatement("capture");
+        assertThat(stmt, org.hamcrest.CoreMatchers.nullValue());
     }
 
 }

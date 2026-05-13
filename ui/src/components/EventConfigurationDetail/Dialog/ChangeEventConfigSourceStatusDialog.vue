@@ -1,44 +1,29 @@
 <template>
-  <div class="change-event-conf-event-status-dialog">
-    <FeatherDialog
-      v-model="store.changeEventConfigSourceStatusDialogState.visible"
-      :labels="labels"
-      hide-close
-      @hidden="store.hideChangeEventConfigSourceStatusDialog()"
-      data-test="feather-dialog"
-    >
-      <div class="modal-body">
-        <p v-html="getMessage()"></p>
-        <p v-if="store.changeEventConfigSourceStatusDialogState.eventConfigSource?.vendor === VENDOR_OPENNMS">
-          <strong>Note: Changing the status of an OpenNMS event configuration source may effect the OpenNMS system functionality. </strong>
-        </p>
-        <p><strong>Are you sure you want to proceed?</strong></p>
-      </div>
-      <template v-slot:footer>
-        <FeatherButton @click="store.hideChangeEventConfigSourceStatusDialog()"> Cancel </FeatherButton>
-        <FeatherButton
-          primary
-          @click="changeStatus()"
-        >
-          Save
-        </FeatherButton>
-      </template>
-    </FeatherDialog>
-  </div>
+  <ConfirmationDialog
+    :visible="store.changeEventConfigSourceStatusDialogState.visible"
+    title="Change Event Configuration Source Status"
+    action-button-text="Save"
+    @cancel="store.hideChangeEventConfigSourceStatusDialog()"
+    @ok="changeStatus()"
+  >
+    <template #content>
+      <p v-html="getMessage()"></p>
+      <p v-if="store.changeEventConfigSourceStatusDialogState.eventConfigSource?.vendor === VENDOR_OPENNMS">
+        <strong>Note: Changing the status of an OpenNMS event configuration source may effect the OpenNMS system functionality. </strong>
+      </p>
+      <p><strong>Are you sure you want to proceed?</strong></p>
+    </template>
+  </ConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
+import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigDetailStore()
 const { showSnackBar } = useSnackbar()
-const labels = {
-  title: 'Change Event Configuration Source Status'
-}
 
 const getMessage = () => {
   const isEnabled = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.enabled
@@ -69,4 +54,3 @@ const changeStatus = async () => {
 </script>
 
 <style scoped lang="scss"></style>
-

@@ -22,10 +22,21 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
+
+vi.mock('@/services', () => ({
+  default: {
+    getAliases: vi.fn().mockResolvedValue([]),
+    getAllCredentials: vi.fn().mockResolvedValue([]),
+    getCredentialsByAlias: vi.fn().mockResolvedValue(null),
+    addCredentials: vi.fn().mockResolvedValue(true),
+    updateCredentials: vi.fn().mockResolvedValue(true)
+  }
+}))
 
 const mockCredentials: SCVCredentials = {
   alias: 'alias',
@@ -34,7 +45,7 @@ const mockCredentials: SCVCredentials = {
   attributes: {}
 }
 
-describe('scvStore test', () => {
+describe('scv test', () => {
   let wrapper: any
 
   beforeEach(() => {
@@ -71,6 +82,24 @@ describe('scvStore test', () => {
     scvStore.aliases = ['alias1']
     // start to create new with alias1
     await aliasInput.setValue('alias1')
+    // expect add btn to remain disabled
+    expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+    // replace with alias2
+    await aliasInput.setValue('alias2')
+    // expect add btn to be enabled
+    expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
+  })
+
+  test('the user may not add a reserved alias', async () => {
+    const scvStore = useScvStore()
+
+    const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
+    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+
+    // add alias1 to the list of current aliases
+    scvStore.aliases = ['alias1']
+    // start to create new with SCV_GET_ALL_ALIAS
+    await aliasInput.setValue(SCV_GET_ALL_ALIAS)
     // expect add btn to remain disabled
     expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
     // replace with alias2
