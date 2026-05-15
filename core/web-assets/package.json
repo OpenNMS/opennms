@@ -129,6 +129,7 @@
     },
     "overrides": {
         "atob": "^2.1.0",
+        "backshift": "github:OpenNMS/backshift#v1.3.5",
         "cipher-base": "~1.0.6",
         "clean-css": "^4.1.11",
         "cross-spawn": "^7.0.6",
