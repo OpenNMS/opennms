@@ -158,6 +158,7 @@
                     {{ source.enabled ? 'Disable' : 'Enable' }} Source
                   </FeatherDropdownItem>
                   <FeatherDropdownItem
+                    v-if="!isPluginSourced(source)"
                     data-test="delete-source-button"
                     @click="openDeleteCollectionSourceDialog(source)"
                   >
@@ -210,6 +211,7 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources, getAllSnmpCollectionProfiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile } from '@/types/snmpDataCollection'

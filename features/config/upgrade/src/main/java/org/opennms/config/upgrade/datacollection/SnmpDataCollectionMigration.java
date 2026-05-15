@@ -515,7 +515,7 @@ public class SnmpDataCollectionMigration {
             @SuppressWarnings("unchecked")
             final T result = (T) unmarshaller.unmarshal(source);
             return result;
-        } catch (JAXBException | SAXException | ParserConfigurationException | java.io.IOException e) {
+        } catch (JAXBException | SAXException | ParserConfigurationException | IOException e) {
             throw new SQLException("Failed to unmarshal " + file.getAbsolutePath(), e);
         }
     }

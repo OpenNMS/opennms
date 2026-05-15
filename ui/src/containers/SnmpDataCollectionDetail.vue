@@ -51,6 +51,7 @@
           Disable Source
         </FeatherButton>
         <FeatherButton
+          v-if="!isPluginSourced(store.selectedCollectionSource)"
           secondary
           data-test="delete-source"
           @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
@@ -145,6 +146,7 @@ import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { deleteSnmpCollectionSources, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'

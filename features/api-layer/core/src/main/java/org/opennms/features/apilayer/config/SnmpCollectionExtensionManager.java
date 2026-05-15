@@ -21,13 +21,14 @@
  */
 package org.opennms.features.apilayer.config;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension;
 import org.opennms.integration.api.v1.config.datacollection.SnmpDataCollection;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DataCollectionGroups;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -37,14 +38,23 @@ import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SnmpCollectionExtensionManager extends ConfigExtensionManager<SnmpCollectionExtension, DataCollectionGroups> {
 
-    private final DataCollectionConfigDao dataCollectionConfigDao;
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionExtensionManager.class);
 
-    public SnmpCollectionExtensionManager(DataCollectionConfigDao dataCollectionConfigDao) {
+    private final SnmpDataCollectionSyncToDb syncToDb;
+    private final SnmpDataCollectionConfigLoader configLoader;
+
+    public SnmpCollectionExtensionManager(final SnmpDataCollectionSyncToDb syncToDb,
+                                          final SnmpDataCollectionConfigLoader configLoader) {
         super(DataCollectionGroups.class, new DataCollectionGroups());
-        this.dataCollectionConfigDao = dataCollectionConfigDao;
+        this.syncToDb = Objects.requireNonNull(syncToDb);
+        this.configLoader = Objects.requireNonNull(configLoader);
     }
 
     @Override
@@ -57,7 +67,30 @@ public class SnmpCollectionExtensionManager extends ConfigExtensionManager<SnmpC
 
     @Override
     protected void triggerReload() {
-        dataCollectionConfigDao.reload();
+        try {
+            final List<DatacollectionGroup> flattened = flatten(getObject());
+            final boolean changed = syncToDb.syncPluginGroupsToDb(flattened);
+            if (changed) {
+                LOG.debug("Plugin SNMP data collection sync produced changes; scheduling runtime reload.");
+                configLoader.scheduleDataCollectionConfigReload();
+            } else {
+                LOG.debug("Plugin SNMP data collection sync produced no changes; skipping runtime reload.");
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to sync plugin SNMP data collection extensions to database", e);
+        }
+    }
+
+    /** Flatten the per-collection map of plugin groups into one list for the sync helper. */
+    private static List<DatacollectionGroup> flatten(final DataCollectionGroups aggregated) {
+        if (aggregated == null) {
+            return List.of();
+        }
+        final List<DatacollectionGroup> out = new ArrayList<>();
+        for (final String collectionName : aggregated.getSnmpCollectionNames()) {
+            out.addAll(aggregated.getDataCollectionGroup(collectionName));
+        }
+        return out;
     }
 
 

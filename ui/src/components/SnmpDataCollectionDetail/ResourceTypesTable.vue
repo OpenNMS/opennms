@@ -27,7 +27,10 @@
         </div>
       </div>
       <div class="section-right">
-        <div class="add">
+        <div
+          class="add"
+          v-if="!isPluginSourced(store.selectedCollectionSource)"
+        >
           <FeatherButton
             secondary
             data-test="add-resource-type-button"
@@ -84,6 +87,7 @@
               <td>
                 <div class="action-container">
                   <FeatherButton
+                    v-if="!isPluginSourced(store.selectedCollectionSource)"
                     icon="Edit"
                     :title="`Edit ${resourceType.name}`"
                     data-test="edit-button"
@@ -110,6 +114,7 @@
                       {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
+                      v-if="!isPluginSourced(store.selectedCollectionSource)"
                       data-test="delete-resource-type-button"
                       @click="openResourceTypeDeleteDialog(resourceType)"
                     >
@@ -189,6 +194,7 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
