@@ -141,7 +141,7 @@ public class DataCollectionConfLifecycleIT {
     @After
     public void wipePluginSources() {
         try {
-            syncToDb.syncPluginGroupsToDb(List.of());
+            syncToDb.syncPluginGroupsToDb(Map.of());
         } catch (Exception ignored) {
             // best-effort cleanup; subsequent tests should not depend on this succeeding
         }
@@ -498,17 +498,8 @@ public class DataCollectionConfLifecycleIT {
 
     // ─── Plugin sync round-trip ────────────────────────────────────────
 
-    /**
-     * Round-trip the plugin sync path that
-     * {@link org.opennms.features.apilayer.config.SnmpCollectionExtensionManager}
-     * drives in production: a plugin-contributed group is persisted via
-     * {@link org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb}, the
-     * runtime reload picks it up, and the source becomes attachable to a
-     * profile via the existing REST endpoint. Then we drop it from the
-     * aggregated set and assert it disappears.
-     */
     @Test
-    public void pluginSync_publishesGroup_andRuntimeReloadPicksItUp() throws Exception {
+    public void pluginSync_autoAttachesToTargetCollection_byCollectionName() throws Exception {
         uploadBaseline();
         final SnmpCollectionProfile defaultProfile = profileDao.findByName("default");
         assertNotNull("'default' profile should exist after upload", defaultProfile);
@@ -516,34 +507,30 @@ public class DataCollectionConfLifecycleIT {
         final String pluginSourceName = "plugin-test-source";
         final String pluginGroupName = "plugin-test-group";
 
-        // 1. Plugin contributes a group via the sync helper (the same call the
-        //    OSGi-bound extension manager makes inside triggerReload()).
-        syncToDb.syncPluginGroupsToDb(List.of(buildPluginGroup(pluginSourceName, pluginGroupName)));
+        syncToDb.syncPluginGroupsToDb(targeted(
+                defaultProfile.getName(), buildPluginGroup(pluginSourceName, pluginGroupName)));
 
-        // 2. Source row exists in DB with the plugin marker.
         final SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
-        assertNotNull("Plugin source should be persisted", pluginSource);
+        assertNotNull(pluginSource);
         assertEquals("opennms-plugins", pluginSource.getUploadedBy());
 
-        // 3. Attach it to the default profile via REST, then wait for the
-        //    runtime reload to publish the new group into in-memory state.
-        final Response resp = rest.addSourceToProfile(
-                defaultProfile.getId(), pluginSourceName, securityContext);
-        assertEquals(200, resp.getStatus());
+        await().atMost(Duration.ofSeconds(2)).pollInterval(Duration.ofMillis(100))
+                .until(() -> {
+                    final SnmpCollectionProfile p = profileDao.findByName("default");
+                    return p != null && p.getSourceNames() != null
+                            && p.getSourceNames().contains(pluginSourceName);
+                });
+
+        loader.scheduleDataCollectionConfigReload();
         await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
                 .until(() -> inMemoryGroupNames().contains(pluginGroupName));
-        assertTrue("Plugin-contributed group should be visible in the runtime config",
-                inMemoryGroupNames().contains(pluginGroupName));
+        assertTrue(inMemoryGroupNames().contains(pluginGroupName));
 
-        // 4. Plugin stops contributing the group. Re-sync with an empty set —
-        //    the source row is removed (since it was plugin-owned) and the
-        //    profile reload drops the group from in-memory state.
-        syncToDb.syncPluginGroupsToDb(List.of());
+        syncToDb.syncPluginGroupsToDb(Map.of());
         loader.scheduleDataCollectionConfigReload();
         await().atMost(RELOAD_TIMEOUT).pollInterval(Duration.ofMillis(200))
                 .until(() -> !inMemoryGroupNames().contains(pluginGroupName));
-        assertNull("Plugin source should be removed when the plugin stops contributing it",
-                sourceDao.findByName(pluginSourceName));
+        assertNull(sourceDao.findByName(pluginSourceName));
     }
 
     /**
@@ -554,7 +541,8 @@ public class DataCollectionConfLifecycleIT {
     @Test
     public void pluginSync_preservesEnabledFlag_setByAdmin() throws Exception {
         final String pluginSourceName = "plugin-toggle-source";
-        syncToDb.syncPluginGroupsToDb(List.of(buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
 
         SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
         assertNotNull(pluginSource);
@@ -567,7 +555,8 @@ public class DataCollectionConfLifecycleIT {
         assertEquals(200, resp.getStatus());
 
         // Plugin re-syncs the same group. Disable intent must survive.
-        syncToDb.syncPluginGroupsToDb(List.of(buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-toggle-group")));
 
         pluginSource = sourceDao.findByName(pluginSourceName);
         assertNotNull(pluginSource);
@@ -583,7 +572,8 @@ public class DataCollectionConfLifecycleIT {
     @Test
     public void pluginSync_restRejectsDeleteOnPluginSource() throws Exception {
         final String pluginSourceName = "plugin-readonly-source";
-        syncToDb.syncPluginGroupsToDb(List.of(buildPluginGroup(pluginSourceName, "plugin-readonly-group")));
+        syncToDb.syncPluginGroupsToDb(targeted(
+                "default", buildPluginGroup(pluginSourceName, "plugin-readonly-group")));
 
         final SnmpCollectionSource pluginSource = sourceDao.findByName(pluginSourceName);
         assertNotNull(pluginSource);
@@ -598,6 +588,11 @@ public class DataCollectionConfLifecycleIT {
             // shape (exception thrown OR error response) is acceptable —
             // both prove the guard fired.
         }
+    }
+
+    private static Map<String, List<DatacollectionGroup>> targeted(final String target,
+                                                                   final DatacollectionGroup group) {
+        return Map.of(target, List.of(group));
     }
 
     private static DatacollectionGroup buildPluginGroup(final String groupName, final String mibGroupName) {

@@ -86,6 +86,7 @@
       <constructor-arg ref="snmpCollectionMibGroupDao"/>
       <constructor-arg ref="snmpCollectionResourceTypeDao"/>
       <constructor-arg ref="snmpCollectionSystemDefDao"/>
+      <constructor-arg ref="snmpCollectionProfileDao"/>
       <constructor-arg ref="sessionUtils"/>
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb" ref="snmpDataCollectionSyncToDb" />

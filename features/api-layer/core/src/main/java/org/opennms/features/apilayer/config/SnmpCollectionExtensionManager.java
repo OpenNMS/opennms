@@ -21,8 +21,8 @@
  */
 package org.opennms.features.apilayer.config;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,8 +68,10 @@ public class SnmpCollectionExtensionManager extends ConfigExtensionManager<SnmpC
     @Override
     protected void triggerReload() {
         try {
-            final List<DatacollectionGroup> flattened = flatten(getObject());
-            final boolean changed = syncToDb.syncPluginGroupsToDb(flattened);
+            final DataCollectionGroups aggregated = getObject();
+            final Map<String, List<DatacollectionGroup>> byCollection =
+                    aggregated == null ? Map.of() : aggregated.getDataCollectionGroupByName();
+            final boolean changed = syncToDb.syncPluginGroupsToDb(byCollection);
             if (changed) {
                 LOG.debug("Plugin SNMP data collection sync produced changes; scheduling runtime reload.");
                 configLoader.scheduleDataCollectionConfigReload();
@@ -79,18 +81,6 @@ public class SnmpCollectionExtensionManager extends ConfigExtensionManager<SnmpC
         } catch (Exception e) {
             LOG.error("Failed to sync plugin SNMP data collection extensions to database", e);
         }
-    }
-
-    /** Flatten the per-collection map of plugin groups into one list for the sync helper. */
-    private static List<DatacollectionGroup> flatten(final DataCollectionGroups aggregated) {
-        if (aggregated == null) {
-            return List.of();
-        }
-        final List<DatacollectionGroup> out = new ArrayList<>();
-        for (final String collectionName : aggregated.getSnmpCollectionNames()) {
-            out.addAll(aggregated.getDataCollectionGroup(collectionName));
-        }
-        return out;
     }
 
 

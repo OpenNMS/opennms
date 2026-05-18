@@ -22,14 +22,17 @@
 package org.opennms.netmgt.dao.support;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
 import org.opennms.netmgt.config.datacollection.Collect;
@@ -40,10 +43,12 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
+import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
+import org.opennms.netmgt.model.SnmpCollectionProfile;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
@@ -65,26 +70,30 @@ public class SnmpDataCollectionSyncToDbImpl implements SnmpDataCollectionSyncToD
     private final SnmpCollectionMibGroupDao mibGroupDao;
     private final SnmpCollectionResourceTypeDao resourceTypeDao;
     private final SnmpCollectionSystemDefDao systemDefDao;
+    private final SnmpCollectionProfileDao profileDao;
     private final SessionUtils sessionUtils;
 
     public SnmpDataCollectionSyncToDbImpl(final SnmpCollectionSourceDao sourceDao,
                                           final SnmpCollectionMibGroupDao mibGroupDao,
                                           final SnmpCollectionResourceTypeDao resourceTypeDao,
                                           final SnmpCollectionSystemDefDao systemDefDao,
+                                          final SnmpCollectionProfileDao profileDao,
                                           final SessionUtils sessionUtils) {
         this.sourceDao = Objects.requireNonNull(sourceDao);
         this.mibGroupDao = Objects.requireNonNull(mibGroupDao);
         this.resourceTypeDao = Objects.requireNonNull(resourceTypeDao);
         this.systemDefDao = Objects.requireNonNull(systemDefDao);
+        this.profileDao = Objects.requireNonNull(profileDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     @Override
-    public boolean syncPluginGroupsToDb(final Collection<DatacollectionGroup> aggregated) {
-        return sessionUtils.withTransaction(() -> doSync(aggregated == null ? Collections.emptyList() : aggregated));
+    public boolean syncPluginGroupsToDb(final Map<String, List<DatacollectionGroup>> groupsByCollection) {
+        return sessionUtils.withTransaction(() ->
+                doSync(groupsByCollection == null ? Collections.emptyMap() : groupsByCollection));
     }
 
-    private boolean doSync(final Collection<DatacollectionGroup> aggregated) {
+    private boolean doSync(final Map<String, List<DatacollectionGroup>> groupsByCollection) {
         boolean changed = false;
         final Date now = new Date();
 
@@ -96,60 +105,63 @@ public class SnmpDataCollectionSyncToDbImpl implements SnmpDataCollectionSyncToD
 
         final Set<String> incomingNames = new HashSet<>();
 
-        for (final DatacollectionGroup group : aggregated) {
-            if (group == null || group.getName() == null || group.getName().isBlank()) {
-                LOG.warn("Skipping plugin DatacollectionGroup with null/blank name");
-                continue;
+        for (final Map.Entry<String, List<DatacollectionGroup>> entry : groupsByCollection.entrySet()) {
+            final String targetCollection = entry.getKey();
+            final List<DatacollectionGroup> groups = entry.getValue();
+            if (groups == null) continue;
+
+            for (final DatacollectionGroup group : groups) {
+                if (group == null || group.getName() == null || group.getName().isBlank()) {
+                    LOG.warn("Skipping plugin DatacollectionGroup with null/blank name");
+                    continue;
+                }
+
+                // Collision on a non-plugin row → take over (matches pre-DB override behavior
+                // in DefaultDataCollectionConfigDao#translateConfig).
+                SnmpCollectionSource source = sourceDao.findByName(group.getName());
+                if (source == null) {
+                    source = new SnmpCollectionSource();
+                    source.setName(group.getName());
+                    source.setUploadedBy(PLUGIN_UPLOADED_BY);
+                    source.setEnabled(Boolean.TRUE);
+                    source.setCreatedTime(now);
+                    source.setLastModified(now);
+                    sourceDao.save(source);
+                    LOG.info("Created plugin-sourced datacollection source '{}'", group.getName());
+                } else if (!PLUGIN_UPLOADED_BY.equals(source.getUploadedBy())) {
+                    LOG.warn("Plugin group '{}' is taking over existing non-plugin source (was uploadedBy='{}'); "
+                                    + "previous content will be replaced.",
+                            group.getName(), source.getUploadedBy());
+                    source.setUploadedBy(PLUGIN_UPLOADED_BY);
+                    source.setLastModified(now);
+                    // enabled is intentionally not reset — admin disable must survive takeover.
+                    sourceDao.saveOrUpdate(source);
+                } else {
+                    source.setLastModified(now);
+                    sourceDao.saveOrUpdate(source);
+                }
+
+                // Children are read-only in the UI for plugin rows, so wholesale replace is safe.
+                mibGroupDao.deleteBySourceId(source.getId());
+                resourceTypeDao.deleteBySourceId(source.getId());
+                systemDefDao.deleteBySourceId(source.getId());
+
+                saveMibGroups(source, group.getGroups());
+                saveResourceTypes(source, group.getResourceTypes());
+                saveSystemDefs(source, group.getSystemDefs());
+
+                if (targetCollection != null && !targetCollection.isBlank()) {
+                    attachSourceToProfile(targetCollection, source.getName());
+                }
+
+                incomingNames.add(group.getName());
+                changed = true;
             }
-
-            // Look up across ALL sources: if a non-plugin row already owns the
-            // name, we take over (matches pre-DB-migration behavior where the
-            // plugin's <datacollection-group> overrode the shipped XML group
-            // of the same name in DefaultDataCollectionConfigDao#translateConfig).
-            SnmpCollectionSource source = sourceDao.findByName(group.getName());
-            if (source == null) {
-                source = new SnmpCollectionSource();
-                source.setName(group.getName());
-                source.setUploadedBy(PLUGIN_UPLOADED_BY);
-                source.setEnabled(Boolean.TRUE);
-                source.setCreatedTime(now);
-                source.setLastModified(now);
-                sourceDao.save(source);
-                LOG.info("Created plugin-sourced datacollection source '{}'", group.getName());
-            } else if (!PLUGIN_UPLOADED_BY.equals(source.getUploadedBy())) {
-                LOG.warn("Plugin group '{}' is taking over existing non-plugin source (was uploadedBy='{}'); "
-                                + "previous content will be replaced.",
-                        group.getName(), source.getUploadedBy());
-                source.setUploadedBy(PLUGIN_UPLOADED_BY);
-                source.setLastModified(now);
-                // enabled flag is preserved as-is across the takeover
-                sourceDao.saveOrUpdate(source);
-            } else {
-                // Already plugin-managed: preserve enabled flag; just refresh lastModified.
-                source.setLastModified(now);
-                sourceDao.saveOrUpdate(source);
-            }
-
-            // Replace children wholesale. Simpler than per-child diffing and
-            // correct given the source has no admin-editable children (they
-            // are read-only in the UI for plugin-sourced rows).
-            mibGroupDao.deleteBySourceId(source.getId());
-            resourceTypeDao.deleteBySourceId(source.getId());
-            systemDefDao.deleteBySourceId(source.getId());
-
-            saveMibGroups(source, group.getGroups());
-            saveResourceTypes(source, group.getResourceTypes());
-            saveSystemDefs(source, group.getSystemDefs());
-
-            incomingNames.add(group.getName());
-            changed = true;
         }
 
-        // Drop plugin sources no longer present in the aggregated set (plugin
-        // uninstalled or stopped contributing that group). Cascade removes
-        // their children.
         for (final SnmpCollectionSource existing : existingPluginSources) {
             if (!incomingNames.contains(existing.getName())) {
+                detachSourceFromAllProfiles(existing.getName());
                 sourceDao.delete(existing);
                 changed = true;
                 LOG.info("Removed plugin-sourced datacollection source '{}' (no longer contributed by any plugin)",
@@ -158,6 +170,45 @@ public class SnmpDataCollectionSyncToDbImpl implements SnmpDataCollectionSyncToD
         }
 
         return changed;
+    }
+
+    private void detachSourceFromAllProfiles(final String sourceName) {
+        for (final SnmpCollectionProfile profile : profileDao.findAll()) {
+            final List<String> existing = DatacollectionJsonHelper.fromJson(
+                    profile.getSourceNames(), new TypeReference<List<String>>() {});
+            if (existing == null || !existing.contains(sourceName)) {
+                continue;
+            }
+            final List<String> filtered = new ArrayList<>(existing.size());
+            for (final String name : existing) {
+                if (!sourceName.equals(name)) {
+                    filtered.add(name);
+                }
+            }
+            profile.setSourceNames(DatacollectionJsonHelper.toJson(filtered));
+            profileDao.saveOrUpdate(profile);
+            LOG.info("Detached plugin source '{}' from profile '{}' (source being removed).",
+                    sourceName, profile.getName());
+        }
+    }
+
+    private void attachSourceToProfile(final String profileName, final String sourceName) {
+        final SnmpCollectionProfile profile = profileDao.findByName(profileName);
+        if (profile == null) {
+            LOG.warn("Plugin source '{}' targets snmp-collection '{}' but no profile of that name exists; "
+                            + "source remains detached. Attach it manually via the admin page if desired.",
+                    sourceName, profileName);
+            return;
+        }
+        final List<String> existing = DatacollectionJsonHelper.fromJson(
+                profile.getSourceNames(), new TypeReference<List<String>>() {});
+        final Set<String> merged = new LinkedHashSet<>();
+        if (existing != null) merged.addAll(existing);
+        if (merged.add(sourceName)) {
+            profile.setSourceNames(DatacollectionJsonHelper.toJson(new ArrayList<>(merged)));
+            profileDao.saveOrUpdate(profile);
+            LOG.info("Auto-attached plugin source '{}' to profile '{}'.", sourceName, profileName);
+        }
     }
 
     private void saveMibGroups(final SnmpCollectionSource source, final List<Group> groups) {

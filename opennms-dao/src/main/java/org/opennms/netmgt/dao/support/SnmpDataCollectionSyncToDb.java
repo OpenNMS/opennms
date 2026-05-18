@@ -21,7 +21,8 @@
  */
 package org.opennms.netmgt.dao.support;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.SnmpCollectionSource;
@@ -33,14 +34,18 @@ import org.opennms.netmgt.model.SnmpCollectionSource;
  * is {@link #PLUGIN_UPLOADED_BY}; the source's child entities (MIB groups,
  * resource types, system defs) are replaced wholesale on each sync.
  *
- * <p>Mirrors the eventconf {@code EventConfExtensionManager} pattern: the
- * marker column is {@code uploaded_by}, sources outside that marker are never
- * touched, and the source's {@code enabled} flag is preserved across syncs so
- * that an admin's disable intent survives plugin reloads.
+ * <p>Plugin extensions declare a target snmp-collection name via
+ * {@code SnmpCollectionExtension.getSnmpCollectionName()}. The sync uses that
+ * key to auto-attach each source row to the matching profile (by adding the
+ * source name to that profile's {@code source_names} JSON column) — mirrors
+ * the pre-DB behavior in {@code DefaultDataCollectionConfigDao#translateConfig}
+ * that auto-added plugin groups to the targeted snmp-collection via
+ * {@code <include-collection>} entries. Sources whose target profile doesn't
+ * exist remain detached; the operator can attach them later via the UI.
  *
- * <p>Profile attachment is not handled here — matches XML migration semantics:
- * sources are inserted independently, and admins attach them to profiles
- * through the admin page when they want them active.
+ * <p>The {@code uploaded_by} marker column means user/migration-uploaded
+ * sources are never touched by sync; the source's {@code enabled} flag is
+ * preserved across syncs so an admin's disable intent survives plugin reloads.
  *
  * <p>Implementation is {@link SnmpDataCollectionSyncToDbImpl}. The interface
  * exists so that OSGi consumers in other bundles get a JDK-proxyable type
@@ -58,16 +63,26 @@ public interface SnmpDataCollectionSyncToDb {
 
     /**
      * Reconcile the DB's plugin-marker rows with the supplied aggregated set.
-     * Plugin sources not present in {@code aggregated} are removed; new ones
-     * are inserted; existing ones have their child entities (MIB groups,
-     * resource types, system defs) replaced. The source's {@code enabled}
-     * flag is preserved when the row already exists.
+     * The map key is the target snmp-collection name (matches the profile name
+     * in the new world); the value is the list of {@code DatacollectionGroup}s
+     * the plugin contributes to that target.
+     *
+     * <p>For each {@code (target, group)}:
+     * <ul>
+     *   <li>Upsert the source row (replacing children).</li>
+     *   <li>Add the source name to the target profile's {@code source_names}
+     *       (idempotent). If no profile of that name exists, log a WARN and
+     *       leave the source detached.</li>
+     * </ul>
+     *
+     * <p>Plugin-marker sources not present in any incoming entry are removed
+     * (orphan cleanup). Non-plugin rows are untouched.
      *
      * <p>Runs under a single transaction.
      *
      * @return {@code true} if any row was inserted, updated, or deleted.
      */
-    boolean syncPluginGroupsToDb(Collection<DatacollectionGroup> aggregated);
+    boolean syncPluginGroupsToDb(Map<String, List<DatacollectionGroup>> groupsByCollection);
 
     /**
      * Whether a source row is managed by the plugin sync. Callers in the REST

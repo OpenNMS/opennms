@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -50,9 +52,11 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
+import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.model.SnmpCollectionProfile;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,11 +96,18 @@ public class SnmpDataCollectionSyncToDbIT {
     @Autowired
     private SnmpCollectionSystemDefDao systemDefDao;
 
+    @Autowired
+    private SnmpCollectionProfileDao profileDao;
+
+    private static final String DEFAULT_TARGET = "default";
+
     @Before
     @Transactional
     public void wipe() {
         sourceDao.deleteAll(sourceDao.findAll());
         sourceDao.flush();
+        profileDao.deleteAll(profileDao.findAll());
+        profileDao.flush();
     }
 
     @After
@@ -104,13 +115,19 @@ public class SnmpDataCollectionSyncToDbIT {
     public void cleanup() {
         sourceDao.deleteAll(sourceDao.findAll());
         sourceDao.flush();
+        profileDao.deleteAll(profileDao.findAll());
+        profileDao.flush();
+    }
+
+    private static Map<String, List<DatacollectionGroup>> targeted(final DatacollectionGroup... groups) {
+        return Map.of(DEFAULT_TARGET, Arrays.asList(groups));
     }
 
     @Test
     public void initialSync_createsSourceAndChildren() {
         final DatacollectionGroup grp = buildGroup("plugin-foo", 2, 1, 1);
 
-        final boolean changed = syncToDb.syncPluginGroupsToDb(List.of(grp));
+        final boolean changed = syncToDb.syncPluginGroupsToDb(targeted(grp));
 
         assertTrue("Initial sync of a new group should report changed=true", changed);
 
@@ -126,10 +143,10 @@ public class SnmpDataCollectionSyncToDbIT {
     @Test
     public void resync_withChangedContent_replacesChildren() {
         final DatacollectionGroup v1 = buildGroup("plugin-foo", 2, 1, 1);
-        syncToDb.syncPluginGroupsToDb(List.of(v1));
+        syncToDb.syncPluginGroupsToDb(targeted(v1));
 
         final DatacollectionGroup v2 = buildGroup("plugin-foo", 4, 2, 3);
-        final boolean changed = syncToDb.syncPluginGroupsToDb(List.of(v2));
+        final boolean changed = syncToDb.syncPluginGroupsToDb(targeted(v2));
 
         assertTrue(changed);
         final SnmpCollectionSource saved = sourceDao.findByName("plugin-foo");
@@ -141,7 +158,7 @@ public class SnmpDataCollectionSyncToDbIT {
     @Test
     public void resync_preservesEnabledFlag_setByAdmin() {
         final DatacollectionGroup grp = buildGroup("plugin-foo", 2, 1, 1);
-        syncToDb.syncPluginGroupsToDb(List.of(grp));
+        syncToDb.syncPluginGroupsToDb(targeted(grp));
 
         // Admin disables the plugin source via the UI/REST.
         final SnmpCollectionSource saved = sourceDao.findByName("plugin-foo");
@@ -150,7 +167,7 @@ public class SnmpDataCollectionSyncToDbIT {
         sourceDao.flush();
 
         // Plugin reloads (same content). The disable intent must survive.
-        syncToDb.syncPluginGroupsToDb(List.of(grp));
+        syncToDb.syncPluginGroupsToDb(targeted(grp));
 
         final SnmpCollectionSource afterResync = sourceDao.findByName("plugin-foo");
         assertNotNull(afterResync);
@@ -161,13 +178,13 @@ public class SnmpDataCollectionSyncToDbIT {
     public void resync_withFewerGroups_deletesOrphans() {
         final DatacollectionGroup a = buildGroup("plugin-a", 1, 0, 0);
         final DatacollectionGroup b = buildGroup("plugin-b", 1, 0, 0);
-        syncToDb.syncPluginGroupsToDb(Arrays.asList(a, b));
+        syncToDb.syncPluginGroupsToDb(targeted(a, b));
 
         assertNotNull(sourceDao.findByName("plugin-a"));
         assertNotNull(sourceDao.findByName("plugin-b"));
 
         // Plugin stops contributing 'plugin-b'.
-        final boolean changed = syncToDb.syncPluginGroupsToDb(List.of(a));
+        final boolean changed = syncToDb.syncPluginGroupsToDb(targeted(a));
 
         assertTrue(changed);
         assertNotNull("Still-contributed group should remain", sourceDao.findByName("plugin-a"));
@@ -187,14 +204,14 @@ public class SnmpDataCollectionSyncToDbIT {
         sourceDao.save(user);
         sourceDao.flush();
 
-        syncToDb.syncPluginGroupsToDb(List.of(buildGroup("plugin-foo", 1, 0, 0)));
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
 
         // Both should coexist.
         assertNotNull(sourceDao.findByName("user-uploaded"));
         assertNotNull(sourceDao.findByName("plugin-foo"));
 
         // A sync with no incoming groups must NOT delete the user row.
-        syncToDb.syncPluginGroupsToDb(Collections.emptyList());
+        syncToDb.syncPluginGroupsToDb(Collections.emptyMap());
 
         assertNotNull("User-uploaded sources are never touched by plugin sync",
                 sourceDao.findByName("user-uploaded"));
@@ -219,7 +236,7 @@ public class SnmpDataCollectionSyncToDbIT {
         // Plugin contributes a group with the same name; sync should take over
         // the existing row (matches pre-DB-migration override behavior).
         final boolean changed = syncToDb.syncPluginGroupsToDb(
-                List.of(buildGroup("Cisco Nexus", 2, 0, 1)));
+                targeted(buildGroup("Cisco Nexus", 2, 0, 1)));
 
         assertTrue("Take-over reports changed=true", changed);
         final SnmpCollectionSource taken = sourceDao.findByName("Cisco Nexus");
@@ -235,7 +252,7 @@ public class SnmpDataCollectionSyncToDbIT {
 
     @Test
     public void emptyInput_isNoOp_whenNoPluginRowsExist() {
-        final boolean changed = syncToDb.syncPluginGroupsToDb(Collections.emptyList());
+        final boolean changed = syncToDb.syncPluginGroupsToDb(Collections.emptyMap());
         assertFalse("Sync of empty input with no existing plugin rows should report no change", changed);
     }
 
@@ -252,9 +269,87 @@ public class SnmpDataCollectionSyncToDbIT {
 
         final DatacollectionGroup valid = buildGroup("plugin-foo", 1, 0, 0);
 
-        syncToDb.syncPluginGroupsToDb(Arrays.asList(nameless, valid));
+        syncToDb.syncPluginGroupsToDb(targeted(nameless, valid));
 
         assertNotNull(sourceDao.findByName("plugin-foo"));
+    }
+
+    @Test
+    public void autoAttach_addsSourceNameToTargetProfile() {
+        final SnmpCollectionProfile profile = newProfile(DEFAULT_TARGET);
+        profileDao.saveOrUpdate(profile);
+        profileDao.flush();
+
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
+
+        final SnmpCollectionProfile after = profileDao.findByName(DEFAULT_TARGET);
+        assertNotNull(after);
+        assertNotNull("source_names should be populated after auto-attach", after.getSourceNames());
+        assertTrue("Profile's source_names should contain the plugin source name",
+                after.getSourceNames().contains("plugin-foo"));
+    }
+
+    @Test
+    public void autoAttach_isIdempotent_acrossResyncs() {
+        final SnmpCollectionProfile profile = newProfile(DEFAULT_TARGET);
+        profileDao.saveOrUpdate(profile);
+        profileDao.flush();
+
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 2, 0, 0)));
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
+
+        final SnmpCollectionProfile after = profileDao.findByName(DEFAULT_TARGET);
+        final String names = after.getSourceNames();
+        final int firstIdx = names.indexOf("plugin-foo");
+        assertTrue(firstIdx >= 0);
+        assertEquals("plugin-foo should appear exactly once across re-syncs",
+                firstIdx, names.lastIndexOf("plugin-foo"));
+    }
+
+    @Test
+    public void orphanCleanup_detachesSourceFromProfiles() {
+        final SnmpCollectionProfile profile = newProfile(DEFAULT_TARGET);
+        profileDao.saveOrUpdate(profile);
+        profileDao.flush();
+
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
+        assertTrue(profileDao.findByName(DEFAULT_TARGET).getSourceNames().contains("plugin-foo"));
+
+        syncToDb.syncPluginGroupsToDb(Collections.emptyMap());
+
+        assertNull(sourceDao.findByName("plugin-foo"));
+        final SnmpCollectionProfile after = profileDao.findByName(DEFAULT_TARGET);
+        if (after.getSourceNames() != null) {
+            assertFalse(after.getSourceNames().contains("plugin-foo"));
+        }
+    }
+
+    @Test
+    public void orphanCleanup_leavesOtherProfileEntriesUntouched() {
+        final SnmpCollectionProfile profile = newProfile(DEFAULT_TARGET);
+        profile.setSourceNames(DatacollectionJsonHelper.toJson(List.of("plugin-foo", "user-source")));
+        profileDao.saveOrUpdate(profile);
+        profileDao.flush();
+
+        syncToDb.syncPluginGroupsToDb(targeted(buildGroup("plugin-foo", 1, 0, 0)));
+        syncToDb.syncPluginGroupsToDb(Collections.emptyMap());
+
+        final SnmpCollectionProfile after = profileDao.findByName(DEFAULT_TARGET);
+        assertFalse(after.getSourceNames().contains("plugin-foo"));
+        assertTrue(after.getSourceNames().contains("user-source"));
+    }
+
+    @Test
+    public void missingTargetProfile_doesNotFailSync() {
+        final boolean changed = syncToDb.syncPluginGroupsToDb(
+                Map.of("no-such-profile", List.of(buildGroup("plugin-foo", 1, 0, 0))));
+
+        assertTrue(changed);
+        assertNotNull("Source row is created even when target profile is missing",
+                sourceDao.findByName("plugin-foo"));
+        assertNull("No profile of that name should magically appear",
+                profileDao.findByName("no-such-profile"));
     }
 
     @Test
@@ -291,6 +386,17 @@ public class SnmpDataCollectionSyncToDbIT {
     }
 
     // ─── fixture builders ──────────────────────────────────────────────
+
+    private static SnmpCollectionProfile newProfile(final String name) {
+        final SnmpCollectionProfile p = new SnmpCollectionProfile();
+        p.setName(name);
+        p.setRrdStep(300);
+        p.setEnabled(Boolean.TRUE);
+        final Date now = new Date();
+        p.setCreatedTime(now);
+        p.setLastModified(now);
+        return p;
+    }
 
     private static DatacollectionGroup buildGroup(final String name,
                                                   final int mibGroupCount,
