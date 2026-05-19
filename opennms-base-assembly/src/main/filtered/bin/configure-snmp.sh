@@ -38,7 +38,15 @@
 #############################################################
 
 
-OPENNMS_HOME="${install.dir}"
+if [ -z "${OPENNMS_HOME}" ]; then
+  _script="$0"
+  case "$_script" in
+    */*) ;;
+    *) _script="$(command -v "$_script" 2>/dev/null || echo "$_script")" ;;
+  esac
+  OPENNMS_HOME="$(cd "$(dirname "$_script")/.." && pwd)"
+  unset _script
+fi
 SEND_EVENT="${OPENNMS_HOME}/bin/send-event.pl"
 EVENT_UEI=uei.opennms.org/internal/configureSNMP
 
