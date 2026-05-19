@@ -21,7 +21,6 @@
  */
 package org.opennms.web.tags.filters;
 
-
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.FilterUtil;
@@ -29,6 +28,8 @@ import org.opennms.web.filter.QueryParameters;
 
 import javax.servlet.ServletContext;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.opennms.web.filter.FilterUtil.getFilterParameters;
@@ -50,9 +51,9 @@ public abstract class AbstractFilterCallback implements FilterCallback {
 
     @Override
     public String toFilterString(List<Filter> filters) {
-        if( filters != null ) {
+        if (filters != null ) {
             String[] filterStrings = new String[filters.size()];
-            for (int i=0; i<filterStrings.length; i++) {
+            for (int i = 0; i < filterStrings.length; i++) {
                 filterStrings[i] = getIndividualFilterString(filters.get(i));
             }
             return toFilterString(filterStrings);
@@ -67,12 +68,15 @@ public abstract class AbstractFilterCallback implements FilterCallback {
     @Override
     public List<Filter> parse(String filterString) {
         String[] filterParameter = getFilterParameters(filterString);
-        for (int i=0; i< filterParameter.length; i++) {
+
+        for (int i = 0; i < filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");
-                filterParameter[i] = URLDecoder.decode(filterParameter[i]);
+                filterParameter[i] = URLDecoder.decode(filterParameter[i], StandardCharsets.UTF_8);
             }
         }
+
+        // Note, filters are deduped in the following call to 'parse()'
         return parse(filterParameter);
     }
 
@@ -87,10 +91,11 @@ public abstract class AbstractFilterCallback implements FilterCallback {
             }
         }
         */
-        return getIndividualFilterList(filters, servletContext);
+
+        String[] dedupedFilters = Arrays.stream(filters).distinct().toArray(String[]::new);
+
+        return getIndividualFilterList(dedupedFilters, servletContext);
     }
-
-
 
     @Override
     public String createLink(String urlBase, QueryParameters parameters, OnmsFilterFavorite favorite) {
@@ -106,7 +111,7 @@ public abstract class AbstractFilterCallback implements FilterCallback {
             buffer.append("&amp;display=").append(parameters.getDisplay());
         }
         String filters = toFilterString(parameters.getFilters());
-        if (filters != null && filters.length() > 0) {
+        if (filters != null && !filters.isEmpty()) {
             buffer.append("&amp;").append(filters);
         }
         if (favorite != null) {
@@ -118,5 +123,4 @@ public abstract class AbstractFilterCallback implements FilterCallback {
     protected abstract String getIndividualFilterString(Filter filter);
 
     protected abstract List<Filter> getIndividualFilterList(String[] filters, ServletContext servletContext);
-
 }

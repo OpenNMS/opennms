@@ -24,6 +24,8 @@ package org.opennms.smoketest.selenium;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
@@ -500,17 +502,21 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected String handleAlert() {
-        return handleAlert(null);
+        return handleAlert(null, true);
     }
 
-    protected String handleAlert(final String expectedText) {
+    protected String handleAlert(final String expectedText, final boolean exactMatch) {
         LOG.debug("handleAlert: expectedText={}", expectedText);
 
         try {
             final Alert alert = getDriver().switchTo().alert();
             final String alertText = alert.getText();
             if (expectedText != null) {
-                assertEquals(expectedText, alertText);
+                if (exactMatch) {
+                    assertEquals(expectedText, alertText);
+                } else {
+                    assertThat(alertText, containsString(expectedText));
+                }
             }
             alert.dismiss();
             return alertText;

@@ -96,9 +96,20 @@ window.forecastError = "One or more dependencies required for forecasting "
           <span ng-non-bindable>Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
       </div> <!-- card-header -->
       <div class="card-body">
+		<div ng-cloak class="alert alert-warning" role="alert" ng-show="forecastWarning">
+			<span class="fa fa-exclamation-triangle" aria-hidden="true"></span>
+			{{forecastWarning}}
+		</div>
 		<div class="row-fluid">
 			<div class="col-md-7">
 		        <div ng-non-bindable data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
+		        <div class="forecast-legend mt-2 small" ng-show="graph">
+		            <span style="display:inline-block;width:12px;height:12px;background-color:#9d4edd;vertical-align:middle;margin-right:4px"></span>HW Fit
+		            &nbsp;&nbsp;
+		            <span style="display:inline-block;width:12px;height:12px;background-color:#ff0000;vertical-align:middle;margin-right:4px"></span>HW Bounds (low/high)
+		            &nbsp;&nbsp;
+		            <span style="display:inline-block;width:12px;height:12px;background-color:#00ffff;vertical-align:middle;margin-right:4px"></span>Trend
+		        </div>
 		    </div>
 		    <div class="col-md-4" ng-show="series.length < 1">
 		        <p>The graph does not contain any series that can be forecasted.</p>

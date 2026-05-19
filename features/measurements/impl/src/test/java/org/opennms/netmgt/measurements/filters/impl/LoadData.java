@@ -79,8 +79,9 @@ public class LoadData {
     }
 
     protected static Entry[] getThird() throws IOException {
-        FileInputStream fis = new FileInputStream("src/test/resources/trendline.txt");
-        return getEntries(IOUtils.toString(fis, StandardCharsets.UTF_8));
+        try (FileInputStream fis = new FileInputStream("src/test/resources/trendline.txt")) {
+            return getEntries(IOUtils.toString(fis, StandardCharsets.UTF_8));
+        }
     }
 
     protected static class Entry {

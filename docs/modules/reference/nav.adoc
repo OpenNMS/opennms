@@ -35,6 +35,7 @@
 ** xref:performance-data-collection/collectors/wmi.adoc[]
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
+** xref:performance-data-collection/collectors/xml-examples.adoc[]
 
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]

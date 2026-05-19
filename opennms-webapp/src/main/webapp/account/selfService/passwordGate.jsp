@@ -160,8 +160,8 @@
 
     if (document.goForm.pass1.value == document.goForm.pass2.value) {
       let newPassword = document.goForm.pass1.value
-      const passwordRegex = /${fn:escapeXml(PasswordGateActionServlet.PASSWORD_REGEX)}/;
-      const sameCharacterRegex = /${fn:escapeXml(PasswordGateActionServlet.SAME_CHARACTER_REGEX)}/;
+      const passwordRegex = /${PasswordGateActionServlet.PASSWORD_REGEX}/;
+      const sameCharacterRegex = /${PasswordGateActionServlet.SAME_CHARACTER_REGEX}/;
 
       if (newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex)) {
         document.goForm.currentPassword.value = document.goForm.oldpass.value;

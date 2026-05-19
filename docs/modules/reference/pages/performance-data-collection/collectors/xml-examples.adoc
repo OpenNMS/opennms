@@ -1,0 +1,270 @@
+
+= XmlCollector configuration examples
+:description: End-to-end examples of using the XmlCollector to collect time-series metrics from XML and JSON HTTP APIs.
+
+This page provides working examples of using the xref:performance-data-collection/collectors/xml.adoc[XmlCollector] against common HTTP APIs.
+Each example follows the same format so you can use one as a template for an integration of your own:
+
+. *Endpoint(s) and response* -- the URLs being polled and the return format.
+. *Metrics* -- the fields extracted, their RRD datasource names, and types.
+. *Configuration* -- the `xml-collection`, the `collectd-configuration.xml` service entry, and any optional graph templates.
+. *Verification* -- a one-shot test from the Karaf shell.
+. *Notes* -- caveats specific to the API (auth, rate limits, response shape).
+
+NOTE: Examples may use the JSON handler (`org.opennms.protocols.json.collector.DefaultJsonCollectionHandler`) because the upstream payload is JSON. The same configuration grammar applies to true XML; only the `handler-class` parameter differs. See xref:performance-data-collection/collectors/xml.adoc[XmlCollector] for the full reference.
+
+NOTE: Examples may reference APIs that have changed and should be checked against current documentation for those APIs.
+
+[#github-repo-stats]
+== GitHub repository activity
+
+Collect GitHub repository metrics (stars, forks, watchers) and the open issue/PR count for a public GitHub repository.
+
+=== Endpoint and response
+
+A single `GET` against `https://api.github.com/repos/\{owner}/\{repo}` returns a JSON object with the fields we care about at the top level:
+
+[source, json]
+----
+{
+  "full_name": "OpenNMS/opennms",
+  "stargazers_count": 1151,
+  "forks_count": 613,
+  "subscribers_count": 88,
+  "open_issues_count": 42,
+  "...": "..."
+}
+----
+
+NOTE: GitHub's `open_issues_count` is the combined count of open issues *and* open pull requests on GitHub. See <<#github-split-issues-prs, Splitting issues from pull requests>> below if you need them broken out.
+
+=== Metrics
+
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| JSON field | Description | DS name | Type
+
+| `stargazers_count`
+| Number of users who starred the repository.
+| `ghStars`
+| GAUGE
+
+| `forks_count`
+| Number of forks.
+| `ghForks`
+| GAUGE
+
+| `subscribers_count`
+| Watchers (users subscribed to repository notifications).
+| `ghWatchers`
+| GAUGE
+
+| `open_issues_count`
+| Open issues + open PRs combined.
+| `ghOpenIssues`
+| GAUGE
+
+| `full_name`
+| `owner/repo` slug, stored as a resource string property.
+| `ghRepoName`
+| STRING
+|===
+
+TIP: It's best to Keep names short to avoid the 19 character limit of RRDs.
+
+=== Configuration
+
+==== xml-datacollection-config.xml
+
+Add the following `xml-collection` to `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml`. The `xml-group` is inlined inside the `xml-source` rather than pulled in via `<import-groups>` because there is only one source.
+
+[source, xml]
+----
+<xml-collection name="github-repo-stats">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+
+  <xml-source url="https://api.github.com/repos/OpenNMS/opennms"> <1>
+    <request method="GET">
+      <header name="User-Agent" value="OpenNMS-XmlCollector"/> <2>
+      <header name="Accept"     value="application/vnd.github+json"/>
+      <!-- Optional: authenticate to raise the rate limit from 60/hour to
+           5000/hour. Store the token in the Secure Credentials Vault
+           (bin/scvcli set github token <PAT>), then uncomment:
+      <header name="Authorization" value="Bearer ${scv:github:token}"/>
+      -->
+    </request>
+    <xml-group name="github-repo" resource-type="node" resource-xpath="/"> <3> <4>
+      <xml-object name="ghStars"     type="GAUGE"  xpath="stargazers_count"/>
+      <xml-object name="ghForks"     type="GAUGE"  xpath="forks_count"/>
+      <xml-object name="ghWatchers"  type="GAUGE"  xpath="subscribers_count"/>
+      <xml-object name="ghOpenIssues" type="GAUGE" xpath="open_issues_count"/>
+      <xml-object name="ghRepoName"  type="STRING" xpath="full_name"/>
+    </xml-group>
+  </xml-source>
+</xml-collection>
+----
+<1> Replace `OpenNMS/opennms` with your own `owner/repo`.
+<2> A `User-Agent` header is required by the GitHub API; requests without one are rejected with `403`.
+<3> `resource-type="node"` writes the metrics to the node's resource directory rather than to a child resource.
+<4> `resource-xpath="/"` makes the `xpath` attributes on each `xml-object` evaluate from the document root.
+
+==== collectd-configuration.xml
+
+Add a service to whichever `package` covers the node you want this collected against, and a matching collector entry near the bottom of `$\{OPENNMS_HOME}/etc/collectd-configuration.xml`:
+
+[source, xml]
+----
+<service name="GitHubRepoStats" interval="300000" user-defined="true" status="on">
+  <parameter key="collection"    value="github-repo-stats"/>
+  <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+</service>
+
+<!-- ... near the bottom, alongside the other <collector> entries: -->
+<collector service="GitHubRepoStats"
+           class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
+----
+
+==== Provision a node
+
+The XmlCollector needs a node and IP interface to schedule against, even though the URL is hard-coded.
+Create (or reuse) a requisition and add a node representing the API:
+
+* *Node label*: `api.github.com` (or anything descriptive)
+* *Interface*: any reachable address; the URL ignores it
+* *Service*: `GitHubRepoStats` (must match the service `name` in `collectd-configuration.xml`) 
+
+TIP: The entire 127.0.0.0/8 is available and references localhost. It works well for these kind of applications.
+
+Synchronize the requisition once the node has been added.
+
+==== (Optional) Graph templates
+
+To render these metrics in the web UI, graph definitions are needed: `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d/github-repo-stats-graph.properties`:
+
+[source, properties]
+----
+reports=github.stars, github.forks, github.watchers, github.openIssues
+
+report.github.stars.name=GitHub Stars
+report.github.stars.columns=ghStars
+report.github.stars.type=nodeSnmp
+report.github.stars.command=--title="GitHub Stars" \
+ --vertical-label="stars" \
+ DEF:s={rrd1}:ghStars:AVERAGE \
+ LINE2:s#1f78b4:"Stars" \
+ GPRINT:s:LAST:"Cur\\: %8.0lf"
+
+report.github.forks.name=GitHub Forks
+report.github.forks.columns=ghForks
+report.github.forks.type=nodeSnmp
+report.github.forks.command=--title="GitHub Forks" \
+ --vertical-label="forks" \
+ DEF:f={rrd1}:ghForks:AVERAGE \
+ LINE2:f#33a02c:"Forks" \
+ GPRINT:f:LAST:"Cur\\: %8.0lf"
+
+report.github.watchers.name=GitHub Watchers
+report.github.watchers.columns=ghWatchers
+report.github.watchers.type=nodeSnmp
+report.github.watchers.command=--title="GitHub Watchers" \
+ --vertical-label="watchers" \
+ DEF:w={rrd1}:ghWatchers:AVERAGE \
+ LINE2:w#6a3d9a:"Watchers" \
+ GPRINT:w:LAST:"Cur\\: %8.0lf"
+
+report.github.openIssues.name=GitHub Open Issues + PRs
+report.github.openIssues.columns=ghOpenIssues
+report.github.openIssues.type=nodeSnmp
+report.github.openIssues.command=--title="GitHub Open Issues + PRs" \
+ --vertical-label="count" \
+ DEF:i={rrd1}:ghOpenIssues:AVERAGE \
+ LINE2:i#e31a1c:"Open" \
+ GPRINT:i:LAST:"Cur\\: %5.0lf"
+----
+
+=== Verification
+
+After reloading collectd (`send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Collectd'`), test an xref:deep-dive/performance-data-collection/shell/adhoc-collection.adoc[Ad-Hoc collection] from the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] without waiting for the next scheduled cycle:
+
+[source, karaf]
+----
+opennms:collect -n <nodeId> \
+    org.opennms.protocols.xml.collector.XmlCollector \
+    127.0.0.1 \
+    collection=github-repo-stats \
+    handler-class=org.opennms.protocols.json.collector.DefaultJsonCollectionHandler
+----
+
+Replace `<nodeId>` with the numeric node ID of the provisioned node.
+The host argument (`127.0.0.1`) is unused because the URL is hard-coded; it just has to parse as an IP.
+The command prints the resulting `CollectionSet`:
+
+[source, text]
+----
+NodeLevelResource[nodeId=287, path=null]
+    Group: github-repo
+        Attribute[ghStars:1151.0]
+        Attribute[ghForks:613.0]
+        Attribute[ghWatchers:88.0]
+        Attribute[ghOpenIssues:42.0]
+        Attribute[ghRepoName:OpenNMS/opennms]
+----
+
+Add `-p` to the command to also persist into time series storage; omit it for a pure dry-run.
+
+=== Notes
+
+* *Rate limits*: Some APIs (such as GitHub's) will have rate limits so adjust your interval accordingly.
+* *Required headers*: GitHub rejects requests with no `User-Agent` (`403 Forbidden`).
+* *The `Accept: application/vnd.github+json` header pins the response to a stable schema.
+* *Authentication*: never inline a token in the configuration file. Store it in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and reference it as `${scv:alias:key}`.
+* *`STRING` objects*: `ghRepoName` is stored as a resource string property to be used as a label or for confirming the response was parsed.
+
+[#github-split-issues-prs]
+=== Splitting issues from pull requests
+
+`open_issues_count` from the `/repos/\{owner}/\{repo}` endpoint counts open issues and open pull requests together.
+To break them out, add two more `xml-source` blocks that hit the search API:
+
+[source, xml]
+----
+<xml-source url="https://api.github.com/search/issues?q=repo:OpenNMS/opennms+is:issue+is:open">
+  <request method="GET">
+    <header name="User-Agent" value="OpenNMS-XmlCollector"/>
+    <header name="Accept"     value="application/vnd.github+json"/>
+  </request>
+  <xml-group name="github-open-issues" resource-type="node" resource-xpath="/">
+    <xml-object name="ghOpenIssuesOnly" type="GAUGE" xpath="total_count"/>
+  </xml-group>
+</xml-source>
+
+<xml-source url="https://api.github.com/search/issues?q=repo:OpenNMS/opennms+is:pr+is:open">
+  <request method="GET">
+    <header name="User-Agent" value="OpenNMS-XmlCollector"/>
+    <header name="Accept"     value="application/vnd.github+json"/>
+  </request>
+  <xml-group name="github-open-prs" resource-type="node" resource-xpath="/">
+    <xml-object name="ghOpenPRs" type="GAUGE" xpath="total_count"/>
+  </xml-group>
+</xml-source>
+----
+
+////
+== <Next example title>
+
+Use the structure above for additional examples:
+
+* Endpoint and response
+* Metrics
+* Configuration (xml-datacollection-config.xml, collectd-configuration.xml,
+  optional graph templates, requisition guidance)
+* Verification (karaf opennms:collect command)
+* Notes (auth, rate limits, response shape gotchas)
+////

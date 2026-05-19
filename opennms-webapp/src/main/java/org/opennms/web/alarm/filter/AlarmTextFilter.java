@@ -43,6 +43,10 @@ public class AlarmTextFilter extends OrFilter {
         return ("<AlarmTextFilter: " + this.getDescription() + ">");
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public String getDescription() {
         return TYPE + "=" + value;

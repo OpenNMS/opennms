@@ -1,0 +1,167 @@
+
+[[forecasting]]
+= Forecasting
+:description: How to use the Holt-Winters forecasting feature in {page-component-title} to project a metric forward in time.
+
+For any graph rendered through the Resource Graphs UI, {page-component-title} can fit a Holt-Winters model to the historical samples and project the metric forward by a configurable horizon.
+The forecast view overlays a fit line, a polynomial trend, and a Gaussian confidence envelope on top of the original graph so you can see where the metric is likely to trend.
+
+== Accessing forecasting
+
+. From the Web UI, navigate to a node and open *Resource Graphs*.
+. Each graph has a small toolbar above it.
+The forecast button is the line-chart icon labeled "Forecast" on hover.
+. Clicking the icon opens the forecast page in a new tab, pre-loaded with the same graph.
+
+The forecast page renders the original graph and a configuration form.
+Pick a metric from the dropdown (only the named series in the graph are eligible). Then choose a forecasting template, optionally tune the parameters, and click *Forecast*.
+
+== Forecasting templates
+
+Three preset templates cover the common cases, plus a *Custom* option for full control:
+
+[cols="1,1,1,1,3"]
+|===
+| Template | Training Start | Graph Start | Forecasts | Description
+
+| 1 day forecast
+| 14 days
+| 7 days
+| 1
+| Uses two weeks of history to project one day ahead.
+
+| 7 day forecast
+| 60 days
+| 30 days
+| 7
+| Uses two months of history to project a week out.
+
+| 31 day forecast
+| 365 days
+| 90 days
+| 4 (each 7 days)
+| Uses a year of history to project four weekly periods.
+
+| Custom
+| n/a
+| n/a
+| n/a
+| Lets you set every parameter individually.
+|===
+
+The *Training Start* parameter sets how far back the model reads samples (in days) when estimating its level, trend, and seasonal components.
+The *Graph Start* parameter sets what's actually visible on screen.
+*Forecasts* is the number of seasonal periods projected forward.
+
+== What gets drawn
+
+The forecast page adds three overlays on top of the original graph:
+
+[cols="1,1,3"]
+|===
+| Series | Color | Meaning
+
+| HW Fit
+| purple (`#9d4edd`)
+| The Holt-Winters point forecast. This is the model's best estimate of the metric at each future time step.
+
+| HW Lwr / HW Upr
+| red (`#ff0000`)
+| The lower and upper confidence bounds of the forecast.
+The interval between them is where the model expects the actual value to fall, given the configured confidence level (default 95%).
+
+| Trend
+| cyan (`#00ffff`)
+| A polynomial trend line fit to the same history window.
+Independent of the Holt-Winters model. Useful as a sanity check on the long-run direction of the metric.
+|===
+
+A static legend below the graph maps each color to its label.
+
+== Holt-Winters in brief
+
+Holt-Winters (also called triple exponential smoothing) is a classic forecasting algorithm for time-series data that exhibits a level, a trend, and seasonality.
+The model maintains three internal state variables:
+
+* *Level* - the current baseline value of the series.
+* *Trend* - the rate at which the level is changing over time.
+* *Seasonal* - a periodic component capturing repeating patterns within each season (for example, daily or weekly cycles).
+
+Each new observation updates all three with exponentially weighted averages, controlled by smoothing parameters that the model estimates by walking the historical samples once.
+A multiplicative seasonality model is used, which works well for metrics whose seasonal swings scale with the overall level (for example, traffic that doubles during business hours scales with monthly growth).
+
+To produce a forecast, {page-component-title} feeds the model the historical samples in the history window, lets it adapt its state, and then iterates the level + trend + seasonal forward by the configured number of steps.
+
+For deeper background, see the link:https://otexts.com/fpp2/holt-winters.html[Holt-Winters chapter] in _Forecasting: Principles and Practice_ by Hyndman & Athanasopoulos.
+
+== Confidence bounds
+
+The bounds (`HW Lwr` and `HW Upr`) are an empirical Gaussian approximation rather than the canonical Holt-Winters prediction interval.
+They are derived from the model's in-sample residuals, the differences between what the model predicted and what actually happened over the history window.
+The standard deviation of those residuals (sigma) becomes the per-step uncertainty.
+
+For a chosen confidence level, a critical value `z` is taken from the standard normal distribution (z &asymp; 1.96 for 95%).
+At a forecast horizon of `h` steps ahead, the half-width of the interval is:
+
+----
+delta = z * sigma * sqrt(min(h, period))
+----
+
+The bounds widen with the square root of the horizon, capped at one full seasonal period.
+The cap reflects the fact that monitoring data is usually mean-reverting rather than a pure random walk. Without it, bounds would fan open quickly and overstate uncertainty.
+
+[NOTE]
+====
+The canonical Holt-Winters prediction interval depends on the model's fitted smoothing parameters (alpha, beta, gamma) and generally grows faster than the simple `sqrt(h)` law used here, particularly for series with real trend or seasonal contributions.
+The residual-based approximation we use trades that fidelity for simplicity and tends to produce bounds that are tighter than the canonical interval would be.
+
+The Gaussian-residual approximation also assumes the model's errors are roughly normally distributed and stationary.
+Highly bursty metrics can violate that assumption and produce bounds that are too tight in calm periods or too loose during spikes.
+====
+
+If the in-sample residuals are all zero (typical for a perfectly flat metric) sigma is zero, the bounds collapse onto the fit line, and a banner is shown explaining this.
+
+== Limitations and warnings
+
+The forecast page surfaces a yellow banner above the graph when one of the following conditions is detected:
+
+[cols="1,3"]
+|===
+| Condition | What it means
+
+| Forecast could not be produced
+| The selected history window has fewer than two usable samples.
+This commonly happens when the graph is new, has gaps, or the window extends before collection started.
+
+| Forecast produced no valid values
+| {page-component-title} ran the filter pipeline but every output sample is `NaN`.
+Typical cause: the upstream `Chomp` and `Outlier` filters removed too many points.
+
+| Confidence bounds have zero width
+| The in-sample residuals had no variance, so the upper and lower bounds coincide with the fit line.
+The forecast is still rendered; the bounds simply aren't visually distinguishable.
+|===
+
+== Behind the scenes
+
+You don't interact with these directly, but it's useful to know what's happening when you click *Forecast*.
+The Web UI doesn't simply hand the raw samples to the Holt-Winters algorithm; instead it builds a fixed chain of server-side measurement filters that prepare the data, run the model, and trim the result to the visible window:
+
+. *Chomp (strip NaNs)* - removes leading and trailing NaN samples from the input column so the model isn't fed gaps at either end.
+. *Outlier* - caps extreme values at the *Outlier Threshold* quantile (default `0.975`) so a single spike doesn't dominate the fit.
+. *HoltWinters* - runs the Holt-Winters algorithm using the configured *Season*, *Forecasts*, and *Confidence Level*, and emits the `HWFit`, `HWLwr`, and `HWUpr` columns.
+. *Trend* - fits a polynomial of order *Trend Order* to the same column and emits a `Trend` column.
+. *Chomp (cutoff)* - trims any rows before *Graph Start* so that only the visible window is returned to the browser.
+
+[cols="1,2"]
+|===
+| Parameter | Affects
+
+| Outlier Threshold | the *Outlier* filter's quantile cap
+| Season | the *HoltWinters* filter's seasonal period (in days)
+| Forecasts | the *HoltWinters* filter's number of seasons projected forward, and the *Trend* filter's `secondsAhead` extent
+| Confidence Level | the *HoltWinters* filter's bound width
+| Trend Order | the *Trend* filter's polynomial order
+| Training Start | how far back the input column is read before the pipeline runs
+| Graph Start | the *Chomp (cutoff)* filter's cutoff date
+|===

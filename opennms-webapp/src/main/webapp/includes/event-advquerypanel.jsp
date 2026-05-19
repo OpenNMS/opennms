@@ -44,6 +44,7 @@
 <%@ page import="org.opennms.web.event.filter.SystemIdFilter" %>
 <%@ page import="org.opennms.web.event.filter.AfterDateFilter" %>
 <%@ page import="org.opennms.web.event.filter.BeforeDateFilter" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
@@ -192,50 +193,117 @@
     pageContext.setAttribute("beforeAmPmText", beforeAmPmText);
 %>
 
+<%
+    StringBuilder _evtSevJs = new StringBuilder();
+    for (Integer _id : checkedSeverities) {
+        if (_evtSevJs.length() > 0) _evtSevJs.append(",");
+        _evtSevJs.append(_id);
+    }
+    StringBuilder _evtSvcJs = new StringBuilder();
+    for (Integer _id : checkedServices) {
+        if (_evtSvcJs.length() > 0) _evtSvcJs.append(",");
+        _evtSvcJs.append(_id);
+    }
+%>
 <script type="text/javascript">
-function resetAdvancedSearch() {
-    var form = document.querySelector('#advancedSearchModal form');
+(function() {
+    var _state = {
+        eventid: '<%= Encode.forJavaScript(prefillEventId) %>',
+        nodenamelike: '<%= Encode.forJavaScript(prefillNodeName) %>',
+        eventtext: '<%= Encode.forJavaScript(prefillEventText) %>',
+        iplike: '<%= Encode.forJavaScript(prefillIpLike) %>',
+        exactuei: '<%= Encode.forJavaScript(prefillExactUei) %>',
+        nodelocation: '<%= Encode.forJavaScript(prefillNodeLocation) %>',
+        systemId: '<%= Encode.forJavaScript(prefillSystemId) %>',
+        sortby: '<%= Encode.forJavaScript(prefillSortStyle) %>',
+        limit: '<%= prefillLimit %>',
+        severities: [<%= _evtSevJs %>],
+        services: [<%= _evtSvcJs %>],
+        useAfterTime: <%= useAfterTime %>,
+        afterHour: '<%= afterHourVal %>',
+        afterMinute: '<%= afterFormattedMinute %>',
+        afterAmPm: '<%= Encode.forJavaScript(afterAmPmText) %>',
+        afterMonthIdx: '<%= afterMonthCount - 1 %>',
+        afterDay: '<%= afterDayVal %>',
+        afterYear: '<%= afterYearVal %>',
+        useBeforeTime: <%= useBeforeTime %>,
+        beforeHour: '<%= beforeHourVal %>',
+        beforeMinute: '<%= beforeFormattedMinute %>',
+        beforeAmPm: '<%= Encode.forJavaScript(beforeAmPmText) %>',
+        beforeMonthIdx: '<%= beforeMonthCount - 1 %>',
+        beforeDay: '<%= beforeDayVal %>',
+        beforeYear: '<%= beforeYearVal %>'
+    };
 
-    // Clear text inputs
-    ['eventid', 'nodenamelike', 'eventtext', 'iplike', 'exactuei'].forEach(function(name) {
-        form.querySelector('[name="' + name + '"]').value = '';
+    function applyState(s) {
+        var form = document.querySelector('#advancedSearchModal form');
+
+        ['eventid', 'nodenamelike', 'eventtext', 'iplike', 'exactuei'].forEach(function(name) {
+            form.querySelector('[name="' + name + '"]').value = s[name];
+        });
+
+        var nlSel = form.querySelector('[name="nodelocation"]');
+        if (s.nodelocation) { nlSel.value = s.nodelocation; }
+        else { nlSel.selectedIndex = 0; }
+
+        var sysSel = form.querySelector('[name="systemId"]');
+        if (s.systemId) { sysSel.value = s.systemId; }
+        else { sysSel.selectedIndex = 0; }
+
+        form.querySelector('[name="relativetime"]').value = '0';
+        form.querySelector('[name="sortby"]').value = s.sortby;
+        form.querySelector('[name="limit"]').value = s.limit;
+
+        form.querySelectorAll('[name^="severity-"]').forEach(function(cb) {
+            cb.checked = s.severities.indexOf(parseInt(cb.name.split('-')[1], 10)) >= 0;
+        });
+        form.querySelectorAll('[name^="service-"]').forEach(function(cb) {
+            cb.checked = s.services.indexOf(parseInt(cb.name.split('-')[1], 10)) >= 0;
+        });
+
+        form.querySelector('[name="useaftertime"]').checked = s.useAfterTime;
+        form.querySelector('[name="afterhour"]').value = s.afterHour;
+        form.querySelector('[name="afterminute"]').value = s.afterMinute;
+        form.querySelector('[name="afterampm"]').value = s.afterAmPm;
+        form.querySelector('[name="aftermonth"]').value = s.afterMonthIdx;
+        form.querySelector('[name="afterdate"]').value = s.afterDay;
+        form.querySelector('[name="afteryear"]').value = s.afterYear;
+
+        form.querySelector('[name="usebeforetime"]').checked = s.useBeforeTime;
+        form.querySelector('[name="beforehour"]').value = s.beforeHour;
+        form.querySelector('[name="beforeminute"]').value = s.beforeMinute;
+        form.querySelector('[name="beforeampm"]').value = s.beforeAmPm;
+        form.querySelector('[name="beforemonth"]').value = s.beforeMonthIdx;
+        form.querySelector('[name="beforedate"]').value = s.beforeDay;
+        form.querySelector('[name="beforeyear"]').value = s.beforeYear;
+    }
+
+    var _nowHour = '${nowHour}';
+    var _nowMin = '${formattedNowMinute}';
+    var _nowAmpm = '${amPmText}';
+    var _nowMonthIdx = parseInt('${nowMonth}', 10) - 1;
+    var _nowDay = '${nowDate}';
+    var _nowYear = '${nowYear}';
+
+    window.resetAdvancedSearch = function() {
+        applyState({
+            eventid: '', nodenamelike: '', eventtext: '', iplike: '', exactuei: '',
+            nodelocation: '', systemId: '',
+            sortby: 'id', limit: '20',
+            severities: [], services: [],
+            useAfterTime: false,
+            afterHour: _nowHour, afterMinute: _nowMin, afterAmPm: _nowAmpm,
+            afterMonthIdx: _nowMonthIdx, afterDay: _nowDay, afterYear: _nowYear,
+            useBeforeTime: false,
+            beforeHour: _nowHour, beforeMinute: _nowMin, beforeAmPm: _nowAmpm,
+            beforeMonthIdx: _nowMonthIdx, beforeDay: _nowDay, beforeYear: _nowYear
+        });
+    };
+
+    $('#advancedSearchModal').on('show.bs.modal', function() {
+        applyState(_state);
     });
-
-    // Uncheck all severity and service checkboxes
-    form.querySelectorAll('[name^="severity-"], [name^="service-"]').forEach(function(cb) {
-        cb.checked = false;
-    });
-
-    // Reset location/system dropdowns to "Any"
-    form.querySelector('[name="nodelocation"]').selectedIndex = 0;
-    form.querySelector('[name="systemId"]').selectedIndex = 0;
-
-    // Reset other dropdowns to defaults
-    form.querySelector('[name="relativetime"]').value = '0';
-    form.querySelector('[name="sortby"]').value = 'id';
-    form.querySelector('[name="limit"]').value = '20';
-
-    // Uncheck time filter checkboxes
-    form.querySelector('[name="useaftertime"]').checked = false;
-    form.querySelector('[name="usebeforetime"]').checked = false;
-
-    // Reset date/time fields to current server time
-    var nowHour = '${nowHour}';
-    var nowMin = '${formattedNowMinute}';
-    var nowAmpm = '${nowAmPm}' === 'AM' ? 'am' : 'pm';
-    var nowMonthIdx = parseInt('${nowMonth}') - 1;
-    var nowDay = '${nowDate}';
-    var nowYear = '${nowYear}';
-
-    ['after', 'before'].forEach(function(prefix) {
-        form.querySelector('[name="' + prefix + 'hour"]').value = nowHour;
-        form.querySelector('[name="' + prefix + 'minute"]').value = nowMin;
-        form.querySelector('[name="' + prefix + 'ampm"]').value = nowAmpm;
-        form.querySelector('[name="' + prefix + 'month"]').value = nowMonthIdx;
-        form.querySelector('[name="' + prefix + 'date"]').value = nowDay;
-        form.querySelector('[name="' + prefix + 'year"]').value = nowYear;
-    });
-}
+})();
 </script>
 
 <form action="event/query" method="post">
@@ -248,19 +316,19 @@ function resetAdvancedSearch() {
 	</div>
 	<div class="form-group col-sm-6">
 		<label for="nodenamelike">Node Label Contains</label>
-		<input class="form-control" type="text" name="nodenamelike" value="<%= prefillNodeName %>" />
+		<input class="form-control" type="text" name="nodenamelike" value="<%= Encode.forHtmlAttribute(prefillNodeName) %>" />
 	</div>
 	</div>
 
 	<div class="row">
 	<div class="form-group col-sm-6">
 		<label for="eventtext">Event Text Contains</label>
-		<input class="form-control" type="text" name="eventtext" value="<%= prefillEventText %>" />
+		<input class="form-control" type="text" name="eventtext" value="<%= Encode.forHtmlAttribute(prefillEventText) %>" />
 	</div>
 
 	<div class="form-group col-sm-6">
 		<label for="iplike">TCP/IP Address Like</label>
-		<input class="form-control" type="text" name="iplike" value="<%= prefillIpLike %>" />
+		<input class="form-control" type="text" name="iplike" value="<%= Encode.forHtmlAttribute(prefillIpLike) %>" />
 	</div>
 	</div>
 
@@ -270,9 +338,9 @@ function resetAdvancedSearch() {
 			<select class="form-control custom-select" name="nodelocation">
 				<option <%= prefillNodeLocation.isEmpty() ? "selected=\"selected\"" : "" %>>Any</option>
 				<% for (OnmsMonitoringLocation onmsMonitoringLocation : monitoringLocations ) { %>
-				<option value="<%= onmsMonitoringLocation.getLocationName() %>"
+				<option value="<%= Encode.forHtmlAttribute(onmsMonitoringLocation.getLocationName()) %>"
 				        <%= onmsMonitoringLocation.getLocationName().equals(prefillNodeLocation) ? "selected=\"selected\"" : "" %>>
-					<%= onmsMonitoringLocation.getLocationName() %>
+					<%= Encode.forHtml(onmsMonitoringLocation.getLocationName()) %>
 				</option>
 				<% } %>
 			</select>
@@ -283,9 +351,9 @@ function resetAdvancedSearch() {
 			<select class="form-control custom-select" name="systemId">
 				<option <%= prefillSystemId.isEmpty() ? "selected" : "" %>>Any</option>
 				<% for (OnmsMonitoringSystem onmsMonitoringSystem : monitoringSystems ) { %>
-				<option value="<%= onmsMonitoringSystem.getId() %>"
+				<option value="<%= Encode.forHtmlAttribute(onmsMonitoringSystem.getId()) %>"
 				        <%= onmsMonitoringSystem.getId().equals(prefillSystemId) ? "selected" : "" %>>
-					<%= onmsMonitoringSystem.getId() %>
+					<%= Encode.forHtml(onmsMonitoringSystem.getId()) %>
 				</option>
 				<% } %>
 			</select>
@@ -299,7 +367,7 @@ function resetAdvancedSearch() {
                 <div>
                     <label>
                         <input type="checkbox" name="severity-<%=severity.getId()%>" value="1"
-                               <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%=severity.getLabel()%>
+                               <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%= Encode.forHtml(severity.getLabel()) %>
                     </label>
                 </div>
             <% } %>
@@ -311,7 +379,7 @@ function resetAdvancedSearch() {
                 <div>
                     <label>
                         <input type="checkbox" name="service-<%=serviceNameMap.get(name)%>" value="1"
-                               <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%=name%>
+                               <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%= Encode.forHtml(name) %>
                     </label>
                 </div>
             <% } %>
@@ -321,7 +389,7 @@ function resetAdvancedSearch() {
 	<div class="row">
 	<div class="form-group col-sm-12">
 		<label for="exactuei">Exact Event UEI</label>
-		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" value="<%= prefillExactUei %>" />
+		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" value="<%= Encode.forHtmlAttribute(prefillExactUei) %>" />
 	</div>
 	</div>
 
@@ -394,7 +462,7 @@ function resetAdvancedSearch() {
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==afterAmPmText}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==afterAmPmText}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -439,7 +507,7 @@ function resetAdvancedSearch() {
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==beforeAmPmText}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==beforeAmPmText}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -464,7 +532,7 @@ function resetAdvancedSearch() {
 
 	<br/>
 
-	<button class="btn btn-secondary" type="submit">Search</button>
+	<button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Search</button>
 	<button class="btn btn-secondary" type="button" onclick="resetAdvancedSearch()">Reset</button>
 
 </form>

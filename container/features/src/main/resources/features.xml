@@ -1251,7 +1251,11 @@
         <details>Core module which provides features to install to listen for rest related services,
             such as @Path annotated interfaces.</details>
         <feature>jax-rs-connector</feature>
-        <feature>jax-rs-provider-jackson</feature>
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
+        <bundle>mvn:com.eclipsesource.jaxrs/provider-jackson/${osgiJaxRsVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
         <bundle>mvn:org.opennms.container.bridge/org.opennms.container.bridge.rest/${project.version}</bundle>
     </feature>
