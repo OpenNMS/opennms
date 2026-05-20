@@ -74,6 +74,12 @@ echo "#### All docker containers have now been pulled to the local cache"
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
 export MAVEN_OPTS="-Xmx2g -Xms2g"
 
+# docker-java 3.3.x defaults to Docker API version 1.32 for initial requests before
+# version negotiation completes. Newer Docker Engine versions (shipped in ubuntu-2204:current)
+# raise the minimum supported API to 1.40, which causes the first request to be rejected.
+# Pinning to 1.44 skips the broken negotiation kickoff while staying within docker-java's range.
+export DOCKER_API_VERSION=1.44
+
 # shellcheck disable=SC3045
 # Set higher open files limit
 ulimit -n 65536
