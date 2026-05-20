@@ -10,7 +10,6 @@ set -eE
 
 trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO} (exit=${rc})"; exit ${rc}' ERR  
 
-
 umask 002
 export MINION_HOME="/opt/minion"
 export KARAF_HOME="${MINION_HOME}"
@@ -51,6 +50,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=tru
 
 # Error codes
 E_ILLEGAL_ARGS=126
+E_INIT_CONFIG=127
 
 # Help function used in error messages and -h option
 usage() {
