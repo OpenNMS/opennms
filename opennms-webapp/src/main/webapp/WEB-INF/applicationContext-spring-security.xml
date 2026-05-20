@@ -263,10 +263,6 @@
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/admin/snmpConfig"/>
-          <beans:constructor-arg name="httpMethod" value="POST"/>
-        </beans:bean>
-        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
           <beans:constructor-arg name="pattern" value="/admin/account/selfService/newPasswordAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>

@@ -163,12 +163,12 @@ if [ -e $OPENNMS_HOME/etc/java.conf ]; then
       JSTACK="false";
    fi
 elif [ -e $MINION_HOME/bin/find-java.sh ]; then
-   JSTACK="$($MINION_HOME/bin/find-java.sh 11.0 17.9999)/bin/jstack"
+   JSTACK="$($MINION_HOME/bin/find-java.sh 17.0 21.9999)/bin/jstack"
    if [ ! -e $JSTACK ]; then
       JSTACK="false";
    fi
 elif [ -e $SENTINEL_HOME/bin/find-java.sh ]; then
-   JSTACK="$($SENTINEL_HOME/bin/find-java.sh 11.0 17.9999)/bin/jstack"
+   JSTACK="$($SENTINEL_HOME/bin/find-java.sh 17.0 21.9999)/bin/jstack"
    if [ ! -e $JSTACK ]; then
       JSTACK="false";
    fi
@@ -191,10 +191,10 @@ if [ $DOJAVA == "true" ]; then
    if [ -e $OPENNMS_HOME/etc/java.conf ]; then
       $(<$OPENNMS_HOME/etc/java.conf) -version &>> $PACK_DIR/java-out.txt
    elif [ -e $MINION_HOME/bin/find-java.sh ]; then
-      FOUND_JDK=$($MINION_HOME/bin/find-java.sh 11.0 17.9999)
+      FOUND_JDK=$($MINION_HOME/bin/find-java.sh 17.0 21.9999)
       $FOUND_JDK/bin/java -version &>> $PACK_DIR/java-out.txt
    elif [ -e $SENTINEL_HOME/bin/find-java.sh ]; then
-      FOUND_JDK=$($SENTINEL_HOME/bin/find-java.sh 11.0 17.9999)
+      FOUND_JDK=$($SENTINEL_HOME/bin/find-java.sh 17.0 21.9999)
       $FOUND_JDK/bin/java -version &>> $PACK_DIR/java-out.txt
    fi
 fi

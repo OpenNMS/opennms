@@ -26,7 +26,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.3.b357-jre-21"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.2.b366-jre-21"
 
 FROM ${BASE_IMAGE} AS minion-base
 
@@ -45,14 +45,6 @@ RUN chmod -R g-w /opt/minion && \
         /opt/minion/system \
         /opt/minion/repositories \
         -type d -print0 | xargs -0 chmod 2775
-
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} AS minion-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Prod image with minimal image size

@@ -80,7 +80,7 @@ While individual events can be disabled if needed, removing core event definitio
 === Vendor event files
 
 Vendor-specific event definitions for third-party devices are available in `$\{OPENNMS_HOME}/etc/examples/events/`.
-This directory contains event configuration files for hundreds of vendors including:
+This directory contains pristine, unmodified event configuration files for hundreds of vendors including:
 
 * Network equipment (Cisco, Juniper, Arista, etc.)
 * Storage systems (NetApp, EMC, etc.)
@@ -90,6 +90,19 @@ This directory contains event configuration files for hundreds of vendors includ
 
 These files are provided as examples and can be uploaded to {page-component-title} as needed for your environment.
 You only need to upload the event files relevant to the devices in your network.
+
+[[migrating-event-files-after-upgrade]]
+==== Migrating event files after upgrade
+
+During the upgrade to the database-backed event configuration, your existing event files from `$\{OPENNMS_HOME}/etc/events/`
+are moved to `$\{OPENNMS_HOME}/etc_archive/events/` and are *not* automatically imported into the database.
+
+If you have customized vendor event files (for example, with adjusted severities, custom UEIs, or local additions),
+upload those files from `$\{OPENNMS_HOME}/etc_archive/events/` into the database through the UI or the
+`POST /api/v2/eventconf/upload` REST endpoint to preserve your customizations.
+
+If you did not modify the vendor event files, you can upload the pristine versions from
+`$\{OPENNMS_HOME}/etc/examples/events/` instead.
 
 === Event sources
 

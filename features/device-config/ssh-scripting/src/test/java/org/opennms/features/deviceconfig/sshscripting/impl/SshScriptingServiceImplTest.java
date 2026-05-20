@@ -23,13 +23,58 @@ package org.opennms.features.deviceconfig.sshscripting.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.opennms.features.deviceconfig.sshscripting.impl.SshScriptingServiceImpl.extractCapturedBytes;
 import static org.opennms.features.deviceconfig.sshscripting.impl.SshScriptingServiceImpl.matchAndConsume;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
 public class SshScriptingServiceImplTest {
+
+    // =========================================================================
+    // extractCapturedBytes — unit tests for awaitAndCapture capture semantics
+    // =========================================================================
+
+    @Test
+    public void extractCapturedBytesReturnsFullTailWhenNoCaptureEnd() {
+        // captureEnd == -1: no await fired after capture, return everything from captureStart
+        var allBytes = "config data\n".getBytes(StandardCharsets.UTF_8);
+        var result = extractCapturedBytes(allBytes, 0, -1);
+        assertThat(new String(result, StandardCharsets.UTF_8), is("config data\n"));
+    }
+
+    @Test
+    public void extractCapturedBytesExcludesPromptLineWhenCaptureEndAtLineStart() {
+        // captureEnd points right to the start of the prompt line (just after the preceding \n)
+        // allBytes = "config data\nrouter#\n" — captureEnd=12 is the 'r' of "router#"
+        var allBytes = "config data\nrouter#\n".getBytes(StandardCharsets.UTF_8);
+        // allBytes[11]='\n', allBytes[12]='r' — captureEnd=12 → scan stops immediately at allBytes[11]
+        var result = extractCapturedBytes(allBytes, 0, 12);
+        assertThat(new String(result, StandardCharsets.UTF_8), is("config data\n"));
+    }
+
+    @Test
+    public void extractCapturedBytesScanBackToNewlineWhenCaptureEndMidLine() {
+        // captureEnd points mid-prompt-line (e.g. await: # on "router#");
+        // the backwards scan must remove the entire "router" prefix too
+        var allBytes = "config data\nrouter#\n".getBytes(StandardCharsets.UTF_8);
+        // allBytes: ...a(10)\n(11)r(12)o(13)u(14)t(15)e(16)r(17)#(18)\n(19)
+        // captureEnd=18 ('r' before '#') → scan: 17='r',16='e',...,12='r',11='\n' → end=12
+        var result = extractCapturedBytes(allBytes, 0, 18);
+        assertThat(new String(result, StandardCharsets.UTF_8), is("config data\n"));
+    }
+
+    @Test
+    public void extractCapturedBytesIsEmptyWhenCaptureStartEqualsEnd() {
+        // captureStart == captureEnd: nothing arrived between capture and the prompt
+        var allBytes = "router#\n".getBytes(StandardCharsets.UTF_8);
+        var result = extractCapturedBytes(allBytes, 0, 0);
+        assertThat(result.length, is(0));
+    }
+
+    // =========================================================================
 
     @Test
     public void testMatchAndConsume() throws Exception {

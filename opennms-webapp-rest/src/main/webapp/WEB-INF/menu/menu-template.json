@@ -281,9 +281,9 @@
           "roles": null
         },
         {
-          "id": "customizeDataCollectionGroups",
-          "name": "Customize Data Collection Groups",
-          "url": "admin/manageSnmpCollections.jsp",
+          "id": "manageSnmpDataCollection",
+          "name": "Manage SNMP Data Collection Config",
+          "url": "ui/index.html#/snmp-data-collection",
           "locationMatch": "",
           "roles": null
         },

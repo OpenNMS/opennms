@@ -2,6 +2,8 @@
 <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
 Note that omitting the enabled attribute will default to enabled = true -->
 <!-- WARNING: The first 2 services (Manager and Eventd) must never be disabled. -->
+<!-- NOTE: This is the default service configuration. User configurations in /etc/service-configuration.xml
+can override these defaults and support environment variable interpolation using ${env:VAR_NAME|default} syntax -->
 
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service enabled="true">

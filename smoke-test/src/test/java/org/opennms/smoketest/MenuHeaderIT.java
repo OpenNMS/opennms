@@ -215,9 +215,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("administrationMenu", "Manage Event Configurations");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='event-config']//div[@class='heading']//h1[text()='Manage Event Configurations']")));
 
-        clickMenuItem("administrationMenu", "Customize Data Collection Groups");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage SNMP Collections and Data Collection Groups')]")));
-
         clickMenuItem("administrationMenu", "Manage SNMP Data Collection per Interface");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Manage SNMP Data Collection per Interface']")));
 

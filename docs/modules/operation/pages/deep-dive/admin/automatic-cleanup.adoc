@@ -1,0 +1,342 @@
+
+= Automatic Database Cleanup
+:description: How {page-component-title} prunes events, alarms, outages, and related records over time, what is and is not cleaned by default, and where to adjust the behavior.
+
+{page-component-title} has several independent cleanup mechanisms for events, alarms, and outages (and other data stored in the database). Each one targets a different set of records and has its own configuration file.
+
+[options="header"]
+[cols="1,2,2"]
+|===
+| Mechanism | Controls | Configured in
+| Alarmd Drools rules | Alarms (and situations) | `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/*.drl`
+| Vacuumd | Events, soft-deleted nodes/interfaces/services, statistics reports, key-value store entries, path-outage alarm clearing | `$\{OPENNMS_HOME}/etc/vacuumd-configuration.xml`
+| AlarmPersister `auto-clean` | Reduced events under an existing alarm (opt-in, per event type) | `<alarm-data auto-clean="true"/>` in event definitions (eventconf)
+|===
+
+
+[#alarms]
+== Alarms (Alarmd Drools rules)
+
+Alarms are pruned by Drools rules running inside Alarmd, not by Vacuumd.
+The default rules use a tiered cascade so most cleared, low-severity alarms disappear within minutes while persistent or unattended alarms survive a few days at most.
+
+Rule file: `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/alarmd.drl`.
+
+.Default cleanup rules (all enabled)
+[options="header"]
+[cols="1,1,3"]
+|===
+| Rule | Inactivity window | Match conditions
+
+| `cleanUp`
+| 5 minutes
+| Severity is at most NORMAL (CLEARED, NORMAL, INDETERMINATE), unacknowledged, no open trouble ticket.
+
+| `fullCleanUp`
+| 1 day
+| Severity is at most NORMAL, no open trouble ticket. Acknowledged or not.
+
+| `GC`
+| 3 days
+| Unacknowledged, any severity.
+
+| `fullGC`
+| 8 days
+| Any alarm at all. Final backstop.
+|===
+
+The "inactivity window" is the time since the alarm last received an event.
+A flapping alarm whose `lastUpdateTime` keeps moving forward will never trip the timer; once events stop arriving, the appropriate rule fires after the window elapses.
+
+The same file also contains:
+
+* `cosmicClear`: when a resolution event arrives whose `clear-key` matches a problem alarm's reduction key, the problem alarm is set to CLEARED severity. This is what drives the bulk of the `cleanUp` deletions five minutes later.
+* `unclear`: if a CLEARED alarm receives a new event with severity above CLEARED, it is restored to that severity (so the cleanup timer resets).
+
+=== Adjusting alarm cleanup
+
+Edit the windows directly in `alarmd.drl`. For example, to keep cleared alarms around for an hour rather than five minutes, change the `cleanUp` rule's `over window:time( 5m )` to `over window:time( 1h )`.
+
+To disable a rule entirely, add `enabled false` to its declaration:
+
+[source, drl]
+----
+rule "fullGC"
+  enabled false
+  salience 0
+  when
+  ...
+end
+----
+
+Reload after editing:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Alarmd'
+----
+
+WARNING: Lengthening the windows can let alarms accumulate faster than they are deleted. Watch the `alarms` table row count after changes.  This can manifest as Alarmd memory pressure long before it causes UI symptoms or crashes {page-component-title}.
+
+=== Disabled-by-default rules
+
+`alarmd.drl` includes several ticketing-related rules with `enabled false`: `createTickets`, `createCriticalTicket`, `updateTickets`, `closeClearedAlarmTickets`, `clearAlarmsForClosedTickets`. These can be enabled in combination with a trouble-ticketing integration to have alarms auto-acknowledged when tickets are opened. Severity escalation is also present as a commented-out `escalation` rule near the top of the file.
+
+[#events]
+== Events, soft-deleted entities, and KV-store entries (Vacuumd)
+
+Vacuumd is a {page-component-title} daemon that runs SQL statements on a schedule.
+The default configuration uses two distinct mechanisms inside the same file:
+
+* `<statement>`: These blocks run on a single shared period, default 24 hours (controlled by the `period` attribute on `<VacuumdConfiguration>`, in milliseconds).
+* `<automations>`: Each automation runs on its own `interval`, optionally driven by a `<trigger>` query.
+
+Configuration file: `$\{OPENNMS_HOME}/etc/vacuumd-configuration.xml`.
+
+=== What the periodic statements clean
+
+All run every 24 hours by default.
+
+[options="header"]
+[cols="2,3"]
+|===
+| Target | What gets deleted
+
+| `events` table
+| Rows older than 6 weeks that are *not* referenced by any outage or notification. Events tied to outages or notifications are kept indefinitely.
+
+| `node` table
+| Rows where `nodeType = 'D'` (soft-deleted). Related rows on other tables (interfaces, services, asset records) are removed at the same time.
+
+| `ipInterface` table
+| Rows where `isManaged = 'D'`.
+
+| `snmpInterface` table
+| Rows where `snmpCollect = 'D'`.
+
+| `ifServices` table
+| Rows where `status = 'D'`.
+
+| `kvstore_jsonb`, `kvstore_bytea`
+| Rows whose `expires_at` is in the past. The TTL is set by whatever feature wrote the row.
+|===
+
+=== What the default automations do
+
+[options="header"]
+[cols="2,1,3"]
+|===
+| Automation | Interval | What it does
+
+| `purgeStatisticsReports`
+| 1 hour
+| `DELETE FROM statisticsReport WHERE purgeDate < now()`. The `purgeDate` is set by the statistics reporting subsystem when each report is generated.
+
+| `clearPathOutages`
+| 30 seconds
+| When a node sends `nodeUp`, this sets severity to NORMAL on any associated `pathOutage` alarms. This does not delete the alarm; the standard `cleanUp` rule above handles deletion.
+|===
+
+The configuration file also contains commented-out examples for monitoring asset maintenance-contract expirations.
+
+=== Adjusting Vacuumd
+
+Edit `vacuumd-configuration.xml` directly:
+
+* To change how aggressively events are pruned, edit the SQL in the `events` `<statement>` block (many users tighten or loosen the `'6 weeks'` interval based on their needs).
+* To change the global statement period, set `<VacuumdConfiguration period="...">` to a different millisecond value.
+* To change an automation's frequency, set its `interval` attribute.
+* To disable an automation without deleting it, set `active="false"`.
+
+Reload after editing:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Vacuumd'
+----
+
+[#auto-clean]
+== Reduced-event cleanup (`auto-clean` in eventconf)
+
+This is a separate, opt-in mechanism that prunes the *events* table only, and only for a specific class of events: events that keep reducing into the same existing alarm.
+
+When an event arrives whose `<alarm-data>` definition has `auto-clean="true"`, and that event reduces into an existing alarm rather than creating a new one, AlarmPersister deletes every prior event for that alarm:
+
+[source, sql]
+----
+DELETE FROM events WHERE alarmid = ? AND eventid != ?
+----
+
+The alarm itself is untouched. Only the previously-reduced event rows go.
+
+NOTE: This runs on each reduction, not on alarm creation. The first event that creates the alarm is kept until the next reducing event arrives, at which point the first event is deleted along with the rest.
+
+There are many event definitions included with {page-component-title} by default that have `auto-clean="true"` set; including authentication events, the catch-all SNMP trap UEI, and many vendor-MIB-driven trap events.
+
+=== When to enable it
+
+Useful for high-frequency reducing UEIs where the alarm count stays at one but the event table grows linearly with the reduction count. Common candidates:
+
+* Interface flapping events that reduce into a single up/down alarm.
+* Polling-failure events that reduce into a single service-outage alarm.
+* Trap-driven events from chatty devices that all reduce to the same reduction key.
+
+Without `auto-clean`, every reduction stores another `events` row, even though the user-visible alarm is just one entry. With `auto-clean`, the alarm carries only its most recent contributing event.
+
+=== Where to enable it
+
+Edit the appropriate event definition under `$\{OPENNMS_HOME}/etc/events/` (or via the web UI event-config editor) and set the attribute on `<alarm-data>`:
+
+[source, xml]
+----
+<event>
+  <uei>uei.opennms.org/example/myFloodingEvent</uei>
+  <event-label>Example: Flooding Event</event-label>
+  ...
+  <alarm-data reduction-key="%uei%:%nodeid%"
+              alarm-type="1"
+              auto-clean="true"/>
+</event>
+----
+
+Then reload event configuration:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Eventd'
+----
+
+WARNING: Enabling `auto-clean` is destructive of historical data. The full event log for that alarm collapses to a single row each time the alarm is reduced into. If you rely on a complete event-by-event audit trail, leave `auto-clean` disabled.
+
+[#not-cleaned]
+== What does *not* get cleaned by default
+
+These records accumulate forever unless an operator removes them or you add cleanup logic yourself.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Records | Notes
+
+| Outages
+| The `outages` table is never pruned by default. One row is added per service-loss/regain cycle.
+
+| Notifications
+| The `notifications` table is never pruned. This also keeps related events alive (the events purge skips events referenced by notifications).
+
+| Acknowledgments
+| Each `acks` row is removed automatically when the alarm or event it references is deleted.
+
+| Events tied to outages or notifications
+| The 6-week event purge explicitly excludes these. An event referenced by a five-year-old resolved outage will still be on disk.
+|===
+
+Outage and notification history are kept by default. Environments with high event throughput may want to add their own cleanup.
+
+[#extending]
+== Extending the defaults
+
+Add new retention rules in Vacuumd. Vacuumd statements can target any table; Drools rules only operate on alarms.
+
+Two patterns to follow:
+
+* For a fixed cadence with no preconditions, add a `<statement>`. It inherits the global `period`.
+* For higher frequency than the global period, sub-second runs, or chaining a query result into a parameterized `UPDATE`/`DELETE`, add an `<automation>` with its own `interval` and an optional `<trigger>` to feed it.
+
+=== Example: purge resolved outages older than 90 days
+
+Add inside `<VacuumdConfiguration>`:
+
+[source, xml]
+----
+<statement>
+  DELETE FROM outages
+   WHERE ifregainedservice IS NOT NULL
+     AND ifregainedservice &lt; now() - interval '90 days';
+</statement>
+----
+
+NOTE: Reports that join the `outages` table will lose visibility into anything older than the cutoff. Pick the interval to match how far back your reporting actually looks.
+
+=== Example: purge old notifications
+
+[source, xml]
+----
+<statement>
+  DELETE FROM notifications
+   WHERE pagetime IS NOT NULL
+     AND pagetime &lt; now() - interval '90 days';
+</statement>
+----
+
+Notifications reference events via the `eventid` column. Once they are gone, the periodic events purge will start removing the events that those notifications were keeping alive.
+
+=== Example: tighten the events retention
+
+The default statement uses 6 weeks. To compress it to 14 days, replace the `interval` literal:
+
+[source, xml]
+----
+<statement>
+  DELETE FROM events WHERE NOT EXISTS
+    (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid
+  UNION
+    SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid
+  UNION
+    SELECT eventid FROM notifications WHERE eventid = events.eventid)
+  AND eventtime &lt; now() - interval '14 days';
+</statement>
+----
+
+TIP: Run the `SELECT count(*)` form of the statement against your database first to gauge how many rows the change will affect. Pruning years of accumulated events in one pass can hold a database lock for a long time and consume a large amount of transaction-log space.
+
+=== Example: a custom automation with a trigger
+
+The default `clearPathOutages` automation uses a trigger pattern (IE: a trigger query feeds rows into a parameterized action).  The same basic pattern works for any "for each row matching X, do Y" cleanup task.
+
+[source, xml]
+----
+<automations>
+  <automation name="archiveStaleAcks" interval="3600000" active="true"
+              trigger-name="findStaleAcks"
+              action-name="deleteStaleAcks"/>
+</automations>
+
+<triggers>
+  <trigger name="findStaleAcks" operator="&gt;=" row-count="1">
+    <statement>
+      SELECT id AS _ackid FROM acks
+       WHERE acktime &lt; now() - interval '180 days'
+    </statement>
+  </trigger>
+</triggers>
+
+<actions>
+  <action name="deleteStaleAcks">
+    <statement>
+      DELETE FROM acks WHERE id = ${_ackid}
+    </statement>
+  </action>
+</actions>
+----
+
+Tokens like `${_ackid}` come from the trigger's columns prefixed with `_`. The action runs once per row returned by the trigger.
+
+== Verifying that cleanup is happening
+
+[options="header"]
+[cols="2,3"]
+|===
+| Signal | Where to look
+
+| Vacuumd executed its statements
+| `$\{OPENNMS_HOME}/logs/vacuumd.log`. Look for `Ran update` log lines and the affected row counts.
+
+| Alarmd Drools rules fired
+| `$\{OPENNMS_HOME}/logs/alarmd.log`. Look for `Deleting alarm with id` log lines from `DefaultAlarmService`.
+
+| Row counts directly
+| `SELECT count(*)` against `events`, `alarms`, `outages`, `notifications`. Trend these to confirm the cleanup is keeping up with arrivals.
+|===
+
+If a Vacuumd reload silently does nothing (no `Ran update` lines, but no errors either), check that `Vacuumd` is started: `opennms:status` from the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] should list it as Running. The same applies to Alarmd.

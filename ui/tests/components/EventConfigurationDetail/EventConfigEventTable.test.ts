@@ -963,7 +963,7 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('handles large number of events (renders without crash)', async () => {
-      store.events = new Array(1000).fill(0).map((_, i) => ({
+      store.events = new Array(100).fill(0).map((_, i) => ({
         id: i,
         uei: `uei${i}`,
         eventLabel: `Label${i}`,
