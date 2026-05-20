@@ -117,9 +117,6 @@ function applyFeatureBootTemplates() {
     # Clean only files managed by this script; keep baseline boot files from the image/package.
     local managed_boot_files=(
       "kafka-ipc.boot"
-      "kafka-rpc.boot"
-      "kafka-sink.boot"
-      "kafka-twin.boot"
       "grpc.boot"
       "disable-jms.boot"
       "jaeger.boot"
@@ -143,9 +140,6 @@ function applyFeatureBootTemplates() {
         ;;
         kafka)
             apply_template "kafka-ipc.boot"
-            apply_template "kafka-rpc.boot"
-            apply_template "kafka-sink.boot"
-            apply_template "kafka-twin.boot"
             apply_template "disable-jms.boot"
             ;;
         grpc)
@@ -182,19 +176,6 @@ function parseEnvironment() {
             ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
             updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
         fi
-        if [[ $env_var =~ ^KAFKA_RPC_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
-        fi
-        if [[ $env_var =~ ^KAFKA_SINK_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
-        fi
-        if [[ $env_var =~ ^KAFKA_TWIN_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.twin.kafka.cfg"
-        fi
-
     done
 }
 
@@ -325,9 +306,6 @@ validateFeatureBootComposition() {
     case "${MINION_IPC:-}" in
       kafka)
         require_boot_file "kafka-ipc.boot"
-        require_boot_file "kafka-rpc.boot"
-        require_boot_file "kafka-sink.boot"
-        require_boot_file "kafka-twin.boot"
         require_boot_file "disable-jms.boot"
         ;;
       grpc)
