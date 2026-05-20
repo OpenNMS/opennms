@@ -79,7 +79,7 @@
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom -Dapi.version=1.41</argLine>
   </properties>
   <build>
     <testResources>
