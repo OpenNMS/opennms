@@ -26,6 +26,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SnmpCollectionCreateSourceDto {
-    public String name;
-    public List<String> profiles = new ArrayList<>();
+    private String name;
+    private List<String> profiles = new ArrayList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(List<String> profiles) {
+        if (profiles == null) {
+            this.profiles.clear();
+        } else {
+            this.profiles = profiles;
+        }
+    }
 }

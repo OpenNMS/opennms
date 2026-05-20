@@ -846,7 +846,6 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
             dataCollectionConfPersistenceService.updateSystemDef(systemDefId,collectionSourceId,request);
             snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SystemDef updated successfully.").build();
-
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("SystemDef was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
@@ -861,31 +860,41 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
     ) {
         final String username = getUsername(securityContext);
 
-        if (request == null || request.name == null || request.name.isBlank()) {
+        if (request == null) {
+            return badRequest("Request must not be empty.");
+        }
+
+        final String sourceName = request.getName() != null ? request.getName().trim(): "";
+
+        if (sourceName.isBlank()) {
             return badRequest("Request must include a non-empty name.");
         }
 
-        if (request.profiles == null || request.profiles.isEmpty()) {
+        final List<String> sourceProfiles =
+                request.getProfiles() != null ?
+                request.getProfiles().stream()
+                        .filter(Objects::nonNull)
+                        .map(String::trim)
+                        .filter(s -> !s.isBlank())
+                        .toList()
+                : List.of();
+
+        if (sourceProfiles.isEmpty()) {
             return badRequest("Request must include at least one profile.");
         }
-
-        if (request.profiles.stream().anyMatch(p -> p == null || p.isBlank())) {
-            return badRequest("All profile names must be non-empty.");
-        }
-
-        final String sourceName = request.name;
 
         if (snmpCollectionSourceDao.findByName(sourceName) != null) {
             return badRequest("A source named '" + sourceName + "' already exists.");
         }
 
-        final List<String> unknownProfiles = request.profiles.stream()
-                .filter(p -> p != null && !p.isBlank())
+        final List<String> unknownProfiles = sourceProfiles.stream()
                 .filter(p -> snmpCollectionProfileDao.findByName(p) == null)
                 .toList();
+
         if (!unknownProfiles.isEmpty()) {
             return badRequest("The following profiles do not exist: " + unknownProfiles);
         }
+
         final Date now = new Date();
         DatacollectionGroup dcg = new DatacollectionGroup();
         dcg.setName(sourceName);
@@ -894,7 +903,7 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
         final Integer sourceId;
 
         try {
-            sourceId = dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, request.profiles);
+            sourceId = dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, sourceProfiles);
             success = true;
         } catch (Exception ex) {
             return internalServerError(ex);
