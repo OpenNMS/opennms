@@ -899,19 +899,15 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
         DatacollectionGroup dcg = new DatacollectionGroup();
         dcg.setName(sourceName);
 
-        boolean success = false;
         final Integer sourceId;
 
         try {
             sourceId = dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, sourceProfiles);
-            success = true;
         } catch (Exception ex) {
             return internalServerError(ex);
         }
 
-        if (success) {
-            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
-        }
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
         return Response.status(Response.Status.CREATED).entity(sourceId).build();
     }
