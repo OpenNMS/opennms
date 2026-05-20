@@ -1,4 +1,5 @@
-import { CreateEditMode, Pagination } from '.'
+import { IAutocompleteItemType } from '@featherds/autocomplete';
+import { CreateEditMode, Pagination, Sorting } from '.'
 
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
