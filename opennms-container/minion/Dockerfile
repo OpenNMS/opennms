@@ -90,7 +90,6 @@ COPY --chown=10001:0 --from=minion-base /opt /opt
 
 # Overlay container-specific etc files (config files and featuresBoot templates)
 COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
-COPY --chown=10001:0 --from=minion-plugins /opt/usr-plugins /opt/minion/deploy
 
 # Create the directory for server certificates
 RUN install -d -m 750 /opt/minion/server-certs
