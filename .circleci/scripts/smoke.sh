@@ -25,7 +25,7 @@ CONTAINER_COUNT=10
 touch /tmp/finished-containers.txt
 for CONTAINER in \
   "alpine:3.5" \
-  "testcontainersofficial/ryuk:0.3.0" \
+  "testcontainersofficial/ryuk:0.11.0" \
   "selenium/standalone-firefox-debug:latest" \
   "cassandra:3.11.2" \
   "confluentinc/cp-kafka:5.2.1" \
