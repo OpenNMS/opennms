@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
-  useRoute: vi.fn((...args: any[]) => mockUseRoute(...args)),
+  useRoute: vi.fn(() => mockUseRoute()),
   useRouter: vi.fn(() => ({
     push: mockPush
   }))
@@ -437,7 +437,7 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
       { id: null, description: 'null' },
       { id: undefined, description: 'undefined' }
     ])('does not fetch when route id is $description', async ({ id }) => {
-      mockUseRoute.mockReturnValue({ params: { id } })
+      mockUseRoute.mockReturnValue({ params: { id: String(id) } })
       store.fetchCollectionSourceById = vi.fn()
 
       wrapper = mount(SnmpDataCollectionSourceDetail, {

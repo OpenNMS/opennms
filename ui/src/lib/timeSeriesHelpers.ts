@@ -33,10 +33,21 @@ export const rraFromString = (rraStr: string): RRA => {
     throw new Error(`Invalid RRA string: ${rraStr}`)
   }
 
+  const xff = parseFloat(parts[2])
+  const steps = parseInt(parts[3], 10)
+  const rows = parseInt(parts[4], 10)
+
+  // Validate all numeric values
+  if (isNaN(xff) || !Number.isFinite(xff) || xff < 0 || xff > 1 ||
+      isNaN(steps) || !Number.isFinite(steps) || steps <= 0 ||
+      isNaN(rows) || !Number.isFinite(rows) || rows <= 0) {
+    throw new Error(`Invalid RRA string: ${rraStr}`)
+  }
+
   return {
     cf: parts[1] as any,
-    xff: parseFloat(parts[2]),
-    steps: parseInt(parts[3], 10),
-    rows: parseInt(parts[4], 10)
-  }
+    xff,
+    steps,
+    rows
+  } as RRA
 }

@@ -43,8 +43,8 @@ export interface SnmpCollectionProfile {
   sourceNames: string[]
   maxVarsPerPdu?: number
   enabled: boolean
-  createdTime?: string
-  lastModified?: string
+  createdTime?: number
+  lastModified?: number
 }
 
 export interface SnmpDataCollectionSourceUploadResponse {
@@ -114,11 +114,10 @@ export interface SnmpCollectionDetailStoreState {
 }
 
 export interface SnmpDataCollectionCreationStoreState {
-  selectedCollectionSource: IAutocompleteItemType
+  // selectedCollectionSource: IAutocompleteItemType
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
   resourceTypeNames: string[]
   mibGroupNames: string[]
-  resourceTypeNames: string[]
   isLoading: boolean
   configForm: {
     systemDef: SnmpCollectionSystemDefPayload[]

@@ -129,7 +129,20 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
       return deleteSnmpDataCollectionProfiles(ids)
     },
     profilesForSource(sourceName: string): SnmpCollectionProfile[] {
-      return this.profiles.filter(profile => profile.sourceNames.includes(sourceName))
+      const normalizedSourceName = sourceName.trim().toLowerCase()
+
+      if (!normalizedSourceName) {
+        return []
+      }
+
+      return this.profiles.filter(profile => {
+        if (!Array.isArray(profile.sourceNames)) {
+          return false
+        }
+        return profile.sourceNames.some(profileSourceName =>
+          profileSourceName.trim().toLowerCase() === normalizedSourceName
+        )
+      })
     },
     async createSnmpDataCollectionSource(name: string, profiles: string[]): Promise<number | null> {
       return createSnmpCollectionSource(name, profiles)

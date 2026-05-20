@@ -594,6 +594,10 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
+  if (!store.profiles.length) {
+    await store.fetchSnmpCollectionProfiles()
+  }
+
   if (route.params.id === 'create') {
     mode.value = CreateEditMode.Create
     store.selectedProfile = {
