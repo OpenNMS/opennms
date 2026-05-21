@@ -172,8 +172,18 @@
 
     <!-- Performance Measurement Card -->
     <action>
-        <label>Configure SNMP Collections and Data Collection Groups</label>
-        <url>admin/manageSnmpCollections.jsp</url>
+        <label>Manage SNMP Data Collection Config</label>
+        <url>ui/index.html#/snmp-data-collection</url>
+        <aliases>
+            <alias>SNMP Data Collection</alias>
+            <alias>SNMP Collection</alias>
+            <alias>Data Collection Config</alias>
+            <alias>Datacollection Config</alias>
+            <alias>MIB Groups</alias>
+            <alias>Resource Types</alias>
+            <alias>System Definitions</alias>
+            <alias>SystemDefs</alias>
+        </aliases>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

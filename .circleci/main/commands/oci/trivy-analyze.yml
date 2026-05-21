@@ -58,7 +58,11 @@ commands:
               echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
               exit 0
             fi
-  
+
+            sudo apt update
+            sudo apt install -y python3-pip
+            pip3 install requests --break-system-packages 
+
             echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
             python3 .circleci/pyscripts/create_jira_issues.py
 

@@ -29,12 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.core.mate.api.EnvironmentScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -81,11 +83,29 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
             LOG.debug("ServiceConfigFactory.init: config file path {}", cfgFile.getPath());
             ServiceConfiguration userConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
             m_config = ServiceConfiguration.mergeWithDefaults(userConfig);
+
+            // Interpolate environment variables in service enabled attributes
+            interpolateServiceAttributes(m_config);
+
             LOG.info("Merged user service configuration with defaults");
         } catch (IOException e) {
             // Should never happen
             LOG.error("Could not open configuration file: " + ConfigFileConstants.SERVICE_CONF_FILE_NAME, e);
     }
+    }
+
+    /**
+     * Interpolates environment variables in service attributes using the MATE interpolation system.
+     * This allows service enabled attributes to use ${env:VAR_NAME|default} syntax.
+     */
+    static void interpolateServiceAttributes(final ServiceConfiguration config) {
+        final EnvironmentScope scope = new EnvironmentScope();
+        for (Service service : config.getServices()) {
+            final String rawEnabled = service.getRawEnabled();
+            if (rawEnabled != null) {
+                service.setEnabled(Interpolator.interpolate(rawEnabled, scope).output);
+            }
+        }
     }
 
     /**

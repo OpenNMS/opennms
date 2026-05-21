@@ -62,6 +62,7 @@
 *** xref:rest/scv.adoc[]
 *** xref:rest/snmp_configuration.adoc[]
 *** xref:rest/snmp_configuration_legacy.adoc[]
+*** xref:rest/snmp-datacollection-config-rest-api.adoc[]
 *** xref:rest/snmpinterfaces.adoc[]
 *** xref:rest/snmpmetadata.adoc[]
 *** xref:rest/users.adoc[]

@@ -83,7 +83,6 @@
       <include-collection dataCollectionGroup="VMware-Cim"/>
       <include-collection dataCollectionGroup="VMware6"/>
       <include-collection dataCollectionGroup="VMware7"/>
-      <include-collection dataCollectionGroup="WMI"/>
       <include-collection dataCollectionGroup="Zertico"/>
       <include-collection dataCollectionGroup="Zeus"/>
    </snmp-collection>

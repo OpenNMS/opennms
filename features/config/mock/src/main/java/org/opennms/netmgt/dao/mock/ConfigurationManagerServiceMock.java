@@ -282,7 +282,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() {
-        return new HashSet<>();
+        return Set.of("provisiond","snmp-config");
     }
 
     @Override

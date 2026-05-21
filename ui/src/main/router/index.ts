@@ -346,6 +346,21 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
+      path: '/snmp-data-collection',
+      name: 'SNMP Data Collection',
+      component: () => import('@/containers/SnmpDataCollection.vue')
+    },
+    {
+      path: '/snmp-data-collection/:id',
+      name: 'SNMP Data Collection Detail',
+      component: () => import('@/containers/SnmpDataCollectionDetail.vue')
+    },
+    {
+      path: '/snmp-data-collection/create',
+      name: 'SNMP Data Collection Create',
+      component: () => import('@/containers/SnmpDataCollectionCreate.vue')
+    },
+    {
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')

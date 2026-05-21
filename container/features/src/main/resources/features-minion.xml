@@ -113,7 +113,6 @@
       <feature>opennms-provisioning</feature>
       <feature>opennms-vmware</feature>
       <feature>opennms-xml-collector</feature>
-      <feature>wmi-integration</feature>
       <feature>wsman-integration</feature>
 
       <feature>opennms-core-ipc-rpc-api</feature>
