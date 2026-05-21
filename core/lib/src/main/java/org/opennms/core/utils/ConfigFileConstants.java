@@ -372,11 +372,6 @@ public abstract class ConfigFileConstants {
      * The NSClient data collection configuration file
      */
     public static final int NSCLIENT_CONFIG_FILE_NAME;
-    
-    /**
-     * The WMI agent configuration file
-     */
-    public static final int WMI_CONFIG_FILE_NAME;
 
     /**
      * The SNMP Asset Provisioning Adapter configuration file
@@ -388,11 +383,6 @@ public abstract class ConfigFileConstants {
      */
     public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
-    /**
-     * The WMI collection configuration file
-     */
-    public static final int WMI_COLLECTION_CONFIG_FILE_NAME;
-    
     /**
      * The Asterisk global configuration file (for notifications, etc.)
      */
@@ -503,11 +493,7 @@ public abstract class ConfigFileConstants {
         NSCLIENT_COLLECTION_CONFIG_FILE_NAME = 65;
         
         NSCLIENT_CONFIG_FILE_NAME = 66;
-        
-        WMI_CONFIG_FILE_NAME = 67;
 
-        WMI_COLLECTION_CONFIG_FILE_NAME = 68;
-        
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
@@ -604,8 +590,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
-        FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
-        FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";

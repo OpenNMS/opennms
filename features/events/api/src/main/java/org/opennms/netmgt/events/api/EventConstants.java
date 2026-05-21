@@ -531,6 +531,7 @@ public abstract class EventConstants {
     public static final String DEVICE_CONFIG_BACKUP_STARTED_UEI = "uei.opennms.org/deviceconfig/configBackupStarted";
     public static final String DEVICE_CONFIG_BACKUP_FAILED_UEI = "uei.opennms.org/deviceconfig/configBackupFailed";
     public static final String DEVICE_CONFIG_BACKUP_SUCCEEDED_UEI = "uei.opennms.org/deviceconfig/configBackupSucceeded";
+    public static final String DEVICE_CONFIG_CHANGED_UEI = "uei.opennms.org/deviceconfig/configChanged";
     //
     // end eventUEIs
     //

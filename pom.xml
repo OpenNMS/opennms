@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.0-SNAPSHOT</version>
+  <version>36.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -130,7 +130,6 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
-    <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-config-dao</module>
   </modules>
@@ -1676,7 +1675,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>36.0.1.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1740,7 +1739,7 @@
     <args4jVersion>2.33</args4jVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
-    <activemqVersion>5.19.4</activemqVersion>
+    <activemqVersion>5.19.5</activemqVersion>
     <activemqCamelVersion>5.16.8</activemqCamelVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
@@ -1774,7 +1773,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.16.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
-    <commonsNetVersion>3.10.0</commonsNetVersion>
+    <commonsNetVersion>3.12.0</commonsNetVersion>
     <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsTextVersion>1.11.0</commonsTextVersion>
@@ -1834,9 +1833,9 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.16.2</jackson2Version>
+    <jackson2Version>2.18.7</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
-    <snakeyamlVersion>2.2</snakeyamlVersion>
+    <snakeyamlVersion>2.3</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>6.20.0</jasperreportsVersion>
@@ -3069,6 +3068,21 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-client</artifactId>
+        <version>${activemqVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-broker</artifactId>
+        <version>${activemqVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>${activemqVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>atomikos-dependencies</artifactId>
         <version>${project.version}</version>
@@ -3692,11 +3706,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp-ng</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-wmi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

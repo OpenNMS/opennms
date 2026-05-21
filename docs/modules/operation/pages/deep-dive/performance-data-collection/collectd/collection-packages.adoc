@@ -100,7 +100,7 @@ The collector and its related Java class must appear at the bottom of the `colle
 <2> The interval at which the service is collected (in milliseconds).
 <3> Marker to say if service is user-defined (used for UI purposes).
 <4> Service is collected only if "on".
-<5> Assign the performance data collection schema named `default` (found in the corresponding configuration file for the type of collection--in this case `datacollection-config.xml`).
+<5> Assign the performance data collection schema named `default` (defined in the corresponding configuration for the type of collection--in this case the SNMP data collection config managed via *Admin -> Manage SNMP Data Collection Config*).
 <6> Enable threshold evaluation for metrics provided by this service.
 <7> Run the SnmpCollector implementation for the service named `SNMP`.
 

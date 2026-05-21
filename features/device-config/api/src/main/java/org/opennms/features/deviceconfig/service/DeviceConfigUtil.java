@@ -27,10 +27,55 @@ import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
 public class DeviceConfigUtil {
-    
+
+    /**
+     * Returns true if two config byte arrays are considered equal.
+     * Comparison is done as text using the given encoding.
+     * When {@code ignoreComments} is true, C-style comments ({@code //}, {@code #},
+     * {@code /* ... *\/}) are stripped from both sides before comparing.
+     */
+    public static boolean configsAreEqual(byte[] a, byte[] b, String encoding, boolean ignoreComments) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        if (!ignoreComments) {
+            return Arrays.equals(a, b);
+        }
+        try {
+            Charset charset = Charset.forName(encoding);
+            return stripComments(new String(a, charset)).equals(stripComments(new String(b, charset)));
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+            return Arrays.equals(a, b);
+        }
+    }
+
+    /**
+     * Removes C-style comments from a configuration string:
+     * <ul>
+     *   <li>{@code /* ... *\/} block comments (including multi-line)</li>
+     *   <li>{@code //} line comments</li>
+     *   <li>{@code #} line comments</li>
+     * </ul>
+     * Lines that are empty or whitespace-only after removal are also dropped,
+     * so a diff that only adds or removes comments is not treated as a change.
+     */
+    public static String stripComments(String content) {
+        // block comments /* ... */ — (?s) makes . match newlines
+        content = content.replaceAll("(?s)/\\*.*?\\*/", "");
+        // // line comments
+        content = content.replaceAll("//[^\r\n]*", "");
+        // # line comments
+        content = content.replaceAll("#[^\r\n]*", "");
+        // drop lines that are now blank or whitespace-only
+        content = content.replaceAll("(?m)^[ \t]*\r?\n", "");
+        return content;
+    }
 
     public static byte[] decompressGzipToBytes(byte[] source) throws IOException {
         try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(source))) {

@@ -1,24 +1,53 @@
 [[releasenotes-36]]
 
-= What's New in OpenNMS Horizon 36
+= What's New in OpenNMS {page-component-title} 36
 
-== Breaking changes
+== System requirements and Dependencies
 
-=== File `eventconf.xml` moved to DB
-The contents of the file `eventconf.xml` will be stored in the database during the upgrade process and all files in `etc/events` will be moved to `etc_archive`.
-These events will not be imported into the database. Please refer to the OpenNMS documentation for information on how to migrate custom events to the database.
+* Java 21: OpenNMS {page-component-title} requires JDK 21.
+* PostgreSQL 14 or higher: This version of OpenNMS {page-component-title} requires a supported version of PostgreSQL.
 
-=== JoeSNMP removed
-The SNMP implementation JoeSNMP was removed in Horizon 36.
+== New features and important changes
 
-=== At least PostgreSQL 14.0 is required
+=== SNMP datacollection config moved to DB with new UI
+The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
+After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
+Direct edits to the archived XML files no longer take effect.
 
-OpenNMS {page-component-title} now requires PostgreSQL 14.x or newer.
-If you are running an older version, you must upgrade to PostgreSQL 14 or later.
-Attempting a schema upgrade with `install -dis` will result in an error.
-If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
-Use this only as a last resort, since it may affect compatibility.
-Be aware that doing so takes you beyond supported configurations — here be dragons.
+=== Snmp Config file `snmp-config.xml` moved to DB with new UI
+The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
+and the original file is moved to `etc_archive/`.
+
+After upgrade, manage SNMP configuration through the *Integrations -> SNMP Agent Configuration* page
+(or the REST v2 API under `/api/v2/snmp-config`). Direct edits to the archived XML file no longer take effect.
+
+The new UI supports definition lookup by IP address and location, profile management, and supports both IPv4 and IPv6.
+
+The legacy file-based SNMP credential encryption feature (the `org.opennms.snmp.encryption.enabled` property
+and the `snmp-config-encrypt` / `snmp-config-decrypt` Karaf commands) has been removed.
+The upgrade handles existing encrypted configurations automatically.
+For protecting SNMP credentials, use Secure Credentials Vault (SCV) metadata expressions in your SNMP configuration.
+
+See xref:development:rest/snmp_configuration.adoc[SNMP Configuration REST API] for details.
+
+=== Trapd Config file `trapd-configuration.xml` moved to DB with new UI
+The contents of `trapd-configuration.xml` are migrated into the database during the upgrade process,
+and the original file is moved to `etc_archive/`.
+
+After upgrade, manage trapd configuration through the *Integrations -> Trap Configuration* page
+(or the REST v2 API under `/api/v2/trapd`). Direct edits to the archived XML file no longer take effect.
+
+See xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)] for details.
+
+=== Environment variable support in service configuration
+Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
+using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`
+to disable Telemetryd without editing the configuration file.
+
+This is particularly useful for containerized deployments where service composition is controlled via environment.
+Existing `enabled="true|false"` values in the file remain the default when no environment variable is set.
+
+NOTE: The `Manager` and `Eventd` services must always be enabled and cannot be disabled via environment variable.
 
 === Ticketing plugin is now automatic
 
@@ -29,3 +58,39 @@ The `NullTicketerPlugin` and the `opennms.ticketer.plugin` property have been re
 If you have `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` in a custom properties file under `etc/opennms.properties.d/`, remove that entry before upgrading.
 If you previously set `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin`, that entry is now redundant and can be removed.
 The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
+
+=== Light and dark mode for the Vue UI
+The Vue-based web UI now supports a light/dark theme toggle, in addition to the system-default option.
+
+=== File `eventconf.xml` moved to DB
+The contents of the file `eventconf.xml` will be stored in the database during the upgrade process and all files in `etc/events` will be moved to `etc_archive`.
+These events will not be imported into the database.
+
+After upgrade, manage event configurations through the *Administration -> Manage Event Configurations* page
+(or the REST API under `/api/v2/eventconf`).
+
+See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
+
+== Breaking changes
+
+=== WMI integration removed
+The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
+
+=== JoeSNMP removed
+The SNMP implementation JoeSNMP was removed in OpenNMS {page-component-title}.
+
+=== C3P0 connection pool removed
+The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) and
+`etc/c3p0.properties` have been removed. HikariCP is now the only supported pool, and has been the default since OpenNMS {page-component-title} 35.
+
+If your `opennms-datasources.xml` explicitly sets `factory="org.opennms.core.db.C3P0ConnectionFactory"`,
+remove that attribute before upgrading.
+
+=== At least PostgreSQL 14.0 is required
+
+OpenNMS {page-component-title} now requires PostgreSQL 14.x or newer.
+If you are running an older version, you must upgrade to PostgreSQL 14 or later.
+Attempting a schema upgrade with `install -dis` will result in an error.
+If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
+Use this only as a last resort, since it may affect compatibility.
+Be aware that doing so takes you beyond supported configurations — here be dragons.

@@ -23,6 +23,7 @@
 --%>
 <%@page import="org.opennms.web.api.Util" %>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.web.geomap.GeomapPageHelper" %>
 <%@page language="java" contentType="text/html" session="true" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -109,14 +110,26 @@
 </div>
 
 <script type="text/javascript">
-$('<%= mapId %>').ready(function() {
+// $(function(handler)) is the canonical document-ready shortcut in
+// jQuery 3+. The previous form, $('<%= mapId %>').ready(handler),
+// expanded to $('map').ready(handler) -- a tag selector for HTML
+// <map> elements (none present on this page), and $(selector).ready
+// was removed from jQuery 3.0, so the handler never fired and
+// geomap.render() was never invoked. The page silent-failed.
+//
+// Render parameter values via GeomapPageHelper so missing query
+// parameters render as the JS null literal (not the string "null").
+// The geomap-js client uses isUndefinedOrNull(...) for default
+// substitution, which treats the string "null" as a real value and
+// forwards it to /api/v2/geolocation/config?strategy=null.
+$(function() {
     geomap.render({
         baseHref: "<%= baseHref %>",
         mapId: "<%= mapId %>",
-        hideControlsOnStartup: <%= WebSecurityUtils.sanitizeString(getParameter(request, "hideControlsOnStartup")) %> ,
-        strategy: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "strategy")) %>" ,
-        severity: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "severity")) %>"
-    })
+        hideControlsOnStartup: <%= GeomapPageHelper.paramAsJsBoolean(getParameter(request, "hideControlsOnStartup")) %>,
+        strategy: <%= GeomapPageHelper.paramAsJsString(getParameter(request, "strategy")) %>,
+        severity: <%= GeomapPageHelper.paramAsJsString(getParameter(request, "severity")) %>
+    });
 });
 </script>
 

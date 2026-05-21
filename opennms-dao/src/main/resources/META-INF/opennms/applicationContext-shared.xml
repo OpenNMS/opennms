@@ -300,4 +300,27 @@
     <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
         <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
     </onmsgi:list>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao" ref="snmpCollectionMibGroupDao" />
+    <bean id="snmpCollectionMibGroupDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionMibGroupDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpCollectionProfileDao" ref="snmpCollectionProfileDao" />
+    <bean id="snmpCollectionProfileDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionProfileDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao" ref="snmpCollectionResourceTypeDao" />
+    <bean id="snmpCollectionResourceTypeDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionResourceTypeDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpCollectionSourceDao" ref="snmpCollectionSourceDao" />
+    <bean id="snmpCollectionSourceDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionSourceDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao" ref="snmpCollectionSystemDefDao" />
+    <bean id="snmpCollectionSystemDefDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionSystemDefDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+
 </beans>

@@ -1,3 +1,14 @@
+opennms-sentinel (36.0.0-1) stable; urgency=low
+
+  * Release 36.0.0 introduces new features including DB-backed 
+    configuration for SNMP, data collection, and Trapd, plus environment 
+    variable support in service configuration.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/36.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 May 2026 12:46:24 -0400
+
 opennms-sentinel (35.0.5-1) stable; urgency=low
 
   * Release 35.0.5 contains a couple of bug fixes and enhancements.

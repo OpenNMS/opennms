@@ -94,6 +94,10 @@ Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.
 | If specified, this command is executed on the remote host instead of a login shell.
 | _Default login shell_
 
+|ignore-comments
+|Whether to ignore commented lines when checking the configuration for drift versus the previous backup
+|false
+
 |===
 
 == Schedule and interval

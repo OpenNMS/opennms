@@ -96,8 +96,6 @@
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
-        <entry key="wmi-config.xml" value="wmiPeerFactory"/>
-        <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
 
         <!-- VMware configuration files -->
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
@@ -498,18 +496,6 @@
   </bean>
 
   <bean id="viewsDisplayFactory" class="org.opennms.netmgt.config.ViewsDisplayFactory" depends-on="viewsDisplayFactory-init" factory-method="getInstance"/>
-
-  <bean id="wmiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="wmiPeerFactory-init" factory-method="getInstance"/>
-
-  <bean id="wmiDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.WmiDataCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="wmiDataCollectionConfigFactory" class="org.opennms.netmgt.config.WmiDataCollectionConfigFactory" depends-on="wmiDataCollectionConfigFactory-init" factory-method="getInstance"/>
 
   <!-- VMware configuration files -->
   <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareCimDatacollectionConfigDaoJaxb">

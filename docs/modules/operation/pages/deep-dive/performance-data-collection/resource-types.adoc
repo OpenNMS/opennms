@@ -16,10 +16,10 @@ The storage strategy converts an index into a resource path label for persistenc
 
 Two resource types do not have a `resource-type` definition: `node` and `ifIndex`.
 
-You can define resource types by placing files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`.
-The latter file path is specific to SNMP.
+For non-SNMP collectors, you can define resource types by placing files in `$\{OPENNMS_HOME}/etc/resource-types.d`.
+For SNMP, manage resource types through *Admin -> Manage SNMP Data Collection Config*; the schema below shows the underlying definition.
 
-.Example `diskIOIndex` resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`
+.Example `diskIOIndex` resource type definition (originally shipped in `etc/datacollection/netsnmp.xml`, now managed via the admin page)
 [source, xml]
 ----
 <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">

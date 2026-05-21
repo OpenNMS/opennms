@@ -12,8 +12,8 @@ Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP
 | Class Name          | `org.opennms.netmgt.collectd.SnmpCollector`
 | Package             | core
 | Supported on Minion | Yes
-| Configuration Files | $OPENNMS_HOME/etc/datacollection-config.xml +
-                        $OPENNMS_HOME/etc/datacollection/*.xml
+| Configuration       | Managed in the database via *Admin -> Manage SNMP Data Collection Config*. +
+                        Pre-36 installations are migrated from `etc/datacollection-config.xml` and `etc/datacollection/*.xml` once at first boot; the original files are then archived to `etc_archive/`.
 |===
 
 == Configuration and use
@@ -45,15 +45,14 @@ Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP
 
 == SNMP collection configuration
 
-To configure which MIB objects to collect from devices, create a datacollection XML configuration file in `etc/datacollection/`.
-After creating a new datacollection config file, add it to `etc/datacollection-config.xml` for inclusion in polling.
-The `datacollection-config.xml` is reloaded automatically whenever the file is modified.
-The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metrics from a node.
-This allows you to modify which metrics are collected without needing to restart services, once the Collectd collector service has been defined.
+Configure which MIB objects to collect from devices through *Admin -> Manage SNMP Data Collection Config*, or through the REST API under `/api/v2/datacollectionconf`.
+The runtime reloads automatically when you save changes through the admin page; no service restart is required.
 
-Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+The XML structures shown below describe the schema imported on first-boot migration and accepted by the upload endpoint, and are useful when bulk-editing or version-controlling SNMP collection definitions outside the UI.
 
-.Structure of the `datacollection-config.xml` file
+Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when authoring SNMP collection definitions.
+
+.Structure of the imported `datacollection-config.xml` file
 [source, xml]
 ----
 <?xml version="1.0"?>
