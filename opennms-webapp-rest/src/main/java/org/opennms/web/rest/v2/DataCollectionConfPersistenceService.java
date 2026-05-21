@@ -705,8 +705,8 @@ public class DataCollectionConfPersistenceService {
             throw new IllegalArgumentException("At least one RRA is required");
         }
         if (dto.getStorageFlag() == null
-                || !(dto.getStorageFlag().equals("select") || dto.getStorageFlag().equals("all"))) {
-            throw new IllegalArgumentException("storageFlag must be 'select' or 'all'");
+                || !(dto.getStorageFlag().equals("select") || dto.getStorageFlag().equals("primary") || dto.getStorageFlag().equals("all"))) {
+            throw new IllegalArgumentException("storageFlag must be 'select', 'primary', or 'all'");
         }
 
         // Name uniqueness
