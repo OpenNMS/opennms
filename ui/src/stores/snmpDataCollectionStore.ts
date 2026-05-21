@@ -84,13 +84,6 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
       this.sourcesPagination.pageSize = pageSize
       await this.fetchSnmpCollectionSources()
     },
-    async refreshSourceFilters() {
-      this.sourcesPagination = { ...defaultPagination }
-      this.sourcesSearchTerm = ''
-      this.sourcesSorting.sortKey = 'createdTime'
-      this.sourcesSorting.sortOrder = 'desc'
-      await this.fetchSnmpCollectionSources()
-    },
     async fetchSnmpCollectionProfiles() {
       this.isLoading = true
       try {
@@ -117,13 +110,6 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     onProfilePageSizeChange(pageSize: number) {
       this.profilesPagination.page = 1
       this.profilesPagination.pageSize = pageSize
-    },
-    async refreshProfilesFilters() {
-      this.profilesPagination = { ...defaultPagination }
-      this.profilesSearchTerm = ''
-      this.profilesSorting.sortKey = 'createdTime'
-      this.profilesSorting.sortOrder = 'desc'
-      await this.fetchSnmpCollectionProfiles()
     },
     async removeSnmpCollectionProfiles(ids: number[]): Promise<boolean> {
       return deleteSnmpDataCollectionProfiles(ids)

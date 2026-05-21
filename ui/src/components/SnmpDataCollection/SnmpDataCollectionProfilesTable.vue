@@ -16,16 +16,6 @@
             </template>
           </FeatherInput>
         </div>
-        <div class="refresh">
-          <FeatherButton
-            primary
-            icon="Refresh"
-            data-test="refresh-button"
-            @click="store.refreshProfilesFilters()"
-          >
-            <FeatherIcon :icon="Refresh"> </FeatherIcon>
-          </FeatherButton>
-        </div>
       </div>
       <div class="section-right">
         <div class="add">
@@ -164,7 +154,6 @@ import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import { FeatherInput } from '@featherds/input'

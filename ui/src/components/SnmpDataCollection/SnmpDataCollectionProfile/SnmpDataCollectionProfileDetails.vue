@@ -402,8 +402,8 @@ onMounted(async () => {
     .action-row {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 30px;
+      gap: 0;
+      margin-top: 0;
       padding-top: 20px;
       border-top: 1px solid var(--feather-border-on-surface);
     }

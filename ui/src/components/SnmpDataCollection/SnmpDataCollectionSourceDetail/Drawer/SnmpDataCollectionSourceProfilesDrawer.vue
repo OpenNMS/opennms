@@ -36,6 +36,7 @@
         :forceSelection="true"
         data-test="profile-autocomplete"
         dropdown
+        completeOnFocus
       />
       <div class="button-row">
         <FeatherButton

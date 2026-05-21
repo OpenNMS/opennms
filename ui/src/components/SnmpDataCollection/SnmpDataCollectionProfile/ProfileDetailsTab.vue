@@ -69,6 +69,7 @@
         <span class="field-label">Max Vars Per PDU:</span>
         <FeatherInput
           label="Max Vars Per PDU"
+          hint="Leave empty or set to 0 to use the default value."
           :modelValue="configDetails.maxVarsPerPdu"
           @update:modelValue="update('maxVarsPerPdu', String($event))"
           type="number"

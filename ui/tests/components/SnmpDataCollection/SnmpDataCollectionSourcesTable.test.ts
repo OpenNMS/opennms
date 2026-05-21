@@ -58,7 +58,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     store.sourcesSorting = { sortKey: 'createdTime', sortOrder: 'desc' }
     store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
     store.fetchAllSourcesNames = vi.fn().mockResolvedValue(undefined)
-    store.refreshSourceFilters = vi.fn().mockResolvedValue(undefined)
     store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
@@ -138,11 +137,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(searchInput.exists()).toBe(true)
     })
 
-    it('renders refresh button', () => {
-      const refreshButton = wrapper.find('[data-test="refresh-button"]')
-      expect(refreshButton.exists()).toBe(true)
-    })
-
     it('renders within snmp-data-collection-source-table container', () => {
       expect(wrapper.find('.snmp-data-collection-source-table').exists()).toBe(true)
     })
@@ -154,10 +148,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
     it('renders search-container within section-left', () => {
       expect(wrapper.find('.section-left .search-container').exists()).toBe(true)
-    })
-
-    it('renders refresh container within section-left', () => {
-      expect(wrapper.find('.section-left .refresh').exists()).toBe(true)
     })
 
     it('renders DeleteConfirmationDialog component', () => {
@@ -193,10 +183,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
 
-    it('should still show header with search and refresh when empty', () => {
+    it('should still show header with search when empty', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
-      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
       expect(wrapper.text()).toContain('Create New Data Collection Source')
     })
 
@@ -316,27 +305,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith(term)
-    })
-  })
-
-  describe('Refresh Button', () => {
-    it('calls refreshSourcesfilters when refresh button is clicked', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      expect(store.refreshSourceFilters).toHaveBeenCalledTimes(1)
-    })
-
-    it('can click refresh button multiple times', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-
-      expect(store.refreshSourceFilters).toHaveBeenCalledTimes(3)
     })
   })
 
@@ -1652,10 +1620,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Header Layout', () => {
-    it('renders section-left with search and refresh', () => {
+    it('renders section-left with search', () => {
       expect(wrapper.find('.section-left').exists()).toBe(true)
       expect(wrapper.find('.search-container').exists()).toBe(true)
-      expect(wrapper.find('.refresh').exists()).toBe(true)
     })
 
     it('renders section-right', () => {
@@ -1665,23 +1632,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Concurrent Operations', () => {
-    it('handles search then immediate refresh', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-      await searchInput.setValue('test')
-      vi.advanceTimersByTime(250) // mid-debounce
-
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      expect(store.refreshSourceFilters).toHaveBeenCalled()
-
-      // Complete the debounce
-      vi.advanceTimersByTime(250)
-      await wrapper.vm.$nextTick()
-      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
-    })
-
     it('handles sort then page change', async () => {
       store.sources = [mockSource]
       store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }

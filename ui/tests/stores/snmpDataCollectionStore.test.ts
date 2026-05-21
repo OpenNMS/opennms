@@ -503,77 +503,6 @@ describe('useSnmpDataCollectionStore', () => {
     )
   })
 
-  describe('refreshSourcesfilters', () => {
-    it('should reset all filters to defaults and fetch sources', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      store.sourcesPagination.page = 5
-      store.sourcesPagination.pageSize = 25
-      store.sourcesSearchTerm = 'test search'
-      store.sourcesSorting.sortKey = 'name'
-      store.sourcesSorting.sortOrder = 'asc'
-
-      await store.refreshSourceFilters()
-
-      expect(store.sourcesPagination.page).toBe(1)
-      expect(store.sourcesPagination.pageSize).toBe(DEFAULT_PAGE_SIZE)
-      expect(store.sourcesPagination.total).toBe(2) // Updated from API response
-      expect(store.sourcesSearchTerm).toBe('')
-      expect(store.sourcesSorting.sortKey).toBe('createdTime')
-      expect(store.sourcesSorting.sortOrder).toBe('desc')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
-    })
-
-    it('should reset pagination to defaults', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesPagination = { page: 10, pageSize: 50, total: 200 }
-
-      await store.refreshSourceFilters()
-
-      expect(store.sourcesPagination.page).toBe(1)
-      expect(store.sourcesPagination.pageSize).toBe(50)
-      expect(store.sourcesPagination.total).toBe(2) // Updated from API response
-    })
-
-    it('should reset search term to empty string', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesSearchTerm = 'some search'
-
-      await store.refreshSourceFilters()
-
-      expect(store.sourcesSearchTerm).toBe('')
-    })
-
-    it('should reset sorting to default', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesSorting = { sortKey: 'vendor', sortOrder: 'asc' }
-
-      await store.refreshSourceFilters()
-
-      expect(store.sourcesSorting.sortKey).toBe('createdTime')
-      expect(store.sourcesSorting.sortOrder).toBe('desc')
-    })
-
-    it('should trigger fetch after resetting filters', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      await store.refreshSourceFilters()
-
-      expect(filterSnmpCollectionSources).toHaveBeenCalledTimes(1)
-      expect(store.sources).toEqual(mockSources)
-    })
-
-    it('should update sources with fetched data after refresh', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sources = []
-
-      await store.refreshSourceFilters()
-
-      expect(store.sources).toEqual(mockSources)
-      expect(store.sourcesPagination.total).toBe(2)
-    })
-  })
-
   describe('State Mutations', () => {
     it('should allow direct state mutation for selectedSource', () => {
       const mockSource: SnmpCollectionSource = {
@@ -633,25 +562,6 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm('test')
       expect(store.sourcesSearchTerm).toBe('test')
       expect(store.sourcesPagination.pageSize).toBe(20)
-
-      await store.refreshSourceFilters()
-      expect(store.sourcesPagination.pageSize).toBe(DEFAULT_PAGE_SIZE)
-      expect(store.sourcesSearchTerm).toBe('')
-    })
-
-    it('should handle refresh after complex filtering', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      await store.onChangeSourcesSearchTerm('complex')
-      await store.onSourcesSortChange('vendor', 'asc')
-      await store.onSourcePageChange(3)
-      await store.onSourcePageSizeChange(25)
-
-      await store.refreshSourceFilters()
-
-      expect(store.sourcesSearchTerm).toBe('')
-      expect(store.sourcesSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
-      expect(store.sourcesPagination).toEqual({ page: 1, pageSize: DEFAULT_PAGE_SIZE, total: 2 }) // Updated from API response
     })
   })
 
