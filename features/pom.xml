@@ -24,6 +24,7 @@
     <module>activemq</module>
 
     <module>api-layer</module>
+    <module>api-tokens</module>
 
     <!-- Alarms -->
     <module>alarms</module>

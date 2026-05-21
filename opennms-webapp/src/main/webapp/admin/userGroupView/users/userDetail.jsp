@@ -95,6 +95,14 @@
             <%=WebSecurityUtils.sanitizeString(user.getUserComments().orElse(""))%>
           </td>
         </tr>
+        <tr>
+          <th>
+            API Tokens:
+          </th>
+          <td width="75%">
+            <a href="admin/userGroupView/users/apiTokens.jsp?userID=<%=org.opennms.web.api.Util.encode(user.getUserId())%>">Manage Tokens</a>
+          </td>
+        </tr>
       </table>
     </div> <!-- panel -->
   </div> <!-- column -->

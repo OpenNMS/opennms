@@ -367,6 +367,18 @@ Many of the properties here are documented with much greater detail in their rel
 | false
 | Enable or disable exporting performance data to an external system over a TCP port
 
+| `org.opennms.api.tokens.default-expiry-days`
+| 365
+| Default expiry period in days for newly created API tokens when no expiry is specified
+
+| `org.opennms.api.tokens.max-expiry-days`
+| 365
+| Maximum allowed expiry period in days for API tokens. Set to `0` to disable token creation entirely.
+
+| `org.opennms.api.tokens.max-tokens-per-user`
+| 50
+| Maximum number of active API tokens each user is allowed to have
+
 | `org.opennms.security.disableLoginSuccessEvent`
 | false
 | Enable or disable sending successful login events on a successful login to the webui

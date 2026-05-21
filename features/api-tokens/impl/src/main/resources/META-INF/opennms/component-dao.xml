@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <bean id="apiTokenDao" class="org.opennms.features.apitokens.impl.ApiTokenDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <onmsgi:service ref="apiTokenDao" interface="org.opennms.features.apitokens.ApiTokenDao"/>
+
+    <bean id="apiTokenService" class="org.opennms.features.apitokens.impl.ApiTokenServiceImpl">
+        <property name="apiTokenDao" ref="apiTokenDao"/>
+        <property name="maxExpiryDays" value="${org.opennms.api.tokens.max-expiry-days:365}"/>
+        <property name="defaultExpiryDays" value="${org.opennms.api.tokens.default-expiry-days:365}"/>
+        <property name="maxTokensPerUser" value="${org.opennms.api.tokens.max-tokens-per-user:50}"/>
+    </bean>
+
+    <onmsgi:service ref="apiTokenService" interface="org.opennms.features.apitokens.ApiTokenService"/>
+</beans>
