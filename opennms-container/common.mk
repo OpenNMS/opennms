@@ -103,14 +103,14 @@ test: $(TARBALL)
 # people get really weird startup errors from runjava because it can't
 # find find-java.sh.
 $(README): $(TARBALL) Dockerfile $(shell find container-fs -type f)
-	@echo "Sanity checking OPENNMS_HOME path in **/fix-permissions script..."
-	@fix_permissions_file=`tar -t -z -f $< | grep '/fix-permissions$$'` || exit 1 ; \
-	  fix_permissions_opennms_home=`tar -x -z -f $< -O "$$fix_permissions_file" | \
-	    egrep "^\\s*OPENNMS_HOME='" | sed "s/^.*OPENNMS_HOME='//;s/'//"` || exit 1 ; \
+	@echo "Sanity checking OPENNMS_HOME path in **/opennms script..."
+	@opennms_script_file=`tar -t -z -f $< | grep '/bin/opennms$$'` || exit 1 ; \
+	  opennms_script_home=`tar -x -z -f $< -O "$$opennms_script_file" | \
+	    egrep "^OPENNMS_HOME=\"" | sed "s/^OPENNMS_HOME=\"//;s/\".*//"`  || exit 1 ; \
           expectation="/opt/opennms" ; \
-	  if [ "$$fix_permissions_opennms_home" != "$$expectation" ]; then \
-	    echo "OPENNMS_HOME in bin/fix-permissions from $< was not $$expectation" >&2 ; \
-	    echo "OPENNMS_HOME was $$fix_permissions_opennms_home -- make sure -Dopennms.home=$$expectation is passed when assemble.pl is run" >&2 ; \
+	  if [ "$$opennms_script_home" != "$$expectation" ]; then \
+	    echo "OPENNMS_HOME in bin/opennms from $< was not $$expectation" >&2 ; \
+	    echo "OPENNMS_HOME was $$opennms_script_home -- make sure -Dopennms.home=$$expectation is passed when assemble.pl is run" >&2 ; \
 	    echo "Go to the top-level and run this: $(ASSEMBLE_COMMAND)" >&2 ; \
 	    exit 1 ; \
 	  fi
