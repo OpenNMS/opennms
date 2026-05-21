@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Collect;
@@ -35,6 +37,7 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb;
 import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
@@ -168,7 +171,7 @@ public class DataCollectionConfPersistenceService {
 
     @Transactional
     public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
-
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(snmpCollectionSource, "Add MibGroup");
         final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionMibGroupDao.save(entity);
@@ -178,7 +181,7 @@ public class DataCollectionConfPersistenceService {
     public Integer addResourceTypeToSnmpCollectionSources(
             final SnmpCollectionSource snmpCollectionSource,
             final SnmpCollectionResourceTypeDto request) {
-
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(snmpCollectionSource, "Add ResourceType");
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionResourceTypeDao.save(entity);
@@ -188,7 +191,7 @@ public class DataCollectionConfPersistenceService {
     public Integer addSystemDefToSnmpCollectionSources(
             final SnmpCollectionSource snmpCollectionSource,
             final SnmpCollectionSystemDefDto request) {
-
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(snmpCollectionSource, "Add SystemDef");
         final var entity = applySystemDefDtoToEntity(request, new SnmpCollectionSystemDef());
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionSystemDefDao.save(entity);
@@ -224,6 +227,8 @@ public class DataCollectionConfPersistenceService {
         requirePathMatchesDto("MibGroup", id, snmpCollectionSourceId,
                 request.getId(), request.getCollectionSourceId());
 
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(requireSource(snmpCollectionSourceId), "Update MibGroup");
+
         final var snmpCollectionMibGroupEntity = snmpCollectionMibGroupDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
 
         if (snmpCollectionMibGroupEntity == null) {
@@ -243,6 +248,8 @@ public class DataCollectionConfPersistenceService {
 
         requirePathMatchesDto("ResourceType", id, snmpCollectionSourceId,
                 request.getId(), request.getCollectionSourceId());
+
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(requireSource(snmpCollectionSourceId), "Update ResourceType");
 
         final var snmpCollectionResourceTypeEntity =
                 snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
@@ -265,6 +272,8 @@ public class DataCollectionConfPersistenceService {
 
         requirePathMatchesDto("SystemDef", id, snmpCollectionSourceId,
                 request.getId(), request.getCollectionSourceId());
+
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(requireSource(snmpCollectionSourceId), "Update SystemDef");
 
         final var snmpCollectionSystemDefEntity =
                 snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
@@ -294,6 +303,7 @@ public class DataCollectionConfPersistenceService {
             if (source == null) {
                 continue;
             }
+            SnmpDataCollectionSyncToDb.requireNotPluginSourced(source, "Delete Source");
             removeSourceFromProfiles(source.getName());
             snmpCollectionSourceDao.delete(source);
         }
@@ -309,7 +319,7 @@ public class DataCollectionConfPersistenceService {
         }
         for (final SnmpCollectionProfile profile : profiles) {
             List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                    profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+                    profile.getSourceNames(), new TypeReference<List<String>>() {});
             if (sourceNames != null && sourceNames.contains(sourceName)) {
                 sourceNames = new ArrayList<>(sourceNames);
                 sourceNames.remove(sourceName);
@@ -324,6 +334,7 @@ public class DataCollectionConfPersistenceService {
     public void deleteSnmpDataCollectionMibGroups(final Integer snmpDataCollectionSourceId,
                                                   final List<Integer> ids) {
         final var source = requireSource(snmpDataCollectionSourceId);
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(source, "Delete MibGroup");
         deleteChildren(
                 source.getId(),
                 ids,
@@ -337,6 +348,7 @@ public class DataCollectionConfPersistenceService {
     public void deleteSnmpDataCollectionResourceTypes(final Integer snmpDataCollectionSourceId,
                                                       final List<Integer> ids) {
         final var source = requireSource(snmpDataCollectionSourceId);
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(source, "Delete ResourceType");
         deleteChildren(
                 source.getId(),
                 ids,
@@ -350,6 +362,7 @@ public class DataCollectionConfPersistenceService {
     public void deleteSnmpDataCollectionSystemDefs(final Integer snmpDataCollectionSourceId,
                                                    final List<Integer> ids) {
         final var source = requireSource(snmpDataCollectionSourceId);
+        SnmpDataCollectionSyncToDb.requireNotPluginSourced(source, "Delete SystemDef");
         deleteChildren(
                 source.getId(),
                 ids,
@@ -546,7 +559,7 @@ public class DataCollectionConfPersistenceService {
      */
     private void appendSourceToProfile(final SnmpCollectionProfile profile, final String sourceName) {
         List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+                profile.getSourceNames(), new TypeReference<List<String>>() {});
         sourceNames = (sourceNames == null) ? new ArrayList<>() : new ArrayList<>(sourceNames);
 
         if (!sourceNames.contains(sourceName)) {
@@ -579,7 +592,7 @@ public class DataCollectionConfPersistenceService {
     public void removeSourceFromProfile(final Integer profileId, final String sourceName) {
         final SnmpCollectionProfile profile = requireProfile(profileId);
         List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+                profile.getSourceNames(), new TypeReference<List<String>>() {});
         if (sourceNames == null || !sourceNames.contains(sourceName)) {
             return;
         }

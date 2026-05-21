@@ -69,7 +69,7 @@
   <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
 
   <!-- SNMP data collection config loader — must run after upgradeConfigService populates the DB -->
-  <bean id="snmpDataCollectionConfigLoader" class="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader"
+  <bean id="snmpDataCollectionConfigLoader" class="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoaderImpl"
         depends-on="upgradeConfigService">
       <property name="dataCollectionConfigDao"        ref="dataCollectionConfigDao" />
       <property name="snmpCollectionProfileDao"       ref="snmpCollectionProfileDao" />
@@ -79,6 +79,17 @@
       <property name="snmpCollectionSystemDefDao"     ref="snmpCollectionSystemDefDao" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader" ref="snmpDataCollectionConfigLoader" />
+
+  <!-- Plugin sync helper: persists SnmpCollectionExtension contributions into the DB -->
+  <bean id="snmpDataCollectionSyncToDb" class="org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDbImpl">
+      <constructor-arg ref="snmpCollectionSourceDao"/>
+      <constructor-arg ref="snmpCollectionMibGroupDao"/>
+      <constructor-arg ref="snmpCollectionResourceTypeDao"/>
+      <constructor-arg ref="snmpCollectionSystemDefDao"/>
+      <constructor-arg ref="snmpCollectionProfileDao"/>
+      <constructor-arg ref="sessionUtils"/>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.support.SnmpDataCollectionSyncToDb" ref="snmpDataCollectionSyncToDb" />
 
   <!-- Configuration File DAOs -->
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">

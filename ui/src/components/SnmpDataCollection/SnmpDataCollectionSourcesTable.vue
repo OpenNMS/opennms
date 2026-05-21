@@ -161,6 +161,7 @@
                     {{ source.enabled ? 'Disable' : 'Enable' }} Source
                   </FeatherDropdownItem>
                   <FeatherDropdownItem
+                    v-if="!isPluginSourced(source)"
                     data-test="delete-source-button"
                     @click="openDeleteCollectionSourceDialog(source)"
                   >
@@ -212,6 +213,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherTooltip } from '@featherds/tooltip'

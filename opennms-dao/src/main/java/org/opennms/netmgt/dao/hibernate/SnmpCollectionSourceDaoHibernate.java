@@ -61,6 +61,11 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     }
 
     @Override
+    public List<SnmpCollectionSource> findByUploadedBy(String uploadedBy) {
+        return find("from SnmpCollectionSource s where s.uploadedBy = ?", uploadedBy);
+    }
+
+    @Override
     public void deleteAll(final Collection<SnmpCollectionSource> list) {
         super.deleteAll(list);
     }

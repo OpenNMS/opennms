@@ -27,7 +27,10 @@
         </div>
       </div>
       <div class="section-right">
-        <div class="add">
+        <div
+          class="add"
+          v-if="!isPluginSourced(store.selectedCollectionSource)"
+        >
           <FeatherButton
             secondary
             data-test="add-mib-group-button"
@@ -83,6 +86,7 @@
               <td>
                 <div class="action-container">
                   <FeatherButton
+                    v-if="!isPluginSourced(store.selectedCollectionSource)"
                     icon="Edit"
                     :title="`Edit ${mibGroup.name}`"
                     data-test="edit-button"
@@ -109,6 +113,7 @@
                       {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
+                      v-if="!isPluginSourced(store.selectedCollectionSource)"
                       data-test="delete-mib-group-button"
                       @click="openDeleteMibGroupDialog(mibGroup)"
                     >
@@ -201,6 +206,7 @@
 
 <script setup lang="ts">
 import { debounce } from 'lodash'
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
