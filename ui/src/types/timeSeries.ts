@@ -21,19 +21,15 @@
 
 /**
  * Consolidation Function Type, corresponding to RRDtool CF types.
- * Mirrors org.opennms.netmgt.rrd.model.v3.CFType.
+ * Note that we do not support all RRDtool CF types, only the "classic" ones that are currently supported by OpenNMS.
+ * See org.opennms.netmgt.rrd.model.v3.CFType, but again we only support these: AVERAGE, MIN, MAX, LAST.
+ * See also: https://oss.oetiker.ch/rrdtool/doc/rrdcreate.en.html#AEN201
  */
 export enum ConsolidationFunctionType {
   AVERAGE = 'AVERAGE',
   MIN = 'MIN',
   MAX = 'MAX',
-  LAST = 'LAST',
-  HWPREDICT = 'HWPREDICT',
-  SEASONAL = 'SEASONAL',
-  DEVSEASONAL = 'DEVSEASONAL',
-  DEVPREDICT = 'DEVPREDICT',
-  FAILURES = 'FAILURES',
-  MHWPREDICT = 'MHWPREDICT',
+  LAST = 'LAST'
 }
 
 /**

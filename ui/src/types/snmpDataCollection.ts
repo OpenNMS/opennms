@@ -30,7 +30,6 @@ export interface SnmpCollectionSource {
 
 export enum SnmpProfileStorageFlagType {
   SELECT = 'select',
-  PRIMARY = 'primary',
   ALL = 'all'
 }
 
