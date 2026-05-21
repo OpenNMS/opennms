@@ -1,5 +1,28 @@
 import { IAutocompleteItemType } from '@featherds/autocomplete';
 import { CreateEditMode, Pagination, Sorting } from '.'
+import type { RRA } from './timeSeries'
+
+export type EditableRRA = RRA & { _id: number }
+
+export interface ProfileFormErrors {
+  name?: string
+  maxVarsPerPdu?: string
+  rrdStep?: string
+  storageFlag?: string
+  rrdRras?: string
+}
+
+export interface ConfigDetailsModel {
+  name: string
+  enabled: boolean
+  maxVarsPerPdu: string
+  storageFlag: string
+}
+
+export interface RrdSettingsModel {
+  rrdStep: string
+  rras: EditableRRA[]
+}
 
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
