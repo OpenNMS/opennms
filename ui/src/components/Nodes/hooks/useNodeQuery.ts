@@ -23,6 +23,7 @@
 import { isConvertibleToInteger } from '@/lib/utils'
 import {
   Category,
+  MatchType,
   MonitoringLocation,
   NodeQueryExtendedSearchParams,
   NodeQueryFilter,
@@ -37,9 +38,13 @@ import {
   parseFlows,
   parseForeignSource,
   parseIplike,
+  parseMaclike,
+  parseMib2Params,
+  parseMonitoredService,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
+  parseSnmpParmParams,
   parseSysParams
 } from './queryStringParser'
 import { isIP } from 'is-ip'
@@ -133,6 +138,10 @@ export const useNodeQuery = () => {
           return true
         }
       }
+
+      if (extendedSearch.selectedService && extendedSearch.selectedService.length > 0) {
+        return true
+      }
     }
 
     return false
@@ -181,20 +190,31 @@ export const useNodeQuery = () => {
    */
   const trackedNodeQueryStringProperties = new Set([
     'categories',
+    'category1',
+    'category2',
     'flows',
+    'foreignsource',
     'ipAddress',
     'iplike',
     'listInterfaces',
+    'maclike',
+    'mib2Parm',
+    'mib2ParmValue',
+    'mib2ParmMatchType',
     'monitoredService',
     'monitoringLocation',
     'nodeLabel',
     'nodename',
+    'service',
     'snmpifalias',
     'snmpifdescription',
     'snmpifindex',
     'snmpifname',
     'snmpMatchType',
     'snmpphysaddr',
+    'snmpParm',
+    'snmpParmValue',
+    'snmpParmMatchType',
     'foreignSource',
     'foreignId',
     'fsfid',
@@ -226,44 +246,70 @@ export const useNodeQuery = () => {
     filter.searchTerm = parseNodeLabel(queryObject)
 
     const { categoryMode, selectedCategories } = parseCategories(queryObject, categories)
-
     if (selectedCategories.length > 0) {
       filter.categoryMode = categoryMode
       filter.selectedCategories = selectedCategories
     }
 
     const location = parseMonitoringLocation(queryObject, monitoringLocations)
-
     if (location) {
       filter.selectedMonitoringLocations.push(location)
     }
 
     filter.selectedFlows = parseFlows(queryObject)
 
-    // TODO: Implement ipaddress or iplike filtering
     const ip = parseIplike(queryObject)
-
     if (ip) {
       filter.extendedSearch.ipAddress = ip
     }
 
+    // Individual SNMP params take priority over legacy snmpParm/snmpParmValue
     const snmpParams = parseSnmpParams(queryObject)
-
     if (snmpParams) {
       filter.extendedSearch.snmpParams = snmpParams
+    } else {
+      const snmpParmParams = parseSnmpParmParams(queryObject)
+      if (snmpParmParams) {
+        filter.extendedSearch.snmpParams = snmpParmParams
+      }
     }
 
+    // Individual sys params take priority over legacy mib2Parm/mib2ParmValue
     const sysParams = parseSysParams(queryObject)
-
     if (sysParams) {
       filter.extendedSearch.sysParams = sysParams
+    } else {
+      const mib2Params = parseMib2Params(queryObject)
+      if (mib2Params) {
+        filter.extendedSearch.sysParams = mib2Params
+      }
     }
 
     const fsParams = parseForeignSource(queryObject)
-
     if (fsParams) {
       filter.extendedSearch.foreignSourceParams = fsParams
     }
+
+    // physAddr (MAC address) — set independently of snmpParm/snmpParams blocks
+    const macAddr = parseMaclike(queryObject)
+    if (macAddr) {
+      if (!filter.extendedSearch.snmpParams) {
+        filter.extendedSearch.snmpParams = getDefaultNodeQuerySnmpParams()
+      }
+      filter.extendedSearch.snmpParams.physAddr = macAddr
+    }
+
+    const serviceName = parseMonitoredService(queryObject)
+    if (serviceName) {
+      filter.extendedSearch.selectedService = serviceName
+    }
+
+    // listInterfaces: intentionally not handled — the Vue node list page has no interface-listing mode,
+    // and already displays the primary interface in the node table.
+    // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
+    // TODO topology: not supported in the v2 API, out of scope.
+    // NOTE nodeId: not handled here. Once Vue Node Details (/node/:id) has parity with element/node.jsp,
+    //   update quicksearch-box.jsp to link to the Vue route instead of element/node.jsp?node={id}.
 
     return filter
   }
@@ -297,10 +343,11 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const foreignSourceQuery = buildForeignSourceQuery(filter.extendedSearch.foreignSourceParams)
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
+  const serviceQuery = buildServiceQuery(filter.extendedSearch.selectedService)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -376,13 +423,13 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
   return ''
 }
 
-const getSnmpSearchTerm = (name: string, field: any) => {
+const getSnmpSearchTerm = (name: string, field: any, wildcard = false) => {
   const fieldStr = (field as string) || ''
-
-  return `snmpInterface.${name}==${fieldStr}`
+  const searchValue = wildcard ? makeWildcard(fieldStr) : fieldStr
+  return `snmpInterface.${name}==${searchValue}`
 }
 
-const isValidParam = (value: string) => {
+const isValidParam = (value: string | undefined) => {
   return !!value && !!value.trim()
 }
 
@@ -423,20 +470,24 @@ const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
   return ''
 }
 
-/**
- * Note, FIQL / SNMP search does not currently support 'like' or 'contains' matches, so we always
- * do an 'equals' (exact match) search.
- */
+const buildServiceQuery = (selectedService?: string) => {
+  if (isValidParam(selectedService)) {
+    return `serviceType.name==${selectedService!}`
+  }
+  return ''
+}
+
 const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
   if (snmpParams) {
     const arr: string[] = []
+    const wildcard = snmpParams.snmpMatchType === MatchType.Contains
 
     if (isValidParam(snmpParams.snmpIfAlias)) {
-      arr.push(getSnmpSearchTerm('ifAlias', snmpParams.snmpIfAlias))
+      arr.push(getSnmpSearchTerm('ifAlias', snmpParams.snmpIfAlias, wildcard))
     }
 
     if (isValidParam(snmpParams.snmpIfDescription)) {
-      arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription))
+      arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription, wildcard))
     }
 
     if (isValidIntegerParam('' + snmpParams.snmpIfIndex)) {
@@ -444,18 +495,22 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
 
     if (isValidParam(snmpParams.snmpIfName)) {
-      arr.push(getSnmpSearchTerm('ifName', snmpParams.snmpIfName))
+      arr.push(getSnmpSearchTerm('ifName', snmpParams.snmpIfName, wildcard))
     }
 
     if (isValidIntegerParam(snmpParams.snmpIfType)) {
       arr.push(getSnmpSearchTerm('ifType', snmpParams.snmpIfType))
     }
 
+    if (isValidParam(snmpParams.physAddr)) {
+      arr.push(`snmpInterface.physAddr==*${snmpParams.physAddr!}*`)
+    }
+
     if (arr.length > 0) {
       return arr.join(';')
     }
   }
-  
+
   return ''
 }
 
@@ -467,7 +522,8 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     props.forEach(p => {
       const value = (sysParams as any)[p]
       if (isValidParam(value)) {
-        arr.push(`node.${p}==${makeWildcard(value)}`)
+        const searchValue = sysParams.sysMatchType === MatchType.Equals ? value : makeWildcard(value)
+        arr.push(`node.${p}==${searchValue}`)
       }
     })
 

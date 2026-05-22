@@ -183,6 +183,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
 
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.NODE_SERVICE_TYPE_BEHAVIORS));
 
         // Use join conditions for one-to-many aliases
         for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS.entrySet()) {

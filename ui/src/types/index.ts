@@ -554,6 +554,7 @@ export interface NodeQuerySnmpParams {
   snmpIfName: string
   snmpIfType: string
   snmpMatchType: MatchType
+  physAddr?: string
 }
 
 export interface NodeQuerySysParams {
@@ -562,6 +563,7 @@ export interface NodeQuerySysParams {
   sysLocation: string
   sysName: string
   sysObjectId: string
+  sysMatchType?: MatchType
 }
 
 export interface NodeQueryExtendedSearchParams {
@@ -569,6 +571,7 @@ export interface NodeQueryExtendedSearchParams {
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
+  selectedService?: string
 }
 
 /** All components of a node structure query */

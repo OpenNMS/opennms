@@ -21,7 +21,7 @@ import { loadNodePreferences } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb, NodePreferences } from '@/types'
-import { useRoute, useRouter } from 'vue-router'
+import { LocationQuery, useRoute, useRouter } from 'vue-router'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -38,41 +38,59 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+// Holds query params that arrived before categories/locations had loaded.
+// Cleared once the deferred filter is applied.
+const pendingRouteQuery = ref<LocationQuery | null>(null)
+
+const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) => {
+  const nodeFilter = buildNodeQueryFilterFromQueryString(
+    query,
+    nodeStructureStore.categories,
+    nodeStructureStore.monitoringLocations
+  )
+  const newPrefs = {
+    nodeColumns: prefs?.nodeColumns || [],
+    nodeFilter
+  } as NodePreferences
+  nodeStructureStore.setFromNodePreferences(newPrefs)
+}
+
 const handleQuery = (prefs: NodePreferences | null) => {
   if (queryStringHasTrackedValues(route.query)) {
-    const nodeFilter = buildNodeQueryFilterFromQueryString(route.query, nodeStructureStore.categories, nodeStructureStore.monitoringLocations)
-
-    const newPrefs = {
-      nodeColumns: prefs?.nodeColumns || [],
-      nodeFilter
-    } as NodePreferences
-
-    nodeStructureStore.setFromNodePreferences(newPrefs)
-
-    // TODO: Save prefs???
+    if (nodeStructureStore.categories.length === 0 || nodeStructureStore.monitoringLocations.length === 0) {
+      // Categories or locations not loaded yet — save and defer.
+      pendingRouteQuery.value = { ...route.query }
+    } else {
+      applyQueryFilter(route.query, prefs)
+    }
+    // Always clear the URL regardless of whether we deferred.
     router.replace({ name: 'Nodes' })
     return true
   }
-
   return false
 }
 
+// Re-apply any deferred query once categories and locations are both populated.
+// This handles the race between App.vue's async getCategories/getMonitoringLocations
+// and Nodes.vue mounting with query params already in the URL.
+watch(
+  [() => nodeStructureStore.categories.length, () => nodeStructureStore.monitoringLocations.length],
+  ([catLen, locLen]) => {
+    if (pendingRouteQuery.value && catLen > 0 && locLen > 0) {
+      applyQueryFilter(pendingRouteQuery.value, loadNodePreferences())
+      pendingRouteQuery.value = null
+    }
+  }
+)
+
 onMounted(() => {
-  // load any saved preferences
   const prefs = loadNodePreferences()
-
-  if (handleQuery(prefs)) {
-    return
-  }
-
-  if (prefs) {
-    nodeStructureStore.setFromNodePreferences(prefs)
-  }
+  if (handleQuery(prefs)) return
+  if (prefs) nodeStructureStore.setFromNodePreferences(prefs)
 })
 
-watch (() => route.query, () => {
-  const prefs = loadNodePreferences()
-  handleQuery(prefs)
+watch(() => route.query, () => {
+  handleQuery(loadNodePreferences())
 })
 </script>
   

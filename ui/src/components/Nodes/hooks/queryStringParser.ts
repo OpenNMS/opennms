@@ -49,7 +49,11 @@ export const parseCategories = (queryObject: any, categories: Category[]) => {
   let categoryMode: SetOperator = SetOperator.Union
   const selectedCategories: Category[] = []
 
-  const queryCategories = queryObject.categories as string ?? ''
+  const queryCategories = (queryObject.categories as string)
+    || [queryObject.category1 as string, queryObject.category2 as string]
+        .filter(Boolean)
+        .join(',')
+    || ''
 
   if (categories.length > 0) {
     categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
@@ -125,7 +129,7 @@ export const parseIplike = (queryObject: any) => {
 }
 
 export const parseForeignSource = (queryObject: any) => {
-  const foreignSource = queryObject.foreignSource || ''
+  const foreignSource = queryObject.foreignSource || queryObject.foreignsource || ''
   const foreignId = queryObject.foreignId || ''
   const foreignSourceId = queryObject.foreignSourceId || queryObject.fsfid || ''
 
@@ -180,4 +184,98 @@ export const parseSysParams = (queryObject: any) => {
   }
 
   return null
+}
+
+const snmpParmToFieldMap: Record<string, keyof NodeQuerySnmpParams> = {
+  ifAlias: 'snmpIfAlias',
+  ifName: 'snmpIfName',
+  ifDescr: 'snmpIfDescription'
+}
+
+/**
+ * Maps legacy snmpParm/snmpParmValue/snmpParmMatchType params to NodeQuerySnmpParams.
+ * snmpParm must be one of: ifAlias, ifName, ifDescr.
+ * snmpParmMatchType=contains applies wildcard matching; default is exact match.
+ */
+export const parseSnmpParmParams = (queryObject: any): NodeQuerySnmpParams | null => {
+  const parm = queryObject.snmpParm as string || ''
+  const value = queryObject.snmpParmValue as string || ''
+  const matchTypeStr = (queryObject.snmpParmMatchType as string || '').toLowerCase()
+
+  if (!parm || !value || !snmpParmToFieldMap[parm]) {
+    return null
+  }
+
+  const snmpMatchType = matchTypeStr === 'contains' ? MatchType.Contains : MatchType.Equals
+
+  return {
+    snmpIfAlias: '',
+    snmpIfDescription: '',
+    snmpIfIndex: '',
+    snmpIfName: '',
+    snmpIfType: '',
+    snmpMatchType,
+    [snmpParmToFieldMap[parm]]: value
+  } as NodeQuerySnmpParams
+}
+
+/**
+ * Maps the legacy mib2Parm/mib2ParmValue/mib2ParmMatchType params to NodeQuerySysParams.
+ * mib2Parm must be one of: sysDescription, sysObjectId, sysContact, sysName, sysLocation.
+ */
+export const parseMib2Params = (queryObject: any): NodeQuerySysParams | null => {
+  const parm = queryObject.mib2Parm as string || ''
+  const value = queryObject.mib2ParmValue as string || ''
+  const matchTypeStr = (queryObject.mib2ParmMatchType as string || '').toLowerCase()
+
+  const validParms: Array<keyof NodeQuerySysParams> = [
+    'sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId'
+  ]
+
+  if (!parm || !value || !validParms.includes(parm as keyof NodeQuerySysParams)) {
+    return null
+  }
+
+  const sysMatchType = matchTypeStr === 'equals' ? MatchType.Equals : MatchType.Contains
+
+  return {
+    sysContact: '',
+    sysDescription: '',
+    sysLocation: '',
+    sysName: '',
+    sysObjectId: '',
+    sysMatchType,
+    [parm]: value
+  } as NodeQuerySysParams
+}
+
+/**
+ * Maps legacy maclike/snmpphysaddr params to a stripped, lowercase MAC address string
+ * suitable for wildcard FIQL matching against snmpInterface.physAddr.
+ * Colons and dashes are stripped to match the format stored in the database.
+ */
+export const parseMaclike = (queryObject: any): string | null => {
+  const mac = queryObject.maclike as string || queryObject.snmpphysaddr as string || ''
+
+  if (!mac) {
+    return null
+  }
+
+  return mac.replace(/[:-]/g, '').toLowerCase()
+}
+
+/**
+ * Maps the monitoredService param to a service name for FIQL filtering via serviceType.name.
+ * The legacy service=<id> (numeric ID) param is intentionally not supported — IDs cannot be
+ * resolved to names without an additional API call. Pages updated in PR 3 will send
+ * monitoredService=<name> instead.
+ */
+export const parseMonitoredService = (queryObject: any): string | null => {
+  const serviceName = queryObject.monitoredService as string || ''
+
+  if (!serviceName) {
+    return null
+  }
+
+  return serviceName
 }
