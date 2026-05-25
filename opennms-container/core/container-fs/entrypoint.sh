@@ -168,6 +168,11 @@ applyOverlayConfig() {
 
 # Start opennms in foreground
 start() {
+  # Clear Karaf's tmp dir before every start to prevent stale download references
+  # after an abrupt kill (e.g. SIGKILL during feature resolution). The dir is
+  # recreated immediately so Karaf can write to it as normal.
+  rm -rf "${OPENNMS_HOME}/data/tmp" && mkdir -p "${OPENNMS_HOME}/data/tmp"
+
   local OPENNMS_JAVA_OPTS="$("${OPENNMS_HOME}/bin/_module_opts.sh") \
   -Dorg.apache.jasper.compiler.disablejsr199=true
   -Dopennms.home=${OPENNMS_HOME}
