@@ -47,7 +47,7 @@
 | `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Global maximum connections                                                        | optional | `50`
 |===
 
-.Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
+.Timeseries storage configuration
 [options="header, %autowidth"]
 |===
 | Environment variable               | Description                                                             | Required | Default value
@@ -61,26 +61,26 @@
 .SNMP Trap receiver configuration in trapd-configuration.xml
 [options="header, %autowidth"]
 |===
-| Environment variable              | Description                                                        | Required | Default value
-| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                    | optional | `*`
-| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                      | optional | `1162`
-| `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event-based trap recipient for unknown devices. | optional | `false`
-| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                               | optional | `false`
-| `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP traps.                     | optional | `0`
-| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                        | optional | `10000`
-| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                           | optional | `1000`
-| `OPENNMS_TRAPD_BATCHINTERVAL`     | Set batch processing interval in milliseconds.                     | optional | `500`
+| Environment variable                    | Description                                                        | Required | Default value
+| `OPENNMS_TRAPD_ADDRESS`                 | Listen interface for SNMP Trapd                                    | optional | `*`
+| `OPENNMS_TRAPD_PORT`                    | Port to listen for SNMP traps                                      | optional | `1162`
+| `OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP`     | Create new suspect event-based trap recipient for unknown devices. | optional | `false`
+| `OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE`     | Preserve raw messages in SNMP traps.                               | optional | `false`
+| `OPENNMS_TRAPD_THREADS`                 | Set maximum thread size to process SNMP traps.                     | optional | `0`
+| `OPENNMS_TRAPD_QUEUE_SIZE`              | Set maximum queue for SNMP trap processing.                        | optional | `10000`
+| `OPENNMS_TRAPD_BATCH_SIZE`              | Set batch size for SNMP trap processing.                           | optional | `1000`
+| `OPENNMS_TRAPD_BATCH_INTERVAL`          | Set batch processing interval in milliseconds.                     | optional | `500`
 |===
 
 .Karaf Shell configuration in org.apache.karaf.shell.cfg
 [options="header, %autowidth"]
 |===
-| Environment variable     | Description                        | Required | Default value
-| `OPENNMS_karaf_SSH_HOST` | Listen interface for Karaf shell | optional | `0.0.0.0`
-| `OPENNMS_karaf_SSH_PORT` | SSH port for Karaf shell       | optional | `8101`
+| Environment variable      | Description                       | Required | Default value
+| `OPENNMS_KARAF_SSH_HOST`  | Listen interface for Karaf shell. | optional | `0.0.0.0`
+| `OPENNMS_KARAF_SSH_PORT`  | SSH port for Karaf shell.         | optional | `8101`
 |===
 
-.Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
+.Cassandra and Newts configuration
 [options="header, %autowidth"]
 |===
 | Environment variable           | Description                                                               | Required | Default value
@@ -91,6 +91,38 @@
 | `OPENNMS_CASSANDRA_USERNAME`   | Username with access to Cassandra                                         | optional | `cassandra`
 | `OPENNMS_CASSANDRA_PASSWORD`   | Password for user with access to Cassandra                                | optional | `cassandra`
 | `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance   | optional | `datacenter1`
+|===
+
+.Service toggles in service-configuration.xml
+[options="header, %autowidth"]
+|===
+| Environment variable                         | Description                               | Default value
+| `CORE_SERVICE_ALARMD_ENABLED`                | Enable the Alarm daemon.                  | `true`
+| `CORE_SERVICE_BSMD_ENABLED`                  | Enable Business Service monitoring.       | `true`
+| `CORE_SERVICE_TICKETER_ENABLED`              | Enable the Ticketer service.              | `true`
+| `CORE_SERVICE_CORRELATOR_ENABLED`            | Enable the event correlator.              | `false`
+| `CORE_SERVICE_QUEUED_ENABLED`                | Enable the Queued service.                | `true`
+| `CORE_SERVICE_ACTIOND_ENABLED`               | Enable the Action daemon.                 | `true`
+| `CORE_SERVICE_NOTIFD_ENABLED`                | Enable the Notification daemon.           | `true`
+| `CORE_SERVICE_SCRIPTD_ENABLED`               | Enable the Script daemon.                 | `true`
+| `CORE_SERVICE_RTCD_ENABLED`                  | Enable the Real-Time Console daemon.      | `true`
+| `CORE_SERVICE_POLLERD_ENABLED`               | Enable the Poller daemon.                 | `true`
+| `CORE_SERVICE_SNMPPOLLER_ENABLED`            | Enable the SNMP Poller.                   | `false`
+| `CORE_SERVICE_ENHANCEDLINKD_ENABLED`         | Enable Enhanced Linkd.                    | `true`
+| `CORE_SERVICE_COLLECTD_ENABLED`              | Enable the Collector daemon.              | `true`
+| `CORE_SERVICE_DISCOVERY_ENABLED`             | Enable auto-discovery.                    | `true`
+| `CORE_SERVICE_VACUUMD_ENABLED`               | Enable the Vacuum daemon.                 | `true`
+| `CORE_SERVICE_EVENTTRANSLATOR_ENABLED`       | Enable the Event Translator.              | `true`
+| `CORE_SERVICE_PASSIVESTATUSD_ENABLED`        | Enable the Passive Status daemon.         | `true`
+| `CORE_SERVICE_STATSD_ENABLED`                | Enable the Statistics daemon.             | `true`
+| `CORE_SERVICE_PROVISIOND_ENABLED`            | Enable the Provisioning daemon.           | `true`
+| `CORE_SERVICE_ACKD_ENABLED`                  | Enable the Acknowledgment daemon.         | `true`
+| `CORE_SERVICE_JETTYSERVER_ENABLED`           | Enable the embedded Jetty web server.     | `true`
+| `CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED`   | Enable the Karaf startup monitor.         | `true`
+| `CORE_SERVICE_SYSLOGD_ENABLED`               | Enable the Syslog daemon.                 | `false`
+| `CORE_SERVICE_TELEMETRYD_ENABLED`            | Enable the Telemetry daemon.              | `true`
+| `CORE_SERVICE_TRAPD_ENABLED`                 | Enable the SNMP Trap daemon.              | `true`
+| `CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED`     | Enable the Perspective Poller.            | `true`
 |===
 
 == Directory conventions
@@ -104,23 +136,15 @@
 
 == JMX Prometheus Exporter
 
-.JMX Exporter with a Confd YAML configuration file
-[source, yaml]
-----
-java:
-  agent:
-    prom-jmx-exporter:
-      startDelaySeconds: 0
-      lowerCaseOutputName: true
-      lowercaseOutputLabelNames: true
-      autoExcludeObjectNameAttributes: true
-      includeObjectNames:
-        - "java.lang:*"
-        - "OpenNMS:*"
-        - "org.opennms.*:*"
-        - "org.opennms.newts:name=ring-buffer*"
-        - "org.opennms.newts:name=repository.samples-inserted*"
-        - "org.opennms.core.ipc.rpc:*"
-      excludeObjectNames:
-        - "org.apache.camel:*"
-----
+The following variables control the default `config.yaml` generated for the JMX exporter.
+To supply a fully custom configuration (for example, custom rules), mount your own file and set `PROM_JMX_EXPORTER_CONFIG` to its path.
+
+.JMX exporter configuration knobs
+[options="header, %autowidth"]
+|===
+| Environment variable                          | Description                                              | Default value
+| `PROM_JMX_START_DELAY_SECONDS`                | Delay in seconds before the exporter starts scraping.   | `0`
+| `PROM_JMX_LOWERCASE_OUTPUT_NAME`              | Lowercase metric output names.                           | `true`
+| `PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES`       | Lowercase label names.                                   | `true`
+| `PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES`| Automatically exclude object name attributes.           | `true`
+|===

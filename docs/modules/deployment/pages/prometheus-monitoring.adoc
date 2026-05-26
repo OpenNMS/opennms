@@ -231,11 +231,10 @@ In the container images the JMX Prometheus Exporter is bundled with the containe
 The metric exporter is disabled by default and you can enable it by setting the environment variable `PROM_JMX_EXPORTER_ENABLED=true`.
 Configure your Prometheus to scrape the metrics from the HTTP endpoint http://your-app:9299/metrics.
 Replace `your-app` with the host or domain name where your Core, Minion or Sentinel is running in your network.
-The environment variables can be used for Core, Minion and Sentinel in the same way and are documented in the xref:reference:configuration/core-docker.adoc#core-oci-confd[docker environment] section.
+The environment variables can be used for Core, Minion, and Sentinel in the same way and are documented in the xref:reference:configuration/core-docker.adoc#core-oci-confd[Core docker environment] section.
 
-If you need to customize the JMX Prometheus Exporter configuration you have two options.
-You can use Confd which is running in our containers to render configuration files or use just inject your own `config.yaml` file to path configured with `PROM_JMX_EXPORTER_CONFIG`.
+To customize the JMX exporter configuration, inject your own `config.yaml` file to the path configured with `PROM_JMX_EXPORTER_CONFIG`.
 
-IMPORTANT: In confd you have access to some basic JMX Prometheus Exporter configurations. If you need a more sophisticated configuration with JMX rules, you need to inject your own `config.yaml` file.
+IMPORTANT: If you need a more sophisticated configuration with JMX rules, you need to inject your own `config.yaml` file.
 
-For configuring container deployments with Confd refer to xref:reference:configuration/core-docker.adoc#core-oci-confd[Core Confd], xref:reference:configuration/minion-confd/minion-confd.adoc#minion-confd[Minion Confd], and xref:reference:configuration/sentinel-features.adoc#sentinel-oci-confd[Sentinel Confd].
+For configuring container deployments, refer to xref:reference:configuration/core-docker.adoc#core-oci-confd[Core], xref:reference:configuration/minion-confd/minion-confd.adoc#minion-confd[Minion], and xref:reference:configuration/sentinel-features.adoc#sentinel-oci-confd[Sentinel].
