@@ -164,7 +164,7 @@ function submitNodeSearch(params) {
               <div class="input-group">
                   <select class="custom-select" id="byservice_monitoredService" name="monitoredService">
                       <% for (String name : serviceNameList) { %>
-                      <option value="<%=WebSecurityUtils.sanitizeString(name)%>"><%=name%>
+                      <option value="<%=WebSecurityUtils.sanitizeString(name)%>"><%=WebSecurityUtils.sanitizeString(name)%>
                       </option>
                       <% } %>
                   </select>
@@ -293,7 +293,7 @@ function submitNodeSearch(params) {
                 <li>192.168.0-255.0-255
                 <li>192.168.0,1,2,3-255.*
                 <li>2001:6a8:3c80:8000-8fff:*:*:*:*
-                <li>fc00,fe80:*:*:*:*:*:*:*:*
+                <li>fc00,fe80:*:*:*:*:*:*:*
             </ul>
 
           <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces
