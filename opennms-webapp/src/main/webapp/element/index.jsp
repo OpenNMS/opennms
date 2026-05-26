@@ -93,7 +93,7 @@ function submitNodeSearch(params) {
           <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({iplike: this.iplike.value}); return false;">
               <label for="byip_iplike">TCP/IP Address like</label>
               <div class="input-group">
-                  <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*"/>
+                  <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*"/>
                   <div class="input-group-append">
                       <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
