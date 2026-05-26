@@ -41,8 +41,7 @@
 %>
 
 <%
-    Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    List<String> serviceNameList = new ArrayList<String>(serviceNameMap.keySet());
+    List<String> serviceNameList = new ArrayList<>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap().keySet());
     Collections.sort(serviceNameList);
 
     List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
@@ -56,6 +55,16 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
+<script>
+function submitNodeSearch(params) {
+  const query = Object.entries(params)
+    .filter(([, v]) => v !== '' && v !== null && v !== undefined)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+  window.location.href = `ui/#/nodes${query ? '?' + query : ''}`
+}
+</script>
+
 <div class="row">
   <div class="col-lg-6 col-md-8">
     <div class="card">
@@ -65,14 +74,12 @@
       <div class="card-body">
         <div>
           <ul class="list-unstyled">
-            <li><a href="element/nodeList.htm">All nodes</a></li>
-            <li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
+            <li><a href="ui/#/nodes">All nodes</a></li>
+            <li><a href="ui/#/nodes">All nodes and their interfaces</a></li>
           </ul>
         </div>
           <%-- Search by name --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="post">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({nodename: this.nodename.value}); return false;">
               <label for="byname_nodename">Name containing</label>
               <div class="input-group">
                   <input type="text" class="form-control" id="byname_nodename" name="nodename"/>
@@ -83,9 +90,7 @@
           </form>
 
           <%-- Search by ip --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="post">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({iplike: this.iplike.value}); return false;">
               <label for="byip_iplike">TCP/IP Address like</label>
               <div class="input-group">
                   <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*"/>
@@ -96,9 +101,7 @@
           </form>
 
           <%-- Search by mib2 param --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({mib2Parm: this.mib2Parm.value, mib2ParmMatchType: this.mib2ParmMatchType.value, mib2ParmValue: this.mib2ParmValue.value}); return false;">
               <label class="hidden-sm hidden-md hidden-lg">System attribute</label>
               <div class="input-group">
                   <select class="custom-select" name="mib2Parm">
@@ -120,9 +123,7 @@
           </form>
 
         <%-- Search by interface param --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({snmpParm: this.snmpParm.value, snmpParmMatchType: this.snmpParmMatchType.value, snmpParmValue: this.snmpParmValue.value}); return false;">
               <label class="hidden-sm hidden-md hidden-lg">Interface attribute</label>
               <div class="input-group">
                   <select class="custom-select" name="snmpParm">
@@ -142,9 +143,7 @@
           </form>
 
         <%-- Search by location --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({monitoringLocation: this.monitoringLocation.value}); return false;">
               <label for="bymonitoringLocation_monitoringLocation">Location:</label>
               <div class="input-group">
                   <select class="custom-select" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
@@ -159,15 +158,13 @@
               </div>
           </form>
 
-        <%-- Search by service --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
-              <label for="byservice_service">Providing service</label>
+        <%-- Search by service (by name) --%>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({monitoredService: this.monitoredService.value}); return false;">
+              <label for="byservice_monitoredService">Providing service</label>
               <div class="input-group">
-                  <select class="custom-select" id="byservice_service" name="service">
+                  <select class="custom-select" id="byservice_monitoredService" name="monitoredService">
                       <% for (String name : serviceNameList) { %>
-                      <option value="<%=serviceNameMap.get(name)%>"><%=name%>
+                      <option value="<%=WebSecurityUtils.sanitizeString(name)%>"><%=name%>
                       </option>
                       <% } %>
                   </select>
@@ -178,9 +175,7 @@
           </form>
 
         <%-- Search by MAC --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({maclike: this.maclike.value}); return false;">
               <label for="bymac_maclike">MAC Address like</label>
               <div class="input-group">
                   <input class="form-control" type="text" name="maclike"/>
@@ -191,9 +186,7 @@
           </form>
 
         <%-- Search by foreign source --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({foreignSource: this.foreignSource.value}); return false;">
               <label for="byfs_foreignSource">Foreign Source name like</label>
               <div class="input-group">
                   <input type="text" class="form-control" name="foreignSource"/>
@@ -204,9 +197,7 @@
           </form>
 
           <%-- Search by flow data --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="listInterfaces" value="false"/>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({flows: this.flows.value}); return false;">
               <label for="byflows_flows">Flows</label>
               <div class="input-group">
                   <select class="custom-select" id="byflows_flows" name="flows">
@@ -219,17 +210,7 @@
               </div>
           </form>
 
-          <%-- Search by Enhanced Linkd topology data --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
-              <input type="hidden" name="listInterfaces" value="false"/>
-              <label class="hidden-sm hidden-md hidden-lg">Enhanced Linkd topology</label>
-              <div class="input-group">
-                  <input type="text" class="form-control" id="byif_topology" name="topology"/>
-                  <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
-                  </div>
-              </div>
-          </form>
+          <%-- Enhanced Linkd topology search removed: not supported in the Vue node list page --%>
 
       </div>
     </div>
@@ -312,7 +293,7 @@
                 <li>192.168.0-255.0-255
                 <li>192.168.0,1,2,3-255.*
                 <li>2001:6a8:3c80:8000-8fff:*:*:*:*
-                <li>fc00,fe80:*:*:*:*:*:*:*
+                <li>fc00,fe80:*:*:*:*:*:*:*:*
             </ul>
 
           <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces
@@ -329,10 +310,6 @@
              matching the search string. This is a case-insensitive partial string match. For
              example, you can find all interfaces with a specified manufacturer's code by entering
              the first 6 characters of the mac address. Octet separators (dash or colon) are optional.
-          </p>
-
-          <p>Search for Enhanced Linkd topology information allows you to find nodes with CDP/LLDP data
-              matching the given search string.
           </p>
 
           <p>Searching for assets allows you to search for all assets which have been
