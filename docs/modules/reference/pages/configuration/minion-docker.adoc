@@ -1,6 +1,9 @@
 [[minion-docker]]
 = Minion Docker
-:description: Learn about startup arguments and environment variables for the Docker with the OpenNMS {page-component-title} Minion.
+:description: Learn about startup arguments and environment variables for the Minion container in OpenNMS {page-component-title}.
+
+The Minion container image reads its configuration from environment variables at startup.
+For settings not covered by environment variables, you can overlay individual configuration files directly (see <<minion-etc-overlay>>).
 
 == Startup arguments
 
@@ -8,60 +11,113 @@
 |===
 | Argument | Description
 | `-h`     | Display help with available arguments.
-| `-c`     | Start Minion and use environment credentials to register Minion on {page-component-title}.
+| `-c`     | Start Minion using environment variables for credentials. WARNING: credentials may be exposed via `docker inspect` and logs; use `-s` for production deployments.
 | `-s`     | One-time command to initialize an encrypted keystore file with credentials in `/keystore/scv.jce`.
 | `-f`     | Initialize and start Minion in foreground.
 |===
 
-== Environment variables
+== Controller configuration
 
-.Generic Minion settings
 [options="header, autowidth"]
 |===
-| Environment variable | Description                                     | Required | Default value
-| `MINION_ID`          | Unique Minion identifier                      | optional | generated UUID
-| `MINION_LOCATION`    | Name of the location associated with the Minion | required | –
+| Variable | Description | Default value
+| `MINION_ID`         | Unique identifier for this Minion instance. | generated UUID
+| `MINION_LOCATION`   | Location name associated with this Minion instance. | `MINION`
+| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `failover:tcp://horizon:61616`
 |===
 
-.Settings when using ActiveMQ
+NOTE: You cannot supply credentials via environment variables without exposing them in `docker inspect` output and container logs.
+To store credentials securely, initialize a keystore file using the `-s` flag and mount it to `$\{MINION_HOME}/etc/scv.jce`.
+
+.Credentials (use only in non-production environments)
 [options="header, autowidth"]
 |===
-| Environment variable  | Description                              | Required | Default value
-| `OPENNMS_HTTP_USER`   | User name for the REST API             | optional | `admin`
-| `OPENNMS_HTTP_PASS`   | Password for the REST API              | optional | `admin`
-| `OPENNMS_BROKER_URL`  | ActiveMQ broker URL                    | required | –
-| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication   | optional | `admin`
-| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication   | optional | `admin`
+| Variable | Description | Default value
+| `OPENNMS_HTTP_USER`   | Username for the OpenNMS HTTP API.       | `admin`
+| `OPENNMS_HTTP_PASS`   | Password for the OpenNMS HTTP API.       | `admin`
+| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication.    | `admin`
+| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication.    | `admin`
 |===
 
-.Settings when using Apache Kafka
+== IPC strategy
 
-If you want to use Apache Kafka, the environment variable names are converted with a prefix convention:
+Set `MINION_IPC` to choose the inter-process communication transport.
 
-* Prefix `KAFKA_IPC_` will be written to `org.opennms.core.ipc.kafka.cfg`
+[options="header, autowidth"]
+|===
+| Value | Description
+| (unset) | Use JMS (ActiveMQ). This is the default when `MINION_IPC` is not set.
+| `jms`   | Use JMS (ActiveMQ) explicitly.
+| `kafka` | Use Apache Kafka. Requires additional Kafka variables (see <<minion-docker-kafka>>).
+| `grpc`  | Use gRPC. Requires additional gRPC variables (see <<minion-docker-grpc>>).
+|===
 
-* Everything behind will be converted to lower case and `_` is replaced with `.`
+[[minion-docker-kafka]]
+=== Kafka configuration
 
-As an example:
+Environment variables prefixed with `KAFKA_IPC_` are written to `$\{MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg`.
+The prefix is stripped, the remainder is lowercased, and underscores are converted to dots before being written as property keys.
 
-[source, shell]
+[options="header, autowidth"]
+|===
+| Variable | Description | Example value
+| `KAFKA_IPC_BOOTSTRAP_SERVERS` | Comma-separated list of Kafka broker addresses. | `kafka-1:9092,kafka-2:9092`
+| `KAFKA_IPC_*` | Any additional Kafka client property. | `KAFKA_IPC_COMPRESSION_TYPE=gzip`
+|===
+
+For example, setting `KAFKA_IPC_BOOTSTRAP_SERVERS=192.168.1.1:9092` produces the following in `org.opennms.core.ipc.kafka.cfg`:
+
+[source, properties]
 ----
-environment:
-  - KAFKA_IPC_BOOTSTRAP_SERVERS=192.168.1.1,192.168.1.2
+bootstrap.servers=192.168.1.1:9092
 ----
 
-This creates the file `org.opennms.core.ipc.kafka.cfg` with the content:
+[[minion-docker-grpc]]
+=== gRPC configuration
 
-[source, shell]
-----
-bootstrap.servers=192.168.1.1,192.168.1.2
-----
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `IPC_GRPC_HOST` | Hostname of the gRPC server. | `horizon`
+| `IPC_GRPC_PORT` | Port of the gRPC server.     | `8990`
+|===
 
+== Optional features
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `JAEGER_ENABLED`       | Set to `true` to enable the Jaeger tracing agent feature.        | `false`
+| `DOMINION_SCV_ENABLED` | Set to `true` to enable the Dominion secure credentials vault.   | `false`
+|===
+
+== JVM memory
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `JAVA_MIN_MEM` | Minimum JVM heap size. | `2g`
+| `JAVA_MAX_MEM` | Maximum JVM heap size. | `2g`
+|===
+
+== Prometheus JMX exporter
+
+For full details on the JMX exporter and customizing its configuration file, see xref:configuration/minion-confd/jmx-exporter.adoc[].
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `PROM_JMX_EXPORTER_ENABLED` | Set to `true` to enable the Prometheus JMX exporter. | `false`
+| `PROM_JMX_EXPORTER_PORT`    | Port on which the JMX exporter listens.              | `9299`
+| `PROM_JMX_EXPORTER_CONFIG`  | Path to the exporter configuration file inside the container. | `/opt/prom-jmx-exporter/config.yaml`
+|===
+
+[[minion-etc-overlay]]
 == Directory conventions
 
 [options="header, autowidth"]
 |===
 | Mountpoint                | Description
-| `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`.
-| `/keystore`               | Directory with credentials for encrypted keystore file
+| `/opt/minion-etc-overlay` | Files copied into `$\{MINION_HOME}/etc/` at startup, after environment variable processing. Direct file overlays take precedence over the corresponding environment variable settings.
+| `/keystore`               | Directory for the encrypted keystore file initialized with the `-s` flag.
 |===

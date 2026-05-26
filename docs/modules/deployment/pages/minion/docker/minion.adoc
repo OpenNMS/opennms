@@ -92,7 +92,7 @@ netmgt:
 <4> Enable the Syslog listener on the Minion on port 1514/udp.
 <5> Enable the SNMP trap listener on the Minion on port 1162/udp.
 
-TIP: To run with Apache Kafka or configure flow listeners, see the xref:reference:configuration/minion-confd/minion-confd.adoc#minion-confd[Minion configuration reference].
+TIP: To run with Apache Kafka or configure flow listeners, see the xref:reference:configuration/minion-docker.adoc#minion-docker[Minion configuration reference].
 
 Next, we need to create the keystore file and add the credentials for connecting to the core {page-component-title} server.
 

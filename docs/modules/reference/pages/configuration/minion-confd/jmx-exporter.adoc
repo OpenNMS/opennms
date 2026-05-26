@@ -2,29 +2,45 @@
 = Prometheus JMX exporter
 :description: Learn how to set up out-of-band monitoring of the Java virtual machine (JVM) with the Minion process in OpenNMS {page-component-title}.
 
-To provide an out-of-band monitoring of the JVM with the Minion process, this container image ships with the Prometheus JMX exporter.
-The default configuration, which you can edit, appears in the `minion-config.yaml` file:
+To enable out-of-band JVM monitoring with the Minion process, set `PROM_JMX_EXPORTER_ENABLED=true`.
+The exporter listens on port `9299` by default; use `PROM_JMX_EXPORTER_PORT` to override this.
 
-```yaml
-java:
-  agent:
-    prom-jmx-exporter:
-      jmxUrl: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
-      username: "admin"
-      password: "admin"
-      lowerCaseOutputName: "true"
-      lowercaseOutputLabelNames: "true"
-      whitelistObjectNames:
-      - "org.opennms.core.ipc.sink.producer:*"
-      - "org.opennms.netmgt.dnsresolver.netty:*"
-      - "org.opennms.netmgt.telemetry:*"
-```
+The container ships a default configuration at `/opt/prom-jmx-exporter/config.yaml`.
+To supply a custom configuration, mount your file over that path or point `PROM_JMX_EXPORTER_CONFIG` to a different path inside the container.
 
-The Minion container images come with the Prometheus JMX exporter.
-Enable them with the following:
+IMPORTANT: The default configuration covers basic JMX metrics.
+If you need custom JMX rules, inject your own `config.yaml` file rather than relying on the default.
 
-```yaml
-process-env:
-  java-opts:
-    - -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
-```
+The default configuration file looks like the following:
+
+[source, yaml]
+----
+startDelaySeconds: 10
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+autoExcludeObjectNameAttributes: true
+
+includeObjectNames:
+  - "java.lang:*"
+  - "org.opennms.*:*"
+  - "kafka.producer:*"
+  - "org.apache.camel:*"
+
+rules:
+  - pattern: "java.lang.*"
+  - pattern: "kafka.producer.*"
+  - pattern: "org.apache.camel.*"
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
+    name: minion_$1_$2
+    type: GAUGE
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
+    name: minion_$1_$2_count
+    type: COUNTER
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
+    name: minion_$1_$2
+    type: GAUGE
+    labels:
+      quantile: "0.$3"
+----
