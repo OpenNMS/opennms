@@ -1737,7 +1737,7 @@
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.7</asmVersion>
-    <activemqVersion>5.19.5</activemqVersion>
+    <activemqVersion>5.19.6</activemqVersion>
     <activemqCamelVersion>5.16.8</activemqCamelVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
