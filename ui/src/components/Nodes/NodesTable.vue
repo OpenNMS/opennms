@@ -64,6 +64,20 @@
               </FeatherChip>
 
               <FeatherChip
+                v-for="(cat, index) in nodeStructureStore.selectedCategories2"
+                :key="`cat2-${index}`"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeItem(cat, FilterTypeEnum.Category2)"
+                  />
+                </template>
+                {{ `Category (2): ${cat._text}` }}
+              </FeatherChip>
+
+              <FeatherChip
                 v-for="(flow, index) in nodeStructureStore.selectedFlows"
                 :key="`flow-${index}`"
               >
@@ -501,6 +515,9 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
       nodeStructureStore.removeCategory(item)
+      break
+    case FilterTypeEnum.Category2:
+      nodeStructureStore.removeCategory2(item)
       break
     case FilterTypeEnum.Flow:
       nodeStructureStore.removeFlow(item)

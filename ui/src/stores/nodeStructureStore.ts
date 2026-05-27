@@ -62,6 +62,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const drawerState = ref<DrawerState>(getDefaultDrawerState())
   const columnsDrawerState = ref<DrawerState>(getDefaultDrawerState())
   const selectedCategories = ref<IAutocompleteItemType[]>([])
+  const selectedCategories2 = ref<IAutocompleteItemType[]>([])
   const selectedFlows = ref<IAutocompleteItemType[]>([])
   const selectedMonitoringLocations = ref<IAutocompleteItemType[]>([])
 
@@ -87,6 +88,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     return (
       queryFilter.value.searchTerm?.length > 0 ||
       queryFilter.value.selectedCategories.length > 0 ||
+      (queryFilter.value.selectedCategories2?.length ?? 0) > 0 ||
       queryFilter.value.selectedFlows.length > 0 ||
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
       !!queryFilter.value.extendedSearch?.ipAddress?.length ||
@@ -208,6 +210,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     const filter = getDefaultNodeQueryFilter()
 
     selectedCategories.value = []
+    selectedCategories2.value = []
     selectedFlows.value = []
     selectedMonitoringLocations.value = []
 
@@ -241,6 +244,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
       if (prefs.nodeFilter.selectedCategories?.length) {
         filter.selectedCategories = [...prefs.nodeFilter.selectedCategories]
+      }
+
+      if (prefs.nodeFilter.selectedCategories2?.length) {
+        filter.selectedCategories2 = [...prefs.nodeFilter.selectedCategories2]
       }
 
       if (prefs.nodeFilter.selectedFlows?.length) {
@@ -280,6 +287,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter((c) => c.id !== item._value)
   }
 
+  const removeCategory2 = (item: IAutocompleteItemType) => {
+    selectedCategories2.value = selectedCategories2.value.filter((i) => i._value !== item._value)
+    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter((c) => c.id !== item._value)
+  }
+
   const removeFlow = (item: IAutocompleteItemType) => {
     selectedFlows.value = selectedFlows.value.filter((i) => i._text !== item._text)
     queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter((f) => f !== item._text)
@@ -301,6 +313,16 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
     // Also update the query filter
     queryFilter.value.selectedCategories = items.map((item) => ({
+      id: item._value as number,
+      name: item._text as string,
+      authorizedGroups: [] as string[]
+    }))
+  }
+
+  const updateSelectedCategories2 = (items: IAutocompleteItemType[]) => {
+    selectedCategories2.value = items
+
+    queryFilter.value.selectedCategories2 = items.map((item) => ({
       id: item._value as number,
       name: item._text as string,
       authorizedGroups: [] as string[]
@@ -351,13 +373,16 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     openInstancesDrawerModal,
     closeInstancesDrawerModal,
     selectedCategories,
+    selectedCategories2,
     selectedFlows,
     selectedMonitoringLocations,
     removeCategory,
+    removeCategory2,
     removeExtendedSearch,
     removeFlow,
     removeMonitoringLocation,
     updateSelectedCategories,
+    updateSelectedCategories2,
     updateSelectedFlows,
     openColumnsDrawerModal,
     closeColumnsDrawerModal

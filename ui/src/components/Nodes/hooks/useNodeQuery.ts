@@ -92,6 +92,7 @@ export const useNodeQuery = () => {
       searchTerm: '',
       categoryMode: SetOperator.Union,
       selectedCategories: [] as Category[],
+      selectedCategories2: [] as Category[],
       selectedFlows: [] as string[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
@@ -245,10 +246,11 @@ export const useNodeQuery = () => {
 
     filter.searchTerm = parseNodeLabel(queryObject)
 
-    const { categoryMode, selectedCategories } = parseCategories(queryObject, categories)
+    const { categoryMode, selectedCategories, selectedCategories2 } = parseCategories(queryObject, categories)
     if (selectedCategories.length > 0) {
       filter.categoryMode = categoryMode
       filter.selectedCategories = selectedCategories
+      filter.selectedCategories2 = selectedCategories2
     }
 
     const location = parseMonitoringLocation(queryObject, monitoringLocations)
@@ -337,7 +339,7 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
 
   const searchQuery = buildSearchQuery(searchTerm)
   const ipAddressQuery = buildIpAddressQuery(ipAddress)
-  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
+  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode, filter.selectedCategories2)
   const flowsQuery = buildFlowsQuery(filter.selectedFlows)
   const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
   const foreignSourceQuery = buildForeignSourceQuery(filter.extendedSearch.foreignSourceParams)
@@ -380,16 +382,27 @@ const buildIpAddressQuery = (ipAddress?: string) => {
   return ''
 }
 
-const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator) => {
-  const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
+const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator, selectedCategories2?: Category[]) => {
+  if (selectedCategories2 && selectedCategories2.length > 0) {
+    // Grouped mode: union within each group, intersection between groups
+    const buildGroup = (cats: Category[]) => {
+      const items = cats.map(cat => `category.id==${cat.id}`)
+      if (items.length === 0) return ''
+      if (items.length === 1) return items[0]
+      return `(${items.join(',')})`
+    }
+    const group1 = buildGroup(selectedCategories)
+    const group2 = buildGroup(selectedCategories2)
+    if (group1 && group2) return `${group1};${group2}`
+    return group1 || group2
+  }
 
-  if (categoryItems.length === 1) {
-    return `${categoryItems[0]}`
-  } else if (categoryItems.length > 1) {
+  const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
+  if (categoryItems.length === 1) return `${categoryItems[0]}`
+  if (categoryItems.length > 1) {
     const separator = getFiqlSetOperator(categoryMode)
     return `(${categoryItems.join(separator)})`
   }
-
   return ''
 }
 

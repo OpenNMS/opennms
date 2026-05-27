@@ -38,56 +38,71 @@ export const parseNodeLabel = (queryObject: any) => {
 
 /**
  * Parse categories from a vue-router route.query object.
- * The route.query 'categories' string can be a comma- or semicolon-separated list of either
- * numeric Category ids or names.
- * comma: Union; semicolon: Intersection
- * 
- * @returns The category mode and categories parsed from the queryObject. If 'selectedCategories' is empty,
- * it means no categories were present.
+ *
+ * Two formats are supported:
+ * - 'categories': flat comma- or semicolon-separated list (comma=Union, semicolon=Intersection).
+ *   Returns a single group in selectedCategories with selectedCategories2 empty.
+ * - 'category1' / 'category2': legacy format from surveillance-view links. Each param may be a
+ *   single string or an array (vue-router repeats params as arrays). Each group is union internally;
+ *   when both groups are non-empty, intersection is applied between them via selectedCategories2.
+ *   If only one of the two is present, all items go into selectedCategories.
+ *
+ * @returns categoryMode, selectedCategories (group 1), selectedCategories2 (group 2, may be empty)
  */
-export const parseCategories = (queryObject: any, categories: Category[]) => {
+export const parseCategories = (queryObject: any, categories: Category[]): {
+  categoryMode: SetOperator
+  selectedCategories: Category[]
+  selectedCategories2: Category[]
+} => {
   let categoryMode: SetOperator = SetOperator.Union
   const selectedCategories: Category[] = []
+  const selectedCategories2: Category[] = []
 
-  // 'category1' + 'category2' is a legacy format for the intersection of two categories.
-  // the newer 'categories' param is preferred
-  const queryCategories = (queryObject.categories as string)
-    || [queryObject.category1 as string, queryObject.category2 as string]
-        .filter(Boolean)
-        .join(';')
-    || ''
+  if (categories.length === 0) {
+    return { categoryMode, selectedCategories, selectedCategories2 }
+  }
 
-  if (categories.length > 0) {
-    categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
-
-    const cats: string[] = queryCategories.replace(/;/g, ',').split(',')
-
-    // add any valid categories
-    cats.forEach(c => {
-      if (/\d+/.test(c)) {
-        // category id number
-        const id = parseInt(c)
-
-        const item = categories.find(x => x.id === id)
-
-        if (item) {
-          selectedCategories.push(item)
-        }
+  const resolveCategory = (vals: string[]): Category[] => {
+    const result: Category[] = []
+    vals.forEach(c => {
+      if (!c) return
+      if (/^\d+$/.test(c)) {
+        const item = categories.find(x => x.id === parseInt(c))
+        if (item) result.push(item)
       } else {
-        // category name, case insensitive
         const item = categories.find(x => x.name.toLowerCase() === c.toLowerCase())
-
-        if (item) {
-          selectedCategories.push(item)
-        }
+        if (item) result.push(item)
       }
     })
+    return result
   }
 
-  return {
-    categoryMode,
-    selectedCategories
+  if (queryObject.categories) {
+    // Flat 'categories' string: comma=union, semicolon=intersection
+    const queryCategories = queryObject.categories as string
+    categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
+    const cats = queryCategories.replace(/;/g, ',').split(',')
+    selectedCategories.push(...resolveCategory(cats))
+  } else if (queryObject.category1 || queryObject.category2) {
+    // Legacy category1/category2: union within each group, intersection between groups.
+    // Vue-router gives a string for a single occurrence, array for multiple occurrences.
+    const toArray = (v: any): string[] =>
+      Array.isArray(v) ? (v as string[]) : v ? [v as string] : []
+
+    const group1 = resolveCategory(toArray(queryObject.category1))
+    const group2 = resolveCategory(toArray(queryObject.category2))
+
+    if (group1.length > 0 && group2.length > 0) {
+      selectedCategories.push(...group1)
+      selectedCategories2.push(...group2)
+    } else {
+      // Only one group present — treat as a flat union (backwards compat)
+      selectedCategories.push(...group1, ...group2)
+    }
+    categoryMode = SetOperator.Union
   }
+
+  return { categoryMode, selectedCategories, selectedCategories2 }
 }
 
 export const parseMonitoringLocation = (queryObject: any, monitoringLocations: MonitoringLocation[]) => {

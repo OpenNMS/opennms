@@ -74,7 +74,7 @@ describe('Nodes queryStringParser test', () => {
       'parseCategories: %s',
       (title, queryObject, expectedCategoryMode, expectedCategories) => {
         const result = parseCategories(queryObject, categories)
-        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories })
+        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories, selectedCategories2: [] })
       }
     )
   })
@@ -292,32 +292,52 @@ describe('Nodes queryStringParser test', () => {
   })
 
   describe('parseCategories: category1/category2 aliases', () => {
-    test('category1 alone maps as union', () => {
+    test('category1 alone maps as union in group 1', () => {
       const result = parseCategories({ category1: 'Routers' }, categories)
       expect(result.categoryMode).toBe(SetOperator.Union)
       expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([])
     })
 
-    test('category2 alone maps as union', () => {
+    test('category2 alone maps as union in group 1 (backwards compat)', () => {
       const result = parseCategories({ category2: 'Switches' }, categories)
       expect(result.categoryMode).toBe(SetOperator.Union)
       expect(result.selectedCategories).toEqual([categories[1]])
+      expect(result.selectedCategories2).toEqual([])
     })
 
-    test('category1 and category2 combined as intersection', () => {
+    test('category1 and category2 populate separate groups', () => {
       const result = parseCategories({ category1: 'Routers', category2: 'Switches' }, categories)
-      expect(result.categoryMode).toBe(SetOperator.Intersection)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([categories[1]])
+    })
+
+    test('category1 array and category2 array populate two groups with union within each', () => {
+      const result = parseCategories(
+        { category1: ['Routers', 'Switches'], category2: ['Production', 'Servers'] },
+        categories
+      )
       expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([categories[3], categories[2]])
+    })
+
+    test('category1 array alone (no category2) puts all in group 1', () => {
+      const result = parseCategories({ category1: ['Routers', 'Switches'] }, categories)
+      expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([])
     })
 
     test('categories param takes precedence over category1/category2', () => {
       const result = parseCategories({ categories: 'Servers', category1: 'Routers', category2: 'Switches' }, categories)
       expect(result.selectedCategories).toEqual([categories[2]])
+      expect(result.selectedCategories2).toEqual([])
     })
 
     test('unknown category1 value returns empty', () => {
       const result = parseCategories({ category1: 'NonExistent' }, categories)
       expect(result.selectedCategories).toEqual([])
+      expect(result.selectedCategories2).toEqual([])
     })
   })
 

@@ -224,12 +224,14 @@ describe('useNodeStructureStore', () => {
   describe('clearAllFiltersAndSelections', () => {
     it('clears categories, flows, and locations', async () => {
       store.selectedCategories = [{ _value: 1, _text: 'Routers' }]
+      store.selectedCategories2 = [{ _value: 2, _text: 'Switches' }]
       store.selectedFlows = [{ _text: 'Ingress' }]
       store.queryFilter.selectedCategories = [categories[0]]
 
       await store.clearAllFiltersAndSelections()
 
       expect(store.selectedCategories).toEqual([])
+      expect(store.selectedCategories2).toEqual([])
       expect(store.selectedFlows).toEqual([])
       expect(store.queryFilter.selectedCategories).toEqual([])
     })
@@ -315,6 +317,20 @@ describe('useNodeStructureStore', () => {
     })
   })
 
+  describe('removeCategory2', () => {
+    it('removes from selectedCategories2 and queryFilter', () => {
+      store.selectedCategories2 = [{ _value: 1, _text: 'Routers' }, { _value: 2, _text: 'Switches' }]
+      store.queryFilter.selectedCategories2 = [categories[0], categories[1]]
+
+      store.removeCategory2({ _value: 1, _text: 'Routers' })
+
+      expect(store.selectedCategories2).toHaveLength(1)
+      expect(store.selectedCategories2[0]._value).toBe(2)
+      expect(store.queryFilter.selectedCategories2).toHaveLength(1)
+      expect(store.queryFilter.selectedCategories2![0].id).toBe(2)
+    })
+  })
+
   describe('removeFlow', () => {
     it('removes from selectedFlows and queryFilter', () => {
       store.selectedFlows = [{ _text: 'Ingress' }, { _text: 'Egress' }]
@@ -351,6 +367,19 @@ describe('useNodeStructureStore', () => {
       expect(store.selectedCategories).toHaveLength(2)
       expect(store.queryFilter.selectedCategories).toHaveLength(2)
       expect(store.queryFilter.selectedCategories[0]).toMatchObject({ id: 1, name: 'Routers' })
+    })
+  })
+
+  describe('updateSelectedCategories2', () => {
+    it('syncs selectedCategories2 and queryFilter.selectedCategories2', () => {
+      store.updateSelectedCategories2([
+        { _value: 3, _text: 'Servers' },
+        { _value: 4, _text: 'Production' }
+      ])
+
+      expect(store.selectedCategories2).toHaveLength(2)
+      expect(store.queryFilter.selectedCategories2).toHaveLength(2)
+      expect(store.queryFilter.selectedCategories2![0]).toMatchObject({ id: 3, name: 'Servers' })
     })
   })
 

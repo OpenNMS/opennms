@@ -579,6 +579,7 @@ export interface NodeQueryFilter {
   searchTerm: string
   categoryMode: SetOperator
   selectedCategories: Category[]
+  selectedCategories2?: Category[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
   extendedSearch: NodeQueryExtendedSearchParams
@@ -603,6 +604,7 @@ export interface IpInterfaceInfo {
 
 export enum FilterTypeEnum {
   Category = 'category',
+  Category2 = 'category2',
   Flow = 'flow',
   MonitoringLocation = 'location'
 }
