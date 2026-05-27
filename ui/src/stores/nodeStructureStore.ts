@@ -54,7 +54,9 @@ const getDefaultDrawerState = (): DrawerState => {
 export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const categories = ref<Category[]>([])
   const categoryCount = computed(() => categories.value.length)
+  const categoriesLoaded = ref(false)
   const monitoringLocations = ref<MonitoringLocation[]>([])
+  const monitoringLocationsLoaded = ref(false)
   const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
   const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
   const drawerState = ref<DrawerState>(getDefaultDrawerState())
@@ -69,6 +71,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     if (resp) {
       categories.value = resp.category
     }
+    categoriesLoaded.value = true
   }
 
   const fetchMonitoringLocations = async () => {
@@ -77,6 +80,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     if (resp) {
       monitoringLocations.value = resp.location
     }
+    monitoringLocationsLoaded.value = true
   }
 
   const isAnyFilterSelected = () => {
@@ -320,9 +324,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
   return {
     categories,
+    categoriesLoaded,
     categoryCount,
     columns,
     monitoringLocations,
+    monitoringLocationsLoaded,
     queryFilter,
     drawerState,
     columnsDrawerState,

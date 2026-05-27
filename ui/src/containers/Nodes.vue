@@ -57,8 +57,8 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
 
 const handleQuery = (prefs: NodePreferences | null) => {
   if (queryStringHasTrackedValues(route.query)) {
-    if (nodeStructureStore.categories.length === 0 || nodeStructureStore.monitoringLocations.length === 0) {
-      // Categories or locations not loaded yet — save and defer.
+    if (!nodeStructureStore.categoriesLoaded || !nodeStructureStore.monitoringLocationsLoaded) {
+      // Lists not finished loading yet — save and defer.
       pendingRouteQuery.value = { ...route.query }
     } else {
       applyQueryFilter(route.query, prefs)
@@ -70,13 +70,14 @@ const handleQuery = (prefs: NodePreferences | null) => {
   return false
 }
 
-// Re-apply any deferred query once categories and locations are both populated.
-// This handles the race between App.vue's async getCategories/getMonitoringLocations
+// Re-apply any deferred query once both lists have finished loading.
+// Handles the race between App.vue's async getCategories/getMonitoringLocations
 // and Nodes.vue mounting with query params already in the URL.
+// Note: lists may be empty (e.g. no categories configured) — loaded flags handle this correctly.
 watch(
-  [() => nodeStructureStore.categories.length, () => nodeStructureStore.monitoringLocations.length],
-  ([catLen, locLen]) => {
-    if (pendingRouteQuery.value && catLen > 0 && locLen > 0) {
+  [() => nodeStructureStore.categoriesLoaded, () => nodeStructureStore.monitoringLocationsLoaded],
+  ([catsLoaded, locsLoaded]) => {
+    if (pendingRouteQuery.value && catsLoaded && locsLoaded) {
       applyQueryFilter(pendingRouteQuery.value, loadNodePreferences())
       pendingRouteQuery.value = null
     }
