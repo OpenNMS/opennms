@@ -21,7 +21,7 @@ For settings not covered by environment variables, you can overlay individual co
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `MINION_ID`         | Unique identifier for this Minion instance. | generated UUID
+| `MINION_ID`         | Unique identifier for this Minion instance. | `MINION-01`
 | `MINION_LOCATION`   | Location name associated with this Minion instance. | `MINION`
 | `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `failover:tcp://horizon:61616`
 |===
