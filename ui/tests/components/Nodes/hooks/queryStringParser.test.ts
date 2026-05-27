@@ -304,9 +304,9 @@ describe('Nodes queryStringParser test', () => {
       expect(result.selectedCategories).toEqual([categories[1]])
     })
 
-    test('category1 and category2 combined as union', () => {
+    test('category1 and category2 combined as intersection', () => {
       const result = parseCategories({ category1: 'Routers', category2: 'Switches' }, categories)
-      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.categoryMode).toBe(SetOperator.Intersection)
       expect(result.selectedCategories).toEqual([categories[0], categories[1]])
     })
 

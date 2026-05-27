@@ -49,10 +49,12 @@ export const parseCategories = (queryObject: any, categories: Category[]) => {
   let categoryMode: SetOperator = SetOperator.Union
   const selectedCategories: Category[] = []
 
+  // 'category1' + 'category2' is a legacy format for the intersection of two categories.
+  // the newer 'categories' param is preferred
   const queryCategories = (queryObject.categories as string)
     || [queryObject.category1 as string, queryObject.category2 as string]
         .filter(Boolean)
-        .join(',')
+        .join(';')
     || ''
 
   if (categories.length > 0) {

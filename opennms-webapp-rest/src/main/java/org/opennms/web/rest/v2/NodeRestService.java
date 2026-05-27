@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.cxf.jaxrs.ext.search.ConditionType;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -88,6 +91,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
+
+    // Maps SNMP interface FIQL field names to their lowercase DB column names in the snmpinterface table.
+    // Used to build SQL subqueries that support both exact (=) and wildcard (like) matching.
+    // Non-string SNMP fields (ifIndex, ifType, etc.) are absent; they use a different join strategy.
+    private static final Map<String,String> SNMP_STRING_COLUMN = Map.of(
+        "ifAlias",  "snmpifalias",
+        "ifDescr",  "snmpifdescr",
+        "ifName",   "snmpifname",
+        "physAddr", "snmpphysaddr"
+    );
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
@@ -187,16 +200,37 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
         // Use join conditions for one-to-many aliases
         for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS.entrySet()) {
-            map.put(Aliases.snmpInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
-                b.alias(
-                    "snmpInterfaces",
-                    Aliases.snmpInterface.toString(),
-                    JoinType.LEFT_JOIN,
-                    Restrictions.or(Restrictions.eq(Aliases.snmpInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.snmpInterface.prop(entry.getKey())))
-                );
-            }));
+            final String key = entry.getKey();
+            final String dbCol = SNMP_STRING_COLUMN.get(key);
+            if (dbCol != null) {
+                // String field: use SQL subquery so that wildcard (LIKE) and exact (=) both work.
+                // A JOIN condition with Restrictions.eq cannot perform LIKE matching, so wildcard
+                // searches like snmpInterface.ifAlias==*value* would return nothing with a join approach.
+                map.put(Aliases.snmpInterface.prop(key), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    switch (c) {
+                    case EQUALS:
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s %s ?)", dbCol, w ? "like" : "="), v, Type.STRING);
+                        break;
+                    case NOT_EQUALS:
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s %s ?)", dbCol, w ? "like" : "="), v, Type.STRING);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
+                    }
+                }));
+            } else {
+                // Non-string field: join condition for exact matching (wildcards not applicable)
+                map.put(Aliases.snmpInterface.prop(key), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    b.alias(
+                        "snmpInterfaces",
+                        Aliases.snmpInterface.toString(),
+                        JoinType.LEFT_JOIN,
+                        Restrictions.or(Restrictions.eq(Aliases.snmpInterface.prop(key), v), Restrictions.isNull(Aliases.snmpInterface.prop(key)))
+                    );
+                }));
+            }
         }
-        // There are no extra String properties on node.snmpInterfaces 
+        // There are no extra String properties on node.snmpInterfaces
 
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
 
