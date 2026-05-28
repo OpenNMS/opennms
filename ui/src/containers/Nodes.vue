@@ -46,7 +46,8 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
   const nodeFilter = buildNodeQueryFilterFromQueryString(
     query,
     nodeStructureStore.categories,
-    nodeStructureStore.monitoringLocations
+    nodeStructureStore.monitoringLocations,
+    nodeStructureStore.allServiceTypes
   )
   const newPrefs = {
     nodeColumns: prefs?.nodeColumns || [],
@@ -57,7 +58,7 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
 
 const handleQuery = (prefs: NodePreferences | null) => {
   if (queryStringHasTrackedValues(route.query)) {
-    if (!nodeStructureStore.categoriesLoaded || !nodeStructureStore.monitoringLocationsLoaded) {
+    if (!nodeStructureStore.categoriesLoaded || !nodeStructureStore.monitoringLocationsLoaded || !nodeStructureStore.serviceTypesLoaded) {
       // Lists not finished loading yet — save and defer.
       pendingRouteQuery.value = { ...route.query }
     } else {
@@ -75,9 +76,9 @@ const handleQuery = (prefs: NodePreferences | null) => {
 // and Nodes.vue mounting with query params already in the URL.
 // Note: lists may be empty (e.g. no categories configured) — loaded flags handle this correctly.
 watch(
-  [() => nodeStructureStore.categoriesLoaded, () => nodeStructureStore.monitoringLocationsLoaded],
-  ([catsLoaded, locsLoaded]) => {
-    if (pendingRouteQuery.value && catsLoaded && locsLoaded) {
+  [() => nodeStructureStore.categoriesLoaded, () => nodeStructureStore.monitoringLocationsLoaded, () => nodeStructureStore.serviceTypesLoaded],
+  ([catsLoaded, locsLoaded, svcTypesLoaded]) => {
+    if (pendingRouteQuery.value && catsLoaded && locsLoaded && svcTypesLoaded) {
       applyQueryFilter(pendingRouteQuery.value, loadNodePreferences())
       pendingRouteQuery.value = null
     }

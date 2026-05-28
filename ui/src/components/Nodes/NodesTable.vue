@@ -106,6 +106,17 @@
               </FeatherChip>
 
               <FeatherChip
+                v-for="(svc, index) in nodeStructureStore.selectedServices"
+                :key="`svc-${index}`"
+              >
+                <template #icon>
+                  <FeatherIcon :icon="cancelIcon" class="icon"
+                    @click="removeItem(svc, FilterTypeEnum.MonitoredService)" />
+                </template>
+                {{ `Service: ${svc._text}` }}
+              </FeatherChip>
+
+              <FeatherChip
                 v-if="hasExtendedSearchParams"
               >
                 <template #icon>
@@ -524,6 +535,9 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
       break
     case FilterTypeEnum.MonitoringLocation:
       nodeStructureStore.removeMonitoringLocation(item)
+      break
+    case FilterTypeEnum.MonitoredService:
+      nodeStructureStore.removeService(item)
       break
     default:
       console.warn(`Unknown filter type: ${type}`)

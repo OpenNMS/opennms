@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, test } from 'vitest'
-import { categories, monitoringLocations } from './utils'
+import { categories, monitoringLocations, serviceTypes } from './utils'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
@@ -375,10 +375,23 @@ describe('Nodes useNodeQuery test', () => {
       expect(filter.extendedSearch.snmpParams?.physAddr).toBe('aabbcc')
     })
 
-    test('monitoredService maps to extendedSearch.selectedService', () => {
-      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: 'HTTP' }, categories, monitoringLocations)
+    test('monitoredService maps to selectedServices (by name)', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: 'HTTP' }, categories, monitoringLocations, serviceTypes)
       const expected = getDefaultNodeQueryFilter()
-      expected.extendedSearch.selectedService = 'HTTP'
+      expected.selectedServices = ['HTTP']
+      expect(filter).toEqual(expected)
+    })
+
+    test('monitoredService by numeric id maps to selectedServices', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: '8' }, categories, monitoringLocations, serviceTypes)
+      const expected = getDefaultNodeQueryFilter()
+      expected.selectedServices = ['HTTPS']
+      expect(filter).toEqual(expected)
+    })
+
+    test('monitoredService unknown name returns no selectedServices', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: 'UNKNOWN' }, categories, monitoringLocations, serviceTypes)
+      const expected = getDefaultNodeQueryFilter()
       expect(filter).toEqual(expected)
     })
   })
@@ -536,12 +549,26 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
-  describe('buildUpdatedNodeStructureQueryParameters: selectedService', () => {
-    test('selectedService generates serviceType.name FIQL query', () => {
+  describe('buildUpdatedNodeStructureQueryParameters: selectedServices', () => {
+    test('single selectedService generates serviceType.name FIQL query', () => {
       const filter = getDefaultNodeQueryFilter()
-      filter.extendedSearch.selectedService = 'HTTP'
+      filter.selectedServices = ['HTTP']
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s).toBe('serviceType.name==HTTP')
+    })
+
+    test('two selectedServices generates OR FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.selectedServices = ['HTTP', 'HTTPS']
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(serviceType.name==HTTP,serviceType.name==HTTPS)')
+    })
+
+    test('empty selectedServices produces no FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.selectedServices = []
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBeUndefined()
     })
   })
 

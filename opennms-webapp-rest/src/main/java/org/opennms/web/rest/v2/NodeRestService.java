@@ -22,7 +22,9 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,11 +57,13 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -104,6 +108,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
     private NodeDao m_dao;
@@ -285,6 +292,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Override
     protected OnmsNode doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
+    }
+
+    @GET
+    @Path("service-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Get all service types", description = "Returns all monitored service types for use in node filtering", operationId = "NodeRestServiceGETServiceTypes")
+    public Response getServiceTypes() {
+        final List<Map<String,Object>> result = m_serviceTypeDao.findAll().stream()
+            .sorted(Comparator.comparing(OnmsServiceType::getName))
+            .map(st -> {
+                final Map<String,Object> item = new HashMap<>();
+                item.put("id", st.getId());
+                item.put("name", st.getName());
+                return item;
+            })
+            .collect(Collectors.toList());
+        return Response.ok(result).build();
     }
 
     @Path("{nodeCriteria}/ipinterfaces")

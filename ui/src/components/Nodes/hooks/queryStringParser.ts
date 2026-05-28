@@ -27,6 +27,7 @@ import {
   NodeQueryForeignSourceParams,
   NodeQuerySnmpParams,
   NodeQuerySysParams,
+  ServiceType,
   SetOperator
 } from '@/types'
 import { isIP } from 'is-ip'
@@ -282,17 +283,27 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
- * Maps the monitoredService param to a service name for FIQL filtering via serviceType.name.
- * The legacy service=<id> (numeric ID) param is intentionally not supported — IDs cannot be
- * resolved to names without an additional API call. Pages updated in PR 3 will send
- * monitoredService=<name> instead.
+ * Maps monitoredService or service query params to canonical service names for FIQL filtering.
+ * Resolves by exact or case-insensitive name match, or by numeric ID lookup via serviceTypes.
+ * monitoredService takes precedence over service when both are present.
  */
-export const parseMonitoredService = (queryObject: any): string | null => {
-  const serviceName = queryObject.monitoredService as string || ''
+export const parseMonitoredServices = (
+  queryObject: any,
+  serviceTypes: ServiceType[]
+): string[] => {
+  const raw: string = (queryObject.monitoredService ?? queryObject.service ?? '') as string
+  if (!raw) return []
 
-  if (!serviceName) {
-    return null
+  const resolve = (val: string): string | null => {
+    if (/^\d+$/.test(val)) {
+      const found = serviceTypes.find(s => s.id === parseInt(val))
+      return found ? found.name : null
+    }
+    const lower = val.toLowerCase()
+    const found = serviceTypes.find(s => s.name.toLowerCase() === lower)
+    return found ? found.name : null
   }
 
-  return serviceName
+  const name = resolve(raw)
+  return name ? [name] : []
 }

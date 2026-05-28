@@ -31,6 +31,7 @@ import {
   NodeQuerySnmpParams,
   NodeQuerySysParams,
   QueryParameters,
+  ServiceType,
   SetOperator
 } from '@/types'
 import {
@@ -40,7 +41,7 @@ import {
   parseIplike,
   parseMaclike,
   parseMib2Params,
-  parseMonitoredService,
+  parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
@@ -93,6 +94,7 @@ export const useNodeQuery = () => {
       categoryMode: SetOperator.Union,
       selectedCategories: [] as Category[],
       selectedCategories2: [] as Category[],
+      selectedServices: [] as string[],
       selectedFlows: [] as string[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
@@ -140,9 +142,6 @@ export const useNodeQuery = () => {
         }
       }
 
-      if (extendedSearch.selectedService && extendedSearch.selectedService.length > 0) {
-        return true
-      }
     }
 
     return false
@@ -241,7 +240,7 @@ export const useNodeQuery = () => {
    *
    * @param query query object from vue-router route.query
    */
-  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[], monitoringLocations: MonitoringLocation[]) => {
+  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[], monitoringLocations: MonitoringLocation[], serviceTypes: ServiceType[] = []) => {
     const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
 
     filter.searchTerm = parseNodeLabel(queryObject)
@@ -301,9 +300,9 @@ export const useNodeQuery = () => {
       filter.extendedSearch.snmpParams.physAddr = macAddr
     }
 
-    const serviceName = parseMonitoredService(queryObject)
-    if (serviceName) {
-      filter.extendedSearch.selectedService = serviceName
+    const serviceNames = parseMonitoredServices(queryObject, serviceTypes)
+    if (serviceNames.length > 0) {
+      filter.selectedServices = serviceNames
     }
 
     // listInterfaces: intentionally not handled — the Vue node list page has no interface-listing mode,
@@ -345,7 +344,7 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const foreignSourceQuery = buildForeignSourceQuery(filter.extendedSearch.foreignSourceParams)
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
-  const serviceQuery = buildServiceQuery(filter.extendedSearch.selectedService)
+  const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
@@ -483,11 +482,11 @@ const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
   return ''
 }
 
-const buildServiceQuery = (selectedService?: string) => {
-  if (isValidParam(selectedService)) {
-    return `serviceType.name==${selectedService!}`
-  }
-  return ''
+const buildServiceQuery = (selectedServices: string[]) => {
+  if (!selectedServices || selectedServices.length === 0) return ''
+  const items = selectedServices.map(name => `serviceType.name==${name}`)
+  if (items.length === 1) return items[0]
+  return `(${items.join(',')})`
 }
 
 const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {

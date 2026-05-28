@@ -31,6 +31,12 @@ export const categories = [
   { authorizedGroups: [] as any[], id: 6, name: 'Development' }
 ]
 
+export const serviceTypes = [
+  { id: 1, name: 'HTTP' },
+  { id: 8, name: 'HTTPS' },
+  { id: 3, name: 'ICMP' }
+]
+
 export const monitoringLocations = [
   {
     geolocation: null,

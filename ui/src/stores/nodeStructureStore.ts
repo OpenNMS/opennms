@@ -31,6 +31,7 @@ import {
   NodeColumnSelectionItem,
   NodePreferences,
   NodeQueryFilter,
+  ServiceType,
   SetOperator
 } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
@@ -65,6 +66,9 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const selectedCategories2 = ref<IAutocompleteItemType[]>([])
   const selectedFlows = ref<IAutocompleteItemType[]>([])
   const selectedMonitoringLocations = ref<IAutocompleteItemType[]>([])
+  const allServiceTypes = ref<ServiceType[]>([])
+  const serviceTypesLoaded = ref(false)
+  const selectedServices = ref<IAutocompleteItemType[]>([])
 
   const fetchCategories = async () => {
     const resp = await API.getCategories()
@@ -84,6 +88,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     monitoringLocationsLoaded.value = true
   }
 
+  const fetchServiceTypes = async () => {
+    allServiceTypes.value = await API.getServiceTypes()
+    serviceTypesLoaded.value = true
+  }
+
   const isAnyFilterSelected = () => {
     return (
       queryFilter.value.searchTerm?.length > 0 ||
@@ -91,6 +100,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       (queryFilter.value.selectedCategories2?.length ?? 0) > 0 ||
       queryFilter.value.selectedFlows.length > 0 ||
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
+      (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
       !!queryFilter.value.extendedSearch?.ipAddress?.length ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
@@ -213,10 +223,12 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     selectedCategories2.value = []
     selectedFlows.value = []
     selectedMonitoringLocations.value = []
+    selectedServices.value = []
 
     queryFilter.value = {
       ...filter,
-      searchTerm
+      searchTerm,
+      selectedServices: []
     }
   }
 
@@ -260,6 +272,21 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
       if (prefs.nodeFilter.extendedSearch) {
         filter.extendedSearch = { ...prefs.nodeFilter.extendedSearch }
+      }
+
+      if (prefs.nodeFilter.selectedServices?.length) {
+        // Always restore string names so the FIQL filter works regardless of load order.
+        // Building IAutocompleteItemType chip items requires allServiceTypes to be populated
+        // first; App.vue must call getServiceTypes() before setFromNodePreferences().
+        // If allServiceTypes is empty the chips won't render, but filtering still works.
+        filter.selectedServices = [...prefs.nodeFilter.selectedServices]
+        const items = prefs.nodeFilter.selectedServices
+          .map(name => {
+            const st = allServiceTypes.value.find(s => s.name === name)
+            return st ? { _value: st.id, _text: st.name } as IAutocompleteItemType : null
+          })
+          .filter((i): i is IAutocompleteItemType => i !== null)
+        selectedServices.value = items
       }
     }
 
@@ -334,6 +361,18 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value.selectedFlows = items.map((item) => item._text as string)
   }
 
+  const updateSelectedServices = (items: IAutocompleteItemType[]) => {
+    selectedServices.value = items
+    queryFilter.value.selectedServices = items.map(i => i._text as string)
+  }
+
+  const removeService = (item: IAutocompleteItemType) => {
+    selectedServices.value = selectedServices.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedServices = (queryFilter.value.selectedServices ?? []).filter(
+      n => n !== item._text
+    )
+  }
+
   const updateSelectedMonitoringLocations = async (locations: IAutocompleteItemType[]) => {
     selectedMonitoringLocations.value = locations
 
@@ -357,6 +396,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     clearAllFiltersAndSelections,
     getCategories: fetchCategories,
     getMonitoringLocations: fetchMonitoringLocations,
+    getServiceTypes: fetchServiceTypes,
     getNodePreferences,
     isAnyFilterSelected,
     resetColumnSelectionToDefault,
@@ -376,14 +416,19 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     selectedCategories2,
     selectedFlows,
     selectedMonitoringLocations,
+    allServiceTypes,
+    serviceTypesLoaded,
+    selectedServices,
     removeCategory,
     removeCategory2,
     removeExtendedSearch,
     removeFlow,
     removeMonitoringLocation,
+    removeService,
     updateSelectedCategories,
     updateSelectedCategories2,
     updateSelectedFlows,
+    updateSelectedServices,
     openColumnsDrawerModal,
     closeColumnsDrawerModal
   }

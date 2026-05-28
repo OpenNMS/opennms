@@ -28,14 +28,14 @@ import {
   parseIplike,
   parseMaclike,
   parseMib2Params,
-  parseMonitoredService,
+  parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
   parseSnmpParmParams,
   parseSysParams
 } from '@/components/Nodes/hooks/queryStringParser'
-import { categories, monitoringLocations } from './utils'
+import { categories, monitoringLocations, serviceTypes } from './utils'
 import { MatchType, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
@@ -374,16 +374,37 @@ describe('Nodes queryStringParser test', () => {
     })
   })
 
-  describe('parseMonitoredService', () => {
-    test.each([
-      ['empty', {}, null],
-      ['monitoredService=HTTP', { monitoredService: 'HTTP' }, 'HTTP'],
-      ['monitoredService=ICMP', { monitoredService: 'ICMP' }, 'ICMP'],
-      ['empty monitoredService string', { monitoredService: '' }, null],
-      ['service numeric ID alone is not handled', { service: '1' }, null],
-      ['service and monitoredService: monitoredService wins', { monitoredService: 'HTTP', service: '1' }, 'HTTP'],
-    ]) ('parseMonitoredService: %s', (title, queryObject, expected) => {
-      expect(parseMonitoredService(queryObject)).toEqual(expected)
+  describe('parseMonitoredServices', () => {
+    test('returns [] when no service param present', () => {
+      expect(parseMonitoredServices({}, serviceTypes)).toEqual([])
+    })
+
+    test('resolves monitoredService by exact name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves monitoredService case-insensitively', () => {
+      expect(parseMonitoredServices({ monitoredService: 'https' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by exact name', () => {
+      expect(parseMonitoredServices({ service: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by numeric ID', () => {
+      expect(parseMonitoredServices({ service: '8' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('returns [] for unknown name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'UNKNOWN' }, serviceTypes)).toEqual([])
+    })
+
+    test('returns [] for unknown numeric ID', () => {
+      expect(parseMonitoredServices({ service: '999' }, serviceTypes)).toEqual([])
+    })
+
+    test('monitoredService takes precedence over service when both present', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTP', service: 'ICMP' }, serviceTypes)).toEqual(['HTTP'])
     })
   })
 })

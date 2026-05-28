@@ -232,6 +232,11 @@ export interface SnmpInterface {
   poll: boolean
 }
 
+export interface ServiceType {
+  id: number
+  name: string
+}
+
 export interface IpInterface {
   ifIndex: string
   isManaged: null | string
@@ -571,7 +576,6 @@ export interface NodeQueryExtendedSearchParams {
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
-  selectedService?: string
 }
 
 /** All components of a node structure query */
@@ -580,6 +584,7 @@ export interface NodeQueryFilter {
   categoryMode: SetOperator
   selectedCategories: Category[]
   selectedCategories2?: Category[]
+  selectedServices?: string[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
   extendedSearch: NodeQueryExtendedSearchParams
@@ -606,7 +611,8 @@ export enum FilterTypeEnum {
   Category = 'category',
   Category2 = 'category2',
   Flow = 'flow',
-  MonitoringLocation = 'location'
+  MonitoringLocation = 'location',
+  MonitoredService = 'monitoredService'
 }
 
 export enum Direction {

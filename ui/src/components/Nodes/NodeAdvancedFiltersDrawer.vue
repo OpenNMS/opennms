@@ -70,7 +70,7 @@
         text-prop="_text"
       ></FeatherAutocomplete>
       <FeatherAutocomplete
-        class="last-filter-autocomplete"
+        class="filter-autocomplete"
         label="Locations"
         type="multi"
         v-model="selectedFilters.locations"
@@ -80,6 +80,16 @@
         @update:modelValue="(items: any) => updateFilter('locations', items)"
       >
       </FeatherAutocomplete>
+      <FeatherAutocomplete
+        class="last-filter-autocomplete"
+        label="Monitored Services"
+        type="multi"
+        v-model="selectedFilters.services"
+        :results="serviceResults"
+        @search="handleServiceSearch"
+        @update:modelValue="(items: any) => updateFilter('services', items)"
+        text-prop="_text"
+      ></FeatherAutocomplete>
       <div class="spacer-medium"></div>
       <div>
         <h4 class="title">Extended Search</h4>
@@ -111,7 +121,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import AddIcon from '@featherds/icon/action/Add'
 import DeleteIcon from '@featherds/icon/action/Delete'
-import { ref } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
@@ -124,6 +134,7 @@ const flowsLoading = ref(false)
 const flowResults = ref<IAutocompleteItemType[]>([])
 const locationsLoading = ref(false)
 const locationResults = ref<IAutocompleteItemType[]>([])
+const serviceResults = ref<IAutocompleteItemType[]>([])
 // we already have items in memory, don't really need to use setTimeout at all,
 // but will keep it just to have the pattern. Timeout can be minimal (5ms)
 const TIMEOUT = 5
@@ -134,7 +145,8 @@ const selectedFilters = reactive({
   categories: [] as IAutocompleteItemType[],
   categories2: [] as IAutocompleteItemType[],
   flows: [] as IAutocompleteItemType[],
-  locations: [] as IAutocompleteItemType[]
+  locations: [] as IAutocompleteItemType[],
+  services: [] as IAutocompleteItemType[]
 })
 
 const filterCategoryItems = (query: string): IAutocompleteItemType[] => {
@@ -194,6 +206,13 @@ const handleLocationSearch = (query: string) => {
   }, TIMEOUT)
 }
 
+const handleServiceSearch = (query: string) => {
+  const lower = query.toLowerCase()
+  serviceResults.value = nodeStructureStore.allServiceTypes
+    .filter(s => s.name.toLowerCase().includes(lower))
+    .map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
+}
+
 const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteItemType[]) => {
   selectedFilters[key] = items
 }
@@ -208,6 +227,7 @@ const applySelectedFilters = () => {
   nodeStructureStore.updateSelectedCategories2(showSecondCategories.value ? selectedFilters.categories2 : [])
   nodeStructureStore.updateSelectedFlows(selectedFilters.flows)
   nodeStructureStore.updateSelectedMonitoringLocations(selectedFilters.locations)
+  nodeStructureStore.updateSelectedServices(selectedFilters.services)
   nodeStructureStore.closeInstancesDrawerModal()
 }
 
@@ -218,6 +238,8 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     showSecondCategories.value = nodeStructureStore.selectedCategories2.length > 0
     selectedFilters.flows = [...nodeStructureStore.selectedFlows]
     selectedFilters.locations = [...nodeStructureStore.selectedMonitoringLocations]
+    selectedFilters.services = [...nodeStructureStore.selectedServices]
+    serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
   }
 })
 </script>

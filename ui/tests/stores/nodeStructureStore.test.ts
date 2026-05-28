@@ -31,7 +31,8 @@ import { categories, monitoringLocations } from '../components/Nodes/hooks/utils
 vi.mock('@/services', () => ({
   default: {
     getCategories: vi.fn(),
-    getMonitoringLocations: vi.fn()
+    getMonitoringLocations: vi.fn(),
+    getServiceTypes: vi.fn()
   }
 }))
 
@@ -520,6 +521,65 @@ describe('useNodeStructureStore', () => {
       await store.resetColumnSelectionToDefault()
 
       expect(store.columns).toEqual(defaultColumns)
+    })
+  })
+
+  // ─── service types ───────────────────────────────────────────────────────────
+
+  describe('service types', () => {
+    it('loads service types on init', async () => {
+      const store = useNodeStructureStore()
+      vi.mocked(API.getServiceTypes).mockResolvedValue([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
+      await store.getServiceTypes()
+      expect(store.allServiceTypes).toEqual([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
+    })
+
+    it('updateSelectedServices updates selectedServices and queryFilter', () => {
+      const store = useNodeStructureStore()
+      store.updateSelectedServices([{ _value: 8, _text: 'HTTPS' }])
+      expect(store.selectedServices).toEqual([{ _value: 8, _text: 'HTTPS' }])
+      expect(store.queryFilter.selectedServices).toEqual(['HTTPS'])
+    })
+
+    it('removeService removes from selectedServices and queryFilter', () => {
+      const store = useNodeStructureStore()
+      store.updateSelectedServices([{ _value: 1, _text: 'HTTP' }, { _value: 8, _text: 'HTTPS' }])
+      store.removeService({ _value: 8, _text: 'HTTPS' })
+      expect(store.selectedServices).toEqual([{ _value: 1, _text: 'HTTP' }])
+      expect(store.queryFilter.selectedServices).toEqual(['HTTP'])
+    })
+
+    it('clearAllFiltersAndSelections clears selectedServices', async () => {
+      const store = useNodeStructureStore()
+      store.updateSelectedServices([{ _value: 8, _text: 'HTTPS' }])
+      await store.clearAllFiltersAndSelections()
+      expect(store.selectedServices).toEqual([])
+      expect(store.queryFilter.selectedServices).toEqual([])
+    })
+
+    it('setFromNodePreferences restores selectedServices after getServiceTypes', async () => {
+      const store = useNodeStructureStore()
+      vi.mocked(API.getServiceTypes).mockResolvedValue([
+        { id: 1, name: 'HTTP' },
+        { id: 8, name: 'HTTPS' }
+      ])
+      await store.getServiceTypes()
+
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: {
+          searchTerm: '',
+          selectedCategories: [],
+          selectedFlows: [],
+          selectedMonitoringLocations: [],
+          categoryMode: SetOperator.Union,
+          selectedServices: ['HTTPS'],
+          extendedSearch: { ipAddress: '', foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }
+        }
+      })
+
+      expect(store.selectedServices).toEqual([{ _value: 8, _text: 'HTTPS' }])
+      expect(store.queryFilter.selectedServices).toEqual(['HTTPS'])
     })
   })
 })
