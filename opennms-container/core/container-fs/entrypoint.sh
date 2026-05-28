@@ -130,7 +130,8 @@ processEnvConfig() {
 
   local CONTAINER_CONFIG_ETC="/opt/opennms/container-fs/etc"
 
-  # Copy static config files; Karaf resolves ${env:VAR:-default} at load time
+  # Copy static config files; OpenNMS resolves ${env:VAR|default} in .properties files
+  # and Karaf resolves ${env:VAR:-default} in .cfg files — both at load time
   mkdir -p "${OPENNMS_HOME}/etc/opennms.properties.d"
   rsync -r "${CONTAINER_CONFIG_ETC}/opennms.properties.d/" "${OPENNMS_HOME}/etc/opennms.properties.d/"
   cp "${CONTAINER_CONFIG_ETC}/org.apache.karaf.shell.cfg" "${OPENNMS_HOME}/etc/"
