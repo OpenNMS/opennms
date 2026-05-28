@@ -144,6 +144,10 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             }
         }
 
+        for (final Map.Entry<String, String> entry : profile.getEnvVars().entrySet()) {
+            withEnv(entry.getKey(), entry.getValue());
+        }
+
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "" + MINION_DEBUG_PORT);
