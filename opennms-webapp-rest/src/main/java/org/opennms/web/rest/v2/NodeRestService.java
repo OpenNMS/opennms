@@ -206,7 +206,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 // String field: use SQL subquery so that wildcard (LIKE) and exact (=) both work.
                 // A JOIN condition with Restrictions.eq cannot perform LIKE matching, so wildcard
                 // searches like snmpInterface.ifAlias==*value* would return nothing with a join approach.
-                map.put(Aliases.snmpInterface.prop(key), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                // skipProperty=true: the SQL subquery handles the full restriction; the snmpInterface
+                // alias is never joined, so the default Hibernate property restriction must not be added
+                // (it would cause a QueryException: could not resolve property: snmpInterface).
+                CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
                     switch (c) {
                     case EQUALS:
                         b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s %s ?)", dbCol, w ? "like" : "="), v, Type.STRING);
@@ -217,7 +220,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
                     }
-                }));
+                });
+                snmpStringBehavior.setSkipPropertyByDefault(true);
+                map.put(Aliases.snmpInterface.prop(key), snmpStringBehavior);
             } else {
                 // Non-string field: join condition for exact matching (wildcards not applicable)
                 map.put(Aliases.snmpInterface.prop(key), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
