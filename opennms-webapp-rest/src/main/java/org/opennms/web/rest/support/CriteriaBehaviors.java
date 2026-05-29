@@ -407,7 +407,7 @@ public abstract class CriteriaBehaviors {
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
                     " and ifservices.status != 'D')",
-                    w ? "like" : "="), v, Type.STRING);
+                    w ? "ilike" : "="), v, Type.STRING);
                 break;
             case NOT_EQUALS:
                 b.sql(String.format(
@@ -416,7 +416,7 @@ public abstract class CriteriaBehaviors {
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
                     " and ifservices.status != 'D')",
-                    w ? "like" : "="), v, Type.STRING);
+                    w ? "ilike" : "="), v, Type.STRING);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type when filtering serviceType.name: " + c.toString());

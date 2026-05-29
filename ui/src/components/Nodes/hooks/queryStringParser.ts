@@ -291,7 +291,7 @@ export const parseMonitoredServices = (
   queryObject: any,
   serviceTypes: ServiceType[]
 ): string[] => {
-  const raw: string = (queryObject.monitoredService ?? queryObject.service ?? '') as string
+  const raw = queryObject.monitoredService ?? queryObject.service
   if (!raw) return []
 
   const resolve = (val: string): string | null => {
@@ -304,6 +304,6 @@ export const parseMonitoredServices = (
     return found ? found.name : null
   }
 
-  const name = resolve(raw)
-  return name ? [name] : []
+  const values: string[] = Array.isArray(raw) ? raw : [raw as string]
+  return values.map(v => resolve(v)).filter((n): n is string => n !== null)
 }

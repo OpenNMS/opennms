@@ -210,6 +210,7 @@ export const useNodeQuery = () => {
     'snmpifdescription',
     'snmpifindex',
     'snmpifname',
+    'snmpiftype',
     'snmpMatchType',
     'snmpphysaddr',
     'snmpParm',
@@ -384,6 +385,7 @@ const buildIpAddressQuery = (ipAddress?: string) => {
 const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator, selectedCategories2?: Category[]) => {
   if (selectedCategories2 && selectedCategories2.length > 0) {
     // Grouped mode: union within each group, intersection between groups
+    // In this case, we ignore categoryMode
     const buildGroup = (cats: Category[]) => {
       const items = cats.map(cat => `category.id==${cat.id}`)
       if (items.length === 0) return ''
@@ -396,6 +398,7 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
     return group1 || group2
   }
 
+  // Single category group: use categoryMode to determine union or intersection
   const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
   if (categoryItems.length === 1) return `${categoryItems[0]}`
   if (categoryItems.length > 1) {
@@ -483,9 +486,18 @@ const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
 }
 
 const buildServiceQuery = (selectedServices: string[]) => {
-  if (!selectedServices || selectedServices.length === 0) return ''
-  const items = selectedServices.map(name => `serviceType.name==${name}`)
-  if (items.length === 1) return items[0]
+  if (!selectedServices || selectedServices.length === 0) {
+    return ''
+  }
+
+  const items = selectedServices
+    .filter(name => name && name.trim().length > 0)
+    .map(name => `serviceType.name==${name}`)
+
+  if (items.length === 1) {
+    return items[0]
+  }
+
   return `(${items.join(',')})`
 }
 
@@ -552,7 +564,7 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
  * May need to do additional replacements here.
  */
 export const sanitizeSearchTerm = (s?: string) => {
-  return (s || '').replace(/[,;]/, ' ')
+  return (s || '').replace(/[,;]/g, ' ')
 }
 
 export const getFiqlSetOperator = (op: SetOperator) => {

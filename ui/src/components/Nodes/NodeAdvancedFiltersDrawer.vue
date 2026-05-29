@@ -154,6 +154,7 @@ import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 const searchTimeout = ref<number>(-1)
+const category2SearchTimeout = ref<number>(-1)
 const categoriesLoading = ref(false)
 const categoryResults = ref([] as IAutocompleteItemType[])
 const categories2Loading = ref(false)
@@ -198,8 +199,8 @@ const handleCategorySearch = (query: string) => {
 
 const handleCategory2Search = (query: string) => {
   categories2Loading.value = true
-  clearTimeout(searchTimeout.value)
-  searchTimeout.value = window.setTimeout(() => {
+  clearTimeout(category2SearchTimeout.value)
+  category2SearchTimeout.value = window.setTimeout(() => {
     category2Results.value = filterCategoryItems(query)
     categories2Loading.value = false
   }, TIMEOUT)

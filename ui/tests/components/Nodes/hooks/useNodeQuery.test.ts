@@ -595,6 +595,7 @@ describe('Nodes useNodeQuery test', () => {
       'snmpifdescription',
       'snmpifindex',
       'snmpifname',
+      'snmpiftype',
       'snmpMatchType',
       'snmpphysaddr',
       'snmpParm',

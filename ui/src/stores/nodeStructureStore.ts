@@ -256,18 +256,26 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
       if (prefs.nodeFilter.selectedCategories?.length) {
         filter.selectedCategories = [...prefs.nodeFilter.selectedCategories]
+        selectedCategories.value = prefs.nodeFilter.selectedCategories
+          .map(cat => ({ _value: cat.id, _text: cat.name } as IAutocompleteItemType))
       }
 
       if (prefs.nodeFilter.selectedCategories2?.length) {
         filter.selectedCategories2 = [...prefs.nodeFilter.selectedCategories2]
+        selectedCategories2.value = prefs.nodeFilter.selectedCategories2
+          .map(cat => ({ _value: cat.id, _text: cat.name } as IAutocompleteItemType))
       }
 
       if (prefs.nodeFilter.selectedFlows?.length) {
         filter.selectedFlows = [...prefs.nodeFilter.selectedFlows]
+        selectedFlows.value = prefs.nodeFilter.selectedFlows
+          .map(name => ({ _text: name, _value: name } as IAutocompleteItemType))
       }
 
       if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
         filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
+        selectedMonitoringLocations.value = prefs.nodeFilter.selectedMonitoringLocations
+          .map(loc => ({ _text: loc.name, _value: loc.name, name: loc.name } as IAutocompleteItemType))
       }
 
       if (prefs.nodeFilter.extendedSearch) {
