@@ -1,19 +1,8 @@
-#
-# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
-#
-{{$promJmxPath := "/java/agent/prom-jmx-exporter" -}}
-startDelaySeconds: {{getv (print $promJmxPath "/startDelaySeconds") "0"}}
-lowercaseOutputName: {{getv (print $promJmxPath "/lowerCaseOutputName") "true"}}
-lowercaseOutputLabelNames: {{getv (print $promJmxPath "/lowercaseOutputLabelNames") "true"}}
-autoExcludeObjectNameAttributes: {{getv (print $promJmxPath "/autoExcludeObjectNameAttributes") "true"}}
+startDelaySeconds: ${PROM_JMX_START_DELAY_SECONDS:-0}
+lowercaseOutputName: ${PROM_JMX_LOWERCASE_OUTPUT_NAME:-true}
+lowercaseOutputLabelNames: ${PROM_JMX_LOWERCASE_OUTPUT_LABEL_NAMES:-true}
+autoExcludeObjectNameAttributes: ${PROM_JMX_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES:-true}
 
-{{$ioSize := len (getvs (print $promJmxPath "/includeObjectNames/*")) -}}
-{{if gt $ioSize 0 -}}
-includeObjectNames:
-{{range getvs (print $promJmxPath "/includeObjectNames/*") -}}
-  - "{{.}}"
-{{end -}}
-{{else -}}
 includeObjectNames:
   - "java.lang:*"
   - "OpenNMS:*"
@@ -22,15 +11,6 @@ includeObjectNames:
   - "org.opennms.newts:name=repository.samples-inserted*"
   - "org.opennms.core.ipc.rpc:*"
   - "com.zaxxer.hikari:*"
-{{end -}}
-
-{{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
-{{if gt $boSize 0 -}}
-excludeObjectNames:
-{{range getvs (print $promJmxPath "/excludeObjectNames/*") -}}
-- "{{.}}"
-{{end -}}
-{{end -}}
 
 # The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
 excludeObjectNameAttributes:

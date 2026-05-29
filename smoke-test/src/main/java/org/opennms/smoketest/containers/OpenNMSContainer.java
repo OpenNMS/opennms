@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -152,9 +153,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
-        if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
-        }
+        this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase(Locale.ROOT));
 
         final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
@@ -200,10 +199,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 // These are expected to be set when using Newts
                 // We also set the corresponding properties explicitly in our overlay
-                .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
+                .withEnv("OPENNMS_CASSANDRA_HOSTNAME", CASSANDRA_ALIAS)
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
-                .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)

@@ -46,7 +46,7 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 
 FROM ${BASE_IMAGE} AS core-base
 
-ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
+ARG REQUIRED_RPMS="diffutils gettext hostname jrrd2 jq rrdtool"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -102,10 +102,13 @@ RUN rm -rf /opt/opennms/share/rrd \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
-# Add templates replaced at runtime and entrypoint
-COPY --chown=10001:0 ./container-fs/confd /etc/confd
+# Add entrypoint, health check, and container config files
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 COPY --chown=10001:0 ./container-fs/health.sh /
+COPY --chown=10001:0 ./container-fs/etc/ /opt/opennms/container-fs/etc/
+
+# Create prom-jmx-exporter directory; config.yaml is generated at startup from the template in container-fs/etc/templates/
+RUN install -d -m 770 -o 10001 -g 0 /opt/prom-jmx-exporter
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /opt/opennms/etc
