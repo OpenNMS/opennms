@@ -97,7 +97,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
     // Maps SNMP interface FIQL field names to their lowercase DB column names in the snmpinterface table.
-    // Used to build SQL subqueries that support both exact (=) and wildcard (like) matching.
+    // Used to build SQL subqueries with ilike for case-insensitive matching (exact and wildcard).
     // Non-string SNMP fields (ifIndex, ifType, etc.) are absent; they use a different join strategy.
     private static final Map<String,String> SNMP_STRING_COLUMN = Map.of(
         "ifAlias",  "snmpifalias",
@@ -210,7 +210,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             final String key = entry.getKey();
             final String dbCol = SNMP_STRING_COLUMN.get(key);
             if (dbCol != null) {
-                // String field: use SQL subquery so that wildcard (LIKE) and exact (=) both work.
+                // String field: use SQL subquery with ilike for case-insensitive matching.
                 // A JOIN condition with Restrictions.eq cannot perform LIKE matching, so wildcard
                 // searches like snmpInterface.ifAlias==*value* would return nothing with a join approach.
                 // skipProperty=true: the SQL subquery handles the full restriction; the snmpInterface
@@ -219,10 +219,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
                     switch (c) {
                     case EQUALS:
-                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s %s ?)", dbCol, w ? "like" : "="), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     case NOT_EQUALS:
-                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s %s ?)", dbCol, w ? "like" : "="), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
