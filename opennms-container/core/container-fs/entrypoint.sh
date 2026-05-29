@@ -156,6 +156,29 @@ processEnvConfig() {
     envsubst < "${CONTAINER_CONFIG_ETC}/templates/prom-jmx-exporter-config.yaml.tmpl" \
               > /opt/prom-jmx-exporter/config.yaml
   )
+
+  (
+    export OPENNMS_TRAPD_ADDRESS="${OPENNMS_TRAPD_ADDRESS:-*}"
+    export OPENNMS_TRAPD_PORT="${OPENNMS_TRAPD_PORT:-10162}"
+    export OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP="${OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP:-false}"
+    export OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE="${OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE:-false}"
+    export OPENNMS_TRAPD_THREADS="${OPENNMS_TRAPD_THREADS:-0}"
+    export OPENNMS_TRAPD_QUEUE_SIZE="${OPENNMS_TRAPD_QUEUE_SIZE:-10000}"
+    export OPENNMS_TRAPD_BATCH_SIZE="${OPENNMS_TRAPD_BATCH_SIZE:-1000}"
+    export OPENNMS_TRAPD_BATCH_INTERVAL="${OPENNMS_TRAPD_BATCH_INTERVAL:-500}"
+
+    validateAddress  OPENNMS_TRAPD_ADDRESS             "$OPENNMS_TRAPD_ADDRESS"
+    validateInt      OPENNMS_TRAPD_PORT                "$OPENNMS_TRAPD_PORT"
+    validateBool     OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP "$OPENNMS_TRAPD_NEW_SUSPECT_ON_TRAP"
+    validateBool     OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE "$OPENNMS_TRAPD_INCLUDE_RAW_MESSAGE"
+    validateInt      OPENNMS_TRAPD_THREADS             "$OPENNMS_TRAPD_THREADS"
+    validateInt      OPENNMS_TRAPD_QUEUE_SIZE          "$OPENNMS_TRAPD_QUEUE_SIZE"
+    validateInt      OPENNMS_TRAPD_BATCH_SIZE          "$OPENNMS_TRAPD_BATCH_SIZE"
+    validateInt      OPENNMS_TRAPD_BATCH_INTERVAL      "$OPENNMS_TRAPD_BATCH_INTERVAL"
+
+    envsubst < "${CONTAINER_CONFIG_ETC}/templates/trapd-configuration.xml.tmpl" \
+              > "${OPENNMS_HOME}/etc/trapd-configuration.xml"
+  )
 }
 
 # Initialize database and configure Karaf
