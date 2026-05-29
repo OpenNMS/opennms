@@ -68,10 +68,11 @@ public class MinionDaoIT {
         for (final OnmsMinion minion : minions) {
             m_minionDao.delete(minion);
         }
-        m_minionDao.flush();
+        //m_minionDao.flush();
     }
 
     @Test
+    @Transactional
     public void testQueryByLocation() throws Exception {
         final Date now = new Date();
         m_minionDao.save(new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now));

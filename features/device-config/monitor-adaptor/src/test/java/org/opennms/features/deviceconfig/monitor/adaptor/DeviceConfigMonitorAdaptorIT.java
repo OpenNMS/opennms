@@ -57,6 +57,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -107,7 +108,10 @@ public class DeviceConfigMonitorAdaptorIT {
 
     @Before
     public void init() {
-        populateIpInterface();
+        sessionUtils.withTransaction(() -> {
+            populateIpInterface();
+            return null;
+        });
     }
 
     /**
@@ -132,6 +136,7 @@ public class DeviceConfigMonitorAdaptorIT {
      *
      */
     @Test
+    @Transactional(readOnly = false)
     public void testDeviceConfigPersistence() {
         String config = "OpenNMS-Device-Config";
         MonitoredService service = Mockito.mock(MonitoredService.class);
@@ -298,6 +303,7 @@ public class DeviceConfigMonitorAdaptorIT {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void testPollStatusChangeForNonScheduledPolls() {
         MonitoredService service = Mockito.mock(MonitoredService.class);
         PollStatus pollStatus = Mockito.mock(PollStatus.class);

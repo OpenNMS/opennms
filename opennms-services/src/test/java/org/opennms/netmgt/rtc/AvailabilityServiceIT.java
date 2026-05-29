@@ -52,9 +52,11 @@ import org.opennms.netmgt.xml.rtc.Node;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -81,6 +83,9 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
     private MonitoredServiceDao m_monitoredServiceDao;
 
     private MockDatabase m_mockDatabase;
+
+    @Autowired
+    PlatformTransactionManager m_transactionManager;
 
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
@@ -142,12 +147,15 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
         final OnmsMonitoredService icmpService = toMonitoredService(mockNetwork.getService(1, "192.168.1.1", "ICMP"));
 
-        OnmsOutage outage = new OnmsOutage();
-        outage.setMonitoredService(icmpService);
-        outage.setIfLostService(oneHourAgo);
-        outage.setIfRegainedService(thirtyMinutesAgo);
-        m_outageDao.save(outage);
-        m_outageDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+                    OnmsOutage outage = new OnmsOutage();
+                    outage.setMonitoredService(icmpService);
+                    outage.setIfLostService(oneHourAgo);
+                    outage.setIfRegainedService(thirtyMinutesAgo);
+                    m_outageDao.save(outage);
+                    m_outageDao.flush();
+                    return null;
+                });
 
         // Verify the availability when outages are present
         euiLevel = m_availabilityService.getEuiLevel(rtcCat);
