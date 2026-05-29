@@ -1,31 +1,28 @@
 
-= Cortex Time Series Plugin
-:description: Configuration and deployment for the OpenNMS Cortex Time Series plugin via Karaf shel or CFG file.
+= Prometheus RemoteWrite Plugin
+:description: Configuration and deployment for the OpenNMS Prometheus RemoteWrite plugin via Karaf shell or CFG file.
 
-The Cortex Time Series plugin enables {page-component-title} to persist time series performance and latency data to Cortex.
-The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
-It also lets you visualize graphs from the Cortex instance in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+The Prometheus RemoteWrite plugin enables {page-component-title} to persist time series performance and latency data to any Prometheus remote-write compatible time series store (for example, https://victoriametrics.com/[VictoriaMetrics], https://grafana.com/oss/mimir/[Mimir], or https://cortexmetrics.io/[Cortex]).
+The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to the configured time series store.
+It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
 
-.Cortex Time Series plugin architecture
-image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Cortex Time Series plugin and how it integrates with {page-component-title}", 600]
+.Prometheus RemoteWrite plugin architecture
+image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Prometheus RemoteWrite plugin and how it integrates with {page-component-title}", 600]
 
 == Requirements
 
-You must have the following before you start to use the Cortex plugin:
+You must have the following before you start to use the Prometheus RemoteWrite plugin:
 
 * Horizon 30.0.0+ (Meridian availability with the 2023 release)
-* Cortex version 1.10.0+
-
-NOTE: We plan to keep the plugin compatible with https://grafana.com/oss/mimir/[Mimir], Grafana's fork of Cortex, as long as Mimir remains compatible with Cortex.
-The minimum supported Mimir version is 2.0.0.
+* A Prometheus remote-write compatible time series store, such as VictoriaMetrics, Mimir, or Cortex 1.10.0+
 
 == Deployment
 
-To use the Cortex Time Series plugin, follow these steps:
+To use the Prometheus RemoteWrite plugin, follow these steps:
 
-. Start Cortex (see the https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions).
+. Start your Prometheus remote-write compatible time series store (see the https://docs.victoriametrics.com/[VictoriaMetrics documentation], https://grafana.com/docs/mimir/latest/[Mimir documentation], or https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions).
 If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
-. Download the plugin's `.kar` file from https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases[GitHub].
+. Download the plugin's `.kar` file from https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin/releases[GitHub].
 . Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
 . Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 +
@@ -44,12 +41,12 @@ org.opennms.timeseries.tin.metatags.tag.ifName=${interface:if-name}
 +
 NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
 
-. Configure the Cortex Time Series plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`.
+. Configure the Prometheus RemoteWrite plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`.
 +
 The `writeUrl` and `readUrl` properties are required.
 All other properties shown here are example values to overwrite the defaults.
-Monitor your Cortex cluster's performance and adjust these properties as necessary.
-Substitute the correct host and port for your Cortex cluster.
+Monitor your time series store's performance and adjust these properties as necessary.
+Substitute the correct host and port for your time series store.
 +
 [{tabs}]
 ====
@@ -86,16 +83,16 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 ----
 ====
 
-. Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` to configure the plugin to remain installed after {page-component-title} restarts:
+. Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot` to configure the plugin to remain installed after {page-component-title} restarts:
 +
 [source, properties]
-opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
+opennms-plugins-prometheus-remotewrite wait-for-kar=opennms-prometheus-remotewrite-plugin
 
 . Restart the {page-component-title} service.
 
-== Cortex tips
+== Time series store tips
 
-Navigate to the following URLs to view information about your Cortex server:
+When using Cortex as the time series store, navigate to the following URLs to view information about your Cortex server:
 
 * *Server status:* \http://cortex-service-host:9009
 * *Ring:* \http://cortex-service-host:9009/ring
