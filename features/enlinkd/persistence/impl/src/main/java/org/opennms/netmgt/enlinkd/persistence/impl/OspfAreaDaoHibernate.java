@@ -48,7 +48,7 @@ public class OspfAreaDaoHibernate extends AbstractDaoHibernate<OspfArea, Integer
     /** {@inheritDoc} */
     @Override
     public OspfArea get(Integer nodeId, InetAddress ospfAreaId ){
-        return findUnique("from OspfArea as ospfArea where ospfArea.node.id = ? and ospfArea.ospfAreaId = ? ",
+        return findUnique("from OspfArea as ospfArea where ospfArea.node.id = ?1 and ospfArea.ospfAreaId = ?2 ",
                           nodeId, ospfAreaId);
     }
 
@@ -57,18 +57,18 @@ public class OspfAreaDaoHibernate extends AbstractDaoHibernate<OspfArea, Integer
     @Override
     public List<OspfArea> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from OspfArea ospfArea where ospfArea.node.id = ?", nodeId);
+        return find("from OspfArea ospfArea where ospfArea.node.id = ?1", nodeId);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from OspfArea ospfArea where ospfArea.node.id = ? and ospfArea.ospfAreaLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from OspfArea ospfArea where ospfArea.node.id = ?1 and ospfArea.ospfAreaLastPollTime < ?2",
                 nodeId, now);
     }    
     
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from OspfArea ospfArea where ospfArea.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from OspfArea ospfArea where ospfArea.node.id = ?1 ",
                                  new Object[] {nodeId});
     }
 }

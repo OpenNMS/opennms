@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.math.BigInteger;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +47,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
@@ -67,7 +66,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public OnmsAlarm findByReductionKey(String reductionKey) {
-        String hql = "from OnmsAlarm as alarms where alarms.reductionKey = ?";
+        String hql = "from OnmsAlarm as alarms where alarms.reductionKey = ?1";
         return super.findUnique(hql, reductionKey);
     }
 
@@ -117,7 +116,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public List<SituationSummary> getSituationSummaries() {
-        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createSQLQuery(
+        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createNativeQuery(
                 "SELECT " +
                         "  a1.alarmid, " +
                         "  a1.severity, " +
@@ -173,7 +172,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
 
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException {
 
                 // We can't use a prepared statement here as the variables are column names, and postgres
                 // does not allow for parameter binding of column names.
@@ -204,7 +203,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=:restrictionValue " : "") +
                                 "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
                 
-                Query query = session.createSQLQuery(queryStr);
+                Query query = session.createNativeQuery(queryStr);
 
                 if (restrictionColumn != null) {
                     query.setParameter("restrictionValue",  restrictionValue, StringType.INSTANCE);
@@ -232,7 +231,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     @Override
     public long getNumSituations() {
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger)s.createSQLQuery(
+            BigInteger result = (BigInteger)s.createNativeQuery(
                     "SELECT COUNT( DISTINCT situation_id ) FROM alarm_situations").uniqueResult();
             return result != null ? result.longValue() : 0L;
         });
@@ -245,7 +244,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             return 0L;  // Return 0 for negative and 0 hours instead of letting SQL handle it, SQL also returns 0.
         }
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger) s.createSQLQuery(
+            BigInteger result = (BigInteger) s.createNativeQuery(
                             "SELECT COUNT(*) FROM alarms WHERE firsteventtime >= NOW() - (:hours * INTERVAL '1 hour')")
                     .setParameter("hours", hours)
                     .uniqueResult();
@@ -263,9 +262,9 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where a.lastEvent=p.event and p.name = :name" + i + " and p.value like :value" + i + ")");
         }
 
-        return (List<OnmsAlarm>) getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsAlarm>>() {
             @Override
-            public List<OnmsEvent> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<OnmsAlarm> doInHibernate(Session session) throws HibernateException {
                 Query q = session.createQuery(hqlStringBuffer.toString());
                 int i = 0;
                 for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {

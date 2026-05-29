@@ -48,7 +48,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
     @Override
     public IsIsLink get(OnmsNode node, Integer isisCircIndex,
             Integer isisISAdjIndex) {
-        return findUnique("from IsIsLink as isisLink where isisLink.node = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
+        return findUnique("from IsIsLink as isisLink where isisLink.node = ?1 and isisLink.isisCircIndex = ?2 and isisLink.isisISAdjIndex = ?3 ",
                           node, isisCircIndex, isisISAdjIndex);
     }
 
@@ -59,7 +59,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         Assert.notNull(isisCircIndex, "isisCircIndex cannot be null");
         Assert.notNull(isisISAdjIndex, "isisISAdjIndex cannot be null");
         return findUnique(
-        		"from IsIsLink as isisLink where isisLink.node.id = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
+        		"from IsIsLink as isisLink where isisLink.node.id = ?1 and isisLink.isisCircIndex = ?2 and isisLink.isisISAdjIndex = ?3 ",
         		nodeId, isisCircIndex, isisISAdjIndex);
     }
     
@@ -67,25 +67,25 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
     @Override
     public List<IsIsLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from IsIsLink isisLink where isisLink.node.id = ?", nodeId);
+        return find("from IsIsLink isisLink where isisLink.node.id = ?1", nodeId);
     }
 
     @Override
     public List<IsIsLink> findBySysIdAndAdjAndCircIndex(int nodeId) {
         return find("from IsIsLink r where exists (from IsIsElement e, IsIsLink l where " +
                     "r.node.id = e.node.id AND r.isisISAdjIndex = l.isisISAdjIndex AND r.isisCircIndex = l.isisCircIndex AND " +
-                    "e.isisSysID = l.isisISAdjNeighSysID AND l.node.id = ?)", nodeId);
+                    "e.isisSysID = l.isisISAdjNeighSysID AND l.node.id = ?1)", nodeId);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ?1 and isisLinkLastPollTime < ?2",
                 nodeId, now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ?1 ",
                                   new Object[] {nodeId});
     }
 

@@ -60,9 +60,9 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     @Override
     public OnmsCategory findByName(String name, boolean useCached) {
         if (useCached) {
-            return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
+            return findByCacheKey("from OnmsCategory as category where category.name = ?1", name);
         } else {
-            return findUnique("from OnmsCategory as category where category.name = ?", name);
+            return findUnique("from OnmsCategory as category where category.name = ?1", name);
         }
     }
     
@@ -132,7 +132,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     @Override
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName) {
         OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
-        crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, StringType.INSTANCE));
+        crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?1)", groupName, StringType.INSTANCE));
         return findMatching(crit);
     }
 }

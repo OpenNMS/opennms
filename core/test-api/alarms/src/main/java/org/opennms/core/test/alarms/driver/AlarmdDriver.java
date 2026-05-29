@@ -56,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -112,6 +113,9 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
     @Autowired
     DistPollerDao m_distPollerDao;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     @Override
     public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
@@ -126,23 +130,26 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
         // Async.
         m_eventMgr.setSynchronous(false);
 
-        m_database.setDistPoller(m_distPollerDao.whoami().getId());
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_database.setDistPoller(m_distPollerDao.whoami().getId());
 
-        // Events need database IDs to make alarmd happy
-        m_eventMgr.setEventWriter(m_database);
+            // Events need database IDs to make alarmd happy
+            m_eventMgr.setEventWriter(m_database);
 
-        // Events need to real nodes too
-        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
-        node.setId(1);
-        m_nodeDao.save(node);
+            // Events need to real nodes too
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+            node.setId(1);
+            m_nodeDao.save(node);
 
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node2");
-        node.setId(2);
-        m_nodeDao.save(node);
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node2");
+            node.setId(2);
+            m_nodeDao.save(node);
 
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node3");
-        node.setId(3);
-        m_nodeDao.save(node);
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node3");
+            node.setId(3);
+            m_nodeDao.save(node);
+            return null;
+        });
 
         // Use a pseudo-clock
         m_droolsAlarmContext.setUsePseudoClock(true);

@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long> implements DeviceConfigDao {
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
@@ -83,7 +84,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName) {
 
-        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
+        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ?1 AND serviceName = ?2 ORDER BY lastUpdated DESC",
                 ipInterface.getId(), serviceName);
     }
 
@@ -112,14 +113,22 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     public Optional<DeviceConfig> getLatestConfigForInterface(OnmsIpInterface ipInterface, String serviceName) {
         List<DeviceConfig> deviceConfigs = new ArrayList<>();
         if (!Strings.isNullOrEmpty(serviceName)) {
-            deviceConfigs =
-                    findObjects(DeviceConfig.class,
-                            "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
-                                    "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
+            deviceConfigs = getHibernateTemplate().execute(session -> {
+                return session.createQuery("from DeviceConfig dc WHERE dc.ipInterface.id = ?1 AND serviceName = ?2 " +
+                        "ORDER BY lastUpdated DESC", DeviceConfig.class)
+                        .setParameter(1, ipInterface.getId())
+                        .setParameter(2, serviceName)
+                        .setMaxResults(1)
+                        .getResultList();
+            });
         } else {
-            deviceConfigs = findObjects(DeviceConfig.class,
-                    "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName is NULL " +
-                            "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId());
+            deviceConfigs = getHibernateTemplate().execute(session -> {
+                return session.createQuery("from DeviceConfig dc WHERE dc.ipInterface.id = ?1 AND serviceName is NULL " +
+                        "ORDER BY lastUpdated DESC", DeviceConfig.class)
+                        .setParameter(1, ipInterface.getId())
+                        .setMaxResults(1)
+                        .getResultList();
+            });
         }
 
         if (!deviceConfigs.isEmpty()) {
@@ -222,7 +231,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             hql +=
                 "\n" +
                 "INNER JOIN ip.node AS node\n" +
-                "WHERE (node.label LIKE ? OR ip.ipAddress LIKE ?)";
+                "WHERE (node.label LIKE ?1 OR ip.ipAddress LIKE ?2)";
         }
 
         if (statuses != null && !statuses.isEmpty()) {
@@ -243,7 +252,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
     @Override
     public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
+        return find("from DeviceConfig dc where dc.ipInterface.id = ?1 ",
                 ipInterfaceId);
     }
 
@@ -313,6 +322,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
+    @Transactional
     public Optional<Long> updateDeviceConfigContent(
             OnmsIpInterface ipInterface,
             String serviceName,
@@ -371,6 +381,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
+    @Transactional
     public void updateDeviceConfigFailure(
             OnmsIpInterface ipInterface,
             String serviceName,
@@ -401,6 +412,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     }
 
     @Override
+    @Transactional
     public void createEmptyDeviceConfig(OnmsIpInterface ipInterface, String serviceName, String configType) {
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setIpInterface(ipInterface);

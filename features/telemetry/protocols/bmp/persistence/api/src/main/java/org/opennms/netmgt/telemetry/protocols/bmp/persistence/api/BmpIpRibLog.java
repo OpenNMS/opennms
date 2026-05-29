@@ -43,7 +43,7 @@ public class BmpIpRibLog implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpIpRibLogSequence")
-    @SequenceGenerator(name = "bmpIpRibLogSequence", sequenceName = "bmpipriblognxtid")
+    @SequenceGenerator(name = "bmpIpRibLogSequence", sequenceName = "bmpipriblognxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
