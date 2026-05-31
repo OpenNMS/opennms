@@ -71,19 +71,19 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ?1 and cdpLink.cdpLinkLastPollTime < ?2",
+        bulkDelete("delete from CdpLink cdpLink where cdpLink.node.id = ?1 and cdpLink.cdpLinkLastPollTime < ?2",
                 nodeId,now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ?1 ",
+        bulkDelete("delete from CdpLink cdpLink where cdpLink.node.id = ?1 ",
                                           new Object[] {nodeId});
     }
 
     @Override
     public void deleteAll() {
-        getHibernateTemplate().bulkUpdate("delete from CdpLink");
+        bulkDelete("delete from CdpLink");
     }
 
 }

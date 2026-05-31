@@ -70,7 +70,7 @@ public class DefaultSessionUtils implements SessionUtils {
     public <V> V withManualFlush(Supplier<V> supplier) {
         final FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
         try {
-            sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.COMMIT);
+            sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
             return supplier.get();
         } finally {
             sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);

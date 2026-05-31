@@ -77,18 +77,18 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ?1 and ospfLinkLastPollTime < ?2",
+        bulkDelete("delete from OspfLink ospfLink where ospfLink.node.id = ?1 and ospfLinkLastPollTime < ?2",
                 nodeId, now);
     }    
     
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ?1 ",
+        bulkDelete("delete from OspfLink ospfLink where ospfLink.node.id = ?1 ",
                                  new Object[] {nodeId});
     }
 
     @Override
     public void deleteAll() {
-        getHibernateTemplate().bulkUpdate("delete from OspfLink");
+        bulkDelete("delete from OspfLink");
     }
 }

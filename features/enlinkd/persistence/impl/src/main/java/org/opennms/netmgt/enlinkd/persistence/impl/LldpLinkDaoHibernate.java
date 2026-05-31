@@ -70,19 +70,19 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ?1 and lldpLink.lldpLinkLastPollTime < ?2",
+        bulkDelete("delete from LldpLink lldpLink where lldpLink.node.id = ?1 and lldpLink.lldpLinkLastPollTime < ?2",
                 nodeId, now);
     }
 
    @Override
    public void deleteByNodeId(Integer nodeId) {
-       getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ?1 ",
+       bulkDelete("delete from LldpLink lldpLink where lldpLink.node.id = ?1 ",
                                          nodeId);
     }
 
     @Override
     public void deleteAll() {
-        getHibernateTemplate().bulkUpdate("delete from LldpLink");
+        bulkDelete("delete from LldpLink");
     }
 
     public List<LldpLink> findLinksForIds(List<Integer> linkIds) {
@@ -113,7 +113,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         Assert.notNull(portId, "portId may not be null");
 
         List<?> ifaces=
-                getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ?1 AND (LOWER(snmpIf.ifDescr) = LOWER(?2) OR LOWER(snmpIf.ifName) = LOWER(?3) OR snmpIf.physAddr = ?4)",
+                findObjects(OnmsSnmpInterface.class, "SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ?1 AND (LOWER(snmpIf.ifDescr) = LOWER(?2) OR LOWER(snmpIf.ifName) = LOWER(?3) OR snmpIf.physAddr = ?4)",
                        nodeid,
                         portId,
                        portId,
@@ -122,11 +122,11 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         if (ifaces.size() == 1) {
             return ((OnmsSnmpInterface) ifaces.iterator().next()).getIfIndex();
         }
-        ifaces = getHibernateTemplate().find("SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ?1 AND ipIf.ipAddress = ?2", nodeid, portId);
+        ifaces = findObjects(OnmsIpInterface.class, "SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ?1 AND ipIf.ipAddress = ?2", nodeid, portId);
         if (ifaces.size() == 1) {
             OnmsIpInterface ipif = (OnmsIpInterface) ifaces.iterator().next();
             if (ipif.getSnmpInterface() != null) {
-                ifaces = getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.id = ?1)",
+                ifaces = findObjects(OnmsSnmpInterface.class, "SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.id = ?1",
                         ipif.getSnmpInterface().getId());
             }
             if (ifaces.size() == 1) {

@@ -79,19 +79,19 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ?1 and isisLinkLastPollTime < ?2",
+        bulkDelete("delete from IsIsLink isisLink where isisLink.node.id = ?1 and isisLinkLastPollTime < ?2",
                 nodeId, now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from IsIsLink isisLink where isisLink.node.id = ?1 ",
+        bulkDelete("delete from IsIsLink isisLink where isisLink.node.id = ?1 ",
                                   new Object[] {nodeId});
     }
 
     @Override
     public void deleteAll() {
-        getHibernateTemplate().bulkUpdate("delete from IsIsLink");
+        bulkDelete("delete from IsIsLink");
     }
 
 }

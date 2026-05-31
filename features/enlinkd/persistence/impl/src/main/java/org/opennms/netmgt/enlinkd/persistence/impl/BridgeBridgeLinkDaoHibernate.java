@@ -75,31 +75,31 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ?1 and rec.bridgeBridgeLinkLastPollTime < ?2",
+	    bulkDelete("delete from BridgeBridgeLink rec where rec.node.id = ?1 and rec.bridgeBridgeLinkLastPollTime < ?2",
 				nodeId,now);
 	}
 
 	@Override
 	public void deleteByDesignatedNodeIdOlderThen(Integer nodeId, Date now) {
-	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ?1 and rec.bridgeBridgeLinkLastPollTime < ?2",
+	    bulkDelete("delete from BridgeBridgeLink rec where rec.designatedNode.id = ?1 and rec.bridgeBridgeLinkLastPollTime < ?2",
 				nodeId,now);
 	}
 
 	@Override
 	public void deleteByNodeId(Integer nodeId) {
-		getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ?1 ",
+		bulkDelete("delete from BridgeBridgeLink rec where rec.node.id = ?1 ",
 									  new Object[] {nodeId});
 	}
 
 	@Override
 	public void deleteByDesignatedNodeId(Integer nodeId) {
-		getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ?1 ",
+		bulkDelete("delete from BridgeBridgeLink rec where rec.designatedNode.id = ?1 ",
 										  new Object[] {nodeId});
 	}
 
 	@Override
 	public void deleteAll() {
-		getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink");
+		bulkDelete("delete from BridgeBridgeLink");
 	}
 
 

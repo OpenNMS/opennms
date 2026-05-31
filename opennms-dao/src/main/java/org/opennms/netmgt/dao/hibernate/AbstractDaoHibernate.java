@@ -424,7 +424,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @return a int.
      * @throws org.springframework.dao.DataAccessException if any.
      */
-    public int bulkDelete(final String hql, final Object[] values ) throws DataAccessException {
+    public int bulkDelete(final String hql, final Object... values ) throws DataAccessException {
         final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
@@ -541,10 +541,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return (List<T>) getHibernateTemplate().execute(session -> {
             Query hqlQuery = session.createQuery(query);
 
-            // Set positional parameters
+            // Set positional parameters (Hibernate 5 uses 1-based parameter indexing)
             if (values != null) {
                 for (int i = 0; i < values.length; i++) {
-                    hqlQuery.setParameter(i, values[i]);
+                    hqlQuery.setParameter(i + 1, values[i]);
                 }
             }
 
