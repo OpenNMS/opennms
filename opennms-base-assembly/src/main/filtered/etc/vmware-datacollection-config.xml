@@ -745,4 +745,37 @@
       </vmware-group>
     </vmware-groups>
   </vmware-collection>
+
+  <!--
+    Datastore capacity collection.
+
+    Driven by VmwareDatastoreCollector. Attribute names map to fields on
+    Datastore.summary, not vCenter performance counters. Indexed by managed
+    object id; resource label comes from Datastore.summary.name. Runs once
+    against vCenter per assignment, regardless of how many hosts mount the
+    datastores.
+  -->
+  <vmware-collection name="vmware-datastore-capacity">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <vmware-groups>
+      <vmware-group name="vmwareDatastoreCapacity" resourceType="vmwareDatastoreCapacity">
+        <attrib name="capacity"           alias="DsCapacity"      type="Gauge"/>
+        <attrib name="freeSpace"          alias="DsFreeSpace"     type="Gauge"/>
+        <attrib name="used"               alias="DsUsed"          type="Gauge"/>
+        <attrib name="usedPct"            alias="DsUsedPct"       type="Gauge"/>
+        <attrib name="uncommitted"        alias="DsUncommitted"   type="Gauge"/>
+        <attrib name="overcommittedBytes" alias="DsOvercommitted" type="Gauge"/>
+        <attrib name="accessible"         alias="DsAccessible"    type="Gauge"/>
+        <attrib name="multipleHostAccess" alias="DsMultiHost"     type="Gauge"/>
+        <attrib name="type"               alias="DsType"          type="string"/>
+        <attrib name="url"                alias="DsUrl"           type="string"/>
+      </vmware-group>
+    </vmware-groups>
+  </vmware-collection>
 </vmware-datacollection-config>

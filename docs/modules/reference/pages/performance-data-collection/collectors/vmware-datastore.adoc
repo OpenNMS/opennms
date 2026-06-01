@@ -1,0 +1,124 @@
+
+= VmwareDatastoreCollector
+:description: Learn how to configure the VmwareDatastoreCollector in OpenNMS {page-component-title} to collect datastore capacity and utilization from a vCenter.
+
+The VmwareDatastoreCollector queries a vCenter once per assignment, walks every reachable `Datastore` managed entity, and persists capacity, free space, used percentage, uncommitted (thin-provisioned) bytes, and a derived overcommit value as multi-instance resources keyed by managed object id.
+
+Unlike the VmwareCollector, which runs on each VMware HostSystem or VirtualMachine node and pulls performance counters scoped to that entity, this collector is intended to run on a single operator-elected anchor node per vCenter.
+The anchor is typically an imported HostSystem (which already has the metadata the collector reads), but any node will work if the `vmware-management-server` service parameter is set.
+
+The metrics come from `Datastore.summary`, which is a property on the managed object, not a performance counter.
+Capacity values therefore reflect what vCenter reports at the moment of collection — typically updated every few minutes by vCenter regardless of OpenNMS's collection interval.
+
+== Collector facts
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.VmwareDatastoreCollector`
+| Package             | core
+| Supported on Minion | Yes
+| Configuration Files | vmware-config.xml, vmware-datacollection-config.xml
+|===
+
+== Configuration and use
+
+.Collector-specific parameters for the VmwareDatastoreCollector
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| collection
+| The name of the VMware collection to use.
+  Should typically be `vmware-datastore-capacity`, which is shipped in the default `vmware-datacollection-config.xml`.
+| n/a
+
+3+| *Optional*
+
+| vmware-management-server
+| Hostname of the vCenter to query, overriding the value the collector would otherwise read from the node's `VMware:managementServer` metadata.
+  Useful when the anchor node has not been imported by the VMware requisition handler (and therefore has no VMware metadata).
+  The value must match a `<vmware-server hostname="..."/>` entry in `vmware-config.xml`.
+| n/a (falls back to node metadata)
+
+| timeout
+| Connection timeout in milliseconds.
+| 3000
+|===
+
+== Operator setup
+
+. Ensure `$\{OPENNMS_HOME}/etc/vmware-config.xml` contains a `<vmware-server>` entry for the vCenter you want to monitor, with credentials populated (or `${scv:...}` references).
+. Pick one node per vCenter to act as the anchor.
+  The simplest choice is one of the HostSystems already imported by the VMware requisition handler — those nodes already have the `VMware:managementServer` metadata the collector needs.
+. Add the `VMware-Datastore-Capacity` service to that node's interface via the UI, REST API, or by editing its requisition.
+. After one collection cycle, datastore graphs appear under the anchor node, resource type `vmwareDatastoreCapacity`, labeled with each datastore's name.
+
+If you operate multiple vCenters, repeat the steps above on a different anchor node per vCenter.
+The collector reads the management-server target from each node's metadata (or service parameter), so each anchor talks to its own vCenter independently.
+
+== Collected attributes
+
+.Numeric attributes (gauges)
+[options="header"]
+[cols="2,4"]
+|===
+| Attribute
+| Description
+
+| capacity
+| Total size of the datastore in bytes, as reported by vCenter.
+
+| freeSpace
+| Free space in bytes.
+
+| used
+| Computed as `capacity - freeSpace`.
+
+| usedPct
+| Integer percent of capacity in use (0-100).
+  Returns `0` if `capacity` is `0`.
+
+| uncommitted
+| Bytes promised by thin-provisioned virtual disks but not yet written.
+  Coerced to `0` when vCenter does not report a value.
+
+| overcommittedBytes
+| Computed as `max(0, used + uncommitted - capacity)`.
+  Non-zero values indicate the datastore is at risk if thin-provisioned VMs grow into their full provisioned size.
+
+| accessible
+| `1` if vCenter reports the datastore as accessible at collection time, `0` otherwise.
+
+| multipleHostAccess
+| `1` if the datastore is mounted by more than one host, `0` otherwise.
+  Coerced to `0` if vCenter does not report a value.
+|===
+
+.String attributes
+[options="header"]
+[cols="2,4"]
+|===
+| Attribute
+| Description
+
+| name
+| Display name of the datastore (also used as the resource label).
+
+| type
+| Datastore type: `VMFS`, `NFS`, `NFS41`, `vsan`, `VVOL`, etc.
+
+| url
+| Datastore URL (for example, `ds:///vmfs/volumes/<uuid>/`).
+|===
+
+== Notes on behavior
+
+If you assign `VMware-Datastore-Capacity` to more than one node pointing at the same vCenter, OpenNMS will collect the same data more than once.
+The metrics will land in different RRD paths under each anchor node, and thresholds may fire multiple times for the same underlying condition.
+This is rarely what you want; assign the service to one node per vCenter.
+
+Datastores not mounted to any host that vCenter manages (orphaned datastores, recently-detached datastores, content libraries reachable only via the API) are still returned by this collector because it queries vCenter for all datastores rather than walking the inventory through HostSystems.

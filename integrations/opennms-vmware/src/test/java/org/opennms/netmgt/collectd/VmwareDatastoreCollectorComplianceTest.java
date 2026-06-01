@@ -1,0 +1,102 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.opennms.netmgt.collectd;
+
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareDatacollectionConfigDao;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.snmp.InetAddrUtils;
+
+import com.google.common.collect.ImmutableMap;
+
+public class VmwareDatastoreCollectorComplianceTest extends CollectorComplianceTest {
+
+    private static final String COLLECTION = "vmware-datastore-capacity";
+
+    public VmwareDatastoreCollectorComplianceTest() {
+        super(VmwareDatastoreCollector.class, true);
+    }
+
+    @Override
+    public String getCollectionName() {
+        return COLLECTION;
+    }
+
+    @Override
+    public Map<String, Object> getRequiredParameters() {
+        return new ImmutableMap.Builder<String, Object>()
+            .put("collection", COLLECTION)
+            .build();
+    }
+
+    @Override
+    public Map<String, Object> getRequiredBeans() {
+        final OnmsNode node = mock(OnmsNode.class, RETURNS_DEEP_STUBS);
+        final NodeDao nodeDao = mock(NodeDao.class);
+        final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
+        mockTransactionTemplate.afterPropertiesSet();
+        when(nodeDao.get(anyInt())).thenReturn(node);
+
+        // The new collector only needs the management server metadata; it does not
+        // require managed-entity-type or foreign id (it walks every Datastore on
+        // the target vCenter, regardless of which host the anchor node represents).
+        when(node.findMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGEMENT_SERVER))
+                .thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "mdx")));
+
+        final VmwareCollection collection = new VmwareCollection();
+        final VmwareDatacollectionConfigDao vmwareDatacollectionConfigDao = mock(VmwareDatacollectionConfigDao.class);
+        when(vmwareDatacollectionConfigDao.getVmwareCollection(COLLECTION)).thenReturn(collection);
+        when(vmwareDatacollectionConfigDao.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());
+
+        final VmwareServer vmwareServer = new VmwareServer();
+        vmwareServer.setHostname(InetAddrUtils.getLocalHostAddress().getCanonicalHostName());
+        final Map<String, VmwareServer> serverMap = new ImmutableMap.Builder<String, VmwareServer>()
+            .put("mdx", vmwareServer)
+            .build();
+
+        final VmwareConfigDao vmwareConfigDao = mock(VmwareConfigDao.class);
+        when(vmwareConfigDao.getServerMap()).thenReturn(serverMap);
+
+        return new ImmutableMap.Builder<String, Object>()
+                .put("nodeDao", nodeDao)
+                .put("vmwareDatacollectionConfigDao", vmwareDatacollectionConfigDao)
+                .put("vmwareConfigDao", vmwareConfigDao)
+                .put("transactionTemplate", mockTransactionTemplate)
+                .build();
+    }
+}

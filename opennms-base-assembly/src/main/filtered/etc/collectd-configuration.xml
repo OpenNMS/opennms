@@ -42,6 +42,11 @@
          <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
          <parameter key="thresholding-enabled" value="true" />
       </service>
+      <service name="VMware-Datastore-Capacity" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="vmware-datastore-capacity" />
+         <parameter key="timeout" value="30000" />
+         <parameter key="thresholding-enabled" value="true" />
+      </service>
    </package>
    <package name="vmware7" remote="false">
       <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
@@ -55,6 +60,11 @@
       </service>
       <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
+         <parameter key="thresholding-enabled" value="true" />
+      </service>
+      <service name="VMware-Datastore-Capacity" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="vmware-datastore-capacity" />
+         <parameter key="timeout" value="30000" />
          <parameter key="thresholding-enabled" value="true" />
       </service>
    </package>
@@ -154,6 +164,7 @@
    <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector" />
    <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector" />
    <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector" />
+   <collector service="VMware-Datastore-Capacity" class-name="org.opennms.netmgt.collectd.VmwareDatastoreCollector" />
    <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
    <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
