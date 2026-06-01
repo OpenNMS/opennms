@@ -88,6 +88,16 @@ The service code will be fully removed in the next Horizon/Meridian release.
 Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
 The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
 
+=== Prometheus RemoteWrite plugin (formerly Cortex TSS plugin)
+
+The OpenNMS Cortex TSS plugin has been renamed to the Prometheus RemoteWrite plugin to reflect that it works with any Prometheus `remote_write`-compatible time series store, not just Cortex.
+As part of the rename, the OSGi configuration PID changed from `org.opennms.plugins.tss.cortex` to `org.opennms.plugins.tss.prometheus`.
+
+IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`, rename the file to `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` after upgrading. If you do not, the plugin falls back to default values and writes will not reach your configured time series store.
+
+The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
+See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
+
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.

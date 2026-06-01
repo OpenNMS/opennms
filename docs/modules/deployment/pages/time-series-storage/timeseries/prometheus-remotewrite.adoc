@@ -41,7 +41,7 @@ org.opennms.timeseries.tin.metatags.tag.ifName=${interface:if-name}
 +
 NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
 
-. Configure the Prometheus RemoteWrite plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`.
+. Configure the Prometheus RemoteWrite plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg`.
 +
 The `writeUrl` and `readUrl` properties are required.
 All other properties shown here are example values to overwrite the defaults.
@@ -55,7 +55,7 @@ Karaf shell::
 .Configure the plugin's properties:
 [source, karaf]
 ----
-config:edit org.opennms.plugins.tss.cortex
+config:edit org.opennms.plugins.tss.prometheus
 property-set writeUrl http://cortex-service-host:9009/api/prom/push
 property-set readUrl http://cortex-service-host:9009/prometheus/api/v1
 property-set maxConcurrentHttpConnections 100
@@ -69,7 +69,7 @@ config:update
 
 CFG file::
 +
-.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file:
+.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` file:
 [source, properties]
 ----
 writeUrl=http://cortex-service-host:9009/api/prom/push
