@@ -8,7 +8,7 @@
   version-prefixed (unlike the vmware6*/vmware7* per-counter groups).
 -->
 
-<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="VMware-Datastore">
+<resource-types>
 
   <resourceType name="vmwareDatastoreCapacity"
                 label="VMware Datastore Capacity"
@@ -17,4 +17,4 @@
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
-</datacollection-group>
+</resource-types>
