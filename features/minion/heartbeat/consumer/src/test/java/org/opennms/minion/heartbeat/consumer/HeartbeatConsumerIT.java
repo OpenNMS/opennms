@@ -56,6 +56,8 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -82,6 +84,22 @@ public class HeartbeatConsumerIT {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    /**
+     * Wraps {@link HeartbeatConsumer#handleMessage} in a committing transaction. The consumer is
+     * instantiated directly in these tests (not via Spring), so its {@code @Transactional} proxy is
+     * not applied; the fixture writes must be committed so the separate-session readers (the async
+     * provisioning thread and {@link MinionDao#countAll()}) can see them.
+     */
+    private void handleMessageInTransaction(HeartbeatConsumer heartbeatConsumer, MinionIdentityDTO minionIdentityDTO) {
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            heartbeatConsumer.handleMessage(minionIdentityDTO);
+            return null;
+        });
+    }
 
     @Test
     public void testProvisioningOfMinions() throws IOException {
@@ -120,7 +138,7 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setNodeDao(nodeDao);
 
         // Stream the messages in parallel.
-        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+        minionDTOs.parallelStream().forEach(dto -> handleMessageInTransaction(heartbeatConsumer, dto));
 
         //Verify that heartbeat does get consumed within short time.
         await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 500);
@@ -144,7 +162,7 @@ public class HeartbeatConsumerIT {
             minionDTOs.add(minionIdentityDTO);
         }
         // Stream the messages in parallel.
-        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+        minionDTOs.parallelStream().forEach(dto -> handleMessageInTransaction(heartbeatConsumer, dto));
 
         //Verify that heartbeat does get consumed within short time.
         await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 1000);
@@ -199,7 +217,7 @@ public class HeartbeatConsumerIT {
 
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
-        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        handleMessageInTransaction(heartbeatConsumer, minionIdentityDTO);
 
         // Wait until we receive monitoringSystemAdded event.
         await().atMost(15, TimeUnit.SECONDS).until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(1));
@@ -216,7 +234,7 @@ public class HeartbeatConsumerIT {
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, secondLocation);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
-        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        handleMessageInTransaction(heartbeatConsumer, minionIdentityDTO);
 
         // Wait until we receive monitoringSystemLocationChanged event.
         await().atMost(15, TimeUnit.SECONDS).until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));

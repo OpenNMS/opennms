@@ -63,7 +63,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -160,17 +160,20 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     }
 
     @After
-    @Transactional
     public void tearDown() {
-        for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
-            m_ipNetToMediaDao.delete(at);
-        m_ipNetToMediaDao.flush();
-        for (final BridgeBridgeLink bb: m_bridgeBridgeLinkDao.findAll())
-            m_bridgeBridgeLinkDao.delete(bb);
-        m_bridgeBridgeLinkDao.flush();
-        for (final OnmsNode node : m_nodeDao.findAll())
-            m_nodeDao.delete(node);
-        m_nodeDao.flush();
+        // NOTE: @Transactional on an @After method is a no-op (the test instance is not a
+        // Spring-AOP proxy), so we wrap the cleanup writes in a committed transaction explicitly.
+        persist(() -> {
+            for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
+                m_ipNetToMediaDao.delete(at);
+            m_ipNetToMediaDao.flush();
+            for (final BridgeBridgeLink bb: m_bridgeBridgeLinkDao.findAll())
+                m_bridgeBridgeLinkDao.delete(bb);
+            m_bridgeBridgeLinkDao.flush();
+            for (final OnmsNode node : m_nodeDao.findAll())
+                m_nodeDao.delete(node);
+            m_nodeDao.flush();
+        });
     }
 
     public OnmsTopologyLogger createAndSubscribe(String protocol) {
@@ -185,5 +188,27 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
                 .map(p -> ProtocolSupported.valueOf(p.getId()))
                 .collect(Collectors.toSet());
     }
-    
+
+    /**
+     * Runs the given work inside a committed transaction. Hibernate 5 rejects writes/flushes
+     * outside an active transaction, and the Enlinkd daemon reads the test fixture on its own
+     * session, so test setup writes must be committed (not rolled back like Spring's @Transactional).
+     */
+    protected void persist(final Runnable work) {
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            work.run();
+            return null;
+        });
+    }
+
+    /** Convenience: save the given nodes and flush, inside a committed transaction. */
+    protected void saveNodes(final OnmsNode... nodes) {
+        persist(() -> {
+            for (final OnmsNode node : nodes) {
+                m_nodeDao.save(node);
+            }
+            m_nodeDao.flush();
+        });
+    }
+
 }

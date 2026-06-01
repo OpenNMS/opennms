@@ -402,7 +402,10 @@ public class TimeseriesRoundtripIT {
 
             OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
             onmsIf.setSnmpInterface(snmpInterface);
-            onmsIf.setId(1);
+            // NOTE: do not setId() on a @GeneratedValue entity — Hibernate 5 then treats it as
+            // detached ("unsaved-value mapping was incorrect") and the nodeDao.update(node)
+            // cascade fails with an optimistic-lock/StaleObjectStateException. The fresh
+            // per-test database assigns id=1 from the sequence anyway.
             onmsIf.setIfIndex(1);
             onmsIf.setIpHostName("myHost");
             onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
@@ -416,10 +419,10 @@ public class TimeseriesRoundtripIT {
             onmsIf.addMonitoredService(onmsMonitoredService);
             ipInterfaceDao.save(onmsIf);
 
-            Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
-            ipInterfaces.add(onmsIf);
-            node.setIpInterfaces(ipInterfaces);
-            nodeDao.update(node);
+            // onmsIf is already linked to node via the OnmsIpInterface(addr, node) constructor
+            // (which adds it to node.getIpInterfaces()) and is persisted by the save above. Do NOT
+            // replace node.getIpInterfaces() with a new Set — Hibernate 5 rejects replacing an
+            // all-delete-orphan collection ("no longer referenced by the owning entity instance").
             return null;
         });
     }

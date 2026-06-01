@@ -79,17 +79,20 @@ public class WsManAssetProvisioningAdapterIT {
 
     @Before
     public void setUp() {
-        // Delete any existing nodes
-        nodeDao.findAll().forEach(n -> nodeDao.delete(n));
+        template.execute(status -> {
+            // Delete any existing nodes
+            nodeDao.findAll().forEach(n -> nodeDao.delete(n));
 
-        // Create a new node
-        final NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("R1").setForeignSource("Microsoft").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
-        nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
-        node = nb.getCurrentNode();
-        // WS-Man lookups are vendor dependent, use a known one from the default config.
-        node.getAssetRecord().setVendor("Microsoft Corporation");
-        nodeDao.save(node);
+            // Create a new node
+            final NetworkBuilder nb = new NetworkBuilder();
+            nb.addNode("R1").setForeignSource("Microsoft").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+            nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
+            node = nb.getCurrentNode();
+            // WS-Man lookups are vendor dependent, use a known one from the default config.
+            node.getAssetRecord().setVendor("Microsoft Corporation");
+            nodeDao.save(node);
+            return null;
+        });
     }
 
     @Test

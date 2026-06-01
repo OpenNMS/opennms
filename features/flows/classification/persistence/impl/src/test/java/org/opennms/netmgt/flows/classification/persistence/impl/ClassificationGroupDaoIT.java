@@ -69,6 +69,10 @@ public class ClassificationGroupDaoIT {
     @Before
     public void before() {
         groupDao.findAll().forEach(group -> groupDao.delete(group));
+        // Flush the cleanup so the DELETEs execute before any INSERT in the test body; otherwise
+        // Hibernate's insert-before-delete flush ordering collides with a pre-seeded group that
+        // shares a unique name (classification_groups_name_key).
+        groupDao.flush();
     }
 
     @Test

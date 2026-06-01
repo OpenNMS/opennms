@@ -251,7 +251,7 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.execSingleSnmpCollection(froh.getId()));
 
         Thread.sleep(200);
-        m_isisLinkDao.flush();
+        persist(m_isisLinkDao::flush);
         assertEquals(2, m_isisLinkDao.countAll());
     }
 }

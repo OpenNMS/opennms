@@ -135,6 +135,10 @@ public class IPServiceEdgeDaoIT {
         // Now delete the node
         m_nodeDao.delete(node);
         m_nodeDao.flush();
+        // The ip_service_edge row is removed by the database ON DELETE CASCADE foreign key, out of
+        // band from Hibernate. Clear the session so the assertions below reload the (now empty)
+        // ipServiceEdges collection from the database rather than the stale first-level cache.
+        m_nodeDao.clear();
 
         // The business service should still be present, but the IP service should have been deleted
         // by the foreign key constraint
