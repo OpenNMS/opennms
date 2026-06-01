@@ -63,6 +63,7 @@ public class MinionDaoIT {
     private JdbcTemplate m_jdbcTemplate;
 
     @Before
+    @Transactional
     public void setUp() throws Exception {
         final Collection<OnmsMinion> minions = m_minionDao.findAll();
         for (final OnmsMinion minion : minions) {

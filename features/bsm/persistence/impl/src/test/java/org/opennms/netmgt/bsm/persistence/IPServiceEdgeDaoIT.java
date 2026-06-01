@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -58,6 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
+@Transactional
 public class IPServiceEdgeDaoIT {
 
     @Autowired

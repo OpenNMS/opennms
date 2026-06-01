@@ -97,6 +97,8 @@ import org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -146,6 +148,9 @@ public class TimeseriesRoundtripIT {
 
     @Autowired
     private ServiceTypeDao serviceTypeDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
 
 
     @Before
@@ -367,53 +372,56 @@ public class TimeseriesRoundtripIT {
     }
 
     private void createAndSaveNode() throws UnknownHostException {
-        OnmsCategory category = new OnmsCategory("myCategory");
-        categoryDao.save(category);
-        OnmsNode node = new OnmsNode(locationDao.getDefaultLocation(), "myNodeLabel");
-        node.setForeignSource("TestGroup");
-        node.setForeignId("1");
-        node.setSysObjectId("abc");
-        node.addCategory(category);
+        final InetAddress address = InetAddress.getByName("10.0.1.1");
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            OnmsCategory category = new OnmsCategory("myCategory");
+            categoryDao.save(category);
+            OnmsNode node = new OnmsNode(locationDao.getDefaultLocation(), "myNodeLabel");
+            node.setForeignSource("TestGroup");
+            node.setForeignId("1");
+            node.setSysObjectId("abc");
+            node.addCategory(category);
 
-        OnmsAssetRecord assets = new OnmsAssetRecord();
-        assets.setVendor("myVendor");
-        assetDao.save(assets);
-        node.setAssetRecord(assets);
+            OnmsAssetRecord assets = new OnmsAssetRecord();
+            assets.setVendor("myVendor");
+            assetDao.save(assets);
+            node.setAssetRecord(assets);
 
-        int nodeId = nodeDao.save(node);
-        nodeDao.flush();
-        assertEquals(1, nodeId); // we expect 1, otherwise we need to change the hardcoded paths above
+            int nodeId = nodeDao.save(node);
+            nodeDao.flush();
+            assertEquals(1, nodeId); // we expect 1, otherwise we need to change the hardcoded paths above
 
-        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
-        // snmpInterface.setId(1);
-        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
-        snmpInterface.setIfDescr("myDescription");
-        snmpInterface.setIfName("en1/0");
-        snmpInterface.setPhysAddr("00:00:00:00:00:01");
-        int snmpInterfaceId = snmpInterfaceDao.save(snmpInterface);
-        assertEquals(2, snmpInterfaceId); // we expect 2, otherwise we need to change the hardcoded paths above
+            OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
+            // snmpInterface.setId(1);
+            snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+            snmpInterface.setIfDescr("myDescription");
+            snmpInterface.setIfName("en1/0");
+            snmpInterface.setPhysAddr("00:00:00:00:00:01");
+            int snmpInterfaceId = snmpInterfaceDao.save(snmpInterface);
+            assertEquals(2, snmpInterfaceId); // we expect 2, otherwise we need to change the hardcoded paths above
 
-        InetAddress address = InetAddress.getByName("10.0.1.1");
-        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
-        onmsIf.setSnmpInterface(snmpInterface);
-        onmsIf.setId(1);
-        onmsIf.setIfIndex(1);
-        onmsIf.setIpHostName("myHost");
-        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        OnmsServiceType service = serviceTypeDao.findByName("SNMP");
-        if (service == null) {
-            service = new OnmsServiceType("SNMP");
-            serviceTypeDao.save(service);
-            serviceTypeDao.flush();
-        }
-        OnmsMonitoredService onmsMonitoredService = new OnmsMonitoredService(onmsIf, service);
-        onmsIf.addMonitoredService(onmsMonitoredService);
-        ipInterfaceDao.save(onmsIf);
+            OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+            onmsIf.setSnmpInterface(snmpInterface);
+            onmsIf.setId(1);
+            onmsIf.setIfIndex(1);
+            onmsIf.setIpHostName("myHost");
+            onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+            OnmsServiceType service = serviceTypeDao.findByName("SNMP");
+            if (service == null) {
+                service = new OnmsServiceType("SNMP");
+                serviceTypeDao.save(service);
+                serviceTypeDao.flush();
+            }
+            OnmsMonitoredService onmsMonitoredService = new OnmsMonitoredService(onmsIf, service);
+            onmsIf.addMonitoredService(onmsMonitoredService);
+            ipInterfaceDao.save(onmsIf);
 
-        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
-        ipInterfaces.add(onmsIf);
-        node.setIpInterfaces(ipInterfaces);
-        nodeDao.update(node);
+            Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
+            ipInterfaces.add(onmsIf);
+            node.setIpInterfaces(ipInterfaces);
+            nodeDao.update(node);
+            return null;
+        });
     }
 
 }

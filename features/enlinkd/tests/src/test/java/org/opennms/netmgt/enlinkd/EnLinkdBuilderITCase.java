@@ -62,6 +62,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -144,6 +146,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     @Autowired
     protected OspfAreaDao m_ospfAreaDao;
 
+    @Autowired
+    protected PlatformTransactionManager m_transactionManager;
+
     @Override
     public void afterPropertiesSet() {
         BeanUtils.assertAutowiring(this);
@@ -155,6 +160,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     }
 
     @After
+    @Transactional
     public void tearDown() {
         for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
             m_ipNetToMediaDao.delete(at);

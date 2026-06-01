@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class ClassificationGroupDaoIT {
 
     @Autowired
@@ -124,7 +125,6 @@ public class ClassificationGroupDaoIT {
     }
 
     @Test
-    @Transactional
     public void verifyKeepsOrder() {
         // INSERT
         Group group = new GroupBuilder().withName(Groups.SYSTEM_DEFINED)

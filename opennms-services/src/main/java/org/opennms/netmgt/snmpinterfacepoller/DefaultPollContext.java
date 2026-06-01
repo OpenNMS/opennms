@@ -42,6 +42,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Represents a DefaultPollContext
@@ -236,6 +237,7 @@ public class DefaultPollContext implements PollContext {
 
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public void update(OnmsSnmpInterface snmpinterface) {
     	OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
     	if (dbSnmpInterface == null)  {
