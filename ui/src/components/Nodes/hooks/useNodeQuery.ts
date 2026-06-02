@@ -84,7 +84,8 @@ export const useNodeQuery = () => {
       ipAddress: '',
       foreignSourceParams: getDefaultNodeQueryForeignSourceParams(),
       snmpParams: getDefaultNodeQuerySnmpParams(),
-      sysParams: getDefaultNodeQuerySysParams()
+      sysParams: getDefaultNodeQuerySysParams(),
+      topology: ''
     }
   }
 
@@ -223,7 +224,8 @@ export const useNodeQuery = () => {
     'sysDescription',
     'sysLocation',
     'sysName',
-    'sysObjectId'
+    'sysObjectId',
+    'topology'
   ])
 
   /**
@@ -306,10 +308,13 @@ export const useNodeQuery = () => {
       filter.selectedServices = serviceNames
     }
 
+    if (queryObject.topology) {
+      filter.extendedSearch.topology = queryObject.topology
+    }
+
     // listInterfaces: intentionally not handled — the Vue node list page has no interface-listing mode,
     // and already displays the primary interface in the node table.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
-    // TODO topology: not supported in the v2 API, out of scope.
     // NOTE nodeId: not handled here. Once Vue Node Details (/node/:id) has parity with element/node.jsp,
     //   update quicksearch-box.jsp to link to the Vue route instead of element/node.jsp?node={id}.
 
@@ -346,10 +351,11 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
   const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
+  const topologyQuery = buildTopologyQuery(filter.extendedSearch.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -556,6 +562,16 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     }
   }
 
+  return ''
+}
+
+const buildTopologyQuery = (topology?: string) => {
+  const term = sanitizeSearchTerm(topology)
+  if (term.length > 0) {
+    const startStar = term.startsWith('*') ? '' : '*'
+    const endStar = term.endsWith('*') ? '' : '*'
+    return `topology==${startStar}${term}${endStar}`
+  }
   return ''
 }
 

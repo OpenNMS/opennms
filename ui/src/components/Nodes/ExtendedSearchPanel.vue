@@ -37,7 +37,8 @@ const searchOptions: ISelectItemType[] = [
   { title: 'SNMP Description', value: 'snmpIfDescription' },
   { title: 'SNMP Index', value: 'snmpIfIndex' },
   { title: 'SNMP Name', value: 'snmpIfName' },
-  { title: 'SNMP Type', value: 'snmpIfType' }
+  { title: 'SNMP Type', value: 'snmpIfType' },
+  { title: 'Enhanced Linkd Topology (CDP/LLDP only)', value: 'topology' }
 ]
 
 const foreignSourceKeys = ['foreignSource', 'foreignId', 'foreignSourceId']
@@ -77,6 +78,12 @@ const onCurrentSearchUpdated = (updatedValue: any) => {
     if (item !== storeItem) {
       nodeStructureStore.setFilterWithSysParams(searchType, item)
     }
+  } else if (searchType === 'topology') {
+    const storeItem = nodeStructureStore.queryFilter.extendedSearch.topology ?? ''
+
+    if (item !== storeItem) {
+      nodeStructureStore.setFilterWithTopology(item)
+    }
   }
 }
 
@@ -89,6 +96,8 @@ const onSearchTypeSelectionUpdated: UpdateModelFunction = (selected: any) => {
     nodeStructureStore.setFilterWithSysParams(selected.value, searchTerm.value)
   } else if ((selected.value as string || '').startsWith('snmp')) {
     nodeStructureStore.setFilterWithSnmpParams(selected.value, searchTerm.value)
+  } else if (selected.value === 'topology') {
+    nodeStructureStore.setFilterWithTopology(searchTerm.value)
   }
 }
 
@@ -133,6 +142,13 @@ const getOptionFromFilter = (queryFilter: NodeQueryFilter) => {
     const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.sysParams, sysKeys)
     if (o) {
       return o
+    }
+  }
+
+  if (queryFilter.extendedSearch.topology) {
+    return {
+      value: queryFilter.extendedSearch.topology,
+      searchOption: searchOptions.find(x => x.value === 'topology')
     }
   }
 

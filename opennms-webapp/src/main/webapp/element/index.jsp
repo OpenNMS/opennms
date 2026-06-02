@@ -75,7 +75,6 @@ function submitNodeSearch(params) {
         <div>
           <ul class="list-unstyled">
             <li><a href="ui/#/nodes">All nodes</a></li>
-            <li><a href="ui/#/nodes">All nodes and their interfaces</a></li>
           </ul>
         </div>
           <%-- Search by name --%>
@@ -210,7 +209,16 @@ function submitNodeSearch(params) {
               </div>
           </form>
 
-          <%-- Enhanced Linkd topology search removed: not supported in the Vue node list page --%>
+          <%-- Search by Enhanced Linkd topology data --%>
+          <form role="form" class="form-group" action="#" method="get" onsubmit="submitNodeSearch({topology: this.topology.value}); return false;">
+              <label for="byif_topology">Enhanced Linkd topology (CDP/LLDP)</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" id="byif_topology" name="topology"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
+                  </div>
+              </div>
+          </form>
 
       </div>
     </div>

@@ -104,7 +104,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       !!queryFilter.value.extendedSearch?.ipAddress?.length ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
-      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams)
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
+      !!queryFilter.value.extendedSearch?.topology?.length
     )
   }
 
@@ -177,6 +178,19 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       extendedSearch: {
         ...getDefaultNodeQueryExtendedSearchParams(),
         sysParams
+      }
+    }
+  }
+
+  /**
+  * Set filter with topology search term, clearing out any other extended search params.
+  */
+  const setFilterWithTopology = async (topology: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...getDefaultNodeQueryExtendedSearchParams(),
+        topology
       }
     }
   }
@@ -413,6 +427,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
     setFilterWithSysParams,
+    setFilterWithTopology,
     setFromNodePreferences,
     setNodeColumnSelection,
     setSearchTerm,

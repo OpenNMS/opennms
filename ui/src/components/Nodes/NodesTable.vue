@@ -128,6 +128,19 @@
                 </template>
                 {{ 'Extended Search' }}
               </FeatherChip>
+
+              <FeatherChip
+                v-if="hasTopologySearch"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeExtendedSearchItem"
+                  />
+                </template>
+                {{ `Topology: ${topologyTerm}` }}
+              </FeatherChip>
             </FeatherChipList>
           </div>
         </div>
@@ -520,6 +533,14 @@ const onNodeLinkClick = (nodeId: number | string) => {
 
 const hasExtendedSearchParams = computed(() => {
   return hasAnyExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+})
+
+const hasTopologySearch = computed(() => {
+  return !!nodeStructureStore.queryFilter.extendedSearch.topology?.length
+})
+
+const topologyTerm = computed(() => {
+  return nodeStructureStore.queryFilter.extendedSearch.topology ?? ''
 })
 
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {

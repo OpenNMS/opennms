@@ -576,6 +576,7 @@ export interface NodeQueryExtendedSearchParams {
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
+  topology?: string
 }
 
 /** All components of a node structure query */
