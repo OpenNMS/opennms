@@ -20,6 +20,7 @@ MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CACERTS="${MINION_HOME}/cacerts"
 FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
 FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
+TELEMETRY_TEMPLATES_DIR="${MINION_HOME}/etc/telemetry-templates"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
 # Prometheus JMX Exporter Configuration
@@ -154,6 +155,35 @@ function applyFeatureBootTemplates() {
     # Standalone optional features
     [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot" || echo "[Features] Jaeger boot file not applied because JAEGER_ENABLED=${JAEGER_ENABLED:-false}."
     [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot" || echo "[Features] Dominion SCV boot file not applied because DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}."
+}
+
+function applyTelemetryListenerTemplates() {
+    apply_listener_template() {
+        local name="$1"
+        local enabled="$2"
+        local src="${TELEMETRY_TEMPLATES_DIR}/${name}"
+        local dst="${MINION_HOME}/etc/${name}"
+
+        if [[ "${enabled,,}" == "true" ]]; then
+            cp "${src}" "${dst}"
+            echo "[Telemetry] Enabled listener config: ${name}"
+        else
+            rm -f "${dst}"
+            echo "[Telemetry] Removed listener config (disabled or unset): ${name}"
+        fi
+    }
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-udp-50001-jti.cfg" \
+        "${JTI_LISTENER_ENABLED:-false}"
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-udp-50002-nxos.cfg" \
+        "${NXOS_LISTENER_ENABLED:-false}"
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-single-port-flows.cfg" \
+        "${FLOWS_LISTENER_ENABLED:-false}"
 }
 
 function parseEnvironment() {
@@ -354,11 +384,12 @@ start() {
 }
 
 # Order of precedence is (later overwrites former):
-# 1. Config set via environment variable
+# 1. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
 # 2. Config set via direct file overlay
 configure() {
   initConfig
   applyOpennmsPropertiesD
+  applyTelemetryListenerTemplates
   applyOverlayConfig
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"

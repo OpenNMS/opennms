@@ -1,3 +1,17 @@
+# Telemetry Listener Environment Variables
+
+The following telemetry listener configs are **not enabled by default**. Set the corresponding environment variable to `true` to activate the listener on startup. The listener config is removed if the variable is absent or set to `false`, so toggling it takes effect on the next container restart.
+
+| Environment Variable    | Listener          | Default port | Config file written to `etc/`                                            |
+|-------------------------|-------------------|--------------|--------------------------------------------------------------------------|
+| `JTI_LISTENER_ENABLED`  | JTI (Juniper)     | 50001        | `org.opennms.features.telemetry.listeners-udp-50001-jti.cfg`             |
+| `NXOS_LISTENER_ENABLED` | NX-OS (Cisco)     | 50002        | `org.opennms.features.telemetry.listeners-udp-50002-nxos.cfg`            |
+| `FLOWS_LISTENER_ENABLED`| Single-port flows | 50000         | `org.opennms.features.telemetry.listeners-single-port-flows.cfg`         |
+
+The listener port can be overridden independently via `JTI_PORT`, `NXOS_PORT`, and `FLOWS_PORT`.
+
+If you place a file with the same name in the etc overlay (`/opt/minion-etc-overlay`), that file always wins regardless of the environment variable — the overlay is applied after the template is copied.
+
 # Configuring Minion via confd
 (instructions for testing/developing confd templates are given at the end of this document)
 ## Mounting
