@@ -244,6 +244,20 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         // There are no extra String properties on node.snmpInterfaces
 
+        // Topology (CDP/LLDP) search: virtual property backed by a SQL subquery across topology tables.
+        // Mirrors DefaultNodeListService.addTopoSearch. skipProperty=true: no Hibernate alias is joined,
+        // so the default property restriction must not be added.
+        final String topologySql = "{alias}.nodeId in (" +
+            "select nodeId from cdplink where cdpinterfacename ilike ? " +
+            "union select nodeId from cdpelement where cdpglobaldeviceid ilike ? " +
+            "union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? " +
+            "union select nodeId from lldpelement where lldpsysname ilike ?)";
+        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) ->
+            b.sql(topologySql, new Object[]{v, v, v, v, v}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING})
+        );
+        topologyBehavior.setSkipPropertyByDefault(true);
+        map.put("topology", topologyBehavior);
+
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
 
         return map;

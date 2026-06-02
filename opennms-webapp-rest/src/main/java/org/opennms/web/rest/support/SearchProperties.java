@@ -552,6 +552,10 @@ public abstract class SearchProperties {
 		SearchProperty serviceNameProp = new SearchProperty(OnmsServiceType.class, Aliases.serviceType.prop("name"), "Service Name", STRING);
 		serviceNameProp.orderBy = false;
 		NODE_SERVICE_PROPERTIES.add(serviceNameProp);
+		// topology uses a raw SQL subquery across CDP/LLDP tables; ordering is not supported.
+		SearchProperty topologyProp = new SearchProperty(null, "topology", "Topology (CDP/LLDP)", STRING);
+		topologyProp.orderBy = false;
+		NODE_SERVICE_PROPERTIES.add(topologyProp);
 
 		// Root prefix
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);
