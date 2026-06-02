@@ -46,6 +46,36 @@ export interface PanelDefinition {
 }
 
 export const panelRegistry: Record<string, PanelDefinition> = {
+  'nodes-with-alarms': {
+    type: 'nodes-with-alarms',
+    title: 'Nodes with Pending Alarms',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/NodesWithAlarmsPanel.vue')),
+    defaultSize: { w: 4, h: 5 },
+    minSize: { w: 3, h: 3 },
+    renamable: true,
+    collapsible: true
+  },
+  'status-overview': {
+    type: 'status-overview',
+    title: 'Status Overview',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/StatusOverviewPanel.vue')),
+    defaultSize: { w: 4, h: 6 },
+    minSize: { w: 3, h: 4 },
+    renamable: true,
+    collapsible: true
+  },
+  notifications: {
+    type: 'notifications',
+    title: 'Notifications',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/NotificationsPanel.vue')),
+    defaultSize: { w: 4, h: 3 },
+    minSize: { w: 2, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
   sample: {
     type: 'sample',
     title: 'Sample Panel',
