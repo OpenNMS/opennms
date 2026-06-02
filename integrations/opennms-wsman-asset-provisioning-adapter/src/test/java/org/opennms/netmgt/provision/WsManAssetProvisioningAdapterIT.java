@@ -82,6 +82,10 @@ public class WsManAssetProvisioningAdapterIT {
         template.execute(status -> {
             // Delete any existing nodes
             nodeDao.findAll().forEach(n -> nodeDao.delete(n));
+            // Flush the deletes so they execute before the insert below; otherwise Hibernate's
+            // insert-before-delete flush ordering collides on node_foreign_unique_idx with a node
+            // committed by a previous test method (committed-tx fixtures are not rolled back).
+            nodeDao.flush();
 
             // Create a new node
             final NetworkBuilder nb = new NetworkBuilder();
