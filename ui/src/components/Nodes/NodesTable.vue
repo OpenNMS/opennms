@@ -88,7 +88,7 @@
                     @click="removeItem(flow, FilterTypeEnum.Flow)"
                   />
                 </template>
-                {{ `Flow: ${flow._text}` }}
+                {{ `Flows: ${flow._text}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -117,16 +117,30 @@
               </FeatherChip>
 
               <FeatherChip
-                v-if="hasExtendedSearchParams"
+                v-for="(value, index) in extendedSearchValues"
+                :key="`extended-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
-                    @click="removeExtendedSearchItem"
+                    @click="removeExtendedSearchItem(value)"
                   />
                 </template>
-                {{ 'Extended Search' }}
+                {{ `Extended Search: ${value.name} ${value.value}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.ipAddress"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeIpAddress()"
+                  />
+                </template>
+                {{ `IP Address: ${nodeStructureStore.queryFilter.ipAddress}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -136,7 +150,7 @@
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
-                    @click="removeExtendedSearchItem"
+                    @click="nodeStructureStore.removeTopology()"
                   />
                 </template>
                 {{ `Topology: ${topologyTerm}` }}
@@ -337,6 +351,7 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
   Direction,
+  ExtendedSearchValue,
   FeatherSortObject,
   FilterTypeEnum,
   Node,
@@ -377,7 +392,7 @@ const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
-const { buildUpdatedNodeStructureQueryParameters, hasAnyExtendedSearchValues } = useNodeQuery()
+const { buildUpdatedNodeStructureQueryParameters, getExtendedSearchValues } = useNodeQuery()
 const visibleColumnStart = ref(0)
 const visibleColumnsCount = 5
 
@@ -531,16 +546,16 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
-const hasExtendedSearchParams = computed(() => {
-  return hasAnyExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+const extendedSearchValues = computed(() => {
+  return getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
 })
 
 const hasTopologySearch = computed(() => {
-  return !!nodeStructureStore.queryFilter.extendedSearch.topology?.length
+  return !!nodeStructureStore.queryFilter.topology?.length
 })
 
 const topologyTerm = computed(() => {
-  return nodeStructureStore.queryFilter.extendedSearch.topology ?? ''
+  return nodeStructureStore.queryFilter.topology ?? ''
 })
 
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
@@ -565,8 +580,8 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   }
 }
 
-const removeExtendedSearchItem = () => {
-  nodeStructureStore.removeExtendedSearch()
+const removeExtendedSearchItem = (item: ExtendedSearchValue) => {
+  nodeStructureStore.removeExtendedSearch(item)
 }
 
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {

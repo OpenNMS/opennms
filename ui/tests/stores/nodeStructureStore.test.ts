@@ -251,14 +251,14 @@ describe('useNodeStructureStore', () => {
     it('sets ipAddress', async () => {
       await store.setFilterWithIpAddress('10.0.0.1')
 
-      expect(store.queryFilter.extendedSearch.ipAddress).toBe('10.0.0.1')
+      expect(store.queryFilter.ipAddress).toBe('10.0.0.1')
     })
 
-    it('clears other extended search params', async () => {
+    it('does not clear snmp params', async () => {
       await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
       await store.setFilterWithIpAddress('10.0.0.1')
 
-      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('')
+      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
     })
   })
 
@@ -269,11 +269,18 @@ describe('useNodeStructureStore', () => {
       expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
     })
 
-    it('clears other extended search params', async () => {
+    it('does not clear ipAddress', async () => {
       await store.setFilterWithIpAddress('1.2.3.4')
       await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
 
-      expect(store.queryFilter.extendedSearch.ipAddress).toBe('')
+      expect(store.queryFilter.ipAddress).toBe('1.2.3.4')
+    })
+
+    it('does not clear other extended search groups', async () => {
+      await store.setFilterWithSysParams('sysName', 'router1')
+      await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
+
+      expect(store.queryFilter.extendedSearch.sysParams?.sysName).toBe('router1')
     })
   })
 
@@ -283,6 +290,13 @@ describe('useNodeStructureStore', () => {
 
       expect(store.queryFilter.extendedSearch.sysParams?.sysName).toBe('router1')
     })
+
+    it('does not clear other extended search groups', async () => {
+      await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
+      await store.setFilterWithSysParams('sysName', 'router1')
+
+      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
+    })
   })
 
   describe('setFilterWithForeignSourceParams', () => {
@@ -291,14 +305,23 @@ describe('useNodeStructureStore', () => {
 
       expect(store.queryFilter.extendedSearch.foreignSourceParams?.foreignSource).toBe('MyFS')
     })
+
+    it('does not clear other extended search groups', async () => {
+      await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
+      await store.setFilterWithForeignSourceParams('foreignSource', 'MyFS')
+
+      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
+    })
   })
 
   describe('removeExtendedSearch', () => {
-    it('resets extendedSearch to defaults', async () => {
-      await store.setFilterWithIpAddress('1.2.3.4')
-      store.removeExtendedSearch()
+    it('clears only the specified field', async () => {
+      await store.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
+      await store.setFilterWithSnmpParams('snmpIfName', 'eth0')
+      store.removeExtendedSearch({ name: 'SNMP Alias', value: 'uplink', group: 'snmpParams', key: 'snmpIfAlias' })
 
-      expect(store.queryFilter.extendedSearch.ipAddress).toBe('')
+      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('')
+      expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfName).toBe('eth0')
     })
   })
 
@@ -436,7 +459,7 @@ describe('useNodeStructureStore', () => {
     it('applies searchTerm from filter', async () => {
       await store.setFromNodePreferences({
         nodeColumns: [],
-        nodeFilter: { searchTerm: 'hello', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { ipAddress: '', foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
+        nodeFilter: { searchTerm: 'hello', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
       })
 
       expect(store.queryFilter.searchTerm).toBe('hello')
@@ -445,7 +468,7 @@ describe('useNodeStructureStore', () => {
     it('applies selectedCategories from filter', async () => {
       await store.setFromNodePreferences({
         nodeColumns: [],
-        nodeFilter: { searchTerm: '', selectedCategories: [categories[0]], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { ipAddress: '', foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
+        nodeFilter: { searchTerm: '', selectedCategories: [categories[0]], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
       })
 
       expect(store.queryFilter.selectedCategories).toEqual([categories[0]])
@@ -574,7 +597,7 @@ describe('useNodeStructureStore', () => {
           selectedMonitoringLocations: [],
           categoryMode: SetOperator.Union,
           selectedServices: ['HTTPS'],
-          extendedSearch: { ipAddress: '', foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }
+          extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }
         }
       })
 

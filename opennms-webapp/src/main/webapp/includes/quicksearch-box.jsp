@@ -36,11 +36,17 @@
 
 <script>
 function submitNodeSearch(params) {
-  const query = Object.entries(params)
-    .filter(([, v]) => v !== '' && v !== null && v !== undefined)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join('&')
-  window.location.href = `ui/#/nodes${query ? '?' + query : ''}`
+  var parts = [];
+  var keys = Object.keys(params);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var v = params[k];
+    if (v !== '' && v !== null && v !== undefined) {
+      parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+    }
+  }
+  var query = parts.join('&');
+  window.location.href = 'ui/#/nodes' + (query ? '?' + query : '');
 }
 </script>
 

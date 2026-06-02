@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 
 import javax.ws.rs.DELETE;
@@ -173,6 +172,34 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
         // Root alias
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+
+        // node.label: use ilike for case-insensitive wildcard matching (default like() is case-sensitive)
+        CriteriaBehavior<?> labelBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (v == null) {
+                    b.isNull("label");
+                } else if (w) {
+                    b.ilike("label", v);
+                } else {
+                    b.eq("label", v);
+                }
+                break;
+            case NOT_EQUALS:
+                if (v == null) {
+                    b.isNotNull("label");
+                } else if (w) {
+                    b.not().ilike("label", v);
+                } else {
+                    b.or(Restrictions.ne("label", v), Restrictions.isNull("label"));
+                }
+                break;
+            default:
+                break;
+            }
+        });
+        labelBehavior.setSkipPropertyByDefault(true);
+        map.put("label", labelBehavior);
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));

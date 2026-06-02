@@ -17,7 +17,7 @@
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
-import { loadNodePreferences } from '@/services/localStorageService'
+import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb, NodePreferences } from '@/types'
@@ -53,6 +53,7 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
     nodeColumns: prefs?.nodeColumns || [],
     nodeFilter
   } as NodePreferences
+
   nodeStructureStore.setFromNodePreferences(newPrefs)
 }
 
@@ -83,6 +84,12 @@ watch(
       pendingRouteQuery.value = null
     }
   }
+)
+
+watch(
+  () => nodeStructureStore.queryFilter,
+  (filter) => saveNodeQueryFilter(filter),
+  { deep: true }
 )
 
 onMounted(() => {

@@ -27,9 +27,11 @@ import API from '@/services'
 import {
   Category,
   DrawerState,
+  ExtendedSearchValue,
   MonitoringLocation,
   NodeColumnSelectionItem,
   NodePreferences,
+  NodeQueryExtendedSearchParams,
   NodeQueryFilter,
   ServiceType,
   SetOperator
@@ -101,11 +103,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       queryFilter.value.selectedFlows.length > 0 ||
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
       (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
-      !!queryFilter.value.extendedSearch?.ipAddress?.length ||
+      !!queryFilter.value.ipAddress?.length ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
-      !!queryFilter.value.extendedSearch?.topology?.length
+      !!queryFilter.value.topology?.length
     )
   }
 
@@ -131,84 +133,60 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     columns.value = [...cols]
   }
 
-  /**
-  * Set filter with IP address, clearing out any other extended search params (currently these are mutually exclusive extended searches).
-  */
   const setFilterWithIpAddress = async (ipAddress: string) => {
     queryFilter.value = {
       ...queryFilter.value,
-      extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
-        ipAddress
-      }
+      ipAddress
     }
   }
 
-  /**
-  * Set filter with SNMP parameters, clearing out any other extended search params.
-  */
   const setFilterWithSnmpParams = async (key: string, value: string) => {
-    // key should be an actual property of NodeQuerySnmpParams
     const snmpParams = {
-      ...getDefaultNodeQuerySnmpParams(),
+      ...(queryFilter.value.extendedSearch.snmpParams ?? getDefaultNodeQuerySnmpParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         snmpParams
       }
     }
   }
 
-  /**
-  * Set filter with sys parameters, clearing out any other extended search params.
-  */
   const setFilterWithSysParams = async (key: string, value: string) => {
-    // key should be an actual on of NodeQuerySysParams
     const sysParams = {
-      ...getDefaultNodeQuerySysParams(),
+      ...(queryFilter.value.extendedSearch.sysParams ?? getDefaultNodeQuerySysParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         sysParams
       }
     }
   }
 
-  /**
-  * Set filter with topology search term, clearing out any other extended search params.
-  */
   const setFilterWithTopology = async (topology: string) => {
     queryFilter.value = {
       ...queryFilter.value,
-      extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
-        topology
-      }
+      topology
     }
   }
 
-  /**
-  * Set filter with foreign source parameters, clearing out any other extended search params.
-  */
   const setFilterWithForeignSourceParams = async (key: string, value: string) => {
-    // key should be an actual property of NodeQueryForeignSourceParams
     const foreignSourceParams = {
-      ...getDefaultNodeQueryForeignSourceParams(),
+      ...(queryFilter.value.extendedSearch.foreignSourceParams ?? getDefaultNodeQueryForeignSourceParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         foreignSourceParams
       }
     }
@@ -264,6 +242,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
     const filter = getDefaultNodeQueryFilter()
 
+    // Always reset chip arrays so stale selections from a previous filter don't survive
+    selectedCategories.value = []
+    selectedCategories2.value = []
+    selectedFlows.value = []
+    selectedMonitoringLocations.value = []
+    selectedServices.value = []
+
     if (prefs.nodeFilter) {
       filter.searchTerm = prefs.nodeFilter.searchTerm
       filter.categoryMode = prefs.nodeFilter.categoryMode
@@ -290,6 +275,14 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
         selectedMonitoringLocations.value = prefs.nodeFilter.selectedMonitoringLocations
           .map(loc => ({ _text: loc.name, _value: loc.name, name: loc.name } as IAutocompleteItemType))
+      }
+
+      if (prefs.nodeFilter.ipAddress) {
+        filter.ipAddress = prefs.nodeFilter.ipAddress
+      }
+
+      if (prefs.nodeFilter.topology) {
+        filter.topology = prefs.nodeFilter.topology
       }
 
       if (prefs.nodeFilter.extendedSearch) {
@@ -353,8 +346,29 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     )
   }
 
-  const removeExtendedSearch = () => {
-    queryFilter.value.extendedSearch = getDefaultNodeQueryExtendedSearchParams()
+  const removeExtendedSearch = (item: ExtendedSearchValue) => {
+    const group = queryFilter.value.extendedSearch[item.group]
+    if (group) {
+      queryFilter.value = {
+        ...queryFilter.value,
+        extendedSearch: {
+          ...queryFilter.value.extendedSearch,
+          [item.group]: { ...(group as Record<string, unknown>), [item.key]: '' }
+        }
+      }
+    }
+  }
+
+  const removeIpAddress = () => {
+    queryFilter.value = { ...queryFilter.value, ipAddress: '' }
+  }
+
+  const removeTopology = () => {
+    queryFilter.value = { ...queryFilter.value, topology: '' }
+  }
+
+  const setExtendedSearchParams = (params: NodeQueryExtendedSearchParams) => {
+    queryFilter.value = { ...queryFilter.value, extendedSearch: { ...params } }
   }
 
   const updateSelectedCategories = (items: IAutocompleteItemType[]) => {
@@ -445,6 +459,9 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeCategory,
     removeCategory2,
     removeExtendedSearch,
+    removeIpAddress,
+    removeTopology,
+    setExtendedSearchParams,
     removeFlow,
     removeMonitoringLocation,
     removeService,

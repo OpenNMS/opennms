@@ -65,7 +65,51 @@
           <FeatherIcon :icon="DeleteIcon" />
         </FeatherButton>
       </div>
+      <hr />
       <div class="spacer-large"></div>
+      <div class="feather-row">
+        <div class="feather-col-6">
+          <FeatherAutocomplete
+            class="filter-autocomplete"
+            label="Monitoring Locations"
+            type="multi"
+            v-model="selectedFilters.locations"
+            :loading="locationsLoading"
+            :results="locationResults"
+            @search="handleLocationSearch"
+            @update:modelValue="(items: any) => updateFilter('locations', items)"
+          >
+          </FeatherAutocomplete>
+        </div>
+        <div class="feather-col-6">
+          <FeatherAutocomplete
+            class="filter-autocomplete"
+            label="Monitored Services"
+            type="multi"
+            v-model="selectedFilters.services"
+            :results="serviceResults"
+            @search="handleServiceSearch"
+            @update:modelValue="(items: any) => updateFilter('services', items)"
+            text-prop="_text"
+          ></FeatherAutocomplete>
+        </div>
+      </div>
+      <div class="feather-row">
+        <div class="feather-col-6">
+          <FeatherInput
+            class="filter-input"
+            label="IP Address"
+            v-model="selectedFilters.ipAddress"
+          />
+        </div>
+        <div class="feather-col-6">
+          <FeatherInput
+            class="filter-input last-filter-input"
+            label="Topology (CDP/LLDP)"
+            v-model="selectedFilters.topology"
+          />
+        </div>
+      </div>
       <FeatherAutocomplete
         class="filter-autocomplete"
         label="Flows"
@@ -77,34 +121,13 @@
         @update:modelValue="(items: any) => updateFilter('flows', items)"
         text-prop="_text"
       ></FeatherAutocomplete>
-      <FeatherAutocomplete
-        class="filter-autocomplete"
-        label="Monitoring Locations"
-        type="multi"
-        v-model="selectedFilters.locations"
-        :loading="locationsLoading"
-        :results="locationResults"
-        @search="handleLocationSearch"
-        @update:modelValue="(items: any) => updateFilter('locations', items)"
-      >
-      </FeatherAutocomplete>
-      <FeatherAutocomplete
-        class="last-filter-autocomplete"
-        label="Monitored Services"
-        type="multi"
-        v-model="selectedFilters.services"
-        :results="serviceResults"
-        @search="handleServiceSearch"
-        @update:modelValue="(items: any) => updateFilter('services', items)"
-        text-prop="_text"
-      ></FeatherAutocomplete>
-      <div class="spacer-large"></div>
+      <div class="spacer-medium"></div>
       <hr />
       <div class="spacer-medium"></div>
       <div>
         <h4 class="title">Extended Search</h4>
         <div class="spacer-medium"></div>
-        <ExtendedSearchPanel />
+        <ExtendedSearchPanel ref="extendedSearchPanelRef" />
       </div>
       <div class="footer">
         <FeatherButton
@@ -115,29 +138,36 @@
         </FeatherButton>
         <FeatherButton
           secondary
+          @click="clearDrawerFilters"
+        >
+          Clear Filters
+        </FeatherButton>
+        <FeatherButton
+          secondary
           @click="nodeStructureStore.closeInstancesDrawerModal()"
         >
           Close
         </FeatherButton>
       </div>
+      <MessageDialog
+        :visible="isMessageDialogVisible"
+        :relative="true"
+        maxHeight="22em"
+        maxWidth="50em"
+        title="Advanced Filters"
+        @close="isMessageDialogVisible = false"
+      >
+        <template #content>
+          <div>
+            <p>Use the advanced filters to find nodes that match specific criteria.</p>
+            <p>You can filter by categories, monitoring locations, monitored services, IP address, topology, flow type and multiple extended search parameters.</p>
+            <p><strong>Categories.</strong> You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
+            <p>Category groups are then "intersected" with each other to refine the search results.</p>
+          </div>
+        </template>
+      </MessageDialog>
     </div>
   </FeatherDrawer>
-  <MessageDialog
-    :visible="isMessageDialogVisible"
-    maxHeight="22em"
-    maxWidth="50em"
-    title="Advanced Filters"
-    @close="isMessageDialogVisible = false"
-  >
-    <template #content>
-      <div>
-        <p>Use the advanced filters to find nodes that match specific criteria.</p>
-        <p>You can filter by categories, flows, locations, and monitored services.</p>
-        <p>You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
-        <p>Category groups are then "intersected" with each other to refine the search results.</p>
-      </div>
-    </template>
-  </MessageDialog>
 </template>
 
 <script lang="ts" setup>
@@ -146,12 +176,15 @@ import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocompl
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import { FeatherInput } from '@featherds/input'
 import AddIcon from '@featherds/icon/action/Add'
 import DeleteIcon from '@featherds/icon/action/Delete'
 import InfoIcon from '@featherds/icon/action/Info'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+
+type ExtendedSearchPanelInstance = InstanceType<typeof ExtendedSearchPanel>
 
 const searchTimeout = ref<number>(-1)
 const category2SearchTimeout = ref<number>(-1)
@@ -170,13 +203,16 @@ const isMessageDialogVisible = ref(false)
 const TIMEOUT = 5
 
 const nodeStructureStore = useNodeStructureStore()
+const extendedSearchPanelRef = ref<ExtendedSearchPanelInstance | null>(null)
 const showSecondCategories = ref(false)
 const selectedFilters = reactive({
   categories: [] as IAutocompleteItemType[],
   categories2: [] as IAutocompleteItemType[],
   flows: [] as IAutocompleteItemType[],
   locations: [] as IAutocompleteItemType[],
-  services: [] as IAutocompleteItemType[]
+  services: [] as IAutocompleteItemType[],
+  ipAddress: '',
+  topology: ''
 })
 
 const filterCategoryItems = (query: string): IAutocompleteItemType[] => {
@@ -244,7 +280,7 @@ const handleServiceSearch = (query: string) => {
 }
 
 const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteItemType[]) => {
-  selectedFilters[key] = items
+  selectedFilters[key as 'categories' | 'categories2' | 'flows' | 'locations' | 'services'] = items
 }
 
 const removeSecondCategories = () => {
@@ -258,7 +294,23 @@ const applySelectedFilters = () => {
   nodeStructureStore.updateSelectedFlows(selectedFilters.flows)
   nodeStructureStore.updateSelectedMonitoringLocations(selectedFilters.locations)
   nodeStructureStore.updateSelectedServices(selectedFilters.services)
+  nodeStructureStore.setFilterWithIpAddress(selectedFilters.ipAddress)
+  nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
+  extendedSearchPanelRef.value?.applyToStore()
   nodeStructureStore.closeInstancesDrawerModal()
+}
+
+const clearDrawerFilters = async () => {
+  await nodeStructureStore.clearAllFiltersAndSelections()
+  selectedFilters.categories = []
+  selectedFilters.categories2 = []
+  selectedFilters.flows = []
+  selectedFilters.locations = []
+  selectedFilters.services = []
+  selectedFilters.ipAddress = ''
+  selectedFilters.topology = ''
+  showSecondCategories.value = false
+  extendedSearchPanelRef.value?.resetFromStore()
 }
 
 watch(() => nodeStructureStore.drawerState.visible, (visible) => {
@@ -269,7 +321,10 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.flows = [...nodeStructureStore.selectedFlows]
     selectedFilters.locations = [...nodeStructureStore.selectedMonitoringLocations]
     selectedFilters.services = [...nodeStructureStore.selectedServices]
+    selectedFilters.ipAddress = nodeStructureStore.queryFilter.ipAddress ?? ''
+    selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
     serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
+    extendedSearchPanelRef.value?.resetFromStore()
   }
 })
 </script>
@@ -312,6 +367,17 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
 }
 
 .last-filter-autocomplete{
+  :deep(.feather-input-sub-text) {
+    display: none !important;
+  }
+}
+
+.filter-input {
+  display: block;
+  width: 100%;
+}
+
+.last-filter-input {
   :deep(.feather-input-sub-text) {
     display: none !important;
   }

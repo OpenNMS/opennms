@@ -572,11 +572,16 @@ export interface NodeQuerySysParams {
 }
 
 export interface NodeQueryExtendedSearchParams {
-  ipAddress?: string
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
-  topology?: string
+}
+
+export interface ExtendedSearchValue {
+  name: string
+  value: string
+  group: keyof NodeQueryExtendedSearchParams
+  key: string
 }
 
 /** All components of a node structure query */
@@ -588,6 +593,8 @@ export interface NodeQueryFilter {
   selectedServices?: string[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
+  ipAddress?: string
+  topology?: string
   extendedSearch: NodeQueryExtendedSearchParams
 }
 
