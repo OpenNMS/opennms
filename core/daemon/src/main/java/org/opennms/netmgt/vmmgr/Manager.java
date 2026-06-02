@@ -93,6 +93,17 @@ public class Manager implements ManagerMBean {
         }
         stopInitiated.set(true);
 
+        // Signal the HA coordinator first so it can unblock the Starter thread
+        // if the process is stopping while a SECONDARY instance is waiting to promote.
+        try {
+            Class<?> coordClass = Class.forName("org.opennms.netmgt.ha.HaStartupCoordinator");
+            coordClass.getMethod("shutdown").invoke(null);
+        } catch (ClassNotFoundException e) {
+            // HA module not present; nothing to do
+        } catch (Exception e) {
+            LOG.warn("Failed to signal HA coordinator during shutdown", e);
+        }
+
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
             for (MBeanServer server : getMBeanServers()) {
                 stop(server);
