@@ -21,20 +21,26 @@ License.
 -->
 
 <!--
-  Dashboard panel replicating the legacy Status Overview "Alarms" doughnut, on
-  Chart.js. Counts are read per-severity from the v2 alarms endpoint's
-  totalCount (cheap; one filtered HEAD-like query per severity).
+  Dashboard panel replicating the legacy Status Overview, on Chart.js: two
+  doughnuts — nodes grouped by unacknowledged alarms, and nodes grouped by
+  current outages — from /api/v2/status/summary/nodes/{alarms,outages}.
 -->
 <template>
   <div class="status-overview">
-    <div class="status-overview__chart">
-      <canvas ref="canvasRef" />
-      <div
-        v-if="!loading"
-        class="status-overview__center"
-      >
-        <span class="status-overview__total">{{ total }}</span>
-        <span class="status-overview__label">Alarms</span>
+    <div class="status-overview__donuts">
+      <div class="status-overview__donut">
+        <canvas ref="alarmsCanvas" />
+        <div class="status-overview__center">
+          <span class="status-overview__total">{{ alarmsTotal }}</span>
+          <span class="status-overview__cap">Alarms</span>
+        </div>
+      </div>
+      <div class="status-overview__donut">
+        <canvas ref="outagesCanvas" />
+        <div class="status-overview__center">
+          <span class="status-overview__total">{{ outagesTotal }}</span>
+          <span class="status-overview__cap">Outages</span>
+        </div>
       </div>
     </div>
     <p
@@ -44,79 +50,96 @@ License.
       Loading…
     </p>
     <p
-      v-else-if="total === 0"
+      v-else-if="alarmsTotal === 0 && outagesTotal === 0"
       class="status-overview__muted"
     >
-      No alarms.
+      No alarms or outages.
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Chart from 'chart.js/auto'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { getAlarms } from '@/services/alarmService'
-import { ALARM_CHART_SEVERITIES, severityColor, severityLabel } from '../severity'
+import { getNodesByAlarms, getNodesByOutages, type StatusSummaryEntry } from '@/services/statusService'
 
 const props = defineProps<PanelComponentProps>()
 
-const canvasRef = ref<HTMLCanvasElement | null>(null)
+// Legacy status-box palette (title-case labels from the summary endpoints).
+const STATUS_COLORS: Record<string, string> = {
+  Normal: '#336600',
+  Warning: '#ffcc00',
+  Minor: '#ff9900',
+  Major: '#ff3300',
+  Critical: '#cc0000',
+  Indeterminate: '#808080',
+  Cleared: '#9e9e9e'
+}
+const colorFor = (label: string) => STATUS_COLORS[label] ?? '#999999'
+
+const alarmsCanvas = ref<HTMLCanvasElement | null>(null)
+const outagesCanvas = ref<HTMLCanvasElement | null>(null)
+const alarmsEntries = ref<StatusSummaryEntry[]>([])
+const outagesEntries = ref<StatusSummaryEntry[]>([])
 const loading = ref(true)
-const counts = ref<Record<string, number>>({})
-let chart: Chart<'doughnut', number[], string> | null = null
 
-const total = computed(() => Object.values(counts.value).reduce((a, b) => a + b, 0))
+let alarmsChart: Chart<'doughnut', number[], string> | null = null
+let outagesChart: Chart<'doughnut', number[], string> | null = null
 
-const severityCount = async (severity: string): Promise<number> => {
-  const resp = await getAlarms({ _s: `alarm.severity==${severity}`, limit: 1 })
-  return resp ? resp.totalCount : 0
-}
+const sum = (entries: StatusSummaryEntry[]) => entries.reduce((a, e) => a + e.count, 0)
+const alarmsTotal = computed(() => sum(alarmsEntries.value))
+const outagesTotal = computed(() => sum(outagesEntries.value))
 
-const load = async () => {
-  loading.value = true
-  const results = await Promise.all(ALARM_CHART_SEVERITIES.map((s) => severityCount(s).then((c) => [s, c] as const)))
-  counts.value = Object.fromEntries(results.filter(([, c]) => c > 0))
-  loading.value = false
-  renderChart()
-}
+const renderDonut = (
+  canvas: HTMLCanvasElement | null,
+  entries: StatusSummaryEntry[],
+  existing: Chart<'doughnut', number[], string> | null
+): Chart<'doughnut', number[], string> | null => {
+  if (!canvas) return existing
+  const filtered = entries.filter((e) => e.count > 0)
+  const labels = filtered.map((e) => e.label)
+  const data = filtered.map((e) => e.count)
+  const colors = filtered.map((e) => colorFor(e.label))
 
-const renderChart = () => {
-  if (!canvasRef.value) return
-  const labels = Object.keys(counts.value)
-  const data = labels.map((s) => counts.value[s])
-  const colors = labels.map((s) => severityColor(s))
-
-  if (chart) {
-    chart.data.labels = labels.map(severityLabel)
-    chart.data.datasets[0].data = data
-    chart.data.datasets[0].backgroundColor = colors
-    chart.update()
-    return
+  if (existing) {
+    existing.data.labels = labels
+    existing.data.datasets[0].data = data
+    existing.data.datasets[0].backgroundColor = colors
+    existing.update()
+    return existing
   }
 
-  chart = new Chart(canvasRef.value, {
+  return new Chart(canvas, {
     type: 'doughnut',
-    data: {
-      labels: labels.map(severityLabel),
-      datasets: [{ data, backgroundColor: colors, borderWidth: 1 }]
-    },
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 1 }] },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       cutout: '68%',
-      plugins: {
-        legend: { position: 'bottom' }
-      }
+      plugins: { legend: { position: 'bottom' } }
     }
   })
+}
+
+const load = async () => {
+  loading.value = true
+  const [alarms, outages] = await Promise.all([getNodesByAlarms(), getNodesByOutages()])
+  alarmsEntries.value = alarms
+  outagesEntries.value = outages
+  loading.value = false
+  await nextTick()
+  alarmsChart = renderDonut(alarmsCanvas.value, alarms, alarmsChart)
+  outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart)
 }
 
 onMounted(load)
 watch(() => props.refreshTick, load)
 onBeforeUnmount(() => {
-  chart?.destroy()
-  chart = null
+  alarmsChart?.destroy()
+  outagesChart?.destroy()
+  alarmsChart = null
+  outagesChart = null
 })
 </script>
 
@@ -126,10 +149,17 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
 
-  &__chart {
-    position: relative;
+  &__donuts {
     flex: 1 1 auto;
     min-height: 0;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__donut {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   &__center {
@@ -145,13 +175,13 @@ onBeforeUnmount(() => {
   }
 
   &__total {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     line-height: 1;
   }
 
-  &__label {
-    font-size: 0.75rem;
+  &__cap {
+    font-size: 0.7rem;
     color: var(--feather-secondary-text-on-surface, #666);
   }
 

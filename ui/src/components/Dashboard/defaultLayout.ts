@@ -73,6 +73,20 @@ export const createDefaultLayout = (): DashboardLayout => ({
       timeframeOverride: null,
       refreshSeconds: null,
       options: {}
+    },
+    {
+      id: 'news-1',
+      type: 'newsfeed',
+      x: 8,
+      y: 3,
+      w: 4,
+      h: 5,
+      collapsed: false,
+      titleOverride: null,
+      filterOverride: null,
+      timeframeOverride: null,
+      refreshSeconds: null,
+      options: {}
     }
   ]
 })

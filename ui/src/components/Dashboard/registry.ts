@@ -76,6 +76,16 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  newsfeed: {
+    type: 'newsfeed',
+    title: 'OpenNMS News Feed',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/NewsFeedPanel.vue')),
+    defaultSize: { w: 4, h: 5 },
+    minSize: { w: 3, h: 3 },
+    renamable: true,
+    collapsible: true
+  },
   sample: {
     type: 'sample',
     title: 'Sample Panel',
