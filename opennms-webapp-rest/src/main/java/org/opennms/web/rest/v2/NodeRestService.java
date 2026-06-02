@@ -219,10 +219,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
                     switch (c) {
                     case EQUALS:
-                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     case NOT_EQUALS:
-                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);

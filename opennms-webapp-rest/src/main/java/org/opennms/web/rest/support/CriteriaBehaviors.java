@@ -406,7 +406,8 @@ public abstract class CriteriaBehaviors {
                     " where ipinterface.id = ifservices.ipinterfaceid" +
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
-                    " and ifservices.status != 'D')",
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
                     w ? "ilike" : "="), v, Type.STRING);
                 break;
             case NOT_EQUALS:
@@ -415,7 +416,8 @@ public abstract class CriteriaBehaviors {
                     " where ipinterface.id = ifservices.ipinterfaceid" +
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
-                    " and ifservices.status != 'D')",
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
                     w ? "ilike" : "="), v, Type.STRING);
                 break;
             default:
