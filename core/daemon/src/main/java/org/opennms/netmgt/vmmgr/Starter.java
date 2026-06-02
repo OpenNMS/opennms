@@ -138,6 +138,23 @@ public class Starter {
     private void start() {
         LOG.debug("Beginning startup");
 
+        // HA coordination: if ha-configuration.xml is present and enabled, this either
+        // returns immediately (PRIMARY) or blocks until SECONDARY is promoted.
+        // Returns false only if shutdown was requested while waiting; in that case exit cleanly.
+        try {
+            Class<?> coordClass = Class.forName("org.opennms.netmgt.ha.HaStartupCoordinator");
+            coordClass.getMethod("load").invoke(null);
+            boolean proceed = (boolean) coordClass.getMethod("awaitReadyToStart").invoke(null);
+            if (!proceed) {
+                LOG.info("HA coordinator signalled clean shutdown; exiting without starting services");
+                return;
+            }
+        } catch (ClassNotFoundException e) {
+            LOG.debug("HA module not on classpath; skipping HA coordination");
+        } catch (Exception e) {
+            LOG.warn("HA coordination failed; proceeding with normal startup", e);
+        }
+
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
         Invoker invoker = new Invoker();

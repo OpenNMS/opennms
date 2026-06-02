@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Active-Passive HA configuration for OpenNMS.
+
+  ============================================================================
+  SETUP OVERVIEW
+  ============================================================================
+
+  1. Edit ha-configuration.xml on each node:
+       - Set <enabled>true</enabled>
+       - Set <instance-id> to a unique label for this node
+       - Set <role> to PRIMARY or SECONDARY (static; determines this node's role)
+       - Set <partner-instance-id> to the instance-id of the other node
+       - Set <partner-rest-url> to the REST base URL of the PARTNER node
+
+  1. Create the "hasync" service account on BOTH nodes:
+
+     a. Add to $OPENNMS_HOME/etc/users.xml (inside the <users> element):
+
+          <user>
+            <user-id>hasync</user-id>
+            <full-name>HA Configuration Sync</full-name>
+            <user-comments>Service account for HA cluster config synchronization. Do not delete.</user-comments>
+            <password salt="true">CHANGE_ME_USE_OPENNMS_UI_TO_SET_PASSWORD</password>
+            <role>ROLE_REST</role>
+            <role>ROLE_FILESYSTEM_EDITOR</role>
+          </user>
+
+        Use the OpenNMS UI (Admin → User Management) to set the password, or
+        use the REST API to create the user and assign roles.
+
+     b. Store the same password in the Secure Credentials Vault on BOTH nodes:
+
+          $OPENNMS_HOME/bin/opennms-scv:set hasync hasync <password>
+
+        Both nodes MUST use the same password. The value shipped in this file
+        is a random placeholder that will not work; you MUST set it explicitly.
+
+     c. Set <sync-password> in ha-configuration.xml to the SCV expression:
+          <sync-password>${scv:hasync:password}</sync-password>
+
+  3. Restart OpenNMS on both nodes. The SECONDARY will enter standby mode,
+     begin syncing configuration from the PRIMARY, and monitor the PRIMARY's
+     heartbeat.
+
+  ============================================================================
+  FAILOVER (automatic)
+  ============================================================================
+  If the PRIMARY heartbeat becomes stale beyond <failover-threshold-seconds>,
+  the SECONDARY promotes itself to ACTIVE and starts all services.
+
+  ============================================================================
+  FAILBACK (manual, after PRIMARY is restored)
+  ============================================================================
+  1. Ensure the restored PRIMARY is online and in STANDBY (check GET /rest/ha/status).
+  2. On the currently-ACTIVE SECONDARY, call:
+       POST /rest/ha/failback   (requires ROLE_ADMIN)
+  3. The SECONDARY stops services and enters STANDBY.
+  4. The PRIMARY detects the SECONDARY is STANDBY and activates within one
+     heartbeat interval.
+
+  ============================================================================
+  NOTES
+  ============================================================================
+  - <role> is static and never changes. It identifies what this node IS.
+  - The database (ha_instance_status table) is the source of truth for current
+    operational state. A SECONDARY with current_state=ACTIVE is a degraded
+    state indicating failover has occurred.
+  - Config sync fetches all files from /rest/filesystem on the partner.
+    The file ha-configuration.xml is NEVER synced (each node has its own).
+  - users.xml requires ROLE_ADMIN to access via the filesystem API and is
+    therefore not synced. Manage users on both nodes independently.
+-->
+<ha-configuration>
+  <enabled>false</enabled>
+
+  <!-- Unique label for this node. Simple strings work best: "opennms-primary" -->
+  <instance-id>opennms-primary</instance-id>
+
+  <!-- Role of THIS node: PRIMARY or SECONDARY -->
+  <role>PRIMARY</role>
+
+  <!-- Unique label of the PARTNER node (used for heartbeat monitoring). -->
+  <partner-instance-id>opennms-secondary</partner-instance-id>
+
+  <!--
+    Base REST URL of the PARTNER node. Used by SECONDARY for config sync.
+    Format: http://<partner-hostname>:<port>/opennms
+    Example: http://opennms-primary:8980/opennms
+  -->
+  <partner-rest-url>http://opennms-secondary:8980/opennms</partner-rest-url>
+
+  <!-- How often PRIMARY writes a heartbeat to the database (seconds). Default: 10. -->
+  <heartbeat-interval-seconds>10</heartbeat-interval-seconds>
+
+  <!--
+    How stale the PRIMARY heartbeat must be before SECONDARY promotes (seconds).
+    Must be greater than heartbeat-interval-seconds. Default: 60.
+    Recommendation: at least 3x the heartbeat interval.
+  -->
+  <failover-threshold-seconds>60</failover-threshold-seconds>
+
+  <!-- Whether SECONDARY should sync config from partner while in STANDBY. Default: true. -->
+  <sync-enabled>true</sync-enabled>
+
+  <!-- How often to sync configuration from the partner while in STANDBY (seconds). Default: 30. -->
+  <sync-interval-seconds>30</sync-interval-seconds>
+
+  <!--
+    Username of the sync service account. Must have ROLE_REST and ROLE_FILESYSTEM_EDITOR
+    on the partner instance. Default: hasync.
+  -->
+  <sync-username>hasync</sync-username>
+
+  <!--
+    Password for the sync service account as an SCV expression.
+    The SCV entry must be set on both nodes with the SAME password:
+      $OPENNMS_HOME/bin/opennms-scv:set hasync hasync <password>
+  -->
+  <sync-password>${scv:hasync:password}</sync-password>
+
+</ha-configuration>

@@ -238,6 +238,24 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-daemon</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-rest</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>${onmsLibScope}</scope>
