@@ -20,7 +20,22 @@
 /// License.
 ///
 
-import { type DashboardLayout, TimeframePreset } from '@/types/dashboard'
+import { type DashboardLayout, type DashboardPanel, TimeframePreset } from '@/types/dashboard'
+
+const panel = (id: string, type: string, x: number, y: number, w: number, h: number): DashboardPanel => ({
+  id,
+  type,
+  x,
+  y,
+  w,
+  h,
+  collapsed: false,
+  titleOverride: null,
+  filterOverride: null,
+  timeframeOverride: null,
+  refreshSeconds: null,
+  options: {}
+})
 
 // Built-in default used until the backend (NMS-19851) persists a layout, and
 // as the "reset" target. A factory (not a constant) so each load gets a fresh,
@@ -32,61 +47,11 @@ export const createDefaultLayout = (): DashboardLayout => ({
   globalFilter: { surveillanceCategories: [], ipMatch: null },
   globalTimeframe: { preset: TimeframePreset.Last24h, from: null, to: null },
   panels: [
-    {
-      id: 'nodes-1',
-      type: 'nodes-with-alarms',
-      x: 0,
-      y: 0,
-      w: 4,
-      h: 6,
-      collapsed: false,
-      titleOverride: null,
-      filterOverride: null,
-      timeframeOverride: null,
-      refreshSeconds: null,
-      options: {}
-    },
-    {
-      id: 'status-1',
-      type: 'status-overview',
-      x: 4,
-      y: 0,
-      w: 4,
-      h: 6,
-      collapsed: false,
-      titleOverride: null,
-      filterOverride: null,
-      timeframeOverride: null,
-      refreshSeconds: null,
-      options: {}
-    },
-    {
-      id: 'notif-1',
-      type: 'notifications',
-      x: 8,
-      y: 0,
-      w: 4,
-      h: 3,
-      collapsed: false,
-      titleOverride: null,
-      filterOverride: null,
-      timeframeOverride: null,
-      refreshSeconds: null,
-      options: {}
-    },
-    {
-      id: 'news-1',
-      type: 'newsfeed',
-      x: 8,
-      y: 3,
-      w: 4,
-      h: 5,
-      collapsed: false,
-      titleOverride: null,
-      filterOverride: null,
-      timeframeOverride: null,
-      refreshSeconds: null,
-      options: {}
-    }
+    panel('situations-1', 'pending-situations', 0, 0, 4, 3),
+    panel('nodes-1', 'nodes-with-alarms', 0, 3, 4, 6),
+    panel('outages-1', 'service-outages', 0, 9, 4, 4),
+    panel('status-1', 'status-overview', 4, 0, 4, 6),
+    panel('notif-1', 'notifications', 8, 0, 4, 3),
+    panel('news-1', 'newsfeed', 8, 3, 4, 6)
   ]
 })
