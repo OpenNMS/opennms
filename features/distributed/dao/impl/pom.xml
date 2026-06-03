@@ -66,6 +66,16 @@
                             org.slf4j,
 
                             org.hibernate,
+                            <!-- org.hibernate.query is required for Hibernate 5: Session.createQuery(String)
+                                 now returns org.hibernate.query.Query (it was org.hibernate.Query in
+                                 Hibernate 3), used by AbstractDaoHibernate.queryInt/countAll (NMS-15863). -->
+                            org.hibernate.query,
+                            <!-- Hibernate 5 SPI packages referenced by the DAO classes embedded in this
+                                 bundle: HibernateCriteriaConverter uses engine.spi.SessionImplementor and
+                                 HibernateUtils uses metamodel.spi / persister.entity (NMS-15863). -->
+                            org.hibernate.engine.spi,
+                            org.hibernate.metamodel.spi,
+                            org.hibernate.persister.entity,
                             org.hibernate.classic,
                             org.hibernate.criterion,
                             org.hibernate.metadata,
