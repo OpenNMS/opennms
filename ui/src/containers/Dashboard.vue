@@ -52,12 +52,16 @@ onMounted(() => store.load())
 
 <style scoped lang="scss">
 .dashboard-container {
+  // fill the app's main content area and scroll INTERNALLY so a tall dashboard
+  // never overflows past the app footer/copyright bar.
   height: 100%;
-  // ensure a solid backdrop + scrolling when shown full screen (NOC display)
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--feather-background, #f3f5f7);
 
   &:fullscreen {
-    overflow: auto;
+    overflow: hidden;
   }
 
   // CSS "maximize" fallback when the Fullscreen API is blocked
@@ -65,14 +69,14 @@ onMounted(() => store.load())
     position: fixed;
     inset: 0;
     z-index: 2000;
-    overflow: auto;
   }
 }
 </style>
 
-<!-- Global (non-scoped): PrimeVue overlays teleport to <body>, outside the app
-     font scope, so they fall back to the serif default. Keep them sans-serif. -->
+<!-- Global (non-scoped) rules. -->
 <style lang="scss">
+// PrimeVue overlays teleport to <body>, outside the app font scope, so they fall
+// back to the serif default. Keep them sans-serif.
 .p-select-overlay,
 .p-select-list,
 .p-multiselect-overlay,
@@ -80,5 +84,14 @@ onMounted(() => store.load())
 .p-popover,
 .p-popover * {
   font-family: 'OpenSans', Helvetica, Arial, sans-serif;
+}
+
+// Only when the dashboard is the active page: give the app content chain a
+// definite height so the dashboard can scroll internally (and not push past the
+// footer). Scoped via :has() so other pages keep their normal auto height.
+.app-content-container:has(#dashboard-root),
+.main-content:has(#dashboard-root) {
+  height: 100%;
+  min-height: 0;
 }
 </style>

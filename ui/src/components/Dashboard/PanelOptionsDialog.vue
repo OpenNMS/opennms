@@ -69,11 +69,20 @@ License.
         <label class="opts__label">Content URL</label>
         <PInputText
           v-model="htmlUrl"
-          placeholder="https://… (same-origin)"
+          placeholder="/opennms/… or https://this-server/…"
           class="opts__control"
+          :class="{ 'opts__control--error': !!urlError }"
         />
-        <small class="opts__hint">
-          Loaded in an iframe. External sites require the server's <code>frame-src</code> CSP to allow them.
+        <small
+          v-if="urlError"
+          class="opts__error"
+        >{{ urlError }}</small>
+        <small
+          v-else
+          class="opts__hint"
+        >
+          Loaded in an iframe. Only same-origin URLs work (the dashboard CSP is <code>frame-src 'self'</code>);
+          note many external sites also refuse to be framed.
         </small>
       </div>
     </div>
@@ -125,6 +134,23 @@ const heightMode = ref<PanelHeightMode>('auto')
 const notesText = ref('')
 const htmlUrl = ref('')
 
+// External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
+// up front so the user gets an explanation instead of a silent broken iframe.
+const urlError = computed(() => {
+  const t = htmlUrl.value.trim()
+  if (!t) return ''
+  let parsed: URL
+  try {
+    parsed = new URL(t, window.location.origin)
+  } catch {
+    return 'That is not a valid URL.'
+  }
+  if (parsed.origin !== window.location.origin) {
+    return `External URLs (${parsed.origin}) are blocked by the dashboard security policy (frame-src 'self'). Use a URL on this server, or ask an admin to allow the host in the server CSP.`
+  }
+  return ''
+})
+
 const syncFromPanel = () => {
   heightMode.value = store.resolvedHeightMode(props.panel)
   notesText.value = String(props.panel.options?.text ?? '')
@@ -139,6 +165,9 @@ watch(
 )
 
 const apply = () => {
+  if (props.panel.type === 'html-content' && urlError.value) {
+    return // keep the dialog open; the error is shown inline
+  }
   store.setPanelHeightMode(props.panel.id, heightMode.value)
   const opts: Record<string, unknown> = { ...props.panel.options }
   if (props.panel.type === 'notes') opts.text = notesText.value
@@ -188,6 +217,15 @@ const apply = () => {
 
   &__hint {
     color: var(--feather-secondary-text-on-surface, #666);
+  }
+
+  &__error {
+    color: var(--feather-error, #b00020);
+  }
+
+  &__control--error {
+    outline: 1px solid var(--feather-error, #b00020);
+    border-radius: 4px;
   }
 }
 </style>

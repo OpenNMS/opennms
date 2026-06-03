@@ -173,13 +173,15 @@ const onRemove = () => {
   min-width: 0;
 
   &--fixed {
-    // fill the grid cell; content scrolls inside it
+    // fill the grid cell; content scrolls inside it. The full PrimeVue 4 chain is
+    // .p-panel > .p-panel-content-container > .p-panel-content-wrapper > .p-panel-content
+    // — every wrapper must flex down for the content to get a bounded height.
     height: 100%;
     display: flex;
     flex-direction: column;
 
     :deep(.p-panel-content-container),
-    :deep(.p-toggleable-content) {
+    :deep(.p-panel-content-wrapper) {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;

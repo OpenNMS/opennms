@@ -177,10 +177,12 @@ const onLayoutUpdated = (newLayout: GridItemModel[]) => {
 
 <style scoped lang="scss">
 .dashboard-grid {
+  // scroll the panel area internally so the dashboard never overflows the footer
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   padding: 1rem;
-  // clear the app's fixed copyright/footer bar so the last panels aren't cut
-  padding-bottom: 3.5rem;
-  min-height: 200px;
+  padding-bottom: 1.5rem;
 
   &--edit :deep(.vgl-item) {
     cursor: move;
