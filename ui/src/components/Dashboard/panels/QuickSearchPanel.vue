@@ -54,11 +54,46 @@ License.
         </button>
       </div>
     </form>
+
+    <form
+      v-if="services.length"
+      class="quick-search__row"
+      action="/opennms/element/nodeList.htm"
+      method="get"
+    >
+      <label class="quick-search__label">Providing service</label>
+      <input
+        type="hidden"
+        name="listInterfaces"
+        value="false"
+      >
+      <div class="quick-search__input">
+        <select
+          class="quick-search__text"
+          name="service"
+        >
+          <option
+            v-for="svc in services"
+            :key="svc.id"
+            :value="svc.id"
+          >{{ svc.name }}</option>
+        </select>
+        <button
+          class="quick-search__btn"
+          type="submit"
+          title="Search by providing service"
+        >
+          <i class="pi pi-search" />
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
+import { getServiceTypes, type ServiceType } from '@/services/dashboardService'
 
 defineProps<PanelComponentProps>()
 
@@ -67,6 +102,11 @@ const fields = [
   { label: 'Node label', name: 'nodename', placeholder: 'localhost', listInterfaces: 'true' },
   { label: 'TCP/IP Address', name: 'iplike', placeholder: '*.*.*.* or *:*:*:*:*:*:*:*', listInterfaces: 'false' }
 ]
+
+const services = ref<ServiceType[]>([])
+onMounted(async () => {
+  services.value = await getServiceTypes()
+})
 </script>
 
 <style scoped lang="scss">

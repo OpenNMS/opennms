@@ -53,3 +53,18 @@ export const getSystemDashboard = async (): Promise<DashboardLayout> => {
 export const saveSystemDashboard = async (layout: DashboardLayout): Promise<void> => {
   await v2.put(endpoint, layout)
 }
+
+export interface ServiceType {
+  id: number
+  name: string
+}
+
+// Monitored service types (id + name) for the Quick Search "Providing service" control.
+export const getServiceTypes = async (): Promise<ServiceType[]> => {
+  try {
+    const resp = await v2.get('/dashboard/service-types', { headers: { Accept: 'application/json' } })
+    return Array.isArray(resp.data) ? (resp.data as ServiceType[]) : []
+  } catch (err) {
+    return []
+  }
+}

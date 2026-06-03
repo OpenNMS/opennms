@@ -64,4 +64,14 @@ public interface DashboardRestApi {
             operationId = "updateSystemDashboardLayout"
     )
     Response updateSystemLayout(Map<String, Object> layout);
+
+    @GET
+    @Path("service-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "List monitored service types (id + name).",
+            description = "Used by the dashboard Quick Search 'Providing service' control.",
+            operationId = "getDashboardServiceTypes"
+    )
+    Response getServiceTypes();
 }

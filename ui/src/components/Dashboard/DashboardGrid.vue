@@ -126,22 +126,20 @@ const minH = (id: string) => {
 const compactLayout = () => {
   const sorted = [...layout.value].sort((a, b) => a.y - b.y || a.x - b.x)
   const placed: GridItemModel[] = []
-  let changed = false
   for (const it of sorted) {
     let bottom = 0
     for (const p of placed) {
       const xOverlap = it.x < p.x + p.w && p.x < it.x + it.w
       if (xOverlap) bottom = Math.max(bottom, p.y + p.h)
     }
-    if (it.y !== bottom) {
-      it.y = bottom
-      changed = true
-    }
+    it.y = bottom
     placed.push(it)
   }
-  // Reassign with FRESH item objects — grid-layout-plus ignores a reassigned
-  // array that keeps the same item identities, so positions wouldn't re-render.
-  if (changed) layout.value = layout.value.map((it) => ({ ...it }))
+  // ALWAYS reassign with FRESH item objects. grid-layout-plus only reacts to a
+  // change of the layout array reference / length (watch on [layout, length]) —
+  // it ignores in-place h/y mutations. A new array of new objects forces it to
+  // re-read and re-render (this is what makes auto-height + compaction apply).
+  layout.value = layout.value.map((it) => ({ ...it }))
 }
 
 // Reconcile the grid model on add/remove/collapse only — keeping existing items'

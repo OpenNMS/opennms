@@ -21,19 +21,26 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.web.rest.v2.api.DashboardRestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link DashboardRestApi}. Persists the single system-wide
@@ -51,6 +58,9 @@ public class DashboardRestService implements DashboardRestApi {
 
     @Autowired
     private JsonStore jsonStore;
+
+    @Autowired
+    private ServiceTypeDao serviceTypeDao;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -80,6 +90,26 @@ public class DashboardRestService implements DashboardRestApi {
             return Response.noContent().build();
         } catch (final Exception e) {
             LOG.error("Failed to store system dashboard layout", e);
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response getServiceTypes() {
+        try {
+            final List<Map<String, Object>> types = serviceTypeDao.findAll().stream()
+                    .sorted(Comparator.comparing(OnmsServiceType::getName, String.CASE_INSENSITIVE_ORDER))
+                    .map(t -> {
+                        final Map<String, Object> m = new LinkedHashMap<>();
+                        m.put("id", t.getId());
+                        m.put("name", t.getName());
+                        return m;
+                    })
+                    .collect(Collectors.toList());
+            return Response.ok(types).build();
+        } catch (final Exception e) {
+            LOG.error("Failed to list service types", e);
             return Response.serverError().build();
         }
     }
