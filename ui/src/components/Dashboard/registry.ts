@@ -98,6 +98,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'business-services': {
     type: 'business-services',
     title: 'Business Services with Pending Alarms',
+    titleHref: '/opennms/topology?provider=Business%20Services&layout=Hierarchy%20Layout&szl=1',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/BusinessServicesPanel.vue')),
     defaultSize: { w: 4, h: 3 },

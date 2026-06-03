@@ -81,6 +81,17 @@ const STATUS_COLORS: Record<string, string> = {
 }
 const colorFor = (label: string) => STATUS_COLORS[label] ?? '#999999'
 
+// Legend label text must follow the theme — Chart.js defaults to a dark gray that
+// is unreadable on the dark surface. Read the Feather text color off the panel.
+const legendColor = (): string => {
+  const el = rootRef.value
+  if (el) {
+    const c = getComputedStyle(el).getPropertyValue('--feather-primary-text-on-surface').trim()
+    if (c) return c
+  }
+  return '#333333'
+}
+
 const rootRef = ref<HTMLElement | null>(null)
 const alarmsCanvas = ref<HTMLCanvasElement | null>(null)
 const outagesCanvas = ref<HTMLCanvasElement | null>(null)
@@ -111,6 +122,8 @@ const renderDonut = (
     existing.data.labels = labels
     existing.data.datasets[0].data = data
     existing.data.datasets[0].backgroundColor = colors
+    const legend = existing.options.plugins?.legend
+    if (legend) legend.labels = { ...(legend.labels ?? {}), color: legendColor() }
     existing.update()
     return existing
   }
@@ -122,7 +135,7 @@ const renderDonut = (
       responsive: true,
       maintainAspectRatio: false,
       cutout: '55%',
-      plugins: { legend: { position: 'bottom' } }
+      plugins: { legend: { position: 'bottom', labels: { color: legendColor() } } }
     }
   })
 }
@@ -138,6 +151,13 @@ const load = async () => {
   outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart)
 }
 
+let themeObserver: MutationObserver | null = null
+
+const recolorLegends = () => {
+  alarmsChart = renderDonut(alarmsCanvas.value, alarmsEntries.value, alarmsChart)
+  outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart)
+}
+
 onMounted(() => {
   load()
   // resize charts when the panel (grid item) is resized
@@ -148,11 +168,17 @@ onMounted(() => {
     })
     resizeObserver.observe(rootRef.value)
   }
+  // recolor the legend when the .open-dark theme is toggled (no refresh needed)
+  themeObserver = new MutationObserver(recolorLegends)
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] })
 })
 watch(() => props.refreshTick, load)
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   resizeObserver = null
+  themeObserver?.disconnect()
+  themeObserver = null
   alarmsChart?.destroy()
   outagesChart?.destroy()
   alarmsChart = null
