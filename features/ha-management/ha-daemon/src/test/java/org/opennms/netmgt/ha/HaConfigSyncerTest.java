@@ -21,13 +21,22 @@
  */
 package org.opennms.netmgt.ha;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class HaConfigSyncerTest {
+
+    @Rule
+    public TemporaryFolder tmp = new TemporaryFolder();
 
     // -------------------------------------------------------------------------
     // JSON array parser
@@ -130,5 +139,67 @@ public class HaConfigSyncerTest {
         cfg.setPartnerRestUrl(null);
         // Should log a warning and return without attempting HTTP
         new HaConfigSyncer(cfg).sync();
+    }
+
+    @Test
+    public void syncSkipsWhenInstanceIsActive() {
+        HaConfiguration cfg = new HaConfiguration();
+        cfg.setSyncEnabled(true);
+        cfg.setPartnerRestUrl("http://partner:8980/opennms");
+        // When this instance is ACTIVE it must not attempt to sync from the partner
+        HaConfigSyncer syncer = new HaConfigSyncer(cfg, () -> HaInstanceState.ACTIVE);
+        syncer.sync(); // would throw/fail if HTTP was attempted against a non-existent partner
+    }
+
+    // -------------------------------------------------------------------------
+    // writeLocalFile skips unchanged content
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void writeLocalFileSkipsUnchangedContent() throws Exception {
+        Path etc = tmp.newFolder("etc").toPath();
+        Path target = etc.resolve("test.xml");
+        Files.writeString(target, "<config/>", StandardCharsets.UTF_8);
+
+        System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
+        try {
+            long beforeMtime = Files.getLastModifiedTime(target).toMillis();
+            // Small sleep to ensure mtime would differ if a write occurred
+            Thread.sleep(50);
+
+            HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
+            // Invoke writeLocalFile via reflection (package-private visibility via same package)
+            invokeWriteLocalFile(syncer, "test.xml", "<config/>");
+
+            long afterMtime = Files.getLastModifiedTime(target).toMillis();
+            assertEquals("File should not have been rewritten when content is identical",
+                    beforeMtime, afterMtime);
+        } finally {
+            System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void writeLocalFileWritesWhenContentDiffers() throws Exception {
+        Path etc = tmp.newFolder("etc").toPath();
+        Path target = etc.resolve("test2.xml");
+        Files.writeString(target, "<old/>", StandardCharsets.UTF_8);
+
+        System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
+        try {
+            HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
+            invokeWriteLocalFile(syncer, "test2.xml", "<new/>");
+            assertEquals("<new/>", Files.readString(target, StandardCharsets.UTF_8));
+        } finally {
+            System.clearProperty("opennms.home");
+        }
+    }
+
+    private static void invokeWriteLocalFile(HaConfigSyncer syncer, String filename, String content)
+            throws Exception {
+        java.lang.reflect.Method m = HaConfigSyncer.class
+                .getDeclaredMethod("writeLocalFile", String.class, String.class);
+        m.setAccessible(true);
+        m.invoke(syncer, filename, content);
     }
 }

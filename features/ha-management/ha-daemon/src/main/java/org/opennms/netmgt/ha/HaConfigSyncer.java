@@ -43,6 +43,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,10 +71,17 @@ public class HaConfigSyncer {
             Pattern.compile("^\\$\\{scv:([^:}]+):([^}]+)\\}$");
 
     private final HaConfiguration config;
+    private final Supplier<HaInstanceState> stateSupplier;
     private final HttpClient httpClient;
 
+    /** Constructor used in tests and when no state tracking is needed (always treats self as STANDBY). */
     public HaConfigSyncer(HaConfiguration config) {
+        this(config, () -> HaInstanceState.STANDBY);
+    }
+
+    public HaConfigSyncer(HaConfiguration config, Supplier<HaInstanceState> stateSupplier) {
         this.config = config;
+        this.stateSupplier = stateSupplier;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -81,12 +89,21 @@ public class HaConfigSyncer {
 
     /**
      * Performs one synchronization pass: fetches the file list from the partner
-     * and overwrites each local file. Failures are logged but do not throw.
+     * and overwrites each local file whose content has changed. Skipped entirely
+     * when this instance is {@link HaInstanceState#ACTIVE}. Failures are logged
+     * but do not throw.
      */
     public void sync() {
         if (!config.isSyncEnabled()) {
             return;
         }
+
+        HaInstanceState state = stateSupplier.get();
+        if (state == HaInstanceState.ACTIVE) {
+            LOG.debug("HA sync: this instance is ACTIVE; skipping config sync");
+            return;
+        }
+
         if (config.getPartnerRestUrl() == null || config.getPartnerRestUrl().isBlank()) {
             LOG.warn("HA sync: partner-rest-url is not configured; skipping config sync");
             return;
@@ -184,6 +201,14 @@ public class HaConfigSyncer {
         // Guard against path traversal
         if (!target.toAbsolutePath().startsWith(etcDir)) {
             throw new IOException("Sync rejected: " + filename + " resolves outside etc directory");
+        }
+
+        if (Files.exists(target)) {
+            String existing = Files.readString(target, StandardCharsets.UTF_8);
+            if (existing.equals(content)) {
+                LOG.debug("HA sync: {} unchanged, skipping write", filename);
+                return;
+            }
         }
 
         Files.createDirectories(target.getParent());

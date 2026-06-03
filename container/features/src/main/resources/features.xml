@@ -1934,6 +1934,10 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-ha-shell" version="${project.version}" description="OpenNMS :: Features :: HA Management :: Shell Commands">
+        <bundle>mvn:org.opennms.features.ha-management/org.opennms.features.ha-management.ha-shell/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <feature>opennms-bridge-http-service</feature>
     </feature>

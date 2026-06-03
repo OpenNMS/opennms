@@ -1100,6 +1100,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.encrypt-util</artifactId>
       <version>${project.version}</version>

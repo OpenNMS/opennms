@@ -18,5 +18,6 @@
         <module>ha-api</module>
         <module>ha-daemon</module>
         <module>ha-rest</module>
+        <module>ha-shell</module>
     </modules>
 </project>

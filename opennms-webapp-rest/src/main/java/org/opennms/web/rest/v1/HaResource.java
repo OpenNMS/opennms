@@ -24,7 +24,6 @@ package org.opennms.web.rest.v1;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.ha.HaConfiguration;
 import org.opennms.netmgt.ha.HaInstanceState;
-import org.opennms.netmgt.ha.HaRole;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 import org.opennms.netmgt.ha.rest.dto.HaInstanceStatusDto;
 import org.opennms.netmgt.ha.rest.dto.HaStatusCollectionDto;
@@ -46,6 +45,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
 import java.io.File;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -100,7 +102,8 @@ public class HaResource extends OnmsRestService {
                 Timestamp ts = rs.getTimestamp("last_heartbeat");
                 dto.setLastHeartbeat(ts != null ? ts.toInstant().toString() : null);
                 dto.setHostname(rs.getString("hostname"));
-                dto.setDegraded("SECONDARY".equals(dto.getConfiguredRole()) && "ACTIVE".equals(dto.getCurrentState()));
+                dto.setDegraded("SECONDARY".equals(dto.getConfiguredRole()) && "ACTIVE".equals(dto.getCurrentState())
+                        || "DEGRADED".equals(dto.getCurrentState()));
                 instances.add(dto);
             }
 
@@ -131,16 +134,16 @@ public class HaResource extends OnmsRestService {
     }
 
     // -------------------------------------------------------------------------
-    // POST /rest/ha/failback
+    // POST /rest/ha/failover
     // -------------------------------------------------------------------------
 
     @POST
-    @Path("failback")
+    @Path("failover")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response initiateFailback(@Context SecurityContext securityContext) {
+    public Response initiateFailover(@Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN)) {
             return Response.status(Response.Status.FORBIDDEN)
-                    .entity("ROLE_ADMIN is required to initiate failback").build();
+                    .entity("ROLE_ADMIN is required to initiate failover").build();
         }
 
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
@@ -149,36 +152,44 @@ public class HaResource extends OnmsRestService {
                     .entity("HA is not enabled on this instance").build();
         }
 
-        HaConfiguration config = coord.getConfig();
-        if (config.getRole() != HaRole.SECONDARY) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity("Failback can only be initiated on a configured-SECONDARY instance").build();
-        }
-
         if (coord.getCurrentState() != HaInstanceState.ACTIVE) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity("This SECONDARY instance is not currently ACTIVE; failback is not applicable").build();
+                    .entity("This instance is not currently ACTIVE; failover is not applicable").build();
         }
 
-        LOG.warn("HA failback initiated via REST by user '{}'", securityContext.getUserPrincipal().getName());
+        HaConfiguration config = coord.getConfig();
+        LOG.warn("HA failover initiated via REST by user '{}' on {} ({})",
+                securityContext.getUserPrincipal().getName(), config.getInstanceId(), config.getRole());
 
-        // Shutdown is asynchronous — the coordinator updates DB state and signals the process.
-        // The operator should monitor GET /rest/ha/status to confirm the partner PRIMARY activates.
-        Thread failbackThread = new Thread(() -> {
+        Thread failoverThread = new Thread(() -> {
             try {
-                // Brief delay to allow this HTTP response to be sent before services begin stopping
-                Thread.sleep(2000);
-                HaStartupCoordinator.shutdown();
+                // Brief delay to allow this HTTP response to be delivered before services stop
+                Thread.sleep(1000);
+
+                // 1. Write STANDBY to DB and stop the heartbeat — partner monitor sees this immediately
+                coord.initiateFailover();
+
+                // 2. Stop all OpenNMS services via the in-process Manager MBean
+                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
+                if (!servers.isEmpty()) {
+                    servers.get(0).invoke(
+                            ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
+                            new Object[0], new String[0]);
+                } else {
+                    LOG.error("HA failover: no MBeanServer found; OpenNMS services may not stop cleanly");
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                LOG.error("HA failover: error stopping services", e);
             }
-        }, "ha-failback");
-        failbackThread.setDaemon(true);
-        failbackThread.start();
+        }, "ha-failover");
+        failoverThread.setDaemon(false); // must not be daemon — must outlive the HTTP request
+        failoverThread.start();
 
         return Response.accepted()
-                .entity("Failback initiated. This instance will stop services and enter STANDBY. " +
-                        "Monitor GET /rest/ha/status on the PRIMARY instance to confirm it activates.")
+                .entity("Failover initiated. This instance will stop services and enter STANDBY. " +
+                        "Monitor GET /rest/ha/status to confirm the partner activates.")
                 .build();
     }
 }
