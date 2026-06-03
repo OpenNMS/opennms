@@ -129,10 +129,14 @@ export const queryTopn = async (
     if (!sources.length) return []
 
     const { start, end } = timeframeRange(timeframe)
+    // Use a normal resolution step (a single huge bucket returns NaN from RRD);
+    // the series is averaged below. Cap to ~1000 points per source.
+    const step = Math.max(300_000, Math.floor((end - start) / 1000))
     const payload = {
       start,
       end,
-      step: Math.max(end - start, 300_000), // one bucket over the whole range
+      step,
+      maxrows: 2000,
       relaxed: true,
       source: sources.map((s, i) => ({
         label: `s${i}`,
