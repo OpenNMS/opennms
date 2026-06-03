@@ -21,7 +21,7 @@
 ///
 
 import { type Component, defineAsyncComponent } from 'vue'
-import type { FilterKey } from '@/types/dashboard'
+import type { FilterKey, PanelHeightMode } from '@/types/dashboard'
 
 export interface PanelGridSize {
   w: number
@@ -38,6 +38,9 @@ export interface PanelDefinition {
   component: Component
   defaultSize: PanelGridSize
   minSize?: PanelGridSize
+  // default height behaviour; user can override per panel instance. 'fixed' =
+  // fixed grid height with scrollbar, 'auto' = grow/shrink to content.
+  defaultHeightMode?: PanelHeightMode
   supportsTimeframe?: boolean // show timeframe control for this panel (user-requested)
   supportedFilters?: FilterKey[] // filters this panel honors (NMS-10507)
   renamable?: boolean // default true
@@ -78,6 +81,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   },
   'status-overview': {
     type: 'status-overview',
+    defaultHeightMode: 'fixed',
     title: 'Status Overview',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/StatusOverviewPanel.vue')),
@@ -108,6 +112,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   },
   availability: {
     type: 'availability',
+    defaultHeightMode: 'fixed',
     title: 'Availability Over the Past 24 Hours',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/AvailabilityPanel.vue')),
@@ -118,6 +123,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   },
   'regional-map': {
     type: 'regional-map',
+    defaultHeightMode: 'fixed',
     title: 'Regional Status',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/RegionalMapPanel.vue')),
@@ -138,6 +144,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   },
   newsfeed: {
     type: 'newsfeed',
+    defaultHeightMode: 'fixed',
     title: 'OpenNMS News Feed',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/NewsFeedPanel.vue')),
@@ -172,6 +179,27 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/QuickSearchPanel.vue')),
     defaultSize: { w: 3, h: 5 },
+    minSize: { w: 2, h: 3 },
+    renamable: true,
+    collapsible: true
+  },
+  notes: {
+    type: 'notes',
+    title: 'Notes',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/NotesPanel.vue')),
+    defaultSize: { w: 3, h: 3 },
+    minSize: { w: 2, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
+  'html-content': {
+    type: 'html-content',
+    defaultHeightMode: 'fixed',
+    title: 'HTML Content',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/HtmlContentPanel.vue')),
+    defaultSize: { w: 4, h: 5 },
     minSize: { w: 2, h: 3 },
     renamable: true,
     collapsible: true

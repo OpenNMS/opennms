@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
-import type { DashboardFilter, DashboardLayout, DashboardPanel, Timeframe } from '@/types/dashboard'
+import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode, Timeframe } from '@/types/dashboard'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
@@ -61,7 +61,12 @@ export const useDashboardStore = defineStore('dashboardStore', {
     resolvedRefreshSeconds:
       (state) =>
         (panel: DashboardPanel): number =>
-          panel.refreshSeconds ?? state.layout.refresh.seconds
+          panel.refreshSeconds ?? state.layout.refresh.seconds,
+    // Effective height mode: panel override, else registry default, else 'auto'.
+    resolvedHeightMode:
+      () =>
+        (panel: DashboardPanel): PanelHeightMode =>
+          panel.heightMode ?? getPanelDefinition(panel.type)?.defaultHeightMode ?? 'auto'
   },
   actions: {
     async load() {
@@ -117,7 +122,10 @@ export const useDashboardStore = defineStore('dashboardStore', {
       for (const item of items) {
         const panel = this.layout.panels.find((p) => p.id === item.i)
         if (!panel) continue
-        const nextH = panel.collapsed ? panel.h : item.h
+        // Don't persist grid height for collapsed (header-only) or auto-height
+        // panels — those are derived at runtime, not user-set.
+        const derivedH = panel.collapsed || this.resolvedHeightMode(panel) === 'auto'
+        const nextH = derivedH ? panel.h : item.h
         if (panel.x !== item.x || panel.y !== item.y || panel.w !== item.w || panel.h !== nextH) {
           panel.x = item.x
           panel.y = item.y
@@ -165,6 +173,20 @@ export const useDashboardStore = defineStore('dashboardStore', {
       if (panel) {
         const trimmed = title?.trim()
         panel.titleOverride = trimmed ? trimmed : null
+        this.isDirty = true
+      }
+    },
+    setPanelOptions(id: string, options: Record<string, unknown>) {
+      const panel = this.layout.panels.find((p) => p.id === id)
+      if (panel) {
+        panel.options = { ...options }
+        this.isDirty = true
+      }
+    },
+    setPanelHeightMode(id: string, mode: PanelHeightMode) {
+      const panel = this.layout.panels.find((p) => p.id === id)
+      if (panel) {
+        panel.heightMode = mode
         this.isDirty = true
       }
     },

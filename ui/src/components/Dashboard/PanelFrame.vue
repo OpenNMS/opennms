@@ -23,13 +23,17 @@ License.
 <!--
   Chrome around a single dashboard panel: title, collapse, and (in edit mode)
   rename / options / remove. Renders the registered panel component and feeds it
-  the resolved filter / timeframe / refresh contracts. Drag & resize are added
-  in milestone 2 with grid-layout-plus; this frame stays unchanged when they are.
+  the resolved filter / timeframe / refresh contracts.
+
+  Height mode: 'fixed' = fixed grid height with an internal scrollbar; 'auto' =
+  the panel measures its natural content height and asks DashboardGrid to size
+  the grid cell to fit (so e.g. empty list panels shrink to a couple of lines).
 -->
 <template>
   <PPanel
+    ref="frameRef"
     class="panel-frame"
-    :class="{ 'panel-frame--missing': !panelDef }"
+    :class="[heightModeClass, { 'panel-frame--missing': !panelDef }]"
     :header="displayTitle"
     :toggleable="collapsible"
     :collapsed="panel.collapsed"
@@ -52,7 +56,7 @@ License.
         type="button"
         class="p-panel-header-icon"
         title="Panel options"
-        @click="onOptions"
+        @click="showOptions = true"
       >
         <i class="pi pi-cog" />
       </button>
@@ -81,22 +85,32 @@ License.
       Unknown panel type: <code>{{ panel.type }}</code>
     </div>
   </PPanel>
+
+  <PanelOptionsDialog
+    v-model:visible="showOptions"
+    :panel="panel"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import Panel from 'primevue/panel'
 import type { DashboardPanel } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
+import PanelOptionsDialog from './PanelOptionsDialog.vue'
 
 const PPanel = Panel
 
 const props = defineProps<{ panel: DashboardPanel }>()
+const emit = defineEmits<{ (e: 'request-height', id: string, px: number): void }>()
 
 const store = useDashboardStore()
 const { editMode, refreshTick } = storeToRefs(store)
+
+const frameRef = ref<{ $el?: HTMLElement } | null>(null)
+const showOptions = ref(false)
 
 const panelDef = computed(() => getPanelDefinition(props.panel.type))
 const collapsible = computed(() => panelDef.value?.collapsible !== false)
@@ -107,23 +121,46 @@ const displayTitle = computed(() => props.panel.titleOverride || panelDef.value?
 const resolvedFilter = computed(() => store.resolvedFilter(props.panel))
 const resolvedTimeframe = computed(() => store.resolvedTimeframe(props.panel))
 
+const heightMode = computed(() => store.resolvedHeightMode(props.panel))
+const heightModeClass = computed(() => (heightMode.value === 'auto' ? 'panel-frame--auto' : 'panel-frame--fixed'))
+
+// --- Auto-height: measure natural content and ask the grid to fit the cell ---
+let resizeObserver: ResizeObserver | null = null
+
+const measure = () => {
+  if (heightMode.value !== 'auto' || props.panel.collapsed) return
+  const el = frameRef.value?.$el
+  if (el) emit('request-height', props.panel.id, el.offsetHeight)
+}
+
+const setupObserver = () => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+  const el = frameRef.value?.$el
+  if (heightMode.value === 'auto' && el) {
+    resizeObserver = new ResizeObserver(() => measure())
+    resizeObserver.observe(el)
+  }
+  nextTick(measure)
+}
+
+onMounted(setupObserver)
+watch([heightMode, () => props.panel.collapsed], setupObserver)
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+})
+
 const onCollapsedChange = (collapsed: boolean) => {
   store.setPanelCollapsed(props.panel.id, collapsed)
 }
 
 const onRename = () => {
-  // Placeholder editor; milestone 5 replaces this with an inline / dialog editor.
   // eslint-disable-next-line no-alert
   const next = window.prompt('Panel title', displayTitle.value)
   if (next !== null) {
     store.setPanelTitle(props.panel.id, next)
   }
-}
-
-const onOptions = () => {
-  // Per-panel options dialog (content / filter / timeframe / refresh overrides)
-  // is milestone 5. Stubbed for now.
-  console.info('Panel options not yet implemented for', props.panel.id)
 }
 
 const onRemove = () => {
@@ -132,27 +169,37 @@ const onRemove = () => {
 </script>
 
 <style scoped lang="scss">
-// Fill the grid cell provided by DashboardGrid (grid-layout-plus GridItem), and
-// give fill-height panels (map, charts) a real bounded content height by making
-// the PrimeVue Panel's content wrappers flex down the column.
 .panel-frame {
-  height: 100%;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
 
-  :deep(.p-panel-content-container),
-  :deep(.p-toggleable-content) {
-    flex: 1 1 auto;
-    min-height: 0;
+  &--fixed {
+    // fill the grid cell; content scrolls inside it
+    height: 100%;
     display: flex;
     flex-direction: column;
+
+    :deep(.p-panel-content-container),
+    :deep(.p-toggleable-content) {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :deep(.p-panel-content) {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
   }
 
-  :deep(.p-panel-content) {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
+  &--auto {
+    // size to content; the grid cell is fitted to this via request-height
+    height: auto;
+
+    :deep(.p-panel-content) {
+      overflow: visible;
+    }
   }
 
   &__missing {

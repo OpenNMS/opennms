@@ -59,6 +59,8 @@ export interface DashboardRefresh {
   paused: boolean
 }
 
+export type PanelHeightMode = 'fixed' | 'auto'
+
 export interface DashboardPanel {
   id: string
   type: string // matches a PanelDefinition.type in the registry
@@ -67,6 +69,9 @@ export interface DashboardPanel {
   y: number
   w: number
   h: number
+  // 'fixed' = fixed grid height with scrollbar; 'auto' = grow to fit content.
+  // undefined => use the registry default for the panel type.
+  heightMode?: PanelHeightMode
   collapsed: boolean // NMS-11946
   titleOverride: string | null // user rename; null => registry default title
   filterOverride: DashboardFilter | null // null => use globalFilter

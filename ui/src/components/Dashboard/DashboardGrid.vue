@@ -53,11 +53,13 @@ License.
         :h="item.h"
         :min-w="minW(item.i)"
         :min-h="minH(item.i)"
+        :is-resizable="editMode && !isAuto(item.i)"
         drag-allow-from=".p-panel-header"
       >
         <PanelFrame
           v-if="getPanel(item.i)"
           :panel="(getPanel(item.i) as DashboardPanel)"
+          @request-height="onRequestHeight"
         />
       </GridItem>
     </GridLayout>
@@ -81,6 +83,7 @@ import { useDashboardStore } from '@/stores/dashboardStore'
 import type { DashboardPanel } from '@/types/dashboard'
 
 const ROW_HEIGHT = 44
+const MARGIN = 12 // matches grid :margin
 const COLLAPSED_H = 1 // header-only rows when a panel is collapsed
 
 interface GridItemModel {
@@ -125,6 +128,22 @@ watch(
     })
   }
 )
+
+const isAuto = (id: string): boolean => {
+  const p = getPanel(id)
+  return !!p && !p.collapsed && store.resolvedHeightMode(p) === 'auto'
+}
+
+// An auto-height panel reported its natural pixel height; size the grid cell to
+// fit. Convert px -> rows accounting for the inter-row margin.
+const onRequestHeight = (id: string, px: number) => {
+  const item = layout.value.find((it) => it.i === id)
+  if (!item || !isAuto(id)) return
+  const rows = Math.max(2, Math.ceil((px + MARGIN) / (ROW_HEIGHT + MARGIN)))
+  if (item.h !== rows) {
+    item.h = rows
+  }
+}
 
 const onLayoutUpdated = (newLayout: GridItemModel[]) => {
   store.syncGeometry(newLayout)
