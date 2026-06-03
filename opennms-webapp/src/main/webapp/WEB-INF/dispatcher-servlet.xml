@@ -344,12 +344,12 @@
                     <property name="entries">
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Nodes"/>
+                                <property name="name" value="Nodes (Legacy)"/>
                                 <property name="url" value="element/nodeList.htm"/>
                                 <property name="locationMatch" value="nodelist"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Structured Node List"/>
+                                <property name="name" value="Node List"/>
                                 <property name="url" value="ui/index.html#/nodes"/>
                                 <property name="locationMatch" value="configurationManagement"/>
                             </bean>

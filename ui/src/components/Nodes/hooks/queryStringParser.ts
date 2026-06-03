@@ -125,9 +125,9 @@ export const parseFlows = (queryObject: any) => {
     return ['Ingress']
   } else if (flows === 'egress') {
     return ['Egress']
+  } else if (flows === 'false') {
+    return ['No Flows']
   }
-
-  // TODO: we don't yet have support for excluding flows, i.e. if queryObject.flows === 'false'
 
   return []
 }

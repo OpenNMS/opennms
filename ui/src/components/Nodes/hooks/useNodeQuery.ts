@@ -412,6 +412,10 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
 }
 
 const buildFlowsQuery = (selectedFlows: string[]) => {
+  if (selectedFlows.some(f => f === 'No Flows')) {
+    return 'lastIngressFlow==null;lastEgressFlow==null'
+  }
+
   const hasIngress = selectedFlows.some(f => f === 'Ingress')
   const hasEgress = selectedFlows.some(f => f === 'Egress')
 

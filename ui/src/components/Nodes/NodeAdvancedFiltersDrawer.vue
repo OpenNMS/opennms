@@ -249,7 +249,8 @@ const handleFlowSearch = (query: string) => {
   searchTimeout.value = window.setTimeout(() => {
     flowResults.value = [
       { _text: 'Egress', _value: 'lastEgressFlow' },
-      { _text: 'Ingress', _value: 'lastIngressFlow' }
+      { _text: 'Ingress', _value: 'lastIngressFlow' },
+      { _text: 'No Flows', _value: 'noFlows' }
     ].filter(flow => flow._text.toLowerCase().includes(query.toLowerCase()))
     flowsLoading.value = false
   }, TIMEOUT)
