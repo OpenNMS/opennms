@@ -21,6 +21,10 @@
  */
 package org.opennms.netmgt.ha;
 
+import org.opennms.core.db.DataSourceConfigurationFactory;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,16 +34,14 @@ import java.util.Properties;
  * Provides JDBC connections to the HA coordinator before the main Spring
  * DataSource is initialised.
  *
- * <p>Connection parameters are read from the same system properties used by
- * the existing {@code opennms-datasources.xml} loader:
- * <ul>
- *   <li>{@code opennms.db.url} — JDBC URL (default: {@code jdbc:postgresql://localhost:5432/opennms})
- *   <li>{@code opennms.db.username} — database username (default: {@code opennms})
- *   <li>{@code opennms.db.password} — database password (default: empty)
- * </ul>
+ * <p>Connection parameters are read from the {@code opennms} entry in
+ * {@code $OPENNMS_HOME/etc/opennms-datasources.xml} via
+ * {@link DataSourceConfigurationFactory}, which applies the full OpenNMS
+ * metadata DSL (including {@code ${env:VAR|default}} substitution) to
+ * the URL, username, and password attributes.
  *
- * These are always set before {@code Starter} is invoked by the OpenNMS
- * bootstrap scripts.
+ * <p>Connections are opened with a short timeout so that a database outage
+ * does not stall the HA monitor loop indefinitely.
  */
 public class DbConnectionFactory {
 
@@ -53,18 +55,29 @@ public class DbConnectionFactory {
         this.password = password;
     }
 
-    public static DbConnectionFactory fromSystemProperties() {
-        String url = System.getProperty("opennms.db.url", "jdbc:postgresql://localhost:5432/opennms");
-        String username = System.getProperty("opennms.db.username", "opennms");
-        String password = System.getProperty("opennms.db.password", "");
-        return new DbConnectionFactory(url, username, password);
+    /**
+     * Builds a factory by parsing {@code $OPENNMS_HOME/etc/opennms-datasources.xml}
+     * and extracting the {@code opennms} data source entry with all metadata
+     * expressions resolved.
+     */
+    public static DbConnectionFactory fromDatasourcesXml() throws Exception {
+        String opennmsHome = System.getProperty("opennms.home", ".");
+        File dsFile = new File(opennmsHome, "etc/opennms-datasources.xml");
+
+        DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(dsFile);
+        JdbcDataSource ds = factory.getJdbcDataSource("opennms");
+        if (ds == null) {
+            throw new IllegalStateException(
+                    "No 'opennms' jdbc-data-source found in " + dsFile.getAbsolutePath());
+        }
+
+        return new DbConnectionFactory(ds.getUrl(), ds.getUserName(), ds.getPassword());
     }
 
     public Connection getConnection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", username);
-        props.setProperty("password", password);
-        // Short connect timeout so a DB outage doesn't stall the monitor loop indefinitely
+        props.setProperty("password", password != null ? password : "");
         props.setProperty("loginTimeout", "5");
         props.setProperty("connectTimeout", "5");
         return DriverManager.getConnection(url, props);
