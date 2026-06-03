@@ -110,7 +110,13 @@ const toItem = (p: DashboardPanel): GridItemModel => ({
 const layout = ref<GridItemModel[]>(panels.value.map(toItem))
 
 const minW = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSize?.w ?? 2
-const minH = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSize?.h ?? 2
+// Auto-height panels size to content, so they must be allowed to shrink to 1 row
+// (otherwise the grid reserves minSize.h and leaves whitespace under short panels).
+const minH = (id: string) => {
+  const p = getPanel(id)
+  if (p && !p.collapsed && store.resolvedHeightMode(p) === 'auto') return 1
+  return getPanelDefinition(p?.type ?? '')?.minSize?.h ?? 2
+}
 
 // Vertical compaction: place each item at the lowest non-colliding y within its
 // columns. grid-layout-plus does NOT recompact on programmatic height changes,
