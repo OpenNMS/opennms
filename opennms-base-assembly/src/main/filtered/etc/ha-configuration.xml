@@ -104,7 +104,7 @@
   <sync-enabled>true</sync-enabled>
 
   <!-- How often to sync configuration from the partner while in STANDBY (seconds). Default: 30. -->
-  <sync-interval-seconds>30</sync-interval-seconds>
+  <sync-interval-seconds>60</sync-interval-seconds>
 
   <!--
     Username of the sync service account. Must have ROLE_REST and ROLE_FILESYSTEM_EDITOR

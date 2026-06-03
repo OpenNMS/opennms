@@ -24,8 +24,10 @@ package org.opennms.netmgt.ha;
 public enum HaInstanceState {
     /** Fully running and serving traffic. */
     ACTIVE,
-    /** Configured-SECONDARY in waiting mode, or configured-PRIMARY waiting for failback. */
+    /** Configured-SECONDARY in waiting mode. */
     STANDBY,
+    /** Configured-PRIMARY blocked from starting because a SECONDARY is currently ACTIVE; waiting for failback. */
+    DEGRADED,
     /** In the process of activating or stepping down. */
     TRANSITIONING,
     /** Stopped or unreachable. */

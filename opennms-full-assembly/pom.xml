@@ -521,6 +521,7 @@
                 <feature>scv-jceks-impl</feature>
                 <feature>scv-shell</feature>
                 <feature>opennms-timeseries-shell</feature>
+                <feature>opennms-ha-shell</feature>
                 <feature>opennms-config-management</feature>
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
