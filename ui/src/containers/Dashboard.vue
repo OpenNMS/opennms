@@ -26,7 +26,10 @@ License.
   the JSP index page.
 -->
 <template>
-  <div class="dashboard-container">
+  <div
+    id="dashboard-root"
+    class="dashboard-container"
+  >
     <DashboardToolbar />
     <DashboardGrid />
   </div>
@@ -50,5 +53,11 @@ onMounted(() => store.load())
 <style scoped lang="scss">
 .dashboard-container {
   height: 100%;
+  // ensure a solid backdrop + scrolling when shown full screen (NOC display)
+  background: var(--feather-background, #f3f5f7);
+
+  &:fullscreen {
+    overflow: auto;
+  }
 }
 </style>

@@ -146,6 +146,36 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  'resource-graphs': {
+    type: 'resource-graphs',
+    title: 'Resource Graphs',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/ResourceGraphsPanel.vue')),
+    defaultSize: { w: 3, h: 2 },
+    minSize: { w: 2, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
+  'ksc-reports': {
+    type: 'ksc-reports',
+    title: 'KSC Reports',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/KscReportsPanel.vue')),
+    defaultSize: { w: 3, h: 2 },
+    minSize: { w: 2, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
+  'quick-search': {
+    type: 'quick-search',
+    title: 'Quick Search',
+    category: 'info',
+    component: defineAsyncComponent(() => import('./panels/QuickSearchPanel.vue')),
+    defaultSize: { w: 3, h: 5 },
+    minSize: { w: 2, h: 3 },
+    renamable: true,
+    collapsible: true
+  },
   sample: {
     type: 'sample',
     title: 'Sample Panel',

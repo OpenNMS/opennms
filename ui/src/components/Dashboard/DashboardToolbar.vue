@@ -32,27 +32,46 @@ License.
     <div class="dashboard-toolbar__controls">
       <DashboardFilterControl />
 
-      <PSelect
-        v-model="timeframePreset"
-        :options="timeframeOptions"
-        option-label="label"
-        option-value="value"
-        aria-label="Dashboard timeframe"
-      />
+      <span
+        class="dashboard-toolbar__control"
+        title="Time range applied to panels that show time-based data (e.g. Availability). Other panels show current state."
+      >
+        <PSelect
+          v-model="timeframePreset"
+          :options="timeframeOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Dashboard timeframe"
+        />
+      </span>
 
-      <PSelect
-        v-model="refreshSeconds"
-        :options="refreshOptions"
-        option-label="label"
-        option-value="value"
-        aria-label="Refresh interval"
-      />
+      <span
+        class="dashboard-toolbar__control"
+        title="How often the dashboard automatically reloads its data. Use Pause to stop auto-refresh."
+      >
+        <PSelect
+          v-model="refreshSeconds"
+          :options="refreshOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Refresh interval"
+        />
+      </span>
 
       <PButton
         text
         :icon="isPaused ? 'pi pi-play' : 'pi pi-pause'"
         :label="isPaused ? 'Resume' : 'Pause'"
+        :title="isPaused ? 'Resume automatic data refresh' : 'Pause automatic data refresh'"
         @click="store.togglePaused()"
+      />
+
+      <PButton
+        text
+        :icon="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
+        :label="isFullscreen ? 'Exit full screen' : 'Full screen'"
+        title="Show the dashboard full screen — for NOC wall displays"
+        @click="toggleFullscreen"
       />
 
       <template v-if="editMode">
@@ -91,7 +110,7 @@ License.
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
@@ -128,6 +147,29 @@ const onAdd = () => {
     panelToAdd.value = null
   }
 }
+
+// Full-screen the dashboard content for NOC wall displays.
+const isFullscreen = ref(false)
+
+const toggleFullscreen = async () => {
+  const el = document.getElementById('dashboard-root') ?? document.documentElement
+  try {
+    if (!document.fullscreenElement) {
+      await el.requestFullscreen()
+    } else {
+      await document.exitFullscreen()
+    }
+  } catch (e) {
+    console.error('Fullscreen toggle failed:', e)
+  }
+}
+
+const onFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))
+onBeforeUnmount(() => document.removeEventListener('fullscreenchange', onFullscreenChange))
 </script>
 
 <style scoped lang="scss">
