@@ -1090,6 +1090,21 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ha-management</groupId>
+      <artifactId>org.opennms.features.ha-management.ha-rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.encrypt-util</artifactId>
       <version>${project.version}</version>
