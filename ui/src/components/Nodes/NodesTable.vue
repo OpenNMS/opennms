@@ -294,13 +294,13 @@
                 ></td>
                 <td class="actions-cell">
                   <FeatherButton
-                    icon="Edit"
-                    class="edit-icon"
+                    icon="View Details"
+                    class="view-details-icon"
                     @click="() => onNodeLinkClick(node.id)"
                   >
                     <FeatherIcon
-                      :icon="Edit"
-                      title="Edit"
+                      :icon="ViewDetails"
+                      title="View Details"
                     />
                   </FeatherButton>
 
@@ -367,6 +367,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Search from '@featherds/icon/action/Search'
+import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
@@ -718,9 +719,9 @@ table {
 }
 
 .actions-cell {
-  .edit-icon {
+  .view-details-icon {
     svg {
-      font-size: 1rem !important;
+      font-size: 1.5rem !important;
     }
   }
 }
