@@ -115,7 +115,7 @@ public class HaStartupCoordinator {
                 return null;
             }
 
-            DbConnectionFactory dbFactory = DbConnectionFactory.fromSystemProperties();
+            DbConnectionFactory dbFactory = DbConnectionFactory.fromDatasourcesXml();
             INSTANCE = new HaStartupCoordinator(cfg, dbFactory);
             LOG.info("HA enabled: instance-id={}, role={}", cfg.getInstanceId(), cfg.getRole());
             return INSTANCE;

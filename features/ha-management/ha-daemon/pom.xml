@@ -41,6 +41,11 @@
             <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

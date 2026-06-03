@@ -117,6 +117,6 @@
     The SCV entry must be set on both nodes with the SAME password:
       $OPENNMS_HOME/bin/opennms-scv:set hasync hasync <password>
   -->
-  <sync-password>${scv:hasync:password}</sync-password>
+  <sync-password>${scv:hasync:password|opennms}</sync-password>
 
 </ha-configuration>
