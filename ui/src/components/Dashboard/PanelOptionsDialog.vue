@@ -85,6 +85,48 @@ License.
           note many external sites also refuse to be framed.
         </small>
       </div>
+
+      <template v-if="panel.type === 'topn'">
+        <div class="opts__field">
+          <label class="opts__label">Rank by (KPI)</label>
+          <PSelect
+            v-model="topnKpi"
+            :options="kpiOptions"
+            option-label="label"
+            option-value="value"
+            class="opts__control"
+          />
+        </div>
+        <fieldset class="opts__group">
+          <legend class="opts__legend">Order</legend>
+          <label class="opts__radio">
+            <input
+              v-model="topnDirection"
+              type="radio"
+              value="desc"
+            >
+            Descending (highest first)
+          </label>
+          <label class="opts__radio">
+            <input
+              v-model="topnDirection"
+              type="radio"
+              value="asc"
+            >
+            Ascending (lowest first)
+          </label>
+        </fieldset>
+        <div class="opts__field">
+          <label class="opts__label">How many (N)</label>
+          <input
+            v-model.number="topnN"
+            type="number"
+            min="1"
+            max="50"
+            class="opts__control opts__number"
+          >
+        </div>
+      </template>
     </div>
 
     <template #footer>
@@ -106,15 +148,20 @@ import { computed, ref, watch } from 'vue'
 import Dialog from 'primevue/dialog'
 import Textarea from 'primevue/textarea'
 import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import Button from 'primevue/button'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
+import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, TOPN_KPIS } from '@/services/topnService'
 
 const PDialog = Dialog
 const PTextarea = Textarea
 const PInputText = InputText
+const PSelect = Select
 const PButton = Button
+
+const kpiOptions = TOPN_KPIS.map((k) => ({ label: k.label, value: k.id }))
 
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
@@ -133,6 +180,9 @@ const title = computed(
 const heightMode = ref<PanelHeightMode>('auto')
 const notesText = ref('')
 const htmlUrl = ref('')
+const topnKpi = ref(DEFAULT_TOPN_KPI)
+const topnN = ref(DEFAULT_TOPN_N)
+const topnDirection = ref<'asc' | 'desc'>('desc')
 
 // External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
 // up front so the user gets an explanation instead of a silent broken iframe.
@@ -155,6 +205,9 @@ const syncFromPanel = () => {
   heightMode.value = store.resolvedHeightMode(props.panel)
   notesText.value = String(props.panel.options?.text ?? '')
   htmlUrl.value = String(props.panel.options?.url ?? '')
+  topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
+  topnN.value = Number(props.panel.options?.n ?? DEFAULT_TOPN_N)
+  topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
 }
 
 watch(
@@ -172,6 +225,11 @@ const apply = () => {
   const opts: Record<string, unknown> = { ...props.panel.options }
   if (props.panel.type === 'notes') opts.text = notesText.value
   if (props.panel.type === 'html-content') opts.url = htmlUrl.value.trim()
+  if (props.panel.type === 'topn') {
+    opts.kpi = topnKpi.value
+    opts.n = Math.min(50, Math.max(1, Number(topnN.value) || DEFAULT_TOPN_N))
+    opts.direction = topnDirection.value
+  }
   store.setPanelOptions(props.panel.id, opts)
   visibleModel.value = false
 }
@@ -225,6 +283,13 @@ const apply = () => {
 
   &__control--error {
     outline: 1px solid var(--feather-error, #b00020);
+    border-radius: 4px;
+  }
+
+  &__number {
+    width: 6rem;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--feather-border-on-surface, #ccc);
     border-radius: 4px;
   }
 }

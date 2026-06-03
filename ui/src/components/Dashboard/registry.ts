@@ -183,6 +183,17 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  topn: {
+    type: 'topn',
+    title: 'Top N',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/TopnPanel.vue')),
+    defaultSize: { w: 3, h: 4 },
+    minSize: { w: 2, h: 2 },
+    supportsTimeframe: true,
+    renamable: true,
+    collapsible: true
+  },
   notes: {
     type: 'notes',
     title: 'Notes',
