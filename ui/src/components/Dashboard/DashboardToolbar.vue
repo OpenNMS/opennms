@@ -148,24 +148,46 @@ const onAdd = () => {
   }
 }
 
-// Full-screen the dashboard content for NOC wall displays.
+// Full-screen the dashboard content for NOC wall displays. Tries the Fullscreen
+// API; if it's blocked (e.g. Permissions-Policy), falls back to a CSS "maximize"
+// that fills the browser viewport over the app chrome.
 const isFullscreen = ref(false)
+const cssMaximized = ref(false)
+
+const dashboardEl = () => document.getElementById('dashboard-root')
+
+const enterCssMaximize = () => {
+  dashboardEl()?.classList.add('dashboard-maximized')
+  cssMaximized.value = true
+  isFullscreen.value = true
+}
+const exitCssMaximize = () => {
+  dashboardEl()?.classList.remove('dashboard-maximized')
+  cssMaximized.value = false
+  isFullscreen.value = false
+}
 
 const toggleFullscreen = async () => {
-  const el = document.getElementById('dashboard-root') ?? document.documentElement
-  try {
-    if (!document.fullscreenElement) {
-      await el.requestFullscreen()
-    } else {
-      await document.exitFullscreen()
+  const el = dashboardEl()
+  if (!el) return
+  if (isFullscreen.value) {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => undefined)
     }
-  } catch (e) {
-    console.error('Fullscreen toggle failed:', e)
+    if (cssMaximized.value) exitCssMaximize()
+    return
+  }
+  try {
+    await el.requestFullscreen()
+  } catch {
+    // Fullscreen API unavailable/blocked — use CSS maximize instead.
+    enterCssMaximize()
   }
 }
 
 const onFullscreenChange = () => {
-  isFullscreen.value = !!document.fullscreenElement
+  // keep state in sync when the user exits via Esc
+  if (!cssMaximized.value) isFullscreen.value = !!document.fullscreenElement
 }
 
 onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))

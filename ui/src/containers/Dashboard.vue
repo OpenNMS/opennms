@@ -59,5 +59,26 @@ onMounted(() => store.load())
   &:fullscreen {
     overflow: auto;
   }
+
+  // CSS "maximize" fallback when the Fullscreen API is blocked
+  &.dashboard-maximized {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    overflow: auto;
+  }
+}
+</style>
+
+<!-- Global (non-scoped): PrimeVue overlays teleport to <body>, outside the app
+     font scope, so they fall back to the serif default. Keep them sans-serif. -->
+<style lang="scss">
+.p-select-overlay,
+.p-select-list,
+.p-multiselect-overlay,
+.p-multiselect-list,
+.p-popover,
+.p-popover * {
+  font-family: 'OpenSans', Helvetica, Arial, sans-serif;
 }
 </style>

@@ -134,6 +134,8 @@ const onLayoutUpdated = (newLayout: GridItemModel[]) => {
 <style scoped lang="scss">
 .dashboard-grid {
   padding: 1rem;
+  // clear the app's fixed copyright/footer bar so the last panels aren't cut
+  padding-bottom: 3.5rem;
   min-height: 200px;
 
   &--edit :deep(.vgl-item) {

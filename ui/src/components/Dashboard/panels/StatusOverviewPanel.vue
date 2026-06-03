@@ -26,7 +26,10 @@ License.
   current outages — from /api/v2/status/summary/nodes/{alarms,outages}.
 -->
 <template>
-  <div class="status-overview">
+  <div
+    ref="rootRef"
+    class="status-overview"
+  >
     <div class="status-overview__donuts">
       <div class="status-overview__donut">
         <canvas ref="alarmsCanvas" />
@@ -78,8 +81,10 @@ const STATUS_COLORS: Record<string, string> = {
 }
 const colorFor = (label: string) => STATUS_COLORS[label] ?? '#999999'
 
+const rootRef = ref<HTMLElement | null>(null)
 const alarmsCanvas = ref<HTMLCanvasElement | null>(null)
 const outagesCanvas = ref<HTMLCanvasElement | null>(null)
+let resizeObserver: ResizeObserver | null = null
 const alarmsEntries = ref<StatusSummaryEntry[]>([])
 const outagesEntries = ref<StatusSummaryEntry[]>([])
 const loading = ref(true)
@@ -133,9 +138,21 @@ const load = async () => {
   outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart)
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  // resize charts when the panel (grid item) is resized
+  if (rootRef.value) {
+    resizeObserver = new ResizeObserver(() => {
+      alarmsChart?.resize()
+      outagesChart?.resize()
+    })
+    resizeObserver.observe(rootRef.value)
+  }
+})
 watch(() => props.refreshTick, load)
 onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
   alarmsChart?.destroy()
   outagesChart?.destroy()
   alarmsChart = null
@@ -146,6 +163,7 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .status-overview {
   height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 
