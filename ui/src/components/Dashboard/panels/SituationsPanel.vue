@@ -43,6 +43,7 @@ License.
         v-for="s in situations"
         :key="s.id"
         class="situations__row"
+        :style="shade ? { backgroundColor: severityTint(s.severity) } : undefined"
       >
         <span
           class="situations__sev"
@@ -60,15 +61,16 @@ License.
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getPendingSituations, type Situation } from '@/services/situationService'
-import { severityColor, severityLabel } from '../severity'
+import { severityColor, severityLabel, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
 const situations = ref<Situation[]>([])
+const shade = computed(() => !!props.options?.shade)
 
 const describe = (s: Situation): string => {
   const parts: string[] = []

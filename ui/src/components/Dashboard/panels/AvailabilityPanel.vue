@@ -54,6 +54,7 @@ License.
           <tr
             v-for="cat in section.categories"
             :key="section.name + '/' + cat.name"
+            :style="shade ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
           >
             <td class="avail__cat">{{ cat.name }}</td>
             <td class="avail__num">{{ cat.outageText }}</td>
@@ -77,9 +78,11 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getAvailability, type AvailabilitySection } from '@/services/availabilityService'
-import { severityColor } from '../severity'
+import { severityColor, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()
+
+const shade = computed(() => !!props.options?.shade)
 
 const loading = ref(true)
 const sections = ref<AvailabilitySection[]>([])

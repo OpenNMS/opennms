@@ -83,5 +83,8 @@
         </div>
       </div>
     </form>
+    <div class="form-group" style="margin-top:0.75rem;">
+      <a class="btn btn-primary btn-block" href="ui/#/dashboard">Try the new Dashboard (beta) &raquo;</a>
+    </div>
   </div>
 </div>

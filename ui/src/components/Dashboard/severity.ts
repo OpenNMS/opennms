@@ -52,6 +52,9 @@ export const severityMeta = (key: string): SeverityMeta =>
 
 export const severityColor = (key: string): string => severityMeta(key).color
 
+// Low-opacity tint of the severity color, for optional row shading (8-digit hex).
+export const severityTint = (key: string): string => `${severityMeta(key).color}33`
+
 export const severityLabel = (key: string): string => severityMeta(key).label
 
 // Highest severity among a set of severity keys (by weight).

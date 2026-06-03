@@ -47,6 +47,7 @@ License.
         v-for="row in rows"
         :key="row.nodeId"
         class="nodes-alarms__row"
+        :style="shade ? { backgroundColor: severityTint(row.maxSeverity) } : undefined"
       >
         <span
           class="nodes-alarms__sev"
@@ -64,12 +65,12 @@ License.
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { SORT } from '@featherds/table'
 import type { PanelComponentProps } from '@/types/dashboard'
 import type { Alarm } from '@/types'
 import { getAlarms } from '@/services/alarmService'
-import { maxSeverity, severityColor, severityLabel } from '../severity'
+import { maxSeverity, severityColor, severityLabel, severityTint } from '../severity'
 
 interface NodeAlarmRow {
   nodeId: number
@@ -82,6 +83,7 @@ const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
 const rows = ref<NodeAlarmRow[]>([])
+const shade = computed(() => !!props.options?.shade)
 
 const MAX_ROWS = 12
 

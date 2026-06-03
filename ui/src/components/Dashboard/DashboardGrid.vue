@@ -41,6 +41,7 @@ License.
       :margin="[12, 12]"
       :is-draggable="editMode"
       :is-resizable="editMode"
+      :vertical-compact="true"
       @layout-updated="onLayoutUpdated"
     >
       <GridItem
@@ -138,7 +139,9 @@ const compactLayout = () => {
     }
     placed.push(it)
   }
-  if (changed) layout.value = [...layout.value]
+  // Reassign with FRESH item objects — grid-layout-plus ignores a reassigned
+  // array that keeps the same item identities, so positions wouldn't re-render.
+  if (changed) layout.value = layout.value.map((it) => ({ ...it }))
 }
 
 // Reconcile the grid model on add/remove/collapse only — keeping existing items'

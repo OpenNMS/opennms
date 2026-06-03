@@ -49,6 +49,17 @@ License.
         </label>
       </fieldset>
 
+      <label
+        v-if="supportsShade"
+        class="opts__radio"
+      >
+        <input
+          v-model="shade"
+          type="checkbox"
+        >
+        Shade rows by severity
+      </label>
+
       <div
         v-if="panel.type === 'notes'"
         class="opts__field"
@@ -178,9 +189,14 @@ const title = computed(
 )
 
 const heightMode = ref<PanelHeightMode>('auto')
+const shade = ref(false)
 const notesText = ref('')
 const htmlUrl = ref('')
 const topnKpi = ref(DEFAULT_TOPN_KPI)
+
+// panels that support optional severity row shading (legacy-style)
+const SHADEABLE = ['pending-situations', 'nodes-with-alarms', 'availability']
+const supportsShade = computed(() => SHADEABLE.includes(props.panel.type))
 const topnN = ref(DEFAULT_TOPN_N)
 const topnDirection = ref<'asc' | 'desc'>('desc')
 
@@ -203,6 +219,7 @@ const urlError = computed(() => {
 
 const syncFromPanel = () => {
   heightMode.value = store.resolvedHeightMode(props.panel)
+  shade.value = !!props.panel.options?.shade
   notesText.value = String(props.panel.options?.text ?? '')
   htmlUrl.value = String(props.panel.options?.url ?? '')
   topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
@@ -223,6 +240,7 @@ const apply = () => {
   }
   store.setPanelHeightMode(props.panel.id, heightMode.value)
   const opts: Record<string, unknown> = { ...props.panel.options }
+  if (supportsShade.value) opts.shade = shade.value
   if (props.panel.type === 'notes') opts.text = notesText.value
   if (props.panel.type === 'html-content') opts.url = htmlUrl.value.trim()
   if (props.panel.type === 'topn') {
