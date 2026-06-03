@@ -27,10 +27,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.opennms.features.config.exception.ConfigConversionException;
 
 public class ConfigConvertUtil {
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module())
+            // Register JAXB annotation introspector with SECONDARY priority so that Jackson annotations
+            // (e.g. @JsonProperty) still take precedence, while @XmlElement / @XmlAttribute names are
+            // honored as a fallback.
+            .registerModule(new JaxbAnnotationModule().setPriority(JaxbAnnotationModule.Priority.SECONDARY))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
 
