@@ -220,14 +220,17 @@ const onRemove = () => {
     color: var(--feather-primary-text-on-surface, #1f1f1f);
     border-color: var(--feather-border-on-surface, #e0e0e0);
 
+    // tighter padding so short auto panels don't round up to an extra grid row
     :deep(.p-panel-header) {
       background: transparent;
       color: var(--feather-primary-text-on-surface, #1f1f1f);
+      padding: 0.5rem 0.75rem;
     }
 
     :deep(.p-panel-content) {
       background: transparent;
       color: inherit;
+      padding: 0.5rem 0.75rem;
     }
 
     &--missing {

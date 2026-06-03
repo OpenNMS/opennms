@@ -73,7 +73,7 @@ License.
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 // grid-layout-plus 1.x injects its own styles at runtime — no CSS import needed.
 import { GridLayout, GridItem } from 'grid-layout-plus'
@@ -179,6 +179,13 @@ const onRequestHeight = (id: string, px: number) => {
 const onLayoutUpdated = (newLayout: GridItemModel[]) => {
   store.syncGeometry(newLayout)
 }
+
+// After initial render, once panels have reported their auto heights, compact the
+// columns so there are no leftover gaps between short panels.
+onMounted(() => {
+  setTimeout(compactLayout, 400)
+  setTimeout(compactLayout, 1200)
+})
 </script>
 
 <style scoped lang="scss">
