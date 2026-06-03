@@ -112,6 +112,29 @@ const layout = ref<GridItemModel[]>(panels.value.map(toItem))
 const minW = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSize?.w ?? 2
 const minH = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSize?.h ?? 2
 
+// Vertical compaction: place each item at the lowest non-colliding y within its
+// columns. grid-layout-plus does NOT recompact on programmatic height changes,
+// so we do it ourselves to guarantee no overlaps after auto-height resizes /
+// add / remove. Only mutates the local layout (positions re-derive on load).
+const compactLayout = () => {
+  const sorted = [...layout.value].sort((a, b) => a.y - b.y || a.x - b.x)
+  const placed: GridItemModel[] = []
+  let changed = false
+  for (const it of sorted) {
+    let bottom = 0
+    for (const p of placed) {
+      const xOverlap = it.x < p.x + p.w && p.x < it.x + it.w
+      if (xOverlap) bottom = Math.max(bottom, p.y + p.h)
+    }
+    if (it.y !== bottom) {
+      it.y = bottom
+      changed = true
+    }
+    placed.push(it)
+  }
+  if (changed) layout.value = [...layout.value]
+}
+
 // Reconcile the grid model on add/remove/collapse only — keeping existing items'
 // live x/y/w so an in-flight drag isn't reset.
 watch(
@@ -126,6 +149,7 @@ watch(
       }
       return toItem(p)
     })
+    compactLayout()
   }
 )
 
@@ -142,6 +166,7 @@ const onRequestHeight = (id: string, px: number) => {
   const rows = Math.max(2, Math.ceil((px + MARGIN) / (ROW_HEIGHT + MARGIN)))
   if (item.h !== rows) {
     item.h = rows
+    compactLayout()
   }
 }
 
