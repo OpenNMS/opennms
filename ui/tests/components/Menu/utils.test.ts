@@ -87,9 +87,9 @@ describe('Menu utils', () => {
       })
       expect(inventoryItems[0].icon).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
-        id: 'structuredNodeList',
+        id: 'nodeList',
         type: 'item',
-        title: 'Structured Node List',
+        title: 'Node List',
         href: `${baseHref}ui/index.html#/nodes`,
         target: '_self'
       })

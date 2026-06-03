@@ -34,7 +34,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Structured Node List', to: '#', position: 'last' }
+    { label: 'Node List', to: '#', position: 'last' }
   ]
 })
 

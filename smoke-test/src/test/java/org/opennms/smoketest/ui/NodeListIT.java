@@ -38,9 +38,9 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.RestClient;
 
 /**
- * Basic validation of the Vue Structured Node List page.
+ * Basic validation of the Vue Node List page.
  */
-public class StructuredNodeListIT extends OpenNMSSeleniumIT {
+public class NodeListIT extends OpenNMSSeleniumIT {
     protected int savedNodeId;
 
     @Before
@@ -67,7 +67,7 @@ public class StructuredNodeListIT extends OpenNMSSeleniumIT {
 
         savedNodeId = node.getId();
 
-        // Navigate to the Structured Node List page
+        // Navigate to the Node List page
         getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/nodes");
     }
 
@@ -78,8 +78,8 @@ public class StructuredNodeListIT extends OpenNMSSeleniumIT {
 
     @Test
     public void canRender() {
-        // Ensure we are on the Structured Node List page and the test node is displayed
-        wait.until(pageContainsText("Structured Node List"));
+        // Ensure we are on the Node List page and the test node is displayed
+        wait.until(pageContainsText("Node List"));
         wait.until(pageContainsText("Test_Node1"));
 
         // find the Actions menu for this node

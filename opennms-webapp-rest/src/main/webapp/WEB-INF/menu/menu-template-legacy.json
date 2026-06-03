@@ -45,17 +45,17 @@
       "roles": null,
       "items": [
         {
-          "id": "nodes",
-          "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
+          "id": "nodeList",
+          "name": "Node List",
+          "url": "ui/index.html#/nodes",
+          "locationMatch": "configurationManagement",
           "roles": null
         },
         {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
-          "url": "ui/index.html#/nodes",
-          "locationMatch": "configurationManagement",
+          "id": "legacyNodes",
+          "name": "Nodes (Legacy)",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
           "roles": null
         },
         {
