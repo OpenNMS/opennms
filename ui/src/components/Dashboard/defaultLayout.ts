@@ -46,13 +46,16 @@ export const createDefaultLayout = (): DashboardLayout => ({
   refresh: { seconds: 120, paused: false },
   globalFilter: { surveillanceCategories: [], ipMatch: null },
   globalTimeframe: { preset: TimeframePreset.Last24h, from: null, to: null },
+  // Three columns with a wider middle (3 / 6 / 3 of 12), matching the legacy
+  // homepage. Left: situations/alarms/outages; center (wide): status + map;
+  // right: notifications/news.
   panels: [
-    panel('situations-1', 'pending-situations', 0, 0, 4, 3),
-    panel('nodes-1', 'nodes-with-alarms', 0, 3, 4, 6),
-    panel('outages-1', 'service-outages', 0, 9, 4, 4),
-    panel('status-1', 'status-overview', 4, 0, 4, 6),
-    panel('notif-1', 'notifications', 8, 0, 4, 3),
-    panel('news-1', 'newsfeed', 8, 3, 4, 6),
-    panel('map-1', 'regional-map', 4, 6, 8, 6)
+    panel('situations-1', 'pending-situations', 0, 0, 3, 3),
+    panel('nodes-1', 'nodes-with-alarms', 0, 3, 3, 5),
+    panel('outages-1', 'service-outages', 0, 8, 3, 4),
+    panel('status-1', 'status-overview', 3, 0, 6, 5),
+    panel('map-1', 'regional-map', 3, 5, 6, 7),
+    panel('notif-1', 'notifications', 9, 0, 3, 3),
+    panel('news-1', 'newsfeed', 9, 3, 3, 5)
   ]
 })
