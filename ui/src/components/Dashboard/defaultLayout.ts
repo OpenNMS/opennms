@@ -52,6 +52,7 @@ export const createDefaultLayout = (): DashboardLayout => ({
     panel('outages-1', 'service-outages', 0, 9, 4, 4),
     panel('status-1', 'status-overview', 4, 0, 4, 6),
     panel('notif-1', 'notifications', 8, 0, 4, 3),
-    panel('news-1', 'newsfeed', 8, 3, 4, 6)
+    panel('news-1', 'newsfeed', 8, 3, 4, 6),
+    panel('map-1', 'regional-map', 4, 6, 8, 6)
   ]
 })

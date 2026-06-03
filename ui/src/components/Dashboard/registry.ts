@@ -86,6 +86,16 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  'regional-map': {
+    type: 'regional-map',
+    title: 'Regional Status',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/RegionalMapPanel.vue')),
+    defaultSize: { w: 8, h: 6 },
+    minSize: { w: 4, h: 4 },
+    renamable: true,
+    collapsible: true
+  },
   notifications: {
     type: 'notifications',
     title: 'Notifications',
