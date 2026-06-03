@@ -21,70 +21,72 @@ License.
 -->
 
 <!--
-  Chrome around a single dashboard panel: title, collapse, and (in edit mode)
-  rename / options / remove. Renders the registered panel component and feeds it
-  the resolved filter / timeframe / refresh contracts.
-
-  Height mode: 'fixed' = fixed grid height with an internal scrollbar; 'auto' =
-  the panel measures its natural content height and asks DashboardGrid to size
-  the grid cell to fit (so e.g. empty list panels shrink to a couple of lines).
+  Chrome around a single dashboard panel. The outer <div> (frameRef) is the grid
+  item content and the element we measure for auto-height (PrimeVue's component
+  ref doesn't reliably expose a DOM node). Panel surface/text use Feather theme
+  variables so the dashboard follows light/dark mode (the .open-dark theme).
 -->
 <template>
-  <PPanel
+  <div
     ref="frameRef"
     class="panel-frame"
-    :class="[heightModeClass, { 'panel-frame--missing': !panelDef }]"
-    :header="displayTitle"
-    :toggleable="collapsible"
-    :collapsed="panel.collapsed"
-    @update:collapsed="onCollapsedChange"
+    :class="heightModeClass"
   >
-    <template
-      v-if="editMode"
-      #icons
+    <PPanel
+      class="panel-frame__panel"
+      :class="{ 'panel-frame__panel--missing': !panelDef }"
+      :header="displayTitle"
+      :toggleable="collapsible"
+      :collapsed="panel.collapsed"
+      @update:collapsed="onCollapsedChange"
     >
-      <button
-        v-if="renamable"
-        type="button"
-        class="p-panel-header-icon"
-        title="Rename panel"
-        @click="onRename"
+      <template
+        v-if="editMode"
+        #icons
       >
-        <i class="pi pi-pencil" />
-      </button>
-      <button
-        type="button"
-        class="p-panel-header-icon"
-        title="Panel options"
-        @click="showOptions = true"
-      >
-        <i class="pi pi-cog" />
-      </button>
-      <button
-        type="button"
-        class="p-panel-header-icon"
-        title="Remove panel"
-        @click="onRemove"
-      >
-        <i class="pi pi-times" />
-      </button>
-    </template>
+        <button
+          v-if="renamable"
+          type="button"
+          class="p-panel-header-icon"
+          title="Rename panel"
+          @click="onRename"
+        >
+          <i class="pi pi-pencil" />
+        </button>
+        <button
+          type="button"
+          class="p-panel-header-icon"
+          title="Panel options"
+          @click="showOptions = true"
+        >
+          <i class="pi pi-cog" />
+        </button>
+        <button
+          type="button"
+          class="p-panel-header-icon"
+          title="Remove panel"
+          @click="onRemove"
+        >
+          <i class="pi pi-times" />
+        </button>
+      </template>
 
-    <component
-      :is="panelDef.component"
-      v-if="panelDef"
-      :options="panel.options"
-      :filter="resolvedFilter"
-      :timeframe="resolvedTimeframe"
-      :refresh-tick="refreshTick"
-    />
-    <div
-      v-else
-      class="panel-frame__missing"
-    >
-      Unknown panel type: <code>{{ panel.type }}</code>
-    </div>
-  </PPanel>
+      <component
+        :is="panelDef.component"
+        v-if="panelDef"
+        :options="panel.options"
+        :filter="resolvedFilter"
+        :timeframe="resolvedTimeframe"
+        :refresh-tick="refreshTick"
+      />
+      <div
+        v-else
+        class="panel-frame__missing"
+      >
+        Unknown panel type: <code>{{ panel.type }}</code>
+      </div>
+    </PPanel>
+  </div>
 
   <PanelOptionsDialog
     v-model:visible="showOptions"
@@ -109,7 +111,7 @@ const emit = defineEmits<{ (e: 'request-height', id: string, px: number): void }
 const store = useDashboardStore()
 const { editMode, refreshTick } = storeToRefs(store)
 
-const frameRef = ref<{ $el?: HTMLElement } | null>(null)
+const frameRef = ref<HTMLElement | null>(null)
 const showOptions = ref(false)
 
 const panelDef = computed(() => getPanelDefinition(props.panel.type))
@@ -124,22 +126,21 @@ const resolvedTimeframe = computed(() => store.resolvedTimeframe(props.panel))
 const heightMode = computed(() => store.resolvedHeightMode(props.panel))
 const heightModeClass = computed(() => (heightMode.value === 'auto' ? 'panel-frame--auto' : 'panel-frame--fixed'))
 
-// --- Auto-height: measure natural content and ask the grid to fit the cell ---
+// --- Auto-height: measure the frame div's natural height and fit the grid cell ---
 let resizeObserver: ResizeObserver | null = null
 
 const measure = () => {
   if (heightMode.value !== 'auto' || props.panel.collapsed) return
-  const el = frameRef.value?.$el
+  const el = frameRef.value
   if (el) emit('request-height', props.panel.id, el.offsetHeight)
 }
 
 const setupObserver = () => {
   resizeObserver?.disconnect()
   resizeObserver = null
-  const el = frameRef.value?.$el
-  if (heightMode.value === 'auto' && el) {
+  if (heightMode.value === 'auto' && frameRef.value) {
     resizeObserver = new ResizeObserver(() => measure())
-    resizeObserver.observe(el)
+    resizeObserver.observe(frameRef.value)
   }
   nextTick(measure)
 }
@@ -173,34 +174,64 @@ const onRemove = () => {
   min-width: 0;
 
   &--fixed {
-    // fill the grid cell; content scrolls inside it. The full PrimeVue 4 chain is
-    // .p-panel > .p-panel-content-container > .p-panel-content-wrapper > .p-panel-content
-    // — every wrapper must flex down for the content to get a bounded height.
+    // fill the grid cell; content scrolls inside it
     height: 100%;
     display: flex;
     flex-direction: column;
 
-    :deep(.p-panel-content-container),
-    :deep(.p-panel-content-wrapper) {
+    .panel-frame__panel {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
-    }
 
-    :deep(.p-panel-content) {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
+      // PrimeVue 4 chain: content-container > content-wrapper > content
+      :deep(.p-panel-content-container),
+      :deep(.p-panel-content-wrapper) {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      :deep(.p-panel-content) {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+      }
     }
   }
 
   &--auto {
-    // size to content; the grid cell is fitted to this via request-height
     height: auto;
+
+    .panel-frame__panel {
+      height: auto;
+    }
 
     :deep(.p-panel-content) {
       overflow: visible;
+    }
+  }
+
+  // Theme via Feather variables so panels follow light/dark mode.
+  .panel-frame__panel {
+    background: var(--feather-elevation-background-2, #ffffff);
+    color: var(--feather-primary-text-on-surface, #1f1f1f);
+    border-color: var(--feather-border-on-surface, #e0e0e0);
+
+    :deep(.p-panel-header) {
+      background: transparent;
+      color: var(--feather-primary-text-on-surface, #1f1f1f);
+    }
+
+    :deep(.p-panel-content) {
+      background: transparent;
+      color: inherit;
+    }
+
+    &--missing {
+      color: var(--feather-error, #b00020);
     }
   }
 
