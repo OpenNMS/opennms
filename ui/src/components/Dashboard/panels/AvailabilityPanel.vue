@@ -54,9 +54,17 @@ License.
           <tr
             v-for="cat in section.categories"
             :key="section.name + '/' + cat.name"
-            :style="shade ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
+            :class="{ 'avail__total': isTotal(section) }"
+            :style="shade && !isTotal(section) ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
           >
-            <td class="avail__cat">{{ cat.name }}</td>
+            <td class="avail__cat">
+              <a
+                v-if="!isTotal(section)"
+                :href="categoryLink(cat.name)"
+                :title="`Outage details for ${cat.name}`"
+              >{{ cat.name }}</a>
+              <template v-else>{{ cat.name }}</template>
+            </td>
             <td class="avail__num">{{ cat.outageText }}</td>
             <td
               class="avail__num"
@@ -64,11 +72,6 @@ License.
             >{{ cat.availabilityText }}</td>
           </tr>
         </template>
-        <tr class="avail__total">
-          <td class="avail__cat">Overall Service Availability</td>
-          <td class="avail__num">{{ overall.down }} of {{ overall.total }}</td>
-          <td class="avail__num">{{ overall.pct.toFixed(3) }}%</td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -87,20 +90,14 @@ const shade = computed(() => !!props.options?.shade)
 const loading = ref(true)
 const sections = ref<AvailabilitySection[]>([])
 
-const overall = computed(() => {
-  let down = 0
-  let total = 0
-  for (const s of sections.value) {
-    for (const c of s.categories) {
-      const m = /(\d+)\s+of\s+(\d+)/.exec(c.outageText)
-      if (m) {
-        down += Number(m[1])
-        total += Number(m[2])
-      }
-    }
-  }
-  return { down, total, pct: total > 0 ? ((total - down) / total) * 100 : 100 }
-})
+// The REST response already includes a "Total" section holding the real
+// "Overall Service Availability" row — render it as the bold total (don't add
+// our own, which previously produced a duplicate).
+const isTotal = (s: AvailabilitySection) => s.name === 'Total'
+
+// Category name links to the legacy RTC outage detail page (categories-box.jsp).
+const categoryLink = (name: string) =>
+  `/opennms/rtc/category.jsp?showoutages=avail&category=${encodeURIComponent(name)}`
 
 const load = async () => {
   loading.value = true
@@ -144,6 +141,15 @@ watch(() => props.refreshTick, load)
 
   &__cat {
     text-align: left;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   &__total td {

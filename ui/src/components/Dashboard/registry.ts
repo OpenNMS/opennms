@@ -43,6 +43,8 @@ export interface PanelDefinition {
   defaultHeightMode?: PanelHeightMode
   supportsTimeframe?: boolean // show timeframe control for this panel (user-requested)
   supportedFilters?: FilterKey[] // filters this panel honors (NMS-10507)
+  // legacy deep-link the panel title opens (matches the front-page box headers)
+  titleHref?: string
   renamable?: boolean // default true
   collapsible?: boolean // default true (NMS-11946)
   roles?: string[] // future: restrict visibility via useRole()
@@ -52,6 +54,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'pending-situations': {
     type: 'pending-situations',
     title: 'Pending Situations',
+    titleHref: '/opennms/alarm/list.htm',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/SituationsPanel.vue')),
     defaultSize: { w: 4, h: 3 },
@@ -62,6 +65,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'nodes-with-alarms': {
     type: 'nodes-with-alarms',
     title: 'Nodes with Pending Alarms',
+    titleHref: '/opennms/alarm/list.htm',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/NodesWithAlarmsPanel.vue')),
     defaultSize: { w: 4, h: 5 },
@@ -72,6 +76,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'service-outages': {
     type: 'service-outages',
     title: 'Nodes with Service Outages',
+    titleHref: '/opennms/outage/list.htm',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/OutagesPanel.vue')),
     defaultSize: { w: 4, h: 4 },
@@ -103,6 +108,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   applications: {
     type: 'applications',
     title: 'Applications with Pending Alarms',
+    titleHref: '/opennms/application/index.jsp',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/ApplicationsPanel.vue')),
     defaultSize: { w: 4, h: 3 },
@@ -114,6 +120,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     type: 'availability',
     defaultHeightMode: 'fixed',
     title: 'Availability Over the Past 24 Hours',
+    titleHref: '/opennms/rtc/index.jsp',
     category: 'status',
     component: defineAsyncComponent(() => import('./panels/AvailabilityPanel.vue')),
     defaultSize: { w: 6, h: 4 },
@@ -135,6 +142,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   notifications: {
     type: 'notifications',
     title: 'Notifications',
+    titleHref: '/opennms/notification/index.jsp',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/NotificationsPanel.vue')),
     defaultSize: { w: 4, h: 3 },
@@ -156,6 +164,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'resource-graphs': {
     type: 'resource-graphs',
     title: 'Resource Graphs',
+    titleHref: '/opennms/graph/index.jsp',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/ResourceGraphsPanel.vue')),
     defaultSize: { w: 3, h: 2 },
@@ -166,6 +175,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   'ksc-reports': {
     type: 'ksc-reports',
     title: 'KSC Reports',
+    titleHref: '/opennms/KSC/index.jsp',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/KscReportsPanel.vue')),
     defaultSize: { w: 3, h: 2 },

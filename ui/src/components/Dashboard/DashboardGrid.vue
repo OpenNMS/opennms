@@ -38,7 +38,7 @@ License.
       v-model:layout="layout"
       :col-num="12"
       :row-height="ROW_HEIGHT"
-      :margin="[12, 12]"
+      :margin="[12, 0]"
       :is-draggable="editMode"
       :is-resizable="editMode"
       :vertical-compact="true"
@@ -74,7 +74,7 @@ License.
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 // grid-layout-plus 1.x injects its own styles at runtime — no CSS import needed.
 import { GridLayout, GridItem } from 'grid-layout-plus'
@@ -83,9 +83,20 @@ import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import type { DashboardPanel } from '@/types/dashboard'
 
-const ROW_HEIGHT = 44
-const MARGIN = 12 // matches grid :margin
-const COLLAPSED_H = 1 // header-only rows when a panel is collapsed
+// PIXEL-BASED grid. row-height is 1px and the vertical margin is 0, so a grid
+// cell is exactly `h` pixels tall — eliminating the coarse ~56px row quantization
+// that left big gaps under short panels. Vertical spacing between panels comes
+// from GAP (baked into each cell's h); the panel itself does not fill the gap.
+const ROW_HEIGHT = 1
+const GAP = 12 // px of empty space below each panel (visual gap between rows)
+const COLLAPSED_H = 40 + GAP // header-only height when a panel is collapsed
+const MIN_AUTO_H = 40 + GAP
+const MIN_FIXED_H = 96
+
+// Old saved layouts (and the default) store h/y in ~44px ROW units; pixel h is
+// always > 40. Convert small values up so legacy layouts render at sane sizes;
+// values already in pixels pass through unchanged (idempotent).
+const toPx = (h: number) => (h <= 40 ? Math.round(h * 56) : h)
 
 interface GridItemModel {
   i: string
@@ -105,18 +116,17 @@ const toItem = (p: DashboardPanel): GridItemModel => ({
   x: p.x,
   y: p.y,
   w: p.w,
-  h: p.collapsed ? COLLAPSED_H : p.h
+  h: p.collapsed ? COLLAPSED_H : toPx(p.h)
 })
 
 const layout = ref<GridItemModel[]>(panels.value.map(toItem))
 
 const minW = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSize?.w ?? 2
-// Auto-height panels size to content, so they must be allowed to shrink to 1 row
-// (otherwise the grid reserves minSize.h and leaves whitespace under short panels).
+// Auto-height panels size to content, so they may shrink to their content height.
 const minH = (id: string) => {
   const p = getPanel(id)
-  if (p && !p.collapsed && store.resolvedHeightMode(p) === 'auto') return 1
-  return getPanelDefinition(p?.type ?? '')?.minSize?.h ?? 2
+  if (p && !p.collapsed && store.resolvedHeightMode(p) === 'auto') return MIN_AUTO_H
+  return MIN_FIXED_H
 }
 
 // Vertical compaction: place each item at the lowest non-colliding y within its
@@ -151,7 +161,7 @@ watch(
     layout.value = panels.value.map((p) => {
       const existing = byId.get(p.id)
       if (existing) {
-        existing.h = p.collapsed ? COLLAPSED_H : p.h
+        existing.h = p.collapsed ? COLLAPSED_H : toPx(p.h)
         return existing
       }
       return toItem(p)
@@ -166,13 +176,13 @@ const isAuto = (id: string): boolean => {
 }
 
 // An auto-height panel reported its natural pixel height; size the grid cell to
-// fit. Convert px -> rows accounting for the inter-row margin.
+// exactly that height plus the inter-panel GAP (pixel-perfect, no quantization).
 const onRequestHeight = (id: string, px: number) => {
   const item = layout.value.find((it) => it.i === id)
   if (!item || !isAuto(id)) return
-  const rows = Math.max(2, Math.ceil((px + MARGIN) / (ROW_HEIGHT + MARGIN)))
-  if (item.h !== rows) {
-    item.h = rows
+  const h = Math.max(MIN_AUTO_H, Math.round(px) + GAP)
+  if (item.h !== h) {
+    item.h = h
     compactLayout()
   }
 }
@@ -184,6 +194,7 @@ const onLayoutUpdated = (newLayout: GridItemModel[]) => {
 // After initial render, once panels have reported their auto heights, compact the
 // columns so there are no leftover gaps between short panels.
 onMounted(() => {
+  nextTick(compactLayout)
   setTimeout(compactLayout, 400)
   setTimeout(compactLayout, 1200)
 })

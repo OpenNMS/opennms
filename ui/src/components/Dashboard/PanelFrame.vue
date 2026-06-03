@@ -35,11 +35,23 @@ License.
     <PPanel
       class="panel-frame__panel"
       :class="{ 'panel-frame__panel--missing': !panelDef }"
-      :header="displayTitle"
       :toggleable="collapsible"
       :collapsed="panel.collapsed"
       @update:collapsed="onCollapsedChange"
     >
+      <template #header>
+        <a
+          v-if="titleHref && !editMode"
+          class="panel-frame__title panel-frame__title--link"
+          :href="titleHref"
+          :title="`Open ${displayTitle}`"
+        >{{ displayTitle }}</a>
+        <span
+          v-else
+          class="panel-frame__title"
+        >{{ displayTitle }}</span>
+      </template>
+
       <template
         v-if="editMode"
         #icons
@@ -119,6 +131,8 @@ const collapsible = computed(() => panelDef.value?.collapsible !== false)
 const renamable = computed(() => panelDef.value?.renamable !== false)
 
 const displayTitle = computed(() => props.panel.titleOverride || panelDef.value?.title || props.panel.type)
+// Legacy deep-link for the panel title (matches the front-page box headers).
+const titleHref = computed(() => panelDef.value?.titleHref ?? null)
 
 const resolvedFilter = computed(() => store.resolvedFilter(props.panel))
 const resolvedTimeframe = computed(() => store.resolvedTimeframe(props.panel))
@@ -174,8 +188,8 @@ const onRemove = () => {
   min-width: 0;
 
   &--fixed {
-    // fill the grid cell; content scrolls inside it
-    height: 100%;
+    // fill the grid cell minus the inter-panel gap; content scrolls inside it
+    height: calc(100% - 12px);
     display: flex;
     flex-direction: column;
 
@@ -235,6 +249,20 @@ const onRemove = () => {
 
     &--missing {
       color: var(--feather-error, #b00020);
+    }
+  }
+
+  &__title {
+    font-weight: 600;
+    color: inherit;
+
+    &--link {
+      text-decoration: none;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
