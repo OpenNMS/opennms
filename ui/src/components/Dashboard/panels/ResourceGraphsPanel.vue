@@ -27,9 +27,6 @@ License.
 -->
 <template>
   <div class="search-box">
-    <p class="search-box__lead">
-      <a href="/opennms/graph/index.jsp">Resource Graphs</a>
-    </p>
     <form
       class="search-box__form"
       action="/opennms/element/nodeList.htm"

@@ -132,14 +132,26 @@ const onRemove = () => {
 </script>
 
 <style scoped lang="scss">
-// Fill the grid cell provided by DashboardGrid (grid-layout-plus GridItem).
+// Fill the grid cell provided by DashboardGrid (grid-layout-plus GridItem), and
+// give fill-height panels (map, charts) a real bounded content height by making
+// the PrimeVue Panel's content wrappers flex down the column.
 .panel-frame {
   height: 100%;
   min-width: 0;
   display: flex;
   flex-direction: column;
 
+  :deep(.p-panel-content-container),
+  :deep(.p-toggleable-content) {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
   :deep(.p-panel-content) {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: auto;
   }
 

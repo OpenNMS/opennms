@@ -26,9 +26,6 @@ License.
 -->
 <template>
   <div class="search-box">
-    <p class="search-box__lead">
-      <a href="/opennms/KSC/index.jsp">KSC Reports</a>
-    </p>
     <form
       class="search-box__form"
       action="/opennms/KSC/index.jsp"

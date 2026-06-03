@@ -116,7 +116,7 @@ const renderDonut = (
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '68%',
+      cutout: '55%',
       plugins: { legend: { position: 'bottom' } }
     }
   })
@@ -160,6 +160,7 @@ onBeforeUnmount(() => {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
+    min-height: 0;
   }
 
   &__center {

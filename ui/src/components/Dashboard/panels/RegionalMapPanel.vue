@@ -32,7 +32,7 @@ License.
   >
     <LMap
       ref="mapRef"
-      :zoom="2"
+      :zoom="zoom"
       :center="center"
       :max-zoom="19"
       :min-zoom="1"
@@ -96,18 +96,46 @@ interface MapMarker {
   label: string
 }
 
+// Remember the user's pan/zoom across reloads (per browser).
+const VIEW_KEY = 'opennms.dashboard.regionalMap.view'
+interface SavedView {
+  lat: number
+  lng: number
+  zoom: number
+}
+const loadSavedView = (): SavedView | null => {
+  try {
+    const s = localStorage.getItem(VIEW_KEY)
+    return s ? (JSON.parse(s) as SavedView) : null
+  } catch {
+    return null
+  }
+}
+const saved = loadSavedView()
+
 const containerRef = ref<HTMLElement | null>(null)
 const mapRef = ref()
 const ready = ref(false)
 const loading = ref(true)
 const markers = ref<MapMarker[]>([])
-const center = ref<[number, number]>([20, 0])
+const center = ref<[number, number]>(saved ? [saved.lat, saved.lng] : [20, 0])
+const zoom = ref<number>(saved ? saved.zoom : 2)
 
 let leaflet: LeafletMapType | null = null
 let resizeObserver: ResizeObserver | null = null
 
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const attribution = '&copy; OpenStreetMap contributors'
+
+const saveView = () => {
+  if (!leaflet) return
+  try {
+    const c = leaflet.getCenter()
+    localStorage.setItem(VIEW_KEY, JSON.stringify({ lat: c.lat, lng: c.lng, zoom: leaflet.getZoom() }))
+  } catch {
+    /* ignore storage errors */
+  }
+}
 
 const iconFor = (severity: string) => {
   switch ((severity || '').toUpperCase()) {
@@ -127,8 +155,12 @@ const iconFor = (severity: string) => {
 const onReady = (mapObject: LeafletMapType) => {
   leaflet = mapObject
   ready.value = true
+  // persist pan/zoom as the user moves
+  leaflet.on('moveend', saveView)
+  leaflet.on('zoomend', saveView)
   // the panel may size after the map mounts; fix tile layout once laid out
   setTimeout(() => leaflet?.invalidateSize(), 150)
+  setTimeout(() => leaflet?.invalidateSize(), 600)
 }
 
 const load = async () => {
@@ -191,12 +223,17 @@ onBeforeUnmount(() => {
 
   &__overlay {
     position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500; // above leaflet tiles
     pointer-events: none;
-    color: var(--feather-secondary-text-on-surface, #666);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--feather-secondary-text-on-surface, #555);
+    font-size: 0.8125rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 }
 </style>
