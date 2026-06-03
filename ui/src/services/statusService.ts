@@ -49,3 +49,38 @@ export const getNodesByAlarms = (): Promise<StatusSummaryEntry[]> =>
 
 export const getNodesByOutages = (): Promise<StatusSummaryEntry[]> =>
   fetchSummary('/status/summary/nodes/outages')
+
+// Named status lists (business services / applications) — only those with a
+// pending problem (severity worse than NORMAL), matching the legacy boxes.
+export interface StatusListItem {
+  id: number
+  name: string
+  severity: string
+}
+
+const PROBLEM_SEVERITIES = new Set(['WARNING', 'MINOR', 'MAJOR', 'CRITICAL'])
+
+const severityString = (s: unknown): string =>
+  (typeof s === 'string' ? s : ((s as any)?.label ?? (s as any)?.name ?? '')).toUpperCase()
+
+const fetchStatusList = async (path: string, key: string): Promise<StatusListItem[]> => {
+  try {
+    const resp = await v2.get(path, { headers: { Accept: 'application/json' } })
+    if (resp.status === 204 || !resp.data) {
+      return []
+    }
+    const raw = resp.data[key]
+    const arr = Array.isArray(raw) ? raw : raw ? [raw] : []
+    return arr
+      .map((x: any) => ({ id: Number(x.id), name: x.name, severity: severityString(x.severity) }))
+      .filter((x: StatusListItem) => PROBLEM_SEVERITIES.has(x.severity))
+  } catch (err) {
+    return []
+  }
+}
+
+export const getBusinessServicesStatus = (): Promise<StatusListItem[]> =>
+  fetchStatusList('/status/business-services', 'businessservice')
+
+export const getApplicationsStatus = (): Promise<StatusListItem[]> =>
+  fetchStatusList('/status/applications', 'application')

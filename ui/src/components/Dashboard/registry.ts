@@ -86,6 +86,26 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  'business-services': {
+    type: 'business-services',
+    title: 'Business Services with Pending Alarms',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/BusinessServicesPanel.vue')),
+    defaultSize: { w: 4, h: 3 },
+    minSize: { w: 3, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
+  applications: {
+    type: 'applications',
+    title: 'Applications with Pending Alarms',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/ApplicationsPanel.vue')),
+    defaultSize: { w: 4, h: 3 },
+    minSize: { w: 3, h: 2 },
+    renamable: true,
+    collapsible: true
+  },
   availability: {
     type: 'availability',
     title: 'Availability Over the Past 24 Hours',
