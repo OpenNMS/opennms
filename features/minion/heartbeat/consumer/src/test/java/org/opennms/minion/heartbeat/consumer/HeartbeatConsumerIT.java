@@ -43,6 +43,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -56,8 +57,6 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -86,19 +85,17 @@ public class HeartbeatConsumerIT {
     private MockEventIpcManager m_mockEventIpcManager;
 
     @Autowired
-    private PlatformTransactionManager m_transactionManager;
+    private SessionUtils sessionUtils;
 
     /**
-     * Wraps {@link HeartbeatConsumer#handleMessage} in a committing transaction. The consumer is
-     * instantiated directly in these tests (not via Spring), so its {@code @Transactional} proxy is
-     * not applied; the fixture writes must be committed so the separate-session readers (the async
-     * provisioning thread and {@link MinionDao#countAll()}) can see them.
+     * Invokes {@link HeartbeatConsumer#handleMessage} exactly as the sink dispatch does in
+     * production -- directly, not through a Spring {@code @Transactional} proxy. handleMessage now
+     * drives its own committing transaction (via {@link SessionUtils}), so the persisted Minion is
+     * visible to the separate-session readers (the async provisioning thread and
+     * {@link MinionDao#countAll()}).
      */
     private void handleMessageInTransaction(HeartbeatConsumer heartbeatConsumer, MinionIdentityDTO minionIdentityDTO) {
-        new TransactionTemplate(m_transactionManager).execute(status -> {
-            heartbeatConsumer.handleMessage(minionIdentityDTO);
-            return null;
-        });
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
     }
 
     @Test
@@ -136,6 +133,7 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
         heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
         heartbeatConsumer.setNodeDao(nodeDao);
+        heartbeatConsumer.setSessionUtils(sessionUtils);
 
         // Stream the messages in parallel.
         minionDTOs.parallelStream().forEach(dto -> handleMessageInTransaction(heartbeatConsumer, dto));
@@ -200,6 +198,7 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
         heartbeatConsumer.setEventSubscriptionService(m_mockEventIpcManager);
         heartbeatConsumer.setNodeDao(nodeDao);
+        heartbeatConsumer.setSessionUtils(sessionUtils);
 
 
         MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();

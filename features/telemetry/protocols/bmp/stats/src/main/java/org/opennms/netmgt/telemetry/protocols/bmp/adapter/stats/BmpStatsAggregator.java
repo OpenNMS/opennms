@@ -211,20 +211,21 @@ public class BmpStatsAggregator {
 
             statsIpOrigins.forEach(stat -> {
                 BmpStatsIpOrigins bmpStatsIpOrigins = buildBmpStatsOrigins(stat);
-                try {
-                    bmpStatsIpOriginsDao.saveOrUpdate(bmpStatsIpOrigins);
-                } catch (Exception e) {
-                    // Possibly unique constraint violation, query and update.
-                    BmpStatsIpOrigins retrieved = bmpStatsIpOriginsDao.findByAsnAndIntervalTime(bmpStatsIpOrigins.getAsn(), bmpStatsIpOrigins.getTimestamp());
-                    if (retrieved != null) {
-                        retrieved.setV4prefixes(bmpStatsIpOrigins.getV4prefixes());
-                        retrieved.setV6prefixes(bmpStatsIpOrigins.getV6prefixes());
-                        retrieved.setV4withrpki(bmpStatsIpOrigins.getV4withrpki());
-                        retrieved.setV6withrpki(bmpStatsIpOrigins.getV6withrpki());
-                        retrieved.setV4withirr(bmpStatsIpOrigins.getV4withirr());
-                        retrieved.setV6withirr(bmpStatsIpOrigins.getV6withirr());
-                        saveBmpStatsIpOrigin(retrieved);
-                    }
+                // Query first: under Hibernate 5 a saveOrUpdate insert is deferred until commit
+                // (after this lambda returns), so a duplicate-key violation would be thrown outside
+                // any try here and abort the whole aggregation. Look the row up by its natural key
+                // and update it in place when it already exists, otherwise insert.
+                BmpStatsIpOrigins retrieved = bmpStatsIpOriginsDao.findByAsnAndIntervalTime(bmpStatsIpOrigins.getAsn(), bmpStatsIpOrigins.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setV4prefixes(bmpStatsIpOrigins.getV4prefixes());
+                    retrieved.setV6prefixes(bmpStatsIpOrigins.getV6prefixes());
+                    retrieved.setV4withrpki(bmpStatsIpOrigins.getV4withrpki());
+                    retrieved.setV6withrpki(bmpStatsIpOrigins.getV6withrpki());
+                    retrieved.setV4withirr(bmpStatsIpOrigins.getV4withirr());
+                    retrieved.setV6withirr(bmpStatsIpOrigins.getV6withirr());
+                    saveBmpStatsIpOrigin(retrieved);
+                } else {
+                    saveBmpStatsIpOrigin(bmpStatsIpOrigins);
                 }
             });
             LOG.debug("Updating StatsIpOrigins --");
@@ -249,16 +250,15 @@ public class BmpStatsAggregator {
 
             statsByPeer.forEach(stat -> {
                 BmpStatsByPeer bmpStatsByPeer = buildBmpStatsByPeer(stat);
-                try {
-                    bmpStatsByPeerDao.saveOrUpdate(bmpStatsByPeer);
-                } catch (Exception e) {
-                    // // Possibly unique constraint violation, query and update.
-                    BmpStatsByPeer retrieved = bmpStatsByPeerDao.findByPeerAndIntervalTime(bmpStatsByPeer.getPeerHashId(), bmpStatsByPeer.getTimestamp());
-                    if (retrieved != null) {
-                        retrieved.setUpdates(bmpStatsByPeer.getUpdates());
-                        retrieved.setWithdraws(bmpStatsByPeer.getWithdraws());
-                        saveBmpStatsByPeer(retrieved);
-                    }
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
+                BmpStatsByPeer retrieved = bmpStatsByPeerDao.findByPeerAndIntervalTime(bmpStatsByPeer.getPeerHashId(), bmpStatsByPeer.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByPeer.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByPeer.getWithdraws());
+                    saveBmpStatsByPeer(retrieved);
+                } else {
+                    saveBmpStatsByPeer(bmpStatsByPeer);
                 }
             });
             LOG.debug("Updating StatsByPeer --");
@@ -283,16 +283,15 @@ public class BmpStatsAggregator {
 
             statsByAsnList.forEach(stat -> {
                 BmpStatsByAsn bmpStatsByAsn = buildBmpStatsByAsn(stat);
-                try {
-                    bmpStatsByAsnDao.saveOrUpdate(bmpStatsByAsn);
-                } catch (Exception e) {
-                    // Possibly unique constraint violation, query and update.
-                    BmpStatsByAsn retrieved = bmpStatsByAsnDao.findByAsnAndIntervalTime(bmpStatsByAsn.getPeerHashId(), bmpStatsByAsn.getOriginAsn(), bmpStatsByAsn.getTimestamp());
-                    if (retrieved != null) {
-                        retrieved.setUpdates(bmpStatsByAsn.getUpdates());
-                        retrieved.setWithdraws(bmpStatsByAsn.getWithdraws());
-                        saveStatsByAsn(retrieved);
-                    }
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
+                BmpStatsByAsn retrieved = bmpStatsByAsnDao.findByAsnAndIntervalTime(bmpStatsByAsn.getPeerHashId(), bmpStatsByAsn.getOriginAsn(), bmpStatsByAsn.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByAsn.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByAsn.getWithdraws());
+                    saveStatsByAsn(retrieved);
+                } else {
+                    saveStatsByAsn(bmpStatsByAsn);
                 }
             });
             LOG.debug("Updating StatsByAsn --");
@@ -316,17 +315,16 @@ public class BmpStatsAggregator {
 
             statsByPrefixList.forEach(stat -> {
                 BmpStatsByPrefix bmpStatsByPrefix = buildBmpStatsByPrefix(stat);
-                try {
-                    bmpStatsByPrefixDao.saveOrUpdate(bmpStatsByPrefix);
-                } catch (Exception e) {
-                    // Possibly unique constraint violation, query and update.
-                    BmpStatsByPrefix retrieved = bmpStatsByPrefixDao.findByPrefixAndIntervalTime(bmpStatsByPrefix.getPeerHashId(), bmpStatsByPrefix.getPrefix(),
-                            bmpStatsByPrefix.getTimestamp());
-                    if (retrieved != null) {
-                        retrieved.setUpdates(bmpStatsByPrefix.getUpdates());
-                        retrieved.setWithdraws(bmpStatsByPrefix.getWithdraws());
-                        saveBmpStatsByPrefix(retrieved);
-                    }
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
+                BmpStatsByPrefix retrieved = bmpStatsByPrefixDao.findByPrefixAndIntervalTime(bmpStatsByPrefix.getPeerHashId(), bmpStatsByPrefix.getPrefix(),
+                        bmpStatsByPrefix.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByPrefix.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByPrefix.getWithdraws());
+                    saveBmpStatsByPrefix(retrieved);
+                } else {
+                    saveBmpStatsByPrefix(bmpStatsByPrefix);
                 }
             });
             LOG.debug("Updating StatsByPrefix --");
@@ -350,16 +348,15 @@ public class BmpStatsAggregator {
 
             statsPeerRibs.forEach(statsPeerRib -> {
                 BmpStatsPeerRib bmpStatsPeerRib = buildBmpStatPeerRibCount(statsPeerRib);
-                try {
-                    bmpStatsPeerRibDao.saveOrUpdate(bmpStatsPeerRib);
-                } catch (Exception e) {
-                    // Possibly unique constraint violation, query and update.
-                    BmpStatsPeerRib retrieved = bmpStatsPeerRibDao.findByPeerAndIntervalTime(bmpStatsPeerRib.getPeerHashId(), bmpStatsPeerRib.getTimestamp());
-                    if (retrieved != null) {
-                        retrieved.setV6prefixes(bmpStatsPeerRib.getV6prefixes());
-                        retrieved.setV4prefixes(bmpStatsPeerRib.getV4prefixes());
-                        saveStatsPeerRib(retrieved);
-                    }
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
+                BmpStatsPeerRib retrieved = bmpStatsPeerRibDao.findByPeerAndIntervalTime(bmpStatsPeerRib.getPeerHashId(), bmpStatsPeerRib.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setV6prefixes(bmpStatsPeerRib.getV6prefixes());
+                    retrieved.setV4prefixes(bmpStatsPeerRib.getV4prefixes());
+                    saveStatsPeerRib(retrieved);
+                } else {
+                    saveStatsPeerRib(bmpStatsPeerRib);
                 }
             });
             LOG.debug("Updating StatsPeerRib --");
