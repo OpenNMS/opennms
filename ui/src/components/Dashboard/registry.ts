@@ -86,6 +86,16 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  availability: {
+    type: 'availability',
+    title: 'Availability Over the Past 24 Hours',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/AvailabilityPanel.vue')),
+    defaultSize: { w: 6, h: 4 },
+    minSize: { w: 4, h: 3 },
+    renamable: true,
+    collapsible: true
+  },
   'regional-map': {
     type: 'regional-map',
     title: 'Regional Status',
