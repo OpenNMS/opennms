@@ -56,8 +56,8 @@ Karaf shell::
 [source, karaf]
 ----
 config:edit org.opennms.plugins.tss.prometheus
-property-set writeUrl http://cortex-service-host:9009/api/prom/push
-property-set readUrl http://cortex-service-host:9009/prometheus/api/v1
+property-set writeUrl http://victoriametrics-host:8428/api/v1/write
+property-set readUrl http://victoriametrics-host:8428/prometheus/api/v1
 property-set maxConcurrentHttpConnections 100
 property-set writeTimeoutInMs 1000
 property-set readTimeoutInMs 1000
@@ -72,8 +72,8 @@ CFG file::
 .Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` file:
 [source, properties]
 ----
-writeUrl=http://cortex-service-host:9009/api/prom/push
-readUrl=http://cortex-service-host:9009/prometheus/api/v1
+writeUrl=http://victoriametrics-host:8428/api/v1/write
+readUrl=http://victoriametrics-host:8428/prometheus/api/v1
 maxConcurrentHttpConnections=100
 writeTimeoutInMs=1000
 readTimeoutInMs=1000
@@ -82,6 +82,8 @@ externalTagsCacheSize=1000
 bulkheadMaxWaitDurationInMs=9223372036854775807
 ----
 ====
++
+NOTE: The URL paths shown above are for VictoriaMetrics single-node. For Cortex, use `writeUrl=http://cortex-host:9009/api/prom/push` and `readUrl=http://cortex-host:9009/prometheus/api/v1`. For Mimir, follow the Mimir documentation for its remote-write endpoint.
 
 . Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot` to configure the plugin to remain installed after {page-component-title} restarts:
 +
@@ -90,10 +92,31 @@ opennms-plugins-prometheus-remotewrite wait-for-kar=opennms-prometheus-remotewri
 
 . Restart the {page-component-title} service.
 
+== Validation
+
+After the first collection cycle (five minutes by default), query the time series store to confirm that metrics are arriving:
+
+[source, bash]
+----
+curl -s 'http://victoriametrics-host:8428/api/v1/series' \
+  --data-urlencode 'match[]={resourceId!=""}' \
+  --data-urlencode 'start=0' | jq '.data | length'
+----
+
+A non-zero result confirms the plugin is writing successfully.
+If the count is `0`, check `$\{OPENNMS_HOME}/logs/karaf.log` for errors (filter for `cortex`, `prometheus`, or `tss`).
+
 == Time series store tips
+
+=== VictoriaMetrics
+
+VictoriaMetrics ships with a built-in PromQL query UI at `\http://victoriametrics-host:8428/vmui`.
+The cardinality explorer at `\http://victoriametrics-host:8428/vmui/?#/cardinality` lists labels and series counts.
+
+=== Cortex
 
 When using Cortex as the time series store, navigate to the following URLs to view information about your Cortex server:
 
-* *Server status:* \http://cortex-service-host:9009
-* *Ring:* \http://cortex-service-host:9009/ring
-* *Internal metrics:* \http://cortex-service-host:9009/metrics
+* *Server status:* \http://cortex-host:9009
+* *Ring:* \http://cortex-host:9009/ring
+* *Internal metrics:* \http://cortex-host:9009/metrics
