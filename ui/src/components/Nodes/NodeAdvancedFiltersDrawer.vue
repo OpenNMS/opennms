@@ -100,6 +100,7 @@
             class="filter-input"
             label="IP Address"
             v-model="selectedFilters.ipAddress"
+            :error="errors.ipAddress"
           />
         </div>
         <div class="feather-col-6">
@@ -132,6 +133,7 @@
       <div class="footer">
         <FeatherButton
           primary
+          :disabled="isApplyDisabled"
           @click="applySelectedFilters"
         >
           Apply Filters
@@ -171,7 +173,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, watchEffect } from 'vue'
+import { isIP } from 'is-ip'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherButton } from '@featherds/button'
@@ -183,6 +186,10 @@ import InfoIcon from '@featherds/icon/action/Info'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+
+interface DrawerErrors {
+  ipAddress?: string
+}
 
 type ExtendedSearchPanelInstance = InstanceType<typeof ExtendedSearchPanel>
 
@@ -198,6 +205,8 @@ const locationsLoading = ref(false)
 const locationResults = ref<IAutocompleteItemType[]>([])
 const serviceResults = ref<IAutocompleteItemType[]>([])
 const isMessageDialogVisible = ref(false)
+const errors = ref<DrawerErrors>({})
+const isApplyDisabled = ref(false)
 // we already have items in memory, don't really need to use setTimeout at all,
 // but will keep it just to have the pattern. Timeout can be minimal (5ms)
 const TIMEOUT = 5
@@ -288,6 +297,20 @@ const removeSecondCategories = () => {
   showSecondCategories.value = false
   selectedFilters.categories2 = []
 }
+
+const validate = (): DrawerErrors => {
+  const errs: DrawerErrors = {}
+  const ip = selectedFilters.ipAddress
+  if (ip && !isIP(ip)) {
+    errs.ipAddress = 'Must be a valid IPv4 or IPv6 address'
+  }
+  return errs
+}
+
+watchEffect(() => {
+  errors.value = validate()
+  isApplyDisabled.value = Object.keys(errors.value).length > 0
+})
 
 const applySelectedFilters = () => {
   nodeStructureStore.updateSelectedCategories(selectedFilters.categories)
