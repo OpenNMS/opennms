@@ -1822,9 +1822,6 @@
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateVersion>5.6.15.Final</hibernateVersion>
-    <hibernateOsgiVersion>5.6.15</hibernateOsgiVersion>
-    <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
-    <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>6.2.5.Final</hibernateValidatorVersion>
     <hibernateValidatorAnnotationProcessorVersion>6.2.5.Final</hibernateValidatorAnnotationProcessorVersion>
     <javaxElVersion>3.0.0</javaxElVersion>
@@ -2001,7 +1998,13 @@
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.3.30.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.3.30.RELEASE_1</patchedSpringVersion>
+    <!-- patchedSpringVersion MUST stay on the .ONMS.1 bundles: they carry OpenNMS backports into the
+         EOL Spring 4.3.x line that stock 4.3.30 does NOT have: Spring4Shell (CVE-2022-22965, in
+         spring-beans CachedIntrospectionResults), the SpEL array-allocation DoS (CVE-2022-22950, in
+         spring-expression), a CGLIB fast-class fix needed on newer JDKs (spring-aop), and a couple of
+         bug fixes (spring-web). This matches the 4.3.x block in spring-legacy.xml. Only converge it
+         back to ${springVersion} after moving to a Spring line that ships these fixes (>= 5.2.20/5.3.x). -->
+    <patchedSpringVersion>4.3.30.RELEASE_1.ONMS.1</patchedSpringVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>

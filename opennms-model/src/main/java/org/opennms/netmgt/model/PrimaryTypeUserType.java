@@ -73,13 +73,13 @@ public class PrimaryTypeUserType implements UserType {
             st.setNull(index, java.sql.Types.CHAR);
         } else if (value instanceof PrimaryType) {
             Character charValue = ((PrimaryType)value).getCharCode();
-            st.setString(index, charValue != null ? charValue.toString() : null);
+            st.setString(index, charValue.toString());
         } else if (value instanceof Character) {
             st.setString(index, value.toString());
         } else if (value instanceof String) {
             // let PrimaryType validate it as a "good" value
             Character charValue = PrimaryType.get((String)value).getCharCode();
-            st.setString(index, charValue != null ? charValue.toString() : null);
+            st.setString(index, charValue.toString());
         }
     }
 

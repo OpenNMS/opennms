@@ -29,6 +29,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -42,7 +43,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Represents a DefaultPollContext
@@ -70,6 +70,9 @@ public class DefaultPollContext implements PollContext {
 
     @Autowired
     private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
 
     private String m_serviceName = "SNMP";
 
@@ -237,19 +240,23 @@ public class DefaultPollContext implements PollContext {
 
     /** {@inheritDoc} */
     @Override
-    @Transactional
     public void update(OnmsSnmpInterface snmpinterface) {
-    	OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
-    	if (dbSnmpInterface == null)  {
-        	log().debug("updating SnmpInterface: no interface found on db for: " + snmpinterface.toString());
-    	} else {
-    		dbSnmpInterface.setIfOperStatus(snmpinterface.getIfOperStatus());
-    		dbSnmpInterface.setIfAdminStatus(snmpinterface.getIfAdminStatus());
-    		dbSnmpInterface.setLastSnmpPoll(snmpinterface.getLastSnmpPoll());
-            dbSnmpInterface.setPoll(snmpinterface.getPoll());
-    		log().debug("updating SnmpInterface: " + dbSnmpInterface.toString());
-    		getSnmpInterfaceDao().update(dbSnmpInterface);
-    	}
+    	// No <tx:annotation-driven/> in this context, so @Transactional won't apply here; drive a
+    	// committing transaction explicitly (required under Hibernate 5, else FlushMode.MANUAL).
+    	m_sessionUtils.withTransaction(() -> {
+    		OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
+    		if (dbSnmpInterface == null)  {
+    			log().debug("updating SnmpInterface: no interface found on db for: " + snmpinterface.toString());
+    		} else {
+    			dbSnmpInterface.setIfOperStatus(snmpinterface.getIfOperStatus());
+    			dbSnmpInterface.setIfAdminStatus(snmpinterface.getIfAdminStatus());
+    			dbSnmpInterface.setLastSnmpPoll(snmpinterface.getLastSnmpPoll());
+    			dbSnmpInterface.setPoll(snmpinterface.getPoll());
+    			log().debug("updating SnmpInterface: " + dbSnmpInterface.toString());
+    			getSnmpInterfaceDao().update(dbSnmpInterface);
+    		}
+    		return null;
+    	});
     }
 
 	@Override

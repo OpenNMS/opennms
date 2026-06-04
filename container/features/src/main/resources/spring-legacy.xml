@@ -127,7 +127,10 @@
         <bundle start-level="30">mvn:org.springframework/spring-webmvc-portlet/3.1.4.RELEASE</bundle>
     </feature>
 
-    <!-- Spring 4.2.x support: retained at hardcoded 4.2.9 for Apache Camel 2.21.5, which requires spring [4.2,4.3). OpenNMS uses the 4.3.x features below. -->
+    <!-- Spring 4.2.x feature definition. NOTE: this is no longer consumed at runtime; the Apache Camel 2.21.5
+         feature's Spring import range is rewritten to [4.3,4.4) by the replacer in container/features/pom.xml,
+         so everything resolves against the 4.3.x features below. Kept only as a vestigial definition; it can be
+         removed once re-verified through the karaf-maven-plugin:verify assembly gate. -->
 
     <feature name="spring" description="Spring 4.2.x support" version="4.2.9.RELEASE_1">
         <bundle dependency="true" start-level="30">
