@@ -140,7 +140,8 @@ public class HaConfigSyncer {
         int synced = 0;
         int failed = 0;
         for (String filename : files) {
-            if (SYNC_EXCLUSIONS.contains(filename)) {
+            if (SYNC_EXCLUSIONS.stream().anyMatch(e ->
+                    e.endsWith("/") ? filename.startsWith(e) : filename.equals(e))) {
                 LOG.debug("HA sync: skipping excluded file {}", filename);
                 continue;
             }
