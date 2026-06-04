@@ -523,9 +523,15 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         while (cause.getCause() != null) {
             if (cause.getMessage() != null) {
                 if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
-                    // Use the session to get the identifier - this is more direct and standard
-                    final Session session = getSessionFactory().getCurrentSession();
-                    Object identifier = session.getIdentifier(entity);
+                    // Best-effort identifier lookup for diagnostics only: getCurrentSession()/getIdentifier()
+                    // can throw (no bound session, or a transient/detached entity) and this runs before the
+                    // caller rethrows the original DataAccessException -- so it must never throw itself.
+                    Object identifier = null;
+                    try {
+                        identifier = getSessionFactory().getCurrentSession().getIdentifier(entity);
+                    } catch (final RuntimeException idEx) {
+                        LOG.debug("Could not resolve identifier for duplicate-key diagnostic on {}", m_entityClass.getName(), idEx);
+                    }
                     LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), identifier);
                     break;
                 } else if (cause.getMessage().contains("given object has a null identifier")) {
