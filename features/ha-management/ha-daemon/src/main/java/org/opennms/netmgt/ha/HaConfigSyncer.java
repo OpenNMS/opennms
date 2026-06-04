@@ -65,22 +65,32 @@ public class HaConfigSyncer {
     private static final Logger LOG = LoggerFactory.getLogger(HaConfigSyncer.class);
 
     /** Files that must never be overwritten by sync, regardless of what the partner returns. vault extensions are already excluded by the filesystem API */
-    private static final List<String> SYNC_EXCLUSIONS = List.of("ha-configuration.xml", "users.xml");
+    private static final List<String> SYNC_EXCLUSIONS = List.of("ha-configuration.xml", "examples/");
 
     private static final Pattern SCV_PATTERN =
             Pattern.compile("^\\$\\{scv:([^:}]+):([^}]+)\\}$");
 
-    private final HaConfiguration config;
+    private final Supplier<HaConfiguration> configSupplier;
     private final Supplier<HaInstanceState> stateSupplier;
     private final HttpClient httpClient;
 
     /** Constructor used in tests and when no state tracking is needed (always treats self as STANDBY). */
     public HaConfigSyncer(HaConfiguration config) {
-        this(config, () -> HaInstanceState.STANDBY);
+        this(() -> config, () -> HaInstanceState.STANDBY);
     }
 
     public HaConfigSyncer(HaConfiguration config, Supplier<HaInstanceState> stateSupplier) {
-        this.config = config;
+        this(() -> config, stateSupplier);
+    }
+
+    /**
+     * Preferred constructor: {@code configSupplier} is invoked at the start of every
+     * {@link #sync()} cycle, so live configuration changes (e.g. {@code sync-enabled}
+     * toggled off, credentials rotated, partner URL updated) take effect on the next
+     * cycle without restarting the syncer.
+     */
+    public HaConfigSyncer(Supplier<HaConfiguration> configSupplier, Supplier<HaInstanceState> stateSupplier) {
+        this.configSupplier = configSupplier;
         this.stateSupplier = stateSupplier;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
@@ -94,6 +104,8 @@ public class HaConfigSyncer {
      * but do not throw.
      */
     public void sync() {
+        HaConfiguration config = configSupplier.get(); // snapshot for this cycle
+
         if (!config.isSyncEnabled()) {
             return;
         }

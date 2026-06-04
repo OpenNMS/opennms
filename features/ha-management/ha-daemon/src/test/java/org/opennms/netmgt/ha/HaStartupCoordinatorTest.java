@@ -68,6 +68,112 @@ public class HaStartupCoordinatorTest {
     }
 
     // -------------------------------------------------------------------------
+    // Config reload
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void configReloadAppliesSyncEnabledToggle() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setSyncEnabled(true);
+        original.setPartnerRestUrl("http://partner:8980/opennms");
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setSyncEnabled(false);
+
+        coord.applyConfigReload(updated);
+
+        assertFalse("sync-enabled should have flipped to false", coord.getConfig().isSyncEnabled());
+    }
+
+    @Test
+    public void configReloadAppliesHeartbeatIntervalChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setHeartbeatIntervalSeconds(10);
+        original.setFailoverThresholdSeconds(30);
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setHeartbeatIntervalSeconds(15);
+
+        coord.applyConfigReload(updated);
+
+        assertEquals(15, coord.getConfig().getHeartbeatIntervalSeconds());
+    }
+
+    @Test
+    public void configReloadClampsOutOfRangeValues() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setHeartbeatIntervalSeconds(10);
+        original.setFailoverThresholdSeconds(30);
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setHeartbeatIntervalSeconds(1);     // below minimum 5
+        updated.setFailoverThresholdSeconds(2);    // below minimum 20
+
+        coord.applyConfigReload(updated);
+
+        assertEquals(HaStartupCoordinator.MIN_HEARTBEAT_INTERVAL_SECONDS, coord.getConfig().getHeartbeatIntervalSeconds());
+        assertEquals(HaStartupCoordinator.MIN_FAILOVER_THRESHOLD_SECONDS, coord.getConfig().getFailoverThresholdSeconds());
+    }
+
+    @Test
+    public void configReloadRejectsRoleChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setRole(HaRole.SECONDARY); // forbidden at runtime
+
+        coord.applyConfigReload(updated);
+
+        assertEquals("role change must be ignored", HaRole.PRIMARY, coord.getConfig().getRole());
+    }
+
+    @Test
+    public void configReloadRejectsInstanceIdChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setInstanceId("opennms-renamed");
+
+        coord.applyConfigReload(updated);
+
+        assertEquals("instance-id change must be ignored", "opennms-primary", coord.getConfig().getInstanceId());
+    }
+
+    @Test
+    public void configReloadRejectsEnabledToggle() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setEnabled(false);
+
+        coord.applyConfigReload(updated);
+
+        assertTrue("enabled toggle must be ignored at runtime", coord.getConfig().isEnabled());
+    }
+
+    @Test
+    public void configReloadNoOpWhenUnchanged() throws Exception {
+        HaConfiguration original = primaryConfig();
+        // Use already-valid values so the reload's clamp doesn't introduce a "change"
+        original.setHeartbeatIntervalSeconds(10);
+        original.setFailoverThresholdSeconds(30);
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+        HaConfiguration before = coord.getConfig();
+
+        coord.applyConfigReload(copyOf(original));
+
+        assertEquals(before.getHeartbeatIntervalSeconds(), coord.getConfig().getHeartbeatIntervalSeconds());
+        assertEquals(before.getFailoverThresholdSeconds(), coord.getConfig().getFailoverThresholdSeconds());
+        assertEquals(before.isSyncEnabled(), coord.getConfig().isSyncEnabled());
+    }
+
+    // -------------------------------------------------------------------------
     // Split-brain detection
     // -------------------------------------------------------------------------
 
@@ -456,6 +562,22 @@ public class HaStartupCoordinatorTest {
         Field field = HaStartupCoordinator.class.getDeclaredField("INSTANCE");
         field.setAccessible(true);
         field.set(null, instance);
+    }
+
+    private static HaConfiguration copyOf(HaConfiguration src) {
+        HaConfiguration c = new HaConfiguration();
+        c.setEnabled(src.isEnabled());
+        c.setInstanceId(src.getInstanceId());
+        c.setRole(src.getRole());
+        c.setPartnerInstanceId(src.getPartnerInstanceId());
+        c.setHeartbeatIntervalSeconds(src.getHeartbeatIntervalSeconds());
+        c.setFailoverThresholdSeconds(src.getFailoverThresholdSeconds());
+        c.setSyncEnabled(src.isSyncEnabled());
+        c.setSyncIntervalSeconds(src.getSyncIntervalSeconds());
+        c.setPartnerRestUrl(src.getPartnerRestUrl());
+        c.setSyncUsername(src.getSyncUsername());
+        c.setSyncPassword(src.getSyncPassword());
+        return c;
     }
 
     private static void setCurrentState(HaStartupCoordinator coord, HaInstanceState state) throws Exception {

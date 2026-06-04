@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,9 +36,11 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,14 +75,25 @@ public class HaStartupCoordinator {
     static final int MIN_HEARTBEAT_INTERVAL_SECONDS = 5;
     static final int MIN_FAILOVER_THRESHOLD_SECONDS = 20;
 
+    /** How often to re-read {@code ha-configuration.xml} from disk while running. */
+    static final int CONFIG_RELOAD_INTERVAL_SECONDS = 60;
+
     private static volatile HaStartupCoordinator INSTANCE;
 
-    private final HaConfiguration config;
+    /** Mutable: replaced by {@link #applyConfigReload(HaConfiguration)} when the on-disk file changes. */
+    private volatile HaConfiguration config;
     private final DbConnectionFactory dbFactory;
     private final CountDownLatch startupGate = new CountDownLatch(1);
     private final AtomicBoolean stopRequested = new AtomicBoolean(false);
     private final AtomicReference<HaInstanceState> currentState = new AtomicReference<>(HaInstanceState.STANDBY);
     private ScheduledExecutorService scheduler;
+
+    // Tracked schedule handles so they can be cancelled and re-scheduled on config reload.
+    private volatile ScheduledFuture<?> heartbeatFuture;
+    private volatile ScheduledFuture<?> standbyMonitorFuture;
+    private volatile ScheduledFuture<?> failbackMonitorFuture;
+    private volatile ScheduledFuture<?> syncFuture;
+    private volatile ScheduledFuture<?> reloadFuture;
 
     private HaStartupCoordinator(HaConfiguration config, DbConnectionFactory dbFactory) {
         this.config = config;
@@ -92,44 +106,58 @@ public class HaStartupCoordinator {
      * no-op singleton) if the file is absent or HA is disabled.
      */
     public static HaStartupCoordinator load() {
-        String opennmsHome = System.getProperty("opennms.home", ".");
-        File configFile = new File(opennmsHome, "etc/" + CONFIG_FILE);
-
-        if (!configFile.exists()) {
-            LOG.debug("HA config file not found at {}; HA is disabled", configFile.getAbsolutePath());
+        HaConfiguration cfg;
+        try {
+            cfg = readConfigFromDisk();
+        } catch (FileNotFoundException e) {
+            LOG.debug("HA config file not found; HA is disabled");
+            INSTANCE = null;
+            return null;
+        } catch (Exception e) {
+            LOG.error("Failed to load HA configuration; HA is disabled", e);
             INSTANCE = null;
             return null;
         }
 
+        if (!cfg.isEnabled()) {
+            LOG.info("HA config found but disabled; starting in standalone mode");
+            INSTANCE = null;
+            return null;
+        }
+
+        if (cfg.getInstanceId() == null || cfg.getRole() == null) {
+            LOG.error("HA config is missing required fields (instance-id, role); HA is disabled");
+            INSTANCE = null;
+            return null;
+        }
+
+        clampConfig(cfg);
+
         try {
-            JAXBContext ctx = JAXBContext.newInstance(HaConfiguration.class);
-            Unmarshaller u = ctx.createUnmarshaller();
-            HaConfiguration cfg = (HaConfiguration) u.unmarshal(configFile);
-
-            if (!cfg.isEnabled()) {
-                LOG.info("HA config found but disabled; starting in standalone mode");
-                INSTANCE = null;
-                return null;
-            }
-
-            if (cfg.getInstanceId() == null || cfg.getRole() == null) {
-                LOG.error("HA config is missing required fields (instance-id, role); HA is disabled");
-                INSTANCE = null;
-                return null;
-            }
-
-            clampConfig(cfg);
-
             DbConnectionFactory dbFactory = DbConnectionFactory.fromDatasourcesXml();
             INSTANCE = new HaStartupCoordinator(cfg, dbFactory);
             LOG.info("HA enabled: instance-id={}, role={}", cfg.getInstanceId(), cfg.getRole());
             return INSTANCE;
-
         } catch (Exception e) {
-            LOG.error("Failed to load HA configuration from {}; HA is disabled", configFile.getAbsolutePath(), e);
+            LOG.error("Failed to initialize HA coordinator; HA is disabled", e);
             INSTANCE = null;
             return null;
         }
+    }
+
+    /**
+     * Reads and unmarshals {@code $OPENNMS_HOME/etc/ha-configuration.xml}.
+     * Throws {@link FileNotFoundException} if the file is absent.
+     */
+    private static HaConfiguration readConfigFromDisk() throws Exception {
+        String opennmsHome = System.getProperty("opennms.home", ".");
+        File configFile = new File(opennmsHome, "etc/" + CONFIG_FILE);
+        if (!configFile.exists()) {
+            throw new FileNotFoundException(configFile.getAbsolutePath());
+        }
+        JAXBContext ctx = JAXBContext.newInstance(HaConfiguration.class);
+        Unmarshaller u = ctx.createUnmarshaller();
+        return (HaConfiguration) u.unmarshal(configFile);
     }
 
     static void clampConfig(HaConfiguration cfg) {
@@ -143,6 +171,112 @@ public class HaStartupCoordinator {
                     cfg.getFailoverThresholdSeconds(), MIN_FAILOVER_THRESHOLD_SECONDS, MIN_FAILOVER_THRESHOLD_SECONDS);
             cfg.setFailoverThresholdSeconds(MIN_FAILOVER_THRESHOLD_SECONDS);
         }
+    }
+
+    /**
+     * Re-reads {@code ha-configuration.xml} from disk and applies any changes.
+     * Called periodically by the scheduler so on-disk edits take effect without
+     * restart. Parse/read errors are logged and the existing config is retained.
+     */
+    void reloadConfig() {
+        if (stopRequested.get()) return;
+
+        HaConfiguration newCfg;
+        try {
+            newCfg = readConfigFromDisk();
+        } catch (FileNotFoundException e) {
+            LOG.warn("HA: config file no longer present at reload; keeping existing config");
+            return;
+        } catch (Exception e) {
+            LOG.warn("HA: failed to re-read config; keeping existing config", e);
+            return;
+        }
+        applyConfigReload(newCfg);
+    }
+
+    /**
+     * Diffs {@code newCfg} against the live config and applies whichever changes are
+     * safe at runtime. Changes to immutable identity fields ({@code enabled},
+     * {@code instance-id}, {@code role}) are rejected with an ERROR and ignored.
+     */
+    void applyConfigReload(HaConfiguration newCfg) {
+        HaConfiguration oldCfg = this.config;
+
+        // Reject immutable-field changes — they require a process restart to take effect safely.
+        if (newCfg.isEnabled() != oldCfg.isEnabled()) {
+            LOG.error("HA: config reload rejected — 'enabled' changed ({} → {}); requires restart",
+                    oldCfg.isEnabled(), newCfg.isEnabled());
+            return;
+        }
+        if (!Objects.equals(newCfg.getInstanceId(), oldCfg.getInstanceId())) {
+            LOG.error("HA: config reload rejected — 'instance-id' changed ({} → {}); requires restart",
+                    oldCfg.getInstanceId(), newCfg.getInstanceId());
+            return;
+        }
+        if (newCfg.getRole() != oldCfg.getRole()) {
+            LOG.error("HA: config reload rejected — 'role' changed ({} → {}); requires restart",
+                    oldCfg.getRole(), newCfg.getRole());
+            return;
+        }
+
+        clampConfig(newCfg);
+
+        if (configEquivalent(oldCfg, newCfg)) {
+            return;
+        }
+
+        LOG.info("HA: config reload detected changes — applying");
+        this.config = newCfg;
+
+        // Heartbeat interval drives writeHeartbeat, checkPrimaryHeartbeat, and monitorForFailback.
+        if (oldCfg.getHeartbeatIntervalSeconds() != newCfg.getHeartbeatIntervalSeconds()) {
+            LOG.info("HA: heartbeat-interval changed {}s → {}s; rescheduling tasks",
+                    oldCfg.getHeartbeatIntervalSeconds(), newCfg.getHeartbeatIntervalSeconds());
+            rescheduleHeartbeatTasks(newCfg.getHeartbeatIntervalSeconds());
+        }
+
+        // Sync changes: interval, enable flag, or partner URL → cancel and re-evaluate.
+        if (oldCfg.getSyncIntervalSeconds() != newCfg.getSyncIntervalSeconds()
+                || oldCfg.isSyncEnabled() != newCfg.isSyncEnabled()
+                || !Objects.equals(oldCfg.getPartnerRestUrl(), newCfg.getPartnerRestUrl())) {
+            LOG.info("HA: sync settings changed (enabled: {} → {}, interval: {}s → {}s, partner-url: {} → {}); re-evaluating sync schedule",
+                    oldCfg.isSyncEnabled(), newCfg.isSyncEnabled(),
+                    oldCfg.getSyncIntervalSeconds(), newCfg.getSyncIntervalSeconds(),
+                    oldCfg.getPartnerRestUrl(), newCfg.getPartnerRestUrl());
+            startSyncIfApplicable();
+        }
+
+        // failover-threshold and sync credentials are read on every cycle — no action needed here.
+    }
+
+    private void rescheduleHeartbeatTasks(int newIntervalSeconds) {
+        if (cancelIfActive(heartbeatFuture)) {
+            heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+                    newIntervalSeconds, newIntervalSeconds, TimeUnit.SECONDS);
+        }
+        if (cancelIfActive(standbyMonitorFuture)) {
+            standbyMonitorFuture = scheduler.scheduleAtFixedRate(this::checkPrimaryHeartbeat,
+                    newIntervalSeconds, newIntervalSeconds, TimeUnit.SECONDS);
+        }
+        if (cancelIfActive(failbackMonitorFuture)) {
+            failbackMonitorFuture = scheduler.scheduleAtFixedRate(this::monitorForFailback,
+                    newIntervalSeconds, newIntervalSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * True if {@code a} and {@code b} have the same values in every field this
+     * coordinator cares about at runtime.
+     */
+    private static boolean configEquivalent(HaConfiguration a, HaConfiguration b) {
+        return a.getHeartbeatIntervalSeconds() == b.getHeartbeatIntervalSeconds()
+            && a.getFailoverThresholdSeconds()  == b.getFailoverThresholdSeconds()
+            && a.isSyncEnabled()                == b.isSyncEnabled()
+            && a.getSyncIntervalSeconds()       == b.getSyncIntervalSeconds()
+            && Objects.equals(a.getPartnerInstanceId(), b.getPartnerInstanceId())
+            && Objects.equals(a.getPartnerRestUrl(),    b.getPartnerRestUrl())
+            && Objects.equals(a.getSyncUsername(),      b.getSyncUsername())
+            && Objects.equals(a.getSyncPassword(),      b.getSyncPassword());
     }
 
     public static HaStartupCoordinator getInstance() {
@@ -194,6 +328,11 @@ public class HaStartupCoordinator {
             return t;
         });
 
+        // Periodic config reload — runs throughout the coordinator's lifetime so on-disk
+        // edits to ha-configuration.xml take effect without restart.
+        reloadFuture = scheduler.scheduleAtFixedRate(this::reloadConfig,
+                CONFIG_RELOAD_INTERVAL_SECONDS, CONFIG_RELOAD_INTERVAL_SECONDS, TimeUnit.SECONDS);
+
         if (config.getRole() == HaRole.PRIMARY) {
             if (isPartnerActive()) {
                 LOG.warn("HA: PRIMARY mode — partner {} is currently ACTIVE; entering DEGRADED state until failback",
@@ -201,17 +340,9 @@ public class HaStartupCoordinator {
                 updateState(HaInstanceState.DEGRADED);
                 currentState.set(HaInstanceState.DEGRADED);
 
-                if (config.isSyncEnabled() && config.getPartnerRestUrl() != null) {
-                    HaConfigSyncer syncer = new HaConfigSyncer(config, this::getCurrentState);
-                    LOG.info("HA: PRIMARY DEGRADED — config sync enabled from {}, interval {}s",
-                            config.getPartnerRestUrl(), config.getSyncIntervalSeconds());
-                    scheduler.scheduleAtFixedRate(syncer::sync,
-                            0, config.getSyncIntervalSeconds(), TimeUnit.SECONDS);
-                } else {
-                    LOG.info("HA: PRIMARY DEGRADED — config sync disabled (partner-rest-url not set or sync-enabled=false)");
-                }
+                startSyncIfApplicable();
 
-                scheduler.scheduleAtFixedRate(this::monitorForFailback,
+                failbackMonitorFuture = scheduler.scheduleAtFixedRate(this::monitorForFailback,
                         config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
                 try {
@@ -227,32 +358,24 @@ public class HaStartupCoordinator {
 
                 LOG.info("HA: PRIMARY emerging from DEGRADED state — proceeding with service startup");
                 // currentState already set to ACTIVE by promoteFromDegraded()
-                scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+                heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                         0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
                 return true;
             }
 
             updateState(HaInstanceState.ACTIVE);
             currentState.set(HaInstanceState.ACTIVE);
-            scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+            heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                     0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
             LOG.info("HA: PRIMARY mode — heartbeat thread started, proceeding with service startup");
             return true;
         }
 
         // SECONDARY: optionally sync config from partner, then monitor PRIMARY heartbeat
-        if (config.isSyncEnabled() && config.getPartnerRestUrl() != null) {
-            HaConfigSyncer syncer = new HaConfigSyncer(config, this::getCurrentState);
-            LOG.info("HA: SECONDARY mode — config sync enabled from {}, interval {}s",
-                    config.getPartnerRestUrl(), config.getSyncIntervalSeconds());
-            scheduler.scheduleAtFixedRate(syncer::sync,
-                    0, config.getSyncIntervalSeconds(), TimeUnit.SECONDS);
-        } else {
-            LOG.info("HA: SECONDARY mode — config sync disabled (partner-rest-url not set or sync-enabled=false)");
-        }
+        startSyncIfApplicable();
 
         LOG.info("HA: SECONDARY mode — starting monitor loop, blocking service startup");
-        scheduler.scheduleAtFixedRate(this::checkPrimaryHeartbeat,
+        standbyMonitorFuture = scheduler.scheduleAtFixedRate(this::checkPrimaryHeartbeat,
                 config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
         try {
@@ -268,9 +391,43 @@ public class HaStartupCoordinator {
 
         LOG.info("HA: SECONDARY promoted to ACTIVE — proceeding with service startup");
         // Switch heartbeat thread on for the promoted instance
-        scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                 0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
         return true;
+    }
+
+    /**
+     * Starts the config sync task if sync is enabled, the partner URL is set, and
+     * this instance is not currently ACTIVE. Idempotent: if a sync task is already
+     * scheduled, it is cancelled and replaced.
+     */
+    private void startSyncIfApplicable() {
+        cancelIfActive(syncFuture);
+        syncFuture = null;
+
+        HaConfiguration cfg = config;
+        if (!cfg.isSyncEnabled() || cfg.getPartnerRestUrl() == null) {
+            LOG.info("HA: config sync inactive (sync-enabled={}, partner-rest-url={})",
+                    cfg.isSyncEnabled(), cfg.getPartnerRestUrl());
+            return;
+        }
+        if (currentState.get() == HaInstanceState.ACTIVE) {
+            LOG.debug("HA: this instance is ACTIVE; not starting config sync");
+            return;
+        }
+        HaConfigSyncer syncer = new HaConfigSyncer(this::getConfig, this::getCurrentState);
+        LOG.info("HA: config sync started — partner {}, interval {}s",
+                cfg.getPartnerRestUrl(), cfg.getSyncIntervalSeconds());
+        syncFuture = scheduler.scheduleAtFixedRate(syncer::sync,
+                0, cfg.getSyncIntervalSeconds(), TimeUnit.SECONDS);
+    }
+
+    private static boolean cancelIfActive(ScheduledFuture<?> f) {
+        if (f != null && !f.isDone() && !f.isCancelled()) {
+            f.cancel(false); // graceful: let in-flight task complete
+            return true;
+        }
+        return false;
     }
 
     void doShutdown() {
