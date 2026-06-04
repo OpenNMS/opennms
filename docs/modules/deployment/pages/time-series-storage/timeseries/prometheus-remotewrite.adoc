@@ -13,7 +13,6 @@ image::time-series-storage/cortex-plugin.png["Architecture diagram displaying th
 
 You must have the following before you start to use the Prometheus RemoteWrite plugin:
 
-* Horizon 30.0.0+ (Meridian availability with the 2023 release)
 * A Prometheus remote-write compatible time series store, such as VictoriaMetrics, Mimir, or Cortex 1.10.0+
 
 == Deployment
