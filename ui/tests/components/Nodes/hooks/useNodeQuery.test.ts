@@ -92,7 +92,7 @@ describe('Nodes useNodeQuery test', () => {
       [ 'true', { flows: 'true' }, SetOperator.Union, ['Ingress', 'Egress']],
       [ 'ingress', { flows: 'ingress' }, SetOperator.Union, ['Ingress']],
       [ 'egress', { flows: 'egress' }, SetOperator.Union, ['Egress']],
-      [ 'false', { flows: 'false' }, SetOperator.Union, []],
+      [ 'false', { flows: 'false' }, SetOperator.Union, ['No Flows']],
       [ 'invalid', { flows: 'whatever' }, SetOperator.Union, []],
       [ 'empty', { flows: '' }, SetOperator.Union, []]
     ]) (
