@@ -86,9 +86,16 @@ watch(
   }
 )
 
+let saveFilterTimeout: number | undefined
+
 watch(
   () => nodeStructureStore.queryFilter,
-  (filter) => saveNodeQueryFilter(filter),
+  (filter) => {
+    if (saveFilterTimeout !== undefined) {
+      clearTimeout(saveFilterTimeout)
+    }
+    saveFilterTimeout = window.setTimeout(() => saveNodeQueryFilter(filter), 250)
+  },
   { deep: true }
 )
 
