@@ -50,8 +50,8 @@
           <div class="chip-container">
             <FeatherChipList label="SearchParams">
               <FeatherChip
-                v-for="(cat, index) in nodeStructureStore.selectedCategories"
-                :key="`cat-${index}`"
+                v-for="cat in nodeStructureStore.selectedCategories"
+                :key="`cat-${cat._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -64,8 +64,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(cat, index) in nodeStructureStore.selectedCategories2"
-                :key="`cat2-${index}`"
+                v-for="cat in nodeStructureStore.selectedCategories2"
+                :key="`cat2-${cat._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -78,8 +78,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(flow, index) in nodeStructureStore.selectedFlows"
-                :key="`flow-${index}`"
+                v-for="flow in nodeStructureStore.selectedFlows"
+                :key="`flow-${flow._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -106,8 +106,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(svc, index) in nodeStructureStore.selectedServices"
-                :key="`svc-${index}`"
+                v-for="svc in nodeStructureStore.selectedServices"
+                :key="`svc-${svc._value}`"
               >
                 <template #icon>
                   <FeatherIcon :icon="cancelIcon" class="icon"
@@ -117,8 +117,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(value, index) in extendedSearchValues"
-                :key="`extended-${index}`"
+                v-for="value in extendedSearchValues"
+                :key="`extended-${value.key}`"
               >
                 <template #icon>
                   <FeatherIcon
