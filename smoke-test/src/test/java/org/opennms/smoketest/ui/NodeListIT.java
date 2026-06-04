@@ -38,7 +38,7 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.RestClient;
 
 /**
- * Basic validation of the Vue Node List page.
+ * Basic validation of the Vue Nodes page.
  */
 public class NodeListIT extends OpenNMSSeleniumIT {
     protected int savedNodeId;
@@ -67,7 +67,7 @@ public class NodeListIT extends OpenNMSSeleniumIT {
 
         savedNodeId = node.getId();
 
-        // Navigate to the Node List page
+        // Navigate to the Nodes page
         getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/nodes");
     }
 
@@ -78,8 +78,8 @@ public class NodeListIT extends OpenNMSSeleniumIT {
 
     @Test
     public void canRender() {
-        // Ensure we are on the Node List page and the test node is displayed
-        wait.until(pageContainsText("Node List"));
+        // Ensure we are on the Nodes page and the test node is displayed
+        wait.until(pageContainsText("Nodes"));
         wait.until(pageContainsText("Test_Node1"));
 
         // find the Actions menu for this node

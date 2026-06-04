@@ -81,7 +81,7 @@ describe('Menu utils', () => {
       expect(inventoryItems[0]).toMatchObject({
         id: 'nodeList',
         type: 'item',
-        title: 'Node List',
+        title: 'Nodes',
         href: `${baseHref}ui/index.html#/nodes`,
         target: '_self'
       })

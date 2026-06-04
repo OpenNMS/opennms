@@ -2,7 +2,7 @@
   <div class="card">
     <div>
       <div class="feather-row title-bar">
-        <span class="title">Node List</span>
+        <span class="title">Nodes</span>
         <div class="action-buttons-container">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"

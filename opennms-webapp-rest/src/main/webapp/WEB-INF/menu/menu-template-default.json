@@ -87,8 +87,8 @@
       "roles": null,
       "items": [
         {
-          "id": "nodeList",
-          "name": "Node List",
+          "id": "nodes",
+          "name": "Nodes",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null

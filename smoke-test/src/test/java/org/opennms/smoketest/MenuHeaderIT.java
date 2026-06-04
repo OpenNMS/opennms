@@ -90,7 +90,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Inventory Menu
         // Note, some items are below under Vue UI checks
-        clickMenuItem("inventoryMenu", "Node List");
+        clickMenuItem("inventoryMenu", "Nodes (Legacy)");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'card')]//span[@class='title' and text()='Node List']")));
 
         clickMenuItem("inventoryMenu", "Assets");
@@ -283,8 +283,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Navigation on Vue UI pages
         frontPage();
-        clickMenuItem("inventoryMenu", "Node List");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Node List']")));
+        clickMenuItem("inventoryMenu", "Nodes");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Nodes']")));
 
         clickMenuItem("inventoryMenu", "Device Configs");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
