@@ -30,8 +30,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,9 +79,7 @@ public class HaStartupCoordinatorTest {
         // Manually place coordinator in ACTIVE state
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        // Query returns both instances ACTIVE; our heartbeat is older
-        Timestamp ourOld    = Timestamp.from(Instant.now().minusSeconds(120));
-        Timestamp partnerNow = Timestamp.from(Instant.now().minusSeconds(5));
+        // Query returns both instances ACTIVE; our age is larger (disconnected longer) → we yield
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")   // row 1: us
@@ -91,9 +87,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(3))
-                .thenReturn(ourOld)
-                .thenReturn(partnerNow);
+        when(mockRs.getLong(3))
+                .thenReturn(120L) // our age: 120s (disconnected longer)
+                .thenReturn(5L);  // partner age: 5s (continuously active)
 
         coord.checkForSplitBrain();
 
@@ -107,9 +103,7 @@ public class HaStartupCoordinatorTest {
         setStaticInstance(coord);
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        // Our heartbeat is newer — we should continue
-        Timestamp ourNow      = Timestamp.from(Instant.now().minusSeconds(5));
-        Timestamp partnerOld  = Timestamp.from(Instant.now().minusSeconds(120));
+        // Our age is smaller (continuously active) — we should continue
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")
@@ -117,9 +111,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(3))
-                .thenReturn(ourNow)
-                .thenReturn(partnerOld);
+        when(mockRs.getLong(3))
+                .thenReturn(5L)    // our age: 5s (continuously active)
+                .thenReturn(120L); // partner age: 120s (was disconnected)
 
         coord.checkForSplitBrain();
 
@@ -134,7 +128,7 @@ public class HaStartupCoordinatorTest {
         setStaticInstance(coord);
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        Timestamp sameTime = Timestamp.from(Instant.now().minusSeconds(10));
+        // Equal ages — tiebreaker: "opennms-primary" < "opennms-secondary" → primary yields
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")
@@ -142,9 +136,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(3))
-                .thenReturn(sameTime)
-                .thenReturn(sameTime);
+        when(mockRs.getLong(3))
+                .thenReturn(10L)  // our age
+                .thenReturn(10L); // partner age (equal → tiebreaker)
 
         coord.checkForSplitBrain();
 
@@ -166,9 +160,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.STANDBY.name());
-        when(mockRs.getTimestamp(3))
-                .thenReturn(Timestamp.from(Instant.now().minusSeconds(5)))
-                .thenReturn(Timestamp.from(Instant.now().minusSeconds(5)));
+        when(mockRs.getLong(3))
+                .thenReturn(5L)
+                .thenReturn(5L);
 
         coord.checkForSplitBrain();
 
@@ -267,13 +261,13 @@ public class HaStartupCoordinatorTest {
         cfg.setHeartbeatIntervalSeconds(1);
         cfg.setFailoverThresholdSeconds(5);
 
-        // isPartnerActive(): SECONDARY row exists, state=ACTIVE, fresh heartbeat
+        // isPartnerActive(): SECONDARY row exists, state=ACTIVE, fresh heartbeat (1s old)
         // monitorForFailback() first call: SECONDARY has stepped down to STANDBY
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1))
                 .thenReturn(HaInstanceState.ACTIVE.name())    // isPartnerActive
                 .thenReturn(HaInstanceState.STANDBY.name());  // monitorForFailback
-        when(mockRs.getTimestamp(2)).thenReturn(Timestamp.from(Instant.now().minusSeconds(1)));
+        when(mockRs.getLong(2)).thenReturn(1L);
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -290,12 +284,12 @@ public class HaStartupCoordinatorTest {
         cfg.setHeartbeatIntervalSeconds(1);
         cfg.setFailoverThresholdSeconds(5);
 
-        // isPartnerActive(): fresh; monitorForFailback(): still ACTIVE state but stale heartbeat
+        // isPartnerActive(): fresh (1s); monitorForFailback(): ACTIVE but stale (60s > threshold 5s)
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name()); // ACTIVE throughout
-        when(mockRs.getTimestamp(2))
-                .thenReturn(Timestamp.from(Instant.now().minusSeconds(1)))   // isPartnerActive: fresh
-                .thenReturn(Timestamp.from(Instant.now().minusSeconds(60))); // monitorForFailback: stale
+        when(mockRs.getLong(2))
+                .thenReturn(1L)   // isPartnerActive: fresh
+                .thenReturn(60L); // monitorForFailback: stale
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -312,10 +306,10 @@ public class HaStartupCoordinatorTest {
         cfg.setHeartbeatIntervalSeconds(1);
         cfg.setFailoverThresholdSeconds(5);
 
-        // SECONDARY stays ACTIVE throughout — PRIMARY remains DEGRADED until shutdown
+        // SECONDARY stays ACTIVE throughout with fresh heartbeat — PRIMARY remains DEGRADED until shutdown
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(2)).thenReturn(Timestamp.from(Instant.now().minusSeconds(1)));
+        when(mockRs.getLong(2)).thenReturn(1L);
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -334,10 +328,10 @@ public class HaStartupCoordinatorTest {
     @Test
     public void secondaryStaysInStandbyWhenPrimaryIsHealthy() throws Exception {
         HaConfiguration cfg = secondaryConfig();
-        // Fresh heartbeat: 5 seconds ago, well within 30s threshold
+        // Fresh heartbeat: 5s old, within failover threshold of 5s
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(2)).thenReturn(Timestamp.from(Instant.now().minusSeconds(5)));
+        when(mockRs.getLong(2)).thenReturn(5L);
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -363,10 +357,10 @@ public class HaStartupCoordinatorTest {
         cfg.setHeartbeatIntervalSeconds(1);
         cfg.setFailoverThresholdSeconds(5);
 
-        // Both reads (initial check + anti-flap re-read) return ACTIVE state with stale heartbeat
+        // Both reads (initial check + anti-flap re-read) return ACTIVE with stale heartbeat (60s > threshold 5s)
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(2)).thenReturn(Timestamp.from(Instant.now().minusSeconds(60)));
+        when(mockRs.getLong(2)).thenReturn(60L);
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -383,12 +377,12 @@ public class HaStartupCoordinatorTest {
         cfg.setHeartbeatIntervalSeconds(1);
         cfg.setFailoverThresholdSeconds(5);
 
-        // First read: stale; second read (anti-flap): fresh — PRIMARY stays ACTIVE throughout
+        // First read: stale (60s > threshold 5s); second read (anti-flap): fresh (0s) — stays STANDBY
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(2))
-                .thenReturn(Timestamp.from(Instant.now().minusSeconds(60))) // first read: stale
-                .thenReturn(Timestamp.from(Instant.now()));                  // second read: fresh
+        when(mockRs.getLong(2))
+                .thenReturn(60L) // first read: stale
+                .thenReturn(0L); // second read: just written
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
@@ -409,10 +403,10 @@ public class HaStartupCoordinatorTest {
     @Test
     public void shutdownWhileSecondaryWaiting() throws Exception {
         HaConfiguration cfg = secondaryConfig();
-        // PRIMARY appears healthy
+        // PRIMARY appears healthy (0s age, well within threshold)
         when(mockRs.next()).thenReturn(true);
         when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getTimestamp(2)).thenReturn(Timestamp.from(Instant.now()));
+        when(mockRs.getLong(2)).thenReturn(0L);
 
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);

@@ -29,16 +29,12 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.net.InetAddress;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.time.Instant;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -312,19 +308,18 @@ public class HaStartupCoordinator {
         String hostname = resolveHostname();
         try (Connection conn = dbFactory.getConnection()) {
             String sql = "INSERT INTO ha_instance_status (instance_id, configured_role, current_state, last_heartbeat, hostname) " +
-                         "VALUES (?, ?, ?, ?, ?) " +
+                         "VALUES (?, ?, ?, NOW(), ?) " +
                          "ON CONFLICT (instance_id) DO UPDATE SET " +
                          "configured_role = EXCLUDED.configured_role, " +
                          "current_state = EXCLUDED.current_state, " +
-                         "last_heartbeat = EXCLUDED.last_heartbeat, " +
+                         "last_heartbeat = NOW(), " +
                          "hostname = EXCLUDED.hostname";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
                 ps.setString(2, config.getRole().name());
                 HaInstanceState initialState = config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY;
                 ps.setString(3, initialState.name());
-                ps.setTimestamp(4, Timestamp.from(Instant.now()));
-                ps.setString(5, hostname);
+                ps.setString(4, hostname);
                 ps.executeUpdate();
             }
         }
@@ -337,11 +332,10 @@ public class HaStartupCoordinator {
         checkForSplitBrain();
         if (stopRequested.get()) return;
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "UPDATE ha_instance_status SET last_heartbeat = ?, current_state = ? WHERE instance_id = ?";
+            String sql = "UPDATE ha_instance_status SET last_heartbeat = NOW(), current_state = ? WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setTimestamp(1, Timestamp.from(Instant.now()));
-                ps.setString(2, currentState.get().name());
-                ps.setString(3, config.getInstanceId());
+                ps.setString(1, currentState.get().name());
+                ps.setString(2, config.getInstanceId());
                 ps.executeUpdate();
             }
         } catch (Exception e) {
@@ -367,30 +361,31 @@ public class HaStartupCoordinator {
     void checkForSplitBrain() {
         if (config.getPartnerInstanceId() == null) return;
 
-        Instant ourHeartbeat = null;
-        Instant partnerHeartbeat = null;
+        long ourAgeSeconds = -1;
+        long partnerAgeSeconds = -1;
         boolean ourStateActive = false;
         boolean partnerStateActive = false;
 
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "SELECT instance_id, current_state, last_heartbeat " +
+            // age_seconds is computed entirely on the DB server
+            String sql = "SELECT instance_id, current_state, " +
+                         "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
                          "FROM ha_instance_status WHERE instance_id IN (?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
                 ps.setString(2, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        String id        = rs.getString(1);
-                        String state     = rs.getString(2);
-                        Timestamp ts     = rs.getTimestamp(3);
-                        Instant heartbeat = ts != null ? ts.toInstant() : Instant.EPOCH;
+                        String id    = rs.getString(1);
+                        String state = rs.getString(2);
+                        long   age   = rs.getLong(3);
 
                         if (config.getInstanceId().equals(id)) {
                             ourStateActive  = HaInstanceState.ACTIVE.name().equals(state);
-                            ourHeartbeat    = heartbeat;
+                            ourAgeSeconds   = age;
                         } else if (config.getPartnerInstanceId().equals(id)) {
                             partnerStateActive  = HaInstanceState.ACTIVE.name().equals(state);
-                            partnerHeartbeat    = heartbeat;
+                            partnerAgeSeconds   = age;
                         }
                     }
                 }
@@ -401,28 +396,30 @@ public class HaStartupCoordinator {
         }
 
         if (!ourStateActive || !partnerStateActive
-                || ourHeartbeat == null || partnerHeartbeat == null) {
+                || ourAgeSeconds < 0 || partnerAgeSeconds < 0) {
             return;
         }
 
         // Both instances are ACTIVE — split-brain detected.
-        int cmp = ourHeartbeat.compareTo(partnerHeartbeat);
-        boolean weYield = cmp < 0
-                || (cmp == 0 && config.getInstanceId().compareTo(config.getPartnerInstanceId()) < 0);
+        // The instance with the larger age (disconnected longer, per DB clock) yields.
+        // Equal ages: deterministic tiebreaker on instance-id.
+        boolean weYield = ourAgeSeconds > partnerAgeSeconds
+                || (ourAgeSeconds == partnerAgeSeconds
+                    && config.getInstanceId().compareTo(config.getPartnerInstanceId()) < 0);
 
         if (weYield) {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
-                      "This instance has the older heartbeat ({} vs {}); yielding to partner.",
+                      "This instance has been disconnected longer (our heartbeat age: {}s vs partner: {}s); yielding.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
-                      ourHeartbeat, partnerHeartbeat);
+                      ourAgeSeconds, partnerAgeSeconds);
             initiateFailover();
             stopServicesViaMBean();
         } else {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
-                      "This instance has the fresher heartbeat ({} vs {}); continuing. " +
+                      "This instance has the fresher heartbeat (our age: {}s vs partner: {}s); continuing. " +
                       "Partner should self-terminate on its next heartbeat write.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
-                      ourHeartbeat, partnerHeartbeat);
+                      ourAgeSeconds, partnerAgeSeconds);
         }
     }
 
@@ -456,7 +453,8 @@ public class HaStartupCoordinator {
         }
 
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "SELECT current_state, last_heartbeat FROM ha_instance_status WHERE instance_id = ?";
+            String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
+                         "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -475,8 +473,7 @@ public class HaStartupCoordinator {
                         return;
                     }
 
-                    Instant heartbeat = rs.getTimestamp(2).toInstant();
-                    long ageSeconds = Instant.now().getEpochSecond() - heartbeat.getEpochSecond();
+                    long ageSeconds = rs.getLong(2);
 
                     if (ageSeconds <= config.getFailoverThresholdSeconds()) {
                         LOG.debug("HA: PRIMARY heartbeat age {}s within threshold {}s — staying STANDBY",
@@ -503,14 +500,14 @@ public class HaStartupCoordinator {
         if (stopRequested.get()) return;
 
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "SELECT current_state, last_heartbeat FROM ha_instance_status WHERE instance_id = ?";
+            String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
+                         "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String stateName = rs.getString(1);
-                        Instant heartbeat = rs.getTimestamp(2).toInstant();
-                        long ageSeconds = Instant.now().getEpochSecond() - heartbeat.getEpochSecond();
+                        long ageSeconds = rs.getLong(2);
                         if (HaInstanceState.ACTIVE.name().equals(stateName)
                                 && ageSeconds <= config.getFailoverThresholdSeconds()) {
                             LOG.info("HA: PRIMARY heartbeat recovered (age now {}s) — staying STANDBY", ageSeconds);
@@ -534,14 +531,14 @@ public class HaStartupCoordinator {
     private boolean isPartnerActive() {
         if (config.getPartnerInstanceId() == null) return false;
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "SELECT current_state, last_heartbeat FROM ha_instance_status WHERE instance_id = ?";
+            String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
+                         "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String stateName = rs.getString(1);
-                        Instant heartbeat = rs.getTimestamp(2).toInstant();
-                        long ageSeconds = Instant.now().getEpochSecond() - heartbeat.getEpochSecond();
+                        long ageSeconds = rs.getLong(2);
                         return HaInstanceState.ACTIVE.name().equals(stateName)
                                 && ageSeconds <= config.getFailoverThresholdSeconds();
                     }
@@ -565,7 +562,8 @@ public class HaStartupCoordinator {
             return;
         }
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "SELECT current_state, last_heartbeat FROM ha_instance_status WHERE instance_id = ?";
+            String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
+                         "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -575,8 +573,7 @@ public class HaStartupCoordinator {
                         return;
                     }
                     String stateName = rs.getString(1);
-                    Instant heartbeat = rs.getTimestamp(2).toInstant();
-                    long ageSeconds = Instant.now().getEpochSecond() - heartbeat.getEpochSecond();
+                    long ageSeconds = rs.getLong(2);
                     boolean secondaryStillActive = HaInstanceState.ACTIVE.name().equals(stateName)
                             && ageSeconds <= config.getFailoverThresholdSeconds();
                     if (!secondaryStillActive) {
@@ -610,11 +607,10 @@ public class HaStartupCoordinator {
 
     private void updateState(HaInstanceState state) {
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "UPDATE ha_instance_status SET current_state = ?, last_heartbeat = ? WHERE instance_id = ?";
+            String sql = "UPDATE ha_instance_status SET current_state = ?, last_heartbeat = NOW() WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, state.name());
-                ps.setTimestamp(2, Timestamp.from(Instant.now()));
-                ps.setString(3, config.getInstanceId());
+                ps.setString(2, config.getInstanceId());
                 ps.executeUpdate();
             }
         } catch (Exception e) {
