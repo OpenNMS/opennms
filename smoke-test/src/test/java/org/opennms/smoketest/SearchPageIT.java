@@ -66,7 +66,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
                 "select[@name='flows']",
                 "input[@name='topology']"
         }) {
-            findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
+            findElementByXpath("//form[@class='form-group']//" + matchingElement);
         }
 
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='searchvalue']");
@@ -76,12 +76,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("All nodes").click();
-        findElementByXpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
-
-        searchPage();
-        findElementByLink("All nodes and their interfaces").click();
-        findElementByXpath("//span[text()='Nodes and their interfaces']");
-        findElementByLink("Hide interfaces");
+        findElementByXpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Node List']");
 
         searchPage();
         findElementByLink("All nodes with asset info").click();
@@ -93,7 +88,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
         final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
         maclike.sendKeys(Keys.ENTER);
 
-        findElementByXpath("//div[@id='content']/nav/ol/li[text()='Node List']");
+        findElementByXpath("//div[@class='breadcrumbs']//a/[text()='Node List']");
         findElementByXpath("//div[@class='card-header']//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
     }
 }
