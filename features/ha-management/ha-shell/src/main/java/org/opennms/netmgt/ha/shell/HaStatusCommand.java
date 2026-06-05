@@ -26,28 +26,39 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import org.opennms.netmgt.ha.DbConnectionFactory;
+import org.opennms.netmgt.ha.HaConfiguration;
+import org.opennms.netmgt.ha.HaStartupCoordinator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.Instant;
 
 /**
  * Karaf shell command: {@code opennms:ha-status}
  *
  * <p>Displays a formatted table of all HA instance rows from the
- * {@code ha_instance_status} database table, equivalent to
- * {@code GET /rest/ha/status}.
+ * {@code ha_instance_status} database table, mirroring the output of
+ * {@code GET /rest/ha/status}. Heartbeat ages are computed on the database
+ * server (clock-skew safe) and an instance is reported as DEGRADED if its
+ * heartbeat age exceeds the configured failover threshold or if its current
+ * role/state combination indicates a degraded cluster condition.
  */
 @Command(scope = "opennms", name = "ha-status", description = "Display HA cluster status for all instances.")
 @Service
-public class    HaStatusCommand implements Action {
+public class HaStatusCommand implements Action {
 
-    private static final String FMT = "%-22s %-10s %-14s %-22s %-26s %s%n";
+    private static final String FMT = "%-22s %-10s %-14s %-18s %-26s %s%n";
 
     @Override
     public Object execute() throws Exception {
+        // Failover threshold for staleness detection comes from the live local config.
+        // If HA isn't enabled on this node, fall back to the schema default.
+        int failoverThresholdSeconds = new HaConfiguration().getFailoverThresholdSeconds();
+        HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
+        if (coord != null) {
+            failoverThresholdSeconds = coord.getConfig().getFailoverThresholdSeconds();
+        }
+
         DbConnectionFactory dbFactory;
         try {
             dbFactory = DbConnectionFactory.fromDatasourcesXml();
@@ -59,7 +70,8 @@ public class    HaStatusCommand implements Action {
         try (Connection conn = dbFactory.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
-                     "SELECT instance_id, configured_role, current_state, last_heartbeat, hostname " +
+                     "SELECT instance_id, configured_role, current_state, " +
+                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
 
             System.out.println("HA Cluster Status");
@@ -67,26 +79,30 @@ public class    HaStatusCommand implements Action {
             System.out.printf(FMT, "INSTANCE", "ROLE", "STATE", "HEARTBEAT AGE", "HOSTNAME", "DEGRADED");
             System.out.printf(FMT,
                     "----------------------", "----------", "--------------",
-                    "----------------------", "--------------------------", "--------");
+                    "------------------", "--------------------------", "--------");
 
             boolean anyRows = false;
             while (rs.next()) {
                 anyRows = true;
-                String instanceId    = rs.getString("instance_id");
+                String instanceId     = rs.getString("instance_id");
                 String configuredRole = rs.getString("configured_role");
-                String currentState  = rs.getString("current_state");
-                Timestamp ts         = rs.getTimestamp("last_heartbeat");
-                String hostname      = rs.getString("hostname");
+                String currentState   = rs.getString("current_state");
+                String hostname       = rs.getString("hostname");
 
-                String heartbeatAge  = formatAge(ts);
-                boolean degraded     = ("SECONDARY".equals(configuredRole) && "ACTIVE".equals(currentState))
-                                    || "DEGRADED".equals(currentState);
+                long ageSeconds       = rs.getLong("age_seconds");
+                boolean heartbeatKnown = !rs.wasNull();
+                boolean heartbeatStale = heartbeatKnown && ageSeconds > failoverThresholdSeconds;
+
+                boolean stateBasedDegraded =
+                        ("SECONDARY".equals(configuredRole) && "ACTIVE".equals(currentState))
+                        || "DEGRADED".equals(currentState);
+                boolean degraded = stateBasedDegraded || heartbeatStale;
 
                 System.out.printf(FMT,
                         nvl(instanceId),
                         nvl(configuredRole),
                         nvl(currentState),
-                        heartbeatAge,
+                        heartbeatKnown ? formatAge(ageSeconds) : "--",
                         nvl(hostname),
                         degraded ? "YES" : "no");
             }
@@ -102,11 +118,7 @@ public class    HaStatusCommand implements Action {
         return null;
     }
 
-    private static String formatAge(Timestamp ts) {
-        if (ts == null) {
-            return "--";
-        }
-        long ageSeconds = Instant.now().getEpochSecond() - ts.toInstant().getEpochSecond();
+    private static String formatAge(long ageSeconds) {
         if (ageSeconds < 60) {
             return ageSeconds + "s ago";
         } else if (ageSeconds < 3600) {

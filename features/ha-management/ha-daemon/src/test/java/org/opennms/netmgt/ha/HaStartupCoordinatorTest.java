@@ -25,8 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,6 +68,96 @@ public class HaStartupCoordinatorTest {
     @After
     public void tearDown() throws Exception {
         setStaticInstance(null);
+    }
+
+    // -------------------------------------------------------------------------
+    // Config write
+    // -------------------------------------------------------------------------
+
+    @Test(expected = IllegalArgumentException.class)
+    public void writeConfigRejectsRoleChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setHeartbeatIntervalSeconds(10);
+        original.setFailoverThresholdSeconds(30);
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration mutated = copyOf(original);
+        mutated.setRole(HaRole.SECONDARY);
+
+        coord.writeConfig(mutated);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void writeConfigRejectsInstanceIdChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setHeartbeatIntervalSeconds(10);
+        original.setFailoverThresholdSeconds(30);
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration mutated = copyOf(original);
+        mutated.setInstanceId("renamed");
+
+        coord.writeConfig(mutated);
+    }
+
+    @Test
+    public void writeConfigPersistsValidChangesToDisk() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            HaConfiguration original = primaryConfig();
+            original.setHeartbeatIntervalSeconds(10);
+            original.setFailoverThresholdSeconds(30);
+            HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+            HaConfiguration mutated = copyOf(original);
+            mutated.setSyncEnabled(false);
+            mutated.setHeartbeatIntervalSeconds(15);
+
+            coord.writeConfig(mutated);
+
+            Path written = tempEtc.resolve("ha-configuration.xml");
+            assertTrue("config file should exist on disk after write", Files.exists(written));
+            String xml = Files.readString(written);
+            assertTrue("written XML should reflect new heartbeat interval",
+                    xml.contains("<heartbeat-interval-seconds>15</heartbeat-interval-seconds>"));
+            assertTrue("written XML should reflect sync-enabled=false",
+                    xml.contains("<sync-enabled>false</sync-enabled>"));
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void writeConfigClampsOutOfRangeValues() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            HaConfiguration original = primaryConfig();
+            original.setHeartbeatIntervalSeconds(10);
+            original.setFailoverThresholdSeconds(30);
+            HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+            HaConfiguration mutated = copyOf(original);
+            mutated.setHeartbeatIntervalSeconds(1);  // below min 5
+            mutated.setFailoverThresholdSeconds(2); // below min 20
+
+            coord.writeConfig(mutated);
+
+            String xml = Files.readString(tempEtc.resolve("ha-configuration.xml"));
+            assertTrue("heartbeat-interval should be clamped on disk",
+                    xml.contains("<heartbeat-interval-seconds>" + HaStartupCoordinator.MIN_HEARTBEAT_INTERVAL_SECONDS + "</heartbeat-interval-seconds>"));
+            assertTrue("failover-threshold should be clamped on disk",
+                    xml.contains("<failover-threshold-seconds>" + HaStartupCoordinator.MIN_FAILOVER_THRESHOLD_SECONDS + "</failover-threshold-seconds>"));
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
     }
 
     // -------------------------------------------------------------------------

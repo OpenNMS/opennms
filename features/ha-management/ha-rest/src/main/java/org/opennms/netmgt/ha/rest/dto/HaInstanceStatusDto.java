@@ -46,8 +46,10 @@ public class HaInstanceStatusDto {
     @XmlElement(name = "hostname")
     private String hostname;
 
-    /** True when the cluster is in a degraded state: SECONDARY is ACTIVE (failover occurred),
-     *  or PRIMARY is in DEGRADED state (waiting for failback). */
+    /** True when this instance reflects a degraded condition: SECONDARY is ACTIVE
+     *  (failover occurred), the instance is in DEGRADED state (PRIMARY waiting for
+     *  failback), or its heartbeat age exceeds the failover threshold (instance
+     *  unreachable / unhealthy). */
     @XmlElement(name = "degraded")
     private boolean degraded;
 

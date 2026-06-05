@@ -23,6 +23,7 @@ package org.opennms.netmgt.ha.shell;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import org.opennms.netmgt.ha.HaConfiguration;
@@ -31,14 +32,39 @@ import org.opennms.netmgt.ha.HaStartupCoordinator;
 /**
  * Karaf shell command: {@code opennms:ha-config}
  *
- * <p>Displays the HA configuration for this instance, equivalent to
- * {@code GET /rest/ha/config}.
+ * <p>With no flags, displays the HA configuration for this instance. With one
+ * or more modification flags (e.g. {@code --sync-enabled}, {@code --heartbeat-interval}),
+ * mutates the matching fields, writes the result to disk, and applies it
+ * immediately to the running coordinator.
+ *
+ * <p>Equivalent to {@code GET /rest/ha/config} and {@code PUT /rest/ha/config}.
  */
-@Command(scope = "opennms", name = "ha-config", description = "Display the HA configuration for this instance.")
+@Command(scope = "opennms", name = "ha-config",
+        description = "Display or modify the HA configuration for this instance.")
 @Service
 public class HaConfigCommand implements Action {
 
     private static final String FMT = "  %-30s %s%n";
+
+    @Option(name = "--sync-enabled",
+            description = "Set sync-enabled to true or false.")
+    private Boolean syncEnabled;
+
+    @Option(name = "--sync-interval",
+            description = "Set the config sync interval in seconds.")
+    private Integer syncInterval;
+
+    @Option(name = "--heartbeat-interval",
+            description = "Set the heartbeat interval in seconds (minimum 5).")
+    private Integer heartbeatInterval;
+
+    @Option(name = "--failover-threshold",
+            description = "Set the failover threshold in seconds (minimum 20).")
+    private Integer failoverThreshold;
+
+    @Option(name = "--partner-rest-url",
+            description = "Set the partner REST URL (e.g. http://partner:8980/opennms).")
+    private String partnerRestUrl;
 
     @Override
     public Object execute() throws Exception {
@@ -48,6 +74,38 @@ public class HaConfigCommand implements Action {
             return null;
         }
 
+        boolean modified = syncEnabled != null
+                || syncInterval != null
+                || heartbeatInterval != null
+                || failoverThreshold != null
+                || partnerRestUrl != null;
+
+        if (modified) {
+            HaConfiguration newCfg = copyOf(coord.getConfig());
+            if (syncEnabled != null)        newCfg.setSyncEnabled(syncEnabled);
+            if (syncInterval != null)       newCfg.setSyncIntervalSeconds(syncInterval);
+            if (heartbeatInterval != null)  newCfg.setHeartbeatIntervalSeconds(heartbeatInterval);
+            if (failoverThreshold != null)  newCfg.setFailoverThresholdSeconds(failoverThreshold);
+            if (partnerRestUrl != null)     newCfg.setPartnerRestUrl(partnerRestUrl);
+
+            try {
+                coord.writeConfig(newCfg); // writes to disk and applies in one step
+                System.out.println("HA configuration written and applied.");
+                System.out.println();
+            } catch (IllegalArgumentException e) {
+                System.err.println("ERROR: " + e.getMessage());
+                return null;
+            } catch (Exception e) {
+                System.err.println("ERROR: Failed to write configuration: " + e.getMessage());
+                return null;
+            }
+        }
+
+        displayConfig(coord);
+        return null;
+    }
+
+    private static void displayConfig(HaStartupCoordinator coord) {
         HaConfiguration cfg = coord.getConfig();
 
         System.out.println("HA Configuration");
@@ -66,8 +124,22 @@ public class HaConfigCommand implements Action {
 
         System.out.println();
         System.out.printf(FMT, "Current State:", coord.getCurrentState());
+    }
 
-        return null;
+    private static HaConfiguration copyOf(HaConfiguration src) {
+        HaConfiguration c = new HaConfiguration();
+        c.setEnabled(src.isEnabled());
+        c.setInstanceId(src.getInstanceId());
+        c.setRole(src.getRole());
+        c.setPartnerInstanceId(src.getPartnerInstanceId());
+        c.setHeartbeatIntervalSeconds(src.getHeartbeatIntervalSeconds());
+        c.setFailoverThresholdSeconds(src.getFailoverThresholdSeconds());
+        c.setSyncEnabled(src.isSyncEnabled());
+        c.setSyncIntervalSeconds(src.getSyncIntervalSeconds());
+        c.setPartnerRestUrl(src.getPartnerRestUrl());
+        c.setSyncUsername(src.getSyncUsername());
+        c.setSyncPassword(src.getSyncPassword());
+        return c;
     }
 
     private static String nvl(Object o) {
