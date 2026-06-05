@@ -30,14 +30,14 @@ if (!window.org_opennms_features_vaadin_components_header_HeaderComponent) {
             // eslint-disable-next-line no-console
             console.log('headercomponent: state change triggered', this.getState());
 
-            // display the menu only if we are at the top level
-            // dashlets in an iframe should not display the menu
+            // display the menu only if we are at the top level,
+            // not when embedded in an iframe
             const inIframe = window.location !== window.parent.location;
 
             $('#onmsheader').empty();
 
             const baseLoadUrl = '/opennms/includes/bootstrap.jsp?nobreadcrumbs=true&superQuiet=true'
-            const loadUrl = inIframe ? baseLoadUrl + '&fromVaadinDashlet=true' : baseLoadUrl + '&fromVaadin=true'
+            const loadUrl = inIframe ? baseLoadUrl : baseLoadUrl + '&fromVaadin=true'
             const div = $('<div></div>').load(loadUrl);
 
             $(div).appendTo('#onmsheader');
