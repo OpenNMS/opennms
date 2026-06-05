@@ -95,7 +95,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Inventory Menu
         // Note, some items are below under Vue UI checks
         clickMenuItem("inventoryMenu", "Node List");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Node List' or text()='Availability']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'card')]//span[@class='title' and text()='Node List']")));
 
         clickMenuItem("inventoryMenu", "Assets");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
