@@ -25,10 +25,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -175,10 +182,11 @@ public class HaStartupCoordinator {
 
     /**
      * Re-reads {@code ha-configuration.xml} from disk and applies any changes.
-     * Called periodically by the scheduler so on-disk edits take effect without
-     * restart. Parse/read errors are logged and the existing config is retained.
+     * Called periodically by the scheduler, and on demand via REST or the
+     * Karaf shell, so on-disk edits take effect without restart. Parse/read
+     * errors are logged and the existing config is retained.
      */
-    void reloadConfig() {
+    public synchronized void reloadConfig() {
         if (stopRequested.get()) return;
 
         HaConfiguration newCfg;
@@ -192,6 +200,69 @@ public class HaStartupCoordinator {
             return;
         }
         applyConfigReload(newCfg);
+    }
+
+    /**
+     * Replaces {@code etc/ha-configuration.xml} on disk with {@code newCfg}
+     * and immediately re-applies it to the running coordinator.
+     *
+     * <p>Validates that the immutable identity fields ({@code enabled},
+     * {@code instance-id}, {@code role}) match the running configuration before
+     * writing — these cannot be changed at runtime. Out-of-range values are
+     * clamped to the same minimums applied by {@link #clampConfig(HaConfiguration)}.
+     *
+     * <p>The write is atomic (write-then-move) so a partial/corrupt file is
+     * never visible to a concurrent reader. After the write succeeds, an
+     * immediate {@link #reloadConfig()} is invoked so callers don't have to.
+     *
+     * @throws IllegalArgumentException if any immutable field differs from the
+     *         running configuration
+     * @throws IOException if marshalling or the file write fails
+     */
+    public synchronized void writeConfig(HaConfiguration newCfg) throws IOException {
+        HaConfiguration current = this.config;
+
+        if (newCfg.isEnabled() != current.isEnabled()) {
+            throw new IllegalArgumentException(
+                    "'enabled' cannot be changed at runtime (requires restart)");
+        }
+        if (!Objects.equals(newCfg.getInstanceId(), current.getInstanceId())) {
+            throw new IllegalArgumentException(
+                    "'instance-id' cannot be changed at runtime (requires restart)");
+        }
+        if (newCfg.getRole() != current.getRole()) {
+            throw new IllegalArgumentException(
+                    "'role' cannot be changed at runtime (requires restart)");
+        }
+
+        clampConfig(newCfg);
+
+        String opennmsHome = System.getProperty("opennms.home", ".");
+        Path configFile = Paths.get(opennmsHome, "etc", CONFIG_FILE);
+        Path tempFile   = Paths.get(opennmsHome, "etc", CONFIG_FILE + ".tmp");
+
+        try {
+            JAXBContext ctx = JAXBContext.newInstance(HaConfiguration.class);
+            Marshaller m = ctx.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.marshal(newCfg, tempFile.toFile());
+        } catch (JAXBException e) {
+            Files.deleteIfExists(tempFile);
+            throw new IOException("Failed to marshal HA configuration", e);
+        }
+
+        try {
+            Files.move(tempFile, configFile,
+                    StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException e) {
+            // Atomic move not supported (e.g. on some Windows filesystems); fall back
+            Files.move(tempFile, configFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        LOG.info("HA: wrote updated configuration to {}", configFile);
+
+        // Apply the file we just wrote so the change takes effect immediately.
+        reloadConfig();
     }
 
     /**
@@ -342,6 +413,12 @@ public class HaStartupCoordinator {
 
                 startSyncIfApplicable();
 
+                // Heartbeat from DEGRADED so the active partner can tell we're alive.
+                // writeHeartbeat publishes whichever state currentState holds at write time,
+                // so it correctly tracks the transition DEGRADED → ACTIVE after promotion.
+                heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+                        config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
+
                 failbackMonitorFuture = scheduler.scheduleAtFixedRate(this::monitorForFailback,
                         config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
@@ -357,9 +434,8 @@ public class HaStartupCoordinator {
                 }
 
                 LOG.info("HA: PRIMARY emerging from DEGRADED state — proceeding with service startup");
-                // currentState already set to ACTIVE by promoteFromDegraded()
-                heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
-                        0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
+                // currentState already set to ACTIVE by promoteFromDegraded();
+                // heartbeat task already running.
                 return true;
             }
 
@@ -371,8 +447,13 @@ public class HaStartupCoordinator {
             return true;
         }
 
-        // SECONDARY: optionally sync config from partner, then monitor PRIMARY heartbeat
+        // SECONDARY: optionally sync config from partner, then monitor PRIMARY heartbeat.
         startSyncIfApplicable();
+
+        // Heartbeat from STANDBY so the active partner can tell we're alive.
+        // After promotion the same task continues, publishing currentState=ACTIVE.
+        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+                config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
         LOG.info("HA: SECONDARY mode — starting monitor loop, blocking service startup");
         standbyMonitorFuture = scheduler.scheduleAtFixedRate(this::checkPrimaryHeartbeat,
@@ -390,9 +471,7 @@ public class HaStartupCoordinator {
         }
 
         LOG.info("HA: SECONDARY promoted to ACTIVE — proceeding with service startup");
-        // Switch heartbeat thread on for the promoted instance
-        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
-                0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
+        // heartbeat task already running; it will publish the new ACTIVE state on the next cycle.
         return true;
     }
 

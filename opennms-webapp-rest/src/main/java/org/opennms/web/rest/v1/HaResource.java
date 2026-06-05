@@ -27,6 +27,7 @@ import org.opennms.netmgt.ha.HaInstanceState;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 import org.opennms.netmgt.ha.rest.dto.HaInstanceStatusDto;
 import org.opennms.netmgt.ha.rest.dto.HaStatusCollectionDto;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +65,13 @@ import java.util.List;
  * <p>Endpoints:
  * <ul>
  *   <li>{@code GET  /rest/ha/status} — current state of all HA instances (all roles)</li>
- *   <li>{@code GET  /rest/ha/config} — current on-disk HA configuration for this instance</li>
- *   <li>{@code POST /rest/ha/failback} — initiate graceful failback; only valid when this
- *       instance is configured-SECONDARY and currently ACTIVE. Requires ROLE_ADMIN.</li>
+ *   <li>{@code GET  /rest/ha/config} — current HA configuration for this instance</li>
+ *   <li>{@code PUT  /rest/ha/config} — replace the on-disk configuration. The new
+ *       configuration is applied immediately. Requires ROLE_ADMIN. Rejects changes
+ *       to immutable fields ({@code enabled}, {@code instance-id}, {@code role})
+ *       with 400 Bad Request.</li>
+ *   <li>{@code POST /rest/ha/failover} — initiate graceful failover; only valid when
+ *       this instance is currently ACTIVE. Requires ROLE_ADMIN.</li>
  * </ul>
  */
 @Component("haResource")
@@ -87,10 +92,19 @@ public class HaResource extends OnmsRestService {
     @Path("status")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getStatus() {
+        // Failover threshold for staleness detection comes from the live local config.
+        // If HA isn't enabled on this node, we fall back to the schema default.
+        int failoverThresholdSeconds = new HaConfiguration().getFailoverThresholdSeconds();
+        HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
+        if (coord != null) {
+            failoverThresholdSeconds = coord.getConfig().getFailoverThresholdSeconds();
+        }
+
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
-                     "SELECT instance_id, configured_role, current_state, last_heartbeat, hostname " +
+                     "SELECT instance_id, configured_role, current_state, last_heartbeat, " +
+                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
 
             List<HaInstanceStatusDto> instances = new ArrayList<>();
@@ -102,8 +116,14 @@ public class HaResource extends OnmsRestService {
                 Timestamp ts = rs.getTimestamp("last_heartbeat");
                 dto.setLastHeartbeat(ts != null ? ts.toInstant().toString() : null);
                 dto.setHostname(rs.getString("hostname"));
-                dto.setDegraded("SECONDARY".equals(dto.getConfiguredRole()) && "ACTIVE".equals(dto.getCurrentState())
-                        || "DEGRADED".equals(dto.getCurrentState()));
+
+                long ageSeconds = rs.getLong("age_seconds");
+                boolean heartbeatStale = !rs.wasNull() && ageSeconds > failoverThresholdSeconds;
+                boolean stateBasedDegraded =
+                        ("SECONDARY".equals(dto.getConfiguredRole()) && "ACTIVE".equals(dto.getCurrentState()))
+                        || "DEGRADED".equals(dto.getCurrentState());
+                dto.setDegraded(stateBasedDegraded || heartbeatStale);
+
                 instances.add(dto);
             }
 
@@ -130,6 +150,47 @@ public class HaResource extends OnmsRestService {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("HA is not enabled on this instance").build();
         }
+        return Response.ok(coord.getConfig()).build();
+    }
+
+    // -------------------------------------------------------------------------
+    // PUT /rest/ha/config — replace the on-disk configuration and reload
+    // -------------------------------------------------------------------------
+
+    @PUT
+    @Path("config")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response updateConfig(@Context SecurityContext securityContext, HaConfiguration newCfg) {
+        if (!securityContext.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("ROLE_ADMIN is required to modify HA configuration").build();
+        }
+
+        HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
+        if (coord == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("HA is not enabled on this instance").build();
+        }
+
+        if (newCfg == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request body must contain an HaConfiguration document").build();
+        }
+
+        try {
+            coord.writeConfig(newCfg); // writes to disk and reloads in one step
+        } catch (IllegalArgumentException e) {
+            LOG.warn("HA config update rejected: {}", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (IOException e) {
+            LOG.error("HA config update failed to write to disk", e);
+            return Response.serverError()
+                    .entity("Failed to write configuration: " + e.getMessage()).build();
+        }
+
+        LOG.info("HA configuration updated via REST by user '{}'",
+                securityContext.getUserPrincipal().getName());
         return Response.ok(coord.getConfig()).build();
     }
 
@@ -188,7 +249,7 @@ public class HaResource extends OnmsRestService {
         failoverThread.start();
 
         return Response.accepted()
-                .entity("Failover initiated. This instance will stop services and enter STANDBY. " +
+                .entity("Failover initiated. This instance will stop services and must be manually restarted to enter STANDBY. " +
                         "Monitor GET /rest/ha/status to confirm the partner activates.")
                 .build();
     }
