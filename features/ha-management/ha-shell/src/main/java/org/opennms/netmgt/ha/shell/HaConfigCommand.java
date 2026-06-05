@@ -48,7 +48,7 @@ public class HaConfigCommand implements Action {
 
     @Option(name = "--sync-enabled",
             description = "Set sync-enabled to true or false.")
-    private Boolean syncEnabled;
+    private String syncEnabled;
 
     @Option(name = "--sync-interval",
             description = "Set the config sync interval in seconds.")
@@ -74,6 +74,11 @@ public class HaConfigCommand implements Action {
             return null;
         }
 
+        if (syncEnabled != null && !syncEnabled.equalsIgnoreCase("true") && !syncEnabled.equalsIgnoreCase("false")) {
+            System.out.println("ERROR: --sync-enabled must be either 'true' or 'false'");
+            return null;
+        }
+
         boolean modified = syncEnabled != null
                 || syncInterval != null
                 || heartbeatInterval != null
@@ -82,7 +87,7 @@ public class HaConfigCommand implements Action {
 
         if (modified) {
             HaConfiguration newCfg = copyOf(coord.getConfig());
-            if (syncEnabled != null)        newCfg.setSyncEnabled(syncEnabled);
+            if (syncEnabled != null)        newCfg.setSyncEnabled(Boolean.parseBoolean(syncEnabled));
             if (syncInterval != null)       newCfg.setSyncIntervalSeconds(syncInterval);
             if (heartbeatInterval != null)  newCfg.setHeartbeatIntervalSeconds(heartbeatInterval);
             if (failoverThreshold != null)  newCfg.setFailoverThresholdSeconds(failoverThreshold);
