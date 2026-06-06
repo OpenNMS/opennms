@@ -90,7 +90,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
         final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
         maclike.sendKeys(Keys.ENTER);
 
-        findElementByXpath("//div[@class='breadcrumbs']//a[text()='Node List']");
+        findElementByXpath("//div[contains(@class, 'breadcrumbs')]//a[text()='Node List']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'card')]//span[@class='title' and text()='Node List']")));
     }
 }
