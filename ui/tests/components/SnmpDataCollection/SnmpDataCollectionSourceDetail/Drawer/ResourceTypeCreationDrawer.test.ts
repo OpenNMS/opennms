@@ -1638,7 +1638,7 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       try {
         store.resourceTypeDrawerState.visible = true
         await nextTick()
-      } catch (e) {
+      } catch (_e) {
         // Expected to fail
       }
       consoleWarnSpy.mockRestore()
@@ -1654,7 +1654,7 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       try {
         store.resourceTypeDrawerState.visible = true
         await nextTick()
-      } catch (e) {
+      } catch (_e) {
         // Expected to fail
       }
       consoleWarnSpy.mockRestore()
@@ -1910,4 +1910,3 @@ describe('ResourceTypeCreationDrawer.vue', () => {
     })
   })
 })
-

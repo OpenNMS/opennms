@@ -55,7 +55,7 @@ import { LocalConfiguration } from './configuration.types'
  */
 const props = defineProps({
   active: Boolean,
-  onClose: { 
+  onClose: {
     type: Function as PropType<(payload: MouseEvent) => void>,
     required: true
   },
@@ -290,4 +290,3 @@ const helpText = computed(() => {
   }
 }
 </style>
-

@@ -151,7 +151,7 @@ const selectAlarmAck = async () => {
       break
   }
 
-  const selectedAlarms = alarms.value.filter((alarm) => all.value || alarmCheckboxes.value[alarm.id])
+  const selectedAlarms = alarms.value.filter(alarm => all.value || alarmCheckboxes.value[alarm.id])
 
   let numFail = 0
   const respCollection: any = []
@@ -165,7 +165,7 @@ const selectAlarmAck = async () => {
   }
 
   const result = await Promise.all(respCollection)
-  result.forEach(r => {
+  result.forEach((r) => {
     if (r === false) {
       numFail = numFail + 1
     }

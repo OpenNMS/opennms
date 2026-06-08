@@ -17,7 +17,7 @@
     </FeatherTabContainer>
   </div>
 </template>
-    
+
 <script setup lang="ts">
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpInterfacesTable from './SnmpInterfacesTable.vue'
@@ -35,4 +35,3 @@ import IpInterfacesTable from './IpInterfacesTable.vue'
   }
 }
 </style>
-  

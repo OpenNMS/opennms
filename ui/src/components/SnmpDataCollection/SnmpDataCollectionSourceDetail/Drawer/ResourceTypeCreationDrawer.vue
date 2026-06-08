@@ -395,8 +395,8 @@ const onSearchStorageStrategy = async (q: string) => {
   }
   storageStrategyTimeout.value = window.setTimeout(() => {
     const filteredOptions = STORAGE_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
+      .filter(x => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map(x => ({
         _text: x,
         _value: x
       }))
@@ -470,8 +470,8 @@ const onSearchPersistenceSelectorStrategy = async (q: string) => {
   }
   persistenceSelectorStrategyTimeout.value = window.setTimeout(() => {
     const filteredOptions = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
+      .filter(x => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map(x => ({
         _text: x,
         _value: x
       }))
@@ -705,7 +705,7 @@ const loadResourceTypeParameterData = () => {
       key.value = parameter.key
       value.value = parameter.value
     }
-  } 
+  }
   if (resourceTypeDrawerState.value.type === 'persistenceSelectorStrategy' && resourceTypeDrawerState.value.persistenceSelectorStrategyObject) {
     const parameter = resourceTypeDrawerState.value.persistenceSelectorStrategyObject
     if (parameter) {
@@ -874,4 +874,3 @@ watch(
   }
 }
 </style>
-

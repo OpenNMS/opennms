@@ -122,8 +122,8 @@ const currentSort = ref({ property: 'key', value: SORT.ASCENDING } as FeatherSor
 const statistics = computed<UsageStatisticsData>(() => usageStatisticsStore.statistics )
 const metadata = computed<UsageStatisticsMetadata>(() => usageStatisticsStore.metadata )
 
-const metadataMap = computed<Map<string,UsageStatisticsMetadataItem>>(() => {
-  const map = new Map<string,UsageStatisticsMetadataItem>()
+const metadataMap = computed<Map<string, UsageStatisticsMetadataItem>>(() => {
+  const map = new Map<string, UsageStatisticsMetadataItem>()
 
   for (const obj of metadata.value.metadata) {
     const item = {

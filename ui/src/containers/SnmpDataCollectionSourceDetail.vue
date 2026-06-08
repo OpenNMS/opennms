@@ -291,7 +291,7 @@ const onSaveSource = async () => {
         sourcesStore.fetchAllSourcesNames(),
         sourcesStore.fetchSnmpCollectionProfiles()
       ])
-      router.push({ name: 'SNMP Data Collection Source Detail', params: { id: newId } })
+      router.push({ name: 'SNMP Data Collection Source Detail', params: { id: newId }})
     } else {
       snackbar.showSnackBar({ msg: `Failed to create Source '${localSourceName.value.trim()}'.`, error: true })
     }

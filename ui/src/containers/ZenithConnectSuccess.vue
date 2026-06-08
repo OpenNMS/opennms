@@ -61,7 +61,7 @@
                   Click to return to view connections. Eventually this will be automatic.
                 </div>
                 <FeatherButton
-                  primary 
+                  primary
                   :disabled="!savedSuccess"
                   @click="onViewConnections"
                 >

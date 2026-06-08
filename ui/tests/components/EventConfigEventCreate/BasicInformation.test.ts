@@ -69,7 +69,7 @@ vi.mock('@/stores/eventConfigStore', () => ({
 
 vi.mock('vkbeautify', () => ({
   default: {
-    xml: vi.fn((xml) => xml)
+    xml: vi.fn(xml => xml)
   }
 }))
 
@@ -348,7 +348,7 @@ describe('BasicInformation Component', () => {
     await ueiInput.setValue('')
     await wrapper.vm.$nextTick()
 
-    await new Promise((resolve) => setTimeout(resolve, 10))
+    await new Promise(resolve => setTimeout(resolve, 10))
 
     expect(wrapper.vm.isValid).toBe(false)
 
@@ -383,7 +383,7 @@ describe('BasicInformation Component', () => {
     await saveButton.trigger('click')
     await wrapper.vm.$nextTick()
 
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(createEventConfigEvent).toHaveBeenCalled()
   })
@@ -412,7 +412,7 @@ describe('BasicInformation Component', () => {
 
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(updateEventConfigEventById).toHaveBeenCalled()
     consoleSpy.mockRestore()
@@ -438,7 +438,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should generate XML with vbNumber type varbinds', async () => {
-      wrapper.vm.varbinds = [{ index: '5', value: 'test-value', type: { _text: 'Varbind Number', _value: 'vbnumber' } }]
+      wrapper.vm.varbinds = [{ index: '5', value: 'test-value', type: { _text: 'Varbind Number', _value: 'vbnumber' }}]
       await wrapper.vm.$nextTick()
 
       const xmlContent = wrapper.vm.xmlContent
@@ -448,7 +448,7 @@ describe('BasicInformation Component', () => {
 
     it('should generate XML with vbOid type varbinds', async () => {
       wrapper.vm.varbinds = [
-        { index: '.1.3.6.1.4.1', value: 'oid-value', type: { _text: 'Varbind OID', _value: 'vboid' } }
+        { index: '.1.3.6.1.4.1', value: 'oid-value', type: { _text: 'Varbind OID', _value: 'vboid' }}
       ]
       await wrapper.vm.$nextTick()
 
@@ -883,7 +883,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind number', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
 
       wrapper.vm.setVarbinds('setVarbindNumber', '5', 0)
 
@@ -891,7 +891,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind number to 0 if value is negative', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
 
       wrapper.vm.setVarbinds('setVarbindNumber', '-5', 0)
 
@@ -899,7 +899,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind number to 0 if value is not a number', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
 
       wrapper.vm.setVarbinds('setVarbindNumber', 'abc', 0)
 
@@ -907,7 +907,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind OID', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbOid', _value: 'vbOid' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbOid', _value: 'vbOid' }}]
 
       wrapper.vm.setVarbinds('setVarbindOid', '.1.3.6.1.4.1', 0)
 
@@ -915,7 +915,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind value', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
 
       wrapper.vm.setVarbinds('setValue', 'test-value', 0)
 
@@ -923,7 +923,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should add a new varbind row', () => {
-      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
 
       wrapper.vm.setVarbinds('addVarbindRow', null, 0)
 
@@ -932,8 +932,8 @@ describe('BasicInformation Component', () => {
 
     it('should remove a varbind row', () => {
       wrapper.vm.varbinds = [
-        { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' } },
-        { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' } }
+        { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' }},
+        { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' }}
       ]
 
       wrapper.vm.setVarbinds('removeVarbindRow', null, 0)
@@ -944,8 +944,8 @@ describe('BasicInformation Component', () => {
 
     it('should clear all varbinds', () => {
       wrapper.vm.varbinds = [
-        { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' } },
-        { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' } }
+        { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' }},
+        { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' }}
       ]
 
       wrapper.vm.setVarbinds('clearAllVarbinds', null, 0)
@@ -954,7 +954,7 @@ describe('BasicInformation Component', () => {
     })
 
     it('should set varbind type and reset index', () => {
-      wrapper.vm.varbinds = [{ index: '5', value: 'test', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '5', value: 'test', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
       const newType = { _text: 'vbOid', _value: 'vbOid' }
 
       wrapper.vm.setVarbinds('setVarbindType', newType, 0)
@@ -1434,7 +1434,7 @@ describe('BasicInformation Component', () => {
       wrapper.vm.autoClean = true
       wrapper.vm.clearKey = 'clear-key'
       wrapper.vm.maskElements = [{ name: { _text: 'uei', _value: 'uei' }, value: 'test' }]
-      wrapper.vm.varbinds = [{ index: '1', value: 'val', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+      wrapper.vm.varbinds = [{ index: '1', value: 'val', type: { _text: 'vbNumber', _value: 'vbNumber' }}]
       wrapper.vm.varbindsDecode = [{ parmId: 'p1', decode: [] }]
       wrapper.vm.selectedSource = { _text: 'Test', _value: 1 }
 
@@ -1477,7 +1477,7 @@ describe('BasicInformation Component', () => {
       })
 
       await newWrapper.vm.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       // When eventConfigEvent is null, resetValues is called which sets _value to ''
       expect(newWrapper.vm.selectedSource._value).toBe('')
@@ -1501,7 +1501,7 @@ describe('BasicInformation Component', () => {
       })
 
       await newWrapper.vm.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(newWrapper.vm.selectedSource._value).toBe(-1)
     })
@@ -1536,7 +1536,7 @@ describe('BasicInformation Component', () => {
       })
 
       await newWrapper.vm.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(newWrapper.vm.addAlarmData).toBe(false)
     })
@@ -1563,7 +1563,7 @@ describe('BasicInformation Component', () => {
       })
 
       await newWrapper.vm.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(newWrapper.vm.logMessage).toBe('')
       expect(newWrapper.vm.destination._value).toBe('')
@@ -1623,7 +1623,7 @@ describe('BasicInformation Component', () => {
       })
 
       await newWrapper.vm.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       // Check the structure of varbindsDecode
       expect(newWrapper.vm.varbindsDecode).toHaveLength(2)

@@ -28,4 +28,3 @@ import useSnackbar from '@/composables/useSnackbar'
 
 const { hideSnackbar, isDisplayed, isCentered, hasError, message, setTimeout } = useSnackbar()
 </script>
-

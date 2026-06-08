@@ -33,7 +33,7 @@ const getMainMenu = async (): Promise<MainMenu | false> => {
   try {
     const resp = await v2.get(menuEndpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -42,7 +42,7 @@ const getNotificationSummary = async (): Promise<NotificationSummary | false> =>
   try {
     const resp = await rest.get(notificationSummaryEndpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

@@ -164,7 +164,7 @@ const processRegistrationResponse = async () => {
   isProcessing.value = true
   processingStatus.value = 'Processing Zenith Registration response...'
   startSpinner()
-  
+
   try {
     const response: ZenithConnectRegistrationResponse = parseRegistrationResponse()
     zenithConnectStore.setRegistrationResponse(response)
@@ -195,7 +195,7 @@ const processRegistrationResponse = async () => {
     }
 
     processingStatus.value = 'Getting registrations...'
-  
+
     const fetchResponse = await zenithConnectStore.fetchRegistrations()
 
     if (!fetchResponse) {
@@ -204,7 +204,7 @@ const processRegistrationResponse = async () => {
     }
 
     status = true
-  } catch (e) {
+  } catch (_e) {
     showSnackBar({
       msg: 'Error registering with Zenith.',
       error: true

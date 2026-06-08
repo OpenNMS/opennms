@@ -127,7 +127,9 @@ const scheduledTime = computed(() => {
 
 const errorRegex = /^Error/
 const advancedCronTabHasErrorInHint = computed(() => {
-  if(!props.config.advancedCrontab || !errorRegex.test(ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced))) return ''
+  if (!props.config.advancedCrontab || !errorRegex.test(ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced))) {
+    return ''
+  }
 
   return 'error'
 })
@@ -190,4 +192,3 @@ div a.link {
     }
 }
 </style>
-

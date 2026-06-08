@@ -55,7 +55,7 @@ export const useUsageStatisticsStore = defineStore('usageStatisticsStore', () =>
 
   const getStatus = async () => {
     const resp = await API.getUsageStatisticsStatus()
-    
+
     if (resp) {
       status.value = resp
     }

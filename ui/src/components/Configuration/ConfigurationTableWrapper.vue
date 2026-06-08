@@ -185,7 +185,7 @@ const saveCurrentState = async () => {
   selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
 
   // Validate the local state.
-  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value,activeIndex.index)
+  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value, activeIndex.index)
 
   // If we're valid.
   if (!validatedItem.hasErrors) {
@@ -327,4 +327,3 @@ const advanceActiveUpdate = (newVal: boolean) => {
   font-size: 24px;
 }
 </style>
-

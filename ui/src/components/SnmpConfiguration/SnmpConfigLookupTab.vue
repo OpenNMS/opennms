@@ -167,7 +167,7 @@ onMounted(() => {
         gap: 20px;
       }
     }
-  
+
     .large-spacer {
       min-height: 1em;
     }

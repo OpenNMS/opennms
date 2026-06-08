@@ -39,7 +39,7 @@ export const getIpInterfaces = async (queryParameters?: QueryParameters): Promis
   try {
     const resp = await v2.get(endpointWithQueryString || endpoint)
     return resp.data as IpInterfaceApiResponse
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

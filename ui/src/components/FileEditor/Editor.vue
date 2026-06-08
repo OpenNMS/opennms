@@ -57,8 +57,12 @@ const lang = computed(() => {
 
   if (selectedFileName.value) {
     const extension = getExtensionFromFilenameSafely(selectedFileName.value)
-    if (extension === xml) return xml
-    if (extension === drl) return java
+    if (extension === xml) {
+      return xml
+    }
+    if (extension === drl) {
+      return java
+    }
   }
   return properties
 })

@@ -73,4 +73,3 @@ const goToCreateEventConfig = () => {
   }
 }
 </style>
-

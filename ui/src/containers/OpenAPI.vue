@@ -33,7 +33,7 @@
       </div>
     </div>
 </template>
-  
+
 <script setup lang="ts">
 import 'rapidoc'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'

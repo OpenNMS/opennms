@@ -74,8 +74,8 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
     it('renders Cancel and Save buttons', () => {
       const buttons = wrapper.findAllComponents(FeatherButton)
       expect(buttons.length).toBe(2)
-      const cancelBtn = buttons.find((btn) => btn.text().toLowerCase().includes('cancel'))
-      const saveBtn = buttons.find((btn) => btn.text().toLowerCase().includes('save'))
+      const cancelBtn = buttons.find(btn => btn.text().toLowerCase().includes('cancel'))
+      const saveBtn = buttons.find(btn => btn.text().toLowerCase().includes('save'))
       expect(cancelBtn).toBeTruthy()
       expect(saveBtn).toBeTruthy()
     })
@@ -168,7 +168,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
     it('calls hideChangeEventConfigEventStatusDialog on Cancel click', async () => {
       const cancelBtn = wrapper
         .findAllComponents(FeatherButton)
-        .find((btn) => btn.text().toLowerCase().includes('cancel'))
+        .find(btn => btn.text().toLowerCase().includes('cancel'))
 
       await cancelBtn?.trigger('click')
       expect(store.hideChangeEventConfigEventStatusDialog).toHaveBeenCalledTimes(1)
@@ -177,7 +177,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
 
   describe('Save Button - Change Status', () => {
     it('calls disableEventConfigEvent when event is enabled and Save clicked', async () => {
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -194,7 +194,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -208,7 +208,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       store.changeEventConfigEventStatusDialogState.eventConfigEvent = null as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -227,7 +227,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -243,7 +243,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       const testError = new Error('Disable failed')
       store.disableEventConfigEvent = vi.fn().mockRejectedValue(testError)
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -263,7 +263,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       store.enableEventConfigEvent = vi.fn().mockRejectedValue(testError)
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
 
       await saveBtn?.trigger('click')
       await flushPromises()
@@ -281,4 +281,3 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
     })
   })
 })
-

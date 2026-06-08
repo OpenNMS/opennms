@@ -112,4 +112,3 @@ watch(() => props.visible, (visible) => {
   min-width: 40rem;
 }
 </style>
-

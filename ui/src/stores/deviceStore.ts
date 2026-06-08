@@ -41,7 +41,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
   const historyModalBackups = ref([] as DeviceConfigBackup[])
 
   const getDeviceConfigBackupObjByIds = (deviceConfigs: DeviceConfigBackup[], ids: number[]) => {
-    return deviceConfigs.filter((dcb) => ids.includes(dcb.id))
+    return deviceConfigs.filter(dcb => ids.includes(dcb.id))
   }
 
   const getDeviceConfigBackups = async (pageEnter?: boolean) => {
@@ -127,7 +127,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     const configs = deviceConfigBackups.value
 
     if (idsOrAll === 'all') {
-      const selIds = configs.map((dcb) => dcb.id)
+      const selIds = configs.map(dcb => dcb.id)
       selectedIds.value = selIds
 
       if (configs.length === 1) {
@@ -159,7 +159,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     selectedIds,
     vendorOptions,
     backupStatusOptions,
-    osImageOptions ,
+    osImageOptions,
     deviceConfigTotal,
     historyModalBackups,
     getDeviceConfigBackupObjByIds,

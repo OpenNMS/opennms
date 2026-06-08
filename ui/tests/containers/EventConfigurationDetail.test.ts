@@ -206,7 +206,7 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const addButton = wrapper.findAll('button').find((btn) => btn.text().includes('Add Event Config'))
+    const addButton = wrapper.findAll('button').find(btn => btn.text().includes('Add Event Config'))
     expect(addButton?.text()).eq('Add Event Config')
     await addButton?.trigger('click')
 
@@ -223,7 +223,7 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const statusButton = wrapper.findAll('button').find((btn) => btn.text().includes('Disable Source'))
+    const statusButton = wrapper.findAll('button').find(btn => btn.text().includes('Disable Source'))
     await statusButton?.trigger('click')
 
     expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockConfig)
@@ -234,7 +234,7 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const deleteButton = wrapper.findAll('button').find((btn) => btn.text().includes('Delete Source'))
+    const deleteButton = wrapper.findAll('button').find(btn => btn.text().includes('Delete Source'))
     await deleteButton?.trigger('click')
 
     expect(store.showDeleteEventConfigSourceDialog).toHaveBeenCalledWith(mockConfig)
@@ -331,7 +331,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should show not-found when route has no id param', async () => {
-    vi.mocked(useRoute).mockReturnValue({ params: {} } as any)
+    vi.mocked(useRoute).mockReturnValue({ params: {}} as any)
     wrapper = mount(EventConfigurationDetail, {
       global: {
         stubs: globalStubs
@@ -344,7 +344,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should handle invalid route id (non-string)', async () => {
-    vi.mocked(useRoute).mockReturnValue({ params: { id: 123 } } as any)
+    vi.mocked(useRoute).mockReturnValue({ params: { id: 123 }} as any)
     vi.mocked(getEventConfSourceById).mockRejectedValue(null) // Ensure not-found for invalid ID
     wrapper = mount(EventConfigurationDetail, {
       global: {
@@ -422,9 +422,8 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should re-render on store change', async () => {
     wrapper = await createWrapper()
-    store.$patch({ selectedSource: { ...mockConfig, enabled: false } })
+    store.$patch({ selectedSource: { ...mockConfig, enabled: false }})
     await wrapper.vm.$nextTick()
     expect(wrapper.text()).toContain('Disabled')
   })
 })
-

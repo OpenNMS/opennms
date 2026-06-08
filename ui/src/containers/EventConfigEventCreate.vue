@@ -30,7 +30,7 @@ const store = useEventModificationStore()
 
 const goBack = () => {
   if (store.selectedSource?.id) {
-    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id } })
+    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id }})
   } else {
     router.push({ name: 'Event Configuration' })
   }
@@ -55,4 +55,3 @@ const goBack = () => {
   }
 }
 </style>
-

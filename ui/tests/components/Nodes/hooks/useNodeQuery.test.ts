@@ -39,7 +39,7 @@ describe('Nodes useNodeQuery test', () => {
     test('empty query', () => {
       const queryObject = {}
       const filter: NodeQueryFilter = buildNodeQueryFilterFromQueryString(queryObject, categories, monitoringLocations)
-      
+
       const expected = getDefaultNodeQueryFilter()
       expect(filter).toEqual(expected)
     })
@@ -438,7 +438,7 @@ describe('Nodes useNodeQuery test', () => {
       }
     )
   })
- 
+
   describe('buildUpdatedNodeStructureQueryParameters: sysParams match type', () => {
     test('sysMatchType Contains uses wildcards', () => {
       const filter = getDefaultNodeQueryFilter()

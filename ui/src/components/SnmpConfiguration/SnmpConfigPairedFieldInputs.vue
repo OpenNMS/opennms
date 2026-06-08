@@ -134,7 +134,7 @@ const handleFormSelectUpdate = (key: string, val?: any, isNumeric?: boolean) => 
 const updateSelectValues = () => {
   let newModel = {}
 
-  props.fieldInfo?.filter(field => field.isSelect).forEach(field => {
+  props.fieldInfo?.filter(field => field.isSelect).forEach((field) => {
     // Get the string value from the current config for the current field
     const value = String((props.config as any)[field.key])
 

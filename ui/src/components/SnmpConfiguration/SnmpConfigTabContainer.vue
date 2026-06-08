@@ -33,7 +33,7 @@ const store = useSnmpConfigStore()
 
 const activeTab = computed({
   get: () => store.activeTab,
-  set: (val) => store.setActiveTab(val)
+  set: val => store.setActiveTab(val)
 })
 </script>
 

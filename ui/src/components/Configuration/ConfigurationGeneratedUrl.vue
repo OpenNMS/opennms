@@ -69,4 +69,3 @@ const convertedItem = computed(() => {
   overflow-wrap: anywhere;
 }
 </style>
-

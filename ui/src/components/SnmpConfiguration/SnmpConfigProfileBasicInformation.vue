@@ -94,7 +94,7 @@ const emit = defineEmits<{
   (e: 'save', profile: SnmpProfile): void
   (e: 'validation-error', formErrors: SnmpProfileFormErrors): void
 }>()
-  
+
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()
 const isValid = ref(false)
@@ -159,7 +159,7 @@ const onDetailsSave = (config: SnmpAgentConfig) => {
 
   if (!isValid.value) {
     snackbar.showSnackBar({ msg: 'Invalid values', error: true })
-    
+
     emit('validation-error', profileErrors)
     return
   }

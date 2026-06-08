@@ -111,4 +111,3 @@ export const AlarmTypeOptions: ISelectItemType[] = [
   { _text: AlarmTypeName.Two, _value: AlarmTypeValue.Two },
   { _text: AlarmTypeName.Three, _value: AlarmTypeValue.Three }
 ]
-

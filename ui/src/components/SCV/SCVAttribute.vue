@@ -74,7 +74,7 @@ const isDuplicateKey = (key: string) => {
 
 const updateAttributeKey: UpdateModelFunction = (key: string) => {
   if (!isDuplicateKey(key)) {
-    scvStore.updateAttribute({ key: props.attributeKey, keyVal: { key, value: props.attributeValue} })
+    scvStore.updateAttribute({ key: props.attributeKey, keyVal: { key, value: props.attributeValue }})
   }
 }
 

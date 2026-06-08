@@ -19,7 +19,7 @@
     -->
   </div>
 </template>
-  
+
 <script setup lang="ts">
 //import EventsTable from '@/components/Nodes/EventsTable.vue'
 //import OutagesTable from '@/components/Nodes/OutagesTable.vue'

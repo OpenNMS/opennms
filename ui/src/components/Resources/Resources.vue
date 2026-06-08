@@ -13,7 +13,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import ResourceList from '@/components/Resources/ResourceList.vue'
 import NodeResourceList from '@/components/Resources/NodeResourceList.vue'

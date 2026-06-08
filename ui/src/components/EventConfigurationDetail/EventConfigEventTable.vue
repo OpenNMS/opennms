@@ -352,4 +352,3 @@ const onChangeSearchTerm = debounce(async (value: string) => {
   }
 }
 </style>
-

@@ -90,7 +90,7 @@ const shouldRemainDisabled = computed(() => (
   (renameFile.value && !!error.value)
 ))
 
-const validateName = () => {  
+const validateName = () => {
   let isValid = false
   if (newFileName.value === '') {
     error.value = 'File name cannot be empty.'
@@ -167,4 +167,3 @@ watch(() => props.visible, (val) => {
 </script>
 
 <style scoped lang="scss"></style>
-

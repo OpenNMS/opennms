@@ -50,7 +50,9 @@ import { stringToFixedFloat } from './utils'
 const props = defineProps({
   baseHref: { type: Object as PropType<string> },
   baseNodeUrl: { type: Object as PropType<string> },
-  node: { type: Object as PropType<Node>, default: () => { return }},
+  node: { type: Object as PropType<Node>, default: () => {
+    return
+  } },
   ipAddress: { type: Object as PropType<string> },
   nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true }
 })

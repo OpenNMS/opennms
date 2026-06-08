@@ -33,7 +33,7 @@ describe('UploadedFileRenameDialog.vue', () => {
 
   const mockFile = new File(['<xml></xml>'], 'original.events.xml', { type: 'text/xml' })
   const mockFile2 = new File(['<xml></xml>'], 'another.events.xml', { type: 'text/xml' })
-  
+
   const fileBucket = [
     {
       file: mockFile,
@@ -134,7 +134,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = ''
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBe('File name cannot be empty.')
   })
 
@@ -143,7 +143,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'filename.txt'
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBe('File name must end with .xml')
   })
 
@@ -154,12 +154,12 @@ describe('UploadedFileRenameDialog.vue', () => {
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
     await flushPromises()
-    
+
     wrapper.vm.renameFile = true
     wrapper.vm.newFileName = 'original.events.xml'
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     // Check that it fails with either error (bucket check or original check)
     expect(wrapper.vm.error).toBeDefined()
   })
@@ -172,7 +172,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.validateName()
 
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBe('A file with this name already exists in the current upload list.')
   })
 
@@ -182,7 +182,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'DUPLICATE.events.xml'
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBe('A file with this name already exists in the system.')
   })
 
@@ -191,7 +191,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'unique.events.xml'
     const isValid = wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBeUndefined()
     expect(isValid).toBe(true)
   })
@@ -201,7 +201,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = '  unique.events.xml  '
     wrapper.vm.onChangeFileName('  unique.events.xml  ')
     await flushPromises()
-    
+
     expect(wrapper.vm.newFileName).toBe('unique.events.xml')
   })
 
@@ -210,7 +210,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.renameFile = false
     wrapper.vm.overwriteFile = false
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.shouldRemainDisabled).toBe(true)
   })
 
@@ -219,14 +219,14 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = ''
     wrapper.vm.validateName()
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.shouldRemainDisabled).toBe(true)
   })
 
   it('enables Save Changes button when overwrite is selected', async () => {
     wrapper.vm.overwriteFile = true
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.shouldRemainDisabled).toBe(false)
   })
 
@@ -235,7 +235,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'newname.events.xml'
     wrapper.vm.validateName()
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.shouldRemainDisabled).toBe(false)
   })
 
@@ -243,10 +243,10 @@ describe('UploadedFileRenameDialog.vue', () => {
   it('deselects overwrite when rename is selected', async () => {
     wrapper.vm.overwriteFile = true
     await wrapper.vm.$nextTick()
-    
+
     wrapper.vm.onChangeRenameFile(true)
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.renameFile).toBe(true)
     expect(wrapper.vm.overwriteFile).toBe(false)
   })
@@ -254,10 +254,10 @@ describe('UploadedFileRenameDialog.vue', () => {
   it('deselects rename when overwrite is selected', async () => {
     wrapper.vm.renameFile = true
     await wrapper.vm.$nextTick()
-    
+
     wrapper.vm.onChangeOverwriteFile(true)
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.overwriteFile).toBe(true)
     expect(wrapper.vm.renameFile).toBe(false)
   })
@@ -267,10 +267,10 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = ''
     wrapper.vm.validateName()
     expect(wrapper.vm.error).toBeDefined()
-    
+
     wrapper.vm.onChangeOverwriteFile(true)
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.error).toBeUndefined()
   })
 
@@ -281,10 +281,10 @@ describe('UploadedFileRenameDialog.vue', () => {
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
     await flushPromises()
-    
+
     wrapper.vm.onChangeOverwriteFile(true)
     await wrapper.vm.$nextTick()
-    
+
     expect(wrapper.vm.newFileName).toBe('original.events.xml')
   })
 
@@ -293,7 +293,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.overwriteFile = true
     wrapper.vm.saveChanges()
     await flushPromises()
-    
+
     expect(wrapper.emitted('overwrite')).toBeTruthy()
     expect(wrapper.emitted('rename')).toBeFalsy()
   })
@@ -304,7 +304,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.validateName()
     wrapper.vm.saveChanges()
     await flushPromises()
-    
+
     expect(wrapper.emitted('rename')).toBeTruthy()
     expect(wrapper.emitted('rename')?.[0]).toEqual(['newname.events.xml'])
     expect(wrapper.emitted('overwrite')).toBeFalsy()
@@ -315,7 +315,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = ''
     wrapper.vm.saveChanges()
     await flushPromises()
-    
+
     expect(wrapper.emitted('rename')).toBeFalsy()
   })
 
@@ -326,7 +326,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.validateName()
     wrapper.vm.saveChanges()
     await flushPromises()
-    
+
     expect(wrapper.emitted('rename')).toBeFalsy()
   })
 
@@ -335,7 +335,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     const cancelButton = wrapper.findAllComponents(FeatherButton)[0]
     await cancelButton.trigger('click')
     await flushPromises()
-    
+
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
@@ -344,10 +344,10 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.overwriteFile = true
     wrapper.vm.newFileName = 'test.xml'
     wrapper.vm.error = 'Some error'
-    
+
     wrapper.vm.handleDialogHidden()
     await flushPromises()
-    
+
     expect(wrapper.vm.renameFile).toBe(false)
     expect(wrapper.vm.overwriteFile).toBe(false)
     expect(wrapper.vm.newFileName).toBe('')
@@ -360,10 +360,10 @@ describe('UploadedFileRenameDialog.vue', () => {
   it('initializes original file name when dialog becomes visible', async () => {
     const newWrapper: any = createWrapper({ visible: false })
     expect(newWrapper.vm.originalFileName).toBe('')
-    
+
     await newWrapper.setProps({ visible: true })
     await flushPromises()
-    
+
     expect(newWrapper.vm.originalFileName).toBe('original.events.xml')
     expect(newWrapper.vm.newFileName).toBe('original.events.xml')
     newWrapper.unmount()
@@ -372,10 +372,10 @@ describe('UploadedFileRenameDialog.vue', () => {
   it('resets state when dialog becomes invisible', async () => {
     wrapper.vm.renameFile = true
     wrapper.vm.newFileName = 'test.xml'
-    
+
     await wrapper.setProps({ visible: false })
     await flushPromises()
-    
+
     expect(wrapper.vm.renameFile).toBe(false)
     expect(wrapper.vm.newFileName).toBe('')
   })
@@ -386,7 +386,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 999 })
     await flushPromises()
-    
+
     expect(wrapper.vm.originalFileName).toBe('')
     expect(wrapper.vm.newFileName).toBe('')
     expect(wrapper.vm.renameFile).toBe(false)
@@ -399,7 +399,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'ANOTHER.events.xml'
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(wrapper.vm.error).toBe('A file with this name already exists in the current upload list.')
   })
 
@@ -408,7 +408,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'test.XML'
     wrapper.vm.validateName()
     await flushPromises()
-    
+
     // Component checks for lowercase .xml only
     expect(wrapper.vm.error).toBe('File name must end with .xml')
   })
@@ -418,17 +418,17 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper.vm.newFileName = 'my.test.file.events.xml'
     const isValid = wrapper.vm.validateName()
     await flushPromises()
-    
+
     expect(isValid).toBe(true)
     expect(wrapper.vm.error).toBeUndefined()
   })
 
   it('updates dialogVisible when props.visible changes', async () => {
     expect(wrapper.vm.dialogVisible).toBe(true)
-    
+
     await wrapper.setProps({ visible: false })
     await flushPromises()
-    
+
     expect(wrapper.vm.dialogVisible).toBe(false)
   })
 })

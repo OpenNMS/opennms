@@ -42,7 +42,7 @@ const loadPreferences = (): OpenNmsPreferences | null => {
 
   if (json) {
     const data = JSON.parse(json)
-    
+
     if (data) {
       return data as OpenNmsPreferences
     }

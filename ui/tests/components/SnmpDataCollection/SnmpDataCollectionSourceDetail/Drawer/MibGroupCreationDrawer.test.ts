@@ -788,7 +788,7 @@ describe('MibGroupCreationDrawer.vue', () => {
       expect(wrapper.vm.tableRecords[0].alias).toBe('alias5')
 
       const initialLength = wrapper.vm.mibObjects.length
-      
+
       // Delete first item on page 2 (page-relative index 0)
       // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*5 + 0 = 5
       wrapper.vm.deleteMibObject(0)
@@ -1256,7 +1256,7 @@ describe('MibGroupCreationDrawer.vue', () => {
       'octetstring',
       'opaque'
     ])('should include data type "%s"', (type) => {
-      const found = MIB_OBJECT_DATA_TYPE_OPTIONS.some((opt) => opt._value === type)
+      const found = MIB_OBJECT_DATA_TYPE_OPTIONS.some(opt => opt._value === type)
       expect(found).toBe(true)
     })
   })
@@ -1267,7 +1267,7 @@ describe('MibGroupCreationDrawer.vue', () => {
     })
 
     it.each(['ignore', 'all'])('should include interface type "%s"', (type) => {
-      const found = IF_TYPE_FILTERS_OPTIONS.some((opt) => opt._value === type)
+      const found = IF_TYPE_FILTERS_OPTIONS.some(opt => opt._value === type)
       expect(found).toBe(true)
     })
   })

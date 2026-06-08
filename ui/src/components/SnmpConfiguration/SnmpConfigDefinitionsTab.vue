@@ -13,7 +13,7 @@
           />
         </div>
       </div>
- 
+
       <SnmpConfigDefinitionsTable v-if="displayTable" />
 
       <div

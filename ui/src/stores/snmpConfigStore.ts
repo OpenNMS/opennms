@@ -162,7 +162,7 @@ export const getMockSnmpConfiguration = () => {
 }
 
 /**
- * 
+ *
  */
 export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const config = ref<SnmpConfig>({

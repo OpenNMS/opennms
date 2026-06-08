@@ -177,7 +177,7 @@ watch(formActive, () => {
   }
 })
 
-const updateExternalSource: UpdateModelFunction = (val: {name:string}) => {
+const updateExternalSource: UpdateModelFunction = (val: { name:string }) => {
   props.updateFormValue('type', val)
   updateHint(val.name)
 }
@@ -193,7 +193,7 @@ const updateCronValue = (type:string, val:string) => {
  **/
 const updateHint = (val:string) => {
   const hint = ConfigurationHelper.getHostHint(val)
-  ConfigurationHelper.forceSetHint({hint}, 0,'.host-update')
+  ConfigurationHelper.forceSetHint({ hint }, 0, '.host-update')
 }
 </script>
 <style
@@ -213,4 +213,3 @@ const updateHint = (val:string) => {
     width: 100%;
 }
 </style>
-

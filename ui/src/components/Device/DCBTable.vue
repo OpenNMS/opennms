@@ -175,7 +175,7 @@
               title="View config"
               v-slot="{ attrs, on }">
               <span
-                v-bind="attrs" 
+                v-bind="attrs"
                 v-on="on"
                 v-date
                 >{{ config.lastBackupDate }}
@@ -283,8 +283,8 @@ watch(() => directions.bottom, () => {
 
 const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)
-    .filter((id) => selectedDeviceConfigBackups.value[id])
-    .map((id) => parseInt(id))
+    .filter(id => selectedDeviceConfigBackups.value[id])
+    .map(id => parseInt(id))
 })
 
 const numberOfSelectedDevices = computed<number>(() => {
@@ -299,7 +299,7 @@ const numberOfSelectedDevices = computed<number>(() => {
 const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceStore.deviceConfigBackups.length))
 const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceStore.deviceConfigBackups.length === 1))
 const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
-const getDeviceConfigBackupById = (id: number) => deviceStore.deviceConfigBackups.filter((backup) => backup.id === id)[0]
+const getDeviceConfigBackupById = (id: number) => deviceStore.deviceConfigBackups.filter(backup => backup.id === id)[0]
 
 const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
@@ -402,7 +402,7 @@ onMounted(() => {
 
     .last-backup-date {
       color: var($primary);
-      
+
       span:hover {
         font-weight: 600;
       }
@@ -464,7 +464,7 @@ a:visited {
 </style>
 
 <style lang="scss">
-.dcb-config-checkbox, 
+.dcb-config-checkbox,
 .dcb-all-checkbox {
   margin-bottom: 0px !important;
 }

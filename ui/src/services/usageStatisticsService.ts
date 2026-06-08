@@ -30,7 +30,7 @@ const getUsageStatistics = async (): Promise<UsageStatisticsData | false> => {
     const url = `${endpoint}`
     const resp = await rest.get(url)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -40,7 +40,7 @@ const getUsageStatisticsMetadata = async (): Promise<UsageStatisticsMetadata | f
     const url = `${endpoint}/meta`
     const resp = await rest.get(url)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -50,7 +50,7 @@ const getUsageStatisticsStatus = async (): Promise<UsageStatisticsStatus | false
     const url = `${endpoint}/status`
     const resp = await rest.get(url)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -63,7 +63,7 @@ const setUsageStatisticsStatus = async (enabled: boolean) : Promise<any | false>
     const url = `${endpoint}/status`
     const resp = await rest.post(url, status)
     return resp
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

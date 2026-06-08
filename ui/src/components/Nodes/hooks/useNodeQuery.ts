@@ -166,7 +166,7 @@ export const useNodeQuery = () => {
   }
 
   /**
-   * Build new QueryParameters based on existing QueryParameters (which contain e.g. limit, offset and similar), 
+   * Build new QueryParameters based on existing QueryParameters (which contain e.g. limit, offset and similar),
    * combined with the given NodeQueryFilter.
    */
   const buildUpdatedNodeStructureQueryParameters = (queryParameters: QueryParameters, filter: NodeQueryFilter) => {
@@ -391,19 +391,27 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
     // In this case, we ignore categoryMode
     const buildGroup = (cats: Category[]) => {
       const items = cats.map(cat => `category.id==${cat.id}`)
-      if (items.length === 0) return ''
-      if (items.length === 1) return items[0]
+      if (items.length === 0) {
+        return ''
+      }
+      if (items.length === 1) {
+        return items[0]
+      }
       return `(${items.join(',')})`
     }
     const group1 = buildGroup(selectedCategories)
     const group2 = buildGroup(selectedCategories2)
-    if (group1 && group2) return `${group1};${group2}`
+    if (group1 && group2) {
+      return `${group1};${group2}`
+    }
     return group1 || group2
   }
 
   // Single category group: use categoryMode to determine union or intersection
   const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
-  if (categoryItems.length === 1) return `${categoryItems[0]}`
+  if (categoryItems.length === 1) {
+    return `${categoryItems[0]}`
+  }
   if (categoryItems.length > 1) {
     const separator = getFiqlSetOperator(categoryMode)
     return `(${categoryItems.join(separator)})`
@@ -550,7 +558,7 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     const props = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId']
     const arr: string[] = []
 
-    props.forEach(p => {
+    props.forEach((p) => {
       const value = (sysParams as any)[p]
       if (isValidParam(value)) {
         const searchValue = sysParams.sysMatchType === MatchType.Equals ? value : makeWildcard(value)

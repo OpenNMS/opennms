@@ -22,7 +22,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { groupBy } from 'lodash'
 import { FeatherCheckbox } from '@featherds/checkbox'

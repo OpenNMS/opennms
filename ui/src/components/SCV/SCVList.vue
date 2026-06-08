@@ -4,8 +4,8 @@
       Aliases
     </FeatherListHeader>
     <FeatherListItem
-      v-for="alias of aliases" 
-      :selected="selectedAlias === alias && isEditing" 
+      v-for="alias of aliases"
+      :selected="selectedAlias === alias && isEditing"
       :key="alias"
       @click="onAliasClick(alias)">
       {{ alias }}

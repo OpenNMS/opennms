@@ -79,7 +79,9 @@ const toggle = () => {
 }
 
 const addNewFile = (file: IFile) => {
-  if (!isOpen.value) toggle()
+  if (!isOpen.value) {
+    toggle()
+  }
   file.children?.unshift({
     name: '',
     isEditing: true,

@@ -458,4 +458,3 @@ const changeResourceTypeStatus = async (selected: { id: number; name: string } |
   }
 }
 </style>
-

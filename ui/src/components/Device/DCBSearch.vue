@@ -23,7 +23,9 @@ const deviceStore = useDeviceStore()
 const searchVal = ref<string | undefined>(undefined)
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  if (searchVal.value === undefined && val === '') return // prevents dup mounted call from feather
+  if (searchVal.value === undefined && val === '') {
+    return
+  } // prevents dup mounted call from feather
   searchVal.value = val
 
   const newQueryParams: DeviceConfigQueryParams = {

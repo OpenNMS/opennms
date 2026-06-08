@@ -33,7 +33,7 @@ const store = useSnmpConfigStore()
 
 const activeAdvancedSubtab = computed({
   get: () => store.activeAdvancedSubtab,
-  set: (val) => store.setActiveAdvancedSubtab(val)
+  set: val => store.setActiveAdvancedSubtab(val)
 })
 </script>
 

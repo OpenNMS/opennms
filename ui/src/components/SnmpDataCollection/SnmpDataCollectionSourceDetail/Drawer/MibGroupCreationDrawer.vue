@@ -451,7 +451,7 @@ const validateMibGroup = (): MibGroupErrors => {
 }
 
 const loadInitialData = () => {
-  instancesOptions.value = store.resourceTypeNames.map((name) => ({ _text: name, _value: name }))
+  instancesOptions.value = store.resourceTypeNames.map(name => ({ _text: name, _value: name }))
   if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     ifType.value = DEFAULT_IF_TYPE_FILTER
@@ -666,4 +666,3 @@ watch(
   }
 }
 </style>
-

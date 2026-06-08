@@ -95,7 +95,7 @@ const downloadConfig = async (format: 'xml' | 'json') => {
     link.download = `datacollection-config.${format}`
     link.click()
     window.URL.revokeObjectURL(link.href)
-  } catch (e) {
+  } catch (_e) {
     snackbar.showSnackBar({
       msg: `Failed to download datacollection-config (${format}).`,
       error: true
@@ -127,4 +127,3 @@ const downloadConfig = async (format: 'xml' | 'json') => {
   }
 }
 </style>
-

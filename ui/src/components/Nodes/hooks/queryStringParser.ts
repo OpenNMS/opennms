@@ -65,14 +65,20 @@ export const parseCategories = (queryObject: any, categories: Category[]): {
 
   const resolveCategory = (vals: string[]): Category[] => {
     const result: Category[] = []
-    vals.forEach(c => {
-      if (!c) return
+    vals.forEach((c) => {
+      if (!c) {
+        return
+      }
       if (/^\d+$/.test(c)) {
         const item = categories.find(x => x.id === parseInt(c))
-        if (item) result.push(item)
+        if (item) {
+          result.push(item)
+        }
       } else {
         const item = categories.find(x => x.name.toLowerCase() === c.toLowerCase())
-        if (item) result.push(item)
+        if (item) {
+          result.push(item)
+        }
       }
     })
     return result
@@ -292,7 +298,9 @@ export const parseMonitoredServices = (
   serviceTypes: ServiceType[]
 ): string[] => {
   const raw = queryObject.monitoredService ?? queryObject.service
-  if (!raw) return []
+  if (!raw) {
+    return []
+  }
 
   const resolve = (val: string): string | null => {
     if (/^\d+$/.test(val)) {

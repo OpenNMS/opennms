@@ -58,7 +58,7 @@ export const useFileEditorStore = defineStore('fileEditorStore', () => {
     // save folder file structure
     const savedAndUnsavedFiles = uniq([...resp, ...unsavedFiles.value])
 
-    const filteredFileNames = savedAndUnsavedFiles.filter(fileName => {
+    const filteredFileNames = savedAndUnsavedFiles.filter((fileName) => {
       const searchValueLower = searchValue.value.toLowerCase()
       const filename = fileName.toLowerCase()
       const selectedFileNameLower = selectedFileName.value.toLowerCase()
@@ -95,7 +95,7 @@ export const useFileEditorStore = defineStore('fileEditorStore', () => {
   const saveFolderFileStructure = (names: string[]) => {
     const savedAndUnsavedFiles = uniq([...names, ...unsavedFiles.value])
 
-    const filteredFileNames = savedAndUnsavedFiles.filter(fileName => {
+    const filteredFileNames = savedAndUnsavedFiles.filter((fileName) => {
       const searchVal = searchValue.value.toLowerCase()
       const filename = fileName.toLowerCase()
       const selectedFile = selectedFileName.value.toLowerCase()

@@ -41,7 +41,7 @@ export const useLogStore = defineStore('logStore', () => {
     log.value = resp
     selectedLog.value = name
   }
- 
+
   const getLogs = async () => {
     const resp = await API.getLogs()
     logs.value = resp

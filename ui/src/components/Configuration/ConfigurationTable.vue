@@ -151,7 +151,7 @@ const filteredItems = computed(() => {
   let myItems: Array<ProvisionDServerConfiguration> = [...itemList.value]
 
   // obfuscate password
-  myItems = myItems.map((item) => ({
+  myItems = myItems.map(item => ({
     ...item,
     [RequisitionData.ImportURL]: ConfigurationHelper.obfuscatePassword(item[RequisitionData.ImportURL])
   }))
@@ -254,4 +254,3 @@ table {
   max-width: 260px;
 }
 </style>
-

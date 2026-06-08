@@ -467,4 +467,3 @@ const changeMibGroupStatus = async (selected: { id: number; name: string } | nul
   }
 }
 </style>
-

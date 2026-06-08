@@ -28,7 +28,6 @@ const props = defineProps({
   }
 })
 
-// eslint-disable-next-line vue/no-setup-props-destructure
 const { item } = props
 
 const addNewFile = () => {

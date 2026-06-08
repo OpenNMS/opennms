@@ -263,7 +263,7 @@ const handleFolderUpload = async (e: Event) => {
         })
       }
 
-    } catch (err) {
+    } catch (_err) {
       snackbar.showSnackBar({
         msg: `Error reading ${file.name}`,
         error: true
@@ -563,4 +563,3 @@ watch(
   }
 }
 </style>
-

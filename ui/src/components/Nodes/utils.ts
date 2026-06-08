@@ -27,7 +27,7 @@ import {
 import { isNumber } from '@/lib/utils'
 
 /**
- * Construct an array of Feather Table CSS classes for the given configured node table columns. 
+ * Construct an array of Feather Table CSS classes for the given configured node table columns.
  * These start with 't', then ('l', 'r', 'c') for (left, right, center), then the 1 based column index.
  * e.g. 'tl1': left-align 1st column
  * 'tr7': right-align 7th colunn

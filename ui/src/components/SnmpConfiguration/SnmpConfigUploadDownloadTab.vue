@@ -240,7 +240,7 @@ const performUpload = async (isXml: boolean) => {
     .feather-row {
       margin-bottom: 0.5rem;
     }
-  
+
     button.btn.btn-icon .upload-download-icon {
       font-size: 1.1rem;
     }

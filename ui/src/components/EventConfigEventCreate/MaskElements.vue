@@ -75,7 +75,7 @@ const elements = ref<Array<{ name: ISelectItemType; value: string }>>([
 
 const availableMaskOptions = (index: number): ISelectItemType[] => {
   const selectedNames = elements.value.map(r => r.name._value)
-  return MaskElementNameOptions.filter(option => {
+  return MaskElementNameOptions.filter((option) => {
     const value = option._value as string
     return (
       !selectedNames.includes(value) ||
@@ -142,4 +142,3 @@ watch(() => props, () => {
 
 }
 </style>
-

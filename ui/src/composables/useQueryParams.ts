@@ -30,7 +30,9 @@ const useQueryParameters = (
   const queryParameters = ref(initialParameters)
   const payload = ref({ queryParameters: queryParameters.value, ...optionalPayload })
 
-  const updateQueryParameters = (updatedParams: QueryParameters) => { queryParameters.value = updatedParams }
+  const updateQueryParameters = (updatedParams: QueryParameters) => {
+    queryParameters.value = updatedParams
+  }
 
   const sort = (sortProps: FeatherSortObject) => {
     const updatedQueryParams = {

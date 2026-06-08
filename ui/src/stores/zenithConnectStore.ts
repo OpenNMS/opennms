@@ -49,7 +49,7 @@ export const useZenithConnectStore = defineStore('zenithConnectStore', () => {
         registrations.value = {
           registrations: [newRegistration]
         }
-      
+
         return true
       }
     }

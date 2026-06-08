@@ -39,7 +39,7 @@ export default {
     provide('canSetParentHtml', () => !!leafletRef.value.getElement())
     provide(
       'setParentHtml',
-      (html) => (leafletRef.value.getElement().innerHTML = html)
+      html => (leafletRef.value.getElement().innerHTML = html)
     )
     provide('addLayer', (layer) => {
       leafletRef.value.addLayer(layer.leafletObject)

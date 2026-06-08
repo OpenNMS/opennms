@@ -34,7 +34,7 @@ const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
-  const nodeLabels = items.map((item) => item.label)
+  const nodeLabels = items.map(item => item.label)
   mapStore.setSearchedNodeLabels(nodeLabels)
 
   if (nodeLabels.length) {

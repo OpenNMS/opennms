@@ -17,7 +17,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { FeatherInput } from '@featherds/input'
 import {

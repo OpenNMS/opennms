@@ -105,7 +105,7 @@
     :visible="displayDeleteDialog"
     title="Delete SNMP Configuration Profile"
     action-button-text="Delete"
-    @cancel="onCancelProfileDelete"                                                                                                              
+    @cancel="onCancelProfileDelete"
     @ok="onProfileDelete"
   >
     <template v-slot:content>
@@ -148,10 +148,6 @@ const searchTerm = ref('')
 const debouncedSearchTerm = ref('')
 const currentPage = ref(1)
 const pageSize = ref(50)
-
-const deleteDialogLabels = {
-  title: 'Delete SNMP Configuration Profile'
-}
 
 const emptyListContent = {
   msg: 'No profiles found.'
@@ -206,7 +202,7 @@ const filteredProfiles = computed<SnmpProfile[]>(() => {
 const pageTotal = computed(() => filteredProfiles.value.length)
 
 const profiles = computed(() => {
-  const items = filteredProfiles.value.map(profile => {
+  const items = filteredProfiles.value.map((profile) => {
     return {
       label: profile.label ?? '--',
       filter: createFilterExpressionLabel(profile)
