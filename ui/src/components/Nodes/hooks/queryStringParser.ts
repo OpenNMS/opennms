@@ -139,13 +139,48 @@ export const parseFlows = (queryObject: any) => {
 }
 
 /**
- * Currently this accepts anything in any valid IPv4 or IPv6 format (see `is-ip`), but
- * some formats may not actually be supported by our FIQL search.
+ * Returns true if value looks like an IPv4 or IPv6 iplike pattern (wildcard, range, or list).
+ *
+ * IPv4: 1-4 dot-separated segments, each being * | N | N-M | N,M | N-M,P-Q,...
+ *   Examples: 192.168.1.*, 10.9.1-3.*, 10.0.0.1-255, 192.168.0,1,2.*
+ * IPv6: 1-8 colon-separated hextets, each being * | H | H-H | H,H,...  (hex values)
+ *   Examples: 2001:db8:*:*:*:*:*:*, fe80:*:*:*:*:*:*:*, 2001:0-ffff:*:*:*:*:*:*
+ *
+ * Returns false for plain exact IPs (use isIP() for those) and for garbage.
+ * Compressed IPv6 notation (::) is not supported in patterns — only in exact addresses.
+ * Ranges are per-segment only; cross-segment notation like 10.0.0.1-10.0.0.255 is invalid.
+ */
+export const isIplikePattern = (value: string): boolean => {
+  // Must contain at least one pattern character to be an iplike pattern (not a plain IP)
+  if (!value.includes('*') && !value.includes('-') && !value.includes(',')) {
+    return false
+  }
+  if (value.includes('.')) {
+    // IPv4: each octet is * | N | N-M | list of those
+    const seg = '(\\*|\\d+(?:-\\d+)?(?:,\\d+(?:-\\d+)?)*)'
+    return new RegExp(`^${seg}(\\.${seg}){0,3}$`).test(value)
+  }
+  if (value.includes(':')) {
+    // IPv6: each hextet is * | H | H-H | list of those (hex digits only)
+    const seg = '(\\*|[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?(?:,[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?)*)'
+    return new RegExp(`^${seg}(:${seg}){0,7}$`).test(value)
+  }
+  return false
+}
+
+/**
+ * Parses an IP address or iplike pattern from a URL query object.
+ * Accepts exact IPv4/IPv6 addresses and IPv4 iplike wildcard patterns like 192.168.1.*.
+ * Priority: `iplike` param over `ipAddress` param.
  */
 export const parseIplike = (queryObject: any) => {
   const ip = queryObject.iplike as string || queryObject.ipAddress as string || ''
 
-  if (ip && isIP(ip)) {
+  if (!ip) {
+    return null
+  }
+
+  if (isIP(ip) || isIplikePattern(ip)) {
     return ip
   }
 

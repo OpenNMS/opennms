@@ -98,7 +98,7 @@
         <div class="feather-col-6">
           <FeatherInput
             class="filter-input"
-            label="IP Address"
+            label="IP Address / Pattern"
             v-model="selectedFilters.ipAddress"
             :error="errors.ipAddress"
           />
@@ -163,8 +163,53 @@
           <div>
             <p>Use the advanced filters to find nodes that match specific criteria.</p>
             <p>You can filter by categories, monitoring locations, monitored services, IP address, topology, flow type and multiple extended search parameters.</p>
-            <p><strong>Categories.</strong> You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
+            <br />
+            <p><strong>Categories</strong></p>
+            <p>You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
             <p>Category groups are then "intersected" with each other to refine the search results.</p>
+            <br />
+            <p><strong>Monitoring Location / Monitored Service</strong></p>
+            <p>To search by Monitoring Location or Monitored Service, click the down arrow and select the location or service you would like to search for.</p>
+            <br />
+            <p><strong>IP Address / IPLIKE</strong></p>
+            <p>Searching by TCP/IP address uses a very flexible search format, allowing you to separate the four or eight (in case of IPv6) fields of a TCP/IP address into specific searches.</p>
+            <p>An asterisk (*) in place of any octet matches any value for that octet.</p>
+            <p>Ranges are indicated by two numbers separated by a dash (-), and commas (,) are used for list demarcation.</p>
+            <br />
+            <p>For example, the following search fields are all valid:</p>
+            <ul>
+              <li><code>10.0.*.*</code> (multiple wildcards)</li>
+              <li><code>10.0.0.1-255</code> (range in last octet)</li>
+              <li><code>10.0.0-255.1-255</code> (range in third and fourth octets)</li>
+              <li><code>10.9.1-3.*</code> (range in third octet with wildcard in last octet)</li>
+              <li><code>192.168.0,1.*</code> (comma list in third octet, wildcard in last octet)</li>
+              <li><code>192.168.1,2,3-255.*</code> (comma + range combination, with wildcard in last octet)</li>
+              <li><code>2001:0-ffff:*:*:*:*:*:*</code> (IPv6 range and wildcards)</li>
+              <li><code>fc00,fe80:*:*:*:*:*:*:*</code> (IPv6 comma and wildcards)</li>
+            </ul>
+            <br />
+            <p><strong>MAC Address</strong></p>
+            <p>Searching by MAC Address allows you to find interfaces with hardware (MAC) addresses matching the search string. This is a case-insensitive partial string match. For example, you can find all interfaces with a specified manufacturer's code by entering the first 6 characters of the mac address. Octet separators (dash or colon) are optional.</p>
+            <br />
+            <p><strong>Topology</strong></p>
+            <p>Searching by Topology allows you to find nodes which have CDP or LLDP neighbors matching the search string. This is a case-insensitive partial string match against the neighbor's system name, system description, and interface name.</p>
+            <br />
+            <p><strong>Flows</strong></p>
+            <p>Filtering by Flows allows you to find nodes which have ingress flows, egress flows or no flows.</p>
+            <br />
+            <p><strong>Extended Search</strong></p>
+            <p>Extended search allows you to perform more complex queries across multiple fields and criteria, including requisition, asset, and SNMP fields.</p>
+            <p>Choose a search type, then a search term and click Add to add it as a filter. You may add multiple filters.</p>
+            <p>This is a case-insensitive partial string match against the selected field.</p>
+            <br />
+            <br />
+            <p><strong>TODO</strong></p>
+            <br />
+            <p><strong>TODO: Move to main page</strong></p>
+            <p>Searching by name is a case-insensitive, inclusive search. For example, searching on serv would find any of serv, Service, Reserved, NTSERV, UserVortex, etc. The underscore character acts as a single character wildcard. The percent character acts as a multiple character wildcard.</p>
+            <br />
+            <p><strong>TODO: Need to implement</strong></p>
+            <p>Also note that you can quickly search for all nodes which have asset information assigned by clicking the List all nodes with asset info link.</p>
           </div>
         </template>
       </MessageDialog>
@@ -175,6 +220,7 @@
 <script lang="ts" setup>
 import { ref, reactive, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
+import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherButton } from '@featherds/button'
@@ -301,8 +347,8 @@ const removeSecondCategories = () => {
 const validate = (): DrawerErrors => {
   const errs: DrawerErrors = {}
   const ip = selectedFilters.ipAddress
-  if (ip && !isIP(ip)) {
-    errs.ipAddress = 'Must be a valid IPv4 or IPv6 address'
+  if (ip && !isIP(ip) && !isIplikePattern(ip)) {
+    errs.ipAddress = 'Enter a valid IPv4/IPv6 address or iplike pattern (e.g. 192.168.1.*, 10.0.0.1-255, 10.9.1-3.*, 192.168.0,1.*, 2001:db8:*:*:*:*:*:*)'
   }
   return errs
 }

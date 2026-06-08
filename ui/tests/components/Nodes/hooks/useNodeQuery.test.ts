@@ -572,6 +572,29 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeStructureQueryParameters: ipAddress / iplike', () => {
+    test('emits ipInterface.ipAddress== for an exact IP', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1.100' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('ipInterface.ipAddress==192.168.1.100')
+      expect(params._s).not.toContain('iplike==')
+    })
+
+    test('emits iplike== for a wildcard pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1.*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('omits IP query when ipAddress is empty', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s ?? '').not.toContain('ipInterface.ipAddress==')
+      expect(params._s ?? '').not.toContain('iplike==')
+    })
+  })
+
   describe('queryStringHasTrackedValues', () => {
     const trackedValues = [
       'categories',

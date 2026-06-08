@@ -79,7 +79,7 @@ describe('Menu utils', () => {
       const inventoryItems = childItems(inventory)
       expect(inventoryItems).toHaveLength(3)
       expect(inventoryItems[0]).toMatchObject({
-        id: 'nodeList',
+        id: 'nodes',
         type: 'item',
         title: 'Nodes',
         href: `${baseHref}ui/index.html#/nodes`,

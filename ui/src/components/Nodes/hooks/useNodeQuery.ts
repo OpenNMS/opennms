@@ -39,6 +39,7 @@ import {
   parseCategories,
   parseFlows,
   parseForeignSource,
+  isIplikePattern,
   parseIplike,
   parseMaclike,
   parseMib2Params,
@@ -153,7 +154,7 @@ export const useNodeQuery = () => {
   }
 
   const addIpAddressToQueryFilter = (filter: NodeQueryFilter, ipAddress: string) => {
-    const ip = parseIplike(ipAddress)
+    const ip = parseIplike({ ipAddress })
 
     if (ip) {
       return {
@@ -378,11 +379,20 @@ const buildSearchQuery = (searchTerm: string) => {
 }
 
 const buildIpAddressQuery = (ipAddress?: string) => {
-  if (ipAddress) {
-    return `ipInterface.ipAddress==${ipAddress}`
+  if (!ipAddress) {
+    return ''
   }
-
-  return ''
+  if (isIplikePattern(ipAddress)) {
+    // Commas in iplike patterns must survive HTTP URL-decoding intact so that FIQL's parser
+    // does not treat them as OR operators.  queryParametersHandler emits the URL verbatim
+    // (no encoding), so the servlet container performs exactly one URL-decode on the query
+    // string.  Double-encoding (%252C) means the server receives %2C after that decode;
+    // CXF's FIQL parser sees %2C as a literal (not a comma), and search.decode.values=true
+    // then decodes %2C → , before the value reaches our CriteriaBehavior lambda.
+    const encoded = ipAddress.replace(/,/g, '%252C')
+    return `iplike==${encoded}`
+  }
+  return `ipInterface.ipAddress==${ipAddress}`
 }
 
 const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator, selectedCategories2?: Category[]) => {

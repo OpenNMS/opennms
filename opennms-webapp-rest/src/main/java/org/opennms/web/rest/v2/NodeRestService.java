@@ -287,6 +287,29 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
 
+        // iplike: PostgreSQL iplike() pattern filter over all IP interfaces of the node.
+        // Uses a SQL subquery because IpLikeCriteriaBehavior.b.iplike() only works against the
+        // root alias; the ipinterface table is a child association and cannot be aliased there.
+        // FIQL delivers '*' wildcards as '%' by the time the lambda fires — reverse with replaceAll().
+        CriteriaBehavior<?> iplikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final String pattern = ((String)v).replaceAll("%", "*");
+            switch (c) {
+            case EQUALS:
+                b.sql("{alias}.nodeid in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                break;
+            case NOT_EQUALS:
+                b.sql("{alias}.nodeid not in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for iplike expression: " + c);
+            }
+        });
+        iplikeBehavior.setSkipPropertyByDefault(true);
+        map.put("iplike", iplikeBehavior);
+
         return map;
     }
 
