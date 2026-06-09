@@ -382,14 +382,16 @@ const buildIpAddressQuery = (ipAddress?: string) => {
   if (!ipAddress) {
     return ''
   }
-  if (isIplikePattern(ipAddress)) {
+  // Normalize spaces around commas (users naturally type "1, 2, 3" but iplike has no spaces)
+  const normalized = ipAddress.replace(/\s*,\s*/g, ',')
+  if (isIplikePattern(normalized)) {
     // Commas in iplike patterns must survive HTTP URL-decoding intact so that FIQL's parser
     // does not treat them as OR operators.  queryParametersHandler emits the URL verbatim
     // (no encoding), so the servlet container performs exactly one URL-decode on the query
     // string.  Double-encoding (%252C) means the server receives %2C after that decode;
     // CXF's FIQL parser sees %2C as a literal (not a comma), and search.decode.values=true
     // then decodes %2C → , before the value reaches our CriteriaBehavior lambda.
-    const encoded = ipAddress.replace(/,/g, '%252C')
+    const encoded = normalized.replace(/,/g, '%252C')
     return `iplike==${encoded}`
   }
   return `ipInterface.ipAddress==${ipAddress}`

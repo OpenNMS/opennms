@@ -151,19 +151,21 @@ export const parseFlows = (queryObject: any) => {
  * Ranges are per-segment only; cross-segment notation like 10.0.0.1-10.0.0.255 is invalid.
  */
 export const isIplikePattern = (value: string): boolean => {
+  // Normalize spaces around commas so "1, 2, 3" is treated the same as "1,2,3"
+  const v = value.replace(/\s*,\s*/g, ',')
   // Must contain at least one pattern character to be an iplike pattern (not a plain IP)
-  if (!value.includes('*') && !value.includes('-') && !value.includes(',')) {
+  if (!v.includes('*') && !v.includes('-') && !v.includes(',')) {
     return false
   }
-  if (value.includes('.')) {
+  if (v.includes('.')) {
     // IPv4: each octet is * | N | N-M | list of those
     const seg = '(\\*|\\d+(?:-\\d+)?(?:,\\d+(?:-\\d+)?)*)'
-    return new RegExp(`^${seg}(\\.${seg}){0,3}$`).test(value)
+    return new RegExp(`^${seg}(\\.${seg}){0,3}$`).test(v)
   }
-  if (value.includes(':')) {
+  if (v.includes(':')) {
     // IPv6: each hextet is * | H | H-H | list of those (hex digits only)
     const seg = '(\\*|[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?(?:,[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?)*)'
-    return new RegExp(`^${seg}(:${seg}){0,7}$`).test(value)
+    return new RegExp(`^${seg}(:${seg}){0,7}$`).test(v)
   }
   return false
 }

@@ -167,6 +167,9 @@ describe('Nodes queryStringParser test', () => {
       ['accepts 192.168.0,1.* — list in third octet', '192.168.0,1.*', true],
       ['accepts 192.168.1,2,3-255.* — list with ranges', '192.168.1,2,3-255.*', true],
       ['accepts 10.0.0.1,5,10-20 — comma list without wildcard', '10.0.0.1,5,10-20', true],
+      // space normalization: spaces around commas are stripped before matching
+      ['accepts 192.168.0, 1.* — space after comma is normalized', '192.168.0, 1.*', true],
+      ['accepts 192.168.1, 2, 3-255.* — spaces after commas normalized', '192.168.1, 2, 3-255.*', true],
       // IPv6 range patterns
       ['accepts 2001:0-ffff:*:*:*:*:*:* — range in second hextet', '2001:0-ffff:*:*:*:*:*:*', true],
       // rejection cases
