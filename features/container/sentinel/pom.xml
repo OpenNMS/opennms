@@ -344,8 +344,8 @@
                         <feature>spring/4.3.30.RELEASE_1</feature>
 
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
-                        <feature>spring/${springVersion}</feature>
-                        <feature>spring-jms/${springVersion}</feature>
+                        <feature>spring/${springOsgiVersion}</feature>
+                        <feature>spring-jms/${springOsgiVersion}</feature>
 
                         <!-- OpenNMS features -->
                         <feature>opennms-core-ipc-rpc-jms</feature>
