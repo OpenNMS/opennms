@@ -49,6 +49,7 @@
         <feature prerequisite="true">shell-compat</feature>
 
         <!-- OpenNMS features -->
+        <feature>opennms-spring-extender</feature>
         <feature>opennms-health</feature>
         <feature>scv-api</feature>
 

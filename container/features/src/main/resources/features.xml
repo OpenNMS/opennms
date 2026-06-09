@@ -128,8 +128,7 @@
         <!-- Gemini Blueprint 2.1.0 is built against Spring 4.3 (its bundles Import-Package
              org.springframework.*;version="[4.3.0,4.4)") and is NOT runtime-compatible with Spring 5.3, so
              this standalone (experimental) feature wires to the retained 4.3 Spring region. The
-             container/spring-extender bundle embeds this same Gemini 2.1.0 and likewise fails against Spring
-             5.3 at runtime; see the opennms-spring-extender feature note below. -->
+             opennms-spring-extender feature no longer uses Gemini; it ships our own Spring 5.3 extender. -->
         <feature version="[4.3,4.4)">spring</feature>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-core/${eclipseGeminiVersion}</bundle>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
@@ -1166,13 +1165,10 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.datasource/${project.version}</bundle>
     </feature>
     <feature name="opennms-spring-extender" version="${project.version}" description="OpenNMS :: Spring Extender">
-        <!-- WARNING: installs container/spring-extender, which embeds Eclipse Gemini Blueprint 2.1.0. Gemini
-             2.1.0 targets Spring 4.3 and is NOT runtime-compatible with Spring 5.3 (verified: Sentinel
-             startup failed when this started Gemini against Spring 5). This feature is currently
-             unreferenced/uninstalled. Before it can be used under Spring 5.3 the extender path must be
-             reworked: rebuild/replace Gemini for Spring 5, migrate the Spring-Context bundles (distributed
-             dao-impl, service-registry, branding) to Aries Blueprint, or pin the whole extender path to the
-             4.3 region (the spring-extender bundle's bnd Import-Package together with the spring deps below). -->
+        <!-- container/spring-extender: loads the Spring application contexts of bundles with a
+             Spring-Context manifest header (distributed dao-impl, service-registry). Formerly based on
+             Eclipse Gemini Blueprint, which is not compatible with Spring 5; it is now a small extender
+             of our own built directly against the Spring 5.3 class space. -->
         <feature version="[5.3,5.4)">spring</feature>
         <feature version="[5.3,5.4)">spring-jdbc</feature>
         <feature version="[5.3,5.4)">spring-orm</feature>
