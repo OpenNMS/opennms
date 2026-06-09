@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 //import EventsTable from '@/components/Nodes/EventsTable.vue'
 //import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 //import InterfacesTabsVue from '@/components/Nodes/InterfacesTabs.vue'

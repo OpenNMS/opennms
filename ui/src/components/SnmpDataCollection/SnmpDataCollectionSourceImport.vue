@@ -281,6 +281,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted, ref, watch } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'

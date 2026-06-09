@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
+import { PropType, computed, ref } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SubdirectoryArrowLeft from '@featherds/icon/navigation/SubdirectoryArrowLeft'
 import { SearchResultItem } from '@/types'

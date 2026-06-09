@@ -96,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import IconDownload from '@featherds/icon/action/DownloadFile'

@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang ="ts">
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { orderBy } from 'lodash'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
 import { FeatherIcon } from '@featherds/icon'

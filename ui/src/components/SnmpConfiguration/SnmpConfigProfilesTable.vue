@@ -118,6 +118,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, reactive, ref } from 'vue'
+
 import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

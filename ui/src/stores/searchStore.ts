@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { SearchResultResponse, SearchResultsByContext } from '@/types'
+import { ref } from 'vue'
 
 /**
  * Could be moved to a Services/Helper area.

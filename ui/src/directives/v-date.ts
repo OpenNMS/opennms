@@ -24,6 +24,7 @@ import { format as fnsFormat } from 'date-fns-tz'
 import { parseISO } from 'date-fns'
 import { AppInfo } from '@/types'
 import { useInfoStore } from '@/stores/infoStore'
+import { computed } from 'vue'
 
 const infoStore = computed(() => useInfoStore())
 const appInfo = computed<AppInfo>(() => infoStore.value.info)

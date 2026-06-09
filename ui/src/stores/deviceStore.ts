@@ -25,6 +25,7 @@ import API from '@/services'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import { DeviceConfigBackup, DeviceConfigQueryParams, status } from '@/types/deviceConfig'
+import { ref } from 'vue'
 
 const { downloadFile } = useDownload()
 const { showSnackBar } = useSnackbar()

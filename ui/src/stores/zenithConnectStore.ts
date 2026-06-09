@@ -22,6 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
+import { ref } from 'vue'
 import {
   ZenithConnectRegistrationResponse,
   ZenithConnectRegistration,

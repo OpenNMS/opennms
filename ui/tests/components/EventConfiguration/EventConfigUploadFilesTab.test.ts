@@ -22,6 +22,7 @@ import { FeatherTooltip } from '@featherds/tooltip'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Draggable from 'vuedraggable'
+import { reactive } from 'vue'
 
 vi.mock('@/stores/eventConfigStore')
 vi.mock('@/components/EventConfiguration/eventConfigXmlValidator')

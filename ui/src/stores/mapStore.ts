@@ -26,6 +26,7 @@ import { latLng, LatLngBounds } from 'leaflet'
 import { orderBy } from 'lodash'
 import { numericSeverityLevel } from '@/components/Map/utils'
 import API from '@/services'
+import { ref } from 'vue'
 import {
   Alarm,
   AlarmModificationQueryVariable,

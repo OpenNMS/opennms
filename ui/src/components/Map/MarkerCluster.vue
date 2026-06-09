@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { inject, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { propsBinder, remapEvents } from '@vue-leaflet/vue-leaflet/src/utils'
 import {

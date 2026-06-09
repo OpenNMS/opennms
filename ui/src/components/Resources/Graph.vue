@@ -51,7 +51,7 @@ import {
   FeatherTabContainer,
   FeatherTabPanel
 } from '@featherds/tabs'
-import { PropType } from 'vue'
+import { PropType, computed, onMounted, ref, watch } from 'vue'
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 

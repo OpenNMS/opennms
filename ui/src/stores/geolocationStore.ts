@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { TileProviderItem } from '@/types/index'
+import { ref } from 'vue'
 
 export const useGeolocationStore = defineStore('geolocationStore', () => {
   const userDefinedTileProvider = ref<TileProviderItem>()

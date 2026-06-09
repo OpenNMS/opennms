@@ -13,7 +13,7 @@
 import { FeatherInput } from '@featherds/input'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
 import { getExtensionFromFilenameSafely } from './utils'
-import { PropType } from 'vue'
+import { PropType, computed, onMounted, ref } from 'vue'
 
 const fileEditorStore = useFileEditorStore()
 const input = ref()

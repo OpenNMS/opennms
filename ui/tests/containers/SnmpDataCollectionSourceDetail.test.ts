@@ -12,6 +12,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { format } from 'date-fns-tz'
 import { setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRoute } from 'vue-router'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({

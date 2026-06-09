@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'

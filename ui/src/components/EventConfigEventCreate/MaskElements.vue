@@ -51,6 +51,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

@@ -10,6 +10,7 @@ import { FeatherSpinner } from '@featherds/progress'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 // Mock the service
 vi.mock('@/services/snmpDataCollectionService', () => ({

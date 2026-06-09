@@ -10,6 +10,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { format } from 'date-fns'
 import { setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRoute } from 'vue-router'
 
 vi.mock('@/lib/utils', () => ({
   VENDOR_OPENNMS: 'OpenNMS'

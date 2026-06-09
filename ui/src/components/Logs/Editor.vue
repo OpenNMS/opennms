@@ -33,6 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watchEffect } from 'vue'
+
 import { VAceEditor } from 'vue3-ace-editor'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'

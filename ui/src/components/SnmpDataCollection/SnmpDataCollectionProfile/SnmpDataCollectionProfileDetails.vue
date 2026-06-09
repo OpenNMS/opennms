@@ -118,6 +118,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ProfileDetailsTab from './ProfileDetailsTab.vue'

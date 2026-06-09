@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { PropType, computed, reactive } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
 import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'

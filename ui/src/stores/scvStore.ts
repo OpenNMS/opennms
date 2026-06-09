@@ -24,6 +24,7 @@ import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import API from '@/services'
 import { SCVCredentials, ScvSearchItem } from '@/types/scv'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useScvStore = defineStore('scvStore', () => {
   const aliases = ref([] as string[])

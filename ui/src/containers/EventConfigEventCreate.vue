@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'

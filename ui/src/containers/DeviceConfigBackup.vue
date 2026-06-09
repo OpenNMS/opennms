@@ -25,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'

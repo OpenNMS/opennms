@@ -8,6 +8,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { useLogStore } from '@/stores/logStore'
 import { FeatherInput } from '@featherds/input'
 

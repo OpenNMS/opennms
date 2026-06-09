@@ -75,6 +75,9 @@
 </template>
 
 <script setup lang ="ts">
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
 import 'leaflet/dist/leaflet.css'
 import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import {

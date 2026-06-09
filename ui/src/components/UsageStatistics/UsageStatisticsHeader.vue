@@ -54,6 +54,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'

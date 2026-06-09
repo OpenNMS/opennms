@@ -21,6 +21,7 @@
 ///
 
 import { FeatherSortObject, QueryParameters } from '@/types'
+import { ref } from 'vue'
 
 const useQueryParameters = (
   initialParameters: QueryParameters,

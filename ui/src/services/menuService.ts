@@ -23,6 +23,7 @@
 import { rest, v2 } from './axiosInstances'
 import { MainMenu, NotificationSummary } from '@/types/mainMenu'
 import { loadDefaultPreferences, loadPreferences, savePreferences } from '@/services/localStorageService'
+import { ref } from 'vue'
 
 const menuEndpoint = 'menu'
 const notificationSummaryEndpoint = 'notifications/summary'

@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import SupportCenter from '@featherds/icon/action/SupportCenter'

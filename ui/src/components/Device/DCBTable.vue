@@ -220,6 +220,9 @@
   setup
   lang="ts"
 >
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useScroll } from '@vueuse/core'
+
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'

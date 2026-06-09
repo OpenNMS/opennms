@@ -86,6 +86,8 @@
   setup
   lang="ts"
 >
+import { computed, reactive, ref } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
 import { FeatherInput } from '@featherds/input'

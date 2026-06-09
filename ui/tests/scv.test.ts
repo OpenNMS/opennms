@@ -27,6 +27,7 @@ import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
+import { nextTick } from 'vue'
 
 vi.mock('@/services', () => ({
   default: {

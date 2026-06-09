@@ -57,7 +57,7 @@
   setup
   lang="ts"
 >
-import { PropType } from 'vue'
+import { PropType, computed, reactive, ref, watch } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'

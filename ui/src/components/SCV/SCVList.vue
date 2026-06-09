@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherList, FeatherListHeader, FeatherListItem } from '@featherds/list'
 import { useScvStore } from '@/stores/scvStore'
 

@@ -46,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherList, FeatherListItem } from '@featherds/list'
 import { ShimFeatherMegaMenu } from '../Common/ShimFeatherMegaMenu'
 // add this back when exports are fixed

@@ -62,6 +62,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'

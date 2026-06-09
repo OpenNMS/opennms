@@ -18,6 +18,8 @@
   setup
   lang="ts"
 >
+import { computed, ref, watch, watchEffect } from 'vue'
+
 import { debounce } from 'lodash'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { useMapStore } from '@/stores/mapStore'

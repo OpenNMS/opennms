@@ -30,6 +30,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { useDebounceFn, useScroll } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'

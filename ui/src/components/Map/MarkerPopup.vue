@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import Location from '@featherds/icon/action/Location'
 import { LPopup } from '@vue-leaflet/vue-leaflet'

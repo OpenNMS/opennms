@@ -95,7 +95,7 @@
   setup
   lang="ts"
 >
-import { ComputedRef, PropType } from 'vue'
+import { computed, ComputedRef, PropType, reactive } from 'vue'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherButton } from '@featherds/button'

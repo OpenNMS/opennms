@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 import pluginVue from 'eslint-plugin-vue'
 import tseslint from 'typescript-eslint'
-import autoImportGlobals from './.eslintrc-auto-import.json' with { type: 'json' }
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -44,8 +43,6 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.es2025,
-        // Globals injected by unplugin-auto-import (vue, vue-router, @vueuse/core)
-        ...Object.fromEntries(Object.keys(autoImportGlobals.globals).map((k) => [k, 'readonly'])),
         // Vue 3 <script setup> macros
         defineProps: 'readonly',
         defineEmits: 'readonly',

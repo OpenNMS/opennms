@@ -38,6 +38,7 @@ import {
 } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 const {
   getDefaultNodeQueryFilter,

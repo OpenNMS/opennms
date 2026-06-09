@@ -54,6 +54,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'

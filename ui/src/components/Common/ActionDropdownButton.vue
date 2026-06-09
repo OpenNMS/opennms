@@ -27,7 +27,7 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import IconDownload from '@featherds/icon/action/DownloadFile'
 import IconUpload from '@featherds/icon/action/UploadFile'
-import { markRaw, PropType } from 'vue'
+import { PropType, computed, markRaw } from 'vue'
 
 const props = defineProps({
   label: {

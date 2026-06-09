@@ -203,6 +203,9 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'

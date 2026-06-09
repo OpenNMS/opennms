@@ -77,12 +77,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { v2 } from '@/services/axiosInstances'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { FeatherButton } from '@featherds/button'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const menuStore = useMenuStore()
 const route = useRoute()

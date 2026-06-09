@@ -60,6 +60,8 @@
   lang="ts"
   setup
 >
+import { computed, reactive } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
 import { FeatherButton } from '@featherds/button'

@@ -31,6 +31,7 @@ import {
 } from '@/types'
 import { uniq } from 'lodash'
 import { sortBy } from 'lodash'
+import { ref } from 'vue'
 
 export interface GraphDefinition {
   id: string

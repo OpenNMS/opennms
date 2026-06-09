@@ -22,6 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
+import { ref } from 'vue'
 
 export const useLogStore = defineStore('logStore', () => {
   const logs = ref([] as string[])

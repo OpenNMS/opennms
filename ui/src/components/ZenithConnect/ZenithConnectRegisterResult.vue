@@ -85,10 +85,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, markRaw, onMounted, ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ContentCopy from '@featherds/icon/action/ContentCopy'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'

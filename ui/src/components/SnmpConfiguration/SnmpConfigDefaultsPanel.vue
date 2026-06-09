@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

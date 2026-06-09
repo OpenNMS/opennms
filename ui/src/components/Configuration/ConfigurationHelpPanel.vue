@@ -41,7 +41,7 @@
   lang="ts"
   setup
 >
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'

@@ -29,6 +29,7 @@ import {
   UsageStatisticsStatus
 } from '@/types/usageStatistics'
 import useSnackbar from '@/composables/useSnackbar'
+import { ref } from 'vue'
 
 const { showSnackBar } = useSnackbar()
 

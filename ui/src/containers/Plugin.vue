@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
+
 import { addStylesheet, getCSSPath, getJSPath } from '@/components/Plugin/utils'
 import Container from '@/components/Plugin/Container.vue'
 

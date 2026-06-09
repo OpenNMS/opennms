@@ -25,6 +25,7 @@ import { uniq } from 'lodash'
 import { filesToFolders } from '@/components/FileEditor/utils'
 import API from '@/services'
 import { FileEditorResponseLog } from '@/types'
+import { ref } from 'vue'
 
 export interface IFile {
   name: string

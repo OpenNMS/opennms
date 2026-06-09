@@ -153,6 +153,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, reactive, ref } from 'vue'
+
 import { cloneDeep, debounce } from 'lodash'
 import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'

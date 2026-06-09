@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { WhoAmIResponse } from '@/types'
+import { ref } from 'vue'
 
 export const useAuthStore = defineStore('authStore', () => {
   const whoAmI = ref({ roles: [] as string[] } as WhoAmIResponse)
