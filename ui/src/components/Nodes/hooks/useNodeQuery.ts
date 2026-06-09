@@ -338,7 +338,9 @@ export const useNodeQuery = () => {
  */
 const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const searchTerm = sanitizeSearchTerm(filter.searchTerm)
-  const ipAddress = sanitizeSearchTerm(filter.ipAddress)
+  // don't sanitize IP address — allow users to enter commas and other FIQL characters, since buildIpAddressQuery will handle them appropriately
+  // (commas are valid in iplike patterns, and users may naturally enter comma-separated lists of IPs or CIDRs)
+  const ipAddress = filter.ipAddress
 
   const searchQuery = buildSearchQuery(searchTerm)
   const ipAddressQuery = buildIpAddressQuery(ipAddress)
@@ -382,8 +384,10 @@ const buildIpAddressQuery = (ipAddress?: string) => {
   if (!ipAddress) {
     return ''
   }
+
   // Normalize spaces around commas (users naturally type "1, 2, 3" but iplike has no spaces)
   const normalized = ipAddress.replace(/\s*,\s*/g, ',')
+
   if (isIplikePattern(normalized)) {
     // Commas in iplike patterns must survive HTTP URL-decoding intact so that FIQL's parser
     // does not treat them as OR operators.  queryParametersHandler emits the URL verbatim
@@ -394,7 +398,13 @@ const buildIpAddressQuery = (ipAddress?: string) => {
     const encoded = normalized.replace(/,/g, '%252C')
     return `iplike==${encoded}`
   }
-  return `ipInterface.ipAddress==${ipAddress}`
+
+  if (isIP(normalized)) {
+    return `ipInterface.ipAddress==${normalized}`
+  }
+
+  // if it's not a valid IP or iplike pattern, don't include it in the query at all
+  return ''
 }
 
 const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator, selectedCategories2?: Category[]) => {

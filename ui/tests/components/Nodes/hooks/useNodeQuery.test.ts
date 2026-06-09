@@ -593,6 +593,47 @@ describe('Nodes useNodeQuery test', () => {
       expect(params._s ?? '').not.toContain('ipInterface.ipAddress==')
       expect(params._s ?? '').not.toContain('iplike==')
     })
+
+    test('emits iplike== for a range-only pattern (no wildcard)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '10.0.0.1-255' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==10.0.0.1-255')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('emits iplike== with double-encoded commas for a comma-list pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1,2.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1%252C2.*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('normalizes spaces around commas before encoding', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1, 2, 3-255.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1%252C2%252C3-255.*')
+    })
+
+    test('omits IP query when ipAddress is not a valid IP or iplike pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: 'notanip' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s ?? '').not.toContain('ipInterface.ipAddress==')
+      expect(params._s ?? '').not.toContain('iplike==')
+    })
+
+    test('emits iplike== for an IPv6 wildcard pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '2001:db8:*:*:*:*:*:*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==2001:db8:*:*:*:*:*:*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('emits ipInterface.ipAddress== for an exact IPv6 address', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('ipInterface.ipAddress==FE80:0000:0000:0000:0202:B3FF:FE1E:8329')
+      expect(params._s).not.toContain('iplike==')
+    })
   })
 
   describe('queryStringHasTrackedValues', () => {
