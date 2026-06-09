@@ -1753,6 +1753,7 @@
         <feature>opennms-graph-provider-bsm</feature>
         <feature>opennms-graph-provider-application</feature>
         <feature>opennms-graph-provider-legacy</feature>
+        <feature>opennms-graph-provider-pathoutage</feature>
         <feature>opennms-graph-provider-topology</feature>
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
@@ -1814,6 +1815,11 @@
         <feature>opennms-model</feature>
         <feature>opennms-topology-api</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-provider-pathoutage" description="OpenNMS :: Features :: Graph :: Provider :: Path Outage" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-model</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.pathoutage/${project.version}</bundle>
     </feature>
     <feature name="opennms-graph-provider-topology" description="OpenNMS :: Features :: Graph :: Provider :: Topology" version="${project.version}">
         <feature>opennms-model</feature>
