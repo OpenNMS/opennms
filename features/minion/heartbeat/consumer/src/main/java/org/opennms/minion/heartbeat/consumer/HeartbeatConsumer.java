@@ -273,6 +273,12 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             }
         }
         if (nextRequisition == null) {
+            if (!nodeDao.getForeignIdToNodeIdMap(nextForeignSource).isEmpty()) {
+                LOG.error("Requisition {} could not be loaded, but provisioned nodes still exist for it. "
+                        + "Skipping provisioning of minion {} to avoid recreating the requisition from scratch and deleting those nodes on the next import.",
+                        nextForeignSource, minion.getId());
+                return;
+            }
             nextRequisition = new Requisition(nextForeignSource);
             nextRequisition.updateDateStamp();
 

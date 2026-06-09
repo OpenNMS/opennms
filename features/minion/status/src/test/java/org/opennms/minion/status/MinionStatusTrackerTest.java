@@ -480,6 +480,51 @@ public class MinionStatusTrackerTest {
     }
 
     @Test
+    public void testRefreshWithOutageForUnmappedNode() throws Exception {
+        final String foreignId = UUID.randomUUID().toString();
+        final OnmsNode node = getNode(1, FOREIGN_SOURCE, foreignId, "MinionLocA");
+        final OnmsMinion minion = getMinion(node);
+
+        when(m_minionDao.findAll()).thenReturn(Arrays.asList(minion));
+        when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(Arrays.asList(createOutage(new Date(), null, node, MINION_HEARTBEAT)));
+
+        m_tracker.refresh();
+
+        assertEquals("there should be 1 minion", 1, m_tracker.getMinions().size());
+        assertFalse("the minion should be down", m_tracker.getStatus(foreignId).isUp());
+    }
+
+    @Test
+    public void testNodeGainedMinionServiceWithUnresolvableMinion() throws Exception {
+        final String foreignId = UUID.randomUUID().toString();
+        final OnmsNode node = getNode(1, FOREIGN_SOURCE, foreignId, "MinionLocA");
+
+        when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
+        when(m_minionDao.findById(foreignId)).thenReturn(null);
+
+        final Event e = EventUtils.createNodeGainedServiceEvent(FOREIGN_SOURCE, 1, InetAddressUtils.addr("192.168.0.1"), MINION_HEARTBEAT, "one", NodeLabelSource.HOSTNAME, null, null);
+        m_tracker.onNodeGainedService(ImmutableMapper.fromMutableEvent(e));
+
+        assertEquals("there should be no minions", 0, m_tracker.getMinions().size());
+        assertNull("there should be no status for the minion", m_tracker.getStatus(foreignId));
+    }
+
+    @Test
+    public void testOutageEventWithUnresolvableMinion() throws Exception {
+        final String foreignId = UUID.randomUUID().toString();
+        final OnmsNode node = getNode(1, FOREIGN_SOURCE, foreignId, "MinionLocA");
+
+        when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
+        when(m_minionDao.findById(foreignId)).thenReturn(null);
+
+        generateOutage(EventConstants.OUTAGE_CREATED_EVENT_UEI, node, MINION_HEARTBEAT, new Date());
+
+        assertEquals("there should be no minions", 0, m_tracker.getMinions().size());
+        assertNull("there should be no status for the minion", m_tracker.getStatus(foreignId));
+    }
+
+    @Test
     public void testStartup() throws Exception {
         final OnmsServiceType heartbeatServiceType = new OnmsServiceType(1, MINION_HEARTBEAT);
         final OnmsServiceType rpcServiceType = new OnmsServiceType(2, MINION_RPC);

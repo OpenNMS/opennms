@@ -245,6 +245,10 @@ public class MinionStatusTracker implements InitializingBean {
             assertHasNodeId(e);
 
             final OnmsMinion minion = getMinionForNodeId(e.getNodeid().intValue());
+            if (minion == null) {
+                LOG.debug("No minion found for node ID {}", e.getNodeid());
+                return;
+            }
             final String minionId = minion.getId();
 
             AggregateMinionStatus status = m_state.get(minionId);
@@ -328,7 +332,7 @@ public class MinionStatusTracker implements InitializingBean {
                 outages.stream().sorted(Comparator.comparing(CurrentOutageDetails::getOutageId).reversed()).forEach(outage -> {
                     final String foreignId = outage.getForeignId();
 
-                    final AggregateMinionStatus currentStatus = state.get(foreignId);
+                    final AggregateMinionStatus currentStatus = state.getOrDefault(foreignId, AggregateMinionStatus.up());
                     final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getServiceName(), null, outage.getIfLostService());
 
                     // If this is a refresh, and the "in-memory" tracking is more up-to-date than the outage records, keep it. Otherwise update with outage records.
@@ -428,6 +432,10 @@ public class MinionStatusTracker implements InitializingBean {
         m_nodeDao.initialize(node.getLocation());
         final String minionId = node.getForeignId();
         final OnmsMinion minion = m_minionDao.findById(minionId);
+        if (minion == null) {
+            LOG.debug("Node {} (foreignId: {}) has no resolvable minion yet; skipping.", nodeId, minionId);
+            return null;
+        }
         m_minionNodes.put(nodeId, minion);
         m_minions.put(minionId, minion);
         return minion;
