@@ -106,6 +106,15 @@
         <div class="feather-col-6">
           <FeatherInput
             class="filter-input last-filter-input"
+            label="MAC Address"
+            v-model="selectedFilters.macAddress"
+          />
+        </div>
+      </div>
+      <div class="feather-row">
+        <div class="feather-col-6">
+          <FeatherInput
+            class="filter-input last-filter-input"
             label="Topology (CDP/LLDP)"
             v-model="selectedFilters.topology"
           />
@@ -267,6 +276,7 @@ const selectedFilters = reactive({
   locations: [] as IAutocompleteItemType[],
   services: [] as IAutocompleteItemType[],
   ipAddress: '',
+  macAddress: '',
   topology: ''
 })
 
@@ -365,6 +375,7 @@ const applySelectedFilters = () => {
   nodeStructureStore.updateSelectedMonitoringLocations(selectedFilters.locations)
   nodeStructureStore.updateSelectedServices(selectedFilters.services)
   nodeStructureStore.setFilterWithIpAddress(selectedFilters.ipAddress)
+  nodeStructureStore.setFilterWithMacAddress(selectedFilters.macAddress)
   nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
   extendedSearchPanelRef.value?.applyToStore()
   nodeStructureStore.closeInstancesDrawerModal()
@@ -378,6 +389,7 @@ const clearDrawerFilters = async () => {
   selectedFilters.locations = []
   selectedFilters.services = []
   selectedFilters.ipAddress = ''
+  selectedFilters.macAddress = ''
   selectedFilters.topology = ''
   showSecondCategories.value = false
   extendedSearchPanelRef.value?.resetFromStore()
@@ -392,6 +404,7 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.locations = [...nodeStructureStore.selectedMonitoringLocations]
     selectedFilters.services = [...nodeStructureStore.selectedServices]
     selectedFilters.ipAddress = nodeStructureStore.queryFilter.ipAddress ?? ''
+    selectedFilters.macAddress = nodeStructureStore.queryFilter.macAddress ?? ''
     selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
     serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
     extendedSearchPanelRef.value?.resetFromStore()

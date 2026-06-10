@@ -594,6 +594,7 @@ export interface NodeQueryFilter {
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
   ipAddress?: string
+  macAddress?: string
   topology?: string
   extendedSearch: NodeQueryExtendedSearchParams
 }

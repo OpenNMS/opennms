@@ -359,10 +359,10 @@ describe('Nodes useNodeQuery test', () => {
       expect(filter.extendedSearch.snmpParams?.snmpIfName).toBe('')
     })
 
-    test('maclike maps to snmpParams.physAddr (stripped, lowercase)', () => {
+    test('maclike maps to macAddress (stripped, lowercase)', () => {
       const filter = buildNodeQueryFilterFromQueryString({ maclike: 'AA:BB:CC:DD:EE:FF' }, categories, monitoringLocations)
       const expected = getDefaultNodeQueryFilter()
-      expected.extendedSearch.snmpParams = { ...getDefaultNodeQuerySnmpParams(), physAddr: 'aabbccddeeff' }
+      expected.macAddress = 'aabbccddeeff'
       expect(filter).toEqual(expected)
     })
 
@@ -372,7 +372,7 @@ describe('Nodes useNodeQuery test', () => {
         categories, monitoringLocations
       )
       expect(filter.extendedSearch.snmpParams?.snmpIfAlias).toBe('Uplink')
-      expect(filter.extendedSearch.snmpParams?.physAddr).toBe('aabbcc')
+      expect(filter.macAddress).toBe('aabbcc')
     })
 
     test('monitoredService maps to selectedServices (by name)', () => {
@@ -546,6 +546,38 @@ describe('Nodes useNodeQuery test', () => {
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s).toBe('snmpInterface.ifAlias==Uplink;snmpInterface.physAddr==*aabbcc*')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: macAddress / maclike', () => {
+    test('emits maclike== for a MAC with colons (stripped, lowercase)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC:DD:EE:FF' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbccddeeff')
+    })
+
+    test('emits maclike== for a MAC with dashes', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA-BB-CC-DD-EE-FF' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbccddeeff')
+    })
+
+    test('emits maclike== for a partial MAC (manufacturer prefix)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbcc')
+    })
+
+    test('omits maclike query when macAddress is empty', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: '' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('maclike==')
+    })
+
+    test('omits maclike query when macAddress is only separators', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: '::--' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('maclike==')
     })
   })
 

@@ -310,6 +310,29 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         iplikeBehavior.setSkipPropertyByDefault(true);
         map.put("iplike", iplikeBehavior);
 
+        // maclike: case-insensitive partial match on SNMP interface physical (MAC) address.
+        // Mirrors DefaultNodeListService.addCriteriaForMaclike — colons and dashes are stripped,
+        // then an ANYWHERE ilike is applied. Uses a SQL subquery because snmpinterface is a child
+        // association and cannot be aliased against the root criteria here.
+        CriteriaBehavior<?> maclikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final String pattern = "%" + ((String)v).replaceAll("[:-]", "") + "%";
+            switch (c) {
+            case EQUALS:
+                b.sql("{alias}.nodeid in (select nodeid from snmpinterface where snmpphysaddr ilike ?)", pattern, Type.STRING);
+                break;
+            case NOT_EQUALS:
+                b.sql("{alias}.nodeid not in (select nodeid from snmpinterface where snmpphysaddr ilike ?)", pattern, Type.STRING);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for maclike expression: " + c);
+            }
+        });
+        maclikeBehavior.setSkipPropertyByDefault(true);
+        map.put("maclike", maclikeBehavior);
+
         return map;
     }
 

@@ -99,6 +99,7 @@ export const useNodeQuery = () => {
       selectedFlows: [] as string[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
       ipAddress: '',
+      macAddress: '',
       topology: '',
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
@@ -292,13 +293,10 @@ export const useNodeQuery = () => {
       filter.extendedSearch.foreignSourceParams = fsParams
     }
 
-    // physAddr (MAC address) — set independently of snmpParm/snmpParams blocks
+    // maclike (MAC address) — dedicated top-level filter, emitted as a maclike== FIQL query
     const macAddr = parseMaclike(queryObject)
     if (macAddr) {
-      if (!filter.extendedSearch.snmpParams) {
-        filter.extendedSearch.snmpParams = getDefaultNodeQuerySnmpParams()
-      }
-      filter.extendedSearch.snmpParams.physAddr = macAddr
+      filter.macAddress = macAddr
     }
 
     const serviceNames = parseMonitoredServices(queryObject, serviceTypes)
@@ -351,11 +349,12 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
   const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
+  const maclikeQuery = buildMaclikeQuery(filter.macAddress)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -594,6 +593,21 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
   }
 
   return ''
+}
+
+const buildMaclikeQuery = (macAddress?: string) => {
+  if (!macAddress) {
+    return ''
+  }
+
+  // Strip separators and lowercase to match the format stored in snmpinterface.snmpphysaddr.
+  // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
+  const stripped = macAddress.replace(/[:-]/g, '').toLowerCase()
+  if (stripped.length === 0) {
+    return ''
+  }
+
+  return `maclike==${stripped}`
 }
 
 const buildTopologyQuery = (topology?: string) => {

@@ -144,6 +144,19 @@
               </FeatherChip>
 
               <FeatherChip
+                v-if="nodeStructureStore.queryFilter.macAddress"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeMacAddress()"
+                  />
+                </template>
+                {{ `MAC Address: ${nodeStructureStore.queryFilter.macAddress}` }}
+              </FeatherChip>
+
+              <FeatherChip
                 v-if="hasTopologySearch"
               >
                 <template #icon>

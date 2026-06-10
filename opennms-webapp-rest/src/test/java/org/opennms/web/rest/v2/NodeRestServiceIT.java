@@ -321,6 +321,41 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testMaclikeSearch() throws Exception {
+        // Create a node with a known SNMP interface MAC (physical) address via the REST API
+        String node = "<node type=\"A\" label=\"MaclikeTestNode\" foreignSource=\"JUnit\" foreignId=\"MaclikeTestNode\">" +
+                "<location>Default</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+
+        // physAddr is stored stripped of separators and (typically) upper-cased
+        String snmpInterface = "<snmpInterface ifIndex=\"1\">" +
+                "<ifType>6</ifType>" +
+                "<physAddr>AABBCCDDEEFF</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201);
+
+        String url = "/nodes";
+
+        // Exact MAC match via maclike (case-insensitive)
+        sendRequest(GET, url, parseParamData("_s=maclike==aabbccddeeff"), 200);
+
+        // Separators in the search term are stripped before matching
+        sendRequest(GET, url, parseParamData("_s=maclike==AA:BB:CC:DD:EE:FF"), 200);
+        sendRequest(GET, url, parseParamData("_s=maclike==aa-bb-cc-dd-ee-ff"), 200);
+
+        // Partial (manufacturer prefix) match
+        sendRequest(GET, url, parseParamData("_s=maclike==aabbcc"), 200);
+
+        // Non-matching MAC — no match, expect 204 No Content
+        sendRequest(GET, url, parseParamData("_s=maclike==112233445566"), 204);
+
+        // NOT_EQUALS: the node does NOT have this MAC, so it appears in results
+        sendRequest(GET, url, parseParamData("_s=maclike!=112233445566"), 200);
+    }
+
+    @Test
     public void createNodeWithParent() throws Exception{
 
         final NetworkBuilder builder = new NetworkBuilder();

@@ -104,6 +104,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
       (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
       !!queryFilter.value.ipAddress?.length ||
+      !!queryFilter.value.macAddress?.length ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
@@ -137,6 +138,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = {
       ...queryFilter.value,
       ipAddress
+    }
+  }
+
+  const setFilterWithMacAddress = async (macAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      macAddress
     }
   }
 
@@ -281,6 +289,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.ipAddress = prefs.nodeFilter.ipAddress
       }
 
+      if (prefs.nodeFilter.macAddress) {
+        filter.macAddress = prefs.nodeFilter.macAddress
+      }
+
       if (prefs.nodeFilter.topology) {
         filter.topology = prefs.nodeFilter.topology
       }
@@ -363,6 +375,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = { ...queryFilter.value, ipAddress: '' }
   }
 
+  const removeMacAddress = () => {
+    queryFilter.value = { ...queryFilter.value, macAddress: '' }
+  }
+
   const removeTopology = () => {
     queryFilter.value = { ...queryFilter.value, topology: '' }
   }
@@ -438,6 +454,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     resetColumnSelectionToDefault,
     setCategoryMode,
     setFilterWithIpAddress,
+    setFilterWithMacAddress,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
     setFilterWithSysParams,
@@ -460,6 +477,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeCategory2,
     removeExtendedSearch,
     removeIpAddress,
+    removeMacAddress,
     removeTopology,
     setExtendedSearchParams,
     removeFlow,
