@@ -6,21 +6,21 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -eE
+
+trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO} (exit=${rc})"; exit ${rc}' ERR  
 
 umask 002
 export MINION_HOME="/opt/minion"
 export KARAF_HOME="${MINION_HOME}"
 
-MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
-CONFD_KEY_STORE="${MINION_HOME}/minion-config.yaml"
-CONFD_CONFIG_DIR="${MINION_HOME}/confd"
-CONFD_BIN="/usr/bin/confd"
-CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="${MINION_HOME}/cacerts"
+FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
+FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
+TELEMETRY_TEMPLATES_DIR="${MINION_HOME}/etc/telemetry-templates"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
 # Prometheus JMX Exporter Configuration
@@ -33,7 +33,7 @@ export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
+# - Configuration is managed via environment variables, which can be set in the Dockerfile, via docker run -e, or in a docker-compose file.
 # - Template uses key/values from /java/agent/prom-jmx-exporter
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
@@ -51,6 +51,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=tru
 
 # Error codes
 E_ILLEGAL_ARGS=126
+E_INIT_CONFIG=127
 
 # Help function used in error messages and -h option
 usage() {
@@ -97,7 +98,7 @@ function updateConfig() {
     value=$2
     file=$3
 
-    # Handling exceptions
+    # Handling exceptions for specific keys
     [ "$key" == "class.name" ]       && key="class-name"
     [ "$key" == "max.packet.size" ]  && key="maxPacketSize"
     [ "$key" == "template.timeout" ] && key="templateTimeout"
@@ -106,11 +107,83 @@ function updateConfig() {
     echo "[Configuring] '$key' in '$file'"
 
     # If config exists in file, replace it. Otherwise, append to file.
-    if grep -E -q "^#?$key=" "$file"; then
-        sed -r -i "s@^#?$key=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
+    if grep -E -q "^#?\s*$key\s*=" "$file"; then
+        sed -r -i "s@^#?\s*$key\s*=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
     else
         echo "$key=$value" >> "$file"
     fi
+}
+
+function applyFeatureBootTemplates() {
+    # Clean only files managed by this script; keep baseline boot files from the image/package.
+    local managed_boot_files=(
+      "kafka-ipc.boot"
+      "grpc.boot"
+      "disable-jms.boot"
+      "jaeger.boot"
+      "dominion-scv.boot"
+    )
+    local boot_file
+    for boot_file in "${managed_boot_files[@]}"; do
+      rm -f "${FEATURES_BOOT_DIR}/${boot_file}"
+    done
+
+    apply_template() {
+        local name="$1"
+        envsubst < "${FEATURES_BOOT_TEMPLATES_DIR}/${name}" > "${FEATURES_BOOT_DIR}/${name}"
+        echo "[Features] Enabled: ${name}"
+    }
+
+    # IPC strategy — jms, kafka, or grpc
+    case "${MINION_IPC:-}" in
+        jms)
+            echo "[Features] IPC strategy set to JMS."
+            ;;
+        kafka)
+            apply_template "kafka-ipc.boot"
+            apply_template "disable-jms.boot"
+            ;;
+        grpc)
+            apply_template "grpc.boot"
+            apply_template "disable-jms.boot"
+            ;;
+        *)
+            echo "[Features] No IPC strategy set via MINION_IPC, using defaults."
+            ;;
+    esac
+
+    # Standalone optional features
+    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot" || echo "[Features] Jaeger boot file not applied because JAEGER_ENABLED=${JAEGER_ENABLED:-false}."
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot" || echo "[Features] Dominion SCV boot file not applied because DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}."
+}
+
+function applyTelemetryListenerTemplates() {
+    apply_listener_template() {
+        local name="$1"
+        local enabled="$2"
+        local src="${TELEMETRY_TEMPLATES_DIR}/${name}"
+        local dst="${MINION_HOME}/etc/${name}"
+
+        if [[ "${enabled,,}" == "true" ]]; then
+            cp "${src}" "${dst}"
+            echo "[Telemetry] Enabled listener config: ${name}"
+        else
+            rm -f "${dst}"
+            echo "[Telemetry] Removed listener config (disabled or unset): ${name}"
+        fi
+    }
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-udp-50001-jti.cfg" \
+        "${JTI_LISTENER_ENABLED:-false}"
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-udp-50002-nxos.cfg" \
+        "${NXOS_LISTENER_ENABLED:-false}"
+
+    apply_listener_template \
+        "org.opennms.features.telemetry.listeners-single-port-flows.cfg" \
+        "${FLOWS_LISTENER_ENABLED:-false}"
 }
 
 function parseEnvironment() {
@@ -132,11 +205,6 @@ function parseEnvironment() {
         if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
             ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
             updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
-            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
-                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
-                echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-                echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-            fi
         fi
     done
 }
@@ -156,19 +224,8 @@ initConfig() {
             echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties && \
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
-        # Expose Karaf Shell
-        sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
-
-        # Expose the RMI registry and server
-        sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
-        sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
-
-        # Set Minion location and connection to OpenNMS instance
-        echo "location = ${MINION_LOCATION}" > ${MINION_CONFIG}
-        echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
-        echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
-
         parseEnvironment
+        applyFeatureBootTemplates
 
         echo "Configured $(date)" > ${MINION_HOME}/etc/configured
     else
@@ -186,15 +243,6 @@ applyOverlayConfig() {
   fi
 }
 
-applyConfd() {
-  if [ -f "${CONFD_KEY_STORE}" ]; then
-    echo "Found a configuration key store, applying configuration via confd."
-    runConfd
-  else
-    echo "No configuration key store present, skipping confd configuration."
-  fi
-}
-
 applyOpennmsPropertiesD() {
   find "${MINION_HOME}/etc/opennms.properties.d" -name '*.properties' | while IFS= read -r filename; do
     echo "appending to custom.system.properties: $filename"
@@ -203,31 +251,145 @@ applyOpennmsPropertiesD() {
   done
 }
 
+printFeatureBootInventory() {
+  echo "[Features] Active boot files in ${FEATURES_BOOT_DIR}:"
+  if compgen -G "${FEATURES_BOOT_DIR}/*.boot" > /dev/null; then
+    find "${FEATURES_BOOT_DIR}" -maxdepth 1 -name "*.boot" -type f | sort | sed "s#^${FEATURES_BOOT_DIR}/#  - #"
+  else
+    echo "  - (none)"
+  fi
+}
+
+printStartupDiagnostics() {
+  echo "[Startup] Effective minion mode and toggles:"
+  echo "  MINION_IPC=${MINION_IPC:-<unset>}"
+  echo "  MINION_VALIDATE_FEATURES_BOOT=${MINION_VALIDATE_FEATURES_BOOT:-false}"
+  echo "  MINION_REPAIR_FEATURES_BOOT=${MINION_REPAIR_FEATURES_BOOT:-true}"
+  echo "  JAEGER_ENABLED=${JAEGER_ENABLED:-false}"
+  echo "  DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}"
+  echo "  GRPC_CLIENT_HOST=${IPC_GRPC_HOST:-<unset>}"
+  echo "  GRPC_CLIENT_PORT=${IPC_GRPC_PORT:-<unset>}"
+  echo "  KAFKA_BOOTSTRAP_SERVERS=${KAFKA_IPC_BOOTSTRAP_SERVERS:-<unset>}"
+
+  print_cfg() {
+    local cfg="$1"
+    local path="${MINION_HOME}/etc/${cfg}"
+    echo "[Startup] ${cfg}:"
+    if [[ -f "${path}" ]]; then
+      sed -n '1,120p' "${path}" | sed 's/^/  /'
+    else
+      echo "  (missing)"
+    fi
+  }
+
+  print_cfg "org.opennms.minion.controller.cfg"
+  print_cfg "org.opennms.core.ipc.grpc.client.cfg"
+  print_cfg "org.opennms.core.ipc.kafka.cfg"
+}
+
+printKarafResolutionDiagnostics() {
+  local ver
+  local root="${MINION_HOME}/system/org/opennms/karaf/opennms"
+
+  ver="$(grep -E 'mvn:org\.opennms\.karaf/opennms/.*/xml/features' "${MINION_HOME}/etc/org.apache.karaf.features.cfg" \
+    | sed -E 's#.*mvn:org\.opennms\.karaf/opennms/([^/]+)/xml/features.*#\1#' \
+    | head -n1)"
+
+  echo "[Karaf] Repository diagnostics:"
+  echo "  configured-opennms-features-version=${ver:-<unknown>}"
+
+  if [[ -n "${ver}" && -d "${root}/${ver}" ]]; then
+    echo "  local-repo-path=${root}/${ver}"
+    find "${root}/${ver}" -maxdepth 1 -type f -name "*features*.xml" | sed 's/^/  found-feature-xml=/' || true
+  else
+    echo "  local-repo-path=${root}/${ver} (missing)"
+  fi
+
+  echo "[Karaf] org.ops4j.pax.url.mvn.cfg:"
+  if [[ "${MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS:-false}" == "true" ]]; then  
+    if [[ -f "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" ]]; then  
+      sed -n '1,200p' "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" | sed 's/^/  /'  
+    else  
+      echo "  (missing)"  
+    fi  
+  else  
+    echo "  (redacted; set MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS=true to print contents)"
+  fi
+}
+
+validateFeatureBootComposition() {
+  local strict_validation="${MINION_VALIDATE_FEATURES_BOOT:-false}"
+  local repair_missing="${MINION_REPAIR_FEATURES_BOOT:-true}"
+  local missing=0
+
+  require_boot_file() {
+    local name="$1"
+    if [[ ! -f "${FEATURES_BOOT_DIR}/${name}" ]]; then
+      echo "[Features][ERROR] Missing required boot file: ${name}"
+      missing=1
+    fi
+  }
+
+  check_required_boot_files() {
+    missing=0
+
+    case "${MINION_IPC:-}" in
+      kafka)
+        require_boot_file "kafka-ipc.boot"
+        require_boot_file "disable-jms.boot"
+        ;;
+      grpc)
+        require_boot_file "grpc.boot"
+        require_boot_file "disable-jms.boot"
+        ;;
+      jms|"")
+        # Default/package-provided feature boots are expected to cover JMS.
+        ;;
+      *)
+        echo "[Features][WARN] Unknown MINION_IPC='${MINION_IPC}', skipping strategy-specific checks."
+        ;;
+    esac
+
+    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot" || echo "[Features][INFO] Jaeger boot file not required because JAEGER_ENABLED=${JAEGER_ENABLED:-false}."
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot" || echo "[Features][INFO] Dominion SCV boot file not required because DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}."
+  }
+
+  printFeatureBootInventory
+
+  check_required_boot_files
+
+  if [[ "$missing" -ne 0 && "${repair_missing}" == "true" ]]; then
+    echo "[Features][WARN] Missing boot files detected; attempting auto-repair from templates."
+    applyFeatureBootTemplates
+    printFeatureBootInventory
+    check_required_boot_files
+  fi
+
+  if [[ "$missing" -ne 0 ]]; then
+    if [[ "${strict_validation}" != "true" ]]; then
+      echo "[Features][WARN] Boot file validation found missing files; continuing because MINION_VALIDATE_FEATURES_BOOT=${strict_validation}."
+      return 0
+    fi
+    echo "[Features][ERROR] Boot file validation failed; refusing to start with incomplete feature composition."
+    return 1
+  fi
+
+  echo "[Features] Boot file validation passed."
+}
+
 start() {
     export KARAF_EXEC="exec"
     cd ${MINION_HOME}/bin
     exec ./karaf server
 }
 
-runConfd() {
-  # Create any directories that confd might write to
-  while IFS= read -r dir; do
-    local dirToCreate="$MINION_HOME"/"$dir"
-    echo "Creating $dirToCreate so confd can write to it"
-    mkdir -p "$dirToCreate"
-  done < "$CONFD_CONFIG_DIR"/directories
-
-  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
-}
-
 # Order of precedence is (later overwrites former):
-# 1. Config set via environment variable
-# 2. Config set via overlayed keystore (confd)
-# 3. Config set via direct file overlay
+# 1. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
+# 2. Config set via direct file overlay
 configure() {
   initConfig
-  applyConfd
   applyOpennmsPropertiesD
+  applyTelemetryListenerTemplates
   applyOverlayConfig
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
@@ -239,6 +401,13 @@ configure() {
     done < "$MINION_PROCESS_ENV_CFG"
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
+  if [[ ${MINION_DEBUG_STARTUP_DIAGNOSTICS:-false} == "true" ]]; then
+    printStartupDiagnostics
+  fi
+  if [[ "${MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS:-false}" == "true" ]]; then
+    printKarafResolutionDiagnostics
+  fi
+  validateFeatureBootComposition
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
