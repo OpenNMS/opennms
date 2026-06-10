@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, test } from 'vitest'
-import { categories, monitoringLocations } from './utils'
+import { categories, monitoringLocations, serviceTypes } from './utils'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
@@ -30,6 +30,7 @@ const {
   buildNodeQueryFilterFromQueryString,
   buildUpdatedNodeStructureQueryParameters,
   getDefaultNodeQueryFilter,
+  getDefaultNodeQuerySnmpParams,
   queryStringHasTrackedValues
 } = useNodeQuery()
 
@@ -91,7 +92,7 @@ describe('Nodes useNodeQuery test', () => {
       [ 'true', { flows: 'true' }, SetOperator.Union, ['Ingress', 'Egress']],
       [ 'ingress', { flows: 'ingress' }, SetOperator.Union, ['Ingress']],
       [ 'egress', { flows: 'egress' }, SetOperator.Union, ['Egress']],
-      [ 'false', { flows: 'false' }, SetOperator.Union, []],
+      [ 'false', { flows: 'false' }, SetOperator.Union, ['No Flows']],
       [ 'invalid', { flows: 'whatever' }, SetOperator.Union, []],
       [ 'empty', { flows: '' }, SetOperator.Union, []]
     ]) (
@@ -120,7 +121,7 @@ describe('Nodes useNodeQuery test', () => {
         const filter = buildNodeQueryFilterFromQueryString(queryObject, categories, monitoringLocations)
 
         const expected = getDefaultNodeQueryFilter()
-        expected.extendedSearch.ipAddress = expectedIp
+        expected.ipAddress = expectedIp
         expect(filter).toEqual(expected)
       }
     )
@@ -290,6 +291,109 @@ describe('Nodes useNodeQuery test', () => {
         expect(filter).toEqual(expected)
       }
     )
+
+    test('category1 alias maps to selectedCategories', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ category1: 'Routers' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.selectedCategories = [categories[0]]
+      expect(filter).toEqual(expected)
+    })
+
+    test('category2 alias maps to selectedCategories', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ category2: 'Switches' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.selectedCategories = [categories[1]]
+      expect(filter).toEqual(expected)
+    })
+
+    test('foreignsource lowercase maps to foreignSourceParams', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ foreignsource: 'MyFS' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.extendedSearch.foreignSourceParams = { foreignSource: 'MyFS', foreignId: '', foreignSourceId: '' }
+      expect(filter).toEqual(expected)
+    })
+
+    test('mib2Parm/mib2ParmValue maps to extendedSearch.sysParams', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { mib2Parm: 'sysDescription', mib2ParmValue: 'Linux', mib2ParmMatchType: 'contains' },
+        categories, monitoringLocations
+      )
+      const expected = getDefaultNodeQueryFilter()
+      expected.extendedSearch.sysParams = {
+        sysContact: '', sysDescription: 'Linux', sysLocation: '', sysName: '', sysObjectId: '',
+        sysMatchType: MatchType.Contains
+      }
+      expect(filter).toEqual(expected)
+    })
+
+    test('mib2Parm does not override explicit sysParams if both present', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { sysContact: 'admin', mib2Parm: 'sysDescription', mib2ParmValue: 'Linux' },
+        categories, monitoringLocations
+      )
+      // explicit sysContact should be set; mib2Parm should be ignored since sysParams already present
+      expect(filter.extendedSearch.sysParams?.sysContact).toBe('admin')
+      expect(filter.extendedSearch.sysParams?.sysDescription).toBe('')
+    })
+
+    test('snmpParm/snmpParmValue maps to extendedSearch.snmpParams', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { snmpParm: 'ifAlias', snmpParmValue: 'Uplink', snmpParmMatchType: 'equals' },
+        categories, monitoringLocations
+      )
+      const expected = getDefaultNodeQueryFilter()
+      expected.extendedSearch.snmpParams = {
+        snmpIfAlias: 'Uplink', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: '', snmpIfType: '',
+        snmpMatchType: MatchType.Equals
+      }
+      expect(filter).toEqual(expected)
+    })
+
+    test('snmpParm does not override explicit snmpParams if both present', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { snmpifalias: 'existing', snmpParm: 'ifName', snmpParmValue: 'eth0' },
+        categories, monitoringLocations
+      )
+      // explicit snmpifalias should be preserved; snmpParm should be ignored
+      expect(filter.extendedSearch.snmpParams?.snmpIfAlias).toBe('existing')
+      expect(filter.extendedSearch.snmpParams?.snmpIfName).toBe('')
+    })
+
+    test('maclike maps to snmpParams.physAddr (stripped, lowercase)', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ maclike: 'AA:BB:CC:DD:EE:FF' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.extendedSearch.snmpParams = { ...getDefaultNodeQuerySnmpParams(), physAddr: 'aabbccddeeff' }
+      expect(filter).toEqual(expected)
+    })
+
+    test('maclike coexists with explicit snmpParams', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { snmpifalias: 'Uplink', maclike: 'AA:BB:CC' },
+        categories, monitoringLocations
+      )
+      expect(filter.extendedSearch.snmpParams?.snmpIfAlias).toBe('Uplink')
+      expect(filter.extendedSearch.snmpParams?.physAddr).toBe('aabbcc')
+    })
+
+    test('monitoredService maps to selectedServices (by name)', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: 'HTTP' }, categories, monitoringLocations, serviceTypes)
+      const expected = getDefaultNodeQueryFilter()
+      expected.selectedServices = ['HTTP']
+      expect(filter).toEqual(expected)
+    })
+
+    test('monitoredService by numeric id maps to selectedServices', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: '8' }, categories, monitoringLocations, serviceTypes)
+      const expected = getDefaultNodeQueryFilter()
+      expected.selectedServices = ['HTTPS']
+      expect(filter).toEqual(expected)
+    })
+
+    test('monitoredService unknown name returns no selectedServices', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ monitoredService: 'UNKNOWN' }, categories, monitoringLocations, serviceTypes)
+      const expected = getDefaultNodeQueryFilter()
+      expect(filter).toEqual(expected)
+    })
   })
 
   describe('test buildUpdatedNodeStructureQueryParameters', () => {
@@ -310,7 +414,7 @@ describe('Nodes useNodeQuery test', () => {
         }
       ],
       [
-        'search term, overrides _s with correct node.label FIQL query',
+        'search term, overrides _s with correct label FIQL query',
         {
           limit: 10,
           offset: 20,
@@ -323,7 +427,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           limit: 10,
           offset: 20,
-          _s: 'node.label==*Node1*'
+          _s: 'label==*Node1*'
         }
       ]
     ]) (
@@ -335,23 +439,168 @@ describe('Nodes useNodeQuery test', () => {
     )
   })
  
+  describe('buildUpdatedNodeStructureQueryParameters: sysParams match type', () => {
+    test('sysMatchType Contains uses wildcards', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: 'Linux',
+        sysLocation: '',
+        sysName: '',
+        sysObjectId: '',
+        sysMatchType: MatchType.Contains
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('node.sysDescription==*Linux*')
+    })
+
+    test('sysMatchType Equals uses no wildcards', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: 'Linux',
+        sysLocation: '',
+        sysName: '',
+        sysObjectId: '',
+        sysMatchType: MatchType.Equals
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('node.sysDescription==Linux')
+    })
+
+    test('sysMatchType undefined defaults to wildcard (Contains)', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: 'Linux',
+        sysLocation: '',
+        sysName: '',
+        sysObjectId: ''
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('node.sysDescription==*Linux*')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: snmpParams match type', () => {
+    test('snmpMatchType Contains uses wildcards on string fields', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = {
+        snmpIfAlias: 'Uplink',
+        snmpIfDescription: '',
+        snmpIfIndex: '',
+        snmpIfName: '',
+        snmpIfType: '',
+        snmpMatchType: MatchType.Contains
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('snmpInterface.ifAlias==*Uplink*')
+    })
+
+    test('snmpMatchType Equals uses no wildcards', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = {
+        snmpIfAlias: 'Uplink',
+        snmpIfDescription: '',
+        snmpIfIndex: '',
+        snmpIfName: '',
+        snmpIfType: '',
+        snmpMatchType: MatchType.Equals
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('snmpInterface.ifAlias==Uplink')
+    })
+
+    test('snmpMatchType undefined defaults to Equals (no wildcards)', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = {
+        snmpIfAlias: 'Uplink',
+        snmpIfDescription: '',
+        snmpIfIndex: '',
+        snmpIfName: '',
+        snmpIfType: ''
+      } as any
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('snmpInterface.ifAlias==Uplink')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: physAddr', () => {
+    test('physAddr generates snmpInterface.physAddr wildcard FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = { ...getDefaultNodeQuerySnmpParams(), physAddr: 'aabbccddeeff' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('snmpInterface.physAddr==*aabbccddeeff*')
+    })
+
+    test('physAddr combined with ifAlias produces semicolon-joined query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = {
+        snmpIfAlias: 'Uplink',
+        snmpIfDescription: '',
+        snmpIfIndex: '',
+        snmpIfName: '',
+        snmpIfType: '',
+        snmpMatchType: MatchType.Equals,
+        physAddr: 'aabbcc'
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('snmpInterface.ifAlias==Uplink;snmpInterface.physAddr==*aabbcc*')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: selectedServices', () => {
+    test('single selectedService generates serviceType.name FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.selectedServices = ['HTTP']
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('serviceType.name==HTTP')
+    })
+
+    test('two selectedServices generates OR FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.selectedServices = ['HTTP', 'HTTPS']
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(serviceType.name==HTTP,serviceType.name==HTTPS)')
+    })
+
+    test('empty selectedServices produces no FIQL query', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.selectedServices = []
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBeUndefined()
+    })
+  })
+
   describe('queryStringHasTrackedValues', () => {
     const trackedValues = [
       'categories',
+      'category1',
+      'category2',
       'flows',
+      'foreignsource',
       'ipAddress',
       'iplike',
       'listInterfaces',
+      'maclike',
+      'mib2Parm',
+      'mib2ParmValue',
+      'mib2ParmMatchType',
       'monitoredService',
       'monitoringLocation',
       'nodeLabel',
       'nodename',
+      'service',
       'snmpifalias',
       'snmpifdescription',
       'snmpifindex',
       'snmpifname',
+      'snmpiftype',
       'snmpMatchType',
       'snmpphysaddr',
+      'snmpParm',
+      'snmpParmValue',
+      'snmpParmMatchType',
       'foreignSource',
       'foreignId',
       'fsfid',

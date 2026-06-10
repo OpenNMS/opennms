@@ -304,6 +304,7 @@ org.jolokia.authMode=jaas
         <bundle>mvn:org.opennms.dependencies/eclipse-npn-alpn/${project.version}</bundle>
 
         <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle dependency="true">wrap:mvn:io.netty/netty-common/${netty4Version}$overwrite=merge&amp;Import-Package=com.oracle.svm.core.annotate;resolution:=optional</bundle>

@@ -26,12 +26,16 @@ import {
   parseFlows,
   parseForeignSource,
   parseIplike,
+  parseMaclike,
+  parseMib2Params,
+  parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
+  parseSnmpParmParams,
   parseSysParams
 } from '@/components/Nodes/hooks/queryStringParser'
-import { categories, monitoringLocations } from './utils'
+import { categories, monitoringLocations, serviceTypes } from './utils'
 import { MatchType, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
@@ -70,7 +74,7 @@ describe('Nodes queryStringParser test', () => {
       'parseCategories: %s',
       (title, queryObject, expectedCategoryMode, expectedCategories) => {
         const result = parseCategories(queryObject, categories)
-        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories })
+        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories, selectedCategories2: [] })
       }
     )
   })
@@ -97,7 +101,7 @@ describe('Nodes queryStringParser test', () => {
       ['true', { flows: 'true' }, ['Ingress', 'Egress']],
       ['ingress', { flows: 'ingress' }, ['Ingress']],
       ['egress', { flows: 'egress' }, ['Egress']],
-      ['false', { flows: 'false' }, []]
+      ['false', { flows: 'false' }, ['No Flows']]
     ]) (
       'parseFlows: %s',
       (title, queryObject, expected) => {
@@ -236,5 +240,171 @@ describe('Nodes queryStringParser test', () => {
         }
       }
     )
+  })
+
+  describe('parseMib2Params', () => {
+    test.each([
+      ['sysDescription contains', { mib2Parm: 'sysDescription', mib2ParmValue: 'Linux', mib2ParmMatchType: 'contains' },
+        { sysContact: '', sysDescription: 'Linux', sysLocation: '', sysName: '', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysContact equals', { mib2Parm: 'sysContact', mib2ParmValue: 'admin', mib2ParmMatchType: 'equals' },
+        { sysContact: 'admin', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '', sysMatchType: MatchType.Equals }],
+      ['sysName, match type defaults to Contains when omitted', { mib2Parm: 'sysName', mib2ParmValue: 'router' },
+        { sysContact: '', sysDescription: '', sysLocation: '', sysName: 'router', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysLocation', { mib2Parm: 'sysLocation', mib2ParmValue: 'datacenter', mib2ParmMatchType: 'contains' },
+        { sysContact: '', sysDescription: '', sysLocation: 'datacenter', sysName: '', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysObjectId', { mib2Parm: 'sysObjectId', mib2ParmValue: '.1.3.6.1', mib2ParmMatchType: 'equals' },
+        { sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '.1.3.6.1', sysMatchType: MatchType.Equals }],
+    ]) ('parseMib2Params: %s', (title, queryObject, expected) => {
+      expect(parseMib2Params(queryObject)).toEqual(expected)
+    })
+
+    test.each([
+      ['empty parm', { mib2Parm: '', mib2ParmValue: 'Linux' }],
+      ['empty value', { mib2Parm: 'sysDescription', mib2ParmValue: '' }],
+      ['invalid parm name', { mib2Parm: 'badField', mib2ParmValue: 'Linux' }],
+      ['both empty', {}],
+    ]) ('parseMib2Params: returns null for invalid input: %s', (title, queryObject) => {
+      expect(parseMib2Params(queryObject)).toBeNull()
+    })
+  })
+
+  describe('parseSnmpParmParams', () => {
+    test.each([
+      ['ifAlias equals', { snmpParm: 'ifAlias', snmpParmValue: 'Uplink', snmpParmMatchType: 'equals' },
+        { snmpIfAlias: 'Uplink', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }],
+      ['ifName contains', { snmpParm: 'ifName', snmpParmValue: 'eth', snmpParmMatchType: 'contains' },
+        { snmpIfAlias: '', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: 'eth', snmpIfType: '', snmpMatchType: MatchType.Contains }],
+      ['ifDescr, match type defaults to Equals when omitted', { snmpParm: 'ifDescr', snmpParmValue: 'GigabitEthernet' },
+        { snmpIfAlias: '', snmpIfDescription: 'GigabitEthernet', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }],
+    ]) ('parseSnmpParmParams: %s', (title, queryObject, expected) => {
+      expect(parseSnmpParmParams(queryObject)).toEqual(expected)
+    })
+
+    test.each([
+      ['empty parm', { snmpParm: '', snmpParmValue: 'value' }],
+      ['empty value', { snmpParm: 'ifAlias', snmpParmValue: '' }],
+      ['unsupported parm (ifIndex)', { snmpParm: 'ifIndex', snmpParmValue: '1' }],
+      ['unknown parm', { snmpParm: 'badField', snmpParmValue: 'value' }],
+      ['both empty', {}],
+    ]) ('parseSnmpParmParams: returns null for invalid input: %s', (title, queryObject) => {
+      expect(parseSnmpParmParams(queryObject)).toBeNull()
+    })
+  })
+
+  describe('parseCategories: category1/category2 aliases', () => {
+    test('category1 alone maps as union in group 1', () => {
+      const result = parseCategories({ category1: 'Routers' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('category2 alone maps as union in group 1 (backwards compat)', () => {
+      const result = parseCategories({ category2: 'Switches' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[1]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('category1 and category2 populate separate groups', () => {
+      const result = parseCategories({ category1: 'Routers', category2: 'Switches' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([categories[1]])
+    })
+
+    test('category1 array and category2 array populate two groups with union within each', () => {
+      const result = parseCategories(
+        { category1: ['Routers', 'Switches'], category2: ['Production', 'Servers'] },
+        categories
+      )
+      expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([categories[3], categories[2]])
+    })
+
+    test('category1 array alone (no category2) puts all in group 1', () => {
+      const result = parseCategories({ category1: ['Routers', 'Switches'] }, categories)
+      expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('categories param takes precedence over category1/category2', () => {
+      const result = parseCategories({ categories: 'Servers', category1: 'Routers', category2: 'Switches' }, categories)
+      expect(result.selectedCategories).toEqual([categories[2]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('unknown category1 value returns empty', () => {
+      const result = parseCategories({ category1: 'NonExistent' }, categories)
+      expect(result.selectedCategories).toEqual([])
+      expect(result.selectedCategories2).toEqual([])
+    })
+  })
+
+  describe('parseForeignSource: lowercase alias', () => {
+    test('foreignsource (lowercase) maps to foreignSource', () => {
+      const result = parseForeignSource({ foreignsource: 'MyFS' })
+      expect(result).toEqual({ foreignSource: 'MyFS', foreignId: '', foreignSourceId: '' })
+    })
+
+    test('foreignSource (camelCase) still works', () => {
+      const result = parseForeignSource({ foreignSource: 'MyFS' })
+      expect(result).toEqual({ foreignSource: 'MyFS', foreignId: '', foreignSourceId: '' })
+    })
+
+    test('foreignSource takes precedence over foreignsource', () => {
+      const result = parseForeignSource({ foreignSource: 'CamelFS', foreignsource: 'LowerFS' })
+      expect(result).toEqual({ foreignSource: 'CamelFS', foreignId: '', foreignSourceId: '' })
+    })
+  })
+
+  describe('parseMaclike', () => {
+    test.each([
+      ['empty', {}, null],
+      ['maclike with colons', { maclike: 'AA:BB:CC:DD:EE:FF' }, 'aabbccddeeff'],
+      ['maclike with dashes', { maclike: 'AA-BB-CC-DD-EE-FF' }, 'aabbccddeeff'],
+      ['maclike no separators', { maclike: 'AABBCCDDEEFF' }, 'aabbccddeeff'],
+      ['maclike already lowercase', { maclike: 'aabbccddeeff' }, 'aabbccddeeff'],
+      ['snmpphysaddr', { snmpphysaddr: 'AA:BB:CC:DD:EE:FF' }, 'aabbccddeeff'],
+      ['maclike takes precedence over snmpphysaddr', { maclike: '112233445566', snmpphysaddr: 'aabbccddeeff' }, '112233445566'],
+      ['partial MAC still stripped', { maclike: 'AA:BB:CC' }, 'aabbcc'],
+      ['empty maclike', { maclike: '' }, null]
+    ]) ('parseMaclike: %s', (title, queryObject, expected) => {
+      expect(parseMaclike(queryObject)).toEqual(expected)
+    })
+  })
+
+  describe('parseMonitoredServices', () => {
+    test('returns [] when no service param present', () => {
+      expect(parseMonitoredServices({}, serviceTypes)).toEqual([])
+    })
+
+    test('resolves monitoredService by exact name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves monitoredService case-insensitively', () => {
+      expect(parseMonitoredServices({ monitoredService: 'https' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by exact name', () => {
+      expect(parseMonitoredServices({ service: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by numeric ID', () => {
+      expect(parseMonitoredServices({ service: '8' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('returns [] for unknown name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'UNKNOWN' }, serviceTypes)).toEqual([])
+    })
+
+    test('returns [] for unknown numeric ID', () => {
+      expect(parseMonitoredServices({ service: '999' }, serviceTypes)).toEqual([])
+    })
+
+    test('monitoredService takes precedence over service when both present', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTP', service: 'ICMP' }, serviceTypes)).toEqual(['HTTP'])
+    })
   })
 })

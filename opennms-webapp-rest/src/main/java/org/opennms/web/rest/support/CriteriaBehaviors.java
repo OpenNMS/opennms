@@ -177,6 +177,7 @@ public abstract class CriteriaBehaviors {
     public static final Map<String,CriteriaBehavior<?>> REDUCTION_KEY_MEMO_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> SERVICE_TYPE_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> SNMP_INTERFACE_BEHAVIORS = new HashMap<>();
+    public static final Map<String,CriteriaBehavior<?>> NODE_SERVICE_TYPE_BEHAVIORS = new HashMap<>();
 
     static {
         ALARM_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
@@ -391,10 +392,40 @@ public abstract class CriteriaBehaviors {
         SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifType", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("physAddr", new CriteriaBehavior<String>(STRING_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastEgressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastIngressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+
+        CriteriaBehavior<String> serviceTypeName = new StringCriteriaBehavior(Aliases.serviceType.prop("name"), (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                b.sql(String.format(
+                    "{alias}.nodeid in (select ipinterface.nodeid from ipinterface, ifservices, service" +
+                    " where ipinterface.id = ifservices.ipinterfaceid" +
+                    " and ifservices.serviceid = service.serviceid" +
+                    " and service.servicename %s ?" +
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
+                    w ? "ilike" : "="), v, Type.STRING);
+                break;
+            case NOT_EQUALS:
+                b.sql(String.format(
+                    "{alias}.nodeid not in (select ipinterface.nodeid from ipinterface, ifservices, service" +
+                    " where ipinterface.id = ifservices.ipinterfaceid" +
+                    " and ifservices.serviceid = service.serviceid" +
+                    " and service.servicename %s ?" +
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
+                    w ? "ilike" : "="), v, Type.STRING);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering serviceType.name: " + c.toString());
+            }
+        });
+        serviceTypeName.setSkipPropertyByDefault(true);
+        NODE_SERVICE_TYPE_BEHAVIORS.put("name", serviceTypeName);
     }
 
     private static String stringForNumericCondition(ConditionType c, String property) {

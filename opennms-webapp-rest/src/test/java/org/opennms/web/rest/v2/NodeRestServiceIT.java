@@ -252,6 +252,26 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
     @Test
+    @JUnitTemporaryDatabase
+    public void testSnmpInterfaceStringSearchIsCaseInsensitive() throws Exception {
+        // DatabasePopulator seeds node1 with physAddr="34E45604BB69" and ifAlias="Initial ifAlias value".
+        // Both must be findable via lowercase wildcard FIQL (ilike, not like).
+        m_databasePopulator.populateDatabase();
+
+        // MAC stored uppercase, search lowercase — without ilike this returns 204 (no match)
+        sendRequest(GET, "/nodes", parseParamData("_s=snmpInterface.physAddr==*34e456*"), 200);
+
+        // Exact-case MAC search still works
+        sendRequest(GET, "/nodes", parseParamData("_s=snmpInterface.physAddr==*34E456*"), 200);
+
+        // ifAlias stored mixed-case, search all-lowercase
+        sendRequest(GET, "/nodes", parseParamData("_s=snmpInterface.ifAlias==*ifalias*"), 200);
+
+        // Negative: unknown MAC returns no results
+        sendRequest(GET, "/nodes", parseParamData("_s=snmpInterface.physAddr==*000000000000*"), 204);
+    }
+
+    @Test
     public void createNodeWithParent() throws Exception{
 
         final NetworkBuilder builder = new NetworkBuilder();

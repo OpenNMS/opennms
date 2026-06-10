@@ -23,6 +23,8 @@
 import { isConvertibleToInteger } from '@/lib/utils'
 import {
   Category,
+  ExtendedSearchValue,
+  MatchType,
   MonitoringLocation,
   NodeQueryExtendedSearchParams,
   NodeQueryFilter,
@@ -30,6 +32,7 @@ import {
   NodeQuerySnmpParams,
   NodeQuerySysParams,
   QueryParameters,
+  ServiceType,
   SetOperator
 } from '@/types'
 import {
@@ -37,9 +40,13 @@ import {
   parseFlows,
   parseForeignSource,
   parseIplike,
+  parseMaclike,
+  parseMib2Params,
+  parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
+  parseSnmpParmParams,
   parseSysParams
 } from './queryStringParser'
 import { isIP } from 'is-ip'
@@ -75,7 +82,6 @@ export const useNodeQuery = () => {
 
   const getDefaultNodeQueryExtendedSearchParams = () => {
     return {
-      ipAddress: '',
       foreignSourceParams: getDefaultNodeQueryForeignSourceParams(),
       snmpParams: getDefaultNodeQuerySnmpParams(),
       sysParams: getDefaultNodeQuerySysParams()
@@ -87,72 +93,73 @@ export const useNodeQuery = () => {
       searchTerm: '',
       categoryMode: SetOperator.Union,
       selectedCategories: [] as Category[],
+      selectedCategories2: [] as Category[],
+      selectedServices: [] as string[],
       selectedFlows: [] as string[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
+      ipAddress: '',
+      topology: '',
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
   }
 
-  const getObjectValues = (obj?: any): string[] => {
-    if (obj) {
-      const names = Object.getOwnPropertyNames(obj)
-      const values = names.map(name => String((obj as any)[name] || ''))
-
-      return values
-    }
-
-    return []
+  const EXTENDED_SEARCH_DISPLAY_NAMES: Record<string, string> = {
+    foreignId: 'Foreign ID',
+    foreignSource: 'Foreign Source',
+    foreignSourceId: 'Foreign Source:Foreign ID',
+    snmpIfAlias: 'SNMP Alias',
+    snmpIfDescription: 'SNMP Description',
+    snmpIfIndex: 'SNMP Index',
+    snmpIfName: 'SNMP Name',
+    snmpIfType: 'SNMP Type',
+    physAddr: 'MAC Address',
+    sysContact: 'Sys Contact',
+    sysDescription: 'Sys Description',
+    sysLocation: 'Sys Location',
+    sysName: 'Sys Name',
+    sysObjectId: 'Sys Object ID'
   }
 
-  const hasAnyExtendedSearchValues = (extendedSearch?: NodeQueryExtendedSearchParams) => {
-    if (extendedSearch) {
-      if (!!extendedSearch.ipAddress && extendedSearch.ipAddress.length > 0) {
-        return true
+  // match-type qualifier fields — not search terms, excluded from chips
+  const EXTENDED_SEARCH_SKIP_FIELDS = new Set(['snmpMatchType', 'sysMatchType'])
+
+  const getExtendedSearchValues = (extendedSearch?: NodeQueryExtendedSearchParams): ExtendedSearchValue[] => {
+    if (!extendedSearch) {
+      return []
+    }
+
+    const values: ExtendedSearchValue[] = []
+
+    const addGroupValues = (group: keyof NodeQueryExtendedSearchParams, obj: Record<string, unknown> | undefined) => {
+      if (!obj) {
+        return
       }
-
-      if (extendedSearch.foreignSourceParams) {
-        const values = getObjectValues(extendedSearch.foreignSourceParams)
-
-        if (values.some(s => s && s.length > 0)) {
-          return true
+      for (const key of Object.keys(obj)) {
+        if (EXTENDED_SEARCH_SKIP_FIELDS.has(key)) {
+          continue
         }
-      }
-
-      if (extendedSearch.snmpParams) {
-        const values = getObjectValues(extendedSearch.snmpParams)
-
-        if (values.some(s => s && s.length > 0)) {
-          return true
-        }
-      }
-
-      if (extendedSearch.sysParams) {
-        const values = getObjectValues(extendedSearch.sysParams)
-
-        if (values.some(s => s && s.length > 0)) {
-          return true
+        const val = String(obj[key] || '')
+        if (val) {
+          values.push({ name: EXTENDED_SEARCH_DISPLAY_NAMES[key] ?? key, value: val, group, key })
         }
       }
     }
 
-    return false
+    addGroupValues('foreignSourceParams', extendedSearch.foreignSourceParams as unknown as Record<string, unknown>)
+    addGroupValues('snmpParams', extendedSearch.snmpParams as unknown as Record<string, unknown>)
+    addGroupValues('sysParams', extendedSearch.sysParams as unknown as Record<string, unknown>)
+
+    return values
   }
 
   const addIpAddressToQueryFilter = (filter: NodeQueryFilter, ipAddress: string) => {
     const ip = parseIplike(ipAddress)
 
     if (ip) {
-      const extended = {
-        ...filter.extendedSearch,
+      return {
+        ...filter,
         ipAddress: ip
       }
-
-      const filterWithIp = {
-        ...filter,
-        extendedSearch: extended
-      }
-
-      return filterWithIp
     }
 
     return filter
@@ -181,20 +188,32 @@ export const useNodeQuery = () => {
    */
   const trackedNodeQueryStringProperties = new Set([
     'categories',
+    'category1',
+    'category2',
     'flows',
+    'foreignsource',
     'ipAddress',
     'iplike',
     'listInterfaces',
+    'maclike',
+    'mib2Parm',
+    'mib2ParmValue',
+    'mib2ParmMatchType',
     'monitoredService',
     'monitoringLocation',
     'nodeLabel',
     'nodename',
+    'service',
     'snmpifalias',
     'snmpifdescription',
     'snmpifindex',
     'snmpifname',
+    'snmpiftype',
     'snmpMatchType',
     'snmpphysaddr',
+    'snmpParm',
+    'snmpParmValue',
+    'snmpParmMatchType',
     'foreignSource',
     'foreignId',
     'fsfid',
@@ -202,7 +221,8 @@ export const useNodeQuery = () => {
     'sysDescription',
     'sysLocation',
     'sysName',
-    'sysObjectId'
+    'sysObjectId',
+    'topology'
   ])
 
   /**
@@ -220,50 +240,80 @@ export const useNodeQuery = () => {
    *
    * @param query query object from vue-router route.query
    */
-  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[], monitoringLocations: MonitoringLocation[]) => {
+  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[], monitoringLocations: MonitoringLocation[], serviceTypes: ServiceType[] = []) => {
     const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
 
     filter.searchTerm = parseNodeLabel(queryObject)
 
-    const { categoryMode, selectedCategories } = parseCategories(queryObject, categories)
-
+    const { categoryMode, selectedCategories, selectedCategories2 } = parseCategories(queryObject, categories)
     if (selectedCategories.length > 0) {
       filter.categoryMode = categoryMode
       filter.selectedCategories = selectedCategories
+      filter.selectedCategories2 = selectedCategories2
     }
 
     const location = parseMonitoringLocation(queryObject, monitoringLocations)
-
     if (location) {
       filter.selectedMonitoringLocations.push(location)
     }
 
     filter.selectedFlows = parseFlows(queryObject)
 
-    // TODO: Implement ipaddress or iplike filtering
     const ip = parseIplike(queryObject)
-
     if (ip) {
-      filter.extendedSearch.ipAddress = ip
+      filter.ipAddress = ip
     }
 
+    // Individual SNMP params take priority over legacy snmpParm/snmpParmValue
     const snmpParams = parseSnmpParams(queryObject)
-
     if (snmpParams) {
       filter.extendedSearch.snmpParams = snmpParams
+    } else {
+      const snmpParmParams = parseSnmpParmParams(queryObject)
+      if (snmpParmParams) {
+        filter.extendedSearch.snmpParams = snmpParmParams
+      }
     }
 
+    // Individual sys params take priority over legacy mib2Parm/mib2ParmValue
     const sysParams = parseSysParams(queryObject)
-
     if (sysParams) {
       filter.extendedSearch.sysParams = sysParams
+    } else {
+      const mib2Params = parseMib2Params(queryObject)
+      if (mib2Params) {
+        filter.extendedSearch.sysParams = mib2Params
+      }
     }
 
     const fsParams = parseForeignSource(queryObject)
-
     if (fsParams) {
       filter.extendedSearch.foreignSourceParams = fsParams
     }
+
+    // physAddr (MAC address) — set independently of snmpParm/snmpParams blocks
+    const macAddr = parseMaclike(queryObject)
+    if (macAddr) {
+      if (!filter.extendedSearch.snmpParams) {
+        filter.extendedSearch.snmpParams = getDefaultNodeQuerySnmpParams()
+      }
+      filter.extendedSearch.snmpParams.physAddr = macAddr
+    }
+
+    const serviceNames = parseMonitoredServices(queryObject, serviceTypes)
+    if (serviceNames.length > 0) {
+      filter.selectedServices = serviceNames
+    }
+
+    if (queryObject.topology) {
+      filter.topology = queryObject.topology
+    }
+
+    // listInterfaces: intentionally not handled — the Vue node list page has no interface-listing mode,
+    // and already displays the primary interface in the node table.
+    // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
+    // NOTE nodeId: not handled here. Once Vue Node Details (/node/:id) has parity with element/node.jsp,
+    //   update quicksearch-box.jsp to link to the Vue route instead of element/node.jsp?node={id}.
 
     return filter
   }
@@ -277,7 +327,7 @@ export const useNodeQuery = () => {
     getDefaultNodeQueryForeignSourceParams,
     getDefaultNodeQuerySnmpParams,
     getDefaultNodeQuerySysParams,
-    hasAnyExtendedSearchValues,
+    getExtendedSearchValues,
     queryStringHasTrackedValues
   }
 }
@@ -287,20 +337,22 @@ export const useNodeQuery = () => {
  */
 const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const searchTerm = sanitizeSearchTerm(filter.searchTerm)
-  const ipAddress = sanitizeSearchTerm(filter.extendedSearch.ipAddress)
+  const ipAddress = sanitizeSearchTerm(filter.ipAddress)
 
   const searchQuery = buildSearchQuery(searchTerm)
   const ipAddressQuery = buildIpAddressQuery(ipAddress)
-  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
+  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode, filter.selectedCategories2)
   const flowsQuery = buildFlowsQuery(filter.selectedFlows)
   const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
   const foreignSourceQuery = buildForeignSourceQuery(filter.extendedSearch.foreignSourceParams)
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
+  const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
+  const topologyQuery = buildTopologyQuery(filter.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -319,7 +371,7 @@ const buildSearchQuery = (searchTerm: string) => {
   if (searchTerm?.length > 0) {
     const startStar = searchTerm.startsWith('*') ? '' : '*'
     const endStar = searchTerm.endsWith('*') ? '' : '*'
-    return `node.label==${startStar}${searchTerm}${endStar}`
+    return `label==${startStar}${searchTerm}${endStar}`
   }
 
   return ''
@@ -333,20 +385,37 @@ const buildIpAddressQuery = (ipAddress?: string) => {
   return ''
 }
 
-const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator) => {
-  const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
+const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator, selectedCategories2?: Category[]) => {
+  if (selectedCategories2 && selectedCategories2.length > 0) {
+    // Grouped mode: union within each group, intersection between groups
+    // In this case, we ignore categoryMode
+    const buildGroup = (cats: Category[]) => {
+      const items = cats.map(cat => `category.id==${cat.id}`)
+      if (items.length === 0) return ''
+      if (items.length === 1) return items[0]
+      return `(${items.join(',')})`
+    }
+    const group1 = buildGroup(selectedCategories)
+    const group2 = buildGroup(selectedCategories2)
+    if (group1 && group2) return `${group1};${group2}`
+    return group1 || group2
+  }
 
-  if (categoryItems.length === 1) {
-    return `${categoryItems[0]}`
-  } else if (categoryItems.length > 1) {
+  // Single category group: use categoryMode to determine union or intersection
+  const categoryItems = selectedCategories.map(cat => `category.id==${cat.id}`)
+  if (categoryItems.length === 1) return `${categoryItems[0]}`
+  if (categoryItems.length > 1) {
     const separator = getFiqlSetOperator(categoryMode)
     return `(${categoryItems.join(separator)})`
   }
-
   return ''
 }
 
 const buildFlowsQuery = (selectedFlows: string[]) => {
+  if (selectedFlows.some(f => f === 'No Flows')) {
+    return 'lastIngressFlow==null;lastEgressFlow==null'
+  }
+
   const hasIngress = selectedFlows.some(f => f === 'Ingress')
   const hasEgress = selectedFlows.some(f => f === 'Egress')
 
@@ -376,13 +445,13 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
   return ''
 }
 
-const getSnmpSearchTerm = (name: string, field: any) => {
+const getSnmpSearchTerm = (name: string, field: any, wildcard = false) => {
   const fieldStr = (field as string) || ''
-
-  return `snmpInterface.${name}==${fieldStr}`
+  const searchValue = wildcard ? makeWildcard(fieldStr) : fieldStr
+  return `snmpInterface.${name}==${searchValue}`
 }
 
-const isValidParam = (value: string) => {
+const isValidParam = (value: string | undefined) => {
   return !!value && !!value.trim()
 }
 
@@ -423,20 +492,33 @@ const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
   return ''
 }
 
-/**
- * Note, FIQL / SNMP search does not currently support 'like' or 'contains' matches, so we always
- * do an 'equals' (exact match) search.
- */
+const buildServiceQuery = (selectedServices: string[]) => {
+  if (!selectedServices || selectedServices.length === 0) {
+    return ''
+  }
+
+  const items = selectedServices
+    .filter(name => name && name.trim().length > 0)
+    .map(name => `serviceType.name==${name}`)
+
+  if (items.length === 1) {
+    return items[0]
+  }
+
+  return `(${items.join(',')})`
+}
+
 const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
   if (snmpParams) {
     const arr: string[] = []
+    const wildcard = snmpParams.snmpMatchType === MatchType.Contains
 
     if (isValidParam(snmpParams.snmpIfAlias)) {
-      arr.push(getSnmpSearchTerm('ifAlias', snmpParams.snmpIfAlias))
+      arr.push(getSnmpSearchTerm('ifAlias', snmpParams.snmpIfAlias, wildcard))
     }
 
     if (isValidParam(snmpParams.snmpIfDescription)) {
-      arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription))
+      arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription, wildcard))
     }
 
     if (isValidIntegerParam('' + snmpParams.snmpIfIndex)) {
@@ -444,18 +526,22 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
 
     if (isValidParam(snmpParams.snmpIfName)) {
-      arr.push(getSnmpSearchTerm('ifName', snmpParams.snmpIfName))
+      arr.push(getSnmpSearchTerm('ifName', snmpParams.snmpIfName, wildcard))
     }
 
     if (isValidIntegerParam(snmpParams.snmpIfType)) {
       arr.push(getSnmpSearchTerm('ifType', snmpParams.snmpIfType))
     }
 
+    if (isValidParam(snmpParams.physAddr)) {
+      arr.push(`snmpInterface.physAddr==*${snmpParams.physAddr!}*`)
+    }
+
     if (arr.length > 0) {
       return arr.join(';')
     }
   }
-  
+
   return ''
 }
 
@@ -467,7 +553,8 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     props.forEach(p => {
       const value = (sysParams as any)[p]
       if (isValidParam(value)) {
-        arr.push(`node.${p}==${makeWildcard(value)}`)
+        const searchValue = sysParams.sysMatchType === MatchType.Equals ? value : makeWildcard(value)
+        arr.push(`node.${p}==${searchValue}`)
       }
     })
 
@@ -479,12 +566,22 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
   return ''
 }
 
+const buildTopologyQuery = (topology?: string) => {
+  const term = sanitizeSearchTerm(topology)
+  if (term.length > 0) {
+    const startStar = term.startsWith('*') ? '' : '*'
+    const endStar = term.endsWith('*') ? '' : '*'
+    return `topology==${startStar}${term}${endStar}`
+  }
+  return ''
+}
+
 /**
  * Remove any FIQL characters from a search term.
  * May need to do additional replacements here.
  */
 export const sanitizeSearchTerm = (s?: string) => {
-  return (s || '').replace(/[,;]/, ' ')
+  return (s || '').replace(/[,;]/g, ' ')
 }
 
 export const getFiqlSetOperator = (op: SetOperator) => {

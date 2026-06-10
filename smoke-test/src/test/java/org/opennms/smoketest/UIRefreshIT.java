@@ -61,7 +61,7 @@ public class UIRefreshIT extends OpenNMSSeleniumIT {
         assertEquals("ItsRainingItsPouring", node.getLabel());
 
         // Switch to the new UI
-        clickMenuItem("inventoryMenu", "Structured Node List");
+        clickMenuItem("inventoryMenu", "Node List");
     }
 
     @After

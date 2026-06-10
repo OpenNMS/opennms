@@ -17,8 +17,8 @@ You can either create a new local user within your vCenter server or use an acco
 === Create a new vCenter role:
 . Log into vCenter Server.
 . Go to menu:Home[Administration > Roles].
-. Select the built-in "Read Only" role.
-. Select the option to clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
+. Select the built-in "Read Only" role to clone it.
+. Clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
 . Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
 . Click *OK* to save the role.
 
@@ -51,6 +51,29 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 ----
 
 NOTE: When specifying the username, make sure to fully qualify it with the appropriate domain name for your directory.
+
+== Test vCenter connectivity from the Karaf shell
+
+With `vmware-config.xml` in place, the `opennms:show-import` Karaf command can connect to vCenter using the stored credentials and print the requisition it would build, without persisting anything.
+This can help verify credentials, network reachability, and TLS trust before you configure an external requisition.
+
+From the Karaf shell:
+
+[source, shell]
+----
+opennms:show-import vmware host=vcenter.mydomain.org path=
+----
+
+The `host=` value must match the `hostname` attribute on a `<vmware-server />` entry in `vmware-config.xml` byte-for-byte; the lookup is case-sensitive and does not normalize between short names and FQDNs.
+The `path=` parameter is required but should be left empty for the test.
+
+On success, the command prints the resulting requisition with some number of nodes that should be imported.
+On failure, the command will print an empty requisition with zero nodes.
+
+[NOTE]
+====
+If `vmware-config.xml` uses `${scv:alias:username}` and `${scv:alias:password}` references, you can supply credentials inline on the command (`username=... password=...`), which bypasses the lookup in `vmware-config.xml` entirely, or temporarily place plaintext credentials in `vmware-config.xml` for the test.
+====
 
 == Configure VMware requisition
 

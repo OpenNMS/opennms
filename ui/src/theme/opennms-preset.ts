@@ -61,6 +61,50 @@ const OpenNMSPreset = definePreset(Aura, {
         },
         surface: {
           0: '#15182B'
+        },
+        // Aura dark uses {surface.0} as white for text.color, but we set surface.0
+        // to our dark navy. Override text tokens here to keep text legible in dark mode.
+        text: {
+          color: 'rgba(255, 255, 255, 0.87)',
+          hoverColor: 'rgba(255, 255, 255, 0.87)',
+          mutedColor: 'rgba(255, 255, 255, 0.6)',
+          hoverMutedColor: 'rgba(255, 255, 255, 0.78)'
+        },
+        // DataTable body rows and other content areas use {content.background}.
+        // Aura dark maps that to {surface.900} (zinc.900 = #18181b), a neutral gray
+        // that doesn't match the OpenNMS navy palette. Map it to surface.0 instead.
+        content: {
+          background: '{surface.0}',
+          hoverBackground: 'rgba(255, 255, 255, 0.06)',
+          borderColor: 'rgba(255, 255, 255, 0.12)',
+          color: '{text.color}',
+          hoverColor: '{text.hover.color}'
+        },
+        // Aura dark sets formField.color to {surface.0}, which is our dark navy (#15182B) —
+        // unreadable text. Also align the form field background to the OpenNMS navy palette.
+        formField: {
+          background: '{surface.0}',
+          color: '{text.color}',
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          hoverBorderColor: 'rgba(255, 255, 255, 0.38)',
+          placeholderColor: 'rgba(255, 255, 255, 0.5)',
+          iconColor: 'rgba(255, 255, 255, 0.5)',
+          disabledBackground: 'rgba(255, 255, 255, 0.05)',
+          disabledColor: 'rgba(255, 255, 255, 0.38)'
+        },
+        // Select/popover overlays are teleported to body; still set their tokens so the
+        // CSS variables carry the right dark values everywhere they're inherited.
+        overlay: {
+          select: {
+            background: '{surface.0}',
+            borderColor: 'rgba(255, 255, 255, 0.12)',
+            color: '{text.color}'
+          },
+          popover: {
+            background: '{surface.0}',
+            borderColor: 'rgba(255, 255, 255, 0.12)',
+            color: '{text.color}'
+          }
         }
       }
     }

@@ -22,10 +22,14 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -52,11 +56,13 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -89,8 +95,21 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
+    // Maps SNMP interface FIQL field names to their lowercase DB column names in the snmpinterface table.
+    // Used to build SQL subqueries with ilike for case-insensitive matching (exact and wildcard).
+    // Non-string SNMP fields (ifIndex, ifType, etc.) are absent; they use a different join strategy.
+    private static final Map<String,String> SNMP_STRING_COLUMN = Map.of(
+        "ifAlias",  "snmpifalias",
+        "ifDescr",  "snmpifdescr",
+        "ifName",   "snmpifname",
+        "physAddr", "snmpphysaddr"
+    );
+
     @Autowired
     private MonitoringLocationDao m_locationDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
     private NodeDao m_dao;
@@ -154,6 +173,34 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // Root alias
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
 
+        // node.label: use ilike for case-insensitive wildcard matching (default like() is case-sensitive)
+        CriteriaBehavior<?> labelBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (v == null) {
+                    b.isNull("label");
+                } else if (w) {
+                    b.ilike("label", v);
+                } else {
+                    b.eq("label", v);
+                }
+                break;
+            case NOT_EQUALS:
+                if (v == null) {
+                    b.isNotNull("label");
+                } else if (w) {
+                    b.not().ilike("label", v);
+                } else {
+                    b.or(Restrictions.ne("label", v), Restrictions.isNull("label"));
+                }
+                break;
+            default:
+                break;
+            }
+        });
+        labelBehavior.setSkipPropertyByDefault(true);
+        map.put("label", labelBehavior);
+
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
@@ -183,19 +230,60 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
 
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
+        map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.NODE_SERVICE_TYPE_BEHAVIORS));
 
         // Use join conditions for one-to-many aliases
         for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS.entrySet()) {
-            map.put(Aliases.snmpInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
-                b.alias(
-                    "snmpInterfaces",
-                    Aliases.snmpInterface.toString(),
-                    JoinType.LEFT_JOIN,
-                    Restrictions.or(Restrictions.eq(Aliases.snmpInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.snmpInterface.prop(entry.getKey())))
-                );
-            }));
+            final String key = entry.getKey();
+            final String dbCol = SNMP_STRING_COLUMN.get(key);
+            if (dbCol != null) {
+                // String field: use SQL subquery with ilike for case-insensitive matching.
+                // A JOIN condition with Restrictions.eq cannot perform LIKE matching, so wildcard
+                // searches like snmpInterface.ifAlias==*value* would return nothing with a join approach.
+                // skipProperty=true: the SQL subquery handles the full restriction; the snmpInterface
+                // alias is never joined, so the default Hibernate property restriction must not be added
+                // (it would cause a QueryException: could not resolve property: snmpInterface).
+                CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    switch (c) {
+                    case EQUALS:
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        break;
+                    case NOT_EQUALS:
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
+                    }
+                });
+                snmpStringBehavior.setSkipPropertyByDefault(true);
+                map.put(Aliases.snmpInterface.prop(key), snmpStringBehavior);
+            } else {
+                // Non-string field: join condition for exact matching (wildcards not applicable)
+                map.put(Aliases.snmpInterface.prop(key), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    b.alias(
+                        "snmpInterfaces",
+                        Aliases.snmpInterface.toString(),
+                        JoinType.LEFT_JOIN,
+                        Restrictions.or(Restrictions.eq(Aliases.snmpInterface.prop(key), v), Restrictions.isNull(Aliases.snmpInterface.prop(key)))
+                    );
+                }));
+            }
         }
-        // There are no extra String properties on node.snmpInterfaces 
+        // There are no extra String properties on node.snmpInterfaces
+
+        // Topology (CDP/LLDP) search: virtual property backed by a SQL subquery across topology tables.
+        // Mirrors DefaultNodeListService.addTopoSearch. skipProperty=true: no Hibernate alias is joined,
+        // so the default property restriction must not be added.
+        final String topologySql = "{alias}.nodeId in (" +
+            "select nodeId from cdplink where cdpinterfacename ilike ? " +
+            "union select nodeId from cdpelement where cdpglobaldeviceid ilike ? " +
+            "union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? " +
+            "union select nodeId from lldpelement where lldpsysname ilike ?)";
+        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) ->
+            b.sql(topologySql, new Object[]{v, v, v, v, v}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING})
+        );
+        topologyBehavior.setSkipPropertyByDefault(true);
+        map.put("topology", topologyBehavior);
 
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
 
@@ -245,6 +333,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Override
     protected OnmsNode doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
+    }
+
+    @GET
+    @Path("service-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(summary = "Get all service types", description = "Returns all monitored service types for use in node filtering", operationId = "NodeRestServiceGETServiceTypes")
+    public Response getServiceTypes() {
+        final List<Map<String,Object>> result = m_serviceTypeDao.findAll().stream()
+            .sorted(Comparator.comparing(OnmsServiceType::getName))
+            .map(st -> {
+                final Map<String,Object> item = new HashMap<>();
+                item.put("id", st.getId());
+                item.put("name", st.getName());
+                return item;
+            })
+            .collect(Collectors.toList());
+        return Response.ok(result).build();
     }
 
     @Path("{nodeCriteria}/ipinterfaces")

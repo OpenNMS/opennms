@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
+import org.opennms.netmgt.config.httpdatacollection.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -169,6 +169,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         }
 
         public void collect() {
+            HttpCollectorException pendingAuthFailure = null;
             List<Uri> uriDefs = m_httpCollection.getUris();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
@@ -177,7 +178,15 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
                 } catch (HttpCollectorException e) {
                     LOG.warn("collect: http collection failed", e);
                     m_collectionSetBuilder.withStatus(CollectionStatus.FAILED);
+                    if (pendingAuthFailure == null && e.getMessage() != null
+                            && e.getMessage().contains("auth failure:")) {
+                        pendingAuthFailure = e;
+                    }
                 }
+            }
+            // Propagate auth failures so the adaptor's cause-chain check fires.
+            if (pendingAuthFailure != null) {
+                throw pendingAuthFailure;
             }
         }
 
@@ -259,9 +268,26 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             }
 
             LOG.info("doCollection: collecting using method: {}", method);
-            final CloseableHttpResponse response = clientWrapper.execute(method);
-            //Not really a persist as such; it just stores data in collectionSet for later retrieval
-            persistResponse(collectorAgent, collectionSetBuilder, response);
+            try (final CloseableHttpResponse response = clientWrapper.execute(method)) {
+                final int status = response.getStatusLine().getStatusCode();
+                if (status == 401 || status == 403) {
+                    // Auth-related refusal. Drain the entity (the
+                    // try-with-resources closes the response itself)
+                    // and surface as a collection failure so the
+                    // controller-side TokenAuthCollectorAdaptor can
+                    // invalidate any cached token used in this request.
+                    EntityUtils.consumeQuietly(response.getEntity());
+                    throw new HttpCollectorException("auth failure: "
+                            + collectorAgent.getUriDef().getName()
+                            + " returned HTTP status " + status);
+                }
+                //Not really a persist as such; it just stores data in collectionSet for later retrieval
+                persistResponse(collectorAgent, collectionSetBuilder, response);
+            }
+        } catch (HttpCollectorException e) {
+            // Don't re-wrap our own type; the message (e.g. "auth failure:")
+            // is what the controller-side adaptor matches on.
+            throw e;
         } catch (URISyntaxException e) {
             throw new HttpCollectorException("Error building HttpClient URI", e);
         } catch (IOException e) {
@@ -399,7 +425,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         if (responseString != null && !"".equals(responseString)) {
             // Get response's locale from the Content-Language header if available
             Locale responseLocale = null;
-            final Header[] headers = response.getHeaders("Content-Language");
+            final org.apache.http.Header[] headers = response.getHeaders("Content-Language");
             if (headers != null) {
                 LOG.debug("doCollection: Trying to devise response's locale from Content-Language header.");
                 if (headers.length == 1) {
@@ -451,13 +477,36 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             method = buildPostMethod(uri, collectorAgent);
         }
 
+        applyConfiguredHeaders(method, url);
+        return method;
+    }
+
+    /**
+     * Applies configured headers from the {@link Url} (virtual-host
+     * plus any explicit {@code <header>} entries) to the outgoing
+     * HTTP request. Package-private so a focused test can drive this
+     * without standing up the full collection pipeline.
+     */
+    static void applyConfiguredHeaders(final HttpRequestBase method, final Url url) {
         if (url.getVirtualHost().isPresent()) {
             final String virtualHost = url.getVirtualHost().get();
             if (!virtualHost.trim().isEmpty()) {
                 method.setHeader(HTTP.TARGET_HOST, virtualHost);
             }
         }
-        return method;
+        for (final Header h : url.getHeaders()) {
+            if (h == null) {
+                continue;
+            }
+            final String name = h.getName();
+            final String value = h.getValue();
+            // XSD declares both name/value required, but defend against
+            // programmatically constructed Header instances with null
+            // members -- setHeader(name, null) would throw.
+            if (name != null && !name.isEmpty() && value != null) {
+                method.setHeader(name, value);
+            }
+        }
     }
 
     private static HttpPost buildPostMethod(final URI uri, final HttpCollectorAgent collectorAgent) {

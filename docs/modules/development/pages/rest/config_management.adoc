@@ -115,6 +115,32 @@ You can also target a single element using a cURL command:
 [source]
 curl -X PUT -u 'admin:admin' https://opennms.example.com/opennms/rest/cm/provisiond/default -H 'Content-type: application/json' --data '{ "rescanThreads": 150 }'
 
+==== Scheduled requisition imports
+
+Each entry in the `requisition-def` array may carry a `cron-schedule` value that tells Provisiond when to pull and import that requisition.
+The value is parsed as a Quartz `CronTrigger` expression, not a standard Unix crontab expression.
+
+* The expression has *six* required fields (`seconds minutes hours day-of-month month day-of-week`) and an optional seventh `year` field, instead of the five Unix `crontab(5)` fields.
+* Either `day-of-month` or `day-of-week` must be `?` -- the two cannot both be specific values in the same expression.
+* Provisiond's scheduler does not back-fill missed fires.
+If {page-component-title} is down when a scheduled import would have run, the run is skipped and the next scheduled run picks up normally.
+
+Example expressions:
+
+[source]
+----
+0 0 0 * * ?       # every day at midnight
+0 0/30 * * * ?    # every 30 minutes
+0 0 2 ? * MON     # 02:00 every Monday
+----
+
+See the link:https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html[Quartz `CronTrigger` tutorial] for the full grammar, including the `L`, `W`, and `#` modifiers.
+
+Example cURL command that PUTs a single weekly-scheduled requisition definition:
+
+[source]
+curl -X PUT -u 'admin:admin' https://opennms.example.com/opennms/rest/cm/provisiond/default -H 'Content-type: application/json' --data '{ "requisition-def": [ { "import-name": "weekly-inventory", "import-url-resource": "requisition://customer1", "cron-schedule": "0 0 2 ? * MON" } ] }'
+
 == DELETEs (removing data)
 
 [caption=]

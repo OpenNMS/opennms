@@ -96,7 +96,4 @@ For more information, see xref:deep-dive/visualizations/trends.adoc[] in the Dee
 
 == Beyond Quick Start
 
-Refer to Visualizations in the Deep Dive section for more information on visualizations, including the following:
-
-* xref:deep-dive/visualizations/opsboard/introduction.adoc[Operator boards and configuration settings].
-* xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
+Refer to Visualizations in the Deep Dive section for more information on the available visualizations.

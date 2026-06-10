@@ -20,8 +20,7 @@
 /// License.
 ///
 
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
-import { NodePreferences, OpenNmsPreferences } from '@/types'
+import { NodePreferences, NodeQueryFilter, OpenNmsPreferences } from '@/types'
 
 const OPENNMS_PREFERENCES_STORAGE_KEY = 'opennms-preferences'
 
@@ -58,9 +57,16 @@ const loadDefaultPreferences = () => {
 
 const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
-  const query = useNodeQuery()
   prefs.nodePreferences = data
-  prefs.nodePreferences.nodeFilter = query.getDefaultNodeQueryFilter()
+  savePreferences(prefs)
+}
+
+const saveNodeQueryFilter = (filter: NodeQueryFilter) => {
+  const prefs = loadPreferences() || defaultPreferences()
+  if (!prefs.nodePreferences) {
+    prefs.nodePreferences = { nodeColumns: [] }
+  }
+  prefs.nodePreferences.nodeFilter = filter
   savePreferences(prefs)
 }
 
@@ -89,5 +95,6 @@ export {
   loadNodePreferences,
   loadPreferences,
   saveNodePreferences,
+  saveNodeQueryFilter,
   savePreferences
 }

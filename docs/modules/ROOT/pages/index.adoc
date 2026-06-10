@@ -29,7 +29,7 @@ Not only can you monitor and troubleshoot problems on your local and remote netw
 
 The following shows a sample full stack {page-component-title} implementation:
 
-image::diagram_implementation.png[]
+image::opennms-full-stack.png[]
 
 . OpenNMS core
 . Kafka message broker

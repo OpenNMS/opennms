@@ -84,6 +84,7 @@
     <complexType>
       <sequence>
         <element ref="http-dc:parameters" minOccurs="0" maxOccurs="1" />
+        <element ref="http-dc:headers" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="method" type="http-dc:allowed-methods" use="optional" default="GET" />
       <attribute name="http-version" type="http-dc:allowed-versions" use="optional" default="1.1" />
@@ -134,6 +135,21 @@
       <sequence>
         <element ref="http-dc:parameter" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
+    </complexType>
+  </element>
+
+  <element name="headers" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:header" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="header" >
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
     </complexType>
   </element>
   

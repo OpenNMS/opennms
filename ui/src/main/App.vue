@@ -55,6 +55,7 @@ onMounted(() => {
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
+  nodeStructureStore.getServiceTypes()
   pluginStore.getPlugins()
 })
 </script>

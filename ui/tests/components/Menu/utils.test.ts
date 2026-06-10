@@ -79,18 +79,18 @@ describe('Menu utils', () => {
       const inventoryItems = childItems(inventory)
       expect(inventoryItems).toHaveLength(3)
       expect(inventoryItems[0]).toMatchObject({
-        id: 'nodes',
+        id: 'nodeList',
         type: 'item',
-        title: 'Nodes',
-        href: `${baseHref}element/nodeList.htm`,
+        title: 'Node List',
+        href: `${baseHref}ui/index.html#/nodes`,
         target: '_self'
       })
       expect(inventoryItems[0].icon).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
-        id: 'structuredNodeList',
+        id: 'legacyNodes',
         type: 'item',
-        title: 'Structured Node List',
-        href: `${baseHref}ui/index.html#/nodes`,
+        title: 'Nodes (Legacy)',
+        href: `${baseHref}element/nodeList.htm`,
         target: '_self'
       })
       expect(inventoryItems[2]).toMatchObject({

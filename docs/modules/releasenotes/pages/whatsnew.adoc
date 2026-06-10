@@ -94,3 +94,22 @@ Attempting a schema upgrade with `install -dis` will result in an error.
 If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
 Use this only as a last resort, since it may affect compatibility.
 Be aware that doing so takes you beyond supported configurations — here be dragons.
+
+=== Prometheus RemoteWrite plugin (formerly Cortex TSS plugin)
+
+The OpenNMS Cortex TSS plugin has been renamed to the Prometheus RemoteWrite plugin to reflect that it works with any Prometheus `remote_write`-compatible time series store, not just Cortex.
+As part of the rename, the OSGi configuration PID changed from `org.opennms.plugins.tss.cortex` to `org.opennms.plugins.tss.prometheus`.
+
+IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`, rename the file to `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` after upgrading. If you do not, the plugin falls back to default values and writes will not reach your configured time series store.
+
+The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
+See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
+
+=== Ops Board and Wallboard removed
+
+The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
+These provided auto-rotating, dashlet-composed displays intended for wall-mounted operations screens.
+
+The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
+There is no drop-in replacement.
+

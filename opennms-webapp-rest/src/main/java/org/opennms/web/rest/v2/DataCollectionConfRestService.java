@@ -36,6 +36,7 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
 import org.opennms.netmgt.model.SnmpCollectionProfile;
+import org.opennms.web.rest.v2.model.SnmpCollectionCreateSourceDto;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -88,7 +89,7 @@ import java.util.LinkedHashMap;
 import java.util.Date;
 
 @Component
-public class DataCollectionConfRestService  implements DataCollectionConfRestApi {
+public class DataCollectionConfRestService implements DataCollectionConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfRestService.class);
 
@@ -845,12 +846,70 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             dataCollectionConfPersistenceService.updateSystemDef(systemDefId,collectionSourceId,request);
             snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SystemDef updated successfully.").build();
-
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("SystemDef was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return internalServerError(ex);
         }
+    }
+
+    @Override
+    public Response createSnmpDataCollectionSource(
+            final SnmpCollectionCreateSourceDto request,
+            final SecurityContext securityContext
+    ) {
+        final String username = getUsername(securityContext);
+
+        if (request == null) {
+            return badRequest("Request must not be empty.");
+        }
+
+        final String sourceName = request.getName() != null ? request.getName().trim(): "";
+
+        if (sourceName.isBlank()) {
+            return badRequest("Request must include a non-empty name.");
+        }
+
+        final List<String> sourceProfiles =
+                request.getProfiles() != null ?
+                request.getProfiles().stream()
+                        .filter(Objects::nonNull)
+                        .map(String::trim)
+                        .filter(s -> !s.isBlank())
+                        .toList()
+                : List.of();
+
+        if (sourceProfiles.isEmpty()) {
+            return badRequest("Request must include at least one profile.");
+        }
+
+        if (snmpCollectionSourceDao.findByName(sourceName) != null) {
+            return badRequest("A source named '" + sourceName + "' already exists.");
+        }
+
+        final List<String> unknownProfiles = sourceProfiles.stream()
+                .filter(p -> snmpCollectionProfileDao.findByName(p) == null)
+                .toList();
+
+        if (!unknownProfiles.isEmpty()) {
+            return badRequest("The following profiles do not exist: " + unknownProfiles);
+        }
+
+        final Date now = new Date();
+        DatacollectionGroup dcg = new DatacollectionGroup();
+        dcg.setName(sourceName);
+
+        final Integer sourceId;
+
+        try {
+            sourceId = dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dcg, now, sourceProfiles);
+        } catch (Exception ex) {
+            return internalServerError(ex);
+        }
+
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
+
+        return Response.status(Response.Status.CREATED).entity(sourceId).build();
     }
 
     @Override
@@ -1437,5 +1496,4 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                 .entity(Map.of("error", "Unexpected error occurred"))
                 .build();
     }
-
 }

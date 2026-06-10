@@ -42,6 +42,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.xml.config.Content;
@@ -184,7 +185,16 @@ public class HttpUrlConnection extends URLConnection {
             }
 
             // Get Response
-            CloseableHttpResponse response = m_clientWrapper.execute(request);
+            final CloseableHttpResponse response = m_clientWrapper.execute(request);
+            final int status = response.getStatusLine().getStatusCode();
+            if (status >= 400) {
+                try (response) {
+                    EntityUtils.consumeQuietly(response.getEntity());
+                    // "auth failure:" prefix on 401/403 lets the adaptor gate cache invalidation.
+                    final String prefix = (status == 401 || status == 403) ? "auth failure: " : "";
+                    throw new IOException(prefix + "HTTP " + status + " from " + m_url);
+                }
+            }
             return response.getEntity().getContent();
         } catch (Exception e) {
             throw new IOException("Can't retrieve " + m_url.getPath() + " from " + m_url.getHost() + " because " + e.getMessage(), e);

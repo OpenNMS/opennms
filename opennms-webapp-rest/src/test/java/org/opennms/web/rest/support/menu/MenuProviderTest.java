@@ -21,8 +21,6 @@
  */
 package org.opennms.web.rest.support.menu;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -92,7 +90,7 @@ public class MenuProviderTest {
         MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
         final String[] expectedNames = new String[] {
-                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
                 "Logs", "Secure Credentials Vault", "Connect to Zenith"
         };
         List<String> actualNames = getMenuNames(infoMenu);
@@ -119,7 +117,7 @@ public class MenuProviderTest {
         MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
         final String[] expectedNames = new String[] {
-                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
                 "Logs", "Secure Credentials Vault"
         };
 
@@ -138,7 +136,7 @@ public class MenuProviderTest {
 
         // Should not have any admin-only roles
         final String[] expectedNames = new String[] {
-            "Nodes", "Structured Node List", "Assets", "Path Outages"
+            "Node List", "Nodes (Legacy)", "Assets", "Path Outages"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);
@@ -156,7 +154,7 @@ public class MenuProviderTest {
 
         // Should not have any admin-only roles, but should have file system manager roles
         final String[] expectedNames = new String[] {
-            "Nodes", "Structured Node List", "Assets", "Path Outages", "File Editor"
+            "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "File Editor"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);

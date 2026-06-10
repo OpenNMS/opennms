@@ -38,6 +38,12 @@ export const setupPrimeVue = (app: App) => {
           order: 'primevue'
         }
       }
+    },
+    zIndex: {
+      overlay: 1060,
+      menu: 1060,
+      modal: 1100,
+      tooltip: 1110
     }
   })
 }

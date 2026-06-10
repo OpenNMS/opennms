@@ -16,23 +16,8 @@
             </template>
           </FeatherInput>
         </div>
-        <div class="refresh">
-          <FeatherButton
-            primary
-            icon="Refresh"
-            data-test="refresh-button"
-            @click="store.refreshSourcesfilters()"
-          >
-            <FeatherIcon :icon="Refresh"> </FeatherIcon>
-          </FeatherButton>
-        </div>
       </div>
-      <!-- Create-source action hidden for now: the only supported entry point
-           for new sources is the multipart upload on the Import tab, which
-           drives the parser/validator and the profile-attachment policy. The
-           handwritten create flow is preserved in the codebase but not
-           surfaced until it's reconciled with the upload contract. -->
-      <div class="section-right" v-if="false">
+      <div class="section-right">
         <div class="add">
           <FeatherButton
             secondary
@@ -85,13 +70,21 @@
                 class="profile-chips"
                 :data-test="`profiles-cell-${source.name}`"
               >
-                <FeatherChip
-                  v-for="name in profilesForSource(source.name)"
-                  :key="name"
-                  class="profile-tag"
+                <FeatherTooltip
+                  v-for="profile in profilesForSource(source.name)"
+                  :key="profile.id"
+                  title="Click to edit profile"
+                  v-slot="{ attrs, on }"
                 >
-                  {{ name }}
-                </FeatherChip>
+                  <FeatherChip
+                    class="profile-tag clickable-chip"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id } })"
+                  >
+                    {{ profile.name }}
+                  </FeatherChip>
+                </FeatherTooltip>
                 <span
                   v-if="profilesForSource(source.name).length === 0"
                   class="empty-profiles"
@@ -158,6 +151,7 @@
                     {{ source.enabled ? 'Disable' : 'Enable' }} Source
                   </FeatherDropdownItem>
                   <FeatherDropdownItem
+                    v-if="!isPluginSourced(source)"
                     data-test="delete-source-button"
                     @click="openDeleteCollectionSourceDialog(source)"
                   >
@@ -209,23 +203,29 @@
 </template>
 
 <script lang="ts" setup>
-import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources, getAllSnmpCollectionProfiles } from '@/services/snmpDataCollectionService'
-import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
+import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
+import { FeatherTooltip } from '@featherds/tooltip'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import DownloadIcon from '@featherds/icon/action/DownloadFile'
+import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import useSnackbar from '@/composables/useSnackbar'
+import {
+  deleteSnmpCollectionSources,
+  downloadSnmpDataCollectionById,
+  enableDisableSnmpDataCollectionSources,
+  getAllSnmpCollectionProfiles
+} from '@/services/snmpDataCollectionService'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
@@ -246,11 +246,11 @@ const availableProfiles = ref<SnmpCollectionProfile[]>([])
 // Profiles are derived (a source is "in" a profile if its name appears in
 // that profile's source_names JSON). Comparison is case-insensitive to match
 // the upload contract.
-const profilesForSource = (sourceName: string): string[] => {
+const profilesForSource = (sourceName: string): { id: number; name: string }[] => {
   const target = sourceName.toLowerCase()
   return availableProfiles.value
     .filter((p) => p.sourceNames?.some((n) => n.toLowerCase() === target))
-    .map((p) => p.name)
+    .map((p) => ({ id: p.id, name: p.name }))
 }
 
 const refreshAvailableProfiles = async () => {
@@ -279,12 +279,15 @@ const sort = reactive({
 }) as any
 
 const goToCreateSource = () => {
-  router.push({ name: 'SNMP Data Collection Create' })
+  router.push({
+    name: 'SNMP Data Collection Source Detail',
+    params: { id: 'create' }
+  })
 }
 
 const onSourceClick = (source: any) => {
   router.push({
-    name: 'SNMP Data Collection Detail',
+    name: 'SNMP Data Collection Source Detail',
     params: { id: source.id }
   })
 }
@@ -482,6 +485,14 @@ onMounted(async () => {
             border-radius: 4px;
           }
 
+          .clickable-chip {
+            cursor: pointer;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+
           .empty-profiles {
             color: var(--feather-secondary-text-on-surface);
           }
@@ -543,4 +554,3 @@ onMounted(async () => {
   }
 }
 </style>
-

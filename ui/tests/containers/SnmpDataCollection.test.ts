@@ -1,5 +1,6 @@
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
+import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourcesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourcesTable.vue'
 import SnmpDataCollection from '@/containers/SnmpDataCollection.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -59,6 +60,7 @@ describe('SnmpDataCollection.vue', () => {
           FeatherTabPanel,
           SnmpDataCollectionSourcesTable: true,
           SnmpDataCollectionSourceImport: true,
+          SnmpDataCollectionProfilesTable: true,
           BreadCrumbs: true
         }
       }
@@ -109,10 +111,15 @@ describe('SnmpDataCollection.vue', () => {
       expect(wrapper.findComponent(SnmpDataCollectionSourceImport).exists()).toBe(true)
     })
 
+    it('renders SnmpDataCollectionProfilesTable component', () => {
+      expect(wrapper.findComponent(SnmpDataCollectionProfilesTable).exists()).toBe(true)
+    })
+
     it('renders all key child components together', () => {
       expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourcesTable).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourceImport).exists()).toBe(true)
+      expect(wrapper.findComponent(SnmpDataCollectionProfilesTable).exists()).toBe(true)
     })
 
     it('does not render any unexpected text outside structured elements', () => {
@@ -133,7 +140,7 @@ describe('SnmpDataCollection.vue', () => {
 
     it('renders exactly two FeatherTab components', () => {
       const tabs = wrapper.findAllComponents(FeatherTab)
-      expect(tabs).toHaveLength(2)
+      expect(tabs).toHaveLength(3)
     })
 
     it('first tab has label "Data Collection Sources"', () => {
@@ -148,7 +155,7 @@ describe('SnmpDataCollection.vue', () => {
 
     it('renders exactly two FeatherTabPanel components', () => {
       const panels = wrapper.findAllComponents(FeatherTabPanel)
-      expect(panels).toHaveLength(2)
+      expect(panels).toHaveLength(3)
     })
 
     it('tab container binds to store.activeTab via modelValue', () => {
@@ -682,8 +689,8 @@ describe('SnmpDataCollection.vue', () => {
       snmpStore.activeTab = 1
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(2)
-      expect(wrapper.findAllComponents(FeatherTabPanel)).toHaveLength(2)
+      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(3)
+      expect(wrapper.findAllComponents(FeatherTabPanel)).toHaveLength(3)
       expect(wrapper.findComponent(FeatherTabContainer).exists()).toBe(true)
     })
 
@@ -763,7 +770,8 @@ describe('SnmpDataCollection.vue', () => {
       expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourcesTable).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourceImport).exists()).toBe(true)
-      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(2)
+      expect(wrapper.findComponent(SnmpDataCollectionProfilesTable).exists()).toBe(true)
+      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(3)
     })
   })
 
@@ -773,7 +781,8 @@ describe('SnmpDataCollection.vue', () => {
   describe('Parametrized Tests - Tab Labels', () => {
     it.each([
       { index: 0, expectedLabel: 'Data Collection Sources' },
-      { index: 1, expectedLabel: 'Import Data Collection Sources' }
+      { index: 1, expectedLabel: 'Import Data Collection Sources' },
+      { index: 2, expectedLabel: 'Profiles' }
     ])('tab at index $index has label "$expectedLabel"', ({ index, expectedLabel }) => {
       const tabs = wrapper.findAllComponents(FeatherTab)
       expect(tabs[index].text()).toContain(expectedLabel)
@@ -784,7 +793,7 @@ describe('SnmpDataCollection.vue', () => {
   // Parametrized Tests - Active Tab
   // ---------------------------------------------------------------------------
   describe('Parametrized Tests - Active Tab', () => {
-    it.each([{ tabIndex: 0 }, { tabIndex: 1 }])(
+    it.each([{ tabIndex: 0 }, { tabIndex: 1 }, { tabIndex: 2 }])(
       'tab container modelValue matches store activeTab $tabIndex',
       async ({ tabIndex }) => {
         snmpStore.activeTab = tabIndex
@@ -809,6 +818,7 @@ describe('SnmpDataCollection.vue', () => {
       expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourcesTable).exists()).toBe(true)
       expect(wrapper.findComponent(SnmpDataCollectionSourceImport).exists()).toBe(true)
+      expect(wrapper.findComponent(SnmpDataCollectionProfilesTable).exists()).toBe(true)
     })
 
     it('maintains BreadCrumbs after tab switch', async () => {
@@ -822,8 +832,8 @@ describe('SnmpDataCollection.vue', () => {
       menuStore.mainMenu = { homeUrl: '/changed' } as any
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(2)
-      expect(wrapper.findAllComponents(FeatherTabPanel)).toHaveLength(2)
+      expect(wrapper.findAllComponents(FeatherTab)).toHaveLength(3)
+      expect(wrapper.findAllComponents(FeatherTabPanel)).toHaveLength(3)
     })
 
     it('combined store interactions do not break rendering', async () => {

@@ -55,6 +55,7 @@ public class HttpDatacollectionConfigTest extends XmlTestNoCastor<HttpDatacollec
         url.setUserAgent("Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412");
         url.setMatches(".*([0-9]+).*");
         url.setResponseRange("100-399");
+        url.setHeaders(Collections.singletonList(new Header("Authorization", "Bearer ${token:my-auth}")));
 
         Uri uri = new Uri();
         uri.setName("document-counts");
@@ -82,7 +83,11 @@ public class HttpDatacollectionConfigTest extends XmlTestNoCastor<HttpDatacollec
                          "<uri name=\"document-counts\">" +
                              "<url path=\"/test/resources/httpcolltest.html\" " +
                                  "user-agent=\"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412\" " +
-                                 "matches=\".*([0-9]+).*\" response-range=\"100-399\" />" +
+                                 "matches=\".*([0-9]+).*\" response-range=\"100-399\">" +
+                                 "<headers>" +
+                                     "<header name=\"Authorization\" value=\"Bearer ${token:my-auth}\"/>" +
+                                 "</headers>" +
+                             "</url>" +
                           "<attributes>" +
                               "<attrib alias=\"documentCount\" match-group=\"1\" type=\"counter\"/>" +
                           "</attributes>" +

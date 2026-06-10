@@ -1,13 +1,16 @@
 import {
   filterSnmpCollectionSources,
-  getAllSnmpCollectionSourcesNamesAndIds
+  getAllSnmpCollectionSourcesNamesAndIds,
+  getAllSnmpCollectionProfiles,
+  deleteSnmpDataCollectionProfiles,
+  createSnmpCollectionSource
 } from '@/services/snmpDataCollectionService'
-import { SnmpDataCollectionStoreState } from '@/types/snmpDataCollection'
+import { SnmpCollectionProfile, SnmpDataCollectionStoreState } from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
   page: 1,
-  pageSize: 10,
+  pageSize: 50,
   total: 0
 }
 
@@ -21,6 +24,14 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     uploadedSourceNames: [],
     activeTab: 0,
     sourcesSorting: {
+      sortOrder: 'desc',
+      sortKey: 'createdTime'
+    },
+    profiles: [],
+    selectedProfile: null,
+    profilesPagination: { ...defaultPagination },
+    profilesSearchTerm: '',
+    profilesSorting: {
       sortOrder: 'desc',
       sortKey: 'createdTime'
     }
@@ -73,13 +84,54 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
       this.sourcesPagination.pageSize = pageSize
       await this.fetchSnmpCollectionSources()
     },
-    async refreshSourcesfilters() {
-      this.sourcesPagination = { ...defaultPagination }
-      this.sourcesSearchTerm = ''
-      this.sourcesSorting.sortKey = 'createdTime'
-      this.sourcesSorting.sortOrder = 'desc'
-      await this.fetchSnmpCollectionSources()
+    async fetchSnmpCollectionProfiles() {
+      this.isLoading = true
+      try {
+        const response = await getAllSnmpCollectionProfiles()
+        this.profiles = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection profiles:', error)
+        this.isLoading = false
+      }
+    },
+    onChangeProfilesSearchTerm(searchTerm: string) {
+      this.profilesSearchTerm = searchTerm
+      this.profilesPagination.page = 1
+    },
+    onProfilesSortChange(sortKey: string, sortOrder: string) {
+      this.profilesSorting.sortKey = sortKey
+      this.profilesSorting.sortOrder = sortOrder
+      this.profilesPagination.page = 1
+    },
+    onProfilePageChange(page: number) {
+      this.profilesPagination.page = page
+    },
+    onProfilePageSizeChange(pageSize: number) {
+      this.profilesPagination.page = 1
+      this.profilesPagination.pageSize = pageSize
+    },
+    async removeSnmpCollectionProfiles(ids: number[]): Promise<boolean> {
+      return deleteSnmpDataCollectionProfiles(ids)
+    },
+    profilesForSource(sourceName: string): SnmpCollectionProfile[] {
+      const normalizedSourceName = sourceName.trim().toLowerCase()
+
+      if (!normalizedSourceName) {
+        return []
+      }
+
+      return this.profiles.filter(profile => {
+        if (!Array.isArray(profile.sourceNames)) {
+          return false
+        }
+        return profile.sourceNames.some(profileSourceName =>
+          profileSourceName.trim().toLowerCase() === normalizedSourceName
+        )
+      })
+    },
+    async createSnmpDataCollectionSource(name: string, profiles: string[]): Promise<number | null> {
+      return createSnmpCollectionSource(name, profiles)
     }
   }
 })
-

@@ -92,11 +92,16 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
         this.isLoading = false
       }
     },
+    // fetch collection source details by ID, including associated system definitions, MIB groups, and resource types
+    // if ID is empty or "create", initialize with default values for creation flow
     async fetchCollectionSourceById(id: string) {
       this.isLoading = true
       try {
-        const response = await getSnmpDataCollectionSourceById(Number(id))
-        this.selectedCollectionSource = response
+        if (id && id !== 'create') {
+          const response = await getSnmpDataCollectionSourceById(Number(id))
+          this.selectedCollectionSource = response
+        }
+
         await this.fetchResourceTypes()
         await this.fetchMibGroups()
         await this.fetchSystemDefinitions()
@@ -109,7 +114,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       }
     },
     async fetchSystemDefinitions() {
-      if (this.selectedCollectionSource) {
+      if (this.selectedCollectionSource?.id) {
         this.isLoading = true
         try {
           const response = await getSnmpDataCollectionSystemDefinitions(
@@ -150,7 +155,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       await this.fetchSystemDefinitions()
     },
     async fetchMibGroups() {
-      if (this.selectedCollectionSource) {
+      if (this.selectedCollectionSource?.id) {
         this.isLoading = true
         try {
           const response = await getSnmpDataCollectionMibGroups(
@@ -207,7 +212,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       await this.fetchSystemDefinitions()
     },
     async fetchResourceTypes() {
-      if (this.selectedCollectionSource) {
+      if (this.selectedCollectionSource?.id) {
         this.isLoading = true
         try {
           const response = await getSnmpDataCollectionResourceTypes(

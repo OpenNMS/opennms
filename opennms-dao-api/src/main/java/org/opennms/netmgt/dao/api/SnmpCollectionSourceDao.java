@@ -38,6 +38,12 @@ public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, I
 
     List<SnmpCollectionSource> findAllEnabled();
 
+    /**
+     * Find all sources whose {@code uploadedBy} matches the given marker.
+     * Used by plugin sync paths to enumerate plugin-managed rows.
+     */
+    List<SnmpCollectionSource> findByUploadedBy(String uploadedBy);
+
     void delete(SnmpCollectionSource source);
 
     void deleteAll(final Collection<SnmpCollectionSource> list);

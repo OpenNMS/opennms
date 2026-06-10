@@ -345,7 +345,7 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `org.opennms.provisiond.scheduleRescanForUpdatedNodes`
 | true
-| Enable or disable rescans of existing nodes following synchronization of a requistion
+| Enable or disable rescans of existing nodes following synchronization of a requisition
 
 | `org.opennms.rrd.fileExtension`
 | `null`

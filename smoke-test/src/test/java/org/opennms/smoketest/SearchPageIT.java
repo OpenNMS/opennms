@@ -32,6 +32,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SearchPageIT extends OpenNMSSeleniumIT {
@@ -60,13 +61,13 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
                 "select[@name='mib2Parm']",
                 "select[@name='snmpParm']",
                 "select[@id='bymonitoringLocation_monitoringLocation']",
-                "select[@id='byservice_service']",
+                "select[@id='byservice_monitoredService']",
                 "input[@name='maclike']",
                 "input[@name='foreignSource']",
                 "select[@name='flows']",
                 "input[@name='topology']"
         }) {
-            findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
+            findElementByXpath("//form[@class='form-group']//" + matchingElement);
         }
 
         findElementByXpath("//form[@action='asset/nodelist.jsp']//select[@name='searchvalue']");
@@ -76,12 +77,8 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("All nodes").click();
-        findElementByXpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
 
-        searchPage();
-        findElementByLink("All nodes and their interfaces").click();
-        findElementByXpath("//span[text()='Nodes and their interfaces']");
-        findElementByLink("Hide interfaces");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'card')]//span[@class='title' and text()='Node List']")));
 
         searchPage();
         findElementByLink("All nodes with asset info").click();
@@ -93,7 +90,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
         final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
         maclike.sendKeys(Keys.ENTER);
 
-        findElementByXpath("//div[@id='content']/nav/ol/li[text()='Node List']");
-        findElementByXpath("//div[@class='card-header']//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
+        findElementByXpath("//div[contains(@class, 'breadcrumbs')]//a[text()='Node List']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'card')]//span[@class='title' and text()='Node List']")));
     }
 }

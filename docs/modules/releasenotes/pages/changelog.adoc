@@ -2,6 +2,58 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.1]]
+
+== Release 36.0.1
+
+=== Bug
+
+* "Requisition" misspelled as "requistion" in code and documentation (Issue https://issues.opennms.org/browse/NMS-14656[NMS-14656])
+* 36.0.0: Some find-java.sh still search for Java between 11.0 17.9999 (Issue https://issues.opennms.org/browse/NMS-19801[NMS-19801])
+* 36.0.0: Wrong HOME directories set in Minion (Issue https://issues.opennms.org/browse/NMS-19800[NMS-19800])
+* Update expat library (Issue https://issues.opennms.org/browse/NMS-19817[NMS-19817])
+* Update glibc library (Issue https://issues.opennms.org/browse/NMS-19655[NMS-19655])
+* Update glibc-common library (Issue https://issues.opennms.org/browse/NMS-19656[NMS-19656])
+* Update glibc-minimal-langpack library (Issue https://issues.opennms.org/browse/NMS-19657[NMS-19657])
+* Update gnutls library (Issue https://issues.opennms.org/browse/NMS-19755[NMS-19755])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-19777[NMS-19777])
+* Update io.netty:netty-codec-dns library (Issue https://issues.opennms.org/browse/NMS-19778[NMS-19778])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-19787[NMS-19787])
+* Update io.netty:netty-codec-http2 library (Issue https://issues.opennms.org/browse/NMS-19788[NMS-19788])
+* Update io.netty:netty-transport-native-epoll library (Issue https://issues.opennms.org/browse/NMS-19779[NMS-19779])
+* Update jq library (Issue https://issues.opennms.org/browse/NMS-19732[NMS-19732])
+* Update krb5-libs library (Issue https://issues.opennms.org/browse/NMS-19756[NMS-19756])
+* Update libcap library (Issue https://issues.opennms.org/browse/NMS-19818[NMS-19818])
+* Update openssh-clients library (Issue https://issues.opennms.org/browse/NMS-19820[NMS-19820])
+* Update org.apache.activemq:activemq-broker library (Issues https://issues.opennms.org/browse/NMS-19789[NMS-19789], https://issues.opennms.org/browse/NMS-19827[NMS-19827])
+* Update org.apache.activemq:activemq-client library (Issue https://issues.opennms.org/browse/NMS-19698[NMS-19698])
+* Update org.apache.mina:mina-core library (Issue https://issues.opennms.org/browse/NMS-19780[NMS-19780])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-19781[NMS-19781])
+* Update org.eclipse.jetty:jetty-http library (Issue https://issues.opennms.org/browse/NMS-19742[NMS-19742])
+* Update org.postgresql:postgresql library (Issue https://issues.opennms.org/browse/NMS-19782[NMS-19782])
+* Update python3 library (Issue https://issues.opennms.org/browse/NMS-19821[NMS-19821])
+* Update python3-libs library (Issue https://issues.opennms.org/browse/NMS-19822[NMS-19822])
+* Update rsync library (Issues https://issues.opennms.org/browse/NMS-19739[NMS-19739], https://issues.opennms.org/browse/NMS-19823[NMS-19823])
+* Update vim-minimal library (Issue https://issues.opennms.org/browse/NMS-19824[NMS-19824])
+
+=== Enhancement
+
+* Add the 64bit memory gauges in UCD-SNMP-MIB to default config (Issue https://issues.opennms.org/browse/NMS-18291[NMS-18291])
+* Deprecate OpsBoard/OpsPanel and Wallboard Vaadin UI Components (Issue https://issues.opennms.org/browse/NMS-19853[NMS-19853])
+* Support for Token Based Authentication with XML/JSON Collector (and HTTP collector) (Issue https://issues.opennms.org/browse/NMS-19751[NMS-19751])
+
+=== Story
+
+* Improve login page directive (Issue https://issues.opennms.org/browse/NMS-19799[NMS-19799])
+* Support SNMP data collection config updates from Plugins (Issue https://issues.opennms.org/browse/NMS-19719[NMS-19719])
+
+=== Task
+
+* Disable flaky smoke tests (Issue https://issues.opennms.org/browse/NMS-17889[NMS-17889])
+* FE: Improve UI for SNMP Data Collection Profiles and Create Source (Issue https://issues.opennms.org/browse/NMS-19796[NMS-19796])
+* Update Jetty 9.4.x (Issue https://issues.opennms.org/browse/NMS-19722[NMS-19722], https://issues.opennms.org/browse/NMS-19774[NMS-19774] and https://issues.opennms.org/browse/NMS-19684[NMS-19684])
+* Update existing links to Node page to go to Node Structure page instead (Issue https://issues.opennms.org/browse/NMS-16118[NMS-16118])
+
 [[releasenotes-changelog-36.0.0]]
 
 == Release 36.0.0

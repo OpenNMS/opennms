@@ -342,6 +342,8 @@
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml/aalto-xml/${aaltoXmlVersion}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-xml/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
@@ -1498,82 +1500,6 @@
     <feature name="org.opennms.features.topology.shell" version="${project.version}" description="OpenNMS :: Features :: Topology :: Shell Commands">
         <details>Generated using Pax-Construct</details>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.shell/${project.version}</bundle>
-    </feature>
-    <feature name="vaadin-dashboard" version="${project.version}" description="OpenNMS :: Features :: Dashboard">
-        <details>OpenNMS Vaadin Dashboard</details>
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
-        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.4.2</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/dashboard-theme/${project.version}</bundle>
-        <bundle>mvn:org.vaadin.addons/dragdroplayouts/1.4.2</bundle>
-    </feature>
-    <feature name="dashlet-alarms" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Alarms">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-bsm" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: BSM">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-bsm/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-summary" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Summary">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-map" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Map">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-map/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-image" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Image">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-charts" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Charts">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-rtc" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: RTC">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-rrd" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: RRD">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rrd/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-ksc" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: KSC">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-ksc/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-topology" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-surveillance" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Surveillance">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-surveillance/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-url" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: URL">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-url/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-grafana" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Grafana">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-grafana/${project.version}</bundle>
     </feature>
     <feature name="vaadin-surveillance-views" version="${project.version}" description="OpenNMS :: Features :: Surveillance Views">
         <details>OpenNMS Vaadin Surveillance Views</details>

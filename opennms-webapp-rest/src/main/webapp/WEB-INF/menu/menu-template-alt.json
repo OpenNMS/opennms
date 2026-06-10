@@ -80,17 +80,17 @@
       "roles": null,
       "items": [
         {
-          "id": "nodes",
-          "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
+          "id": "nodeList",
+          "name": "Node List",
+          "url": "ui/index.html#/nodes",
+          "locationMatch": "configurationManagement",
           "roles": null
         },
         {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
-          "url": "ui/index.html#/nodes",
-          "locationMatch": "configurationManagement",
+          "id": "legacyNodes",
+          "name": "Nodes (Legacy)",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
           "roles": null
         },
         {
@@ -202,13 +202,6 @@
           "name": "Dashboards",
           "url": "dashboards.htm",
           "locationMatch": "",
-          "roles": null
-        },
-        {
-          "id": "opsBoard",
-          "name": "Wallboard",
-          "url": "vaadin-wallboard",
-          "locationMatch": "vaadin-wallboard",
           "roles": null
         },
         {
@@ -480,13 +473,6 @@
           "id": "scheduledOutages",
           "name": "Scheduled Outages",
           "url": "admin/sched-outages/index.jsp",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "wallboardConfiguration",
-          "name": "Wallboard Configuration",
-          "url": "admin/wallboardConfig.jsp",
           "locationMatch": null,
           "roles": null
         },
