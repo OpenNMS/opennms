@@ -103,7 +103,7 @@ public class HaResource extends OnmsRestService {
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
-                     "SELECT instance_id, configured_role, current_state, last_heartbeat, " +
+                     "SELECT instance_id, configured_role, current_state, last_heartbeat, active_since, " +
                      "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
 
@@ -115,6 +115,8 @@ public class HaResource extends OnmsRestService {
                 dto.setCurrentState(rs.getString("current_state"));
                 Timestamp ts = rs.getTimestamp("last_heartbeat");
                 dto.setLastHeartbeat(ts != null ? ts.toInstant().toString() : null);
+                Timestamp activeSinceTs = rs.getTimestamp("active_since");
+                dto.setActiveSince(activeSinceTs != null ? activeSinceTs.toInstant().toString() : null);
                 dto.setHostname(rs.getString("hostname"));
 
                 long ageSeconds = rs.getLong("age_seconds");

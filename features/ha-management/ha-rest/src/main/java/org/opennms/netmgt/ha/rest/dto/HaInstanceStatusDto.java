@@ -43,6 +43,12 @@ public class HaInstanceStatusDto {
     @XmlElement(name = "last-heartbeat")
     private String lastHeartbeat;
 
+    /** ISO-8601 timestamp at which this instance most recently transitioned into the
+     *  ACTIVE state, or {@code null} if it is not ACTIVE. This is the signal used to
+     *  resolve split-brain (the instance that became ACTIVE earlier yields). */
+    @XmlElement(name = "active-since")
+    private String activeSince;
+
     @XmlElement(name = "hostname")
     private String hostname;
 
@@ -64,6 +70,9 @@ public class HaInstanceStatusDto {
 
     public String getLastHeartbeat() { return lastHeartbeat; }
     public void setLastHeartbeat(String lastHeartbeat) { this.lastHeartbeat = lastHeartbeat; }
+
+    public String getActiveSince() { return activeSince; }
+    public void setActiveSince(String activeSince) { this.activeSince = activeSince; }
 
     public String getHostname() { return hostname; }
     public void setHostname(String hostname) { this.hostname = hostname; }
