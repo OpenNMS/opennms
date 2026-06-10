@@ -273,7 +273,10 @@ public class HaStartupCoordinatorTest {
     @Test
     public void splitBrainYieldsWhenOurHeartbeatIsOlder() throws Exception {
         HaConfiguration cfg = primaryConfig();
-        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        // Spy so we can intercept the JVM halt the yield path triggers (it would otherwise
+        // kill the test JVM).
+        HaStartupCoordinator coord = spy(createCoordinator(cfg, mockDbFactory));
+        doNothing().when(coord).terminateJvm(anyInt());
         setStaticInstance(coord);
         // Manually place coordinator in ACTIVE state
         setCurrentState(coord, HaInstanceState.ACTIVE);
@@ -293,6 +296,7 @@ public class HaStartupCoordinatorTest {
         coord.checkForSplitBrain();
 
         assertEquals("should have stepped down to STANDBY", HaInstanceState.STANDBY, coord.getCurrentState());
+        verify(coord).terminateJvm(70);
     }
 
     @Test
@@ -323,7 +327,8 @@ public class HaStartupCoordinatorTest {
     public void splitBrainTiebreakerLowerInstanceIdYields() throws Exception {
         // "opennms-primary" < "opennms-secondary" lexicographically → primary yields
         HaConfiguration cfg = primaryConfig();
-        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        HaStartupCoordinator coord = spy(createCoordinator(cfg, mockDbFactory));
+        doNothing().when(coord).terminateJvm(anyInt());
         setStaticInstance(coord);
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
@@ -342,6 +347,7 @@ public class HaStartupCoordinatorTest {
         coord.checkForSplitBrain();
 
         assertEquals("lower instance-id should yield on tie", HaInstanceState.STANDBY, coord.getCurrentState());
+        verify(coord).terminateJvm(70);
     }
 
     @Test
