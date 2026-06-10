@@ -168,8 +168,8 @@ importers:
         specifier: ^9.13.0
         version: 9.13.0(vue@3.5.33(typescript@5.4.5))
       ace-builds:
-        specifier: ^1.32.6
-        version: 1.43.6
+        specifier: ^1.44.0
+        version: 1.44.0
       axios:
         specifier: ^1.15.0
         version: 1.15.0
@@ -259,7 +259,7 @@ importers:
         version: 4.6.4(vue@3.5.33(typescript@5.4.5))
       vue3-ace-editor:
         specifier: ^2.2.4
-        version: 2.2.4(ace-builds@1.43.6)(vue@3.5.33(typescript@5.4.5))
+        version: 2.2.4(ace-builds@1.44.0)(vue@3.5.33(typescript@5.4.5))
       vuedraggable:
         specifier: ^4.1.0
         version: 4.1.0(vue@3.5.33(typescript@5.4.5))
@@ -1570,8 +1570,8 @@ packages:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ace-builds@1.43.6:
-    resolution: {integrity: sha512-L1ddibQ7F3vyXR2k2fg+I8TQTPWVA6CKeDQr/h2+8CeyTp3W6EQL8xNFZRTztuP8xNOAqL3IYPqdzs31GCjDvg==}
+  ace-builds@1.44.0:
+    resolution: {integrity: sha512-PFNMSYqFdEUkul2Ntud0HvA09AgY+F1ag0UYdpMH60wNI/qOA8cB8tlTgoALMEwIdUPJK2CjrIQ7OnbiSS/ugQ==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2911,6 +2911,7 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   vite-svg-loader@4.0.0:
@@ -4846,7 +4847,7 @@ snapshots:
 
   abbrev@2.0.0: {}
 
-  ace-builds@1.43.6: {}
+  ace-builds@1.44.0: {}
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
@@ -6275,9 +6276,9 @@ snapshots:
       '@vue/language-core': 2.2.12(typescript@5.4.5)
       typescript: 5.4.5
 
-  vue3-ace-editor@2.2.4(ace-builds@1.43.6)(vue@3.5.33(typescript@5.4.5)):
+  vue3-ace-editor@2.2.4(ace-builds@1.44.0)(vue@3.5.33(typescript@5.4.5)):
     dependencies:
-      ace-builds: 1.43.6
+      ace-builds: 1.44.0
       resize-observer-polyfill: 1.5.1
       vue: 3.5.33(typescript@5.4.5)
 
