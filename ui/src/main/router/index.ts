@@ -36,6 +36,8 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { computed } from 'vue'
+import { whenever } from '@vueuse/core'
 
 const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())

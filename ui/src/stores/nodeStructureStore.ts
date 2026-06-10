@@ -38,10 +38,10 @@ import {
 } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 const {
   getDefaultNodeQueryFilter,
-  getDefaultNodeQueryExtendedSearchParams,
   getDefaultNodeQueryForeignSourceParams,
   getDefaultNodeQuerySnmpParams,
   getDefaultNodeQuerySysParams
@@ -296,7 +296,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         // If allServiceTypes is empty the chips won't render, but filtering still works.
         filter.selectedServices = [...prefs.nodeFilter.selectedServices]
         const items = prefs.nodeFilter.selectedServices
-          .map(name => {
+          .map((name) => {
             const st = allServiceTypes.value.find(s => s.name === name)
             return st ? { _value: st.id, _text: st.name } as IAutocompleteItemType : null
           })
@@ -325,24 +325,24 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   const removeCategory = (item: IAutocompleteItemType) => {
-    selectedCategories.value = selectedCategories.value.filter((i) => i._value !== item._value)
-    queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter((c) => c.id !== item._value)
+    selectedCategories.value = selectedCategories.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter(c => c.id !== item._value)
   }
 
   const removeCategory2 = (item: IAutocompleteItemType) => {
-    selectedCategories2.value = selectedCategories2.value.filter((i) => i._value !== item._value)
-    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter((c) => c.id !== item._value)
+    selectedCategories2.value = selectedCategories2.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter(c => c.id !== item._value)
   }
 
   const removeFlow = (item: IAutocompleteItemType) => {
-    selectedFlows.value = selectedFlows.value.filter((i) => i._text !== item._text)
-    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter((f) => f !== item._text)
+    selectedFlows.value = selectedFlows.value.filter(i => i._text !== item._text)
+    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter(f => f !== item._text)
   }
 
   const removeMonitoringLocation = (item: IAutocompleteItemType) => {
     const locationName = item.name
     queryFilter.value.selectedMonitoringLocations = queryFilter.value.selectedMonitoringLocations.filter(
-      (loc) => loc.name !== locationName
+      loc => loc.name !== locationName
     )
   }
 
@@ -368,14 +368,14 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   const setExtendedSearchParams = (params: NodeQueryExtendedSearchParams) => {
-    queryFilter.value = { ...queryFilter.value, extendedSearch: { ...params } }
+    queryFilter.value = { ...queryFilter.value, extendedSearch: { ...params }}
   }
 
   const updateSelectedCategories = (items: IAutocompleteItemType[]) => {
     selectedCategories.value = items
 
     // Also update the query filter
-    queryFilter.value.selectedCategories = items.map((item) => ({
+    queryFilter.value.selectedCategories = items.map(item => ({
       id: item._value as number,
       name: item._text as string,
       authorizedGroups: [] as string[]
@@ -385,7 +385,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const updateSelectedCategories2 = (items: IAutocompleteItemType[]) => {
     selectedCategories2.value = items
 
-    queryFilter.value.selectedCategories2 = items.map((item) => ({
+    queryFilter.value.selectedCategories2 = items.map(item => ({
       id: item._value as number,
       name: item._text as string,
       authorizedGroups: [] as string[]
@@ -394,7 +394,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
   const updateSelectedFlows = (items: IAutocompleteItemType[]) => {
     selectedFlows.value = items
-    queryFilter.value.selectedFlows = items.map((item) => item._text as string)
+    queryFilter.value.selectedFlows = items.map(item => item._text as string)
   }
 
   const updateSelectedServices = (items: IAutocompleteItemType[]) => {

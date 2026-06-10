@@ -55,7 +55,7 @@
 
   <div class="compare-container" v-if="config1 && config2 && isCompareView">
     <p class="changes">
-      DIFFERENCES: 
+      DIFFERENCES:
       <span class="deletions">-{{ changes.deletions }}</span>
       <span class="additions"> +{{ changes.additions }}</span>
     </p>
@@ -64,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
 import { FeatherButton } from '@featherds/button'
@@ -85,7 +87,7 @@ const config2 = ref<DeviceConfigBackup | null>(null)
 const isCompareView = ref(false)
 const changes = ref<{ additions: number; deletions: number }>({ additions: 0, deletions: 0 })
 
-const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter((val) => val).length)
+const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter(val => val).length)
 
 const onCompare = () => isCompareView.value = true
 const onReturn = () => isCompareView.value = false
@@ -135,7 +137,7 @@ const updateCheckboxes = () => {
  * used for updating which checkboxes are true,
  * displaying the selected date chips, and the
  *  prev/current configuration text comparison.
- * 
+ *
  * @param config device config from checkbox clicked
  * @returns void
  */
@@ -177,8 +179,8 @@ const setConfig = (config: DeviceConfigBackup) => {
 const calculateChanges = () => {
   if (config1.value && config2.value) {
     const diff = diffLines(config1.value.config, config2.value.config)
-    const additions = diff.filter((item) => item.added).length
-    const deletions = diff.filter((item) => item.removed).length
+    const additions = diff.filter(item => item.added).length
+    const deletions = diff.filter(item => item.removed).length
 
     changes.value = {
       additions,

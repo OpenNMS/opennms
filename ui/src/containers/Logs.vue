@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import Editor from '@/components/Logs/Editor.vue'
 import Logs from '@/components/Logs/Logs.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'

@@ -12,6 +12,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { format } from 'date-fns-tz'
 import { setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRoute } from 'vue-router'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -73,7 +74,7 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
   beforeEach(() => {
     setActivePinia(createTestingPinia())
     vi.clearAllMocks()
-    mockUseRoute.mockReturnValue({ params: { id: '1' } })
+    mockUseRoute.mockReturnValue({ params: { id: '1' }})
     store = useSnmpDataCollectionDetailStore()
     const sourcesStore = useSnmpDataCollectionStore()
     sourcesStore.profilesForSource = vi.fn().mockReturnValue([])
@@ -405,7 +406,7 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
       { id: 'test-id', description: 'string route id' },
       { id: 'uuid-1234-5678', description: 'UUID-style route id' }
     ])('passes $description to fetchCollectionSourceById', async ({ id }) => {
-      mockUseRoute.mockReturnValue({ params: { id } })
+      mockUseRoute.mockReturnValue({ params: { id }})
       store.fetchCollectionSourceById = vi.fn()
 
       wrapper = mount(SnmpDataCollectionSourceDetail, {
@@ -419,7 +420,7 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
     })
 
     it('does not fetch when route id is missing', async () => {
-      vi.mocked(useRoute).mockReturnValue({ params: {} } as any)
+      vi.mocked(useRoute).mockReturnValue({ params: {}} as any)
       store.fetchCollectionSourceById = vi.fn()
 
       wrapper = mount(SnmpDataCollectionSourceDetail, {
@@ -437,7 +438,7 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
       { id: null, description: 'null' },
       { id: undefined, description: 'undefined' }
     ])('does not fetch when route id is $description', async ({ id }) => {
-      mockUseRoute.mockReturnValue({ params: { id: String(id) } })
+      mockUseRoute.mockReturnValue({ params: { id: String(id) }})
       store.fetchCollectionSourceById = vi.fn()
 
       wrapper = mount(SnmpDataCollectionSourceDetail, {
@@ -1531,4 +1532,3 @@ describe('SnmpDataCollectionSourceDetail.vue', () => {
     })
   })
 })
-

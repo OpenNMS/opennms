@@ -14,7 +14,7 @@ export const validateEvent = (
   autoClean: boolean,
   clearKey: string,
   maskElements: Array<{ name?: { _text?: string; _value?: string }; value?: string }>,
-  varbinds: Array<{ index: string; value: string; type: { _text?: string; _value?: string } }>,
+  varbinds: Array<{ index: string; value: string; type: { _text?: string; _value?: string }}>,
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
@@ -72,7 +72,7 @@ export const validateEvent = (
     maskElementErrors[index] = elementErrors
   })
 
-  if (maskElementErrors.some((err) => Object.keys(err).length > 0)) {
+  if (maskElementErrors.some(err => Object.keys(err).length > 0)) {
     errors.maskElements = maskElementErrors
   }
 
@@ -116,7 +116,7 @@ export const validateEvent = (
       varbindErrors[index] = varbindError
     })
 
-    if (varbindErrors.some((err) => Object.keys(err).length > 0)) {
+    if (varbindErrors.some(err => Object.keys(err).length > 0)) {
       errors.varbinds = varbindErrors
     }
   }
@@ -144,7 +144,7 @@ export const validateEvent = (
           decodeErrors[decodeIndex] = decodeError
         })
 
-        if (decodeErrors.some((err) => Object.keys(err).length > 0)) {
+        if (decodeErrors.some(err => Object.keys(err).length > 0)) {
           varbindDecodeError.decode = decodeErrors
         }
       }
@@ -152,11 +152,10 @@ export const validateEvent = (
       varbindDecodeErrors[index] = varbindDecodeError
     })
 
-    if (varbindDecodeErrors.some((err) => Object.keys(err).length > 0)) {
+    if (varbindDecodeErrors.some(err => Object.keys(err).length > 0)) {
       errors.varbindsDecode = varbindDecodeErrors
     }
   }
 
   return errors
 }
-

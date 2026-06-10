@@ -4,8 +4,8 @@
       Aliases
     </FeatherListHeader>
     <FeatherListItem
-      v-for="alias of aliases" 
-      :selected="selectedAlias === alias && isEditing" 
+      v-for="alias of aliases"
+      :selected="selectedAlias === alias && isEditing"
       :key="alias"
       @click="onAliasClick(alias)">
       {{ alias }}
@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherList, FeatherListHeader, FeatherListItem } from '@featherds/list'
 import { useScvStore } from '@/stores/scvStore'
 

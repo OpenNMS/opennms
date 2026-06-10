@@ -14,7 +14,7 @@
   "displayAddNodeButton": false,
   "sideMenuInitialExpand": false,
   "copyrightDates": "2002-2026",
-  "version": "36.0.1-SNAPSHOT",
+  "version": "36.0.2-SNAPSHOT",
   "menus": [
     {
       "id": "testHeader",

@@ -41,6 +41,8 @@
   setup
   lang="ts"
 >
+import { computed } from 'vue'
+
 import { FeatherIcon } from '@featherds/icon'
 import Error from '@featherds/icon/notification/Error'
 import { useFileEditorStore } from '@/stores/fileEditorStore'

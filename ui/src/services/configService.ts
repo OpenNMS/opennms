@@ -30,7 +30,7 @@ const getFileNames = async (changedFilesOnly: boolean): Promise<string[]> => {
   try {
     const resp = await rest.get(`${endpoint}?changedFilesOnly=${changedFilesOnly}`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }
@@ -39,7 +39,7 @@ const getFile = async (fileName: string): Promise<string> => {
   try {
     const resp = await rest.get(`${endpoint}/contents?f=${fileName}`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return ''
   }
 }
@@ -57,7 +57,7 @@ const getSnippets = async (fileName: string): Promise<string> => {
   try {
     const resp = await rest.get(`${endpoint}/help?f=${fileName}`)
     return marked(resp.data, { breaks: true })
-  } catch (err) {
+  } catch (_err) {
     return ''
   }
 }
@@ -66,7 +66,7 @@ const getFileExtensions = async (): Promise<string[]> => {
   try {
     const resp = await rest.get(`${endpoint}/extensions`)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

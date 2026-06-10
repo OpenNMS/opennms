@@ -64,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherIcon } from '@featherds/icon'
@@ -114,4 +116,3 @@ watch(() => props, (newVal) => {
   }
 }
 </style>
-

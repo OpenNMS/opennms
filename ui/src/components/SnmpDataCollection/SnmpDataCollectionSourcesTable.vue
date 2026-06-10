@@ -203,6 +203,9 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
@@ -249,8 +252,8 @@ const availableProfiles = ref<SnmpCollectionProfile[]>([])
 const profilesForSource = (sourceName: string): { id: number; name: string }[] => {
   const target = sourceName.toLowerCase()
   return availableProfiles.value
-    .filter((p) => p.sourceNames?.some((n) => n.toLowerCase() === target))
-    .map((p) => ({ id: p.id, name: p.name }))
+    .filter(p => p.sourceNames?.some(n => n.toLowerCase() === target))
+    .map(p => ({ id: p.id, name: p.name }))
 }
 
 const refreshAvailableProfiles = async () => {

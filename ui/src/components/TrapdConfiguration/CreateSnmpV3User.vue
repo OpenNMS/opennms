@@ -134,6 +134,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL } from '@/lib/constants'
 import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_CHARACTERS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
@@ -465,4 +467,3 @@ onMounted(() => {
   }
 }
 </style>
-

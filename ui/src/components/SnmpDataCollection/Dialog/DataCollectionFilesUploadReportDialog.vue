@@ -110,4 +110,3 @@ const gotoViewTab = async () => {
   color: var(variables.$success);
 }
 </style>
-

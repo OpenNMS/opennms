@@ -229,6 +229,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherCard } from '@featherds/card'
 import { FeatherCheckbox } from '@featherds/checkbox'
@@ -253,14 +255,14 @@ const props = defineProps<{
   ipMatch?: string,
   config?: SnmpAgentConfig
 }>()
- 
+
 const emit = defineEmits<{
   (e: 'cancel'): void
   (e: 'save', config: SnmpAgentConfig, firstIp?: string, lastIp?: string, ipMatch?: string): void
   (e: 'add-range', firstIp: string, lastIp: string, ipMatch: string): void
   (e: 'validation-error', formErrors: SnmpConfigFormErrors): void
 }>()
- 
+
 const SnmpVersions: ISelectItemType[] = [
   { _text: 'v1', _value: 'v1' },
   { _text: 'v2c', _value: 'v2c' },
@@ -288,7 +290,7 @@ const displayAdvancedConfig = ref(false)
 const displaySnmpV3ContextFields = ref(false)
 
 const monitoringLocations = computed<ISelectItemType[]>(() => {
-  return store.monitoringLocations.map(loc => {
+  return store.monitoringLocations.map((loc) => {
     return {
       _text: loc.name,
       _value: loc.name
@@ -339,7 +341,7 @@ const snmpV3Fields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
     key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol',
     isSelect: true, selectOptions: SnmpAuthProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
   },
-  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true, 
+  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true,
     skipDefaultHint: true
   },
   {
@@ -376,12 +378,12 @@ const loadInitialValues = () => {
   } else if (currentConfig.version === 'v3') {
     snmpVersion.value = SnmpVersions[2]
   }
-    
+
   firstIpAddress.value = props.firstIp || ''
   lastIpAddress.value =  props.lastIp || ''
   ipMatchValue.value = props.ipMatch || ''
   selectedMonitoringLocation.value = { _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION }
-  
+
   // Load all config fields into formConfig
   Object.assign(formConfig, {
     version: currentConfig.version ?? '',

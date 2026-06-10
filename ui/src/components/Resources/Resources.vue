@@ -13,8 +13,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import ResourceList from '@/components/Resources/ResourceList.vue'
 import NodeResourceList from '@/components/Resources/NodeResourceList.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'

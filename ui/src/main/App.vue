@@ -26,6 +26,8 @@
   setup
   lang="ts"
 >
+import { onMounted } from 'vue'
+
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'

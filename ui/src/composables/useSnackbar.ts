@@ -22,6 +22,7 @@
 
 import { SnackbarProps } from '@/types'
 import { isDefined } from '@vueuse/core'
+import { readonly, ref } from 'vue'
 
 const isDisplayed = ref(false)
 const isCentered = ref<boolean | undefined>(true)

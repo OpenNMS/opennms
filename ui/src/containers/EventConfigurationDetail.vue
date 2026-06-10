@@ -103,6 +103,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import ChangeEventConfigSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
@@ -227,4 +230,3 @@ onMounted(async () => {
   }
 }
 </style>
-

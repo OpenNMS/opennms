@@ -38,6 +38,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue'
+
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import FilterAlt from '@featherds/icon/action/FilterAlt'

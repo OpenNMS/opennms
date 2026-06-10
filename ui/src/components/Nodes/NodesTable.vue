@@ -526,8 +526,12 @@ const onDownload = async (format: string) => {
   generateDownload(blob, `Nodes.${format}`)
 }
 
-const onCsvDownload = async () => { return onDownload('csv') }
-const onJsonDownload = async () => { return onDownload('json') }
+const onCsvDownload = async () => {
+  return onDownload('csv')
+}
+const onJsonDownload = async () => {
+  return onDownload('json')
+}
 
 const onNodeInfo = (node: Node) => {
   dialogNode.value = node

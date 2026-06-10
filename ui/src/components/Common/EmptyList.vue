@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 
 type Content = {
   title?: string

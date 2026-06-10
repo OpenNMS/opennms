@@ -37,7 +37,7 @@ const getCategories = async (): Promise<CategoryApiResponse | false> => {
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

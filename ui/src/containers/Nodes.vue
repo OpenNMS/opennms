@@ -12,8 +12,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
@@ -101,15 +103,19 @@ watch(
 
 onMounted(() => {
   const prefs = loadNodePreferences()
-  if (handleQuery(prefs)) return
-  if (prefs) nodeStructureStore.setFromNodePreferences(prefs)
+  if (handleQuery(prefs)) {
+    return
+  }
+  if (prefs) {
+    nodeStructureStore.setFromNodePreferences(prefs)
+  }
 })
 
 watch(() => route.query, () => {
   handleQuery(loadNodePreferences())
 })
 </script>
-  
+
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
 

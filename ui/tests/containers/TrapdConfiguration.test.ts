@@ -56,12 +56,6 @@ describe('TrapdConfiguration.vue', () => {
     })
   }
 
-  const createXmlFile = (name = 'trapd.xml', content = '<trapd-configuration />') => {
-    const file = new File([content], name, { type: 'text/xml' })
-    vi.spyOn(file, 'text').mockResolvedValue(content)
-    return file
-  }
-
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ stubActions: true }))

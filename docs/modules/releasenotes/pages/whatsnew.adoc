@@ -105,3 +105,11 @@ IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org
 The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
 See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
 
+=== Ops Board and Wallboard removed
+
+The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
+These provided auto-rotating, dashlet-composed displays intended for wall-mounted operations screens.
+
+The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
+There is no drop-in replacement.
+

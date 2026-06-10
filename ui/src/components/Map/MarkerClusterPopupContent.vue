@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang ="ts">
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { orderBy } from 'lodash'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
 import { FeatherIcon } from '@featherds/icon'
@@ -60,7 +60,9 @@ interface ClusterInfo {
 }
 
 const props = defineProps({
-  cluster: { type: Object as PropType<Cluster>, default: () => { return }},
+  cluster: { type: Object as PropType<Cluster>, default: () => {
+    return
+  } },
   ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true }
 })
 
@@ -98,7 +100,7 @@ const getItems = () => {
   const children = props.cluster.getAllChildMarkers()
   const currentNodes = children.map(m => nodeFromMarker(m)).filter(n => n !== null)
 
-  const items = currentNodes.map(node => {
+  const items = currentNodes.map((node) => {
     const nodeId = node?.id || ''
     const nodeLink = (nodeId && `${baseNodeUrl.value}${nodeId}`) || '#'
     const description = node?.assetRecord?.description || 'N/A'
@@ -177,4 +179,3 @@ const getItems = () => {
    }
 }
 </style>
- 

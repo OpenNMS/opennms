@@ -22,6 +22,7 @@ import { FeatherTooltip } from '@featherds/tooltip'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Draggable from 'vuedraggable'
+import { reactive } from 'vue'
 
 vi.mock('@/stores/eventConfigStore')
 vi.mock('@/components/EventConfiguration/eventConfigXmlValidator')
@@ -406,7 +407,7 @@ describe('EventConfigUploadFilesTab', () => {
       }
       return { isValid: true, errors: [] }
     })
-    vi.mocked(isDuplicateFile).mockImplementation((name) => name === 'duplicate.events.xml')
+    vi.mocked(isDuplicateFile).mockImplementation(name => name === 'duplicate.events.xml')
 
     const files = [
       mockFile('valid1.events.xml'),
@@ -633,7 +634,7 @@ describe('EventConfigUploadFilesTab', () => {
 
   it('handles case-insensitive duplicate files', async () => {
     vi.mocked(isDuplicateFile).mockImplementation((name, existingFiles) =>
-      existingFiles.some((f) => f.file.name.toLowerCase() === name.toLowerCase())
+      existingFiles.some(f => f.file.name.toLowerCase() === name.toLowerCase())
     )
     const files = [mockFile('test.events.xml'), mockFile('TEST.events.xml'), mockFile('test.EVENTS.XML')]
     const input = wrapper.find('input[type="file"]')
@@ -686,7 +687,7 @@ describe('EventConfigUploadFilesTab', () => {
       return { isValid: true, errors: [] }
     })
     vi.mocked(isDuplicateFile).mockImplementation((name, existingFiles) =>
-      existingFiles.some((element) => element.file.name.toLowerCase() === name.toLowerCase())
+      existingFiles.some(element => element.file.name.toLowerCase() === name.toLowerCase())
     )
 
     const files = [
@@ -731,12 +732,12 @@ describe('EventConfigUploadFilesTab', () => {
 
   it('handles rapid file uploads with validation and rename', async () => {
     store.uploadedSources = [{ id: 1, name: 'test.events.xml' }]
-    vi.mocked(validateEventConfigFile).mockImplementation(async (file) => ({
+    vi.mocked(validateEventConfigFile).mockImplementation(async file => ({
       isValid: !file.name.includes('invalid'),
       errors: file.name.includes('invalid') ? ['Invalid XML'] : []
     }))
     vi.mocked(isDuplicateFile).mockImplementation((name, existingFiles) =>
-      existingFiles.some((element) => element.file.name.toLowerCase() === name.toLowerCase())
+      existingFiles.some(element => element.file.name.toLowerCase() === name.toLowerCase())
     )
 
     const firstBatch = [mockFile('test.events.xml'), mockFile('invalid.events.xml')]
@@ -1219,7 +1220,7 @@ describe('EventConfigUploadFilesTab', () => {
 
   it('skips duplicate files during folder upload', async () => {
     vi.mocked(isDuplicateFile).mockImplementation((name, existingFiles) => {
-      return name === 'dup.events.xml' || existingFiles.some((f) => f.file.name === name)
+      return name === 'dup.events.xml' || existingFiles.some(f => f.file.name === name)
     })
     vi.mocked(validateEventConfigFile).mockClear().mockResolvedValue({ isValid: true, errors: [] })
 

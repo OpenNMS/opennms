@@ -191,6 +191,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, reactive, ref } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services/snmpDataCollectionService'
@@ -455,4 +457,3 @@ const changeSystemDefStatus = async (selected: { id: number; name: string } | nu
   }
 }
 </style>
-

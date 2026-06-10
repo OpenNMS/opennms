@@ -173,4 +173,3 @@ describe('EventConfigTabContainer', () => {
     expect(uploadFilesTab.exists()).toBe(true)
   })
 })
-

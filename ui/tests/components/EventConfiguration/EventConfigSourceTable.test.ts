@@ -10,8 +10,8 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -308,7 +308,7 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.vm.$nextTick()
 
     const dropdown1 = rows[0].findAllComponents(FeatherDropdownItem)
-    
+
     expect(dropdown1[0].text()).toBe('Disable Source')
     expect(dropdown1[1].text()).toBe('Delete Source')
 
@@ -352,7 +352,7 @@ describe('EventConfigSourceTable.vue', () => {
 
     await rows[0].findAll('button')[1].trigger('click')
     await wrapper.vm.$nextTick()
-    
+
     expect(downloadEventConfXmlBySourceId).toHaveBeenCalled()
     expect(svc.downloadEventConfXmlBySourceId).toHaveBeenCalledWith(mockSource.id)
     vi.useRealTimers()

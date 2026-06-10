@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { MonitoringSystemMainResponse } from '@/types'
+import { ref } from 'vue'
 
 export const useMonitoringSystemStore = defineStore('monitoringSystemStore', () => {
   const mainMonitoringSystem = ref<MonitoringSystemMainResponse>()

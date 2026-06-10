@@ -134,6 +134,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, markRaw } from 'vue'
+
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import IconArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'

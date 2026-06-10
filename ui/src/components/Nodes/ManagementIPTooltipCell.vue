@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { IpInterface, Node } from '@/types'
 import { FeatherTooltip, PointerAlignment, PopoverPlacement } from '@featherds/tooltip'
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { IpInterfaceInfo } from '@/types'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
 

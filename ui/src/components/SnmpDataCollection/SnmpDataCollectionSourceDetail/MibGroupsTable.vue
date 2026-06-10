@@ -205,6 +205,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, reactive, ref } from 'vue'
+
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import { FeatherButton } from '@featherds/button'
@@ -467,4 +469,3 @@ const changeMibGroupStatus = async (selected: { id: number; name: string } | nul
   }
 }
 </style>
-

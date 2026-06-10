@@ -72,6 +72,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, watch } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
@@ -119,7 +121,7 @@ const removeColumn = (index: number) => {
   selectedColumns.value = selectedColumns.value.filter((_, i) => i !== index)
 }
 
-const customizeTable = async() => {
+const customizeTable = async () => {
   nodeStructureStore.columns = selectedColumns.value.map((col, index) => ({
     id: col.value as string,
     label: col.name as string,

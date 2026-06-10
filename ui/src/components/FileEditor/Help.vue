@@ -6,6 +6,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'

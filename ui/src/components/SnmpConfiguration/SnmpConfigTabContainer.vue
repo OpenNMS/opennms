@@ -23,6 +23,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
@@ -33,7 +35,7 @@ const store = useSnmpConfigStore()
 
 const activeTab = computed({
   get: () => store.activeTab,
-  set: (val) => store.setActiveTab(val)
+  set: val => store.setActiveTab(val)
 })
 </script>
 

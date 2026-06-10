@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
@@ -23,7 +25,9 @@ const deviceStore = useDeviceStore()
 const searchVal = ref<string | undefined>(undefined)
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  if (searchVal.value === undefined && val === '') return // prevents dup mounted call from feather
+  if (searchVal.value === undefined && val === '') {
+    return
+  } // prevents dup mounted call from feather
   searchVal.value = val
 
   const newQueryParams: DeviceConfigQueryParams = {

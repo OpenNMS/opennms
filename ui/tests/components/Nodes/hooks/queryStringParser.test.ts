@@ -43,12 +43,12 @@ describe('Nodes queryStringParser test', () => {
   describe('queryStringParser, parseNodeLabel', () => {
     test.each([
       ['empty', {}, ''],
-      ['nodename', { nodename: 'NodeName'}, 'NodeName'],
-      ['nodename takes priority over nodeLabel', { nodename: 'NodeName', nodeLabel: 'NodeLabel'}, 'NodeName'],
-      ['nodeLabel with nodename being invalid', { nodeName: 'NodeName', nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['nodeLabel with empty nodename', { nodename: '', nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['nodeLabel only', { nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['invalid nodeLabel', { nodelabel: 'NodeLabel'}, ''],
+      ['nodename', { nodename: 'NodeName' }, 'NodeName'],
+      ['nodename takes priority over nodeLabel', { nodename: 'NodeName', nodeLabel: 'NodeLabel' }, 'NodeName'],
+      ['nodeLabel with nodename being invalid', { nodeName: 'NodeName', nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['nodeLabel with empty nodename', { nodename: '', nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['nodeLabel only', { nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['invalid nodeLabel', { nodelabel: 'NodeLabel' }, ''],
       ['nodename with another property', { nodename: 'NodeName', a: 'Whatever' }, 'NodeName']
     ]) (
       'parseNodeLabel: %s',
@@ -113,25 +113,25 @@ describe('Nodes queryStringParser test', () => {
 
   describe('queryStringParser, parseIpLike', () => {
     test.each([
-      ['valid ipAddress IPv4 1', { ipAddress: '0.0.0.0'}, '0.0.0.0'],
-      ['valid ipAddress IPv4 2', { ipAddress: '192.168.0.1'}, '192.168.0.1'],
-      ['valid ipAddress IPv6', { ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'}, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
+      ['valid ipAddress IPv4 1', { ipAddress: '0.0.0.0' }, '0.0.0.0'],
+      ['valid ipAddress IPv4 2', { ipAddress: '192.168.0.1' }, '192.168.0.1'],
+      ['valid ipAddress IPv6', { ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
 
-      ['valid iplike IPv4 1', { iplike: '0.0.0.0'}, '0.0.0.0'],
-      ['valid iplike IPv4 2', { iplike: '192.168.0.1'}, '192.168.0.1'],
-      ['valid iplike IPv6', { iplike: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'}, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
+      ['valid iplike IPv4 1', { iplike: '0.0.0.0' }, '0.0.0.0'],
+      ['valid iplike IPv4 2', { iplike: '192.168.0.1' }, '192.168.0.1'],
+      ['valid iplike IPv6', { iplike: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
 
-      ['empty ipAddress', { ipAddress: ''}, null],
-      ['invalid ipAddress', { ipAddress: 'abc'}, null],
-      ['invalid ipAddress localhost', { ipAddress: 'localhost'}, null],
-      ['invalid partial ipAddress', { ipAddress: '192.168.'}, null],
-      ['invalid ipAddress', { ipAddress: 'A.B.C.D'}, null],
+      ['empty ipAddress', { ipAddress: '' }, null],
+      ['invalid ipAddress', { ipAddress: 'abc' }, null],
+      ['invalid ipAddress localhost', { ipAddress: 'localhost' }, null],
+      ['invalid partial ipAddress', { ipAddress: '192.168.' }, null],
+      ['invalid ipAddress', { ipAddress: 'A.B.C.D' }, null],
 
-      ['empty iplike', { iplike: ''}, null],
-      ['invalid iplike', { iplike: 'abc'}, null],
-      ['invalid iplike localhost', { iplike: 'localhost'}, null],
-      ['invalid partial iplike', { iplike: '192.168.'}, null],
-      ['invalid iplike', { iplike: 'A.B.C.D'}, null]
+      ['empty iplike', { iplike: '' }, null],
+      ['invalid iplike', { iplike: 'abc' }, null],
+      ['invalid iplike localhost', { iplike: 'localhost' }, null],
+      ['invalid partial iplike', { iplike: '192.168.' }, null],
+      ['invalid iplike', { iplike: 'A.B.C.D' }, null]
     ]) (
       'parseIpLike: %s',
       (title, queryObject, expected) => {
@@ -253,7 +253,7 @@ describe('Nodes queryStringParser test', () => {
       ['sysLocation', { mib2Parm: 'sysLocation', mib2ParmValue: 'datacenter', mib2ParmMatchType: 'contains' },
         { sysContact: '', sysDescription: '', sysLocation: 'datacenter', sysName: '', sysObjectId: '', sysMatchType: MatchType.Contains }],
       ['sysObjectId', { mib2Parm: 'sysObjectId', mib2ParmValue: '.1.3.6.1', mib2ParmMatchType: 'equals' },
-        { sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '.1.3.6.1', sysMatchType: MatchType.Equals }],
+        { sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '.1.3.6.1', sysMatchType: MatchType.Equals }]
     ]) ('parseMib2Params: %s', (title, queryObject, expected) => {
       expect(parseMib2Params(queryObject)).toEqual(expected)
     })
@@ -262,7 +262,7 @@ describe('Nodes queryStringParser test', () => {
       ['empty parm', { mib2Parm: '', mib2ParmValue: 'Linux' }],
       ['empty value', { mib2Parm: 'sysDescription', mib2ParmValue: '' }],
       ['invalid parm name', { mib2Parm: 'badField', mib2ParmValue: 'Linux' }],
-      ['both empty', {}],
+      ['both empty', {}]
     ]) ('parseMib2Params: returns null for invalid input: %s', (title, queryObject) => {
       expect(parseMib2Params(queryObject)).toBeNull()
     })
@@ -275,7 +275,7 @@ describe('Nodes queryStringParser test', () => {
       ['ifName contains', { snmpParm: 'ifName', snmpParmValue: 'eth', snmpParmMatchType: 'contains' },
         { snmpIfAlias: '', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: 'eth', snmpIfType: '', snmpMatchType: MatchType.Contains }],
       ['ifDescr, match type defaults to Equals when omitted', { snmpParm: 'ifDescr', snmpParmValue: 'GigabitEthernet' },
-        { snmpIfAlias: '', snmpIfDescription: 'GigabitEthernet', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }],
+        { snmpIfAlias: '', snmpIfDescription: 'GigabitEthernet', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }]
     ]) ('parseSnmpParmParams: %s', (title, queryObject, expected) => {
       expect(parseSnmpParmParams(queryObject)).toEqual(expected)
     })
@@ -285,7 +285,7 @@ describe('Nodes queryStringParser test', () => {
       ['empty value', { snmpParm: 'ifAlias', snmpParmValue: '' }],
       ['unsupported parm (ifIndex)', { snmpParm: 'ifIndex', snmpParmValue: '1' }],
       ['unknown parm', { snmpParm: 'badField', snmpParmValue: 'value' }],
-      ['both empty', {}],
+      ['both empty', {}]
     ]) ('parseSnmpParmParams: returns null for invalid input: %s', (title, queryObject) => {
       expect(parseSnmpParmParams(queryObject)).toBeNull()
     })

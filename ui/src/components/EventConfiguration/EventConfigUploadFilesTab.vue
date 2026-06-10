@@ -172,6 +172,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
@@ -263,7 +265,7 @@ const handleFolderUpload = async (e: Event) => {
         })
       }
 
-    } catch (err) {
+    } catch (_err) {
       snackbar.showSnackBar({
         msg: `Error reading ${file.name}`,
         error: true
@@ -563,4 +565,3 @@ watch(
   }
 }
 </style>
-

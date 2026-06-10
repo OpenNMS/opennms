@@ -17,8 +17,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherInput } from '@featherds/input'
 import {
   FeatherListHeader,

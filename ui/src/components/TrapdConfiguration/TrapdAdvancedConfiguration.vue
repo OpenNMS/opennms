@@ -96,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import IconDownload from '@featherds/icon/action/DownloadFile'
@@ -201,7 +203,7 @@ const performUpload = async (isXml: boolean) => {
       const validationResult = validateTrapdXml(textContent)
 
       if (!validationResult.valid) {
-        const errorList = validationResult.errors.slice(0, 3).map((error) => error.message).join(' | ')
+        const errorList = validationResult.errors.slice(0, 3).map(error => error.message).join(' | ')
         const moreCount = validationResult.errors.length - 3
         const suffix = moreCount > 0 ? ` (+${moreCount} more)` : ''
         snackbar.showSnackBar({ msg: `Invalid trap configuration XML: ${errorList}${suffix}`, error: true })
@@ -211,7 +213,7 @@ const performUpload = async (isXml: boolean) => {
       const validationResult = validateTrapdJson(textContent)
 
       if (!validationResult.valid) {
-        const errorList = validationResult.errors.slice(0, 3).map((error) => error.message).join(' | ')
+        const errorList = validationResult.errors.slice(0, 3).map(error => error.message).join(' | ')
         const moreCount = validationResult.errors.length - 3
         const suffix = moreCount > 0 ? ` (+${moreCount} more)` : ''
         snackbar.showSnackBar({ msg: `Invalid trap configuration JSON: ${errorList}${suffix}`, error: true })
@@ -219,7 +221,7 @@ const performUpload = async (isXml: boolean) => {
       }
     }
 
-    const response = await uploadTrapdConfiguration(uploadFile.value, isXml)
+    await uploadTrapdConfiguration(uploadFile.value, isXml)
 
     snackbar.showSnackBar({
       msg: `Successfully uploaded Trap configuration from '${fileName}'.`,
@@ -267,7 +269,7 @@ const performUpload = async (isXml: boolean) => {
     .feather-row {
       margin-bottom: 0.5rem;
     }
-  
+
     button.btn.btn-icon .upload-download-icon {
       font-size: 1.1rem;
     }

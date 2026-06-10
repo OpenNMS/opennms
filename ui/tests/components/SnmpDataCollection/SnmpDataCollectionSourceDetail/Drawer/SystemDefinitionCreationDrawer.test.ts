@@ -642,7 +642,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
 
     it('should handle concurrent save operations (double-click)', async () => {
       vi.mocked(createSystemDefinition).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(true), 100))
+        () => new Promise(resolve => setTimeout(() => resolve(true), 100))
       )
 
       wrapper.vm.name = 'Test'
@@ -1660,4 +1660,3 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     })
   })
 })
-

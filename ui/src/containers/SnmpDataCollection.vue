@@ -62,6 +62,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
@@ -95,7 +97,7 @@ const downloadConfig = async (format: 'xml' | 'json') => {
     link.download = `datacollection-config.${format}`
     link.click()
     window.URL.revokeObjectURL(link.href)
-  } catch (e) {
+  } catch (_e) {
     snackbar.showSnackBar({
       msg: `Failed to download datacollection-config (${format}).`,
       error: true
@@ -127,4 +129,3 @@ const downloadConfig = async (format: 'xml' | 'json') => {
   }
 }
 </style>
-

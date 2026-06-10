@@ -49,6 +49,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
 import useSnackbar from '@/composables/useSnackbar'
@@ -154,7 +156,7 @@ const onDeleteProfile = async (label: string) => {
         gap: 20px;
       }
     }
-  
+
     .large-spacer {
       min-height: 1em;
     }

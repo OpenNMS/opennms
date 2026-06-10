@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
@@ -30,7 +32,7 @@ const store = useEventModificationStore()
 
 const goBack = () => {
   if (store.selectedSource?.id) {
-    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id } })
+    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id }})
   } else {
     router.push({ name: 'Event Configuration' })
   }
@@ -55,4 +57,3 @@ const goBack = () => {
   }
 }
 </style>
-

@@ -21,6 +21,7 @@
 ///
 
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import {
   applyThemeClass,
   DARK_THEME,

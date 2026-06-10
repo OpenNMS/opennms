@@ -281,6 +281,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted, ref, watch } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
@@ -334,8 +336,11 @@ const orderedSourceFiles = computed<UploadSnmpDataCollectionFileType[]>(() => {
   const newOnes: UploadSnmpDataCollectionFileType[] = []
   const updates: UploadSnmpDataCollectionFileType[] = []
   for (const f of sourceFiles.value) {
-    if (f.isDuplicate) updates.push(f)
-    else newOnes.push(f)
+    if (f.isDuplicate) {
+      updates.push(f)
+    } else {
+      newOnes.push(f)
+    }
   }
   return [...newOnes, ...updates]
 })
@@ -350,7 +355,7 @@ const toggleProfile = (name: string, checked: boolean) => {
       selectedProfileNames.value = [...selectedProfileNames.value, name]
     }
   } else {
-    selectedProfileNames.value = selectedProfileNames.value.filter((n) => n !== name)
+    selectedProfileNames.value = selectedProfileNames.value.filter(n => n !== name)
   }
 }
 
@@ -358,14 +363,14 @@ onMounted(() => {
   fetchProfiles()
 })
 const hasConfigFile = computed(() =>
-  sourceFiles.value.some((f) => f.kind === 'config')
+  sourceFiles.value.some(f => f.kind === 'config')
 )
 
 // "New" sources = group files whose name doesn't already exist in the DB.
 // These are the only ones that need a profile pick to avoid orphaning;
 // updates keep their existing profile memberships.
 const hasNewSource = computed(() =>
-  sourceFiles.value.some((f) => f.kind === 'group' && !f.isDuplicate)
+  sourceFiles.value.some(f => f.kind === 'group' && !f.isDuplicate)
 )
 
 // True when the picker is gating the Upload button (i.e., at least one new
@@ -394,9 +399,13 @@ const removeFile = (index: number) => {
   // updates), so its row index doesn't line up with sourceFiles. Resolve
   // back through the File reference to find the actual array position.
   const target = tableRecord.value[index]?.file
-  if (!target) return
-  const sourceIndex = sourceFiles.value.findIndex((f) => f.file === target)
-  if (sourceIndex < 0) return
+  if (!target) {
+    return
+  }
+  const sourceIndex = sourceFiles.value.findIndex(f => f.file === target)
+  if (sourceIndex < 0) {
+    return
+  }
   sourceFiles.value.splice(sourceIndex, 1)
   total.value = sourceFiles.value.length
   tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
@@ -422,9 +431,11 @@ const onPageSizeChange = (newPageSize: number) => {
 }
 
 const isExistingSourceName = (groupName: string | undefined): boolean => {
-  if (!groupName) return false
+  if (!groupName) {
+    return false
+  }
   const target = groupName.toLowerCase()
-  return store.uploadedSourceNames.some((s) => s.name.toLowerCase() === target)
+  return store.uploadedSourceNames.some(s => s.name.toLowerCase() === target)
 }
 
 const handleSourceFileUpload = async (event: Event) => {
@@ -617,8 +628,8 @@ const overwriteFile = () => {
 watch(
   () => store.uploadedSourceNames,
   (newNames) => {
-    const existing = new Set(newNames.map((s) => s.name.toLowerCase()))
-    sourceFiles.value = sourceFiles.value.map((file) => ({
+    const existing = new Set(newNames.map(s => s.name.toLowerCase()))
+    sourceFiles.value = sourceFiles.value.map(file => ({
       ...file,
       isDuplicate: !!file.groupName && existing.has(file.groupName.toLowerCase())
     }))
@@ -642,6 +653,13 @@ watch(
     }
   }
 )
+
+// Expose internal methods for testing
+defineExpose({
+  openFileRenameDialog,
+  displayRenameDialog,
+  selectedIndex
+})
 </script>
 
 <style scoped lang="scss">
@@ -909,4 +927,3 @@ watch(
   }
 }
 </style>
-

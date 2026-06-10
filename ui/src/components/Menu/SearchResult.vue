@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
+import { PropType, computed, ref } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SubdirectoryArrowLeft from '@featherds/icon/navigation/SubdirectoryArrowLeft'
 import { SearchResultItem } from '@/types'
@@ -34,8 +34,12 @@ const props = defineProps({
   // TODO: SearchResult:item in components/Layout/Search.vue should be a SearchResultItem but may not be,
   // that's why we are using "| any" here. Need to make sure we are passing correct objects and types
   contextLabel: { type: String, default: '' },
-  item: { type: Object as PropType<SearchResultItem | any>, default: () => { return } },
-  itemClicked: { type: Function as PropType<(item: SearchResultItem) => void>, default: () => { return } },
+  item: { type: Object as PropType<SearchResultItem | any>, default: () => {
+    return
+  } },
+  itemClicked: { type: Function as PropType<(item: SearchResultItem) => void>, default: () => {
+    return
+  } },
   iconClass: { type: String, default: '' }
 })
 
@@ -47,7 +51,7 @@ const validMatches = computed(() => {
   const itemMatches = (props.item as SearchResultItem)?.matches
 
   if (itemMatches) {
-    itemMatches.forEach(m => {
+    itemMatches.forEach((m) => {
       matches.push({ label: m.label, value: m.value })
     })
   }
@@ -97,7 +101,7 @@ const onItemOut = () => {
         }
     }
 }
-/** 
+/**
     These styles are a bit wild, but they were take from a diff done
     between this component as a div vs a button. Initially coded using the div
     we had to move to the button to get better accessibility. But then the styles were off.

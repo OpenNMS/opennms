@@ -131,6 +131,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
 import { FeatherButton } from '@featherds/button'

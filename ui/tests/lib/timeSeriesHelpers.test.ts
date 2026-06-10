@@ -91,7 +91,7 @@ describe('timeSeriesHelpers', () => {
     test('should parse valid RRA string with AVERAGE consolidation function', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1:2880'
       const result = rraFromString(rraStr)
-      
+
       expect(result.cf).toBe('AVERAGE')
       expect(result.xff).toBe(0.5)
       expect(result.steps).toBe(1)
@@ -101,7 +101,7 @@ describe('timeSeriesHelpers', () => {
     test('should parse valid RRA string with MIN consolidation function', () => {
       const rraStr = 'RRA:MIN:0.25:12:1440'
       const result = rraFromString(rraStr)
-      
+
       expect(result.cf).toBe('MIN')
       expect(result.xff).toBe(0.25)
       expect(result.steps).toBe(12)
@@ -111,7 +111,7 @@ describe('timeSeriesHelpers', () => {
     test('should parse valid RRA string with MAX consolidation function', () => {
       const rraStr = 'RRA:MAX:0.75:60:720'
       const result = rraFromString(rraStr)
-      
+
       expect(result.cf).toBe('MAX')
       expect(result.xff).toBe(0.75)
       expect(result.steps).toBe(60)
@@ -121,7 +121,7 @@ describe('timeSeriesHelpers', () => {
     test('should parse valid RRA string with LAST consolidation function', () => {
       const rraStr = 'RRA:LAST:1:288:365'
       const result = rraFromString(rraStr)
-      
+
       expect(result.cf).toBe('LAST')
       expect(result.xff).toBe(1)
       expect(result.steps).toBe(288)
@@ -131,104 +131,104 @@ describe('timeSeriesHelpers', () => {
     test('should parse RRA string with xff value of 0', () => {
       const rraStr = 'RRA:AVERAGE:0:1:100'
       const result = rraFromString(rraStr)
-      
+
       expect(result.xff).toBe(0)
     })
 
     test('should parse RRA string with decimal xff values', () => {
       const rraStr = 'RRA:AVERAGE:0.123456:5:500'
       const result = rraFromString(rraStr)
-      
+
       expect(result.xff).toBeCloseTo(0.123456)
     })
 
     test('should throw error for string not starting with RRA', () => {
       const rraStr = 'INVALID:AVERAGE:0.5:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: INVALID:AVERAGE:0.5:1:2880')
     })
 
     test('should throw error for string with too few parts', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:1')
     })
 
     test('should throw error for string with too many parts', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1:2880:extra'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:1:2880:extra')
     })
 
     test('should throw error for invalid xff (non-numeric)', () => {
       const rraStr = 'RRA:AVERAGE:invalid:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:invalid:1:2880')
     })
 
     test('should throw error for invalid steps (non-numeric)', () => {
       const rraStr = 'RRA:AVERAGE:0.5:invalid:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:invalid:2880')
     })
 
     test('should throw error for invalid rows (non-numeric)', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1:invalid'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:1:invalid')
     })
 
     test('should throw error for xff less than 0', () => {
       const rraStr = 'RRA:AVERAGE:-0.1:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:-0.1:1:2880')
     })
 
     test('should throw error for xff greater than 1', () => {
       const rraStr = 'RRA:AVERAGE:1.5:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:1.5:1:2880')
     })
 
     test('should throw error for steps less than or equal to 0', () => {
       const rraStr = 'RRA:AVERAGE:0.5:0:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:0:2880')
     })
 
     test('should throw error for negative steps', () => {
       const rraStr = 'RRA:AVERAGE:0.5:-1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:-1:2880')
     })
 
     test('should throw error for rows less than or equal to 0', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1:0'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:1:0')
     })
 
     test('should throw error for negative rows', () => {
       const rraStr = 'RRA:AVERAGE:0.5:1:-100'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:0.5:1:-100')
     })
 
     test('should throw error for empty string', () => {
       const rraStr = ''
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: ')
     })
 
     test('should throw error for Infinity values', () => {
       const rraStr = 'RRA:AVERAGE:Infinity:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:Infinity:1:2880')
     })
 
     test('should throw error for NaN values', () => {
       const rraStr = 'RRA:AVERAGE:NaN:1:2880'
-      
+
       expect(() => rraFromString(rraStr)).toThrow('Invalid RRA string: RRA:AVERAGE:NaN:1:2880')
     })
   })
@@ -241,10 +241,10 @@ describe('timeSeriesHelpers', () => {
         steps: 1,
         rows: 2880
       }
-      
+
       const str = rraToString(original)
       const parsed = rraFromString(str)
-      
+
       expect(parsed.cf).toBe(original.cf)
       expect(parsed.xff).toBe(original.xff)
       expect(parsed.steps).toBe(original.steps)
@@ -258,10 +258,10 @@ describe('timeSeriesHelpers', () => {
         steps: 12,
         rows: 1440
       }
-      
+
       const str = rraToString(original)
       const parsed = rraFromString(str)
-      
+
       expect(parsed.cf).toBe(original.cf)
       expect(parsed.xff).toBe(original.xff)
       expect(parsed.steps).toBe(original.steps)
@@ -275,10 +275,10 @@ describe('timeSeriesHelpers', () => {
         steps: 5,
         rows: 500
       }
-      
+
       const str = rraToString(original)
       const parsed = rraFromString(str)
-      
+
       expect(parsed.cf).toBe(original.cf)
       expect(parsed.xff).toBeCloseTo(original.xff)
       expect(parsed.steps).toBe(original.steps)
@@ -292,12 +292,12 @@ describe('timeSeriesHelpers', () => {
         steps: 60,
         rows: 720
       }
-      
+
       const str1 = rraToString(original)
       const parsed1 = rraFromString(str1)
       const str2 = rraToString(parsed1)
       const parsed2 = rraFromString(str2)
-      
+
       expect(parsed2.cf).toBe(original.cf)
       expect(parsed2.xff).toBe(original.xff)
       expect(parsed2.steps).toBe(original.steps)

@@ -96,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import IconDownload from '@featherds/icon/action/DownloadFile'
@@ -240,7 +242,7 @@ const performUpload = async (isXml: boolean) => {
     .feather-row {
       margin-bottom: 0.5rem;
     }
-  
+
     button.btn.btn-icon .upload-download-icon {
       font-size: 1.1rem;
     }

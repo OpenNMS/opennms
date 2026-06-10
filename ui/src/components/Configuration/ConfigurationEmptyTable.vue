@@ -27,7 +27,7 @@ import { FeatherButton } from '@featherds/button'
  * Props
  */
 defineProps({
-  newDefinition: { 
+  newDefinition: {
     type: Function as PropType<(payload: MouseEvent) => void>,
     required: true
   }
@@ -71,4 +71,3 @@ defineProps({
   margin-top: 20px;
 }
 </style>
-

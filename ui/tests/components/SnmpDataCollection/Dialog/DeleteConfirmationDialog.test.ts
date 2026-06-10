@@ -54,7 +54,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not render modal body when selected id is missing', async () => {
-      wrapper = createWrapper({ selected: { name: 'Test' } })
+      wrapper = createWrapper({ selected: { name: 'Test' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -62,7 +62,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not render modal body when selected name is missing', async () => {
-      wrapper = createWrapper({ selected: { id: 1 } })
+      wrapper = createWrapper({ selected: { id: 1 }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -146,7 +146,7 @@ describe('DeleteConfirmationDialog', () => {
 
   describe('Dialog Content', () => {
     it('displays correct content for resource-type', async () => {
-      wrapper = createWrapper({ type: 'resource-type', selected: { id: 5, name: 'CPU Resource' } })
+      wrapper = createWrapper({ type: 'resource-type', selected: { id: 5, name: 'CPU Resource' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -157,7 +157,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('displays correct content for source', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 3, name: 'Cisco Source' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 3, name: 'Cisco Source' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -170,7 +170,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('displays correct content for mib-group', async () => {
-      wrapper = createWrapper({ type: 'mib-group', selected: { id: 7, name: 'System MIB' } })
+      wrapper = createWrapper({ type: 'mib-group', selected: { id: 7, name: 'System MIB' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -179,7 +179,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('displays correct content for system-def', async () => {
-      wrapper = createWrapper({ type: 'system-def', selected: { id: 2, name: 'Router Definition' } })
+      wrapper = createWrapper({ type: 'system-def', selected: { id: 2, name: 'Router Definition' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -188,7 +188,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('displays selected name in bold', async () => {
-      wrapper = createWrapper({ selected: { id: 1, name: 'Test Name' } })
+      wrapper = createWrapper({ selected: { id: 1, name: 'Test Name' }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -392,7 +392,7 @@ describe('DeleteConfirmationDialog', () => {
 
   describe('Edge Cases', () => {
     it('handles selected with id as 0', async () => {
-      wrapper = createWrapper({ selected: { id: 0, name: 'Zero ID' } })
+      wrapper = createWrapper({ selected: { id: 0, name: 'Zero ID' }})
       await flushPromises()
 
       // Should not render because 0 is falsy
@@ -401,7 +401,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('handles empty string name', async () => {
-      wrapper = createWrapper({ selected: { id: 1, name: '' } })
+      wrapper = createWrapper({ selected: { id: 1, name: '' }})
       await flushPromises()
 
       // Should not render because empty string is falsy
@@ -411,7 +411,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles special characters in name', async () => {
       const specialName = 'Test<>Name&"Special\'Chars'
-      wrapper = createWrapper({ selected: { id: 1, name: specialName } })
+      wrapper = createWrapper({ selected: { id: 1, name: specialName }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -420,7 +420,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles long names correctly', async () => {
       const longName = 'A'.repeat(200)
-      wrapper = createWrapper({ selected: { id: 1, name: longName } })
+      wrapper = createWrapper({ selected: { id: 1, name: longName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -446,10 +446,10 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not crash when selected changes while dialog is open', async () => {
-      wrapper = createWrapper({ selected: { id: 1, name: 'First' } })
+      wrapper = createWrapper({ selected: { id: 1, name: 'First' }})
       await flushPromises()
 
-      await wrapper.setProps({ selected: { id: 2, name: 'Second' } })
+      await wrapper.setProps({ selected: { id: 2, name: 'Second' }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -457,7 +457,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('emits correct data after selected and type are changed', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'First' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'First' }})
       await flushPromises()
 
       await wrapper.setProps({
@@ -574,7 +574,7 @@ describe('DeleteConfirmationDialog', () => {
 
   describe('Source Type Specific Content', () => {
     it('displays Note section only for source type', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -582,7 +582,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not display Note section for mib-group type', async () => {
-      wrapper = createWrapper({ type: 'mib-group', selected: { id: 1, name: 'Test MIB' } })
+      wrapper = createWrapper({ type: 'mib-group', selected: { id: 1, name: 'Test MIB' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -590,7 +590,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not display Note section for system-def type', async () => {
-      wrapper = createWrapper({ type: 'system-def', selected: { id: 1, name: 'Test System' } })
+      wrapper = createWrapper({ type: 'system-def', selected: { id: 1, name: 'Test System' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -598,7 +598,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('does not display Note section for resource-type', async () => {
-      wrapper = createWrapper({ type: 'resource-type', selected: { id: 1, name: 'Test Resource' } })
+      wrapper = createWrapper({ type: 'resource-type', selected: { id: 1, name: 'Test Resource' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -606,7 +606,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('mentions MIB Groups removal for source type', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -614,7 +614,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('mentions System Definitions removal for source type', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -622,7 +622,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('mentions Resource Types removal for source type', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test Source' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -633,7 +633,7 @@ describe('DeleteConfirmationDialog', () => {
   describe('Unicode and International Characters', () => {
     it('handles Chinese characters in name', async () => {
       const chineseName = '测试资源类型'
-      wrapper = createWrapper({ selected: { id: 1, name: chineseName } })
+      wrapper = createWrapper({ selected: { id: 1, name: chineseName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -642,7 +642,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles Japanese characters in name', async () => {
       const japaneseName = 'テストリソース'
-      wrapper = createWrapper({ selected: { id: 1, name: japaneseName } })
+      wrapper = createWrapper({ selected: { id: 1, name: japaneseName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -651,7 +651,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles Korean characters in name', async () => {
       const koreanName = '테스트 리소스'
-      wrapper = createWrapper({ selected: { id: 1, name: koreanName } })
+      wrapper = createWrapper({ selected: { id: 1, name: koreanName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -660,7 +660,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles Arabic characters in name', async () => {
       const arabicName = 'اختبار المورد'
-      wrapper = createWrapper({ selected: { id: 1, name: arabicName } })
+      wrapper = createWrapper({ selected: { id: 1, name: arabicName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -669,7 +669,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles Cyrillic characters in name', async () => {
       const cyrillicName = 'Тестовый ресурс'
-      wrapper = createWrapper({ selected: { id: 1, name: cyrillicName } })
+      wrapper = createWrapper({ selected: { id: 1, name: cyrillicName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -678,7 +678,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles emoji in name', async () => {
       const emojiName = 'Test 🚀 Resource 📦'
-      wrapper = createWrapper({ selected: { id: 1, name: emojiName } })
+      wrapper = createWrapper({ selected: { id: 1, name: emojiName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -687,7 +687,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles mixed scripts in name', async () => {
       const mixedName = 'Test测试テスト'
-      wrapper = createWrapper({ selected: { id: 1, name: mixedName } })
+      wrapper = createWrapper({ selected: { id: 1, name: mixedName }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -698,7 +698,7 @@ describe('DeleteConfirmationDialog', () => {
   describe('Whitespace Handling', () => {
     it('handles leading whitespace in name (trimmed by DOM)', async () => {
       const name = '   Leading Spaces'
-      wrapper = createWrapper({ selected: { id: 1, name } })
+      wrapper = createWrapper({ selected: { id: 1, name }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -708,7 +708,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles trailing whitespace in name (trimmed by DOM)', async () => {
       const name = 'Trailing Spaces   '
-      wrapper = createWrapper({ selected: { id: 1, name } })
+      wrapper = createWrapper({ selected: { id: 1, name }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -718,7 +718,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles multiple internal spaces in name', async () => {
       const name = 'Name    With    Spaces'
-      wrapper = createWrapper({ selected: { id: 1, name } })
+      wrapper = createWrapper({ selected: { id: 1, name }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -727,7 +727,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles tabs in name', async () => {
       const name = 'Name\twith\ttabs'
-      wrapper = createWrapper({ selected: { id: 1, name } })
+      wrapper = createWrapper({ selected: { id: 1, name }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -737,7 +737,7 @@ describe('DeleteConfirmationDialog', () => {
 
     it('handles newlines in name', async () => {
       const name = 'Name\nwith\nnewlines'
-      wrapper = createWrapper({ selected: { id: 1, name } })
+      wrapper = createWrapper({ selected: { id: 1, name }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -748,7 +748,7 @@ describe('DeleteConfirmationDialog', () => {
 
   describe('Numeric Edge Cases', () => {
     it('handles negative id', async () => {
-      wrapper = createWrapper({ selected: { id: -1, name: 'Negative ID' } })
+      wrapper = createWrapper({ selected: { id: -1, name: 'Negative ID' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -756,7 +756,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('handles very large id', async () => {
-      wrapper = createWrapper({ selected: { id: Number.MAX_SAFE_INTEGER, name: 'Large ID' } })
+      wrapper = createWrapper({ selected: { id: Number.MAX_SAFE_INTEGER, name: 'Large ID' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -764,7 +764,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('handles decimal id', async () => {
-      wrapper = createWrapper({ selected: { id: 1.5, name: 'Decimal ID' } })
+      wrapper = createWrapper({ selected: { id: 1.5, name: 'Decimal ID' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -772,7 +772,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('handles numeric name string', async () => {
-      wrapper = createWrapper({ selected: { id: 1, name: '12345' } })
+      wrapper = createWrapper({ selected: { id: 1, name: '12345' }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -780,7 +780,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('handles name starting with number', async () => {
-      wrapper = createWrapper({ selected: { id: 1, name: '123-Resource-Name' } })
+      wrapper = createWrapper({ selected: { id: 1, name: '123-Resource-Name' }})
       await flushPromises()
 
       const strong = wrapper.find('strong')
@@ -798,7 +798,7 @@ describe('DeleteConfirmationDialog', () => {
       ]
 
       for (const type of types) {
-        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test' } })
+        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test' }})
         await flushPromises()
 
         const modalBody = wrapper.find('.modal-body')
@@ -817,7 +817,7 @@ describe('DeleteConfirmationDialog', () => {
       ]
 
       for (const type of types) {
-        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test' } })
+        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test' }})
         await flushPromises()
 
         const modalBody = wrapper.find('.modal-body')
@@ -836,7 +836,7 @@ describe('DeleteConfirmationDialog', () => {
       ]
 
       for (const type of types) {
-        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test Name' } })
+        wrapper = createWrapper({ type, selected: { id: 1, name: 'Test Name' }})
         await flushPromises()
 
         const strong = wrapper.find('strong')
@@ -919,7 +919,7 @@ describe('DeleteConfirmationDialog', () => {
       await flushPromises()
 
       // Trigger re-renders
-      await wrapper.setProps({ selected: { id: 2, name: 'Updated' } })
+      await wrapper.setProps({ selected: { id: 2, name: 'Updated' }})
       await flushPromises()
       await wrapper.setProps({ type: 'mib-group' })
       await flushPromises()
@@ -935,19 +935,19 @@ describe('DeleteConfirmationDialog', () => {
 
   describe('Content Sections', () => {
     it('renders exactly one type-specific content section', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
       const divs = modalBody.findAll('div > div')
 
       // Only one type-specific div should have visible content
-      const visibleDivs = divs.filter((d) => d.text().includes('This will delete'))
+      const visibleDivs = divs.filter(d => d.text().includes('This will delete'))
       expect(visibleDivs).toHaveLength(1)
     })
 
     it('all paragraphs are present for source type', async () => {
-      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test' } })
+      wrapper = createWrapper({ type: 'source', selected: { id: 1, name: 'Test' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -958,7 +958,7 @@ describe('DeleteConfirmationDialog', () => {
     })
 
     it('all paragraphs are present for non-source types', async () => {
-      wrapper = createWrapper({ type: 'mib-group', selected: { id: 1, name: 'Test' } })
+      wrapper = createWrapper({ type: 'mib-group', selected: { id: 1, name: 'Test' }})
       await flushPromises()
 
       const modalBody = wrapper.find('.modal-body')
@@ -1080,4 +1080,3 @@ describe('DeleteConfirmationDialog', () => {
     })
   })
 })
-

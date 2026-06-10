@@ -18,6 +18,8 @@
   setup
   lang="ts"
 >
+import { computed, ref, watch, watchEffect } from 'vue'
+
 import { debounce } from 'lodash'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { useMapStore } from '@/stores/mapStore'
@@ -34,7 +36,7 @@ const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
-  const nodeLabels = items.map((item) => item.label)
+  const nodeLabels = items.map(item => item.label)
   mapStore.setSearchedNodeLabels(nodeLabels)
 
   if (nodeLabels.length) {

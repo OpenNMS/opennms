@@ -88,6 +88,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'

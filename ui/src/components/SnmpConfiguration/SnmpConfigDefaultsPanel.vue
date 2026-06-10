@@ -93,7 +93,7 @@
             @click="onSave"
           >
             Save
-          </FeatherButton>  
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -190,126 +190,126 @@ const formErrors = ref<SnmpConfigFormErrors>({})
 const isMessageDialogVisible = ref(false)
 
 const parameters: ParameterConfig[] = [
-  { 
-    key: 'version', 
-    label: 'Version', 
-    defaultValue: DEFAULT_SNMP_VERSION, 
+  {
+    key: 'version',
+    label: 'Version',
+    defaultValue: DEFAULT_SNMP_VERSION,
     inputType: 'text',
     hint: 'SNMP version (v1, v2c, or v3)',
     isSelect: true,
     selectOptions: SnmpVersions
   },
-  { 
-    key: 'timeout', 
-    label: 'Timeout', 
-    defaultValue: DEFAULT_SNMP_TIMEOUT, 
+  {
+    key: 'timeout',
+    label: 'Timeout',
+    defaultValue: DEFAULT_SNMP_TIMEOUT,
     inputType: 'number',
     hint: 'Timeout in milliseconds'
   },
-  { 
-    key: 'retry', 
-    label: 'Retries', 
-    defaultValue: DEFAULT_SNMP_RETRIES, 
+  {
+    key: 'retry',
+    label: 'Retries',
+    defaultValue: DEFAULT_SNMP_RETRIES,
     inputType: 'number',
     hint: 'Number of retries'
   },
-  { 
-    key: 'port', 
-    label: 'Port', 
-    defaultValue: DEFAULT_SNMP_PORT, 
+  {
+    key: 'port',
+    label: 'Port',
+    defaultValue: DEFAULT_SNMP_PORT,
     inputType: 'number',
     hint: 'SNMP port (default: 161)'
   },
-  { 
-    key: 'ttl', 
-    label: 'TTL', 
-    defaultValue: DEFAULT_SNMP_TTL, 
+  {
+    key: 'ttl',
+    label: 'TTL',
+    defaultValue: DEFAULT_SNMP_TTL,
     inputType: 'number',
     hint: 'Time to live'
   },
-  { 
-    key: 'maxRequestSize', 
-    label: 'Max Request Size', 
-    defaultValue: DEFAULT_SNMP_MAX_REQUEST_SIZE, 
+  {
+    key: 'maxRequestSize',
+    label: 'Max Request Size',
+    defaultValue: DEFAULT_SNMP_MAX_REQUEST_SIZE,
     inputType: 'number',
     hint: 'Maximum bytes per PDU request'
   },
-  { 
-    key: 'maxVarsPerPdu', 
-    label: 'Max Vars Per PDU', 
-    defaultValue: DEFAULT_SNMP_MAX_VARS_PER_PDU, 
+  {
+    key: 'maxVarsPerPdu',
+    label: 'Max Vars Per PDU',
+    defaultValue: DEFAULT_SNMP_MAX_VARS_PER_PDU,
     inputType: 'number',
     hint: 'Variables per SNMP request'
   },
-  { 
-    key: 'maxRepetitions', 
-    label: 'Max Repetitions', 
-    defaultValue: DEFAULT_SNMP_MAX_REPETITIONS, 
+  {
+    key: 'maxRepetitions',
+    label: 'Max Repetitions',
+    defaultValue: DEFAULT_SNMP_MAX_REPETITIONS,
     inputType: 'number',
     hint: 'Repetitions per get-bulk request'
   },
-  { 
-    key: 'readCommunity', 
-    label: 'Read Community String', 
-    defaultValue: DEFAULT_SNMP_READ_COMMUNITY_STRING, 
+  {
+    key: 'readCommunity',
+    label: 'Read Community String',
+    defaultValue: DEFAULT_SNMP_READ_COMMUNITY_STRING,
     inputType: 'text',
     hint: 'Read community string',
     scvEnabled: true
   },
-  { 
-    key: 'writeCommunity', 
-    label: 'Write Community String', 
-    defaultValue: DEFAULT_SNMP_WRITE_COMMUNITY_STRING, 
+  {
+    key: 'writeCommunity',
+    label: 'Write Community String',
+    defaultValue: DEFAULT_SNMP_WRITE_COMMUNITY_STRING,
     inputType: 'text',
     hint: 'Write community string',
     scvEnabled: true
   },
-  { 
-    key: 'securityName', 
-    label: 'V3 Security Name', 
-    defaultValue: DEFAULT_SNMP_V3_SECURITY_NAME, 
+  {
+    key: 'securityName',
+    label: 'V3 Security Name',
+    defaultValue: DEFAULT_SNMP_V3_SECURITY_NAME,
     inputType: 'text',
     hint: 'SNMP v3 security name',
     scvEnabled: true
   },
-  { 
-    key: 'securityLevel', 
-    label: 'V3 Security Level', 
-    defaultValue: DEFAULT_SNMP_V3_SECURITY_LEVEL, 
+  {
+    key: 'securityLevel',
+    label: 'V3 Security Level',
+    defaultValue: DEFAULT_SNMP_V3_SECURITY_LEVEL,
     inputType: 'number',
     hint: 'SNMP v3 security level',
     isSelect: true,
     selectOptions: SecurityLevelSelectionOptions
   },
-  { 
-    key: 'authPassphrase', 
-    label: 'V3 Auth Passphrase', 
-    defaultValue: DEFAULT_SNMP_V3_AUTH_PASSPHRASE, 
+  {
+    key: 'authPassphrase',
+    label: 'V3 Auth Passphrase',
+    defaultValue: DEFAULT_SNMP_V3_AUTH_PASSPHRASE,
     inputType: 'password',
     hint: 'Authentication passphrase',
     scvEnabled: true
   },
-  { 
-    key: 'authProtocol', 
-    label: 'V3 Auth Protocol', 
-    defaultValue: DEFAULT_SNMP_V3_AUTH_PROTOCOL, 
+  {
+    key: 'authProtocol',
+    label: 'V3 Auth Protocol',
+    defaultValue: DEFAULT_SNMP_V3_AUTH_PROTOCOL,
     inputType: 'text',
     hint: 'Authentication protocol',
     isSelect: true,
     selectOptions: SnmpAuthProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
   },
-  { 
-    key: 'privacyPassphrase', 
-    label: 'V3 Privacy Passphrase', 
-    defaultValue: DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, 
+  {
+    key: 'privacyPassphrase',
+    label: 'V3 Privacy Passphrase',
+    defaultValue: DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE,
     inputType: 'password',
     hint: 'Privacy passphrase',
     scvEnabled: true
   },
-  { 
-    key: 'privacyProtocol', 
-    label: 'V3 Privacy Protocol', 
-    defaultValue: DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, 
+  {
+    key: 'privacyProtocol',
+    label: 'V3 Privacy Protocol',
+    defaultValue: DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
     inputType: 'text',
     hint: 'Privacy protocol',
     isSelect: true,
@@ -346,10 +346,10 @@ const onScvButtonClick = (key: keyof SnmpBaseConfiguration) => {
 
 const scvItemSelected = (item: ScvSearchItem) => {
   const scvValue = '${scv:' + item.alias + ':' + item.key + '}'
-  
+
   const key = scvSelectedProperty.value as keyof SnmpBaseConfiguration
   (formConfig.value as any)[key] = scvValue
-  
+
   scvSearchDrawerOpen.value = false
 }
 
@@ -518,7 +518,7 @@ onMounted(() => {
     max-width: 80em;
     padding: 1.5em;
   }
-  
+
   .large-spacer {
     height: 1.5rem;
   }

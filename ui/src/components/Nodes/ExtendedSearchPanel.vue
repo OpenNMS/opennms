@@ -60,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputTextComponent from 'primevue/inputtext'

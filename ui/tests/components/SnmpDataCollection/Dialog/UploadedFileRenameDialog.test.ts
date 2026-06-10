@@ -156,10 +156,10 @@ describe('UploadedFileRenameDialog.vue', () => {
     it('should set original file name when dialog becomes visible', async () => {
       await wrapper.setProps({ visible: false })
       await nextTick()
-      
+
       await wrapper.setProps({ visible: true })
       await nextTick()
-      
+
       expect(wrapper.vm.originalFileName).toBe('test-file.xml')
     })
 
@@ -334,7 +334,7 @@ describe('UploadedFileRenameDialog.vue', () => {
       it('should handle trimmed names when checking upload list', () => {
         // onChangeFileName already trims the value before validation
         wrapper.vm.onChangeFileName('  another-file.xml  ')
-        
+
         expect(wrapper.vm.newFileName).toBe('another-file.xml')
         expect(wrapper.vm.error).toBe('A file with this name already exists in the current upload list.')
       })
@@ -628,7 +628,7 @@ describe('UploadedFileRenameDialog.vue', () => {
       await wrapper.setProps({ visible: false })
       await nextTick()
 
-      await wrapper.setProps({ 
+      await wrapper.setProps({
         visible: true,
         index: 1,
         fileBucket: mockFileBucket
@@ -675,12 +675,12 @@ describe('UploadedFileRenameDialog.vue', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty file bucket', async () => {
-      await wrapper.setProps({ 
+      await wrapper.setProps({
         visible: false
       })
       await nextTick()
 
-      await wrapper.setProps({ 
+      await wrapper.setProps({
         fileBucket: [],
         index: 0,
         visible: true
@@ -744,10 +744,10 @@ describe('UploadedFileRenameDialog.vue', () => {
 
       await wrapper.setProps({ visible: false })
       await nextTick()
-      
+
       await wrapper.setProps({ fileBucket: mixedCaseFiles, index: 0, visible: true })
       await nextTick()
-      
+
       // Now originalFileName is 'Test-File.xml'
       // Try to use another file from the list with different case
       wrapper.vm.newFileName = 'ANOTHER-FILE.xml'
@@ -767,7 +767,7 @@ describe('UploadedFileRenameDialog.vue', () => {
 
     it('should handle rapid checkbox toggling', async () => {
       const checkboxes = wrapper.findAllComponents(FeatherCheckbox)
-      
+
       await checkboxes[0].vm.$emit('update:modelValue', true)
       await checkboxes[1].vm.$emit('update:modelValue', true)
       await checkboxes[0].vm.$emit('update:modelValue', true)
@@ -891,20 +891,20 @@ describe('UploadedFileRenameDialog.vue', () => {
     describe('onChangeFileName', () => {
       it('should update newFileName and validate', () => {
         wrapper.vm.onChangeFileName('new-name.xml')
-        
+
         expect(wrapper.vm.newFileName).toBe('new-name.xml')
       })
 
       it('should trim the value', () => {
         wrapper.vm.onChangeFileName('  spaced-name.xml  ')
-        
+
         expect(wrapper.vm.newFileName).toBe('spaced-name.xml')
       })
 
       it('should not update for falsy values', () => {
         const originalName = wrapper.vm.newFileName
         wrapper.vm.onChangeFileName(null)
-        
+
         expect(wrapper.vm.newFileName).toBe(originalName)
       })
     })
@@ -1161,7 +1161,7 @@ describe('UploadedFileRenameDialog.vue', () => {
       await nextTick()
 
       // Reopen with different file
-      await wrapper.setProps({ 
+      await wrapper.setProps({
         visible: true,
         index: 1
       })

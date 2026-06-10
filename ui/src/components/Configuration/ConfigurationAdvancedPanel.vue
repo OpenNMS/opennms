@@ -57,7 +57,7 @@
   setup
   lang="ts"
 >
-import { PropType } from 'vue'
+import { PropType, computed, reactive, ref, watch } from 'vue'
 
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
@@ -104,7 +104,9 @@ const labels = ref(defaultLabels)
 const buttonAddDisabled = computed(() => {
   const itemsLength = props.items.length
 
-  if (!itemsLength) return false // enabled
+  if (!itemsLength) {
+    return false
+  } // enabled
 
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
@@ -151,7 +153,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
 const search = (searchVal: string, type: string, subType: string, index: number) => {
   // prevent username/Username/password/Password key, using Advanced Options section, from adding to the URL, since they can be set in their respective input field of the form
   const vmWareFields = Object.entries(VMWareFields).map(e => e[1])
-  if(vmWareFields.includes(searchVal)) {
+  if (vmWareFields.includes(searchVal)) {
     labels.value = { noResults: LabelStrings.optionNotAvailable }
     return
   }
@@ -159,7 +161,7 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   const advancedKeys = getKeysBasedOnType(type, subType)
 
   //Find keys based on search text.
-  let newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
+  let newResu = advancedKeys.filter(key => key.name.includes(searchVal) || key.name === searchVal)
 
   //If there are no results, add one to the list. This enables custom advanced keys.
   if (newResu.length === 0) {
@@ -272,4 +274,3 @@ watch(props, () => {
   color: var($error);
 }
 </style>
-

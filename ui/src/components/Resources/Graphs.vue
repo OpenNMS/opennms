@@ -28,8 +28,12 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { useDebounceFn, useScroll } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
@@ -44,7 +48,7 @@ import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
 
 const el = document.getElementById('card')
-const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
+const { arrivedState } = useScroll(el, { offset: { bottom: 100 }})
 const definitionsToDisplay = ref<string[]>([])
 
 const graphStore = useGraphStore()
@@ -110,7 +114,7 @@ const searchHandler: UpdateModelFunction = (searchInputVal: string) => {
 
   const search = useDebounceFn((val: string) => {
     if (val) {
-      definitionsListCopy = definitionsList.value.filter((definition) =>
+      definitionsListCopy = definitionsList.value.filter(definition =>
         definition.toLowerCase().includes(val.toLowerCase()))
 
       definitionsToDisplay.value = definitionsListCopy.splice(0, 4)

@@ -75,6 +75,9 @@
 </template>
 
 <script setup lang ="ts">
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
 import 'leaflet/dist/leaflet.css'
 import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import {
@@ -155,8 +158,8 @@ const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu
 const ipInterfaces = computed<IpInterface[]>(() => ipInterfaceStore.ipInterfaces)
 
 // cached map of node id -> IpInterface list
-const ipInterfaceMap = computed<Map<string,IpInterface[]>>(() => {
-  const nodeIfMap = new Map<string,IpInterface[]>()
+const ipInterfaceMap = computed<Map<string, IpInterface[]>>(() => {
+  const nodeIfMap = new Map<string, IpInterface[]>()
 
   for (let ip of ipInterfaces.value) {
     const key = ip.nodeId.toString()
@@ -232,7 +235,7 @@ const initializeClusterPopup = async (cluster: Cluster) => {
 // to inject into the Leaflet popup component and launch the popup
 const launchClusterPopup = (cluster: Cluster) => {
   const content = clusterPopupContent.value.$refs.clusterPopupContent.innerHTML
-  const options: PopupOptions = { }
+  const options: PopupOptions = {}
 
   const leafletObject = window['L']
 
@@ -335,7 +338,7 @@ const flyToNode = (nodeLabelOrId: string) => {
 
 const setBoundingBox = (nodeLabels: string[]) => {
   const coordinateMap = getNodeCoordinateMap.value
-  const bounds = nodeLabels.map((nodeLabel) => coordinateMap.get(nodeLabel))
+  const bounds = nodeLabels.map(nodeLabel => coordinateMap.get(nodeLabel))
 
   if (bounds.length) {
     leafletObject.value.fitBounds(bounds.map(c => [c!.latitude, c!.longitude] as LatLngTuple))

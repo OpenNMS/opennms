@@ -249,6 +249,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource, createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
@@ -302,7 +305,7 @@ const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
 const varbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([
-  { index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } }
+  { index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber }}
 ])
 const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
 const labels = {
@@ -379,7 +382,7 @@ const resetValues = () => {
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
   if (store.selectedSource) {
-    const source = eventConfigStore.uploadedSources?.find((s) => s.id === store.selectedSource?.id)
+    const source = eventConfigStore.uploadedSources?.find(s => s.id === store.selectedSource?.id)
     selectedSource.value = { _text: source?.name, _value: source?.id }
   } else {
     selectedSource.value = { _text: '', _value: -1 }
@@ -408,7 +411,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
       const alarmTypeAttr = alarmDataElement?.getAttribute('alarm-type') as AlarmTypeValue
       const matchedKey = Object.keys(AlarmTypeValue).find(
-        (key) => AlarmTypeValue[key as keyof typeof AlarmTypeValue] === alarmTypeAttr
+        key => AlarmTypeValue[key as keyof typeof AlarmTypeValue] === alarmTypeAttr
       ) as keyof typeof AlarmTypeValue
       alarmType.value = {
         _text: AlarmTypeName[matchedKey] || '',
@@ -549,7 +552,7 @@ const setVarbinds = (key: string, value: any, index: number) => {
   }
 
   if (key === 'addVarbindRow') {
-    varbinds.value.push({ index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } })
+    varbinds.value.push({ index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber }})
   }
 
   if (key === 'removeVarbindRow') {
@@ -701,7 +704,7 @@ const handleSourceCreationSave = async () => {
         error: true
       })
     }
-  } catch (error) {
+  } catch (_error) {
     snackbar.showSnackBar({
       msg: 'Failed to create event configuration source. Please try again.',
       error: true
@@ -749,8 +752,8 @@ const search = (query: string) => {
   clearTimeout(timeout.value)
   timeout.value = window.setTimeout(() => {
     results.value = eventConfigStore.uploadedSources
-      .filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
-      .map((x) => ({ _text: x.name, _value: x.id }))
+      .filter(s => s.name.toLowerCase().includes(query.toLowerCase()))
+      .map(x => ({ _text: x.name, _value: x.id }))
     loading.value = false
   }, 500)
 }

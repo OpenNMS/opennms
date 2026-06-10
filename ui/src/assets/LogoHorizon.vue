@@ -100,4 +100,4 @@ svg {
 .cls-8 {
     fill: #0081ad;
 }
-</style>               
+</style>

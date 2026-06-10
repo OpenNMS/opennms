@@ -9,10 +9,10 @@
     @update:modelValue="updatePage"
   ></FeatherPagination>
 </template>
-  
+
 <script setup lang="ts">
 import { FeatherPagination } from '@featherds/pagination'
-import { PropType } from 'vue'
+import { PropType, computed, onMounted, ref } from 'vue'
 import { QueryParameters } from '@/types'
 
 const props = defineProps({

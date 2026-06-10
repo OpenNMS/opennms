@@ -58,6 +58,9 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, Ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
@@ -160,4 +163,3 @@ const visitCreatedEventConfigSource = () => {
 </script>
 
 <style lang="scss" scoped></style>
-
