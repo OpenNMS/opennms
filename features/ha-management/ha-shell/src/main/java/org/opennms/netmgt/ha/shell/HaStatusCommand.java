@@ -25,6 +25,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
+import org.apache.karaf.shell.support.table.ShellTable;
 import org.opennms.netmgt.ha.DbConnectionFactory;
 import org.opennms.netmgt.ha.HaConfiguration;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
@@ -46,8 +47,6 @@ import java.sql.Statement;
 @Command(scope = "opennms", name = "ha-status", description = "Display HA cluster status for all instances.")
 @Service
 public class HaStatusCommand implements Action {
-
-    private static final String FMT = "%-22s %-10s %-14s %-26s %-16s %-26s %s%n";
 
     @Override
     public Object execute() throws Exception {
@@ -73,18 +72,18 @@ public class HaStatusCommand implements Action {
                      "SELECT instance_id, configured_role, current_state, active_since, " +
                      "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
+            
+            ShellTable haTable = new ShellTable();
+            haTable.column("INSTANCE");
+            haTable.column("ROLE");
+            haTable.column("STATE");
+            haTable.column("ACTIVE SINCE");
+            haTable.column("HEARTBEAT AGE");
+            haTable.column("HOSTNAME");
+            haTable.column("DEGRADED");
 
             boolean anyRows = false;
             while (rs.next()) {
-                if (!anyRows) {
-                    // Print the header only once we know there is at least one row.
-                    System.out.println("HA Cluster Status");
-                    System.out.println("=================");
-                    System.out.printf(FMT, "INSTANCE", "ROLE", "STATE", "ACTIVE SINCE", "HEARTBEAT AGE", "HOSTNAME", "DEGRADED");
-                    System.out.printf(FMT,
-                            "----------------------", "----------", "--------------",
-                            "--------------------------", "----------------", "--------------------------", "--------");
-                }
                 anyRows = true;
                 String instanceId     = rs.getString("instance_id");
                 String configuredRole = rs.getString("configured_role");
@@ -100,18 +99,18 @@ public class HaStatusCommand implements Action {
                         ("SECONDARY".equals(configuredRole) && "ACTIVE".equals(currentState))
                         || "DEGRADED".equals(currentState);
                 boolean degraded = stateBasedDegraded || heartbeatStale;
-                System.out.printf(FMT,
-                        nvl(instanceId),
-                        nvl(configuredRole),
-                        nvl(currentState),
-                        nvl(activeSince),
-                        heartbeatKnown ? formatAge(ageSeconds) : "--",
-                        nvl(hostname),
-                        degraded ? "YES" : "no");
+                haTable.addRow().addContent(nvl(instanceId), nvl(configuredRole), nvl(currentState),
+                        nvl(activeSince), heartbeatKnown ? formatAge(ageSeconds) : "--",
+                        nvl(hostname), degraded ? "YES" : "no");
             }
-
-            if (!anyRows) {
-                System.out.println("  (no rows — HA table is empty or HA is not configured)");
+            
+            if (anyRows) {
+                System.out.println("HA Cluster Status");
+                System.out.println("=================");
+                haTable.print(System.out);
+                System.out.println();
+            } else {
+                System.out.println("(HA table is empty or HA is not configured)");
             }
 
         } catch (Exception e) {
