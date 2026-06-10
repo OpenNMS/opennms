@@ -363,6 +363,44 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         downStatusBehavior.setSkipPropertyByDefault(true);
         map.put("nodesWithDownAggregateStatus", downStatusBehavior);
 
+        // nodesWithAssets: nodes whose asset record has at least one non-empty field.
+        // Mirrors the legacy AssetModel.searchNodesWithAssets() query ("All nodes with asset info").
+        final String[] assetColumns = {
+            "manufacturer", "vendor", "modelNumber", "serialNumber", "description", "circuitId",
+            "assetNumber", "operatingSystem", "rack", "slot", "port", "region", "division", "department",
+            "address1", "address2", "city", "state", "zip", "building", "floor", "room", "vendorPhone",
+            "vendorFax", "dateInstalled", "lease", "leaseExpires", "supportPhone", "maintContract",
+            "vendorAssetNumber", "maintContractExpires", "displayCategory", "notifyCategory",
+            "pollerCategory", "thresholdCategory", "comment", "username", "password", "enable",
+            "connection", "autoenable", "cpu", "ram", "storagectrl", "hdd1", "hdd2", "hdd3", "hdd4",
+            "hdd5", "hdd6", "numpowersupplies", "inputpower", "additionalhardware", "admin",
+            "snmpcommunity", "rackunitheight"
+        };
+        final String nonEmptyAssets = java.util.Arrays.stream(assetColumns)
+                .map(col -> "coalesce(" + col + ",'') != ''")
+                .collect(java.util.stream.Collectors.joining(" or "));
+        final String assetsSubquery = "(select nodeid from assets where " + nonEmptyAssets + ")";
+        CriteriaBehavior<?> withAssetsBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final boolean wantAssets = Boolean.parseBoolean((String)v);
+            boolean hasAssets;
+            switch (c) {
+            case EQUALS:
+                hasAssets = wantAssets;
+                break;
+            case NOT_EQUALS:
+                hasAssets = !wantAssets;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for nodesWithAssets expression: " + c);
+            }
+            b.sql("{alias}.nodeid " + (hasAssets ? "in " : "not in ") + assetsSubquery);
+        });
+        withAssetsBehavior.setSkipPropertyByDefault(true);
+        map.put("nodesWithAssets", withAssetsBehavior);
+
         return map;
     }
 

@@ -21,6 +21,7 @@
 ///
 
 import {
+  AssetFilter,
   Category,
   MatchType,
   MonitoringLocation,
@@ -326,15 +327,30 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
- * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL.
- * Used to validate the `assetColumn` query param (sourced from site-status-views config) so a
- * stray/unsupported column never produces an invalid FIQL query. Geolocation-backed fields
- * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties.
+ * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL,
+ * with human-readable labels for the asset-filter dropdown. Geolocation-backed fields
+ * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties,
+ * so an `assetRecord.city` query would be invalid.
  */
-export const ALLOWED_ASSET_COLUMNS = new Set([
-  'building', 'floor', 'room', 'rack', 'region', 'division', 'department',
-  'category', 'displayCategory', 'circuitId'
-])
+export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
+  { value: 'building', label: 'Building' },
+  { value: 'floor', label: 'Floor' },
+  { value: 'room', label: 'Room' },
+  { value: 'rack', label: 'Rack' },
+  { value: 'region', label: 'Region' },
+  { value: 'division', label: 'Division' },
+  { value: 'department', label: 'Department' },
+  { value: 'category', label: 'Category' },
+  { value: 'displayCategory', label: 'Display Category' },
+  { value: 'circuitId', label: 'Circuit ID' }
+]
+
+/** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
+export const ALLOWED_ASSET_COLUMNS = new Set(ASSET_COLUMN_OPTIONS.map(o => o.value))
+
+/** Display label for an asset column key (falls back to the key itself). */
+export const getAssetColumnLabel = (column: string): string =>
+  ASSET_COLUMN_OPTIONS.find(o => o.value === column)?.label ?? column
 
 /**
  * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.
@@ -344,18 +360,36 @@ export const parseDownAggregateStatus = (queryObject: any): boolean => {
 }
 
 /**
- * Parses an asset-field filter (`assetColumn` + `assetValue`) from a query object.
- * Both must be present and the column must be in ALLOWED_ASSET_COLUMNS, otherwise null.
+ * Returns true if the `nodesWithAssets` query param requests only nodes that have asset info.
  */
-export const parseAssetFilter = (queryObject: any): { column: string, value: string } | null => {
-  const column = (queryObject.assetColumn as string) || ''
-  const value = (queryObject.assetValue as string) || ''
+export const parseNodesWithAssets = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithAssets ?? '').toLowerCase() === 'true'
+}
 
-  if (!column || !value || !ALLOWED_ASSET_COLUMNS.has(column)) {
-    return null
+/**
+ * Parses asset-field filters from `assetColumn` + `assetValue` query params.
+ * Each param may be a single value (vue-router string) or repeated (array); the two are paired
+ * by index. Pairs with an empty value or a column not in ALLOWED_ASSET_COLUMNS are skipped, and
+ * duplicate columns keep the last value. Returns [] when none are valid.
+ */
+export const parseAssetFilters = (queryObject: any): AssetFilter[] => {
+  const toArray = (v: any): string[] =>
+    Array.isArray(v) ? (v as string[]) : v ? [v as string] : []
+
+  const columns = toArray(queryObject.assetColumn)
+  const values = toArray(queryObject.assetValue)
+
+  const byColumn = new Map<string, string>()
+  const count = Math.min(columns.length, values.length)
+  for (let i = 0; i < count; i++) {
+    const column = columns[i]
+    const value = values[i]
+    if (column && value && ALLOWED_ASSET_COLUMNS.has(column)) {
+      byColumn.set(column, value)
+    }
   }
 
-  return { column, value }
+  return Array.from(byColumn, ([column, value]) => ({ column, value }))
 }
 
 /**

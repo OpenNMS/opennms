@@ -22,9 +22,10 @@
 
 import { describe, expect, test } from 'vitest'
 import {
-  parseAssetFilter,
+  parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
+  parseNodesWithAssets,
   parseFlows,
   parseForeignSource,
   parseIplike,
@@ -437,17 +438,60 @@ describe('Nodes queryStringParser test', () => {
     })
   })
 
-  describe('parseAssetFilter', () => {
+  describe('parseNodesWithAssets', () => {
     test.each([
-      ['empty', {}, null],
-      ['column only', { assetColumn: 'building' }, null],
-      ['value only', { assetValue: 'HQ' }, null],
-      ['valid building', { assetColumn: 'building', assetValue: 'HQ' }, { column: 'building', value: 'HQ' }],
-      ['valid region', { assetColumn: 'region', assetValue: 'East' }, { column: 'region', value: 'East' }],
-      ['disallowed column (geolocation) returns null', { assetColumn: 'city', assetValue: 'Pittsburgh' }, null],
-      ['unknown column returns null', { assetColumn: 'bogus', assetValue: 'X' }, null]
-    ]) ('parseAssetFilter: %s', (title, queryObject, expected) => {
-      expect(parseAssetFilter(queryObject)).toEqual(expected)
+      ['empty', {}, false],
+      ['true', { nodesWithAssets: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithAssets: 'TRUE' }, true],
+      ['boolean true', { nodesWithAssets: true }, true],
+      ['false', { nodesWithAssets: 'false' }, false],
+      ['garbage', { nodesWithAssets: 'yes' }, false]
+    ]) ('parseNodesWithAssets: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithAssets(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseAssetFilters', () => {
+    test.each([
+      ['empty', {}, []],
+      ['column only', { assetColumn: 'building' }, []],
+      ['value only', { assetValue: 'HQ' }, []],
+      ['single valid building', { assetColumn: 'building', assetValue: 'HQ' }, [{ column: 'building', value: 'HQ' }]],
+      ['single valid region', { assetColumn: 'region', assetValue: 'East' }, [{ column: 'region', value: 'East' }]],
+      ['disallowed column (geolocation) skipped', { assetColumn: 'city', assetValue: 'Pittsburgh' }, []],
+      ['unknown column skipped', { assetColumn: 'bogus', assetValue: 'X' }, []]
+    ]) ('parseAssetFilters: %s', (title, queryObject, expected) => {
+      expect(parseAssetFilters(queryObject)).toEqual(expected)
+    })
+
+    test('pairs repeated column/value params by index', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'region'],
+        assetValue: ['HQ', 'East']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'region', value: 'East' }
+      ])
+    })
+
+    test('skips disallowed columns within a repeated set', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'city', 'rack'],
+        assetValue: ['HQ', 'Pittsburgh', 'R1']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'rack', value: 'R1' }
+      ])
+    })
+
+    test('duplicate columns keep the last value', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'building'],
+        assetValue: ['HQ', 'DC2']
+      })
+      expect(result).toEqual([{ column: 'building', value: 'DC2' }])
     })
   })
 

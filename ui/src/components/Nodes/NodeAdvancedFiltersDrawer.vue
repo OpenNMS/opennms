@@ -17,7 +17,7 @@
           :icon="InfoIcon"
           class="info-icon"
           @click="isMessageDialogVisible = true"
-          data-test="snmp-config-lookup-info-icon"
+          data-test="advanced-filters-info-icon"
         />
       </div>
       <h4 class="title">Categories</h4>
@@ -120,6 +120,7 @@
           />
         </div>
       </div>
+      <div class="spacer-large"></div>
       <FeatherAutocomplete
         class="filter-autocomplete"
         label="Flows"
@@ -140,6 +141,23 @@
             Down nodes only (nodes with a down aggregate status)
           </FeatherCheckbox>
         </div>
+      </div>
+      <div class="feather-row">
+        <div class="feather-col-12">
+          <FeatherCheckbox
+            v-model="selectedFilters.nodesWithAssets"
+          >
+            Nodes with asset info only
+          </FeatherCheckbox>
+        </div>
+      </div>
+      <div class="spacer-medium"></div>
+      <hr />
+      <div class="spacer-medium"></div>
+      <div>
+        <h4 class="title">Asset Fields</h4>
+        <div class="spacer-medium"></div>
+        <AssetFilterPanel ref="assetFilterPanelRef" />
       </div>
       <div class="spacer-medium"></div>
       <hr />
@@ -181,7 +199,7 @@
         <template #content>
           <div>
             <p>Use the advanced filters to find nodes that match specific criteria.</p>
-            <p>You can filter by categories, monitoring locations, monitored services, IP address, topology, flow type and multiple extended search parameters.</p>
+            <p>You can filter by categories, monitoring locations, monitored services, IP address, MAC address, topology, flow type, down status, asset fields and multiple extended search parameters.</p>
             <br />
             <p><strong>Categories</strong></p>
             <p>You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
@@ -216,19 +234,19 @@
             <p><strong>Flows</strong></p>
             <p>Filtering by Flows allows you to find nodes which have ingress flows, egress flows or no flows.</p>
             <br />
+            <p><strong>Down nodes only</strong></p>
+            <p>Limits results to nodes with a down aggregate status, i.e. nodes that have at least one active monitored service currently in outage.</p>
+            <br />
+            <p><strong>Nodes with asset info only</strong></p>
+            <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
+            <br />
+            <p><strong>Asset Fields</strong></p>
+            <p>Filter by one or more node asset-record fields (such as Building, Region, or Rack). Choose an asset field, enter a value, and click Add. Each added field is an exact match, and multiple asset fields are intersected (a node must match all of them).</p>
+            <br />
             <p><strong>Extended Search</strong></p>
             <p>Extended search allows you to perform more complex queries across multiple fields and criteria, including requisition, asset, and SNMP fields.</p>
             <p>Choose a search type, then a search term and click Add to add it as a filter. You may add multiple filters.</p>
             <p>This is a case-insensitive partial string match against the selected field.</p>
-            <br />
-            <br />
-            <p><strong>TODO</strong></p>
-            <br />
-            <p><strong>TODO: Move to main page</strong></p>
-            <p>Searching by name is a case-insensitive, inclusive search. For example, searching on serv would find any of serv, Service, Reserved, NTSERV, UserVortex, etc. The underscore character acts as a single character wildcard. The percent character acts as a multiple character wildcard.</p>
-            <br />
-            <p><strong>TODO: Need to implement</strong></p>
-            <p>Also note that you can quickly search for all nodes which have asset information assigned by clicking the List all nodes with asset info link.</p>
           </div>
         </template>
       </MessageDialog>
@@ -251,6 +269,7 @@ import DeleteIcon from '@featherds/icon/action/Delete'
 import InfoIcon from '@featherds/icon/action/Info'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
+import AssetFilterPanel from './AssetFilterPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 interface DrawerErrors {
@@ -258,6 +277,7 @@ interface DrawerErrors {
 }
 
 type ExtendedSearchPanelInstance = InstanceType<typeof ExtendedSearchPanel>
+type AssetFilterPanelInstance = InstanceType<typeof AssetFilterPanel>
 
 const searchTimeout = ref<number>(-1)
 const category2SearchTimeout = ref<number>(-1)
@@ -279,6 +299,7 @@ const TIMEOUT = 5
 
 const nodeStructureStore = useNodeStructureStore()
 const extendedSearchPanelRef = ref<ExtendedSearchPanelInstance | null>(null)
+const assetFilterPanelRef = ref<AssetFilterPanelInstance | null>(null)
 const showSecondCategories = ref(false)
 const selectedFilters = reactive({
   categories: [] as IAutocompleteItemType[],
@@ -289,7 +310,8 @@ const selectedFilters = reactive({
   ipAddress: '',
   macAddress: '',
   topology: '',
-  nodesWithDownAggregateStatus: false
+  nodesWithDownAggregateStatus: false,
+  nodesWithAssets: false
 })
 
 const filterCategoryItems = (query: string): IAutocompleteItemType[] => {
@@ -389,7 +411,9 @@ const applySelectedFilters = () => {
   nodeStructureStore.setFilterWithIpAddress(selectedFilters.ipAddress)
   nodeStructureStore.setFilterWithMacAddress(selectedFilters.macAddress)
   nodeStructureStore.setFilterWithDownAggregateStatus(selectedFilters.nodesWithDownAggregateStatus)
+  nodeStructureStore.setFilterWithNodesWithAssets(selectedFilters.nodesWithAssets)
   nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
+  assetFilterPanelRef.value?.applyToStore()
   extendedSearchPanelRef.value?.applyToStore()
   nodeStructureStore.closeInstancesDrawerModal()
 }
@@ -405,7 +429,9 @@ const clearDrawerFilters = async () => {
   selectedFilters.macAddress = ''
   selectedFilters.topology = ''
   selectedFilters.nodesWithDownAggregateStatus = false
+  selectedFilters.nodesWithAssets = false
   showSecondCategories.value = false
+  assetFilterPanelRef.value?.resetFromStore()
   extendedSearchPanelRef.value?.resetFromStore()
 }
 
@@ -421,7 +447,9 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.macAddress = nodeStructureStore.queryFilter.macAddress ?? ''
     selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
     selectedFilters.nodesWithDownAggregateStatus = nodeStructureStore.queryFilter.nodesWithDownAggregateStatus ?? false
+    selectedFilters.nodesWithAssets = nodeStructureStore.queryFilter.nodesWithAssets ?? false
     serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
+    assetFilterPanelRef.value?.resetFromStore()
     extendedSearchPanelRef.value?.resetFromStore()
   }
 })

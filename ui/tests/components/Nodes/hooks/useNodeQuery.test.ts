@@ -595,21 +595,51 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
-  describe('buildUpdatedNodeStructureQueryParameters: asset filter', () => {
-    test('emits assetRecord.<col>== for an allowed column', () => {
-      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'building', assetValue: 'HQ' }
+  describe('buildUpdatedNodeStructureQueryParameters: nodesWithAssets', () => {
+    test('emits nodesWithAssets==true when set', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithAssets==true')
+    })
+
+    test('omits the filter when false', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: false }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('nodesWithAssets')
+    })
+
+    test('parses nodesWithAssets from the query string', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { nodesWithAssets: 'true' }, categories, monitoringLocations
+      )
+      expect(filter.nodesWithAssets).toBe(true)
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: asset filters', () => {
+    test('emits assetRecord.<col>== for a single allowed column', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: 'HQ' }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s).toBe('assetRecord.building==HQ')
     })
 
-    test('omits asset query for a disallowed column', () => {
-      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'city', assetValue: 'Pittsburgh' }
+    test('intersects multiple asset filters', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        assetFilters: [{ column: 'building', value: 'HQ' }, { column: 'region', value: 'East' }]
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('assetRecord.building==HQ;assetRecord.region==East')
+    })
+
+    test('omits disallowed columns', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'city', value: 'Pittsburgh' }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s ?? '').not.toContain('assetRecord')
     })
 
-    test('omits asset query when value missing', () => {
-      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'building', assetValue: '' }
+    test('omits entries with an empty value', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: '' }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s ?? '').not.toContain('assetRecord')
     })
@@ -617,8 +647,7 @@ describe('Nodes useNodeQuery test', () => {
     test('combines categories, asset and down filter with intersection', () => {
       const filter = {
         ...getDefaultNodeQueryFilter(),
-        assetColumn: 'building',
-        assetValue: 'HQ',
+        assetFilters: [{ column: 'building', value: 'HQ' }],
         nodesWithDownAggregateStatus: true
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
@@ -629,14 +658,13 @@ describe('Nodes useNodeQuery test', () => {
   })
 
   describe('buildNodeQueryFilterFromQueryString: down + asset params', () => {
-    test('parses nodesWithDownAggregateStatus and asset filter', () => {
+    test('parses nodesWithDownAggregateStatus and asset filters', () => {
       const filter = buildNodeQueryFilterFromQueryString(
         { nodesWithDownAggregateStatus: 'true', assetColumn: 'building', assetValue: 'HQ' },
         categories, monitoringLocations
       )
       expect(filter.nodesWithDownAggregateStatus).toBe(true)
-      expect(filter.assetColumn).toBe('building')
-      expect(filter.assetValue).toBe('HQ')
+      expect(filter.assetFilters).toEqual([{ column: 'building', value: 'HQ' }])
     })
 
     test('ignores a disallowed asset column', () => {
@@ -644,8 +672,7 @@ describe('Nodes useNodeQuery test', () => {
         { assetColumn: 'city', assetValue: 'Pittsburgh' },
         categories, monitoringLocations
       )
-      expect(filter.assetColumn).toBe('')
-      expect(filter.assetValue).toBe('')
+      expect(filter.assetFilters).toEqual([])
     })
   })
 

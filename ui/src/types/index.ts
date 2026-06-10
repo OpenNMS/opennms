@@ -584,6 +584,12 @@ export interface ExtendedSearchValue {
   key: string
 }
 
+/** A single asset-record field filter (column + exact-match value). */
+export interface AssetFilter {
+  column: string
+  value: string
+}
+
 /** All components of a node structure query */
 export interface NodeQueryFilter {
   searchTerm: string
@@ -597,8 +603,8 @@ export interface NodeQueryFilter {
   macAddress?: string
   topology?: string
   nodesWithDownAggregateStatus?: boolean
-  assetColumn?: string
-  assetValue?: string
+  nodesWithAssets?: boolean
+  assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }
 

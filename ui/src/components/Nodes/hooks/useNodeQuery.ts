@@ -22,6 +22,7 @@
 
 import { isConvertibleToInteger } from '@/lib/utils'
 import {
+  AssetFilter,
   Category,
   ExtendedSearchValue,
   MatchType,
@@ -37,7 +38,7 @@ import {
 } from '@/types'
 import {
   ALLOWED_ASSET_COLUMNS,
-  parseAssetFilter,
+  parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
   parseFlows,
@@ -49,6 +50,7 @@ import {
   parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
+  parseNodesWithAssets,
   parseSnmpParams,
   parseSnmpParmParams,
   parseSysParams
@@ -105,8 +107,8 @@ export const useNodeQuery = () => {
       macAddress: '',
       topology: '',
       nodesWithDownAggregateStatus: false,
-      assetColumn: '',
-      assetValue: '',
+      nodesWithAssets: false,
+      assetFilters: [] as AssetFilter[],
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
   }
@@ -204,6 +206,7 @@ export const useNodeQuery = () => {
     'foreignsource',
     'ipAddress',
     'iplike',
+    'nodesWithAssets',
     'nodesWithDownAggregateStatus',
     'listInterfaces',
     'maclike',
@@ -313,11 +316,15 @@ export const useNodeQuery = () => {
       filter.nodesWithDownAggregateStatus = true
     }
 
-    // asset-field filter (e.g. from site-status-view drill-down links)
-    const assetFilter = parseAssetFilter(queryObject)
-    if (assetFilter) {
-      filter.assetColumn = assetFilter.column
-      filter.assetValue = assetFilter.value
+    // nodesWithAssets — limit to nodes that have asset info (legacy "All nodes with asset info")
+    if (parseNodesWithAssets(queryObject)) {
+      filter.nodesWithAssets = true
+    }
+
+    // asset-field filters (e.g. from site-status-view drill-down links)
+    const assetFilters = parseAssetFilters(queryObject)
+    if (assetFilters.length > 0) {
+      filter.assetFilters = assetFilters
     }
 
     const serviceNames = parseMonitoredServices(queryObject, serviceTypes)
@@ -372,12 +379,13 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
   const maclikeQuery = buildMaclikeQuery(filter.macAddress)
   const downStatusQuery = buildDownStatusQuery(filter.nodesWithDownAggregateStatus)
-  const assetQuery = buildAssetQuery(filter.assetColumn, filter.assetValue)
+  const withAssetsQuery = buildWithAssetsQuery(filter.nodesWithAssets)
+  const assetQuery = buildAssetQuery(filter.assetFilters)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, withAssetsQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -637,13 +645,21 @@ const buildDownStatusQuery = (nodesWithDownAggregateStatus?: boolean) => {
   return nodesWithDownAggregateStatus ? 'nodesWithDownAggregateStatus==true' : ''
 }
 
-const buildAssetQuery = (assetColumn?: string, assetValue?: string) => {
-  if (!assetColumn || !assetValue || !ALLOWED_ASSET_COLUMNS.has(assetColumn)) {
+const buildWithAssetsQuery = (nodesWithAssets?: boolean) => {
+  return nodesWithAssets ? 'nodesWithAssets==true' : ''
+}
+
+const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
+  if (!assetFilters || assetFilters.length === 0) {
     return ''
   }
 
-  // Exact match against the asset record column (mirrors the legacy site-status-view asset filter).
-  return `assetRecord.${assetColumn}==${assetValue}`
+  // Exact match against each asset record column (mirrors the legacy site-status-view asset filter).
+  // Multiple filters are intersected (a node must match every one).
+  return assetFilters
+    .filter(f => f.column && f.value && ALLOWED_ASSET_COLUMNS.has(f.column))
+    .map(f => `assetRecord.${f.column}==${f.value}`)
+    .join(getFiqlSetOperator(SetOperator.Intersection))
 }
 
 const buildTopologyQuery = (topology?: string) => {

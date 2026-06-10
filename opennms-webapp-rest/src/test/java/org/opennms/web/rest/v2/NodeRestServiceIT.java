@@ -345,6 +345,31 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithAssetsSearch() throws Exception {
+        // DatabasePopulator seeds alternate-node1 with asset info (assetNumber, plus building "HQ"
+        // carried over by NetworkBuilder). A bare node created via REST has no asset fields set
+        // (its asset 'category' defaults to "Unspecified", which is intentionally NOT in the query).
+        m_databasePopulator.populateDatabase();
+
+        String bareNode = "<node type=\"A\" label=\"AssetEmptyNode\" foreignSource=\"JUnit\" foreignId=\"AssetEmptyNode\">" +
+                "<location>Default</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", bareNode, 201);
+
+        String url = "/nodes";
+
+        // Has-asset-info: alternate-node1 matches, the bare node does not
+        sendRequest(GET, url, parseParamData("_s=nodesWithAssets==true;node.label==alternate-node1"), 200);
+        sendRequest(GET, url, parseParamData("_s=nodesWithAssets==true;node.label==AssetEmptyNode"), 204);
+
+        // Inverse: alternate-node1 drops out, the bare node remains
+        sendRequest(GET, url, parseParamData("_s=nodesWithAssets==false;node.label==alternate-node1"), 204);
+        sendRequest(GET, url, parseParamData("_s=nodesWithAssets==false;node.label==AssetEmptyNode"), 200);
+    }
+
+    @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
         String node = "<node type=\"A\" label=\"MaclikeTestNode\" foreignSource=\"JUnit\" foreignId=\"MaclikeTestNode\">" +
