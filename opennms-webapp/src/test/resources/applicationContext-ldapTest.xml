@@ -17,8 +17,8 @@
   <authentication-manager>
     <authentication-provider>
       <user-service>
-        <user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
-        <user name="bob" password="bobspassword" authorities="ROLE_USER" />
+        <user name="jimi" password="{noop}jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
+        <user name="bob" password="{noop}bobspassword" authorities="ROLE_USER" />
       </user-service>
     </authentication-provider>
   </authentication-manager>
