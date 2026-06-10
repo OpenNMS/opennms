@@ -39,10 +39,6 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -645,11 +641,18 @@ public class HaStartupCoordinator {
 
         if (weYield) {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
-                      "This instance has been disconnected longer (our heartbeat age: {}s vs partner: {}s); yielding.",
+                      "This instance has been disconnected longer (our heartbeat age: {}s vs partner: {}s); " +
+                      "yielding by terminating the JVM immediately.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
                       ourAgeSeconds, partnerAgeSeconds);
+            // Flip our row to STANDBY first as an explicit signal to the partner (best-effort;
+            // connectivity is present since the split-brain read above just succeeded).
             initiateFailover();
-            stopServicesViaMBean();
+            // Hard-terminate rather than a graceful Manager.stop(): an orderly shutdown lets
+            // pending/queued tasks from other daemons drain, which would mean a second ACTIVE
+            // instance writing to the database during the split-brain window. Halting kills the
+            // JVM immediately with no shutdown hooks, so no further writes can occur.
+            terminateJvm(70);
         } else {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
                       "This instance has the fresher heartbeat (our age: {}s vs partner: {}s); continuing. " +
@@ -659,26 +662,19 @@ public class HaStartupCoordinator {
         }
     }
 
-    private void stopServicesViaMBean() {
-        Thread t = new Thread(() -> {
-            try {
-                Thread.sleep(500);
-                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-                if (!servers.isEmpty()) {
-                    servers.get(0).invoke(
-                            ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
-                            new Object[0], new String[0]);
-                } else {
-                    LOG.error("HA split-brain: no MBeanServer found; services may not stop cleanly");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                LOG.error("HA split-brain: error stopping services after split-brain resolution", e);
-            }
-        }, "ha-split-brain-stop");
-        t.setDaemon(false);
-        t.start();
+    /**
+     * Forcibly terminates the JVM, the in-process equivalent of {@code SIGKILL}: the VM
+     * stops immediately without running shutdown hooks or finalizers, so no other daemon's
+     * pending or queued work can drain. This is deliberately more abrupt than a graceful
+     * {@code Manager.stop()} — during a split-brain yield we must guarantee this instance
+     * issues no further database writes while the partner is also ACTIVE.
+     *
+     * <p>Overridable so tests can verify the yield decision without killing the test JVM.
+     *
+     * @param code process exit status (non-zero signals abnormal termination)
+     */
+    protected void terminateJvm(int code) {
+        Runtime.getRuntime().halt(code);
     }
 
     private void checkPrimaryHeartbeat() {
