@@ -55,7 +55,7 @@
 	throw new ServletException("Session attribute "
 				   + "interfaces.nodemanagement is null");
     } else if (interfaces.size() < 1) {
-    	throw new NoManagedInterfacesException("element/nodeList.htm");
+    	throw new NoManagedInterfacesException("ui/#/nodes");
     }
     lineItems = (Integer) userSession.getAttribute("lineItems.nodemanagement");
     if (lineItems == null) {

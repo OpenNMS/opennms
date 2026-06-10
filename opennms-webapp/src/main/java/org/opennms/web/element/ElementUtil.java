@@ -601,14 +601,14 @@ public abstract class ElementUtil {
             } catch (NumberFormatException e) {
                 throw new ElementIdNotFoundException("Wrong data type for \""
                         + nodeLookupString + "\", should be integer", nodeLookupString, 
-                        "node", "element/node.jsp", "node", "element/nodeList.htm");
+                        "node", "element/node.jsp", "node", "ui/#/nodes");
             }
         }
 
         OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
-            throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
+            throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "ui/#/nodes");
         }
         
         return node;
@@ -690,7 +690,7 @@ public abstract class ElementUtil {
                 if (node != null) {
                     nodeId = node.getId();
                 } else {
-                    throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
+                    throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "ui/#/nodes");
                 }
             } else {
                 try {
