@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.dao.support;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -297,12 +296,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     private List<OnmsResource> getDomainResources(ResourcePath parent, Set<String> intfNames) {
         final List<OnmsResource> resources = Lists.newLinkedList();
         for (String intfName : intfNames) {
-            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName); 
-            try {
-                resource.setLink("element/nodeList.htm?listInterfaces=true&snmpParm=ifAlias&snmpParmMatchType=contains&snmpParmValue=" + URLEncoder.encode(intfName, StandardCharsets.UTF_8.name()));
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalStateException("URLEncoder.encode complained about UTF-8. " + e, e);
-            }
+            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName);
+            resource.setLink("ui/#/nodes?snmpifalias=" + URLEncoder.encode(intfName, StandardCharsets.UTF_8) + "&snmpMatchType=contains");
             resources.add(resource);
         }
         return resources;
