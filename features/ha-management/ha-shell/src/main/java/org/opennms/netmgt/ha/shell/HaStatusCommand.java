@@ -47,7 +47,7 @@ import java.sql.Statement;
 @Service
 public class HaStatusCommand implements Action {
 
-    private static final String FMT = "%-22s %-10s %-14s %-18s %-26s %s%n";
+    private static final String FMT = "%-22s %-10s %-14s %-26s %-16s %-26s %s%n";
 
     @Override
     public Object execute() throws Exception {
@@ -70,23 +70,26 @@ public class HaStatusCommand implements Action {
         try (Connection conn = dbFactory.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
-                     "SELECT instance_id, configured_role, current_state, " +
+                     "SELECT instance_id, configured_role, current_state, active_since, " +
                      "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
 
-            System.out.println("HA Cluster Status");
-            System.out.println("=================");
-            System.out.printf(FMT, "INSTANCE", "ROLE", "STATE", "HEARTBEAT AGE", "HOSTNAME", "DEGRADED");
-            System.out.printf(FMT,
-                    "----------------------", "----------", "--------------",
-                    "------------------", "--------------------------", "--------");
-
             boolean anyRows = false;
             while (rs.next()) {
+                if (!anyRows) {
+                    // Print the header only once we know there is at least one row.
+                    System.out.println("HA Cluster Status");
+                    System.out.println("=================");
+                    System.out.printf(FMT, "INSTANCE", "ROLE", "STATE", "ACTIVE SINCE", "HEARTBEAT AGE", "HOSTNAME", "DEGRADED");
+                    System.out.printf(FMT,
+                            "----------------------", "----------", "--------------",
+                            "--------------------------", "----------------", "--------------------------", "--------");
+                }
                 anyRows = true;
                 String instanceId     = rs.getString("instance_id");
                 String configuredRole = rs.getString("configured_role");
                 String currentState   = rs.getString("current_state");
+                String activeSince    = rs.getString("active_since");
                 String hostname       = rs.getString("hostname");
 
                 long ageSeconds       = rs.getLong("age_seconds");
@@ -97,11 +100,11 @@ public class HaStatusCommand implements Action {
                         ("SECONDARY".equals(configuredRole) && "ACTIVE".equals(currentState))
                         || "DEGRADED".equals(currentState);
                 boolean degraded = stateBasedDegraded || heartbeatStale;
-
                 System.out.printf(FMT,
                         nvl(instanceId),
                         nvl(configuredRole),
                         nvl(currentState),
+                        nvl(activeSince),
                         heartbeatKnown ? formatAge(ageSeconds) : "--",
                         nvl(hostname),
                         degraded ? "YES" : "no");

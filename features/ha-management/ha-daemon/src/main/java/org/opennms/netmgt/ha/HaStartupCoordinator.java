@@ -539,17 +539,21 @@ public class HaStartupCoordinator {
     private void writeInitialStatus() throws Exception {
         String hostname = resolveHostname();
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "INSERT INTO ha_instance_status (instance_id, configured_role, current_state, last_heartbeat, hostname) " +
-                         "VALUES (?, ?, ?, NOW(), ?) " +
+            HaInstanceState initialState = config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY;
+            // A PRIMARY starting up clean takes ACTIVE now, so stamp active_since with the DB
+            // clock; a SECONDARY starts STANDBY with no ownership (NULL). See checkForSplitBrain.
+            String activeSinceExpr = initialState == HaInstanceState.ACTIVE ? "NOW()" : "NULL";
+            String sql = "INSERT INTO ha_instance_status (instance_id, configured_role, current_state, last_heartbeat, hostname, active_since) " +
+                         "VALUES (?, ?, ?, NOW(), ?, " + activeSinceExpr + ") " +
                          "ON CONFLICT (instance_id) DO UPDATE SET " +
                          "configured_role = EXCLUDED.configured_role, " +
                          "current_state = EXCLUDED.current_state, " +
                          "last_heartbeat = NOW(), " +
-                         "hostname = EXCLUDED.hostname";
+                         "hostname = EXCLUDED.hostname, " +
+                         "active_since = EXCLUDED.active_since";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
                 ps.setString(2, config.getRole().name());
-                HaInstanceState initialState = config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY;
                 ps.setString(3, initialState.name());
                 ps.setString(4, hostname);
                 ps.executeUpdate();
@@ -582,10 +586,17 @@ public class HaStartupCoordinator {
      * stale, and the partner promoted itself. When connectivity is restored this instance
      * resumes writing heartbeats — at which point both rows show ACTIVE.
      *
-     * <p>Resolution: the instance whose {@code last_heartbeat} is older (the one that was
-     * disconnected) yields by calling {@link #initiateFailover()} and stopping services.
-     * If timestamps are equal, the instance with the lexicographically lower
-     * {@code instance_id} yields as a deterministic tiebreaker.
+     * <p>Resolution is decided on {@code active_since} — the timestamp at which each node
+     * took ownership of the ACTIVE role — <em>not</em> on heartbeat age. A split-brain only
+     * arises when one node was ACTIVE, lost the DB, and the partner promoted itself later
+     * because the first looked dead; the partner (with the <em>later</em> {@code active_since})
+     * is the rightful owner, so the node that became ACTIVE <em>earlier</em> yields. This is
+     * the stable signal: {@code active_since} is set only on the transition into ACTIVE and
+     * never moves on a heartbeat, so — unlike {@code last_heartbeat}, which resets to ~0 the
+     * instant a disconnected node reconnects — both nodes read the same two absolute
+     * timestamps and always reach complementary decisions. If the timestamps are equal (or
+     * either is missing), the instance with the lexicographically lower {@code instance_id}
+     * yields as a deterministic tiebreaker.
      *
      * <p>Called at the start of every heartbeat write cycle; exits immediately when no
      * split-brain condition exists.
@@ -593,31 +604,33 @@ public class HaStartupCoordinator {
     void checkForSplitBrain() {
         if (config.getPartnerInstanceId() == null) return;
 
-        long ourAgeSeconds = -1;
-        long partnerAgeSeconds = -1;
+        double ourActiveSince = Double.NaN;
+        double partnerActiveSince = Double.NaN;
         boolean ourStateActive = false;
         boolean partnerStateActive = false;
 
         try (Connection conn = dbFactory.getConnection()) {
-            // age_seconds is computed entirely on the DB server
+            // active_since is read as an absolute epoch (seconds) from the DB clock — a stable
+            // value that does not move between the two nodes' independent check cycles.
             String sql = "SELECT instance_id, current_state, " +
-                         "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
+                         "EXTRACT(EPOCH FROM active_since) AS active_since_epoch " +
                          "FROM ha_instance_status WHERE instance_id IN (?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
                 ps.setString(2, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        String id    = rs.getString(1);
-                        String state = rs.getString(2);
-                        long   age   = rs.getLong(3);
+                        String id           = rs.getString(1);
+                        String state        = rs.getString(2);
+                        double activeSince   = rs.getDouble(3);
+                        boolean activeSinceNull = rs.wasNull();
 
                         if (config.getInstanceId().equals(id)) {
                             ourStateActive  = HaInstanceState.ACTIVE.name().equals(state);
-                            ourAgeSeconds   = age;
+                            ourActiveSince  = activeSinceNull ? Double.NaN : activeSince;
                         } else if (config.getPartnerInstanceId().equals(id)) {
                             partnerStateActive  = HaInstanceState.ACTIVE.name().equals(state);
-                            partnerAgeSeconds   = age;
+                            partnerActiveSince  = activeSinceNull ? Double.NaN : activeSince;
                         }
                     }
                 }
@@ -627,24 +640,33 @@ public class HaStartupCoordinator {
             return;
         }
 
-        if (!ourStateActive || !partnerStateActive
-                || ourAgeSeconds < 0 || partnerAgeSeconds < 0) {
+        if (!ourStateActive || !partnerStateActive) {
             return;
         }
 
-        // Both instances are ACTIVE — split-brain detected.
-        // The instance with the larger age (disconnected longer, per DB clock) yields.
-        // Equal ages: deterministic tiebreaker on instance-id.
-        boolean weYield = ourAgeSeconds > partnerAgeSeconds
-                || (ourAgeSeconds == partnerAgeSeconds
-                    && config.getInstanceId().compareTo(config.getPartnerInstanceId()) < 0);
+        // Both instances are ACTIVE — split-brain detected. The instance that became ACTIVE
+        // earlier (smaller active_since) is the stale one and yields. A missing active_since
+        // is treated as "earliest possible" so it yields against a node with a known
+        // ownership time. Identical/both-missing values fall back to the instance-id tiebreaker.
+        final boolean weYield;
+        if (!Double.isNaN(ourActiveSince) && !Double.isNaN(partnerActiveSince)
+                && ourActiveSince != partnerActiveSince) {
+            weYield = ourActiveSince < partnerActiveSince;
+        } else if (Double.isNaN(ourActiveSince) && !Double.isNaN(partnerActiveSince)) {
+            weYield = true;  // we have no ownership timestamp; partner does → we yield
+        } else if (!Double.isNaN(ourActiveSince) && Double.isNaN(partnerActiveSince)) {
+            weYield = false; // partner has no ownership timestamp; we do → partner yields
+        } else {
+            // Equal timestamps, or neither recorded → deterministic tiebreaker on instance-id.
+            weYield = config.getInstanceId().compareTo(config.getPartnerInstanceId()) < 0;
+        }
 
         if (weYield) {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
-                      "This instance has been disconnected longer (our heartbeat age: {}s vs partner: {}s); " +
+                      "This instance took the ACTIVE role earlier (our active-since epoch: {} vs partner: {}); " +
                       "yielding by terminating the JVM immediately.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
-                      ourAgeSeconds, partnerAgeSeconds);
+                      ourActiveSince, partnerActiveSince);
             // Flip our row to STANDBY first as an explicit signal to the partner (best-effort;
             // connectivity is present since the split-brain read above just succeeded).
             initiateFailover();
@@ -655,10 +677,10 @@ public class HaStartupCoordinator {
             terminateJvm(70);
         } else {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
-                      "This instance has the fresher heartbeat (our age: {}s vs partner: {}s); continuing. " +
-                      "Partner should self-terminate on its next heartbeat write.",
+                      "This instance took the ACTIVE role later (our active-since epoch: {} vs partner: {}); continuing. " +
+                      "Partner became ACTIVE earlier and should self-terminate on its next heartbeat write.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
-                      ourAgeSeconds, partnerAgeSeconds);
+                      ourActiveSince, partnerActiveSince);
         }
     }
 
@@ -838,8 +860,17 @@ public class HaStartupCoordinator {
     }
 
     private void updateState(HaInstanceState state) {
+        // active_since records when this instance took ownership of the ACTIVE role and is
+        // the signal used to resolve split-brain (see checkForSplitBrain). On a transition
+        // INTO ACTIVE we stamp it with the DB clock, but only on the actual edge — the
+        // CASE guard leaves an existing active_since untouched if we are already ACTIVE, so
+        // repeated ACTIVE writes never bump it. Any non-ACTIVE state clears it to NULL.
+        final String activeSinceClause = state == HaInstanceState.ACTIVE
+                ? "active_since = CASE WHEN current_state <> 'ACTIVE' THEN NOW() ELSE active_since END"
+                : "active_since = NULL";
         try (Connection conn = dbFactory.getConnection()) {
-            String sql = "UPDATE ha_instance_status SET current_state = ?, last_heartbeat = NOW() WHERE instance_id = ?";
+            String sql = "UPDATE ha_instance_status SET current_state = ?, last_heartbeat = NOW(), "
+                    + activeSinceClause + " WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, state.name());
                 ps.setString(2, config.getInstanceId());

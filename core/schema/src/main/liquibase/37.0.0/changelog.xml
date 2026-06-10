@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet author="dyancey" id="37.0.0-ha-instance-status-table">
+    <changeSet author="dino2gnt" id="37.0.0-ha-instance-status-table">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ha_instance_status"/>
@@ -12,24 +12,24 @@
         </preConditions>
 
         <createTable tableName="ha_instance_status">
-            <column name="instance_id" type="varchar(64)">
+            <column name="instance_id" type="text">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="configured_role" type="varchar(16)">
+            <column name="configured_role" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="current_state" type="varchar(24)">
+            <column name="current_state" type="text">
                 <constraints nullable="false"/>
             </column>
             <column name="last_heartbeat" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
-            <column name="hostname" type="varchar(255)"/>
+            <column name="active_since" type="timestamp with time zone"/>
+            <column name="hostname" type="text"/>
         </createTable>
 
         <rollback>
             <dropTable tableName="ha_instance_status"/>
         </rollback>
     </changeSet>
-
 </databaseChangeLog>

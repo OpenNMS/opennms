@@ -271,7 +271,7 @@ public class HaStartupCoordinatorTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void splitBrainYieldsWhenOurHeartbeatIsOlder() throws Exception {
+    public void splitBrainYieldsWhenWeBecameActiveEarlier() throws Exception {
         HaConfiguration cfg = primaryConfig();
         // Spy so we can intercept the JVM halt the yield path triggers (it would otherwise
         // kill the test JVM).
@@ -281,7 +281,7 @@ public class HaStartupCoordinatorTest {
         // Manually place coordinator in ACTIVE state
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        // Query returns both instances ACTIVE; our age is larger (disconnected longer) → we yield
+        // Both ACTIVE; our active_since is earlier (smaller epoch) → we are the stale owner → we yield.
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")   // row 1: us
@@ -289,9 +289,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getLong(3))
-                .thenReturn(120L) // our age: 120s (disconnected longer)
-                .thenReturn(5L);  // partner age: 5s (continuously active)
+        when(mockRs.getDouble(3))
+                .thenReturn(1000.0) // our active_since: became ACTIVE earlier
+                .thenReturn(2000.0); // partner active_since: promoted later (rightful owner)
 
         coord.checkForSplitBrain();
 
@@ -300,13 +300,13 @@ public class HaStartupCoordinatorTest {
     }
 
     @Test
-    public void splitBrainContinuesWhenOurHeartbeatIsFresher() throws Exception {
+    public void splitBrainContinuesWhenWeBecameActiveLater() throws Exception {
         HaConfiguration cfg = primaryConfig();
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
         setStaticInstance(coord);
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        // Our age is smaller (continuously active) — we should continue
+        // Our active_since is later (larger epoch) — we promoted to take over, so we stay ACTIVE.
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")
@@ -314,13 +314,44 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getLong(3))
-                .thenReturn(5L)    // our age: 5s (continuously active)
-                .thenReturn(120L); // partner age: 120s (was disconnected)
+        when(mockRs.getDouble(3))
+                .thenReturn(2000.0)  // our active_since: promoted later (rightful owner)
+                .thenReturn(1000.0); // partner active_since: stale owner
 
         coord.checkForSplitBrain();
 
-        assertEquals("should stay ACTIVE when our heartbeat is fresher", HaInstanceState.ACTIVE, coord.getCurrentState());
+        assertEquals("should stay ACTIVE when we became ACTIVE later", HaInstanceState.ACTIVE, coord.getCurrentState());
+    }
+
+    @Test
+    public void splitBrainYieldsWhenWeHaveNoActiveSince() throws Exception {
+        // A missing active_since (NULL) is treated as "earliest possible": we yield to a
+        // partner that has a known ownership timestamp.
+        HaConfiguration cfg = primaryConfig();
+        HaStartupCoordinator coord = spy(createCoordinator(cfg, mockDbFactory));
+        doNothing().when(coord).terminateJvm(anyInt());
+        setStaticInstance(coord);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        when(mockRs.next()).thenReturn(true, true, false);
+        when(mockRs.getString(1))
+                .thenReturn("opennms-primary")
+                .thenReturn("opennms-secondary");
+        when(mockRs.getString(2))
+                .thenReturn(HaInstanceState.ACTIVE.name())
+                .thenReturn(HaInstanceState.ACTIVE.name());
+        when(mockRs.getDouble(3))
+                .thenReturn(0.0)     // our active_since: NULL (see wasNull below)
+                .thenReturn(2000.0); // partner active_since: present
+        when(mockRs.wasNull())
+                .thenReturn(true)    // our value was NULL
+                .thenReturn(false);  // partner value was present
+
+        coord.checkForSplitBrain();
+
+        assertEquals("missing active_since should yield to a partner that has one",
+                HaInstanceState.STANDBY, coord.getCurrentState());
+        verify(coord).terminateJvm(70);
     }
 
     @Test
@@ -332,7 +363,7 @@ public class HaStartupCoordinatorTest {
         setStaticInstance(coord);
         setCurrentState(coord, HaInstanceState.ACTIVE);
 
-        // Equal ages — tiebreaker: "opennms-primary" < "opennms-secondary" → primary yields
+        // Equal active_since — tiebreaker: "opennms-primary" < "opennms-secondary" → primary yields
         when(mockRs.next()).thenReturn(true, true, false);
         when(mockRs.getString(1))
                 .thenReturn("opennms-primary")
@@ -340,9 +371,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.ACTIVE.name());
-        when(mockRs.getLong(3))
-                .thenReturn(10L)  // our age
-                .thenReturn(10L); // partner age (equal → tiebreaker)
+        when(mockRs.getDouble(3))
+                .thenReturn(1500.0)  // our active_since
+                .thenReturn(1500.0); // partner active_since (equal → tiebreaker)
 
         coord.checkForSplitBrain();
 
@@ -365,9 +396,9 @@ public class HaStartupCoordinatorTest {
         when(mockRs.getString(2))
                 .thenReturn(HaInstanceState.ACTIVE.name())
                 .thenReturn(HaInstanceState.STANDBY.name());
-        when(mockRs.getLong(3))
-                .thenReturn(5L)
-                .thenReturn(5L);
+        when(mockRs.getDouble(3))
+                .thenReturn(1500.0)
+                .thenReturn(1500.0);
 
         coord.checkForSplitBrain();
 
