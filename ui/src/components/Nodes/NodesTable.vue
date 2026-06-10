@@ -168,6 +168,32 @@
                 </template>
                 {{ `Topology: ${topologyTerm}` }}
               </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeDownAggregateStatus()"
+                  />
+                </template>
+                Down nodes only
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.assetValue"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeAsset()"
+                  />
+                </template>
+                {{ `Asset ${nodeStructureStore.queryFilter.assetColumn}: ${nodeStructureStore.queryFilter.assetValue}` }}
+              </FeatherChip>
             </FeatherChipList>
           </div>
         </div>

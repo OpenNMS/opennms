@@ -333,6 +333,36 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         maclikeBehavior.setSkipPropertyByDefault(true);
         map.put("maclike", maclikeBehavior);
 
+        // nodesWithDownAggregateStatus: nodes whose aggregate status is "down", i.e. that have at
+        // least one active (status='A') monitored service currently in outage (ifRegainedService is null).
+        // Mirrors the post-query AggregateStatus.getDownNodes() filter the legacy node list applies.
+        // Uses a SQL subquery because the outage/ifservice tables are not aliased on the node criteria.
+        final String downStatusSubquery = "(select ip.nodeid from outages o " +
+                "join ifservices s on o.ifserviceid = s.id " +
+                "join ipinterface ip on s.ipinterfaceid = ip.id " +
+                "where o.ifregainedservice is null and s.status = 'A')";
+        CriteriaBehavior<?> downStatusBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final boolean wantDown = Boolean.parseBoolean((String)v);
+            // (==true) and (!=false) both mean "down nodes only"; (==false)/(!=true) mean "exclude down nodes".
+            boolean downOnly;
+            switch (c) {
+            case EQUALS:
+                downOnly = wantDown;
+                break;
+            case NOT_EQUALS:
+                downOnly = !wantDown;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for nodesWithDownAggregateStatus expression: " + c);
+            }
+            b.sql("{alias}.nodeid " + (downOnly ? "in " : "not in ") + downStatusSubquery);
+        });
+        downStatusBehavior.setSkipPropertyByDefault(true);
+        map.put("nodesWithDownAggregateStatus", downStatusBehavior);
+
         return map;
     }
 

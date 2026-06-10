@@ -22,7 +22,9 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  parseAssetFilter,
   parseCategories,
+  parseDownAggregateStatus,
   parseFlows,
   parseForeignSource,
   parseIplike,
@@ -419,6 +421,33 @@ describe('Nodes queryStringParser test', () => {
       ['empty maclike', { maclike: '' }, null]
     ]) ('parseMaclike: %s', (title, queryObject, expected) => {
       expect(parseMaclike(queryObject)).toEqual(expected)
+    })
+  })
+
+  describe('parseDownAggregateStatus', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithDownAggregateStatus: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithDownAggregateStatus: 'TRUE' }, true],
+      ['boolean true', { nodesWithDownAggregateStatus: true }, true],
+      ['false', { nodesWithDownAggregateStatus: 'false' }, false],
+      ['garbage', { nodesWithDownAggregateStatus: 'yes' }, false]
+    ]) ('parseDownAggregateStatus: %s', (title, queryObject, expected) => {
+      expect(parseDownAggregateStatus(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseAssetFilter', () => {
+    test.each([
+      ['empty', {}, null],
+      ['column only', { assetColumn: 'building' }, null],
+      ['value only', { assetValue: 'HQ' }, null],
+      ['valid building', { assetColumn: 'building', assetValue: 'HQ' }, { column: 'building', value: 'HQ' }],
+      ['valid region', { assetColumn: 'region', assetValue: 'East' }, { column: 'region', value: 'East' }],
+      ['disallowed column (geolocation) returns null', { assetColumn: 'city', assetValue: 'Pittsburgh' }, null],
+      ['unknown column returns null', { assetColumn: 'bogus', assetValue: 'X' }, null]
+    ]) ('parseAssetFilter: %s', (title, queryObject, expected) => {
+      expect(parseAssetFilter(queryObject)).toEqual(expected)
     })
   })
 

@@ -596,6 +596,9 @@ export interface NodeQueryFilter {
   ipAddress?: string
   macAddress?: string
   topology?: string
+  nodesWithDownAggregateStatus?: boolean
+  assetColumn?: string
+  assetValue?: string
   extendedSearch: NodeQueryExtendedSearchParams
 }
 

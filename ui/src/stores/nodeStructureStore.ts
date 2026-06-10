@@ -105,6 +105,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
       !!queryFilter.value.ipAddress?.length ||
       !!queryFilter.value.macAddress?.length ||
+      !!queryFilter.value.nodesWithDownAggregateStatus ||
+      !!queryFilter.value.assetValue?.length ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
@@ -145,6 +147,21 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = {
       ...queryFilter.value,
       macAddress
+    }
+  }
+
+  const setFilterWithDownAggregateStatus = async (nodesWithDownAggregateStatus: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithDownAggregateStatus
+    }
+  }
+
+  const setFilterWithAsset = async (assetColumn: string, assetValue: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetColumn,
+      assetValue
     }
   }
 
@@ -293,6 +310,15 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.macAddress = prefs.nodeFilter.macAddress
       }
 
+      if (prefs.nodeFilter.nodesWithDownAggregateStatus) {
+        filter.nodesWithDownAggregateStatus = true
+      }
+
+      if (prefs.nodeFilter.assetColumn && prefs.nodeFilter.assetValue) {
+        filter.assetColumn = prefs.nodeFilter.assetColumn
+        filter.assetValue = prefs.nodeFilter.assetValue
+      }
+
       if (prefs.nodeFilter.topology) {
         filter.topology = prefs.nodeFilter.topology
       }
@@ -379,6 +405,14 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = { ...queryFilter.value, macAddress: '' }
   }
 
+  const removeDownAggregateStatus = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithDownAggregateStatus: false }
+  }
+
+  const removeAsset = () => {
+    queryFilter.value = { ...queryFilter.value, assetColumn: '', assetValue: '' }
+  }
+
   const removeTopology = () => {
     queryFilter.value = { ...queryFilter.value, topology: '' }
   }
@@ -455,6 +489,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setCategoryMode,
     setFilterWithIpAddress,
     setFilterWithMacAddress,
+    setFilterWithDownAggregateStatus,
+    setFilterWithAsset,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
     setFilterWithSysParams,
@@ -478,6 +514,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeExtendedSearch,
     removeIpAddress,
     removeMacAddress,
+    removeDownAggregateStatus,
+    removeAsset,
     removeTopology,
     setExtendedSearchParams,
     removeFlow,

@@ -321,6 +321,30 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithDownAggregateStatusSearch() throws Exception {
+        // DatabasePopulator seeds node1 with an unresolved (open) outage on its active SNMP service,
+        // so node1 has a "down" aggregate status; the other nodes do not.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Down-only: at least node1 matches
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus==true"), 200);
+
+        // Precise: node1 IS down, node2 is NOT
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus==true;node.label==node1"), 200);
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus==true;node.label==node2"), 204);
+
+        // Excluding down nodes: node1 drops out, node2 remains
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus==false;node.label==node1"), 204);
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus==false;node.label==node2"), 200);
+
+        // NOT_EQUALS true is equivalent to ==false (exclude down nodes)
+        sendRequest(GET, url, parseParamData("_s=nodesWithDownAggregateStatus!=true;node.label==node1"), 204);
+    }
+
+    @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
         String node = "<node type=\"A\" label=\"MaclikeTestNode\" foreignSource=\"JUnit\" foreignId=\"MaclikeTestNode\">" +

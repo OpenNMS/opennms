@@ -581,6 +581,74 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeStructureQueryParameters: nodesWithDownAggregateStatus', () => {
+    test('emits nodesWithDownAggregateStatus==true when set', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithDownAggregateStatus==true')
+    })
+
+    test('omits the down filter when false', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: false }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('nodesWithDownAggregateStatus')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: asset filter', () => {
+    test('emits assetRecord.<col>== for an allowed column', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'building', assetValue: 'HQ' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('assetRecord.building==HQ')
+    })
+
+    test('omits asset query for a disallowed column', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'city', assetValue: 'Pittsburgh' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('assetRecord')
+    })
+
+    test('omits asset query when value missing', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetColumn: 'building', assetValue: '' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('assetRecord')
+    })
+
+    test('combines categories, asset and down filter with intersection', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        assetColumn: 'building',
+        assetValue: 'HQ',
+        nodesWithDownAggregateStatus: true
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toContain('assetRecord.building==HQ')
+      expect(params._s).toContain('nodesWithDownAggregateStatus==true')
+      expect(params._s).toContain(';')
+    })
+  })
+
+  describe('buildNodeQueryFilterFromQueryString: down + asset params', () => {
+    test('parses nodesWithDownAggregateStatus and asset filter', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { nodesWithDownAggregateStatus: 'true', assetColumn: 'building', assetValue: 'HQ' },
+        categories, monitoringLocations
+      )
+      expect(filter.nodesWithDownAggregateStatus).toBe(true)
+      expect(filter.assetColumn).toBe('building')
+      expect(filter.assetValue).toBe('HQ')
+    })
+
+    test('ignores a disallowed asset column', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { assetColumn: 'city', assetValue: 'Pittsburgh' },
+        categories, monitoringLocations
+      )
+      expect(filter.assetColumn).toBe('')
+      expect(filter.assetValue).toBe('')
+    })
+  })
+
   describe('buildUpdatedNodeStructureQueryParameters: selectedServices', () => {
     test('single selectedService generates serviceType.name FIQL query', () => {
       const filter = getDefaultNodeQueryFilter()

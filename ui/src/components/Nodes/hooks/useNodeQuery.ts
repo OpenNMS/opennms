@@ -36,7 +36,10 @@ import {
   SetOperator
 } from '@/types'
 import {
+  ALLOWED_ASSET_COLUMNS,
+  parseAssetFilter,
   parseCategories,
+  parseDownAggregateStatus,
   parseFlows,
   parseForeignSource,
   isIplikePattern,
@@ -101,6 +104,9 @@ export const useNodeQuery = () => {
       ipAddress: '',
       macAddress: '',
       topology: '',
+      nodesWithDownAggregateStatus: false,
+      assetColumn: '',
+      assetValue: '',
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
   }
@@ -189,6 +195,8 @@ export const useNodeQuery = () => {
    * Query string search parameters tracked/accepted by the Node Structure page.
    */
   const trackedNodeQueryStringProperties = new Set([
+    'assetColumn',
+    'assetValue',
     'categories',
     'category1',
     'category2',
@@ -196,6 +204,7 @@ export const useNodeQuery = () => {
     'foreignsource',
     'ipAddress',
     'iplike',
+    'nodesWithDownAggregateStatus',
     'listInterfaces',
     'maclike',
     'mib2Parm',
@@ -299,6 +308,18 @@ export const useNodeQuery = () => {
       filter.macAddress = macAddr
     }
 
+    // nodesWithDownAggregateStatus — limit to nodes with a down aggregate status
+    if (parseDownAggregateStatus(queryObject)) {
+      filter.nodesWithDownAggregateStatus = true
+    }
+
+    // asset-field filter (e.g. from site-status-view drill-down links)
+    const assetFilter = parseAssetFilter(queryObject)
+    if (assetFilter) {
+      filter.assetColumn = assetFilter.column
+      filter.assetValue = assetFilter.value
+    }
+
     const serviceNames = parseMonitoredServices(queryObject, serviceTypes)
     if (serviceNames.length > 0) {
       filter.selectedServices = serviceNames
@@ -350,11 +371,13 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
   const serviceQuery = buildServiceQuery(filter.selectedServices ?? [])
   const maclikeQuery = buildMaclikeQuery(filter.macAddress)
+  const downStatusQuery = buildDownStatusQuery(filter.nodesWithDownAggregateStatus)
+  const assetQuery = buildAssetQuery(filter.assetColumn, filter.assetValue)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -608,6 +631,19 @@ const buildMaclikeQuery = (macAddress?: string) => {
   }
 
   return `maclike==${stripped}`
+}
+
+const buildDownStatusQuery = (nodesWithDownAggregateStatus?: boolean) => {
+  return nodesWithDownAggregateStatus ? 'nodesWithDownAggregateStatus==true' : ''
+}
+
+const buildAssetQuery = (assetColumn?: string, assetValue?: string) => {
+  if (!assetColumn || !assetValue || !ALLOWED_ASSET_COLUMNS.has(assetColumn)) {
+    return ''
+  }
+
+  // Exact match against the asset record column (mirrors the legacy site-status-view asset filter).
+  return `assetRecord.${assetColumn}==${assetValue}`
 }
 
 const buildTopologyQuery = (topology?: string) => {

@@ -132,6 +132,16 @@
         text-prop="_text"
       ></FeatherAutocomplete>
       <div class="spacer-medium"></div>
+      <div class="feather-row">
+        <div class="feather-col-12">
+          <FeatherCheckbox
+            v-model="selectedFilters.nodesWithDownAggregateStatus"
+          >
+            Down nodes only (nodes with a down aggregate status)
+          </FeatherCheckbox>
+        </div>
+      </div>
+      <div class="spacer-medium"></div>
       <hr />
       <div class="spacer-medium"></div>
       <div>
@@ -233,6 +243,7 @@ import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherInput } from '@featherds/input'
 import AddIcon from '@featherds/icon/action/Add'
@@ -277,7 +288,8 @@ const selectedFilters = reactive({
   services: [] as IAutocompleteItemType[],
   ipAddress: '',
   macAddress: '',
-  topology: ''
+  topology: '',
+  nodesWithDownAggregateStatus: false
 })
 
 const filterCategoryItems = (query: string): IAutocompleteItemType[] => {
@@ -376,6 +388,7 @@ const applySelectedFilters = () => {
   nodeStructureStore.updateSelectedServices(selectedFilters.services)
   nodeStructureStore.setFilterWithIpAddress(selectedFilters.ipAddress)
   nodeStructureStore.setFilterWithMacAddress(selectedFilters.macAddress)
+  nodeStructureStore.setFilterWithDownAggregateStatus(selectedFilters.nodesWithDownAggregateStatus)
   nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
   extendedSearchPanelRef.value?.applyToStore()
   nodeStructureStore.closeInstancesDrawerModal()
@@ -391,6 +404,7 @@ const clearDrawerFilters = async () => {
   selectedFilters.ipAddress = ''
   selectedFilters.macAddress = ''
   selectedFilters.topology = ''
+  selectedFilters.nodesWithDownAggregateStatus = false
   showSecondCategories.value = false
   extendedSearchPanelRef.value?.resetFromStore()
 }
@@ -406,6 +420,7 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.ipAddress = nodeStructureStore.queryFilter.ipAddress ?? ''
     selectedFilters.macAddress = nodeStructureStore.queryFilter.macAddress ?? ''
     selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
+    selectedFilters.nodesWithDownAggregateStatus = nodeStructureStore.queryFilter.nodesWithDownAggregateStatus ?? false
     serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
     extendedSearchPanelRef.value?.resetFromStore()
   }

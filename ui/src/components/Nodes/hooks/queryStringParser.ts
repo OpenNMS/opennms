@@ -326,6 +326,39 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
+ * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL.
+ * Used to validate the `assetColumn` query param (sourced from site-status-views config) so a
+ * stray/unsupported column never produces an invalid FIQL query. Geolocation-backed fields
+ * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties.
+ */
+export const ALLOWED_ASSET_COLUMNS = new Set([
+  'building', 'floor', 'room', 'rack', 'region', 'division', 'department',
+  'category', 'displayCategory', 'circuitId'
+])
+
+/**
+ * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.
+ */
+export const parseDownAggregateStatus = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithDownAggregateStatus ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Parses an asset-field filter (`assetColumn` + `assetValue`) from a query object.
+ * Both must be present and the column must be in ALLOWED_ASSET_COLUMNS, otherwise null.
+ */
+export const parseAssetFilter = (queryObject: any): { column: string, value: string } | null => {
+  const column = (queryObject.assetColumn as string) || ''
+  const value = (queryObject.assetValue as string) || ''
+
+  if (!column || !value || !ALLOWED_ASSET_COLUMNS.has(column)) {
+    return null
+  }
+
+  return { column, value }
+}
+
+/**
  * Maps monitoredService or service query params to canonical service names for FIQL filtering.
  * Resolves by exact or case-insensitive name match, or by numeric ID lookup via serviceTypes.
  * monitoredService takes precedence over service when both are present.
