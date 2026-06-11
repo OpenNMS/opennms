@@ -956,8 +956,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public Requisition loadRequisition(final Resource resource) {
         final Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
+        // Stamp the returned object so callers see the current import time...
         r.updateLastImported();
-        m_foreignSourceRepository.save(r);
+        // ...but persist the timestamp via a targeted, clobber-safe update rather than rewriting
+        // the whole requisition from this (possibly stale) snapshot. A full save(r) here races
+        // with other writers of the same requisition file (e.g. the Minion HeartbeatConsumer)
+        // and silently truncates concurrently-added nodes.
+        m_foreignSourceRepository.updateLastImported(r.getForeignSource());
         m_foreignSourceRepository.flush();
         return r;
     }

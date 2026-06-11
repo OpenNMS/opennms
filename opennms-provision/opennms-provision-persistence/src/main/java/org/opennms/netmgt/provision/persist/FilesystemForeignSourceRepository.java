@@ -23,20 +23,26 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -56,6 +62,18 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     protected String m_requisitionPath;
     protected String m_foreignSourcePath;
     
+    /**
+     * Process-wide locks keyed by canonical file path, so that <em>all</em> repository instances
+     * in this JVM serialize their read-modify-write of a given requisition / foreign-source file.
+     * provisiond and the Minion HeartbeatConsumer use different repository beans (a
+     * {@code FasterFilesystem} instance vs the factory-selected deployed instance) that write the
+     * same directory, so a per-instance lock cannot coordinate them. An OS {@link java.nio.channels.FileLock}
+     * is also unsuitable here: it is held on behalf of the whole JVM and throws
+     * {@code OverlappingFileLockException} for two threads in the same JVM. A static, path-keyed
+     * lock is the correct same-JVM coordination primitive.
+     */
+    private static final ConcurrentMap<String, ReentrantLock> FILE_LOCKS = new ConcurrentHashMap<>();
+
     protected final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     protected final Lock m_readLock = m_globalLock.readLock();
     protected final Lock m_writeLock = m_globalLock.writeLock();
@@ -179,27 +197,27 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     	LOG.debug("Writing foreign source {} to {}", foreignSource.getName(), m_foreignSourcePath);
     	validate(foreignSource);
 
-        m_writeLock.lock();
-        try {
-            if (foreignSource.getName().equals("default")) {
+        if (foreignSource.getName().equals("default")) {
+            m_writeLock.lock();
+            try {
                 putDefaultForeignSource(foreignSource);
                 return;
-            }
-            final File outputFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
-            OutputStream outputStream = null;
-            Writer writer = null;
-            try {
-                outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-                JaxbUtils.marshal(foreignSource, writer);
-            } catch (final Throwable e) {
-                throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
             } finally {
-                IOUtils.closeQuietly(writer);
-                IOUtils.closeQuietly(outputStream);
+                m_writeLock.unlock();
+            }
+        }
+        final File outputFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
+        final ReentrantLock fileLock = lockFor(outputFile);
+        fileLock.lock();
+        try {
+            m_writeLock.lock();
+            try {
+                marshalAtomically(foreignSource, outputFile);
+            } finally {
+                m_writeLock.unlock();
             }
         } finally {
-            m_writeLock.unlock();
+            fileLock.unlock();
         }
     }
 
@@ -313,23 +331,106 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         LOG.debug("Writing requisition {} to {}", requisition.getForeignSource(), m_requisitionPath);
         validate(requisition);
 
-        m_writeLock.lock();
+        final File outputFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
+        final ReentrantLock fileLock = lockFor(outputFile);
+        fileLock.lock();
         try {
-            final File outputFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
-            Writer writer = null;
-            OutputStream outputStream = null;
+            m_writeLock.lock();
             try {
-                outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-                JaxbUtils.marshal(requisition, writer);
-            } catch (final Throwable e) {
-                throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
+                marshalAtomically(requisition, outputFile);
             } finally {
-                IOUtils.closeQuietly(writer);
-                IOUtils.closeQuietly(outputStream);
+                m_writeLock.unlock();
             }
         } finally {
-            m_writeLock.unlock();
+            fileLock.unlock();
+        }
+    }
+
+    /**
+     * Returns the process-wide lock for {@code file}, keyed by its canonical path so that every
+     * repository instance in this JVM contends on the same monitor for that file.
+     */
+    private static ReentrantLock lockFor(final File file) {
+        String key;
+        try {
+            key = file.getCanonicalPath();
+        } catch (final IOException e) {
+            key = file.getAbsolutePath();
+        }
+        return FILE_LOCKS.computeIfAbsent(key, k -> new ReentrantLock());
+    }
+
+    /**
+     * Updates only the {@code last-import} timestamp of an existing requisition without rewriting
+     * it from a (possibly stale) caller-held snapshot. Under the shared per-file lock this
+     * re-reads the <em>current</em> requisition straight from disk, stamps it, and writes it back
+     * atomically. Because the on-disk node set is read fresh inside the lock, a concurrent writer
+     * adding nodes (e.g. the Minion HeartbeatConsumer) can never be clobbered: only the timestamp
+     * changes, every node currently on disk is preserved. No-op if the requisition file is absent.
+     */
+    @Override
+    public void updateLastImported(final String foreignSourceName) throws ForeignSourceRepositoryException {
+        final File outputFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, foreignSourceName);
+        final ReentrantLock fileLock = lockFor(outputFile);
+        fileLock.lock();
+        try {
+            m_writeLock.lock();
+            try {
+                if (!outputFile.exists()) {
+                    LOG.debug("updateLastImported: no requisition file at {}, skipping", outputFile.getPath());
+                    return;
+                }
+                // Read the current on-disk requisition directly (bypassing any per-instance cache)
+                // so the merge always reflects the latest committed node set.
+                final Requisition current = RequisitionFileUtils.getRequisitionFromFile(outputFile);
+                current.updateLastImported();
+                marshalAtomically(current, outputFile);
+            } finally {
+                m_writeLock.unlock();
+            }
+        } finally {
+            fileLock.unlock();
+        }
+    }
+
+    /**
+     * Marshals {@code jaxbObject} to {@code outputFile} atomically: the document is written in
+     * full to a temporary file in the same directory and then moved into place with an atomic
+     * rename. This guarantees that a concurrent reader — provisiond re-importing on a
+     * {@code reloadImport} event, the {@link DirectoryWatcher} reload, or another repository
+     * instance — never observes a partially-written (truncated) file. Writing directly to the
+     * destination with a {@link FileOutputStream} truncates it to zero before the new content is
+     * flushed, which is the window in which torn/empty reads (and thus truncated requisitions)
+     * occur.
+     */
+    private void marshalAtomically(final Object jaxbObject, final File outputFile)
+            throws ForeignSourceRepositoryException {
+        final File directory = outputFile.getParentFile();
+        File tempFile = null;
+        try {
+            // The temp file shares the destination's directory so the move is a same-filesystem
+            // atomic rename. Its ".tmp" suffix keeps it out of the ".xml" requisition listing and
+            // out of the snapshot (<foreignSource>.xml.<digits>) matcher.
+            tempFile = File.createTempFile(outputFile.getName() + '.', ".tmp", directory);
+            try (OutputStream outputStream = new FileOutputStream(tempFile);
+                 Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                JaxbUtils.marshal(jaxbObject, writer);
+            }
+            try {
+                Files.move(tempFile.toPath(), outputFile.toPath(),
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (final AtomicMoveNotSupportedException e) {
+                // Rare (e.g. some filesystems); fall back to a plain replace, which is still a
+                // single rename rather than an in-place truncate-and-rewrite.
+                Files.move(tempFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+            tempFile = null; // moved into place; nothing to clean up
+        } catch (final Throwable e) {
+            throw new ForeignSourceRepositoryException("unable to write " + outputFile.getPath(), e);
+        } finally {
+            if (tempFile != null && tempFile.exists() && !tempFile.delete()) {
+                LOG.warn("Could not delete temporary file: {}", tempFile.getPath());
+            }
         }
     }
 

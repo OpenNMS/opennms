@@ -84,12 +84,22 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             }
             // Trust whatever is on the cache if exist for local resources only.
             if (isLocal) {
-                LOG.debug("importResourceRequisition: saving cached requisition to disk");
                 final Requisition req;
                 try {
                     req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
                     if (req != null) {
                         req.setResource(resource);
+                        // If the resource being imported IS our own already-deployed requisition
+                        // file, this is an idempotent self-import (e.g. a reloadImport for a
+                        // requisition that lives in this repository). Re-saving it here would
+                        // rewrite the file from a possibly-stale cache and can silently truncate
+                        // it when another writer (such as the Minion HeartbeatConsumer) is
+                        // concurrently editing the same file. Return it read-only instead.
+                        if (isOwnDeployedRequisition(resource)) {
+                            LOG.debug("importResourceRequisition: {} is our own deployed requisition; returning without rewriting", resource.getFilename());
+                            return req;
+                        }
+                        LOG.debug("importResourceRequisition: saving cached requisition to disk");
                         save(req);
                         return req;
                     }
@@ -102,6 +112,24 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         // Use the default implementation if the cache doesn't contain the requisition or the requisition comes from an external source.
         return super.importResourceRequisition(resource);
+    }
+
+    /**
+     * Returns {@code true} if {@code resource} resolves to this repository's own deployed
+     * requisition file (i.e. {@code m_requisitionPath/<filename>}), meaning an import of it is a
+     * no-op rewrite of the source. Used to keep a self-import read-only so it cannot clobber a
+     * concurrent writer. External or pending resources (a different directory, an HTTP URL)
+     * return {@code false} and are imported/saved normally.
+     */
+    private boolean isOwnDeployedRequisition(final Resource resource) {
+        try {
+            final File resourceFile = resource.getFile();
+            final File deployedFile = new File(m_requisitionPath, resource.getFilename());
+            return resourceFile.getCanonicalFile().equals(deployedFile.getCanonicalFile());
+        } catch (Exception e) {
+            // Not a resolvable local file (e.g. an HTTP resource) — treat as not-our-own.
+            return false;
+        }
     }
 
     /* (non-Javadoc)

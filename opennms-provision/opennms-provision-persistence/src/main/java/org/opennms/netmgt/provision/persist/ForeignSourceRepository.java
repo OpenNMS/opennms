@@ -155,6 +155,22 @@ public interface ForeignSourceRepository {
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     void save(Requisition requisition) throws ForeignSourceRepositoryException;
+
+    /**
+     * Persist only the {@code last-import} timestamp of an existing requisition, without
+     * rewriting it from a caller-held snapshot.
+     *
+     * @param foreignSourceName the foreign source whose requisition should be stamped.
+     * @throws ForeignSourceRepositoryException if the update fails.
+     */
+    default void updateLastImported(String foreignSourceName) throws ForeignSourceRepositoryException {
+        final Requisition requisition = getRequisition(foreignSourceName);
+        if (requisition != null) {
+            requisition.updateLastImported();
+            save(requisition);
+        }
+    }
+
     /**
      * <p>delete</p>
      *

@@ -228,6 +228,16 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
         cleanUpSnapshots(requisition);
     }
 
+    /**
+     * Delegates to the deployed repository so its per-file-locked, atomic re-read-merge-write of
+     * the {@code last-import} timestamp is used as a single operation, rather than the interface
+     * default's separate getRequisition()/save() calls (which would not be clobber-safe).
+     */
+    @Override
+    public void updateLastImported(final String foreignSourceName) throws ForeignSourceRepositoryException {
+        m_deployedForeignSourceRepository.updateLastImported(foreignSourceName);
+    }
+
     private void cleanUpSnapshots(final Requisition requisition) {
         final String foreignSource = requisition.getForeignSource();
         final Date pendingDate = m_pendingForeignSourceRepository.getRequisitionDate(foreignSource);
