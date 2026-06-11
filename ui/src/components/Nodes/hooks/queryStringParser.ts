@@ -313,8 +313,10 @@ export const parseMib2Params = (queryObject: any): NodeQuerySysParams | null => 
 
 /**
  * Maps legacy maclike/snmpphysaddr params to a stripped, lowercase MAC address string
- * suitable for wildcard FIQL matching against snmpInterface.physAddr.
- * Colons and dashes are stripped to match the format stored in the database.
+ * suitable for matching against snmpInterface.physAddr.
+ * All non-hex characters (separators like ':' and '-', plus any stray FIQL characters such as
+ * ',' or ';') are stripped, both to match the format stored in the database and to keep the value
+ * safe for the FIQL expression.
  */
 export const parseMaclike = (queryObject: any): string | null => {
   const mac = queryObject.maclike as string || queryObject.snmpphysaddr as string || ''
@@ -323,7 +325,7 @@ export const parseMaclike = (queryObject: any): string | null => {
     return null
   }
 
-  return mac.replace(/[:-]/g, '').toLowerCase()
+  return mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
 }
 
 /**

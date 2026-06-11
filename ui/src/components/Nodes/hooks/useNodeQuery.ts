@@ -650,6 +650,27 @@ const buildWithAssetsQuery = (nodesWithAssets?: boolean) => {
   return nodesWithAssets ? 'nodesWithAssets==true' : ''
 }
 
+/**
+ * Encode a FIQL value so it survives intact to the backend CriteriaBehavior as an exact literal.
+ *
+ * Asset values are free text and may contain FIQL-structural characters (',' ';' '(' ')') or
+ * URL-structural characters ('&' '#' '%' space). We can neither sanitize them away (the match must
+ * be exact) nor pass them raw (they corrupt the FIQL expression or the URL).
+ *
+ * The value is URL-decoded twice on the way in — once by the servlet container, once by CXF
+ * (search.decode.values=true on the v2 endpoints) — so we double-encode it here. This generalizes
+ * the comma double-encoding in buildIpAddressQuery to every reserved character. A strict encoder is
+ * used because encodeURIComponent leaves ! ' ( ) * unescaped, and ( ) * are meaningful to FIQL.
+ *
+ * After two decodes the backend receives the exact original string (and '*' is matched literally,
+ * preserving exact-match rather than being treated as a wildcard).
+ */
+const encodeFiqlValue = (value: string): string => {
+  const strictEncode = (s: string): string =>
+    encodeURIComponent(s).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
+  return strictEncode(strictEncode(value))
+}
+
 const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   if (!assetFilters || assetFilters.length === 0) {
     return ''
@@ -659,7 +680,7 @@ const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   // Multiple filters are intersected (a node must match every one).
   return assetFilters
     .filter(f => f.column && f.value && ALLOWED_ASSET_COLUMNS.has(f.column))
-    .map(f => `assetRecord.${f.column}==${f.value}`)
+    .map(f => `assetRecord.${f.column}==${encodeFiqlValue(f.value)}`)
     .join(getFiqlSetOperator(SetOperator.Intersection))
 }
 

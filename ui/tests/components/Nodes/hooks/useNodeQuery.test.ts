@@ -662,6 +662,33 @@ describe('Nodes useNodeQuery test', () => {
       expect(params._s).toContain('nodesWithDownAggregateStatus==true')
       expect(params._s).toContain(';')
     })
+
+    // Asset values are free text; FIQL/URL-structural characters are double-encoded so they survive
+    // the two URL-decodes (servlet container + CXF search.decode.values) and reach the backend as the
+    // exact literal, without corrupting the FIQL expression. See encodeFiqlValue.
+    test.each([
+      ['comma', 'A,B', 'assetRecord.building==A%252CB'],
+      ['semicolon', 'A;B', 'assetRecord.building==A%253BB'],
+      ['parentheses', '(A)', 'assetRecord.building==%2528A%2529'],
+      ['ampersand', 'A&B', 'assetRecord.building==A%2526B'],
+      ['percent', '50%', 'assetRecord.building==50%2525'],
+      ['asterisk (literal, not wildcard)', 'A*', 'assetRecord.building==A%252A'],
+      ['space', 'Data Center', 'assetRecord.building==Data%2520Center'],
+      ['mixed', 'Bldg 1, Floor (2)', 'assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529']
+    ])('double-encodes a value with %s', (title, value, expected) => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe(expected)
+    })
+
+    test('round-trips back to the original value after two URL-decodes', () => {
+      const value = 'Bldg 1, Floor (2) & A;B 50%'
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      const encoded = (params._s as string).replace('assetRecord.building==', '')
+      // container decode, then CXF search.decode.values decode
+      expect(decodeURIComponent(decodeURIComponent(encoded))).toBe(value)
+    })
   })
 
   describe('buildNodeQueryFilterFromQueryString: down + asset params', () => {

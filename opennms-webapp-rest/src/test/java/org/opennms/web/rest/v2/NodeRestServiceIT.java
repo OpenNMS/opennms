@@ -370,6 +370,29 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
+    public void testAssetFilterValueWithFiqlCharacters() throws Exception {
+        // A node whose asset 'building' contains FIQL-structural characters (comma + semicolon).
+        // The Vue UI double-encodes such values (',' -> %252C, ';' -> %253B); the servlet container
+        // and CXF (search.decode.values=true) then decode them back to the exact literal before the
+        // value reaches the criteria, so an exact match must still work.
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("AssetCommaNode").setForeignSource("JUnit").setForeignId("AssetComma").setType(OnmsNode.NodeType.ACTIVE);
+        builder.setBuilding("A,B;C");
+        final OnmsNode node = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(node);
+        m_databasePopulator.getNodeDao().flush();
+
+        String url = "/nodes";
+
+        // Exact match via the double-encoded value the UI emits
+        sendRequest(GET, url, parseParamData("_s=assetRecord.building==A%252CB%253BC"), 200);
+
+        // A different (also double-encoded) value must not match
+        sendRequest(GET, url, parseParamData("_s=assetRecord.building==A%252CX"), 204);
+    }
+
+    @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
         String node = "<node type=\"A\" label=\"MaclikeTestNode\" foreignSource=\"JUnit\" foreignId=\"MaclikeTestNode\">" +
