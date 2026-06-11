@@ -55,7 +55,7 @@ export interface TopnRow {
 
 const MAX_SOURCES = 250 // cap candidate resources per query
 
-const timeframeRange = (tf: Timeframe): { start: number; end: number } => {
+export const timeframeRange = (tf: Timeframe): { start: number; end: number } => {
   const now = Date.now()
   const hour = 3_600_000
   const day = 24 * hour
@@ -95,7 +95,7 @@ interface RawResource {
   children?: { resource?: RawResource[] }
 }
 
-interface MeasurementSource {
+export interface MeasurementSource {
   resourceId: string
   attribute: string
   label: string
@@ -116,6 +116,13 @@ const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiDef): Me
   return out.slice(0, MAX_SOURCES)
 }
 
+// All entities (resources) carrying the given KPI — shared by Top-N and the metric chart.
+export const listKpiSources = async (kpiId: string): Promise<MeasurementSource[]> => {
+  const kpi = TOPN_KPIS.find((k) => k.id === kpiId) ?? TOPN_KPIS[0]
+  const tree = await rest.get('/resources?depth=2', { headers: { Accept: 'application/json' } })
+  return collectSources(tree.data ?? {}, kpi)
+}
+
 export const queryTopn = async (
   kpiId: string,
   timeframe: Timeframe,
@@ -124,8 +131,7 @@ export const queryTopn = async (
 ): Promise<TopnRow[]> => {
   const kpi = TOPN_KPIS.find((k) => k.id === kpiId) ?? TOPN_KPIS[0]
   try {
-    const tree = await rest.get('/resources?depth=2', { headers: { Accept: 'application/json' } })
-    const sources = collectSources(tree.data ?? {}, kpi)
+    const sources = await listKpiSources(kpi.id)
     if (!sources.length) return []
 
     const { start, end } = timeframeRange(timeframe)

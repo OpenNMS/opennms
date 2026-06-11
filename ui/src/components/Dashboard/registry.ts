@@ -205,6 +205,18 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
+  'metric-chart': {
+    type: 'metric-chart',
+    defaultHeightMode: 'fixed',
+    title: 'Metric Chart',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/MetricChartPanel.vue')),
+    defaultSize: { w: 6, h: 5 },
+    minSize: { w: 3, h: 3 },
+    supportsTimeframe: true,
+    renamable: true,
+    collapsible: true
+  },
   notes: {
     type: 'notes',
     title: 'Notes',

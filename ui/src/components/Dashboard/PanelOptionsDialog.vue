@@ -97,6 +97,30 @@ License.
         </small>
       </div>
 
+      <template v-if="panel.type === 'metric-chart'">
+        <div class="opts__field">
+          <label class="opts__label">Entity</label>
+          <PSelect
+            v-model="chartEntity"
+            :options="entityOptions"
+            :loading="entitiesLoading"
+            filter
+            class="opts__control"
+          />
+          <small class="opts__hint">Entities that have data for the selected metric.</small>
+        </div>
+        <div class="opts__field">
+          <label class="opts__label">Metric</label>
+          <PSelect
+            v-model="chartMetric"
+            :options="kpiOptions"
+            option-label="label"
+            option-value="value"
+            class="opts__control"
+          />
+        </div>
+      </template>
+
       <template v-if="panel.type === 'topn'">
         <div class="opts__field">
           <label class="opts__label">Rank by (KPI)</label>
@@ -165,6 +189,7 @@ import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, TOPN_KPIS } from '@/services/topnService'
+import { DEFAULT_CHART_ENTITY, DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
 
 const PDialog = Dialog
 const PTextarea = Textarea
@@ -200,6 +225,27 @@ const supportsShade = computed(() => SHADEABLE.includes(props.panel.type))
 const topnN = ref(DEFAULT_TOPN_N)
 const topnDirection = ref<'asc' | 'desc'>('desc')
 
+// metric-chart: one entity x one metric (single-select each)
+const chartEntity = ref(DEFAULT_CHART_ENTITY)
+const chartMetric = ref(DEFAULT_CHART_METRIC)
+const entityOptions = ref<string[]>([])
+const entitiesLoading = ref(false)
+
+const loadEntities = async () => {
+  entitiesLoading.value = true
+  const entities = await listMetricEntities(chartMetric.value)
+  // keep the current selection listed even if it has no data right now
+  if (chartEntity.value && !entities.includes(chartEntity.value)) {
+    entities.unshift(chartEntity.value)
+  }
+  entityOptions.value = entities
+  entitiesLoading.value = false
+}
+
+watch(chartMetric, () => {
+  if (props.panel.type === 'metric-chart' && props.visible) loadEntities()
+})
+
 // External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
 // up front so the user gets an explanation instead of a silent broken iframe.
 const urlError = computed(() => {
@@ -225,6 +271,9 @@ const syncFromPanel = () => {
   topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
   topnN.value = Number(props.panel.options?.n ?? DEFAULT_TOPN_N)
   topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
+  chartEntity.value = String(props.panel.options?.entity ?? DEFAULT_CHART_ENTITY)
+  chartMetric.value = String(props.panel.options?.metric ?? DEFAULT_CHART_METRIC)
+  if (props.panel.type === 'metric-chart') loadEntities()
 }
 
 watch(
@@ -247,6 +296,10 @@ const apply = () => {
     opts.kpi = topnKpi.value
     opts.n = Math.min(50, Math.max(1, Number(topnN.value) || DEFAULT_TOPN_N))
     opts.direction = topnDirection.value
+  }
+  if (props.panel.type === 'metric-chart') {
+    opts.entity = chartEntity.value
+    opts.metric = chartMetric.value
   }
   store.setPanelOptions(props.panel.id, opts)
   visibleModel.value = false
