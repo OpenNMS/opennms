@@ -137,10 +137,10 @@ describe('Nodes queryStringParser test', () => {
       ['invalid partial iplike', { iplike: '192.168.' }, null],
       ['invalid iplike', { iplike: 'A.B.C.D' }, null],
 
-      ['iplike wildcard pattern from iplike param', { iplike: '192.168.1.*'}, '192.168.1.*'],
-      ['iplike wildcard pattern from ipAddress param', { ipAddress: '10.*.*.*'}, '10.*.*.*'],
-      ['iplike prefers iplike param over ipAddress', { iplike: '10.*.*.*', ipAddress: '192.168.1.1'}, '10.*.*.*'],
-      ['iplike all wildcards', { iplike: '*.*.*.*'}, '*.*.*.*'],
+      ['iplike wildcard pattern from iplike param', { iplike: '192.168.1.*' }, '192.168.1.*'],
+      ['iplike wildcard pattern from ipAddress param', { ipAddress: '10.*.*.*' }, '10.*.*.*'],
+      ['iplike prefers iplike param over ipAddress', { iplike: '10.*.*.*', ipAddress: '192.168.1.1' }, '10.*.*.*'],
+      ['iplike all wildcards', { iplike: '*.*.*.*' }, '*.*.*.*'],
       ['iplike IPv6 wildcard from iplike param', { iplike: '2001:db8:*:*:*:*:*:*' }, '2001:db8:*:*:*:*:*:*'],
       ['iplike IPv6 wildcard from ipAddress param', { ipAddress: 'fe80:*:*:*:*:*:*:*' }, 'fe80:*:*:*:*:*:*:*']
     ]) (
