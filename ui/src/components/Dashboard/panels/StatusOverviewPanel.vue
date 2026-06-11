@@ -92,6 +92,11 @@ const legendColor = (): string => {
   return '#333333'
 }
 
+// Slice clicks deep-link to the legacy severity-filtered node list, matching
+// the original homepage donuts (status-box onclick).
+const statusUrl = (strategy: 'alarms' | 'outages', severity: string) =>
+  `/opennms/status/index.jsp?title=Node%20List&type=nodes&strategy=${strategy}&severityFilter=${encodeURIComponent(severity)}`
+
 const rootRef = ref<HTMLElement | null>(null)
 const alarmsCanvas = ref<HTMLCanvasElement | null>(null)
 const outagesCanvas = ref<HTMLCanvasElement | null>(null)
@@ -110,7 +115,8 @@ const outagesTotal = computed(() => sum(outagesEntries.value))
 const renderDonut = (
   canvas: HTMLCanvasElement | null,
   entries: StatusSummaryEntry[],
-  existing: Chart<'doughnut', number[], string> | null
+  existing: Chart<'doughnut', number[], string> | null,
+  strategy: 'alarms' | 'outages'
 ): Chart<'doughnut', number[], string> | null => {
   if (!canvas) return existing
   const filtered = entries.filter((e) => e.count > 0)
@@ -135,7 +141,15 @@ const renderDonut = (
       responsive: true,
       maintainAspectRatio: false,
       cutout: '55%',
-      plugins: { legend: { position: 'bottom', labels: { color: legendColor() } } }
+      plugins: { legend: { position: 'bottom', labels: { color: legendColor() } } },
+      onClick: (_event, elements, chart) => {
+        const idx = elements[0]?.index
+        const severity = idx === undefined ? undefined : chart.data.labels?.[idx]
+        if (severity) window.location.assign(statusUrl(strategy, String(severity)))
+      },
+      onHover: (_event, elements, chart) => {
+        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default'
+      }
     }
   })
 }
@@ -147,15 +161,15 @@ const load = async () => {
   outagesEntries.value = outages
   loading.value = false
   await nextTick()
-  alarmsChart = renderDonut(alarmsCanvas.value, alarms, alarmsChart)
-  outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart)
+  alarmsChart = renderDonut(alarmsCanvas.value, alarms, alarmsChart, 'alarms')
+  outagesChart = renderDonut(outagesCanvas.value, outages, outagesChart, 'outages')
 }
 
 let themeObserver: MutationObserver | null = null
 
 const recolorLegends = () => {
-  alarmsChart = renderDonut(alarmsCanvas.value, alarmsEntries.value, alarmsChart)
-  outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart)
+  alarmsChart = renderDonut(alarmsCanvas.value, alarmsEntries.value, alarmsChart, 'alarms')
+  outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart, 'outages')
 }
 
 onMounted(() => {
