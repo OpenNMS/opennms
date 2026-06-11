@@ -366,6 +366,13 @@ describe('Nodes useNodeQuery test', () => {
       expect(filter).toEqual(expected)
     })
 
+    test('maclike maps to macAddress (stripped, remove FIQL characters, lowercase)', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ maclike: 'AA:B,B:CC:DD:E;E:FF' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.macAddress = 'aabbccddeeff'
+      expect(filter).toEqual(expected)
+    })
+
     test('maclike coexists with explicit snmpParams', () => {
       const filter = buildNodeQueryFilterFromQueryString(
         { snmpifalias: 'Uplink', maclike: 'AA:BB:CC' },

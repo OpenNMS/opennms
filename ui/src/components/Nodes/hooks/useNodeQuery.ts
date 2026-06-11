@@ -631,9 +631,10 @@ const buildMaclikeQuery = (macAddress?: string) => {
     return ''
   }
 
-  // Strip separators and lowercase to match the format stored in snmpinterface.snmpphysaddr.
+  // Strip separators/whitespace and lowercase to match the format stored in snmpinterface.snmpphysaddr.
   // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
-  const stripped = macAddress.replace(/[:-]/g, '').toLowerCase()
+  const stripped = macAddress.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+
   if (stripped.length === 0) {
     return ''
   }
