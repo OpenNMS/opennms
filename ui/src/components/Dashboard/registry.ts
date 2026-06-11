@@ -48,6 +48,9 @@ export interface PanelDefinition {
   renamable?: boolean // default true
   collapsible?: boolean // default true (NMS-11946)
   roles?: string[] // future: restrict visibility via useRole()
+  // not offered in the "Add panel" picker; still renders if a layout references
+  // it (dev/debug panels like 'sample')
+  hidden?: boolean
 }
 
 export const panelRegistry: Record<string, PanelDefinition> = {
@@ -240,6 +243,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   },
   sample: {
     type: 'sample',
+    hidden: true, // framework wiring check — keep for debugging, not for production
     title: 'Sample Panel',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/SamplePanel.vue')),
@@ -254,4 +258,5 @@ export const panelRegistry: Record<string, PanelDefinition> = {
 
 export const getPanelDefinition = (type: string): PanelDefinition | undefined => panelRegistry[type]
 
-export const listPanelDefinitions = (): PanelDefinition[] => Object.values(panelRegistry)
+export const listPanelDefinitions = (): PanelDefinition[] =>
+  Object.values(panelRegistry).filter((d) => !d.hidden)
