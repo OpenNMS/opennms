@@ -96,7 +96,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         if (routeIdsByModule.containsKey(module)) {
             LOG.info("Destroying route for module: {}", module);
             final String routeId = routeIdsByModule.remove(module);
-            context.stopRoute(routeId);
+            context.getRouteController().stopRoute(routeId);
             context.removeRoute(routeId);
         }
     }

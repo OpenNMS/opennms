@@ -65,10 +65,10 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
-      <feature>camel-netty4</feature>
+      <feature>camel-netty</feature>
       <feature>commons-beanutils</feature>
       <feature>guava</feature>
-      <feature>gemini-blueprint</feature>
+      <feature>opennms-spring-extender</feature>
 
       <feature>opennms-core-daemon</feature>
       <feature>opennms-dao-api</feature>

@@ -26,6 +26,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
@@ -33,14 +34,16 @@ import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.netty4.NettyComponent;
-import org.apache.camel.component.netty4.NettyConstants;
+import org.apache.camel.component.netty.NettyComponent;
+import org.apache.camel.component.netty.NettyConstants;
+import org.apache.camel.core.osgi.OsgiDefaultCamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultManagementNameStrategy;
-import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.impl.engine.DefaultManagementNameStrategy;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +65,8 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
     private final SyslogdConfig m_config;
 
     private DefaultCamelContext m_camel;
+
+    private BundleContext m_bundleContext;
 
     public SyslogReceiverCamelNettyImpl(final SyslogdConfig config) {
         super(config);
@@ -99,6 +104,22 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
         super.stop();
     }
 
+    private DefaultCamelContext createCamelContext() {
+        // in OSGi the blueprint injects the bundle context, and the OSGi-aware camel
+        // context is required for factory discovery (languages, processor factories, ...)
+        // to work across bundles. The JVM (spring) wiring injects nothing, and the
+        // pojosr-based tests provide a bundle context but no bundle classloading, so
+        // only use it when this class was actually loaded from a bundle.
+        if (m_bundleContext != null && FrameworkUtil.getBundle(SyslogReceiverCamelNettyImpl.class) != null) {
+            return new OsgiDefaultCamelContext(m_bundleContext);
+        }
+        return new DefaultCamelContext();
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        m_bundleContext = bundleContext;
+    }
+
     /**
      * The execution context.
      */
@@ -107,11 +128,9 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
         // Setup logging and create the dispatcher
         super.run();
 
-        SimpleRegistry registry = new SimpleRegistry();
-
         //Adding netty component to camel in order to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
-        m_camel = new DefaultCamelContext(registry);
+        m_camel = createCamelContext();
 
         // Set the context name so that it shows up nicely in JMX
         //
@@ -121,7 +140,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
         m_camel.setName("syslogdListenerCamelNettyContext");
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
-        m_camel.addComponent("netty4", nettyComponent);
+        m_camel.addComponent("netty", nettyComponent);
 
         m_camel.getShutdownStrategy().setShutdownNowOnTimeout(true);
         m_camel.getShutdownStrategy().setTimeout(15);
@@ -131,7 +150,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty4:udp://%s:%d?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
+                    String from = String.format("netty:udp://%s:%d?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
@@ -172,6 +191,13 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
                                 callback.done(false);
                             });
                             return false;
+                        }
+
+                        @Override
+                        public CompletableFuture<Exchange> processAsync(Exchange exchange) {
+                            final CompletableFuture<Exchange> future = new CompletableFuture<>();
+                            process(exchange, doneSync -> future.complete(exchange));
+                            return future;
                         }
                     });
                 }

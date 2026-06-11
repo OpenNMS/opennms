@@ -1748,7 +1748,7 @@
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
-    <camelVersion>2.21.5</camelVersion>
+    <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1790,7 +1790,6 @@
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
@@ -3919,6 +3918,26 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-spring</artifactId>
         <version>${camelVersion}</version>
+      </dependency>
+      <dependency>
+        <!-- the <camelContext> spring XML namespace handler lives here as of Camel 3 -->
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-spring-xml</artifactId>
+        <version>${camelVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.curator</groupId>

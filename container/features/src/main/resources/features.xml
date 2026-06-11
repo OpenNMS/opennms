@@ -124,16 +124,6 @@
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/xmlgraphics-commons/${xmlgraphicsCommonsVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.commons&amp;Bundle-Version=${xmlgraphicsCommonsVersion}</bundle>
         <feature>batik</feature>
     </feature>
-    <feature name="gemini-blueprint" version="${eclipseGeminiVersion}" description="Eclipse :: Gemini Blueprint">
-        <!-- Gemini Blueprint 2.1.0 is built against Spring 4.3 (its bundles Import-Package
-             org.springframework.*;version="[4.3.0,4.4)") and is NOT runtime-compatible with Spring 5.3, so
-             this standalone (experimental) feature wires to the retained 4.3 Spring region. The
-             opennms-spring-extender feature no longer uses Gemini; it ships our own Spring 5.3 extender. -->
-        <feature version="[4.3,4.4)">spring</feature>
-        <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-core/${eclipseGeminiVersion}</bundle>
-        <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
-        <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
-    </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
         <!-- needed by spifly -->
         <feature version="[9.4,10)">asm</feature>
@@ -351,9 +341,9 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
-        <!-- netty-transport-classes-epoll must be loaded before camel-netty4 resolves io.netty.channel.epoll -->
+        <!-- netty-transport-classes-epoll must be loaded before camel-netty resolves io.netty.channel.epoll -->
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
-        <feature>camel-netty4</feature>
+        <feature>camel-netty</feature>
         <feature>opennms-core</feature>
         <bundle dependency="true">mvn:com.fasterxml/aalto-xml/${aaltoXmlVersion}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec-xml/${netty4Version}</bundle>
@@ -394,7 +384,6 @@
     </feature>
     <feature name="opennms-distributed-core-jms" description="OpenNMS :: Distributed :: Core :: JMS" version="${project.version}">
         <feature>camel-jms</feature>
-        <feature>activemq-camel</feature>
         <feature>activemq-client</feature>
         <feature>jms</feature>
         <feature version="[5.3,5.4)">spring</feature>
@@ -770,7 +759,7 @@
         <feature version="[5.3,5.4)">spring</feature>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
-        <feature>camel-netty4</feature>
+        <feature>camel-netty</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-core</feature>
@@ -827,7 +816,7 @@
     <feature name="eif-adapter" version="${project.version}" description="OpenNMS :: Features :: EIF Adapter">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
-        <feature>camel-netty4</feature>
+        <feature>camel-netty</feature>
         <feature>opennms-core-camel</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-dao-api</feature>

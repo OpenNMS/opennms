@@ -285,13 +285,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
             LOG.info("Waiting for Sentinel health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             try {
-                // Feature resolution takes considerably longer while both the Spring 4.3
-                // and 5.3 bundle sets are installed: third-party bundles whose spring
-                // imports span both versions (cxf, activemq, ...) make the felix resolver
-                // explore both candidates. A full boot takes ~8 minutes on idle hardware
-                // and over 10 under CI load; this goes away once Camel moves off Spring 4.3.
                 await("waiting for good health check probe")
-                        .atMost(15, MINUTES)
+                        .atMost(5, MINUTES)
                         .pollInterval(10, SECONDS)
                         .failFast("container is no longer running", () -> !container.isRunning())
                         .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })

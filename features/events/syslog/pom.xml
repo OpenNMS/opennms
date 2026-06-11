@@ -60,6 +60,12 @@
   </build>
   <dependencies>
     <dependency>
+        <!-- OSGi-aware CamelContext for the hand-built context (factory discovery across bundles) -->
+        <groupId>org.apache.camel.karaf</groupId>
+        <artifactId>camel-core-osgi</artifactId>
+        <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
