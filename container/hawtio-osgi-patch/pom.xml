@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>33.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.hawtio-osgi-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: Hawtio OSGi WAR Patch</name>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-hawtio-osgi-and-json-and-commons-io</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>io.hawt</groupId>
+                                    <artifactId>hawtio-osgi</artifactId>
+                                    <version>${hawtio.version}</version>
+                                    <type>war</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <destFileName>hawtio-osgi-${hawtio.version}.war</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.json</groupId>
+                                    <artifactId>json</artifactId>
+                                    <version>${jsonVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>commons-io</groupId>
+                                    <artifactId>commons-io</artifactId>
+                                    <version>${commonsIoVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>patch-hawtio-osgi-json-and-commons-io</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/hawtio-osgi-unpacked"/>
+                                <unzip src="${project.build.directory}/hawtio-osgi-${hawtio.version}.war"
+                                       dest="${project.build.directory}/hawtio-osgi-unpacked"/>
+                                <delete>
+                                    <fileset dir="${project.build.directory}/hawtio-osgi-unpacked/WEB-INF/lib"
+                                             includes="json-*.jar"
+                                             excludes="json-simple-*.jar"/>
+                                    <fileset dir="${project.build.directory}/hawtio-osgi-unpacked/WEB-INF/lib"
+                                             includes="commons-io-*.jar"/>
+                                </delete>
+                                <copy todir="${project.build.directory}/hawtio-osgi-unpacked/WEB-INF/lib">
+                                    <fileset dir="${project.build.directory}" includes="json-${jsonVersion}.jar"/>
+                                    <fileset dir="${project.build.directory}" includes="commons-io-${commonsIoVersion}.jar"/>
+                                </copy>
+                                <delete file="${project.build.directory}/hawtio-osgi-${hawtio.version}.war"/>
+                                <zip destfile="${project.build.directory}/hawtio-osgi-${hawtio.version}.war"
+                                     basedir="${project.build.directory}/hawtio-osgi-unpacked"/>
+                                <delete dir="${project.build.directory}/hawtio-osgi-unpacked"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-patched-hawtio-osgi</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/hawtio-osgi-${hawtio.version}.war</file>
+                            <groupId>io.hawt</groupId>
+                            <artifactId>hawtio-osgi</artifactId>
+                            <version>${hawtio.version}</version>
+                            <packaging>war</packaging>
+                            <generatePom>false</generatePom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
