@@ -393,6 +393,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value.selectedMonitoringLocations = queryFilter.value.selectedMonitoringLocations.filter(
       loc => loc.name !== locationName
     )
+    // Also update the autocomplete-backed ref (read by the drawer on reopen); otherwise a removed
+    // location chip would reappear in the drawer's selection. Mirrors removeCategory/removeService.
+    selectedMonitoringLocations.value = selectedMonitoringLocations.value.filter(
+      loc => loc.name !== locationName
+    )
   }
 
   const removeExtendedSearch = (item: ExtendedSearchValue) => {

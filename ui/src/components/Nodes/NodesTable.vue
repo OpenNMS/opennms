@@ -136,7 +136,7 @@
                     @click="removeExtendedSearchItem(value)"
                   />
                 </template>
-                {{ `Extended Search: ${value.name} ${value.value}` }}
+                {{ `${value.name} ${value.value}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -149,7 +149,7 @@
                     @click="nodeStructureStore.removeIpAddress()"
                   />
                 </template>
-                {{ `IP Address: ${nodeStructureStore.queryFilter.ipAddress}` }}
+                {{ `IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -215,7 +215,7 @@
                     @click="nodeStructureStore.removeAssetFilter(assetFilter.column)"
                   />
                 </template>
-                {{ `Asset ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}` }}
+                {{ `Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}` }}
               </FeatherChip>
             </FeatherChipList>
           </div>

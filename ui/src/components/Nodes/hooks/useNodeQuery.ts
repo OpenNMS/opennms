@@ -449,12 +449,12 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
       if (items.length === 1) {
         return items[0]
       }
-      return `(${items.join(',')})`
+      return `(${items.join(getFiqlSetOperator(SetOperator.Union))})`
     }
     const group1 = buildGroup(selectedCategories)
     const group2 = buildGroup(selectedCategories2)
     if (group1 && group2) {
-      return `${group1};${group2}`
+      return `${group1}${getFiqlSetOperator(SetOperator.Intersection)}${group2}`
     }
     return group1 || group2
   }
@@ -487,7 +487,7 @@ const buildFlowsQuery = (selectedFlows: string[]) => {
   if (flowItems.length === 1) {
     return `${flowItems[0]}`
   } else if (flowItems.length > 1) {
-    return `(${flowItems.join(',')})`
+    return `(${flowItems.join(getFiqlSetOperator(SetOperator.Union))})`
   }
 
   return ''
@@ -499,7 +499,7 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
   if (locationItems.length === 1) {
     return `${locationItems[0]}`
   } else if (locationItems.length > 1) {
-    return `(${locationItems.join(',')})`
+    return `(${locationItems.join(getFiqlSetOperator(SetOperator.Union))})`
   }
 
   return ''
@@ -565,7 +565,7 @@ const buildServiceQuery = (selectedServices: string[]) => {
     return items[0]
   }
 
-  return `(${items.join(',')})`
+  return `(${items.join(getFiqlSetOperator(SetOperator.Union))})`
 }
 
 const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
@@ -598,7 +598,7 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
 
     if (arr.length > 0) {
-      return arr.join(';')
+      return arr.join(getFiqlSetOperator(SetOperator.Intersection))
     }
   }
 
@@ -619,7 +619,7 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     })
 
     if (arr.length > 0) {
-      return arr.join(';')
+      return arr.join(getFiqlSetOperator(SetOperator.Intersection))
     }
   }
 
