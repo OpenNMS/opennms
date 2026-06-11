@@ -22,6 +22,7 @@
 package org.opennms.netmgt.graph.provider.pathoutage;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -91,7 +92,9 @@ public class PathOutageGraphProvider implements GraphProvider {
             // plus those parents) and their labels, and remember the parent->child pairs.
             final Map<Integer, String> labelById = Maps.newHashMap();
             final Set<Integer> participating = new LinkedHashSet<>();
-            final Set<int[]> parentChild = new LinkedHashSet<>();
+            // child -> parent: value-based (unlike a Set of arrays), and a child
+            // has exactly one parent, so duplicates are structurally impossible.
+            final Map<Integer, Integer> parentByChild = new LinkedHashMap<>();
             for (final OnmsNode node : nodes) {
                 final OnmsNode parent = node.getParent();
                 if (parent == null) {
@@ -103,7 +106,7 @@ public class PathOutageGraphProvider implements GraphProvider {
                 labelById.put(parentId, parent.getLabel());
                 participating.add(childId);
                 participating.add(parentId);
-                parentChild.add(new int[] { parentId, childId });
+                parentByChild.put(childId, parentId);
             }
 
             // Vertices first (an edge requires its endpoints to already be present).
@@ -116,13 +119,14 @@ public class PathOutageGraphProvider implements GraphProvider {
                         .build());
             }
 
-            int edgeId = 0;
-            for (final int[] pc : parentChild) {
+            // No explicit edge id: GenericEdge derives a deterministic one from
+            // source->target, stable across loads (a counter would depend on
+            // NodeDao.findAll() ordering).
+            for (final Map.Entry<Integer, Integer> pc : parentByChild.entrySet()) {
                 builder.addEdge(GenericEdge.builder()
                         .namespace(NAMESPACE)
-                        .source(NAMESPACE, String.valueOf(pc[0]))
-                        .target(NAMESPACE, String.valueOf(pc[1]))
-                        .property(GenericProperties.ID, String.valueOf(edgeId++))
+                        .source(NAMESPACE, String.valueOf(pc.getValue()))
+                        .target(NAMESPACE, String.valueOf(pc.getKey()))
                         .build());
             }
 
