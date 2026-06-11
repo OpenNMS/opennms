@@ -86,6 +86,13 @@ License.
           @change="onAdd"
         />
         <PButton
+          text
+          label="Reset to default"
+          icon="pi pi-replay"
+          title="Replace the current layout with the built-in default dashboard (legacy homepage parity). Applied when you Save."
+          @click="onResetToDefault"
+        />
+        <PButton
           label="Save"
           icon="pi pi-save"
           :disabled="!isDirty"
@@ -145,6 +152,12 @@ const onAdd = () => {
   if (panelToAdd.value) {
     store.addPanel(panelToAdd.value)
     panelToAdd.value = null
+  }
+}
+
+const onResetToDefault = () => {
+  if (window.confirm('Replace the current layout with the built-in default dashboard? Your current arrangement is overwritten when you Save.')) {
+    store.applyFactoryDefault()
   }
 }
 

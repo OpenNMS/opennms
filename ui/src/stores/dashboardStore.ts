@@ -96,6 +96,12 @@ export const useDashboardStore = defineStore('dashboardStore', {
     async reset() {
       await this.load()
     },
+    // Replace the working layout with the built-in factory default (legacy
+    // homepage parity, incl. the Regional Map). Persists only on Save.
+    applyFactoryDefault() {
+      this.layout = createDefaultLayout()
+      this.isDirty = true
+    },
     setEditMode(on: boolean) {
       this.editMode = on
     },
