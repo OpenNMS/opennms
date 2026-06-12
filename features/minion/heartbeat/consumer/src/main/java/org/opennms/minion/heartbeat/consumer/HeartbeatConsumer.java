@@ -23,9 +23,12 @@ package org.opennms.minion.heartbeat.consumer;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -92,6 +95,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
     private final AtomicInteger numofRejected = new AtomicInteger(0);
+
+    private final Map<String, Long> lastReloadByForeignSource = new ConcurrentHashMap<>();
+
+    private long reloadRetryInterval = SystemProperties.getLong("opennms.minion.provisioning.reloadRetryInterval", TimeUnit.MINUTES.toMillis(5));
 
     @Autowired
     private MinionDao minionDao;
@@ -273,25 +280,34 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             }
         }
         if (nextRequisition == null) {
-            if (!nodeDao.getForeignIdToNodeIdMap(nextForeignSource).isEmpty()) {
-                LOG.error("Requisition {} could not be loaded, but provisioned nodes still exist for it. "
-                        + "Skipping provisioning of minion {} to avoid recreating the requisition from scratch and deleting those nodes on the next import.",
-                        nextForeignSource, minion.getId());
-                return;
-            }
             nextRequisition = new Requisition(nextForeignSource);
             nextRequisition.updateDateStamp();
+
+            // Populate before the first save so an empty requisition never hits the disk
+            // while provisioned nodes exist (a concurrent import reading it would delete them).
+            restoreProvisionedNodes(nextRequisition, nextForeignSource);
 
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
 
-            // Remove and replace all policies and detectors from the foreign source with defaults
-            // Default Snmp detector and policy for appliances
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            foreignSource.setDetectors(List.of(detector));
-            foreignSource.setPolicies(List.of(policy));
+            if (foreignSource.isDefault()) {
+                // Fresh setup: replace all policies and detectors with the Minion defaults
+                foreignSource.setDetectors(List.of(detector));
+                foreignSource.setPolicies(List.of(policy));
+                deployedForeignSourceRepository.save(foreignSource);
+            } else if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+                // Rebuilding after requisition loss: keep the existing definition, just ensure the defaults
+                foreignSource.addPolicy(policy);
+                foreignSource.addDetector(detector);
+                deployedForeignSourceRepository.save(foreignSource);
+            }
 
-            deployedForeignSourceRepository.save(foreignSource);
+            alteredForeignSources.add(nextForeignSource);
+        } else if (restoreProvisionedNodes(nextRequisition, nextForeignSource)) {
+            nextRequisition.setDate(new Date());
+            deployedForeignSourceRepository.save(nextRequisition);
+            deployedForeignSourceRepository.flush();
 
             alteredForeignSources.add(nextForeignSource);
         }
@@ -317,7 +333,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             alteredForeignSources.add(nextForeignSource);
         } else {
             // Change location in requisition.
-            if (!prevLocation.equals(nextLocation)) {
+            if (!Objects.equals(prevLocation, nextLocation)) {
                 requisitionNode.setLocation(nextLocation);
             }
             // The node already exists in the requisition
@@ -339,16 +355,81 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             }
         }
 
+        // The minion has no database node (checked above), so an import is still outstanding. If this
+        // heartbeat did not alter the requisition, an earlier import must have failed or been lost;
+        // re-trigger it, throttled per foreign source so converging heartbeats cannot storm provisiond.
+        if (!alteredForeignSources.contains(nextForeignSource)) {
+            final Long lastReload = lastReloadByForeignSource.get(nextForeignSource);
+            if (lastReload == null || System.currentTimeMillis() - lastReload >= reloadRetryInterval) {
+                LOG.warn("Minion {} is in requisition {} but has no node in the database; re-triggering import.",
+                        minion.getId(), nextForeignSource);
+                alteredForeignSources.add(nextForeignSource);
+            }
+        }
+
         for (final String alteredForeignSource : alteredForeignSources) {
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(deployedForeignSourceRepository.getRequisitionURL(alteredForeignSource)));
 
             try {
                 eventProxy.send(eventBuilder.getEvent());
+                lastReloadByForeignSource.put(alteredForeignSource, System.currentTimeMillis());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group " + alteredForeignSource, e);
+                LOG.error("Unable to send reload import event for foreign source {}; it will be retried on a later heartbeat.", alteredForeignSource, e);
             }
         }
+    }
+
+    /**
+     * Re-adds requisition entries for nodes that are provisioned in the database but missing from the
+     * requisition (e.g. after the requisition file was lost, corrupted, or overwritten by a stale copy).
+     * Without this, the next import would delete those nodes. Only nodes that still have a live minion
+     * row are restored, so minions removed through the REST API stay removed.
+     */
+    private boolean restoreProvisionedNodes(final Requisition requisition, final String foreignSource) {
+        final Map<String, Integer> dbNodesByForeignId = nodeDao.getForeignIdToNodeIdMap(foreignSource);
+        if (dbNodesByForeignId.isEmpty()) {
+            return false;
+        }
+
+        final Map<String, OnmsMinion> minionsByForeignId = new HashMap<>();
+        for (final OnmsMinion minion : minionDao.findAll()) {
+            if (foreignSource.equals(String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, minion.getLocation()))) {
+                minionsByForeignId.put(minion.getLabel() != null ? minion.getLabel() : minion.getId(), minion);
+            }
+        }
+
+        int restored = 0;
+        for (final String foreignId : dbNodesByForeignId.keySet()) {
+            final OnmsMinion minion = minionsByForeignId.get(foreignId);
+            if (minion == null || requisition.getNode(foreignId) != null) {
+                continue;
+            }
+
+            final RequisitionInterface requisitionInterface = new RequisitionInterface();
+            requisitionInterface.setIpAddr(MINION_INTERFACE);
+            requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
+            ensureServicesAreOnInterface(requisitionInterface);
+
+            final RequisitionNode requisitionNode = new RequisitionNode();
+            requisitionNode.setNodeLabel(minion.getId());
+            requisitionNode.setForeignId(foreignId);
+            requisitionNode.setLocation(minion.getLocation());
+            requisitionNode.putInterface(requisitionInterface);
+            requisition.putNode(requisitionNode);
+            restored++;
+        }
+
+        if (restored > 0) {
+            LOG.warn("Requisition {} was missing {} node(s) that are provisioned in the database; restored them to prevent their deletion on import.",
+                    foreignSource, restored);
+        }
+        return restored > 0;
+    }
+
+    @VisibleForTesting
+    void setReloadRetryInterval(final long reloadRetryInterval) {
+        this.reloadRetryInterval = reloadRetryInterval;
     }
 
     private static boolean ensureServicesAreOnInterface(RequisitionInterface requisitionInterface) {

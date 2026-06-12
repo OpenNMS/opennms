@@ -30,9 +30,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.Matchers;
@@ -50,12 +52,16 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.FusedForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -164,9 +170,20 @@ public class HeartbeatConsumerIT {
 
 
 
-    @Test
-    public void testProvisioningSkippedWhenRequisitionIsUnreadable() throws Exception {
-        final AtomicInteger reloadCount = new AtomicInteger();
+    private FusedForeignSourceRepository createForeignSourceRepository() throws IOException {
+        FusedForeignSourceRepository foreignSourceRepository = new FusedForeignSourceRepository();
+        FasterFilesystemForeignSourceRepository deployed = new FasterFilesystemForeignSourceRepository();
+        deployed.setForeignSourcePath(tempFolder.newFolder("foreign-sources").getPath());
+        deployed.setRequisitionPath(tempFolder.newFolder("imports").getPath());
+        FasterFilesystemForeignSourceRepository pending = new FasterFilesystemForeignSourceRepository();
+        pending.setForeignSourcePath(tempFolder.newFolder("foreign-sources", "pending").getPath());
+        pending.setRequisitionPath(tempFolder.newFolder("imports", "pending").getPath());
+        foreignSourceRepository.setDeployedForeignSourceRepository(deployed);
+        foreignSourceRepository.setPendingForeignSourceRepository(pending);
+        return foreignSourceRepository;
+    }
+
+    private EventProxy createReloadCountingEventProxy(final AtomicInteger reloadCount) throws Exception {
         EventProxy eventProxy = Mockito.mock(EventProxy.class);
         Mockito.doAnswer(invocation -> {
             final Event event = invocation.getArgument(0);
@@ -175,43 +192,47 @@ public class HeartbeatConsumerIT {
             }
             return null;
         }).when(eventProxy).send(Mockito.any(Event.class));
+        return eventProxy;
+    }
+
+    private HeartbeatConsumer createConsumer(final NodeDao nodeDaoToUse, final EventProxy eventProxy) throws IOException {
         EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
         Mockito.when(eventSubscriptionService.hasEventListener(Mockito.anyString())).thenReturn(true);
 
-        FusedForeignSourceRepository foreignSourceRepository = new FusedForeignSourceRepository();
-        FasterFilesystemForeignSourceRepository deployed = new FasterFilesystemForeignSourceRepository();
-        String foreignSourcePath = tempFolder.newFolder("foreign-sources").getPath();
-        String importsPath = tempFolder.newFolder("imports").getPath();
-        String pendingForeignSourcePath = tempFolder.newFolder("foreign-sources", "pending").getPath();
-        String pendingImportsPath = tempFolder.newFolder("imports", "pending").getPath();
-        deployed.setForeignSourcePath(foreignSourcePath);
-        deployed.setRequisitionPath(importsPath);
-        FasterFilesystemForeignSourceRepository pending = new FasterFilesystemForeignSourceRepository();
-        pending.setRequisitionPath(pendingImportsPath);
-        pending.setForeignSourcePath(pendingForeignSourcePath);
-        foreignSourceRepository.setDeployedForeignSourceRepository(deployed);
-        foreignSourceRepository.setPendingForeignSourceRepository(pending);
+        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer();
+        heartbeatConsumer.setMinionDao(minionDao);
+        heartbeatConsumer.setEventProxy(eventProxy);
+        heartbeatConsumer.setDeployedForeignSourceRepository(createForeignSourceRepository());
+        heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
+        heartbeatConsumer.setNodeDao(nodeDaoToUse);
+        return heartbeatConsumer;
+    }
+
+    @Test
+    public void testRequisitionRebuiltWhenUnreadable() throws Exception {
+        final AtomicInteger reloadCount = new AtomicInteger();
+        // The fleet is still provisioned in the database, only the requisition is unreadable
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(Collections.emptyList());
+        Mockito.when(mockNodeDao.getForeignIdToNodeIdMap("Minions")).thenReturn(Collections.singletonMap("existing-minion", 1));
+
+        minionDao.save(new OnmsMinion("existing-minion", "existing-location", "up", new Date()));
+
+        HeartbeatConsumer heartbeatConsumer = createConsumer(mockNodeDao, createReloadCountingEventProxy(reloadCount));
+
+        // A customized foreign source definition that must survive the rebuild
+        final ForeignSource customForeignSource = new ForeignSource("Minions");
+        customForeignSource.addDetector(new PluginConfig("ICMP", "org.opennms.netmgt.provision.detector.icmp.IcmpDetector"));
+        heartbeatConsumer.getDeployedForeignSourceRepository().save(customForeignSource);
 
         // An existing requisition that fails validation (duplicate foreign-ids) and therefore loads as null
-        final File minionsXml = new File(importsPath, "Minions.xml");
+        final File minionsXml = new File(tempFolder.getRoot(), "imports/Minions.xml");
         final String invalidRequisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\""
                 + " date-stamp=\"2026-01-01T00:00:00.000-05:00\" foreign-source=\"Minions\">"
                 + "<node location=\"loc\" foreign-id=\"dup\" node-label=\"a\"/>"
                 + "<node location=\"loc\" foreign-id=\"dup\" node-label=\"b\"/>"
                 + "</model-import>";
         Files.write(minionsXml.toPath(), invalidRequisition.getBytes(StandardCharsets.UTF_8));
-
-        // The fleet is still provisioned in the database, only the requisition is unreadable
-        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
-        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(Collections.emptyList());
-        Mockito.when(mockNodeDao.getForeignIdToNodeIdMap("Minions")).thenReturn(Collections.singletonMap("existing-minion", 1));
-
-        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer();
-        heartbeatConsumer.setMinionDao(minionDao);
-        heartbeatConsumer.setEventProxy(eventProxy);
-        heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
-        heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
-        heartbeatConsumer.setNodeDao(mockNodeDao);
 
         MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
         minionIdentityDTO.setId(UUID.randomUUID().toString());
@@ -220,9 +241,140 @@ public class HeartbeatConsumerIT {
 
         await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 1L);
 
-        Assert.assertEquals("the unreadable requisition must not be overwritten", invalidRequisition,
-                new String(Files.readAllBytes(minionsXml.toPath()), StandardCharsets.UTF_8));
-        Assert.assertEquals("no reload import should be triggered", 0, reloadCount.get());
+        final String content = new String(Files.readAllBytes(minionsXml.toPath()), StandardCharsets.UTF_8);
+        Assert.assertTrue("the provisioned node must be restored", content.contains("foreign-id=\"existing-minion\""));
+        Assert.assertTrue("the heartbeating minion must be added", content.contains("foreign-id=\"" + minionIdentityDTO.getId() + "\""));
+        Assert.assertFalse("the invalid entries must be gone", content.contains("foreign-id=\"dup\""));
+        Assert.assertEquals("a single reload import should be triggered", 1, reloadCount.get());
+
+        final ForeignSource rebuiltForeignSource = heartbeatConsumer.getDeployedForeignSourceRepository().getForeignSource("Minions");
+        Assert.assertNotNull("the custom detector must survive the rebuild", rebuiltForeignSource.getDetector("ICMP"));
+        Assert.assertNotNull("the default detector must be added", rebuiltForeignSource.getDetector("SNMP"));
+    }
+
+    @Test
+    public void testStaleRequisitionRestoresMissingProvisionedNodes() throws Exception {
+        final AtomicInteger reloadCount = new AtomicInteger();
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(Collections.emptyList());
+        Mockito.when(mockNodeDao.getForeignIdToNodeIdMap("Minions")).thenReturn(Collections.singletonMap("existing-minion", 1));
+
+        minionDao.save(new OnmsMinion("existing-minion", "existing-location", "up", new Date()));
+
+        HeartbeatConsumer heartbeatConsumer = createConsumer(mockNodeDao, createReloadCountingEventProxy(reloadCount));
+
+        // A valid requisition that lost the provisioned node (stale copy)
+        final File minionsXml = new File(tempFolder.getRoot(), "imports/Minions.xml");
+        final String staleRequisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\""
+                + " date-stamp=\"2026-01-01T00:00:00.000-05:00\" foreign-source=\"Minions\"/>";
+        Files.write(minionsXml.toPath(), staleRequisition.getBytes(StandardCharsets.UTF_8));
+
+        MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+        minionIdentityDTO.setId(UUID.randomUUID().toString());
+        minionIdentityDTO.setLocation(UUID.randomUUID().toString());
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 1L);
+
+        final String content = new String(Files.readAllBytes(minionsXml.toPath()), StandardCharsets.UTF_8);
+        Assert.assertTrue("the provisioned node must be restored", content.contains("foreign-id=\"existing-minion\""));
+        Assert.assertTrue("the heartbeating minion must be added", content.contains("foreign-id=\"" + minionIdentityDTO.getId() + "\""));
+        Assert.assertEquals("a single reload import should be triggered", 1, reloadCount.get());
+    }
+
+    @Test
+    public void testReloadRetriedWhenNodeMissingFromDatabase() throws Exception {
+        final AtomicInteger reloadCount = new AtomicInteger();
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(Collections.emptyList());
+        Mockito.when(mockNodeDao.getForeignIdToNodeIdMap(Mockito.anyString())).thenReturn(Collections.emptyMap());
+
+        final String minionId = UUID.randomUUID().toString();
+        final String location = UUID.randomUUID().toString();
+        minionDao.save(new OnmsMinion(minionId, location, "up", new Date()));
+
+        HeartbeatConsumer heartbeatConsumer = createConsumer(mockNodeDao, createReloadCountingEventProxy(reloadCount));
+
+        // The requisition already contains the minion, but its node never made it into the database
+        // (e.g. the import triggered by an earlier heartbeat failed)
+        final File minionsXml = new File(tempFolder.getRoot(), "imports/Minions.xml");
+        final String requisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\""
+                + " date-stamp=\"2026-01-01T00:00:00.000-05:00\" foreign-source=\"Minions\">"
+                + "<node location=\"" + location + "\" foreign-id=\"" + minionId + "\" node-label=\"" + minionId + "\">"
+                + "<interface ip-addr=\"127.0.0.1\" snmp-primary=\"P\">"
+                + "<monitored-service service-name=\"Minion-Heartbeat\"/>"
+                + "<monitored-service service-name=\"Minion-RPC\"/>"
+                + "<monitored-service service-name=\"JMX-Minion\"/>"
+                + "</interface></node></model-import>";
+        Files.write(minionsXml.toPath(), requisition.getBytes(StandardCharsets.UTF_8));
+
+        MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+        minionIdentityDTO.setId(minionId);
+        minionIdentityDTO.setLocation(location);
+
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 1L);
+        Assert.assertEquals("the import should be re-triggered", 1, reloadCount.get());
+
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 2L);
+        Assert.assertEquals("the retry should be throttled", 1, reloadCount.get());
+
+        heartbeatConsumer.setReloadRetryInterval(0);
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 3L);
+        Assert.assertEquals("the import should be re-triggered after the cooldown", 2, reloadCount.get());
+    }
+
+    @Test
+    public void testReloadRetriedImmediatelyAfterFailedSend() throws Exception {
+        final AtomicInteger reloadCount = new AtomicInteger();
+        final AtomicBoolean failFirstSend = new AtomicBoolean(true);
+        EventProxy eventProxy = Mockito.mock(EventProxy.class);
+        Mockito.doAnswer(invocation -> {
+            final Event event = invocation.getArgument(0);
+            if (EventConstants.RELOAD_IMPORT_UEI.equals(event.getUei())) {
+                if (failFirstSend.compareAndSet(true, false)) {
+                    throw new EventProxyException("simulated event subsystem failure");
+                }
+                reloadCount.incrementAndGet();
+            }
+            return null;
+        }).when(eventProxy).send(Mockito.any(Event.class));
+
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(Collections.emptyList());
+        Mockito.when(mockNodeDao.getForeignIdToNodeIdMap(Mockito.anyString())).thenReturn(Collections.emptyMap());
+
+        final String minionId = UUID.randomUUID().toString();
+        final String location = UUID.randomUUID().toString();
+        minionDao.save(new OnmsMinion(minionId, location, "up", new Date()));
+
+        HeartbeatConsumer heartbeatConsumer = createConsumer(mockNodeDao, eventProxy);
+
+        final File minionsXml = new File(tempFolder.getRoot(), "imports/Minions.xml");
+        final String requisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\""
+                + " date-stamp=\"2026-01-01T00:00:00.000-05:00\" foreign-source=\"Minions\">"
+                + "<node location=\"" + location + "\" foreign-id=\"" + minionId + "\" node-label=\"" + minionId + "\">"
+                + "<interface ip-addr=\"127.0.0.1\" snmp-primary=\"P\">"
+                + "<monitored-service service-name=\"Minion-Heartbeat\"/>"
+                + "<monitored-service service-name=\"Minion-RPC\"/>"
+                + "<monitored-service service-name=\"JMX-Minion\"/>"
+                + "</interface></node></model-import>";
+        Files.write(minionsXml.toPath(), requisition.getBytes(StandardCharsets.UTF_8));
+
+        MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+        minionIdentityDTO.setId(minionId);
+        minionIdentityDTO.setLocation(location);
+
+        // The first re-fire attempt fails to send; no cooldown must be recorded for it
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 1L);
+        Assert.assertEquals("the failed send must not count as a reload", 0, reloadCount.get());
+
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> heartbeatConsumer.getExecutor().getCompletedTaskCount() == 2L);
+        Assert.assertEquals("the reload must be retried immediately after a failed send", 1, reloadCount.get());
     }
 
     @Test

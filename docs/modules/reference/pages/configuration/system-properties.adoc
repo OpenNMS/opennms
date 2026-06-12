@@ -93,11 +93,19 @@ Many of the properties here are documented with much greater detail in their rel
 
 | `opennms.minion.provisioning`
 | true
-| Enable the automatic, heartbeat-based provisioning mechanism for Minions
+| Enable the automatic, heartbeat-based provisioning mechanism for Minions. When enabled, OpenNMS generates and maintains the Minion requisition (`etc/imports/Minions.xml` by default) automatically. The requisition is machine-owned: do not edit the file manually, since a file that diverges from the database can cause Minion nodes to be deleted and re-provisioned, and manual additions are not restored if the file has to be rebuilt. To monitor additional services on Minion nodes, add detectors to the Minion foreign source definition instead. If the requisition file is lost or damaged, it is rebuilt automatically from the database; the `opennms:minion-rebuild-requisition` Karaf shell command rebuilds it on demand
 
 | `opennms.minion.provisioning.foreignSourcePattern`
 | "Minions"
 | The pattern used to name the foreign source to provision minions. can contain a single `%s` placeholder which is replaced with the minion location
+
+| `opennms.minion.provisioning.queueSize`
+| 500
+| Capacity of the queue of pending Minion provisioning tasks. Heartbeats arriving while the queue is full are dropped and retried on the Minion's next heartbeat. Set this to at least the number of Minions in the deployment
+
+| `opennms.minion.provisioning.reloadRetryInterval`
+| 300000
+| Minimum time in milliseconds between requisition import retries per foreign source, used when a Minion exists in the requisition but its node is missing from the database (for example, after a failed import)
 
 | `opennms.newsFeedPanel.show`
 | true
