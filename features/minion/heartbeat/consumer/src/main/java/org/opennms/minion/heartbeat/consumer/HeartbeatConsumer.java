@@ -32,6 +32,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -41,6 +42,7 @@ import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -64,7 +66,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
@@ -114,6 +115,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Autowired
     private NodeDao nodeDao;
 
+    @Autowired
+    private SessionUtils sessionUtils;
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("minion-provision-handler")
             .build();
@@ -122,54 +126,63 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), threadFactory, new RejectedExecutionHandlerImpl());
 
     @Override
-    @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
                 minionHandle.getId(), minionHandle.getLocation());
 
-        OnmsMinion minion = minionDao.findById(minionHandle.getId());
-        if (minion == null) {
-            minion = new OnmsMinion();
-            minion.setId(minionHandle.getId());
-
-            // The real location is filled in below, but we set this to null
-            // for now to detect requisition changes
-            minion.setLocation(null);
-        }
-
-        if (!Objects.isNull(minionHandle.getVersion()) &&
-                (Objects.isNull(minion.getVersion()) || !minion.getVersion().equals(minionHandle.getVersion()))) {
-            minion.setVersion(minionHandle.getVersion());
-        }
-
-        final String prevLocation = minion.getLocation();
         final String nextLocation = minionHandle.getLocation();
+        final AtomicReference<String> prevLocationRef = new AtomicReference<>();
 
-        minion.setLocation(minionHandle.getLocation());
+        // The sink dispatch invokes this consumer directly -- afterPropertiesSet() registers `this`,
+        // not the Spring @Transactional proxy -- so the class-level @Transactional never took effect.
+        // Under Hibernate 5 a non-transactional session is read-only (FlushMode.MANUAL), so the
+        // saveOrUpdate below is rejected and the Minion is never registered. Drive a committing
+        // transaction explicitly.
+        final OnmsMinion onmsMinion = sessionUtils.withTransaction(() -> {
+            OnmsMinion minion = minionDao.findById(minionHandle.getId());
+            if (minion == null) {
+                minion = new OnmsMinion();
+                minion.setId(minionHandle.getId());
 
-        if (minionHandle.getTimestamp() == null) {
-            // The heartbeat does not contain a timestamp - use the current time
-            minion.setLastUpdated(new Date());
-            LOG.info("Received heartbeat without a timestamp: {}", minionHandle);
-        } else if (minion.getLastUpdated() == null) {
-            // The heartbeat does contain a timestamp, and we don't have
-            // one set yet, so use whatever we've been given
-            minion.setLastUpdated(minionHandle.getTimestamp());
-        } else if (minionHandle.getTimestamp().after(minion.getLastUpdated())) {
-            // The timestamp in the heartbeat is more recent than the one we
-            // have stored, so update it
-            minion.setLastUpdated(minionHandle.getTimestamp());
-        } else {
-            // The timestamp in the heartbeat is earlier than the
-            // timestamp we have stored, so ignore it
-            LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
-        }
+                // The real location is filled in below, but we set this to null
+                // for now to detect requisition changes
+                minion.setLocation(null);
+            }
 
-        minionDao.saveOrUpdate(minion);
+            if (!Objects.isNull(minionHandle.getVersion()) &&
+                    (Objects.isNull(minion.getVersion()) || !minion.getVersion().equals(minionHandle.getVersion()))) {
+                minion.setVersion(minionHandle.getVersion());
+            }
+
+            prevLocationRef.set(minion.getLocation());
+
+            minion.setLocation(minionHandle.getLocation());
+
+            if (minionHandle.getTimestamp() == null) {
+                // The heartbeat does not contain a timestamp - use the current time
+                minion.setLastUpdated(new Date());
+                LOG.info("Received heartbeat without a timestamp: {}", minionHandle);
+            } else if (minion.getLastUpdated() == null) {
+                // The heartbeat does contain a timestamp, and we don't have
+                // one set yet, so use whatever we've been given
+                minion.setLastUpdated(minionHandle.getTimestamp());
+            } else if (minionHandle.getTimestamp().after(minion.getLastUpdated())) {
+                // The timestamp in the heartbeat is more recent than the one we
+                // have stored, so update it
+                minion.setLastUpdated(minionHandle.getTimestamp());
+            } else {
+                // The timestamp in the heartbeat is earlier than the
+                // timestamp we have stored, so ignore it
+                LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
+            }
+
+            minionDao.saveOrUpdate(minion);
+            return minion;
+        });
+
+        final String prevLocation = prevLocationRef.get();
 
         // Provision the minions node in a separate thread.
-        final OnmsMinion onmsMinion = minion;
-
         executor.execute(() -> {
 
             this.provision(onmsMinion,
@@ -415,6 +428,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @VisibleForTesting
     void setNodeDao(NodeDao nodeDao) {
         this.nodeDao = nodeDao;
+    }
+
+    @VisibleForTesting
+    void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 
     public ThreadPoolExecutor getExecutor() {

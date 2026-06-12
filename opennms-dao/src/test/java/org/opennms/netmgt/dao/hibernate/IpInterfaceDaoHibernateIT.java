@@ -80,6 +80,7 @@ public class IpInterfaceDaoHibernateIT implements InitializingBean {
     }
 
     @Before
+    @Transactional
     public void setUp() {
         m_databasePopulator.populateDatabase();
 

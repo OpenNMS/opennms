@@ -98,6 +98,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
@@ -134,12 +135,15 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE)
     })
     public void testNetwork17216LldpLinks() throws Exception {
-        m_nodeDao.save(builder.getSwitch1());
-        m_nodeDao.save(builder.getSwitch2());
-        m_nodeDao.save(builder.getSwitch3());
-        m_nodeDao.save(builder.getSwitch4());
-        m_nodeDao.save(builder.getSwitch5());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSwitch1());
+            m_nodeDao.save(builder.getSwitch2());
+            m_nodeDao.save(builder.getSwitch3());
+            m_nodeDao.save(builder.getSwitch4());
+            m_nodeDao.save(builder.getSwitch5());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -464,17 +468,19 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
     })
     public void testNetwork17216CdpLinks() {
-        m_nodeDao.save(builder.getSwitch1());
-        m_nodeDao.save(builder.getSwitch2());
-        m_nodeDao.save(builder.getSwitch3());
-        m_nodeDao.save(builder.getSwitch4());
-        m_nodeDao.save(builder.getSwitch5());
-        m_nodeDao.save(builder.getRouter1());
-        m_nodeDao.save(builder.getRouter2());
-        m_nodeDao.save(builder.getRouter3());
-        m_nodeDao.save(builder.getRouter4());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSwitch1());
+            m_nodeDao.save(builder.getSwitch2());
+            m_nodeDao.save(builder.getSwitch3());
+            m_nodeDao.save(builder.getSwitch4());
+            m_nodeDao.save(builder.getSwitch5());
+            m_nodeDao.save(builder.getRouter1());
+            m_nodeDao.save(builder.getRouter2());
+            m_nodeDao.save(builder.getRouter3());
+            m_nodeDao.save(builder.getRouter4());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(true);
@@ -803,10 +809,12 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
     })
     public void testNetwork17216CdpTopology() {
-        m_nodeDao.save(builder.getSwitch1());
-        m_nodeDao.save(builder.getSwitch2());
-        
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSwitch1());
+            m_nodeDao.save(builder.getSwitch2());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(true);
@@ -922,11 +930,13 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testNetwork17216LldpTopology() {
-        m_nodeDao.save(builder.getSwitch1());
-        m_nodeDao.save(builder.getSwitch2());
-        m_nodeDao.save(builder.getSwitch3());
-        
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSwitch1());
+            m_nodeDao.save(builder.getSwitch2());
+            m_nodeDao.save(builder.getSwitch3());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);

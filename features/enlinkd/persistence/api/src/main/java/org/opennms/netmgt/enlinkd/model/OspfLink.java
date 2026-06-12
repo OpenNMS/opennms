@@ -71,7 +71,7 @@ public class OspfLink implements Serializable {
 
     @Id
     @Column(nullable = false)
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
 		return m_id;
