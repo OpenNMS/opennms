@@ -64,6 +64,7 @@
         init-method="init" destroy-method="destroy">
     <argument value="${rpkiUrl}"/>
     <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
     <property name="rpkiUsername" value="${rpkiUsername}"/>
     <property name="rpkiPassword" value="${rpkiUsername}"/>
     <property name="hourOfTheDay" value="${hourOfTheDayForRpki}"/>

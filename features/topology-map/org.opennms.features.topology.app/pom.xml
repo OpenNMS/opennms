@@ -105,6 +105,28 @@
             <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
+            <exclusions>
+                <!-- Exclude Bean Validation 2.0 API - GWT only supports 1.0 -->
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Add Bean Validation 1.0 for GWT compatibility -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
@@ -154,17 +176,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.geolocation</groupId>

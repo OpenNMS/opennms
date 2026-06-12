@@ -433,13 +433,18 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("Parent").setForeignSource("JUnit").setForeignId("Parent").setType(OnmsNode.NodeType.ACTIVE);
         final OnmsNode parent = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(parent);
 
-        builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
-                .setParent(parent).setNodeParentId(parent.getId());
-        final OnmsNode child = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(child);
-        m_databasePopulator.getNodeDao().flush();
+        // Commit the fixture so the separate-session REST reads below can see the nodes.
+        final OnmsNode child = m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(parent);
+
+            builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
+                    .setParent(parent).setNodeParentId(parent.getId());
+            final OnmsNode newChild = builder.getCurrentNode();
+            m_databasePopulator.getNodeDao().save(newChild);
+            m_databasePopulator.getNodeDao().flush();
+            return newChild;
+        });
 
         Assert.assertNotNull(child.getId());
         Assert.assertNotNull(parent.getId());

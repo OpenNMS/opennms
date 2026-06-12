@@ -45,41 +45,42 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findBySourceId(Long sourceId) {
-        return find("from EventConfEvent e where e.source.id = ? order by e.createdTime desc", sourceId);
+        return find("from EventConfEvent e where e.source.id = ?1 order by e.createdTime desc", sourceId);
     }
 
     @Override
     public EventConfEvent findByUei(String uei) {
-        List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?", uei);
+        List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?1", uei);
         return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
     public List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId) {
-        return find("from EventConfEvent e where e.uei = ? and e.source.id = ?", uei, sourceId);
+        return find("from EventConfEvent e where e.uei = ?1 and e.source.id = ?2", uei, sourceId);
     }
 
     @Override
     public int countBySourceId(Long sourceId) {
-        return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?", sourceId);
+        return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?1", sourceId);
     }
 
     public List<EventConfEvent> filterEventConf(final String uei, final String vendor, final String sourceName, final int offset, final int limit) {
         List<Object> queryParamList = new ArrayList<>();
+        int paramIndex = 0;
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
         if (uei != null && !uei.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.uei) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.uei) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(uei.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.vendor) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.source.vendor) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (sourceName != null && !sourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.name) like ? escape '\\' ");
+            queryBuilder.append(" and lower(e.source.name) like ?" + (++paramIndex) + " escape '\\' ");
             queryParamList.add("%" + escapeLike(sourceName.trim().toLowerCase()) + "%");
         }
 
@@ -94,20 +95,21 @@ public class EventConfEventDaoHibernate
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
+        int paramIndex = 0;
 
-        String whereClause = "where e.source.id = ? ";
+        String whereClause = "where e.source.id = ?" + (++paramIndex) + " ";
         queryParams.add(sourceId);
 
         // Add filter conditions dynamically
         if (eventFilter != null && !eventFilter.trim().isEmpty()) {
             String escapedFilter = "%" + escapeLike(eventFilter.trim().toLowerCase()) + "%";
-            conditions.add("lower(e.uei) like ? escape '\\'");
+            conditions.add("lower(e.uei) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
-            conditions.add("lower(e.eventLabel) like ? escape '\\'");
+            conditions.add("lower(e.eventLabel) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
-            conditions.add("lower(e.description) like ? escape '\\'");
+            conditions.add("lower(e.description) like ?" + (++paramIndex) + " escape '\\'");
             queryParams.add(escapedFilter);
 
         }
@@ -205,7 +207,7 @@ public class EventConfEventDaoHibernate
 
     @Override
     public void deleteBySourceId(Long sourceId) {
-        getHibernateTemplate().bulkUpdate("delete from EventConfEvent e where e.source.id = ?", sourceId);
+        bulkDelete("delete from EventConfEvent e where e.source.id = ?1", sourceId);
     }
 
     @Override
@@ -246,11 +248,11 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findEventsByVendor(String vendor) {
-        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ? order by e.id asc ", vendor);
+        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ?1 order by e.id asc ", vendor);
     }
 
     @Override
     public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
-        return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
+        return findUnique("from EventConfEvent e where e.source.id = ?1 AND  e.id = ?2 ", sourceId, eventId);
     }
 }
