@@ -147,6 +147,11 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
         m_camel.getShutdownStrategy().setTimeUnit(TimeUnit.SECONDS);
 
         try {
+            // start before adding routes: OsgiDefaultCamelContext is already initialized
+            // by its constructor, and Camel 3 only reifies route definitions that are
+            // either present at init time or added to a started context — routes added
+            // between init and start are silently never started
+            m_camel.start();
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
@@ -202,7 +207,6 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
                     });
                 }
             });
-            m_camel.start();
         } catch (Throwable e) {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }

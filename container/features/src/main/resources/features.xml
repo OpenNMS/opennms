@@ -395,6 +395,10 @@
         <bundle start-level="8">mvn:javax.jms/javax.jms-api/${jmsApiVersion}</bundle>
         <bundle start-level="8">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
 
+        <!-- only the bundle, not camel's camel-activemq feature: that feature ships
+             its own activemq-pool/activemq-osgi 5.17.6, which would leave two
+             ActiveMQ client exporters next to activemq-client's ${activemqVersion} -->
+        <bundle>mvn:org.apache.camel/camel-activemq/${camelVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
     <feature name="opennms-model" version="${project.version}" description="OpenNMS :: Model">

@@ -122,8 +122,12 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         template = rpcCamelContext.createProducerTemplate();
         sinkCamelContext.addComponent("queuingservice", queuingservice);
         sinkCamelContext.getGlobalOptions().put(Exchange.LOG_DEBUG_BODY_MAX_CHARS, debugMaxChar);
-        sinkCamelContext.addRoutes(new SinkRouteBuilder(this));
+        // start before adding routes: OsgiDefaultCamelContext is already initialized
+        // by its constructor, and Camel 3 only reifies route definitions that are
+        // either present at init time or added to a started context — routes added
+        // between init and start are silently never started
         sinkCamelContext.start();
+        sinkCamelContext.addRoutes(new SinkRouteBuilder(this));
         LOG.info("JMS Twin subscriber initialized");
     }
 

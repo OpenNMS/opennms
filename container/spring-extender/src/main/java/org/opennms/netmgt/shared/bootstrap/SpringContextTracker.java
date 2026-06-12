@@ -24,6 +24,7 @@ package org.opennms.netmgt.shared.bootstrap;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -44,6 +45,10 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.util.AntPathMatcher;
 
 /**
  * Tracks active bundles with a {@code Spring-Context} manifest header and starts
@@ -139,6 +144,11 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     }
 
     private void createApplicationContext(Bundle bundle, List<String> configLocations) {
+        if (bundle.getState() != Bundle.ACTIVE) {
+            LOG.info("Bundle {} was stopped before its Spring application context was created, skipping",
+                    bundle.getSymbolicName());
+            return;
+        }
         // Bean classes resolve through the bundle first; Spring infrastructure classes
         // the bundle does not import (tx/aop interceptors, ...) fall back to this
         // bundle's loader, which dynamically imports org.springframework.*
@@ -148,7 +158,7 @@ class SpringContextTracker extends BundleTracker<Bundle> {
         final ClassLoader oldTccl = thread.getContextClassLoader();
         thread.setContextClassLoader(classLoader);
         try {
-            final GenericApplicationContext context = new GenericApplicationContext();
+            final GenericApplicationContext context = new OsgiApplicationContext(bundle);
             context.setDisplayName("OSGi Spring context for bundle " + bundle.getSymbolicName());
             context.setClassLoader(classLoader);
             context.getBeanFactory().registerSingleton(BUNDLE_CONTEXT_BEAN_NAME, bundle.getBundleContext());
@@ -163,12 +173,77 @@ class SpringContextTracker extends BundleTracker<Bundle> {
 
             context.refresh();
             contexts.put(bundle.getBundleId(), context);
+            // The bundle may have been stopped while we were blocked in refresh (e.g.
+            // waiting on an osgi:reference); removedBundle saw an empty map then, so
+            // re-check and tear the context down ourselves
+            if (bundle.getState() != Bundle.ACTIVE) {
+                LOG.info("Bundle {} was stopped while its Spring application context was starting, closing it",
+                        bundle.getSymbolicName());
+                closeContext(bundle.getBundleId());
+                return;
+            }
             LOG.info("Started Spring application context for bundle {} ({} bean definitions)",
                     bundle.getSymbolicName(), context.getBeanDefinitionCount());
         } catch (Throwable t) {
             LOG.error("Failed to start Spring application context for bundle {}", bundle.getSymbolicName(), t);
         } finally {
             thread.setContextClassLoader(oldTccl);
+        }
+    }
+
+    /**
+     * Spring's PathMatchingResourcePatternResolver cannot enumerate the
+     * {@code bundle:} URLs a bundle class loader returns, so wildcard
+     * {@code classpath*:} lookups (hibernate packagesToScan, component-scan)
+     * silently come up empty. Resolve them through the bundle wiring instead,
+     * the way the Gemini resource pattern resolver used to.
+     */
+    private static final class OsgiApplicationContext extends GenericApplicationContext {
+        private final Bundle bundle;
+        private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+        OsgiApplicationContext(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        public Resource[] getResources(String locationPattern) throws IOException {
+            if (locationPattern.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
+                final String pattern = locationPattern.substring(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.length());
+                if (pathMatcher.isPattern(pattern)) {
+                    return findBundleResources(pattern);
+                }
+            }
+            return super.getResources(locationPattern);
+        }
+
+        private Resource[] findBundleResources(String pattern) {
+            final int firstWildcard = indexOfFirstWildcard(pattern);
+            final int rootEnd = pattern.lastIndexOf('/', firstWildcard);
+            final String rootPath = rootEnd > 0 ? pattern.substring(0, rootEnd) : "/";
+            final String filePattern = pattern.substring(pattern.lastIndexOf('/') + 1);
+
+            final BundleWiring wiring = bundle.adapt(BundleWiring.class);
+            final Collection<String> names = wiring.listResources(rootPath, filePattern, BundleWiring.LISTRESOURCES_RECURSE);
+            final List<Resource> resources = new ArrayList<>();
+            for (final String name : names) {
+                if (pathMatcher.match(pattern, name)) {
+                    final URL url = wiring.getClassLoader().getResource(name);
+                    if (url != null) {
+                        resources.add(new UrlResource(url));
+                    }
+                }
+            }
+            return resources.toArray(new Resource[0]);
+        }
+
+        private static int indexOfFirstWildcard(String pattern) {
+            final int star = pattern.indexOf('*');
+            final int question = pattern.indexOf('?');
+            if (star < 0) {
+                return question;
+            }
+            return question < 0 ? star : Math.min(star, question);
         }
     }
 
