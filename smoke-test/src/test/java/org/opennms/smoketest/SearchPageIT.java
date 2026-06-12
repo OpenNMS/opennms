@@ -86,7 +86,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
         searchPage();
         findElementByLink("All nodes with asset info (Assets page)").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li/a[contains(text()[normalize-space()], 'Asset List')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li[contains(text()[normalize-space()], 'Asset List')]")));
     }
 
     @Test
