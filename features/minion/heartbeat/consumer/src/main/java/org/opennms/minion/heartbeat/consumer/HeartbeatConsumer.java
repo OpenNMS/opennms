@@ -70,6 +70,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import javax.xml.bind.ValidationException;
+
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatConsumer.class);
@@ -172,9 +174,13 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         executor.execute(() -> {
 
-            this.provision(onmsMinion,
-                    prevLocation,
-                    nextLocation);
+            try {
+                this.provision(onmsMinion,
+                        prevLocation,
+                        nextLocation) ;
+            } catch (ValidationException e) {
+                throw new RuntimeException("Heartbeat provisioner failed to validate: ", e);
+            }
 
             if (prevLocation == null) {
                 final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
@@ -202,14 +208,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                 }
             }
         });
-
-
-
     }
 
     private void provision(final OnmsMinion minion,
                            final String prevLocation,
-                           final String nextLocation) {
+                           final String nextLocation) throws ValidationException {
         // Return fast if automatic provisioning is disabled
         if (!PROVISIONING) {
             return;
@@ -232,6 +235,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         // Return if minion with this foreignId and location already exists.
         String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
+        if (foreignId.isEmpty()) {
+            LOG.warn("Heartbeat received with null ID and label for location '{}', aborting this heartbeat!", minion.getLocation());
+            return;
+        }
         List<OnmsNode> nodes = nodeDao.findByForeignIdForLocation(foreignId, nextLocation);
         if (!nodes.isEmpty()) {
             //check for existing requisitions the policy and detectors are in place
@@ -302,6 +309,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             requisitionNode.setForeignId(foreignId);
             requisitionNode.setLocation(minion.getLocation());
             requisitionNode.putInterface(requisitionInterface);
+            requisitionNode.validate();
 
             nextRequisition.putNode(requisitionNode);
             nextRequisition.setDate(new Date());
