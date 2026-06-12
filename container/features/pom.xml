@@ -14,6 +14,10 @@
     <systemStartLevel>30</systemStartLevel>
     <earlyStartLevel>60</earlyStartLevel>
     <lateStartLevel>100</lateStartLevel>
+    <!-- Frozen Spring 4.2.x line used only by the vestigial feature definitions in
+         spring-legacy.xml; intentionally decoupled from ${springVersion}, which has moved on. -->
+    <legacySpring42Version>4.2.9.RELEASE_1</legacySpring42Version>
+    <legacySpring42PatchedVersion>4.2.9.RELEASE_1.ONMS.1</legacySpring42PatchedVersion>
   </properties>
   <build>
     <plugins>

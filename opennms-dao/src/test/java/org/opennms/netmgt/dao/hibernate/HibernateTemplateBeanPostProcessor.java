@@ -29,7 +29,7 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
  * Test-specific BeanPostProcessor to configure HibernateTemplate
  * in DAO beans to disable write operation checks for Hibernate 5 compatibility.
  */
-public class    HibernateTemplateBeanPostProcessor implements BeanPostProcessor {
+public class HibernateTemplateBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {

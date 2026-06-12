@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -53,6 +54,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -143,6 +145,31 @@ public class NodeDaoIT implements InitializingBean {
         getNodeDao().save(node);
 
         getNodeDao().flush();
+    }
+
+    /**
+     * The category queries left-join-fetch ipInterfaces and monitoredServices; a node whose
+     * interfaces carry no monitored services must still be returned.
+     */
+    @Test
+    @Transactional
+    public void testFindAllByCategoryListIncludesNodesWithoutMonitoredServices() {
+        final OnmsCategory routers = m_populator.getCategoryDao().findByName("Routers");
+        assertNotNull(routers);
+
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "no-services-node");
+        node.setType(OnmsNode.NodeType.ACTIVE);
+        node.getCategories().add(routers);
+        final OnmsIpInterface ipInterface = new OnmsIpInterface(InetAddressUtils.addr("192.0.2.123"), node);
+        ipInterface.setIsManaged("M");
+        getNodeDao().save(node);
+        getNodeDao().flush();
+
+        final List<OnmsNode> byList = getNodeDao().findAllByCategoryList(Collections.singletonList(routers));
+        assertTrue(byList.stream().anyMatch(n -> "no-services-node".equals(n.getLabel())));
+
+        final List<OnmsNode> byLists = getNodeDao().findAllByCategoryLists(Collections.singletonList(routers), Collections.singletonList(routers));
+        assertTrue(byLists.stream().anyMatch(n -> "no-services-node".equals(n.getLabel())));
     }
 
     @Test

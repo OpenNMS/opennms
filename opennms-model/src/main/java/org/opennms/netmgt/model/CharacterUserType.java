@@ -29,7 +29,6 @@ import java.util.Objects;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.type.CharacterType;
 import org.hibernate.usertype.UserType;
 
 public class CharacterUserType implements UserType {
