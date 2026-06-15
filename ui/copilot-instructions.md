@@ -11,7 +11,7 @@ Both apps share services, components, stores, and composables but have separate 
 ## Critical Build & Deploy Workflow
 
 **Package Manager:** pnpm (required, enforced by preinstall hook)  
-**Node:** 18+ (22+ recommended)
+**Node:** 22+
 
 ### Development Cycle
 ```bash
@@ -19,7 +19,7 @@ pnpm install                    # After dependency changes
 pnpm run build:all              # Builds both main + menu apps
 pnpm run build:dev:all          # Non-minified for debugging
 pnpm test                       # Run vitest unit tests
-pnpm lint --fix                 # Auto-fix linting issues
+pnpm lint:fix                   # Auto-fix linting issues
 ```
 
 ### Fast Deploy to Local OpenNMS Instance

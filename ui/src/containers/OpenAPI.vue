@@ -166,7 +166,7 @@ const setup = async () => {
     renderV1()
   } else if (docElV1) {
     v1Observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
+      if (entries.some(entry => entry.isIntersecting)) {
         v1Observer?.disconnect()
         v1Observer = null
         renderV1()

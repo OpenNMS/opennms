@@ -1,10 +1,12 @@
 # Vue 3 + Typescript + Vite
 
-This template should help you start developing with Vue 3, Typescript 5, and Vite 4.
+This template should help you start developing with Vue 3, Typescript 5, and Vite 4. We use the Vue 3 Composition API.
 
 ## Build instructions
 
-This project requires Node 18+. Node 22+ is recommended. pnpm 10.24+ is required.
+This project requires `node` 22.13.0+ and `pnpm` 10.33+.
+
+*NOTE*: `pnpm build` currently just builds the Vue SPA application. Need to use `pnpm build:all` to also build the `ui-components` part, which is the Vue menu on the legacy JSP pages.
 
 To install packages and build (see Developer workflow below for more):
 ```
@@ -12,17 +14,26 @@ pnpm install
 pnpm run build:all
 ```
 
-Run unit tests
+Build in development mode, non-minified:
+```
+pnpm build:dev:all
+```
+
+Run unit tests:
 ```
 pnpm test
+```
+
+Run linter, or linter with fix:
+```
+pnpm lint
+pnpm lint:fix
 ```
 
 ## State management: pinia
 This project uses [pinia](https://pinia.vuejs.org/).
 
 pinia stores are under `stores`.
-
-*NOTE:* this project used to use `vuex` but it has been replaced by `pinia`.
 
 ## Vue-router
 Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
@@ -41,7 +52,7 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 
 - any time you update dependencies, or on initial build, from your `~/projects/opennms/ui` directory, run `pnpm install`
 
-- from your `~/projects/opennms/ui` directory, run `pnpm run build:all` (or `pnpm run build:all:dev` for non-minified mode)
+- from your `~/projects/opennms/ui` directory, run `pnpm run build:all` (or `pnpm run build:dev:all` for non-minified mode)
 
 - have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui` and `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui-components`
 
@@ -65,12 +76,12 @@ cp ~/projects/opennms/ui/src/menu/dist-menu/index.html .
 
 - test and debug code, use browser `F12 Developer Tools` to set breakpoints, view console output, inspect elements, etc.
 
-- often `console.log` or `console.dir` statements in the code are more helpful for debugging than the browser debugger
+- sometimes `console.log` or `console.dir` statements in the code are more helpful for debugging than the browser debugger
 
-- run `pnpm lint` to check for any linting/formatting errors. `pnpm lint --fix` may fix them, but you should always double check
+- run `pnpm lint` to check for any linting/formatting errors. `pnpm lint:fix` may fix them, but you should always double check
 
-## Prettier
-Formatting should use the .prettierrc file. For VSCode, install the Prettier extension, go to the IDE Settings and set this formatter to take precedence.
+## Formatting
+Formatting uses `eslint v10` and `stylistic`. See `eslint.config.js` for the rules we currently enforce.
 
 ### Use `<script setup>`
 
