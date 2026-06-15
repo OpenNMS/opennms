@@ -33,22 +33,27 @@ import java.util.regex.Pattern;
 public class IPAddress implements Comparable<IPAddress> {
     private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
     protected final InetAddress m_inetAddress;
+    private final byte[] m_addressBytes;
 
     public IPAddress(final IPAddress addr) {
         m_inetAddress = addr.m_inetAddress;
+        m_addressBytes = addr.m_addressBytes;
     }
 
     public IPAddress(final String dottedNotation) {
         m_inetAddress = getInetAddress(dottedNotation);
+        m_addressBytes = extractAddressBytes(m_inetAddress);
     }
 
     public IPAddress(final InetAddress inetAddress) {
         m_inetAddress = inetAddress;
+        m_addressBytes = extractAddressBytes(m_inetAddress);
     }
 
     public IPAddress(final byte[] ipAddrOctets) {
         try {
-            m_inetAddress = InetAddress.getByAddress(ipAddrOctets);
+            m_addressBytes = Arrays.copyOf(ipAddrOctets, ipAddrOctets.length);
+            m_inetAddress = InetAddress.getByAddress(m_addressBytes);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Cannot convert bytes to an InetAddress.", e);
         }
@@ -63,14 +68,14 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public byte[] toOctets() {
-        return m_inetAddress.getAddress();
+        return Arrays.copyOf(m_addressBytes, m_addressBytes.length);
     }
 
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) return false;
         if (obj instanceof IPAddress) {
-            return Arrays.equals(m_inetAddress.getAddress(), ((IPAddress) obj).m_inetAddress.getAddress());
+            return Arrays.equals(m_addressBytes, ((IPAddress) obj).m_addressBytes);
         }
         return false;
     }
@@ -82,17 +87,17 @@ public class IPAddress implements Comparable<IPAddress> {
 
     @Override
     public int compareTo(final IPAddress o) {
-        return compare(m_inetAddress.getAddress(), o.m_inetAddress.getAddress());
+        return compare(m_addressBytes, o.m_addressBytes);
     }
 
     public String toUserString() {
         if (m_inetAddress instanceof Inet4Address) {
-            return toIpAddrString(m_inetAddress);
+            return toIpAddrString(m_addressBytes);
         } else if (m_inetAddress instanceof Inet6Address) {
             /*
              * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
              */
-            final byte[] bytes = m_inetAddress.getAddress();
+            final byte[] bytes = m_addressBytes;
             final int[] hextets = new int[8];
             for (int i = 0; i < hextets.length; i++) {
                 hextets[i] = fromBytes(
@@ -116,12 +121,12 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public String toDbString() {
-        return toIpAddrString(m_inetAddress);
+        return toIpAddrString(m_addressBytes);
     }
 
     /** {@inheritDoc} */
     public BigInteger toBigInteger() {
-        return new BigInteger(1, m_inetAddress.getAddress());
+        return new BigInteger(1, m_addressBytes);
     }
 
     /**
@@ -130,7 +135,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress incr() {
-        final byte[] current = m_inetAddress.getAddress();
+        final byte[] current = m_addressBytes;
         final byte[] b = new byte[current.length];
 
         int carry = 1;
@@ -154,7 +159,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress decr() {
-        final byte[] current = m_inetAddress.getAddress();
+        final byte[] current = m_addressBytes;
         final byte[] b = new byte[current.length];
 
         int borrow = 1;
@@ -180,7 +185,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a boolean.
      */
     public boolean isPredecessorOf(final IPAddress other) {
-        return other.decr().equals(this);
+        return isImmediateSuccessor(other.m_addressBytes, m_addressBytes);
     }
 
     /**
@@ -190,7 +195,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a boolean.
      */
     public boolean isSuccessorOf(final IPAddress other) {
-        return other.incr().equals(this);
+        return isImmediateSuccessor(m_addressBytes, other.m_addressBytes);
     }
 
     /**
@@ -272,7 +277,7 @@ public class IPAddress implements Comparable<IPAddress> {
 
     protected String toIpAddrString(final byte[] addr) {
         if (addr.length == 4) {
-            return getInetAddress(addr).getHostAddress();
+            return formatIpv4(addr);
         } else if (addr.length == 16) {
             return String.format("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
                                  addr[0],
@@ -311,8 +316,15 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     private InetAddress getInetAddress(final String dottedNotation) {
+        if (dottedNotation == null) {
+            return null;
+        }
+        final byte[] ipv4Bytes = tryParseIpv4Bytes(dottedNotation);
+        if (ipv4Bytes != null) {
+            return getInetAddress(ipv4Bytes);
+        }
         try {
-            return dottedNotation == null? null : InetAddress.getByName(dottedNotation);
+            return InetAddress.getByName(dottedNotation);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress " + dottedNotation);
         }
@@ -326,26 +338,85 @@ public class IPAddress implements Comparable<IPAddress> {
         } else if (b == null) {
             return 1;
         } else {
-            // Make shorter byte arrays "less than" longer arrays
-            if (a.length < b.length) {
-                return -1;
-            } else if (a.length > b.length) {
-                return 1;
-            } else {
-                // Compare byte-by-byte
-                for (int i = 0; i < a.length; i++) {
-                    final int aInt = unsignedByteToInt(a[i]);
-                    final int bInt = unsignedByteToInt(b[i]);
-                    if (aInt < bInt) {
-                        return -1;
-                    } else if (aInt > bInt) {
-                        return 1;
-                    }
+            final int lengthCmp = Integer.compare(a.length, b.length);
+            if (lengthCmp != 0) {
+                return lengthCmp;
+            }
+            for (int i = 0; i < a.length; i++) {
+                final int byteCmp = Integer.compare(a[i] & 0xFF, b[i] & 0xFF);
+                if (byteCmp != 0) {
+                    return byteCmp;
                 }
-                // OK both arrays are the same length and every byte is identical so they are equal
-                return 0;
+            }
+            return 0;
+        }
+    }
+
+    private static boolean isImmediateSuccessor(final byte[] successor, final byte[] base) {
+        if (successor.length != base.length) {
+            return false;
+        }
+        int carry = 1;
+        for (int i = base.length - 1; i >= 0; i--) {
+            final int sum = (base[i] & 0xFF) + carry;
+            if ((successor[i] & 0xFF) != (sum & 0xFF)) {
+                return false;
+            }
+            carry = sum >> 8;
+        }
+        return carry == 0;
+    }
+
+    private static String formatIpv4(final byte[] addr) {
+        return new StringBuilder(15)
+                .append(addr[0] & 0xFF).append('.')
+                .append(addr[1] & 0xFF).append('.')
+                .append(addr[2] & 0xFF).append('.')
+                .append(addr[3] & 0xFF)
+                .toString();
+    }
+
+    /**
+     * Parse a dotted-decimal IPv4 literal without invoking the JDK name service.
+     *
+     * @return four address octets, or {@code null} if the input is not a strict
+     *         decimal IPv4 literal (caller should fall back to {@link InetAddress#getByName(String)}).
+     */
+    private static byte[] tryParseIpv4Bytes(final String s) {
+        if (s == null || s.isEmpty()) {
+            return null;
+        }
+        final byte[] result = new byte[4];
+        int part = 0;
+        int value = 0;
+        boolean hasDigit = false;
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c == '.') {
+                if (!hasDigit || value > 255 || part >= 3) {
+                    return null;
+                }
+                result[part++] = (byte) value;
+                value = 0;
+                hasDigit = false;
+            } else if (c >= '0' && c <= '9') {
+                if (!hasDigit && c == '0' && i + 1 < s.length() && s.charAt(i + 1) != '.') {
+                    return null;
+                }
+                hasDigit = true;
+                value = value * 10 + (c - '0');
+                if (value > 255) {
+                    return null;
+                }
+            } else {
+                return null;
             }
         }
+        if (!hasDigit || value > 255 || part != 3) {
+            return null;
+        }
+        result[3] = (byte) value;
+        return result;
     }
 
     /**
@@ -430,7 +501,14 @@ public class IPAddress implements Comparable<IPAddress> {
         return matcher.replaceAll(":");
     }
 
-    private int unsignedByteToInt(final byte b) {
-        return b < 0 ? ((int)b)+256 : ((int)b);
+    private static byte[] extractAddressBytes(final InetAddress addr) {
+        if (addr == null) {
+            throw new IllegalArgumentException("Cannot convert null InetAddress to a byte array");
+        }
+        final byte[] address = addr.getAddress();
+        if (address == null) {
+            throw new IllegalArgumentException("InetAddress instance violates contract by returning a null address from getAddress()");
+        }
+        return address;
     }
 }
