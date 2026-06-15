@@ -139,7 +139,7 @@ const createMenuListHeader = (item: MenuItem) => {
 const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
   // you can test by using const pluginsToUse = [createFakePlugin()] to see how the menu looks with plugins,
   // even if you don't have any real plugins installed
-  const pluginsMenuItems = plugins.map(plugin => {
+  const pluginsMenuItems = plugins.map((plugin) => {
     return {
       ...createMenuItem(`plugins_${plugin.extensionId}`, plugin.menuEntry),
       url: computePluginRelLink(plugin)

@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import {

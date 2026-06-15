@@ -54,6 +54,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
@@ -120,20 +122,20 @@ const clearShiftCheck = () => {
  * key in quick succession (less than 2000 ms). Only stores a single shift keypress, ignores
  * all other input. Upon detection of the second shift keypress, it clears all stored values,
  * focuses the search box in the MenuBar and returns to its default state.
- * 
+ *
  * Logic:
- * If user presses either left or right shift key and we're in a default state, store it in temporary memory, 
+ * If user presses either left or right shift key and we're in a default state, store it in temporary memory,
  * along with the time it was pressed.
- * 
+ *
  * If user presses any other key, clear stored values and stored timestamp.
- * 
- * If user's last keypress was a shift key, 
- * but they take longer than the variable shiftDelay (currently 2000ms), 
+ *
+ * If user's last keypress was a shift key,
+ * but they take longer than the variable shiftDelay (currently 2000ms),
  * clear state and return to default.
- * 
- * If the user presses a shift key, directly after pressing a shift key, 
+ *
+ * If the user presses a shift key, directly after pressing a shift key,
  * focus the search box, clear the values and return to a default state.
- * 
+ *
  */
 const shiftCheck = (e: KeyboardEvent) => {
   const shiftCodes = ['ShiftLeft', 'ShiftRight']

@@ -9,7 +9,7 @@
     </template>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { BreadCrumb } from '@/types'
 import { PropType } from 'vue'
@@ -21,7 +21,7 @@ defineProps({
   }
 })
 </script>
-  
+
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/themes/variables";

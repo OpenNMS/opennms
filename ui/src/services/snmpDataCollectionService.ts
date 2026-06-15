@@ -558,7 +558,7 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
   const endpoint = '/datacollectionconf/collectsources'
   try {
     const params = new URLSearchParams()
-    sourceIds.forEach((id) => params.append('id', id.toString()))
+    sourceIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -598,7 +598,7 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mib-groups`
   try {
     const params = new URLSearchParams()
-    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    mibGroupIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -622,7 +622,7 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/resource-types`
   try {
     const params = new URLSearchParams()
-    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    resourceTypeIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -646,7 +646,7 @@ export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: nu
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/system-defs`
   try {
     const params = new URLSearchParams()
-    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    systemDefIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -725,7 +725,7 @@ export const enableDisableSnmpDataCollectionSources = async (
   const endpoint = `/datacollectionconf/collectsources/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    sourceIds.forEach((id) => params.append('id', id.toString()))
+    sourceIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -754,7 +754,7 @@ export const enableDisableSnmpMibGroups = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/mib-groups/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    mibGroupIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -783,7 +783,7 @@ export const enableDisableSnmpResourceTypes = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/resource-types/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    resourceTypeIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -812,7 +812,7 @@ export const enableDisableSnmpSystemDefs = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/system-defs/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    systemDefIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {

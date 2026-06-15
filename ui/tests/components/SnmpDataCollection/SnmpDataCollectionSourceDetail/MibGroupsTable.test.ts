@@ -621,7 +621,7 @@ describe('MibGroupsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const ths = wrapper.findAll('th')
-      const actionsHeader = ths.filter((th) => th.text() === 'Actions')
+      const actionsHeader = ths.filter(th => th.text() === 'Actions')
       expect(actionsHeader.length).toBe(1)
     })
   })
@@ -1690,4 +1690,3 @@ describe('MibGroupsTable.vue', () => {
     })
   })
 })
-

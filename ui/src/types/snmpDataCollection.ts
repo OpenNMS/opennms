@@ -1,4 +1,3 @@
-import { IAutocompleteItemType } from '@featherds/autocomplete';
 import { CreateEditMode, Pagination, Sorting } from '.'
 import type { RRA } from './timeSeries'
 

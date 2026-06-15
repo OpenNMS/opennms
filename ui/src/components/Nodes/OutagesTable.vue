@@ -43,6 +43,9 @@
   setup
   lang="ts"
 >
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 import Pagination from '../Common/Pagination.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import useQueryParameters from '@/composables/useQueryParams'

@@ -58,6 +58,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
 import { SnmpDataCollectionSourceNamesAndIds, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
@@ -90,7 +92,7 @@ const shouldRemainDisabled = computed(() => (
   (renameFile.value && !!error.value)
 ))
 
-const validateName = () => {  
+const validateName = () => {
   let isValid = false
   if (newFileName.value === '') {
     error.value = 'File name cannot be empty.'
@@ -167,4 +169,3 @@ watch(() => props.visible, (val) => {
 </script>
 
 <style scoped lang="scss"></style>
-

@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { FeatherSelect } from '@featherds/select'
 import { useMapStore } from '@/stores/mapStore'
 

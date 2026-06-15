@@ -28,4 +28,3 @@ const store = useEventConfigStore()
 </script>
 
 <style lang="scss" scoped></style>
-

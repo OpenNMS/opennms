@@ -211,6 +211,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import TableCard from '@/components/Common/TableCard.vue'
 import DeleteConfirmationDialog from '@/components/SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import SnmpDataCollectionChangeStatusDialog from '@/components/SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
@@ -291,7 +294,7 @@ const onSaveSource = async () => {
         sourcesStore.fetchAllSourcesNames(),
         sourcesStore.fetchSnmpCollectionProfiles()
       ])
-      router.push({ name: 'SNMP Data Collection Source Detail', params: { id: newId } })
+      router.push({ name: 'SNMP Data Collection Source Detail', params: { id: newId }})
     } else {
       snackbar.showSnackBar({ msg: `Failed to create Source '${localSourceName.value.trim()}'.`, error: true })
     }

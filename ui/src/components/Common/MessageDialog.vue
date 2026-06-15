@@ -3,6 +3,7 @@
     <FeatherDialog
       v-model="isVisible"
       :labels="labels"
+      :relative="props.relative"
       hide-close
       @hidden="onClose"
     >
@@ -21,6 +22,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
@@ -29,7 +32,8 @@ const props = defineProps({
   maxWidth: { type: String, default: '50em' },
   actionButtonText: { required: false, type: String },
   title: { required: false, type: String },
-  visible: { required: true, type: Boolean }
+  visible: { required: true, type: Boolean },
+  relative: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['close'])

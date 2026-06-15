@@ -82,7 +82,7 @@
   setup
   lang="ts"
 >
-import { PropType } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -328,4 +328,3 @@ const toggleHelp = () => {
   transition: all ease-in-out 0.3s;
 }
 </style>
-

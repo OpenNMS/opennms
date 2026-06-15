@@ -84,8 +84,8 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     it('renders Cancel and Save buttons', () => {
       const buttons = wrapper.findAll('button')
       expect(buttons.length).toBe(2)
-      const cancelBtn = buttons.find((btn) => btn.text().toLowerCase().includes('cancel'))
-      const saveBtn = buttons.find((btn) => btn.text().toLowerCase().includes('save'))
+      const cancelBtn = buttons.find(btn => btn.text().toLowerCase().includes('cancel'))
+      const saveBtn = buttons.find(btn => btn.text().toLowerCase().includes('save'))
       expect(cancelBtn).toBeTruthy()
       expect(saveBtn).toBeTruthy()
     })
@@ -170,7 +170,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
 
   describe('Cancel Button', () => {
     it('calls hideChangeEventConfigSourceStatusDialog on Cancel click', async () => {
-      const cancelBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'cancel')
+      const cancelBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase() === 'cancel')
       expect(cancelBtn).toBeTruthy()
       await cancelBtn!.trigger('click')
       expect(store.hideChangeEventConfigSourceStatusDialog).toHaveBeenCalled()
@@ -179,7 +179,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
 
   describe('Save Button - Change Status', () => {
     it('calls disableEventConfigSource when source is enabled and Save clicked', async () => {
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
       expect(saveBtn).toBeTruthy()
@@ -199,7 +199,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
       expect(saveBtn).toBeTruthy()
@@ -216,7 +216,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       store.changeEventConfigSourceStatusDialogState.eventConfigSource = null as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
 
@@ -237,7 +237,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
 
@@ -255,7 +255,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       const testError = new Error('Disable failed')
       store.disableEventConfigSource = vi.fn().mockRejectedValue(testError)
 
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
 
@@ -277,7 +277,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       store.enableEventConfigSource = vi.fn().mockRejectedValue(testError)
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAll('button').find((btn) =>
+      const saveBtn = wrapper.findAll('button').find(btn =>
         btn.text().toLowerCase().includes('save')
       )
 

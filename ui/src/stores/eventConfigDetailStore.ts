@@ -210,4 +210,3 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     }
   }
 })
-

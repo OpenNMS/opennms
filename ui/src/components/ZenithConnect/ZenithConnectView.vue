@@ -105,6 +105,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, markRaw, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { format as fnsFormat } from 'date-fns'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

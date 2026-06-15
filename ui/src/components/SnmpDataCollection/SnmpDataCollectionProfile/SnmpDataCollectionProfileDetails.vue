@@ -118,6 +118,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ProfileDetailsTab from './ProfileDetailsTab.vue'
@@ -161,7 +164,7 @@ const configDetailsModel = computed<ConfigDetailsModel>(() => ({
   name: localName.value,
   enabled: localEnabled.value,
   maxVarsPerPdu: localMaxVarsPerPdu.value,
-  storageFlag: localStorageFlag.value,
+  storageFlag: localStorageFlag.value
 }))
 
 const onConfigDetailsUpdate = (val: ConfigDetailsModel) => {
@@ -173,7 +176,7 @@ const onConfigDetailsUpdate = (val: ConfigDetailsModel) => {
 
 const rrdSettingsModel = computed<RrdSettingsModel>(() => ({
   rrdStep: localRrdStep.value,
-  rras: localRRAs.value,
+  rras: localRRAs.value
 }))
 
 const onRrdSettingsUpdate = (val: RrdSettingsModel) => {
@@ -192,7 +195,9 @@ const openDeleteCollectionProfileDialog = () => {
 const confirmDelete = async () => {
   showDeleteConfirmation.value = false
   const id = store.selectedProfile?.id
-  if (id == null) { return }
+  if (id == null) {
+    return
+  }
 
   const success = await store.removeSnmpCollectionProfiles([id])
 
@@ -201,7 +206,7 @@ const confirmDelete = async () => {
     snackbar.showSnackBar({ msg: `Profile '${store.selectedProfile?.name ?? id}' deleted successfully.` })
     goBack()
   } else {
-    snackbar.showSnackBar({ msg: `Failed to delete profile.`, error: true })
+    snackbar.showSnackBar({ msg: 'Failed to delete profile.', error: true })
   }
 }
 
@@ -329,7 +334,7 @@ onMounted(async () => {
       : ''
     localRrdStep.value = store.selectedProfile.rrdStep ? String(store.selectedProfile.rrdStep) : ''
     localStorageFlag.value = store.selectedProfile.storageFlag || SnmpProfileStorageFlagType.SELECT
-    localRRAs.value = store.selectedProfile.rrdRras.flatMap(s => {
+    localRRAs.value = store.selectedProfile.rrdRras.flatMap((s) => {
       try {
         return [{ ...rraFromString(s), _id: nextRRAId++ }]
       } catch {

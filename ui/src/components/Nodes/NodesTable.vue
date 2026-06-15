@@ -2,7 +2,7 @@
   <div class="card">
     <div>
       <div class="feather-row title-bar">
-        <span class="title">Node List</span>
+        <span class="title">Nodes</span>
         <div class="action-buttons-container">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"
@@ -39,8 +39,17 @@
               </FeatherInput>
             </div>
             <div>
+              <FeatherIcon
+                :icon="InfoIcon"
+                class="info-icon"
+                title="Node Search Help"
+                @click="isHelpMessageDialogVisible = true"
+                data-test="nodes-info-icon"
+              />
+            </div>
+            <div>
               <FeatherButton
-                icon="FilterAlt"
+                icon="Advanced Filters"
                 @click="() => nodeStructureStore.openInstancesDrawerModal()"
               >
                 <FeatherIcon :icon="FilterAlt" />
@@ -50,8 +59,8 @@
           <div class="chip-container">
             <FeatherChipList label="SearchParams">
               <FeatherChip
-                v-for="(cat, index) in nodeStructureStore.selectedCategories"
-                :key="`cat-${index}`"
+                v-for="cat in nodeStructureStore.selectedCategories"
+                :key="`cat-${cat._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -64,8 +73,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(cat, index) in nodeStructureStore.selectedCategories2"
-                :key="`cat2-${index}`"
+                v-for="cat in nodeStructureStore.selectedCategories2"
+                :key="`cat2-${cat._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -78,8 +87,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(flow, index) in nodeStructureStore.selectedFlows"
-                :key="`flow-${index}`"
+                v-for="flow in nodeStructureStore.selectedFlows"
+                :key="`flow-${flow._value}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -88,7 +97,7 @@
                     @click="removeItem(flow, FilterTypeEnum.Flow)"
                   />
                 </template>
-                {{ `Flow: ${flow._text}` }}
+                {{ `Flows: ${flow._text}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -106,8 +115,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="(svc, index) in nodeStructureStore.selectedServices"
-                :key="`svc-${index}`"
+                v-for="svc in nodeStructureStore.selectedServices"
+                :key="`svc-${svc._value}`"
               >
                 <template #icon>
                   <FeatherIcon :icon="cancelIcon" class="icon"
@@ -117,16 +126,96 @@
               </FeatherChip>
 
               <FeatherChip
-                v-if="hasExtendedSearchParams"
+                v-for="value in extendedSearchValues"
+                :key="`extended-${value.key}`"
               >
                 <template #icon>
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
-                    @click="removeExtendedSearchItem"
+                    @click="removeExtendedSearchItem(value)"
                   />
                 </template>
-                {{ 'Extended Search' }}
+                {{ `${value.name} ${value.value}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.ipAddress"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeIpAddress()"
+                  />
+                </template>
+                {{ `IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.macAddress"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeMacAddress()"
+                  />
+                </template>
+                {{ `MAC Address: ${nodeStructureStore.queryFilter.macAddress}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="hasTopologySearch"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeTopology()"
+                  />
+                </template>
+                {{ `Topology: ${topologyTerm}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeDownAggregateStatus()"
+                  />
+                </template>
+                Down nodes only
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.nodesWithAssets"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeNodesWithAssets()"
+                  />
+                </template>
+                Nodes with asset info
+              </FeatherChip>
+
+              <FeatherChip
+                v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
+                :key="assetFilter.column"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeAssetFilter(assetFilter.column)"
+                  />
+                </template>
+                {{ `Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}` }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -267,13 +356,13 @@
                 ></td>
                 <td class="actions-cell">
                   <FeatherButton
-                    icon="Edit"
-                    class="edit-icon"
+                    icon="View Details"
+                    class="view-details-icon"
                     @click="() => onNodeLinkClick(node.id)"
                   >
                     <FeatherIcon
-                      :icon="Edit"
-                      title="Edit"
+                      :icon="ViewDetails"
+                      title="View Details"
                     />
                   </FeatherButton>
 
@@ -315,6 +404,24 @@
   </NodeDetailsDialog>
   <NodeAdvancedFiltersDrawer />
   <ColumnSelectionDrawer />
+
+  <MessageDialog
+    :visible="isHelpMessageDialogVisible"
+    :relative="true"
+    maxHeight="22em"
+    maxWidth="50em"
+    title="Node Search"
+    @close="isHelpMessageDialogVisible = false"
+  >
+    <template #content>
+      <div>
+        <p>You may search by node name or exact IP address here.</p>
+        <p>Searching by name is a case-insensitive, inclusive search.</p>
+        <p>For example, searching on serv would find any of serv, Service, Reserved, NTSERV, UserVortex, etc. The underscore character acts as a single character wildcard. The percent character acts as a multiple character wildcard.</p>
+        <p>For more advanced search options, please open the Advanced Filters drawer.</p>
+      </div>
+    </template>
+  </MessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -324,6 +431,7 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
   Direction,
+  ExtendedSearchValue,
   FeatherSortObject,
   FilterTypeEnum,
   Node,
@@ -336,15 +444,17 @@ import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Search from '@featherds/icon/action/Search'
+import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import InfoIcon from '@featherds/icon/action/Info'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import MessageDialog from '../Common/MessageDialog.vue'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -356,6 +466,7 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
+import { getAssetColumnLabel } from './hooks/queryStringParser'
 import { getTableCssClasses } from './utils'
 import EmptyList from '../Common/EmptyList.vue'
 
@@ -364,9 +475,10 @@ const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
-const { buildUpdatedNodeStructureQueryParameters, hasAnyExtendedSearchValues } = useNodeQuery()
+const { buildUpdatedNodeStructureQueryParameters, getExtendedSearchValues } = useNodeQuery()
 const visibleColumnStart = ref(0)
 const visibleColumnsCount = 5
+const isHelpMessageDialogVisible = ref(false)
 
 const visibleColumns = computed(() => {
   return nodeStructureStore.columns
@@ -498,8 +610,12 @@ const onDownload = async (format: string) => {
   generateDownload(blob, `Nodes.${format}`)
 }
 
-const onCsvDownload = async () => { return onDownload('csv') }
-const onJsonDownload = async () => { return onDownload('json') }
+const onCsvDownload = async () => {
+  return onDownload('csv')
+}
+const onJsonDownload = async () => {
+  return onDownload('json')
+}
 
 const onNodeInfo = (node: Node) => {
   dialogNode.value = node
@@ -518,8 +634,16 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
-const hasExtendedSearchParams = computed(() => {
-  return hasAnyExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+const extendedSearchValues = computed(() => {
+  return getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+})
+
+const hasTopologySearch = computed(() => {
+  return !!nodeStructureStore.queryFilter.topology?.length
+})
+
+const topologyTerm = computed(() => {
+  return nodeStructureStore.queryFilter.topology ?? ''
 })
 
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
@@ -544,8 +668,8 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   }
 }
 
-const removeExtendedSearchItem = () => {
-  nodeStructureStore.removeExtendedSearch()
+const removeExtendedSearchItem = (item: ExtendedSearchValue) => {
+  nodeStructureStore.removeExtendedSearch(item)
 }
 
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
@@ -668,11 +792,23 @@ table {
 }
 
 .title-bar {
-  display: flex;
   justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+.search-container {
+  .info-icon {
+    cursor: pointer;
+    font-size: 1.5em;
+    margin-left: 0.5em;
+    color: var(variables.$primary);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 
 .action-buttons-container {
@@ -682,9 +818,9 @@ table {
 }
 
 .actions-cell {
-  .edit-icon {
+  .view-details-icon {
     svg {
-      font-size: 1rem !important;
+      font-size: 1.5rem !important;
     }
   }
 }

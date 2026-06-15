@@ -121,7 +121,7 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
         return []
       }
 
-      return this.profiles.filter(profile => {
+      return this.profiles.filter((profile) => {
         if (!Array.isArray(profile.sourceNames)) {
           return false
         }

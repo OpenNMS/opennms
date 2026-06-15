@@ -269,9 +269,9 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
             driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
-        // Open the nodes list page
+        // Open the legacy nodes list page
         driver.get(getBaseUrlInternal() + "opennms/");
-        clickMenuItem("inventoryMenu", "Nodes");
+        clickMenuItem("inventoryMenu", "Nodes (Legacy)");
 
         try {
             // Don't wait as long as usual for just the node page, it should be pretty quick

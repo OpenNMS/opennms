@@ -28,6 +28,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import org.opennms.config.upgrade.datacollection.SnmpDataCollectionDefaultsUpdate;
 import org.opennms.config.upgrade.datacollection.SnmpDataCollectionMigration;
 import org.opennms.core.logging.Logging;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -69,6 +70,9 @@ public class UpgradeConfigService implements InitializingBean {
             try (Logging.MDCCloseable ignored = Logging.withPrefixCloseable("manager")) {
                 new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
                 migrateSnmpDataCollection();
+                // Must run after the migration so first-boot imports are seen
+                // (single-boot convergence for every install type).
+                applySnmpDataCollectionDefaultUpdates();
             }
         }
     }
@@ -94,6 +98,36 @@ public class UpgradeConfigService implements InitializingBean {
                 try { connection.rollback(); } catch (SQLException ignored) { }
             }
             LOG.error("SNMP data collection XML-to-DB migration failed: {}", e.getMessage(), e);
+        } finally {
+            if (connection != null) {
+                try { connection.close(); } catch (SQLException ignored) { }
+            }
+        }
+    }
+
+    /**
+     * Apply shipped-default updates to the DB-resident SNMP data collection
+     * config. Ledger-backed (snmp_collection_defaults_log) — each update runs
+     * at most once per database.
+     */
+    private void applySnmpDataCollectionDefaultUpdates() {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            final SnmpDataCollectionDefaultsUpdate defaultsUpdate = new SnmpDataCollectionDefaultsUpdate();
+            final boolean applied = defaultsUpdate.execute(connection);
+            connection.commit();
+            // Mirror applied fragments into etc_archive only after commit,
+            // matching the migration's archive-after-commit pattern.
+            if (applied) {
+                defaultsUpdate.archiveAppliedFragments();
+            }
+        } catch (final Exception e) {
+            if (connection != null) {
+                try { connection.rollback(); } catch (SQLException ignored) { }
+            }
+            LOG.error("SNMP data collection default updates failed: {}", e.getMessage(), e);
         } finally {
             if (connection != null) {
                 try { connection.close(); } catch (SQLException ignored) { }

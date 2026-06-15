@@ -315,11 +315,6 @@
                     <property name="url" value="dashboard.jsp"/>
                     <property name="locationMatch" value="dashboard"/>
                 </bean>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Ops Board"/>
-                    <property name="url" value="vaadin-wallboard"/>
-                    <property name="locationMatch" value="vaadin-wallboard"/>
-                </bean>
             </list>
         </property>
     </bean>
@@ -345,13 +340,8 @@
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Nodes"/>
-                                <property name="url" value="element/nodeList.htm"/>
-                                <property name="locationMatch" value="nodelist"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Structured Node List"/>
                                 <property name="url" value="ui/index.html#/nodes"/>
-                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="locationMatch" value="nodeList"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Assets"/>

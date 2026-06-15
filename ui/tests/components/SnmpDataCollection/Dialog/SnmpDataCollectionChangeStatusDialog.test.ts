@@ -76,7 +76,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
       const buttons = wrapper.findAllComponents(FeatherButton)
-      const cancelButton = buttons.find((b) => b.text() === 'Cancel')
+      const cancelButton = buttons.find(b => b.text() === 'Cancel')
       expect(cancelButton).toBeDefined()
     })
 
@@ -84,7 +84,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
       const buttons = wrapper.findAllComponents(FeatherButton)
-      const saveButton = buttons.find((b) => b.text() === 'Save')
+      const saveButton = buttons.find(b => b.text() === 'Save')
       expect(saveButton).toBeDefined()
     })
   })
@@ -351,7 +351,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       expect(wrapper.emitted('close')).toBeTruthy()
@@ -363,7 +363,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       await nextTick()
       expect(wrapper.vm.isVisible).toBe(true)
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       expect(wrapper.vm.isVisible).toBe(false)
@@ -373,7 +373,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')).toBeFalsy()
@@ -390,7 +390,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')).toBeTruthy()
@@ -402,7 +402,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       await nextTick()
       expect(wrapper.vm.isVisible).toBe(true)
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.vm.isVisible).toBe(false)
@@ -416,7 +416,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')?.[0]).toEqual([null, 'mib-group'])
@@ -436,7 +436,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')?.[0]).toEqual([selected, type])
@@ -548,7 +548,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
 
     it('accepts selected with proper structure', () => {
       expect(() =>
-        mountComponent({ selected: { id: 1, name: 'Test', enabled: true } })
+        mountComponent({ selected: { id: 1, name: 'Test', enabled: true }})
       ).not.toThrow()
     })
 
@@ -652,7 +652,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
 
       expect(wrapper.text()).toContain('First')
 
-      await wrapper.setProps({ selected: { id: 2, name: 'Second', enabled: false } })
+      await wrapper.setProps({ selected: { id: 2, name: 'Second', enabled: false }})
       await nextTick()
 
       expect(wrapper.text()).toContain('Second')
@@ -692,7 +692,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       expect(saveButton?.props('primary')).toBe(true)
     })
 
@@ -700,7 +700,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       expect(cancelButton?.props('primary')).toBeFalsy()
     })
   })
@@ -725,7 +725,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       expect(wrapper.emitted('close')?.length).toBe(1)
@@ -735,7 +735,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')?.length).toBe(1)
@@ -745,7 +745,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       expect(wrapper.emitted('close')?.length).toBe(1)
@@ -756,7 +756,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')?.length).toBe(1)
@@ -768,7 +768,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
       expect(wrapper.emitted('close')?.length).toBe(1)
       expect(wrapper.emitted('confirm')).toBeFalsy()
@@ -778,7 +778,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       wrapper = mountComponent({ visible: true })
       await nextTick()
 
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       expect(wrapper.emitted('confirm')?.length).toBe(1)
@@ -804,7 +804,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       expect(wrapper.vm.label.title).toBe('Enable SNMP Data Collection Source')
 
       // Click save
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       // Verify emit
@@ -829,7 +829,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       expect(wrapper.vm.label.title).toBe('Disable MIB Group')
 
       // Click save
-      const saveButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Save')
+      const saveButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Save')
       await saveButton?.trigger('click')
 
       // Verify emit
@@ -847,7 +847,7 @@ describe('SnmpDataCollectionChangeStatusDialog.vue', () => {
       await nextTick()
 
       // Click cancel
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find((b) => b.text() === 'Cancel')
+      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text() === 'Cancel')
       await cancelButton?.trigger('click')
 
       // Verify no confirm emitted

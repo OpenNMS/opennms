@@ -12,12 +12,14 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
-import { loadNodePreferences } from '@/services/localStorageService'
+import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb, NodePreferences } from '@/types'
@@ -34,7 +36,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Structured Node List', to: '#', position: 'last' }
+    { label: 'Nodes', to: '#', position: 'last' }
   ]
 })
 
@@ -53,6 +55,7 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
     nodeColumns: prefs?.nodeColumns || [],
     nodeFilter
   } as NodePreferences
+
   nodeStructureStore.setFromNodePreferences(newPrefs)
 }
 
@@ -85,17 +88,34 @@ watch(
   }
 )
 
+let saveFilterTimeout: number | undefined
+
+watch(
+  () => nodeStructureStore.queryFilter,
+  (filter) => {
+    if (saveFilterTimeout !== undefined) {
+      clearTimeout(saveFilterTimeout)
+    }
+    saveFilterTimeout = window.setTimeout(() => saveNodeQueryFilter(filter), 250)
+  },
+  { deep: true }
+)
+
 onMounted(() => {
   const prefs = loadNodePreferences()
-  if (handleQuery(prefs)) return
-  if (prefs) nodeStructureStore.setFromNodePreferences(prefs)
+  if (handleQuery(prefs)) {
+    return
+  }
+  if (prefs) {
+    nodeStructureStore.setFromNodePreferences(prefs)
+  }
 })
 
 watch(() => route.query, () => {
   handleQuery(loadNodePreferences())
 })
 </script>
-  
+
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
 

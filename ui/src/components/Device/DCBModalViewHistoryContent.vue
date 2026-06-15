@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
+
 import { storeToRefs } from 'pinia'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

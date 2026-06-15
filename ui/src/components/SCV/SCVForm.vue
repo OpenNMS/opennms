@@ -38,9 +38,9 @@
     </div>
 
     <SCVAttribute
-      v-for="(value, key, index) in scvStore.credentials.attributes" 
-      :key="key" :attributeKey="key" 
-      :attributeValue="value" 
+      v-for="(value, key, index) in scvStore.credentials.attributes"
+      :key="key" :attributeKey="key"
+      :attributeValue="value"
       :attributeIndex="index"
       @set-key-error="setKeyError"
     />
@@ -50,7 +50,7 @@
         v-if="!isEditing"
         data-test="add-creds-btn"
         :disabled="disabled"
-        primary 
+        primary
         @click="addCredentials">
           Add Credentials
       </FeatherButton>
@@ -59,13 +59,13 @@
         v-if="isEditing"
         data-test="update-creds-btn"
         :disabled="disabled"
-        primary 
+        primary
         @click="updateCredentials">
           Update Credentials
       </FeatherButton>
 
       <FeatherButton
-        primary 
+        primary
         data-test="clear-btn"
         @click="clearCredentials">
           Clear Form
@@ -75,10 +75,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add' 
+import Add from '@featherds/icon/action/Add'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
@@ -107,10 +109,10 @@ const isMasked = (password: string) => {
 const passwordError = computed<string | undefined>(() => {
   if (
     dbCredentials.value.username && scvStore.credentials.password &&
-    scvStore.credentials.username !== dbCredentials.value.username && 
+    scvStore.credentials.username !== dbCredentials.value.username &&
     isMasked(scvStore.credentials.password)) {
 
-    return 'Password cannot be masked with updated usernames.'  
+    return 'Password cannot be masked with updated usernames.'
   }
   return undefined
 })
@@ -118,14 +120,14 @@ const passwordError = computed<string | undefined>(() => {
 // Error if alias name is not unique or it is reserved
 const aliasError = computed<string | undefined>(() => {
   if (
-    !isEditing.value && 
+    !isEditing.value &&
     scvStore.credentials.alias?.toLowerCase() === SCV_GET_ALL_ALIAS) {
     return 'Cannot use reserved alias name.'
   }
 
   if (
-    !isEditing.value && 
-    scvStore.credentials.alias && 
+    !isEditing.value &&
+    scvStore.credentials.alias &&
     aliases.value.includes(scvStore.credentials.alias.toLowerCase())) {
     return 'Alias already in use.'
   }
@@ -136,10 +138,10 @@ const setKeyError = (val: boolean) => keyError.value = val
 
 const updateAlias: UpdateModelFunction = (val: string) => {
   scvStore.setValue({ alias: val.toLowerCase() })
-} 
+}
 
 const updateUsername: UpdateModelFunction = (val: string) => scvStore.setValue({ username: val })
-const updatePassword: UpdateModelFunction = (val: string) => scvStore.setValue({ password: val }) 
+const updatePassword: UpdateModelFunction = (val: string) => scvStore.setValue({ password: val })
 const addCredentials = () => scvStore.addCredentials()
 const updateCredentials = () => scvStore.updateCredentials()
 const clearCredentials = () => scvStore.clearCredentials()

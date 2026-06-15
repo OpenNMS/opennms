@@ -10,10 +10,18 @@ const buildJson = (overrides: {
 } = {}): string => {
   const { address = '*', port = 162, suspect = null, users } = overrides
   const obj: Record<string, unknown> = {}
-  if (address !== null) obj['snmpTrapAddress'] = address
-  if (port !== null) obj['snmpTrapPort'] = port
-  if (suspect !== null) obj['newSuspectOnTrap'] = suspect
-  if (users !== undefined) obj['snmpv3User'] = users
+  if (address !== null) {
+    obj['snmpTrapAddress'] = address
+  }
+  if (port !== null) {
+    obj['snmpTrapPort'] = port
+  }
+  if (suspect !== null) {
+    obj['newSuspectOnTrap'] = suspect
+  }
+  if (users !== undefined) {
+    obj['snmpv3User'] = users
+  }
   return JSON.stringify(obj)
 }
 
@@ -63,7 +71,7 @@ describe('validateTrapdJson – snmpTrapAddress', () => {
   it('accepts omitted snmpTrapAddress because it is optional', () => {
     const result = validateTrapdJson(buildJson({ address: null }))
     expect(result.valid).toBe(true)
-    expect(result.errors.some((e) => e.field === 'snmpTrapAddress')).toBe(false)
+    expect(result.errors.some(e => e.field === 'snmpTrapAddress')).toBe(false)
   })
 
   it('accepts wildcard "*"', () => {
@@ -79,13 +87,13 @@ describe('validateTrapdJson – snmpTrapAddress', () => {
   it('returns error for invalid IPv4 address', () => {
     const result = validateTrapdJson(buildJson({ address: '999.0.0.1' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapAddress')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapAddress')).toBe(true)
   })
 
   it('returns error for hostname (not IPv4)', () => {
     const result = validateTrapdJson(buildJson({ address: 'localhost' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapAddress')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapAddress')).toBe(true)
   })
 })
 
@@ -93,7 +101,7 @@ describe('validateTrapdJson – snmpTrapPort', () => {
   it('returns error when snmpTrapPort is missing', () => {
     const result = validateTrapdJson(buildJson({ port: null }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapPort')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapPort')).toBe(true)
   })
 
   it('accepts MIN_PORT boundary', () => {
@@ -109,19 +117,19 @@ describe('validateTrapdJson – snmpTrapPort', () => {
   it('returns error for port 0 (below MIN_PORT)', () => {
     const result = validateTrapdJson(buildJson({ port: 0 }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapPort')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapPort')).toBe(true)
   })
 
   it('returns error for port 65536 (above MAX_PORT)', () => {
     const result = validateTrapdJson(buildJson({ port: 65536 }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapPort')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapPort')).toBe(true)
   })
 
   it('returns error for non-numeric port', () => {
     const result = validateTrapdJson(buildJson({ port: 'abc' }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmpTrapPort')).toBe(true)
+    expect(result.errors.some(e => e.field === 'snmpTrapPort')).toBe(true)
   })
 })
 
@@ -146,26 +154,26 @@ describe('validateTrapdJson – snmpv3User: securityName and securityLevel', () 
   it('returns error when securityName is missing', () => {
     const user = buildUser({ securityLevel: 1 })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('securityName'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('securityName'))).toBe(true)
   })
 
   it('returns error for missing securityLevel', () => {
     const user = buildUser({ securityName: 'user1' })
     const result = validateTrapdJson(buildJson({ users: [user] }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field.includes('securityLevel'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('securityLevel'))).toBe(true)
   })
 
   it('returns error for securityLevel 0 (None)', () => {
     const user = buildUser({ securityName: 'user1', securityLevel: 0 })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('securityLevel'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('securityLevel'))).toBe(true)
   })
 
   it('returns error for securityLevel 4 (out of range)', () => {
     const user = buildUser({ securityName: 'user1', securityLevel: 4 })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('securityLevel'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('securityLevel'))).toBe(true)
   })
 })
 
@@ -184,7 +192,7 @@ describe('validateTrapdJson – snmpv3User: level 1 (NoAuthNoPriv)', () => {
       authPassphrase: 'pass'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 
   it('returns error when authPassphrase is present at level 1', () => {
@@ -194,7 +202,7 @@ describe('validateTrapdJson – snmpv3User: level 1 (NoAuthNoPriv)', () => {
       authPassphrase: 'pass'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authPassphrase'))).toBe(true)
   })
 
   it('returns error when privacyProtocol is present at level 1', () => {
@@ -205,7 +213,7 @@ describe('validateTrapdJson – snmpv3User: level 1 (NoAuthNoPriv)', () => {
       privacyPassphrase: 'priv'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('privacyProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyProtocol'))).toBe(true)
   })
 
   it('returns error when privacyPassphrase is present at level 1', () => {
@@ -215,7 +223,7 @@ describe('validateTrapdJson – snmpv3User: level 1 (NoAuthNoPriv)', () => {
       privacyPassphrase: 'priv'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('privacyPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyPassphrase'))).toBe(true)
   })
 })
 
@@ -238,7 +246,7 @@ describe('validateTrapdJson – snmpv3User: level 2 (AuthNoPriv)', () => {
       authPassphrase: 'secret'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 
   it('returns error when authPassphrase is missing at level 2', () => {
@@ -248,7 +256,7 @@ describe('validateTrapdJson – snmpv3User: level 2 (AuthNoPriv)', () => {
       authProtocol: 'MD5'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authPassphrase'))).toBe(true)
   })
 
   it('returns error when privacyProtocol is present at level 2', () => {
@@ -261,7 +269,7 @@ describe('validateTrapdJson – snmpv3User: level 2 (AuthNoPriv)', () => {
       privacyPassphrase: 'priv'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('privacyProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyProtocol'))).toBe(true)
   })
 
   it('returns error when privacyPassphrase is present at level 2', () => {
@@ -273,7 +281,7 @@ describe('validateTrapdJson – snmpv3User: level 2 (AuthNoPriv)', () => {
       privacyPassphrase: 'priv'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('privacyPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyPassphrase'))).toBe(true)
   })
 })
 
@@ -296,28 +304,28 @@ describe('validateTrapdJson – snmpv3User: level 3 (AuthPriv)', () => {
     const { authProtocol: omittedAuthProtocol, ...attrs } = validLevel3
     void omittedAuthProtocol
     const result = validateTrapdJson(buildJson({ users: [buildUser(attrs)] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 
   it('returns error when authPassphrase is missing at level 3', () => {
     const { authPassphrase: omittedAuthPassphrase, ...attrs } = validLevel3
     void omittedAuthPassphrase
     const result = validateTrapdJson(buildJson({ users: [buildUser(attrs)] }))
-    expect(result.errors.some((e) => e.field.includes('authPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authPassphrase'))).toBe(true)
   })
 
   it('returns error when privacyProtocol is missing at level 3', () => {
     const { privacyProtocol: omittedPrivacyProtocol, ...attrs } = validLevel3
     void omittedPrivacyProtocol
     const result = validateTrapdJson(buildJson({ users: [buildUser(attrs)] }))
-    expect(result.errors.some((e) => e.field.includes('privacyProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyProtocol'))).toBe(true)
   })
 
   it('returns error when privacyPassphrase is missing at level 3', () => {
     const { privacyPassphrase: omittedPrivacyPassphrase, ...attrs } = validLevel3
     void omittedPrivacyPassphrase
     const result = validateTrapdJson(buildJson({ users: [buildUser(attrs)] }))
-    expect(result.errors.some((e) => e.field.includes('privacyPassphrase'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyPassphrase'))).toBe(true)
   })
 })
 
@@ -330,7 +338,7 @@ describe('validateTrapdJson – authProtocol values', () => {
       authPassphrase: 'secret'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(false)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(false)
   })
 
   it('rejects undashed SHA-2 authProtocol values', () => {
@@ -341,7 +349,7 @@ describe('validateTrapdJson – authProtocol values', () => {
       authPassphrase: 'secret'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 
   it('rejects completely unknown authProtocol value', () => {
@@ -352,7 +360,7 @@ describe('validateTrapdJson – authProtocol values', () => {
       authPassphrase: 'secret'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 
   it('rejects unknown privacyProtocol value', () => {
@@ -365,7 +373,7 @@ describe('validateTrapdJson – authProtocol values', () => {
       privacyPassphrase: 'priv'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('privacyProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('privacyProtocol'))).toBe(true)
   })
 })
 
@@ -379,7 +387,7 @@ describe('validateTrapdJson – privacyProtocol without authProtocol', () => {
       authPassphrase: 'secret'
     })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.errors.some((e) => e.field.includes('authProtocol'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('authProtocol'))).toBe(true)
   })
 })
 
@@ -402,7 +410,7 @@ describe('validateTrapdJson – multiple snmpv3User elements', () => {
     const user2 = buildUser({ securityName: 'userB', securityLevel: 99 })
     const result = validateTrapdJson(buildJson({ users: [user1, user2] }))
     expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field.includes('snmpv3User[1]'))).toBe(true)
-    expect(result.errors.some((e) => e.field.includes('snmpv3User[2]'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('snmpv3User[1]'))).toBe(true)
+    expect(result.errors.some(e => e.field.includes('snmpv3User[2]'))).toBe(true)
   })
 })

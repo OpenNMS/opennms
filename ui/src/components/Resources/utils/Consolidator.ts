@@ -258,16 +258,31 @@ const Consolidator = () => {
     }
 
     sortedValues.sort((a, b) => {
-      if (isNaN(a)) return -1
-      if (isNaN(b)) return 1
+      if (isNaN(a)) {
+        return -1
+      }
+      if (isNaN(b)) {
+        return 1
+      }
 
-      if (a == Number.POSITIVE_INFINITY) return 1
-      if (a == Number.NEGATIVE_INFINITY) return -1
-      if (b == Number.POSITIVE_INFINITY) return -1
-      if (b == Number.NEGATIVE_INFINITY) return 1
+      if (a == Number.POSITIVE_INFINITY) {
+        return 1
+      }
+      if (a == Number.NEGATIVE_INFINITY) {
+        return -1
+      }
+      if (b == Number.POSITIVE_INFINITY) {
+        return -1
+      }
+      if (b == Number.NEGATIVE_INFINITY) {
+        return 1
+      }
 
-      if (a < b) return -1
-      else return 1
+      if (a < b) {
+        return -1
+      } else {
+        return 1
+      }
     })
 
     return [undefined, sortedValues[Math.round((argument * (sortedValues.length - 1)) / 100.0)]]

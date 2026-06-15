@@ -242,4 +242,3 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     })
   })
 })
-

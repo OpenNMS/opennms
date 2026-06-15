@@ -12,5 +12,3 @@ Specific functions may take additional parameters.
 * Attributes: optional key/value pairs to tag or enrich the business service with additional information.
 These are used to identify or tag the business service and may be referenced in other workflows.
 These attributes do not affect the dependencies or the status calculation of the business service.
-
-TIP: You can use attributes to filter business services in xref:deep-dive/visualizations/opsboard/introduction.adoc[Ops Board dashlets].

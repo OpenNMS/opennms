@@ -128,7 +128,7 @@ const setSearchResultRef = (el: any, contextKey: string | number, subContextKey:
 const updateFlatResults = () => {
   const results: any[] = []
   searchResultRefs.value.clear()
-  
+
   Object.entries(filteredResults.value).forEach(([contextKey, searchResultByContext]: any) => {
     if (searchResultByContext?.results) {
       Object.entries(searchResultByContext.results).forEach(([subContextKey, contextSearchResults]: any) => {
@@ -148,7 +148,7 @@ const updateFlatResults = () => {
       })
     }
   })
-  
+
   flatResults.value = results
 }
 
@@ -192,9 +192,9 @@ const handleItemClick = (item: any) => {
 }
 
 const setSelectedIndex = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
-  const foundIndex = flatResults.value.findIndex(result => 
-    result.contextKey === String(contextKey) && 
-    result.subContextKey === String(subContextKey) && 
+  const foundIndex = flatResults.value.findIndex(result =>
+    result.contextKey === String(contextKey) &&
+    result.subContextKey === String(subContextKey) &&
     result.itemIndex === itemIndex
   )
 
@@ -207,12 +207,12 @@ const isSelected = (contextKey: string | number, subContextKey: string | number,
   if (selectedIndex.value === -1) {
     return false
   }
-  
+
   const currentResult = flatResults.value[selectedIndex.value]
 
-  return currentResult && 
-         currentResult.contextKey === String(contextKey) && 
-         currentResult.subContextKey === String(subContextKey) && 
+  return currentResult &&
+         currentResult.contextKey === String(contextKey) &&
+         currentResult.subContextKey === String(subContextKey) &&
          currentResult.itemIndex === itemIndex
 }
 
@@ -238,13 +238,13 @@ const onKeyDown = async (event: KeyboardEvent) => {
   if (!showResults.value || !hasResults.value) {
     return
   }
-  
+
   if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
     event.preventDefault()
     // prevent Escape from closing side menu
     event.stopPropagation()
     event.stopImmediatePropagation()
-    
+
     switch (event.key) {
       case 'ArrowDown':
         if (selectedIndex.value < flatResults.value.length - 1) {
@@ -254,7 +254,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'ArrowUp':
         if (selectedIndex.value > 0) {
           selectedIndex.value--
@@ -263,11 +263,11 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'Enter':
         selectCurrentItem()
         break
-        
+
       case 'Escape':
         closeResults()
         break
@@ -380,7 +380,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
     &::placeholder {
       color: var($secondary-text-on-surface);
     }
-    
+
     &:focus {
       box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
     }

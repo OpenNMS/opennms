@@ -25,21 +25,24 @@ import { defaultColumns } from '@/components/Nodes/utils'
 import { hasNonEmptyProperty } from '@/lib/utils'
 import API from '@/services'
 import {
+  AssetFilter,
   Category,
   DrawerState,
+  ExtendedSearchValue,
   MonitoringLocation,
   NodeColumnSelectionItem,
   NodePreferences,
+  NodeQueryExtendedSearchParams,
   NodeQueryFilter,
   ServiceType,
   SetOperator
 } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 const {
   getDefaultNodeQueryFilter,
-  getDefaultNodeQueryExtendedSearchParams,
   getDefaultNodeQueryForeignSourceParams,
   getDefaultNodeQuerySnmpParams,
   getDefaultNodeQuerySysParams
@@ -101,10 +104,15 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       queryFilter.value.selectedFlows.length > 0 ||
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
       (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
-      !!queryFilter.value.extendedSearch?.ipAddress?.length ||
+      !!queryFilter.value.ipAddress?.length ||
+      !!queryFilter.value.macAddress?.length ||
+      !!queryFilter.value.nodesWithDownAggregateStatus ||
+      !!queryFilter.value.nodesWithAssets ||
+      (queryFilter.value.assetFilters?.length ?? 0) > 0 ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
-      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams)
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
+      !!queryFilter.value.topology?.length
     )
   }
 
@@ -130,71 +138,88 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     columns.value = [...cols]
   }
 
-  /**
-  * Set filter with IP address, clearing out any other extended search params (currently these are mutually exclusive extended searches).
-  */
   const setFilterWithIpAddress = async (ipAddress: string) => {
     queryFilter.value = {
       ...queryFilter.value,
-      extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
-        ipAddress
-      }
+      ipAddress
     }
   }
 
-  /**
-  * Set filter with SNMP parameters, clearing out any other extended search params.
-  */
+  const setFilterWithMacAddress = async (macAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      macAddress
+    }
+  }
+
+  const setFilterWithDownAggregateStatus = async (nodesWithDownAggregateStatus: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithDownAggregateStatus
+    }
+  }
+
+  const setFilterWithNodesWithAssets = async (nodesWithAssets: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithAssets
+    }
+  }
+
+  const setFilterWithAssetFilters = async (assetFilters: AssetFilter[]) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: [...assetFilters]
+    }
+  }
+
   const setFilterWithSnmpParams = async (key: string, value: string) => {
-    // key should be an actual property of NodeQuerySnmpParams
     const snmpParams = {
-      ...getDefaultNodeQuerySnmpParams(),
+      ...(queryFilter.value.extendedSearch.snmpParams ?? getDefaultNodeQuerySnmpParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         snmpParams
       }
     }
   }
 
-  /**
-  * Set filter with sys parameters, clearing out any other extended search params.
-  */
   const setFilterWithSysParams = async (key: string, value: string) => {
-    // key should be an actual on of NodeQuerySysParams
     const sysParams = {
-      ...getDefaultNodeQuerySysParams(),
+      ...(queryFilter.value.extendedSearch.sysParams ?? getDefaultNodeQuerySysParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         sysParams
       }
     }
   }
 
-  /**
-  * Set filter with foreign source parameters, clearing out any other extended search params.
-  */
+  const setFilterWithTopology = async (topology: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      topology
+    }
+  }
+
   const setFilterWithForeignSourceParams = async (key: string, value: string) => {
-    // key should be an actual property of NodeQueryForeignSourceParams
     const foreignSourceParams = {
-      ...getDefaultNodeQueryForeignSourceParams(),
+      ...(queryFilter.value.extendedSearch.foreignSourceParams ?? getDefaultNodeQueryForeignSourceParams()),
       [key]: value
     }
 
     queryFilter.value = {
       ...queryFilter.value,
       extendedSearch: {
-        ...getDefaultNodeQueryExtendedSearchParams(),
+        ...queryFilter.value.extendedSearch,
         foreignSourceParams
       }
     }
@@ -250,6 +275,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
     const filter = getDefaultNodeQueryFilter()
 
+    // Always reset chip arrays so stale selections from a previous filter don't survive
+    selectedCategories.value = []
+    selectedCategories2.value = []
+    selectedFlows.value = []
+    selectedMonitoringLocations.value = []
+    selectedServices.value = []
+
     if (prefs.nodeFilter) {
       filter.searchTerm = prefs.nodeFilter.searchTerm
       filter.categoryMode = prefs.nodeFilter.categoryMode
@@ -278,6 +310,30 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
           .map(loc => ({ _text: loc.name, _value: loc.name, name: loc.name } as IAutocompleteItemType))
       }
 
+      if (prefs.nodeFilter.ipAddress) {
+        filter.ipAddress = prefs.nodeFilter.ipAddress
+      }
+
+      if (prefs.nodeFilter.macAddress) {
+        filter.macAddress = prefs.nodeFilter.macAddress
+      }
+
+      if (prefs.nodeFilter.nodesWithDownAggregateStatus) {
+        filter.nodesWithDownAggregateStatus = true
+      }
+
+      if (prefs.nodeFilter.nodesWithAssets) {
+        filter.nodesWithAssets = true
+      }
+
+      if (prefs.nodeFilter.assetFilters?.length) {
+        filter.assetFilters = [...prefs.nodeFilter.assetFilters]
+      }
+
+      if (prefs.nodeFilter.topology) {
+        filter.topology = prefs.nodeFilter.topology
+      }
+
       if (prefs.nodeFilter.extendedSearch) {
         filter.extendedSearch = { ...prefs.nodeFilter.extendedSearch }
       }
@@ -289,7 +345,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         // If allServiceTypes is empty the chips won't render, but filtering still works.
         filter.selectedServices = [...prefs.nodeFilter.selectedServices]
         const items = prefs.nodeFilter.selectedServices
-          .map(name => {
+          .map((name) => {
             const st = allServiceTypes.value.find(s => s.name === name)
             return st ? { _value: st.id, _text: st.name } as IAutocompleteItemType : null
           })
@@ -318,36 +374,81 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   const removeCategory = (item: IAutocompleteItemType) => {
-    selectedCategories.value = selectedCategories.value.filter((i) => i._value !== item._value)
-    queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter((c) => c.id !== item._value)
+    selectedCategories.value = selectedCategories.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter(c => c.id !== item._value)
   }
 
   const removeCategory2 = (item: IAutocompleteItemType) => {
-    selectedCategories2.value = selectedCategories2.value.filter((i) => i._value !== item._value)
-    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter((c) => c.id !== item._value)
+    selectedCategories2.value = selectedCategories2.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedCategories2 = (queryFilter.value.selectedCategories2 ?? []).filter(c => c.id !== item._value)
   }
 
   const removeFlow = (item: IAutocompleteItemType) => {
-    selectedFlows.value = selectedFlows.value.filter((i) => i._text !== item._text)
-    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter((f) => f !== item._text)
+    selectedFlows.value = selectedFlows.value.filter(i => i._text !== item._text)
+    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter(f => f !== item._text)
   }
 
   const removeMonitoringLocation = (item: IAutocompleteItemType) => {
     const locationName = item.name
     queryFilter.value.selectedMonitoringLocations = queryFilter.value.selectedMonitoringLocations.filter(
-      (loc) => loc.name !== locationName
+      loc => loc.name !== locationName
+    )
+    // Also update the autocomplete-backed ref (read by the drawer on reopen); otherwise a removed
+    // location chip would reappear in the drawer's selection. Mirrors removeCategory/removeService.
+    selectedMonitoringLocations.value = selectedMonitoringLocations.value.filter(
+      loc => loc.name !== locationName
     )
   }
 
-  const removeExtendedSearch = () => {
-    queryFilter.value.extendedSearch = getDefaultNodeQueryExtendedSearchParams()
+  const removeExtendedSearch = (item: ExtendedSearchValue) => {
+    const group = queryFilter.value.extendedSearch[item.group]
+    if (group) {
+      queryFilter.value = {
+        ...queryFilter.value,
+        extendedSearch: {
+          ...queryFilter.value.extendedSearch,
+          [item.group]: { ...(group as Record<string, unknown>), [item.key]: '' }
+        }
+      }
+    }
+  }
+
+  const removeIpAddress = () => {
+    queryFilter.value = { ...queryFilter.value, ipAddress: '' }
+  }
+
+  const removeMacAddress = () => {
+    queryFilter.value = { ...queryFilter.value, macAddress: '' }
+  }
+
+  const removeDownAggregateStatus = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithDownAggregateStatus: false }
+  }
+
+  const removeNodesWithAssets = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithAssets: false }
+  }
+
+  const removeAssetFilter = (column: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: (queryFilter.value.assetFilters ?? []).filter(f => f.column !== column)
+    }
+  }
+
+  const removeTopology = () => {
+    queryFilter.value = { ...queryFilter.value, topology: '' }
+  }
+
+  const setExtendedSearchParams = (params: NodeQueryExtendedSearchParams) => {
+    queryFilter.value = { ...queryFilter.value, extendedSearch: { ...params }}
   }
 
   const updateSelectedCategories = (items: IAutocompleteItemType[]) => {
     selectedCategories.value = items
 
     // Also update the query filter
-    queryFilter.value.selectedCategories = items.map((item) => ({
+    queryFilter.value.selectedCategories = items.map(item => ({
       id: item._value as number,
       name: item._text as string,
       authorizedGroups: [] as string[]
@@ -357,7 +458,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const updateSelectedCategories2 = (items: IAutocompleteItemType[]) => {
     selectedCategories2.value = items
 
-    queryFilter.value.selectedCategories2 = items.map((item) => ({
+    queryFilter.value.selectedCategories2 = items.map(item => ({
       id: item._value as number,
       name: item._text as string,
       authorizedGroups: [] as string[]
@@ -366,7 +467,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
   const updateSelectedFlows = (items: IAutocompleteItemType[]) => {
     selectedFlows.value = items
-    queryFilter.value.selectedFlows = items.map((item) => item._text as string)
+    queryFilter.value.selectedFlows = items.map(item => item._text as string)
   }
 
   const updateSelectedServices = (items: IAutocompleteItemType[]) => {
@@ -410,9 +511,14 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     resetColumnSelectionToDefault,
     setCategoryMode,
     setFilterWithIpAddress,
+    setFilterWithMacAddress,
+    setFilterWithDownAggregateStatus,
+    setFilterWithNodesWithAssets,
+    setFilterWithAssetFilters,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
     setFilterWithSysParams,
+    setFilterWithTopology,
     setFromNodePreferences,
     setNodeColumnSelection,
     setSearchTerm,
@@ -430,6 +536,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeCategory,
     removeCategory2,
     removeExtendedSearch,
+    removeIpAddress,
+    removeMacAddress,
+    removeDownAggregateStatus,
+    removeNodesWithAssets,
+    removeAssetFilter,
+    removeTopology,
+    setExtendedSearchParams,
     removeFlow,
     removeMonitoringLocation,
     removeService,

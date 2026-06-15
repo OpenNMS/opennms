@@ -46,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherList, FeatherListItem } from '@featherds/list'
 import { ShimFeatherMegaMenu } from '../Common/ShimFeatherMegaMenu'
 // add this back when exports are fixed
@@ -66,51 +68,51 @@ const emit = defineEmits(['updateTime'])
 
 const mega = ref()
 const startDateRef = ref()
-const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' } })
+const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' }})
 const endDateRef = ref()
-const endTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' } })
+const endTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' }})
 
 const selectedTime = ref('Last Day')
 const options = [
-  { label: 'Last hour', time: { minutes: '60' } },
-  { label: 'Last 2 hours', time: { hours: '2' } },
-  { label: 'Last 4 hours', time: { hours: '4' } },
-  { label: 'Last 8 hours', time: { hours: '5' } },
-  { label: 'Last 12 hours', time: { hours: '12' } },
-  { label: 'Last day', time: { hours: '24' } },
-  { label: 'Last two days', time: { hours: '48' } },
-  { label: 'Last week', time: { days: '7' } },
-  { label: 'Last month', time: { months: '1' } },
-  { label: 'Last three months', time: { months: '3' } },
-  { label: 'Last six months', time: { months: '6' } },
-  { label: 'Last year', time: { years: '1' } }
+  { label: 'Last hour', time: { minutes: '60' }},
+  { label: 'Last 2 hours', time: { hours: '2' }},
+  { label: 'Last 4 hours', time: { hours: '4' }},
+  { label: 'Last 8 hours', time: { hours: '5' }},
+  { label: 'Last 12 hours', time: { hours: '12' }},
+  { label: 'Last day', time: { hours: '24' }},
+  { label: 'Last two days', time: { hours: '48' }},
+  { label: 'Last week', time: { days: '7' }},
+  { label: 'Last month', time: { months: '1' }},
+  { label: 'Last three months', time: { months: '3' }},
+  { label: 'Last six months', time: { months: '6' }},
+  { label: 'Last year', time: { years: '1' }}
 ]
 
 const times = [
-  { label: '12 AM', time: { hours: '0' } },
-  { label: '1 AM', time: { hours: '1' } },
-  { label: '2 AM', time: { hours: '2' } },
-  { label: '3 AM', time: { hours: '3' } },
-  { label: '4 AM', time: { hours: '4' } },
-  { label: '5 AM', time: { hours: '5' } },
-  { label: '6 AM', time: { hours: '6' } },
-  { label: '7 AM', time: { hours: '7' } },
-  { label: '8 AM', time: { hours: '8' } },
-  { label: '9 AM', time: { hours: '9' } },
-  { label: '10 AM', time: { hours: '10' } },
-  { label: '11 AM', time: { hours: '11' } },
-  { label: '12 PM', time: { hours: '12' } },
-  { label: '1 PM', time: { hours: '13' } },
-  { label: '2 PM', time: { hours: '14' } },
-  { label: '3 PM', time: { hours: '15' } },
-  { label: '4 PM', time: { hours: '16' } },
-  { label: '5 PM', time: { hours: '17' } },
-  { label: '6 PM', time: { hours: '18' } },
-  { label: '7 PM', time: { hours: '19' } },
-  { label: '8 PM', time: { hours: '20' } },
-  { label: '9 PM', time: { hours: '21' } },
-  { label: '10 PM', time: { hours: '22' } },
-  { label: '11 PM', time: { hours: '23' } }
+  { label: '12 AM', time: { hours: '0' }},
+  { label: '1 AM', time: { hours: '1' }},
+  { label: '2 AM', time: { hours: '2' }},
+  { label: '3 AM', time: { hours: '3' }},
+  { label: '4 AM', time: { hours: '4' }},
+  { label: '5 AM', time: { hours: '5' }},
+  { label: '6 AM', time: { hours: '6' }},
+  { label: '7 AM', time: { hours: '7' }},
+  { label: '8 AM', time: { hours: '8' }},
+  { label: '9 AM', time: { hours: '9' }},
+  { label: '10 AM', time: { hours: '10' }},
+  { label: '11 AM', time: { hours: '11' }},
+  { label: '12 PM', time: { hours: '12' }},
+  { label: '1 PM', time: { hours: '13' }},
+  { label: '2 PM', time: { hours: '14' }},
+  { label: '3 PM', time: { hours: '15' }},
+  { label: '4 PM', time: { hours: '16' }},
+  { label: '5 PM', time: { hours: '17' }},
+  { label: '6 PM', time: { hours: '18' }},
+  { label: '7 PM', time: { hours: '19' }},
+  { label: '8 PM', time: { hours: '20' }},
+  { label: '9 PM', time: { hours: '21' }},
+  { label: '10 PM', time: { hours: '22' }},
+  { label: '11 PM', time: { hours: '23' }}
 ]
 
 const disableCustomTimeBtn = computed(() => Boolean(!startDateRef.value || !startTimeRef.value || !endDateRef.value || !endTimeRef.value))
@@ -138,9 +140,15 @@ const applyCustomTime = () => {
   const endTime = getUnixTime(add(endDateRef.value, endTimeRef.value.time))
 
   const difference = differenceInHours(startTime, endTime)
-  if (difference < 1) format = 'minutes'
-  if (difference > 24) format = 'days'
-  if (difference > 8766) format = 'years'
+  if (difference < 1) {
+    format = 'minutes'
+  }
+  if (difference > 24) {
+    format = 'days'
+  }
+  if (difference > 8766) {
+    format = 'years'
+  }
 
   emit('updateTime', {
     startTime,

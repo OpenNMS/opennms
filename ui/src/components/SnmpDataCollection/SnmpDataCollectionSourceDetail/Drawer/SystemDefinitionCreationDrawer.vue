@@ -95,6 +95,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch, watchEffect } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
 import { createSystemDefinition, updateSystemDefinition } from '@/services/snmpDataCollectionService'
@@ -128,7 +130,7 @@ const drawerTitle = computed(() =>
 )
 
 const loadInitialData = () => {
-  mibGroupNames.value = store.mibGroupNames.map((name) => ({ _text: name, _value: name }))
+  mibGroupNames.value = store.mibGroupNames.map(name => ({ _text: name, _value: name }))
   if (store.systemDefDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     oidType.value = DEFAULT_OID_TYPE
@@ -179,8 +181,8 @@ const search = (q: string) => {
   }
   timeout.value = setTimeout(() => {
     results.value = store.mibGroupNames
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
+      .filter(x => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map(x => ({
         _text: x,
         _value: x
       }))
@@ -206,7 +208,7 @@ const saveSystemDef = async () => {
       oidType.value === 'mask' ? oidValue.value : '',
       [],
       [],
-      mibGroupNames.value.map((x) => x._value as string),
+      mibGroupNames.value.map(x => x._value as string),
       status.value,
       store.selectedSystemDef?.id || 0,
       store.systemDefDrawerState.isEditMode
@@ -228,7 +230,7 @@ const saveSystemDef = async () => {
     } else {
       snackbar.showSnackBar({ msg: 'An error occurred while saving the System Definition.', error: true })
     }
-  } catch (error) {
+  } catch (_error) {
     snackbar.showSnackBar({ msg: 'An error occurred while saving the System Definition.', error: true })
   }
 }
@@ -299,4 +301,3 @@ watch(
   }
 }
 </style>
-

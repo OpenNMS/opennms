@@ -94,6 +94,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, toRefs, watch } from 'vue'
+
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'

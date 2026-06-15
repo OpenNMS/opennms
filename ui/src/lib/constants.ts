@@ -97,7 +97,7 @@ export const VALID_MIB_OBJ_TYPES = [
 export const DEFAULT_MIB_OBJ_TYPE: ISelectItemType = { _text: 'gauge', _value: 'gauge' }
 
 export const MIB_OBJECT_DATA_TYPE_OPTIONS: ISelectItemType[] = [
-  ...VALID_MIB_OBJ_TYPES.map((type) => ({ _text: type, _value: type }))
+  ...VALID_MIB_OBJ_TYPES.map(type => ({ _text: type, _value: type }))
 ]
 
 export const PERSISTENCE_SELECTOR_STRATEGY_OPTIONS: string[] = [
@@ -120,4 +120,3 @@ export const DEFAULT_TRAPD_BATCH_INTERVAL = 500
 export const DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND = false
 export const DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE = false
 export const DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP = false
-

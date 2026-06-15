@@ -82,15 +82,15 @@ describe('Menu utils', () => {
         id: 'nodes',
         type: 'item',
         title: 'Nodes',
-        href: `${baseHref}element/nodeList.htm`,
+        href: `${baseHref}ui/index.html#/nodes`,
         target: '_self'
       })
       expect(inventoryItems[0].icon).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
-        id: 'structuredNodeList',
+        id: 'legacyNodes',
         type: 'item',
-        title: 'Structured Node List',
-        href: `${baseHref}ui/index.html#/nodes`,
+        title: 'Nodes (Legacy)',
+        href: `${baseHref}element/nodeList.htm`,
         target: '_self'
       })
       expect(inventoryItems[2]).toMatchObject({

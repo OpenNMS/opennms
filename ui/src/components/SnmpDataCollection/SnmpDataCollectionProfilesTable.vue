@@ -149,6 +149,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted, reactive, ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -234,11 +236,11 @@ const onChangeSearchTerm = (value: string) => {
 }
 
 const goToCreateProfile = () => {
-  router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: 'create' } })
+  router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: 'create' }})
 }
 
 const onProfileClick = (profile: SnmpCollectionProfile) => {
-  router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id } })
+  router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id }})
 }
 
 const onChangeProfileStatus = async (profile: SnmpCollectionProfile) => {
@@ -270,7 +272,9 @@ const openDeleteCollectionProfileDialog = (profile: SnmpCollectionProfile) => {
 const confirmDelete = async () => {
   showDeleteConfirmation.value = false
   const profile = profileToDelete.value
-  if (!profile) { return }
+  if (!profile) {
+    return
+  }
 
   const success = await store.removeSnmpCollectionProfiles([profile.id])
 

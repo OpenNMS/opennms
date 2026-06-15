@@ -24,6 +24,8 @@
   setup
   lang="ts"
 >
+import { computed } from 'vue'
+
 import Snackbar from '@/components/Common/Snackbar.vue'
 import ConfigurationHeader from '@/components/Configuration/ConfigurationHeader.vue'
 import ConfigurationTableWrapper from '@/components/Configuration/ConfigurationTableWrapper.vue'
@@ -59,4 +61,3 @@ configurationStore.getProvisionDService()
   margin-left: 20px;
 }
 </style>
-

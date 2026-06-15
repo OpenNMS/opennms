@@ -150,7 +150,7 @@ describe('EventConfigEventTable.vue', () => {
 
     it('renders refresh button', () => {
       const refreshButtons = wrapper.findAllComponents(FeatherButton)
-      const refreshButton = refreshButtons.find((btn) => btn.props('icon') === 'Refresh')
+      const refreshButton = refreshButtons.find(btn => btn.props('icon') === 'Refresh')
       expect(refreshButton).toBeDefined()
     })
 
@@ -263,7 +263,7 @@ describe('EventConfigEventTable.vue', () => {
 
   describe('Refresh Button', () => {
     it('calls store refresh on button click', async () => {
-      const refreshButton = wrapper.findAllComponents(FeatherButton).find((btn) => btn.props('icon') === 'Refresh')
+      const refreshButton = wrapper.findAllComponents(FeatherButton).find(btn => btn.props('icon') === 'Refresh')
       await refreshButton?.trigger('click')
       await nextTick()
       expect(store.refreshEventConfigEvents).toHaveBeenCalled()
@@ -349,7 +349,7 @@ describe('EventConfigEventTable.vue', () => {
       expect(sortHeaders).toHaveLength(4)
       const headerTexts = wrapper
         .findAll('thead th')
-        .map((th) => th.text().trim())
+        .map(th => th.text().trim())
         .filter((text: string) => text.length > 0)
       expect(headerTexts[0]).toContain('Event UEI')
       expect(headerTexts[1]).toContain('Event Label')
@@ -468,7 +468,7 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('renders headers with correct labels in order', () => {
-      const headerTexts = wrapper.findAll('thead th').map((th) => th.text())
+      const headerTexts = wrapper.findAll('thead th').map(th => th.text())
       expect(headerTexts[0]).toContain('Event UEI')
       expect(headerTexts[1]).toContain('Event Label')
       expect(headerTexts[2]).toContain('Severity')
@@ -1222,4 +1222,3 @@ describe('EventConfigEventTable.vue', () => {
     })
   })
 })
-

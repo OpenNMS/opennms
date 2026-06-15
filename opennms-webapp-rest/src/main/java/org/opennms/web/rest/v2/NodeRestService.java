@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 
 import javax.ws.rs.DELETE;
@@ -174,6 +173,34 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // Root alias
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
 
+        // node.label: use ilike for case-insensitive wildcard matching (default like() is case-sensitive)
+        CriteriaBehavior<?> labelBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (v == null) {
+                    b.isNull("label");
+                } else if (w) {
+                    b.ilike("label", v);
+                } else {
+                    b.eq("label", v);
+                }
+                break;
+            case NOT_EQUALS:
+                if (v == null) {
+                    b.isNotNull("label");
+                } else if (w) {
+                    b.not().ilike("label", v);
+                } else {
+                    b.or(Restrictions.ne("label", v), Restrictions.isNull("label"));
+                }
+                break;
+            default:
+                break;
+            }
+        });
+        labelBehavior.setSkipPropertyByDefault(true);
+        map.put("label", labelBehavior);
+
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
@@ -219,10 +246,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
                     switch (c) {
                     case EQUALS:
-                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     case NOT_EQUALS:
-                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
                         break;
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
@@ -244,7 +271,135 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         // There are no extra String properties on node.snmpInterfaces
 
+        // Topology (CDP/LLDP) search: virtual property backed by a SQL subquery across topology tables.
+        // Mirrors DefaultNodeListService.addTopoSearch. skipProperty=true: no Hibernate alias is joined,
+        // so the default property restriction must not be added.
+        final String topologySql = "{alias}.nodeId in (" +
+            "select nodeId from cdplink where cdpinterfacename ilike ? " +
+            "union select nodeId from cdpelement where cdpglobaldeviceid ilike ? " +
+            "union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? " +
+            "union select nodeId from lldpelement where lldpsysname ilike ?)";
+        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) ->
+            b.sql(topologySql, new Object[]{v, v, v, v, v}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING})
+        );
+        topologyBehavior.setSkipPropertyByDefault(true);
+        map.put("topology", topologyBehavior);
+
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
+
+        // iplike: PostgreSQL iplike() pattern filter over all IP interfaces of the node.
+        // Uses a SQL subquery because IpLikeCriteriaBehavior.b.iplike() only works against the
+        // root alias; the ipinterface table is a child association and cannot be aliased there.
+        // FIQL delivers '*' wildcards as '%' by the time the lambda fires — reverse with replaceAll().
+        CriteriaBehavior<?> iplikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final String pattern = ((String)v).replaceAll("%", "*");
+            switch (c) {
+            case EQUALS:
+                b.sql("{alias}.nodeid in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                break;
+            case NOT_EQUALS:
+                b.sql("{alias}.nodeid not in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for iplike expression: " + c);
+            }
+        });
+        iplikeBehavior.setSkipPropertyByDefault(true);
+        map.put("iplike", iplikeBehavior);
+
+        // maclike: case-insensitive partial match on SNMP interface physical (MAC) address.
+        // Mirrors DefaultNodeListService.addCriteriaForMaclike — colons and dashes are stripped,
+        // then an ANYWHERE ilike is applied. Uses a SQL subquery because snmpinterface is a child
+        // association and cannot be aliased against the root criteria here.
+        CriteriaBehavior<?> maclikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final String pattern = "%" + ((String)v).replaceAll("[:-]", "") + "%";
+            switch (c) {
+            case EQUALS:
+                b.sql("{alias}.nodeid in (select nodeid from snmpinterface where snmpphysaddr ilike ?)", pattern, Type.STRING);
+                break;
+            case NOT_EQUALS:
+                b.sql("{alias}.nodeid not in (select nodeid from snmpinterface where snmpphysaddr ilike ?)", pattern, Type.STRING);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for maclike expression: " + c);
+            }
+        });
+        maclikeBehavior.setSkipPropertyByDefault(true);
+        map.put("maclike", maclikeBehavior);
+
+        // nodesWithDownAggregateStatus: nodes whose aggregate status is "down", i.e. that have at
+        // least one active (status='A') monitored service currently in outage (ifRegainedService is null).
+        // Mirrors the post-query AggregateStatus.getDownNodes() filter the legacy node list applies.
+        // Uses a SQL subquery because the outage/ifservice tables are not aliased on the node criteria.
+        final String downStatusSubquery = "(select ip.nodeid from outages o " +
+                "join ifservices s on o.ifserviceid = s.id " +
+                "join ipinterface ip on s.ipinterfaceid = ip.id " +
+                "where o.ifregainedservice is null and s.status = 'A')";
+        CriteriaBehavior<?> downStatusBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final boolean wantDown = Boolean.parseBoolean((String)v);
+            // (==true) and (!=false) both mean "down nodes only"; (==false)/(!=true) mean "exclude down nodes".
+            boolean downOnly;
+            switch (c) {
+            case EQUALS:
+                downOnly = wantDown;
+                break;
+            case NOT_EQUALS:
+                downOnly = !wantDown;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for nodesWithDownAggregateStatus expression: " + c);
+            }
+            b.sql("{alias}.nodeid " + (downOnly ? "in " : "not in ") + downStatusSubquery);
+        });
+        downStatusBehavior.setSkipPropertyByDefault(true);
+        map.put("nodesWithDownAggregateStatus", downStatusBehavior);
+
+        // nodesWithAssets: nodes whose asset record has at least one non-empty field.
+        // Mirrors the legacy AssetModel.searchNodesWithAssets() query ("All nodes with asset info").
+        final String[] assetColumns = {
+            "manufacturer", "vendor", "modelNumber", "serialNumber", "description", "circuitId",
+            "assetNumber", "operatingSystem", "rack", "slot", "port", "region", "division", "department",
+            "address1", "address2", "city", "state", "zip", "building", "floor", "room", "vendorPhone",
+            "vendorFax", "dateInstalled", "lease", "leaseExpires", "supportPhone", "maintContract",
+            "vendorAssetNumber", "maintContractExpires", "displayCategory", "notifyCategory",
+            "pollerCategory", "thresholdCategory", "comment", "username", "password", "enable",
+            "connection", "autoenable", "cpu", "ram", "storagectrl", "hdd1", "hdd2", "hdd3", "hdd4",
+            "hdd5", "hdd6", "numpowersupplies", "inputpower", "additionalhardware", "admin",
+            "snmpcommunity", "rackunitheight"
+        };
+        final String nonEmptyAssets = java.util.Arrays.stream(assetColumns)
+                .map(col -> "coalesce(" + col + ",'') != ''")
+                .collect(java.util.stream.Collectors.joining(" or "));
+        final String assetsSubquery = "(select nodeid from assets where " + nonEmptyAssets + ")";
+        CriteriaBehavior<?> withAssetsBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final boolean wantAssets = Boolean.parseBoolean((String)v);
+            boolean hasAssets;
+            switch (c) {
+            case EQUALS:
+                hasAssets = wantAssets;
+                break;
+            case NOT_EQUALS:
+                hasAssets = !wantAssets;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for nodesWithAssets expression: " + c);
+            }
+            b.sql("{alias}.nodeid " + (hasAssets ? "in " : "not in ") + assetsSubquery);
+        });
+        withAssetsBehavior.setSkipPropertyByDefault(true);
+        map.put("nodesWithAssets", withAssetsBehavior);
 
         return map;
     }

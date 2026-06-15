@@ -23,11 +23,11 @@
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 export const categories = [
-  { authorizedGroups: [] as any[], id: 1, name: 'Routers' }, 
-  { authorizedGroups: [] as any[], id: 2, name: 'Switches' }, 
-  { authorizedGroups: [] as any[], id: 3, name: 'Servers' }, 
-  { authorizedGroups: [] as any[], id: 4, name: 'Production' }, 
-  { authorizedGroups: [] as any[], id: 5, name: 'Test' }, 
+  { authorizedGroups: [] as any[], id: 1, name: 'Routers' },
+  { authorizedGroups: [] as any[], id: 2, name: 'Switches' },
+  { authorizedGroups: [] as any[], id: 3, name: 'Servers' },
+  { authorizedGroups: [] as any[], id: 4, name: 'Production' },
+  { authorizedGroups: [] as any[], id: 5, name: 'Test' },
   { authorizedGroups: [] as any[], id: 6, name: 'Development' }
 ]
 

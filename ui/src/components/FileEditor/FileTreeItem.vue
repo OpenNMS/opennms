@@ -40,7 +40,7 @@ import Close from '@featherds/icon/navigation/ChevronRight'
 import Remove from '@featherds/icon/action/Remove'
 import NewFileInput from './NewFileInput.vue'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
-import { PropType } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 
 const props = defineProps({
   item: {
@@ -79,7 +79,9 @@ const toggle = () => {
 }
 
 const addNewFile = (file: IFile) => {
-  if (!isOpen.value) toggle()
+  if (!isOpen.value) {
+    toggle()
+  }
   file.children?.unshift({
     name: '',
     isEditing: true,

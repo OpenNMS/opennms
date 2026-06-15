@@ -572,10 +572,22 @@ export interface NodeQuerySysParams {
 }
 
 export interface NodeQueryExtendedSearchParams {
-  ipAddress?: string
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
+}
+
+export interface ExtendedSearchValue {
+  name: string
+  value: string
+  group: keyof NodeQueryExtendedSearchParams
+  key: string
+}
+
+/** A single asset-record field filter (column + exact-match value). */
+export interface AssetFilter {
+  column: string
+  value: string
 }
 
 /** All components of a node structure query */
@@ -587,6 +599,12 @@ export interface NodeQueryFilter {
   selectedServices?: string[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
+  ipAddress?: string
+  macAddress?: string
+  topology?: string
+  nodesWithDownAggregateStatus?: boolean
+  nodesWithAssets?: boolean
+  assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }
 

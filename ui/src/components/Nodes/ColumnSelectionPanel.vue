@@ -29,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, markRaw } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherIcon } from '@featherds/icon'

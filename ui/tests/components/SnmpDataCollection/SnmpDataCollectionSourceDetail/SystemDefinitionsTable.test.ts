@@ -61,8 +61,8 @@ describe('SystemDefinitionsTable.vue', () => {
       name: 'Cisco-Router',
       sysoid: '.1.3.6.1.4.1.9.1.1',
       sysoidMask: '.1.3.6.1.4.1.9',
-      ipAddresses: ["192.168.1.1"],
-      ipAddressMasks: ["255.255.255.0"],
+      ipAddresses: ['192.168.1.1'],
+      ipAddressMasks: ['255.255.255.0'],
       mibGroupNames: ['cisco-memory-pool', 'cisco-cpu'],
       enabled: true,
       collectionSourceId: 1,
@@ -244,7 +244,7 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(sortHeaders.length).toBe(4)
 
       const ths = wrapper.findAll('th')
-      const actionsHeader = ths.filter((th) => th.text() === 'Actions')
+      const actionsHeader = ths.filter(th => th.text() === 'Actions')
       expect(actionsHeader.length).toBe(1)
     })
 
@@ -657,7 +657,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const ths = wrapper.findAll('th')
-      const actionsHeader = ths.filter((th) => th.text() === 'Actions')
+      const actionsHeader = ths.filter(th => th.text() === 'Actions')
       expect(actionsHeader.length).toBe(1)
     })
   })
@@ -1664,4 +1664,3 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 })
-

@@ -1741,7 +1741,6 @@
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
     <activemqVersion>5.19.6</activemqVersion>
-    <activemqCamelVersion>5.16.8</activemqCamelVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.84</bouncyCastleVersion>
@@ -3085,6 +3084,11 @@
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
+        <version>${activemqVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-spring</artifactId>
         <version>${activemqVersion}</version>
       </dependency>
       <dependency>

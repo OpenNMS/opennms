@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { DefineComponent } from 'vue'
+import { DefineComponent, computed } from 'vue'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'

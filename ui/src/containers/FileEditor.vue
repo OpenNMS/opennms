@@ -51,6 +51,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import Editor from '@/components/FileEditor/Editor.vue'

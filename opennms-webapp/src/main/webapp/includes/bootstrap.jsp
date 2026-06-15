@@ -247,9 +247,6 @@
 <%--
     Note, if 'fromVaadin' is true, we display the menu anyway, even if 'superQuiet' is true.
     This means this is a Vaadin page loaded at the top level and should have the menu.
-    For Vaadin pages that are actually dashlets loaded inside a Wallboard, they will have
-    'fromVaadinDashlet=true', which we treat the same as 'superQuiet', i.e. do not display a menu.
-    'fromVaadinDashlet' might be used to add additional code to fix margins, etc.
     See header-component_connector.js and org.opennms.features.vaadin.components.header.HeaderComponent.java for more.
 --%>
 <c:choose>

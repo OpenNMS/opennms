@@ -3,7 +3,7 @@
     <div class="title-container">
       <h3>Lookup by IP</h3>
     </div>
-    
+
     <div class="info-section">
       <span>Find the SNMP configuration that exists for a particular IP address.</span>
       <FeatherIcon
@@ -82,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
@@ -112,9 +114,9 @@ const ipAddress = ref('')
 const emit = defineEmits<{
   (e: 'lookup-complete', config: SnmpAgentConfig, ipAddress: string): void
 }>()
- 
+
 const monitoringLocations = computed<ISelectItemType[]>(() => {
-  return store.monitoringLocations.map(loc => {
+  return store.monitoringLocations.map((loc) => {
     return {
       _text: loc.name,
       _value: loc.name
@@ -182,11 +184,11 @@ watch(() => props.autoLookupIpAddress, (ip) => {
   // auto-lookup mode for url like '/snmp-config/lookup?ipAddress=X&location=Y'
   if (ip) {
     lookupIpAddress.value = ip
-    
+
     const locationIsDefault = !props.autoLookupLocation || props.autoLookupLocation.localeCompare(DEFAULT_MONITORING_LOCATION, undefined, { sensitivity: 'base' }) === 0
     const locationName = locationIsDefault ? DEFAULT_MONITORING_LOCATION : props.autoLookupLocation
     const matched = monitoringLocations.value.find(loc => loc._value === locationName)
-    
+
     // If non-default location is provided, check if it matches any of the available monitoring locations.
     // Note, this could also happen if the monitoring locations are still loading and haven't been populated yet.
     // User can then manually select the location and trigger lookup.

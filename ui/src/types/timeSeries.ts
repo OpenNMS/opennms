@@ -41,7 +41,7 @@ export enum TimeseriesDataSourceType {
   COUNTER = 'COUNTER',
   DERIVE = 'DERIVE',
   ABSOLUTE = 'ABSOLUTE',
-  COMPUTE = 'COMPUTE',
+  COMPUTE = 'COMPUTE'
 }
 
 export interface RRA {

@@ -9,6 +9,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -455,7 +456,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const ths = wrapper.findAll('thead th')
       // Source (sortable), Profiles (plain), Status (sortable), Actions (plain) = 4 headers.
       expect(ths.length).toBe(4)
-      const labels = ths.map((th) => th.text().trim())
+      const labels = ths.map(th => th.text().trim())
       expect(labels).toContain('Profiles')
       expect(labels).toContain('Actions')
     })
@@ -466,7 +467,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      const properties = sortHeaders.map((h) => h.props('property'))
+      const properties = sortHeaders.map(h => h.props('property'))
       expect(properties).toContain('name')
       expect(properties).toContain('enabled')
     })
@@ -1285,14 +1286,14 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
     it('calls goToCreateSource function to navigate', () => {
       wrapper.vm.goToCreateSource()
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' } })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' }})
     })
 
     it('goToCreateSource can be called multiple times', () => {
       wrapper.vm.goToCreateSource()
       wrapper.vm.goToCreateSource()
       expect(mockPush).toHaveBeenCalledTimes(2)
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' } })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Source Detail', params: { id: 'create' }})
     })
   })
 
@@ -1743,7 +1744,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('openChangeStatusDialog sets correct source for enabled source', () => {
       const enabledSource = { ...mockSource, enabled: true }
       wrapper.vm.openChangeStatusDialog(enabledSource)
-      
+
       expect(wrapper.vm.selectedCollectionSource).toEqual(enabledSource)
       expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
     })
@@ -1751,7 +1752,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('openChangeStatusDialog sets correct source for disabled source', () => {
       const disabledSource = { ...mockSource, enabled: false }
       wrapper.vm.openChangeStatusDialog(disabledSource)
-      
+
       expect(wrapper.vm.selectedCollectionSource).toEqual(disabledSource)
       expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
     })
@@ -2110,4 +2111,3 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
   })
 })
-

@@ -86,6 +86,8 @@
   setup
   lang="ts"
 >
+import { computed, reactive, ref } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
 import { FeatherInput } from '@featherds/input'
@@ -113,14 +115,14 @@ const snackbarErrorMessage = 'Thread pool values are outside of supported range.
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
+  threadPoolKeys.forEach(key => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
 
 const unTouchedThreadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
+  threadPoolKeys.forEach(key => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
@@ -150,15 +152,15 @@ const updateThreadpools = async () => {
       const reducedUpdatedProvisionDData = threadPoolKeys.reduce((acc, key) => {
         const obj: Record<string, string> = {}
 
-        for(let elem in updatedProvisionDData) {
-          if(elem === key){
+        for (let elem in updatedProvisionDData) {
+          if (elem === key) {
             obj[elem] = updatedProvisionDData[elem]
             break
           }
         }
 
-        return {...acc, ...obj}
-      },{})
+        return { ...acc, ...obj }
+      }, {})
       const haveThreadPoolValuesChanged = !_isEqual(currentThreadpoolState, reducedUpdatedProvisionDData)
 
       // Set Update State
@@ -177,7 +179,7 @@ const updateThreadpools = async () => {
 
       let messageUpdateSuccess = 'Thread pool data saved.'
 
-      if(!haveThreadPoolValuesChanged) {
+      if (!haveThreadPoolValuesChanged) {
         showSnackBar({
           msg: messageUpdateSuccess
         })

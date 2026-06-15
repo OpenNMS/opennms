@@ -14,7 +14,7 @@
   lang="ts"
   setup
 >
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import { RequisitionData } from './copy/requisitionTypes'
@@ -69,4 +69,3 @@ const convertedItem = computed(() => {
   overflow-wrap: anywhere;
 }
 </style>
-

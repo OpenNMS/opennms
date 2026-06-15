@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.support;
 
-import static org.opennms.web.rest.support.CriteriaValueConverters.BOOLEAN_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.CHARACTER_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;
@@ -406,7 +405,8 @@ public abstract class CriteriaBehaviors {
                     " where ipinterface.id = ifservices.ipinterfaceid" +
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
-                    " and ifservices.status != 'D')",
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
                     w ? "ilike" : "="), v, Type.STRING);
                 break;
             case NOT_EQUALS:
@@ -415,7 +415,8 @@ public abstract class CriteriaBehaviors {
                     " where ipinterface.id = ifservices.ipinterfaceid" +
                     " and ifservices.serviceid = service.serviceid" +
                     " and service.servicename %s ?" +
-                    " and ifservices.status != 'D')",
+                    " and ifservices.status != 'D'" +
+                    " and ipinterface.ismanaged != 'D')",
                     w ? "ilike" : "="), v, Type.STRING);
                 break;
             default:

@@ -53,7 +53,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   })
 
   it('calls hideChangeEventConfigSourceStatusDialog on Cancel click', async () => {
-    const cancelBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'cancel')
+    const cancelBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase() === 'cancel')
 
     expect(cancelBtn).toBeTruthy()
     await cancelBtn?.trigger('click')
@@ -62,7 +62,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   })
 
   it('calls disableEventConfigSource on Save click when enabled', async () => {
-    const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'save')
+    const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase() === 'save')
 
     await saveBtn?.trigger('click')
 
@@ -88,7 +88,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     }
     await wrapper.vm.$nextTick()
 
-    const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'save')
+    const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase() === 'save')
 
     await saveBtn?.trigger('click')
 
@@ -107,4 +107,3 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     expect(dialog.props('modelValue')).toBe(true)
   })
 })
-

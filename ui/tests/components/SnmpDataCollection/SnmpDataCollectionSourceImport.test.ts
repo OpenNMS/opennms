@@ -10,6 +10,7 @@ import { FeatherSpinner } from '@featherds/progress'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 // Mock the service
 vi.mock('@/services/snmpDataCollectionService', () => ({
@@ -154,7 +155,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     // validator). Derive groupName from the filename basename so the
     // watcher's name-based duplicate detection works without each test
     // having to know about the groupName field.
-    wrapper.vm.sourceFiles = files.map((f) => ({
+    wrapper.vm.sourceFiles = files.map(f => ({
       ...f,
       groupName: f.groupName ?? f.file.name.replace(/\.xml$/i, '')
     }))
@@ -850,8 +851,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.$nextTick()
 
       const buttons = wrapper.findAllComponents(FeatherButton)
-      const chooseFilesButton = buttons.find((btn) => btn.text().includes('Choose files to upload'))
-      const chooseFolderButton = buttons.find((btn) => btn.text().includes('Choose folder to upload'))
+      const chooseFilesButton = buttons.find(btn => btn.text().includes('Choose files to upload'))
+      const chooseFolderButton = buttons.find(btn => btn.text().includes('Choose folder to upload'))
 
       expect(chooseFilesButton?.props('disabled')).toBe(true)
       expect(chooseFolderButton?.props('disabled')).toBe(true)
@@ -1699,7 +1700,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
         const dialog = wrapper.findComponent({ name: 'UploadedFileRenameDialog' })
         // setSourceFiles auto-derives groupName; the pass-through prop reflects that.
         expect(dialog.props('fileBucket')).toEqual(
-          files.map((f) => ({ ...f, groupName: f.file.name.replace(/\.xml$/i, '') }))
+          files.map(f => ({ ...f, groupName: f.file.name.replace(/\.xml$/i, '') }))
         )
       })
 
@@ -3557,4 +3558,3 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
   })
 
 })
-

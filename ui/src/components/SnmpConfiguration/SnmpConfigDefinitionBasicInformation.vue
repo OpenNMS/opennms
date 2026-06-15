@@ -92,7 +92,7 @@
 
           <p>You may then edit all the other parameters as needed, and click <strong>Save</strong> to save the configuration, which will now apply to all the IP addresses, ranges or IPLIKE expressions specified in the badges.</p>
 
-          <p><strong>NOTE:</strong> OpenNMS will optimize the application of these configurations to the specified IP addresses, ranges, or IPLIKE expressions, for 
+          <p><strong>NOTE:</strong> OpenNMS will optimize the application of these configurations to the specified IP addresses, ranges, or IPLIKE expressions, for
           example by consolidating overlapping ranges.</p>
 
           <h4>Secure Credentials Vault (SCV) Support</h4>
@@ -107,6 +107,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
@@ -303,7 +305,7 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
 
   if (firstIp && !lastIp) {
     const duplicateError = checkForDuplicateDefinitionItems(currentDefinition.value, undefined, firstIp, undefined)
-    
+
     if (duplicateError) {
       errors.value = {
         duplicateRangeItem: duplicateError
@@ -365,7 +367,7 @@ const loadInitialValues = () => {
 
 const onDetailsValidationError = (formErrors: SnmpConfigFormErrors) => {
   isValid.value = Object.keys(formErrors).length === 0
-  errors.value = { ...formErrors}
+  errors.value = { ...formErrors }
 }
 
 const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string, ipMatch?: string) => {

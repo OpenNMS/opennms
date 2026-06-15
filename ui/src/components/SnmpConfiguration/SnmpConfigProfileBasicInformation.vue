@@ -75,6 +75,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
+
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherInput } from '@featherds/input'
 import useSnackbar from '@/composables/useSnackbar'
@@ -94,7 +96,7 @@ const emit = defineEmits<{
   (e: 'save', profile: SnmpProfile): void
   (e: 'validation-error', formErrors: SnmpProfileFormErrors): void
 }>()
-  
+
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()
 const isValid = ref(false)
@@ -159,7 +161,7 @@ const onDetailsSave = (config: SnmpAgentConfig) => {
 
   if (!isValid.value) {
     snackbar.showSnackBar({ msg: 'Invalid values', error: true })
-    
+
     emit('validation-error', profileErrors)
     return
   }

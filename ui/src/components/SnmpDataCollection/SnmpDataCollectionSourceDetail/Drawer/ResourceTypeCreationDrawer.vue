@@ -306,6 +306,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, ref, watch, watchEffect } from 'vue'
+
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { KEY_PATTERN, PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
@@ -395,8 +397,8 @@ const onSearchStorageStrategy = async (q: string) => {
   }
   storageStrategyTimeout.value = window.setTimeout(() => {
     const filteredOptions = STORAGE_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
+      .filter(x => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map(x => ({
         _text: x,
         _value: x
       }))
@@ -470,8 +472,8 @@ const onSearchPersistenceSelectorStrategy = async (q: string) => {
   }
   persistenceSelectorStrategyTimeout.value = window.setTimeout(() => {
     const filteredOptions = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
+      .filter(x => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map(x => ({
         _text: x,
         _value: x
       }))
@@ -705,7 +707,7 @@ const loadResourceTypeParameterData = () => {
       key.value = parameter.key
       value.value = parameter.value
     }
-  } 
+  }
   if (resourceTypeDrawerState.value.type === 'persistenceSelectorStrategy' && resourceTypeDrawerState.value.persistenceSelectorStrategyObject) {
     const parameter = resourceTypeDrawerState.value.persistenceSelectorStrategyObject
     if (parameter) {
@@ -874,4 +876,3 @@ watch(
   }
 }
 </style>
-

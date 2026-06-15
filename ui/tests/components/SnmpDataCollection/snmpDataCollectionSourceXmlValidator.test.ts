@@ -130,7 +130,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
 
       it('should validate all valid MIB object types', async () => {
         const types = ['counter', 'counter32', 'counter64', 'gauge', 'gauge32', 'gauge64', 'integer', 'integer32', 'timeticks', 'string', 'octetstring', 'opaque']
-        
+
         for (const type of types) {
           const xml = `<?xml version="1.0"?>
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="test-group">
@@ -323,7 +323,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('')
     })
@@ -345,7 +345,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType 1: missing "name" attribute')
     })
@@ -357,7 +357,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType 1: missing "name" attribute')
     })
@@ -369,7 +369,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": missing "label" attribute')
     })
@@ -381,7 +381,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": missing "label" attribute')
     })
@@ -392,7 +392,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": missing <persistenceSelectorStrategy>')
     })
@@ -404,7 +404,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": <persistenceSelectorStrategy> missing "class" attribute')
     })
@@ -416,7 +416,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": <persistenceSelectorStrategy> missing "class" attribute')
     })
@@ -427,7 +427,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": missing <storageStrategy>')
     })
@@ -439,7 +439,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": <storageStrategy> missing "class" attribute')
     })
@@ -451,7 +451,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('ResourceType "test": <storageStrategy> missing "class" attribute')
     })
@@ -467,7 +467,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toBe('')
     })
@@ -481,7 +481,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </resourceType>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('resourceType')
-      
+
       const result = validateResourceTypeElement(element, 1)
       expect(result).toContain('persistenceSelectorStrategy parameter 1')
     })
@@ -499,7 +499,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<parameter key="testKey" value="testValue"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('parameter')
-      
+
       const result = validateParameterElement(element, 'Test context')
       expect(result).toBe('')
     })
@@ -508,7 +508,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<parameter key="testKey" value=""/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('parameter')
-      
+
       const result = validateParameterElement(element, 'Test context')
       expect(result).toBe('')
     })
@@ -522,7 +522,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<parameter value="testValue"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('parameter')
-      
+
       const result = validateParameterElement(element, 'Test context')
       expect(result).toBe('Test context: missing "key" attribute')
     })
@@ -531,7 +531,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<parameter key="" value="testValue"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('parameter')
-      
+
       const result = validateParameterElement(element, 'Test context')
       expect(result).toBe('Test context: missing "key" attribute')
     })
@@ -540,7 +540,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<parameter key="testKey"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('parameter')
-      
+
       const result = validateParameterElement(element, 'Test context')
       expect(result).toBe('Test context: missing "value" attribute')
     })
@@ -560,7 +560,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('')
     })
@@ -571,7 +571,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('')
     })
@@ -582,7 +582,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('')
     })
@@ -603,7 +603,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('Group 1: missing "name" attribute')
     })
@@ -614,7 +614,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('Group 1: missing "name" attribute')
     })
@@ -625,7 +625,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('Group "testGroup": missing "ifType" attribute')
     })
@@ -636,7 +636,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('Group "testGroup": missing "ifType" attribute')
     })
@@ -658,7 +658,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           </group>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('group')
-          
+
           const result = validateGroupElement(element!, 1)
           expect(result).toContain(`invalid "ifType" value "${value}"`)
         }
@@ -670,7 +670,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('Group "testGroup": missing <mibObj> elements')
     })
@@ -682,7 +682,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toBe('')
     })
@@ -693,7 +693,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </group>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('group')
-      
+
       const result = validateGroupElement(element!, 1)
       expect(result).toContain('mibObj 1')
     })
@@ -711,7 +711,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="sysDescr" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('')
     })
@@ -720,7 +720,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid="1.3.6.1.2.1.1.1" instance="0" alias="sysDescr" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('')
     })
@@ -734,7 +734,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj instance="0" alias="test" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "oid"')
     })
@@ -743,7 +743,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid="" instance="0" alias="test" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "oid"')
     })
@@ -764,7 +764,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           const xml = `<mibObj oid="${oid}" instance="0" alias="test" type="string"/>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('mibObj')
-          
+
           const result = validateMibObjElement(element!, 'testGroup', 1)
           expect(result).toContain(`invalid OID format "${oid}"`)
         }
@@ -775,7 +775,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" alias="test" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "instance"')
     })
@@ -784,7 +784,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="" alias="test" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "instance"')
     })
@@ -793,7 +793,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "alias"')
     })
@@ -802,7 +802,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="" type="string"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "alias"')
     })
@@ -811,7 +811,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test"/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "type"')
     })
@@ -820,7 +820,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type=""/>'
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('mibObj')
-      
+
       const result = validateMibObjElement(element!, 'testGroup', 1)
       expect(result).toBe('Group "testGroup" mibObj 1: missing "type"')
     })
@@ -840,7 +840,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           const xml = `<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type="${type}"/>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('mibObj')
-          
+
           const result = validateMibObjElement(element!, 'testGroup', 1)
           expect(result).toContain(`invalid type "${type}"`)
         }
@@ -861,7 +861,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           const xml = `<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type="${type}"/>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('mibObj')
-          
+
           const result = validateMibObjElement(element!, 'testGroup', 1)
           expect(result).toBe('')
         }
@@ -871,7 +871,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type="Counter"/>'
         xmlDoc = parser.parseFromString(xml, 'application/xml')
         const element = xmlDoc.querySelector('mibObj')
-        
+
         const result = validateMibObjElement(element!, 'testGroup', 1)
         expect(result).toBe('')
       })
@@ -880,7 +880,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         const xml = '<mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type="String"/>'
         xmlDoc = parser.parseFromString(xml, 'application/xml')
         const element = xmlDoc.querySelector('mibObj')
-        
+
         const result = validateMibObjElement(element!, 'testGroup', 1)
         expect(result).toBe('')
       })
@@ -904,7 +904,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -918,7 +918,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -930,7 +930,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -952,7 +952,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('SystemDef 1: missing "name" attribute')
     })
@@ -964,7 +964,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('SystemDef 1: missing "name" attribute')
     })
@@ -975,7 +975,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('SystemDef "testSystem": missing <sysoid> or <sysoidMask>')
     })
@@ -998,7 +998,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           </systemDef>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('systemDef')
-          
+
           const result = validateSystemDefElement(element!, 1)
           expect(result).toContain(`invalid <sysoid> format "${sysoid}"`)
         }
@@ -1012,7 +1012,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -1024,7 +1024,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -1045,7 +1045,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
           </systemDef>`
           xmlDoc = parser.parseFromString(xml, 'application/xml')
           const element = xmlDoc.querySelector('systemDef')
-          
+
           const result = validateSystemDefElement(element!, 1)
           expect(result).toContain(`invalid <sysoidMask> format "${mask}"`)
         }
@@ -1058,7 +1058,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('SystemDef "testSystem": missing <collect>')
     })
@@ -1073,7 +1073,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toBe('')
     })
@@ -1087,7 +1087,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toContain('<includeGroup> 1 is empty')
     })
@@ -1101,7 +1101,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       </systemDef>`
       xmlDoc = parser.parseFromString(xml, 'application/xml')
       const element = xmlDoc.querySelector('systemDef')
-      
+
       const result = validateSystemDefElement(element!, 1)
       expect(result).toContain('<includeGroup> 1 is empty')
     })
