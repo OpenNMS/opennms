@@ -28,6 +28,15 @@
 // styles. Remove this file when FeatherDS is dropped (migration Phase 6) if the
 // PrimeVue defaults are acceptable at that point.
 
+// The app font (OpenSans) is applied per-FeatherDS-component, not globally on
+// <body>, and PrimeVue components don't set their own font. Teleported overlays
+// (e.g. Select / AutoComplete dropdown panels appended to <body>) therefore fall
+// back to the browser default font. Apply the app font to every PrimeVue
+// component so inline and teleported components alike match FeatherDS.
+.p-component {
+  font-family: OpenSans, Helvetica, Arial, sans-serif;
+}
+
 // FeatherDS data tables render column headers in uppercase.
 .p-datatable-thead > tr > th {
   text-transform: uppercase;

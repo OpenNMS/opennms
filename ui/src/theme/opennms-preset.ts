@@ -144,6 +144,17 @@ const OpenNMSPreset = definePreset(Aura, {
           select: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' },
           popover: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' },
           modal: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' }
+        },
+        // Dropdown / autocomplete option hover + selected backgrounds. Aura's dark
+        // defaults derive from the neutral surface scale (off the OpenNMS navy
+        // palette); use a subtle white overlay like the FeatherDS dropdowns. Light
+        // mode keeps Aura's defaults, which already match.
+        list: {
+          option: {
+            focusBackground: 'rgba(255, 255, 255, 0.06)',
+            selectedBackground: 'rgba(255, 255, 255, 0.06)',
+            selectedFocusBackground: 'rgba(255, 255, 255, 0.1)'
+          }
         }
       }
     }
