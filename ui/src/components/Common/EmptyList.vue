@@ -15,14 +15,16 @@
   <div :class="['empty-list', bg ? 'bg' : '']">
     <h3 v-if="content.title" data-test="title">{{ content.title }}</h3>
     <div data-test="msg">{{ msg }}</div>
-    <FeatherButton v-if="content.btn" secondary @click="content.btn?.action" data-test="btn">{{ content.btn?.label }}
-    </FeatherButton>
+    <PButton v-if="content.btn" outlined @click="content.btn?.action" data-test="btn">{{ content.btn?.label }}
+    </PButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import Button from 'primevue/button'
 
+const PButton = Button
 
 type Content = {
   title?: string
@@ -42,8 +44,6 @@ const msg = computed(() => props.content.msg || '')
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
 @use '@/styles/vars.scss';
 
 .empty-list {
@@ -55,13 +55,13 @@ const msg = computed(() => props.content.msg || '')
   height: 200px;
 
   >button {
-    margin-top: var(variables.$spacing-l);
+    margin-top: 1.25rem;
   }
 }
 
 .bg {
-  background-color: var(variables.$surface);
+  background-color: var(--p-content-background);
   border-radius: vars.$border-radius-surface;
-  border: 1px solid var(variables.$border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 }
 </style>
