@@ -99,7 +99,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * The singleton instance of this factory
      */
-    private static SnmpPeerFactory s_singleton = null;
+    private static volatile SnmpPeerFactory s_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -128,8 +128,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * {@code synchronized (SnmpPeerFactory.class)} when calling {@link BeanUtils#getBean}:
      * bean lookup can take {@code ContextRegistry}'s lock while Spring still holds that lock
      * and invokes {@link #init()}, which needs the class monitor (deadlock with SNMP
-     * interface poller). The same applies to {@code textEncryptor} resolution in
-     * {@link #encryptSingletonIfEnabled()}, which must run outside the class monitor.
+     * interface poller). The same applies to {@link #initializeTextEncryptor()} in
+     * {@link #encryptSnmpConfig()}; encrypt save is re-synchronized on the class monitor
+     * after the bean is resolved.
      */
     private static final Object secureCredentialsScopeInitLock = new Object();
 
