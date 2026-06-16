@@ -3,25 +3,23 @@ import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import * as eventConfigService from '@/services/eventConfigService'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import DeleteEventConfigEventDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigEventDialog.vue'
 import type { EventConfigSource } from '@/types/eventConfig'
+
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({
     push: mockPush
   })
-}))
-
-vi.mock('@featherds/dialog', () => ({
-  FeatherDialog: {
-    name: 'FeatherDialog',
-    template: '<div><slot></slot><slot name="footer"></slot></div>',
-    props: ['labels', 'modelValue'],
-    emits: ['hidden']
-  }
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -76,7 +74,9 @@ describe('DeleteEventConfigEventDialog', () => {
     wrapper = mount(DeleteEventConfigEventDialog, {
       global: {
         plugins: [pinia],
-        components: { FeatherButton, FeatherDialog }
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
+        }
       }
     })
 
@@ -89,24 +89,24 @@ describe('DeleteEventConfigEventDialog', () => {
 
   describe('Dialog Rendering', () => {
     it('renders the dialog when visible is true', () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
       expect(dialog.exists()).toBe(true)
-      expect(dialog.props('labels')).toEqual({
-        title: 'Delete Event Configuration Event'
-      })
+      expect(dialog.props('title')).toBe('Delete Event Configuration Event')
     })
 
     it('hides the dialog when visible is false', async () => {
       store.$state.deleteEventConfigEventDialogState.visible = false
       await wrapper.vm.$nextTick()
-      expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
+      expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
     })
 
     it('renders Cancel and Delete buttons', () => {
-      const buttons = wrapper.findAllComponents(FeatherButton)
-      expect(buttons.length).toBe(2)
-      expect(buttons.some(b => b.text().includes('Cancel'))).toBe(true)
-      expect(buttons.some(b => b.text().includes('Delete'))).toBe(true)
+      const cancelButton = wrapper.find('.cancel-btn')
+      const deleteButton = wrapper.find('.action-btn')
+      expect(cancelButton.exists()).toBe(true)
+      expect(deleteButton.exists()).toBe(true)
+      expect(cancelButton.text()).toContain('Cancel')
+      expect(deleteButton.text()).toContain('Delete')
     })
 
     it('renders confirmation question', () => {
@@ -148,9 +148,9 @@ describe('DeleteEventConfigEventDialog', () => {
 
   describe('Cancel Button', () => {
     it('calls hideDeleteEventConfigEventDialog when Cancel is clicked', async () => {
-      const cancelButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Cancel'))
-      expect(cancelButton?.exists()).toBe(true)
-      await cancelButton?.trigger('click')
+      const cancelButton = wrapper.find('.cancel-btn')
+      expect(cancelButton.exists()).toBe(true)
+      await cancelButton.trigger('click')
       expect(store.hideDeleteEventConfigEventDialog).toHaveBeenCalled()
     })
   })
@@ -163,8 +163,8 @@ describe('DeleteEventConfigEventDialog', () => {
         totalRecords: 0
       })
 
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(eventConfigService.deleteEventConfigEventBySourceId).toHaveBeenCalledWith(5, [10])
@@ -179,8 +179,8 @@ describe('DeleteEventConfigEventDialog', () => {
       store.$state.selectedSource = { ...mockSource, eventCount: 0 }
       vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId').mockResolvedValue(true)
 
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration' })
@@ -193,8 +193,8 @@ describe('DeleteEventConfigEventDialog', () => {
         totalRecords: 0
       })
 
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(store.fetchEventsBySourceId).toHaveBeenCalled()
@@ -206,8 +206,8 @@ describe('DeleteEventConfigEventDialog', () => {
     it('shows snackbar error when delete returns false', async () => {
       vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId').mockResolvedValue(false)
 
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to delete event configuration event', error: true })
@@ -219,8 +219,8 @@ describe('DeleteEventConfigEventDialog', () => {
       const testError = new Error('Delete failed')
       vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId').mockRejectedValue(testError)
 
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error deleting event configuration event:', testError)
@@ -233,8 +233,8 @@ describe('DeleteEventConfigEventDialog', () => {
       await wrapper.vm.$nextTick()
 
       const spy = vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId')
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(spy).not.toHaveBeenCalled()
@@ -248,8 +248,8 @@ describe('DeleteEventConfigEventDialog', () => {
       await wrapper.vm.$nextTick()
 
       const spy = vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId')
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(spy).not.toHaveBeenCalled()
@@ -261,8 +261,8 @@ describe('DeleteEventConfigEventDialog', () => {
       await wrapper.vm.$nextTick()
 
       const spy = vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId')
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(spy).not.toHaveBeenCalled()
@@ -277,8 +277,8 @@ describe('DeleteEventConfigEventDialog', () => {
       await wrapper.vm.$nextTick()
 
       const spy = vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId')
-      const deleteButton = wrapper.findAllComponents(FeatherButton).find(b => b.text().includes('Delete'))
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('.action-btn')
+      await deleteButton.trigger('click')
       await flushPromises()
 
       expect(spy).not.toHaveBeenCalled()
@@ -286,10 +286,10 @@ describe('DeleteEventConfigEventDialog', () => {
     })
   })
 
-  describe('Dialog Hidden Event', () => {
-    it('calls hideDeleteEventConfigEventDialog when dialog emits hidden event', async () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
-      dialog.vm.$emit('hidden')
+  describe('Dialog Cancel Event', () => {
+    it('calls hideDeleteEventConfigEventDialog when dialog emits cancel event', async () => {
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      dialog.vm.$emit('cancel')
       expect(store.hideDeleteEventConfigEventDialog).toHaveBeenCalled()
     })
   })

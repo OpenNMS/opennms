@@ -1,19 +1,18 @@
 import DeleteEventConfigSourceDialog from '@/components/EventConfiguration/Dialog/DeleteEventConfigSourceDialog.vue'
 import * as eventConfigService from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@featherds/dialog', () => ({
-  FeatherDialog: {
-    name: 'FeatherDialog',
-    template: '<div><slot></slot><slot name="footer"></slot></div>',
-    props: ['labels', 'modelValue']
-  }
-}))
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 describe('DeleteEventConfigSourceDialog', () => {
   let wrapper: any
@@ -59,9 +58,8 @@ describe('DeleteEventConfigSourceDialog', () => {
     wrapper = mount(DeleteEventConfigSourceDialog, {
       global: {
         plugins: [pinia],
-        components: {
-          FeatherButton,
-          FeatherDialog
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -70,10 +68,8 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('renders the dialog when visible is true', () => {
-    expect(wrapper.findComponent(FeatherDialog).exists()).toBe(true)
-    expect(wrapper.findComponent(FeatherDialog).props('labels')).toEqual({
-      title: 'Delete Event Configuration Source'
-    })
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('title')).toBe('Delete Event Configuration Source')
   })
 
   it('displays the correct event configuration source name and event count', () => {
@@ -84,7 +80,7 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('calls hideDeleteEventConfigSourceModal when Cancel button is clicked', async () => {
-    const cancelButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Cancel'))
+    const cancelButton = wrapper.find('.cancel-btn')
     expect(cancelButton.exists()).toBe(true)
     await cancelButton.trigger('click')
     expect(store.hideDeleteEventConfigSourceModal).toHaveBeenCalled()
@@ -97,7 +93,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       totalRecords: 0
     })
     vi.spyOn(eventConfigService, 'getAllSourceNames').mockResolvedValue([])
-    const deleteButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
+    const deleteButton = wrapper.find('.action-btn')
     expect(deleteButton.exists()).toBe(true)
     await deleteButton.trigger('click')
     await flushPromises()
@@ -136,9 +132,8 @@ describe('DeleteEventConfigSourceDialog', () => {
     const localWrapper = mount(DeleteEventConfigSourceDialog, {
       global: {
         plugins: [pinia],
-        components: {
-          FeatherButton,
-          FeatherDialog
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -146,9 +141,9 @@ describe('DeleteEventConfigSourceDialog', () => {
     await flushPromises()
 
     const mockDelete = vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
-    const deleteButton = localWrapper.findAllComponents(FeatherButton).at(1)
-    expect(deleteButton?.exists()).toBe(true)
-    await deleteButton?.trigger('click')
+    const deleteButton = localWrapper.find('.action-btn')
+    expect(deleteButton.exists()).toBe(true)
+    await deleteButton.trigger('click')
     await flushPromises()
     expect(mockDelete).not.toHaveBeenCalled()
   })
@@ -156,6 +151,6 @@ describe('DeleteEventConfigSourceDialog', () => {
   it('hides the dialog when visible is false', async () => {
     store.$state.deleteEventConfigSourceDialogState.visible = false
     await wrapper.vm.$nextTick()
-    expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
   })
 })
