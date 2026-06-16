@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
@@ -55,11 +55,13 @@ import io.opentracing.util.GlobalTracer;
  */
 public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Map<String, Object>> {
 
-    @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
+    // bound to direct:sendMessage on the sinkClient context in init(); Camel 3
+    // dropped the @EndpointInject context attribute
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
     private Endpoint endpoint;
+
+    private CamelContext camelContext;
 
     private BundleContext bundleContext;
 
@@ -115,6 +117,8 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     }
 
     public void init() {
+        endpoint = camelContext.getEndpoint("direct:sendMessage");
+        template = camelContext.createProducerTemplate();
         if (tracerRegistry != null && identity != null) {
             tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
         }
@@ -123,6 +127,10 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public void destroy() {
         onDestroy();
+    }
+
+    public void setCamelContext(CamelContext camelContext) {
+        this.camelContext = camelContext;
     }
 
     public void setBundleContext(BundleContext bundleContext) {

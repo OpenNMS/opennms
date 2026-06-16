@@ -21,16 +21,30 @@
  */
 package org.opennms.web.springframework.security;
 
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.util.DigestUtils;
 
 /**
- * <p>UpperCaseMd5PasswordEncoder class.</p>
+ * <p>Computes an uppercase, hex-encoded MD5 hash of a password, reproducing the behaviour of the
+ * Spring Security 3.x-era {@code Md5PasswordEncoder} (and its {@code mergePasswordAndSalt} salt
+ * handling) so that pre-existing OpenNMS password hashes continue to validate.</p>
+ *
+ * <p>Spring Security 5.x removed {@code org.springframework.security.authentication.encoding}, so the
+ * hashing is implemented directly here rather than by extending the removed {@code Md5PasswordEncoder}.</p>
  */
-public class UpperCaseMd5PasswordEncoder extends Md5PasswordEncoder {
-    /** {@inheritDoc} */
-    @Override
-    public String encodePassword(String rawPass, Object salt) {
-    	// This is almost too easy -- I'm not complaining!!
-        return super.encodePassword(rawPass, salt).toUpperCase();
+public class UpperCaseMd5PasswordEncoder {
+
+    public String encodePassword(final String rawPass, final Object salt) {
+        final byte[] bytes = mergePasswordAndSalt(rawPass, salt).getBytes(StandardCharsets.UTF_8);
+        return DigestUtils.md5DigestAsHex(bytes).toUpperCase();
+    }
+
+    private static String mergePasswordAndSalt(final String password, final Object salt) {
+        final String pass = (password == null) ? "" : password;
+        if (salt == null || "".equals(salt)) {
+            return pass;
+        }
+        return pass + "{" + salt.toString() + "}";
     }
 }

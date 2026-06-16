@@ -37,10 +37,6 @@
         <property name="order" value="0"/>
     </bean>
 
-    <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
-
     <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="order" value="1"/>

@@ -1748,7 +1748,7 @@
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
-    <camelVersion>2.21.5</camelVersion>
+    <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1790,7 +1790,6 @@
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
@@ -1997,22 +1996,29 @@
     <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
-    <springVersion>4.3.30.RELEASE_1</springVersion>
-    <!-- patchedSpringVersion MUST stay on the .ONMS.1 bundles: they carry OpenNMS backports into the
-         EOL Spring 4.3.x line that stock 4.3.30 does NOT have: Spring4Shell (CVE-2022-22965, in
-         spring-beans CachedIntrospectionResults), the SpEL array-allocation DoS (CVE-2022-22950, in
-         spring-expression), a CGLIB fast-class fix needed on newer JDKs (spring-aop), and a couple of
-         bug fixes (spring-web). This matches the 4.3.x block in spring-legacy.xml. Only converge it
-         back to ${springVersion} after moving to a Spring line that ships these fixes (>= 5.2.20/5.3.x). -->
-    <patchedSpringVersion>4.3.30.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line
+         needed (Spring4Shell CVE-2022-22965, the SpEL array-allocation DoS CVE-2022-22950, a CGLIB/JDK
+         fast-class fix, and spring-web bug fixes) are all shipped in stock 5.3.x, so the patched-bundle
+         split is gone and every Spring bundle uses ${springVersion}. -->
+    <springVersion>5.3.39_2</springVersion>
+    <!-- OSGi-version form of springVersion: the ServiceMix Maven coordinate (5.3.39_2) is NOT a valid
+         OSGi version, so this suffix-free form is used in OSGi package/feature version fields
+         (custom.properties system-packages, feature version attrs/ranges). Keep in sync with springVersion. -->
+    <springOsgiVersion>5.3.39</springOsgiVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
+    <springSecurityVersion>5.8.16_1</springSecurityVersion>
+    <!-- OSGi-version form of springSecurityVersion (5.8.16_1 is not a valid OSGi version); keep in sync. -->
+    <springSecurityOsgiVersion>5.8.16</springSecurityOsgiVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
+    <!-- spring-security-kerberos has no upstream 5.x release; the 1.0.1 bundle only uses
+         spring-security-core auth interfaces, which are still present in 5.8. -->
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
-    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
+    <!-- SAML (spring-security-saml2-core 1.0.x extension) and OpenID dropped: both were unwired and are
+         incompatible with / removed in Spring Security 5.x. Reintroduce SAML via the built-in
+         spring-security-saml2-service-provider if needed (separate effort). -->
 
     <!-- moved here from topology features -->
     <jungVersion>2.1.1</jungVersion>
@@ -3915,6 +3921,26 @@
         <version>${camelVersion}</version>
       </dependency>
       <dependency>
+        <!-- the <camelContext> spring XML namespace handler lives here as of Camel 3 -->
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-spring-xml</artifactId>
+        <version>${camelVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.apache.curator</groupId>
         <artifactId>curator-client</artifactId>
         <version>${curatorVersion}</version>
@@ -5148,7 +5174,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5170,7 +5196,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5214,7 +5240,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5258,7 +5284,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5317,7 +5343,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5336,17 +5362,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-webmvc-portlet</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>

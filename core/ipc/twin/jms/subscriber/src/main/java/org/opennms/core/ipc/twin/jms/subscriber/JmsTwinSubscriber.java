@@ -25,13 +25,13 @@ import com.codahale.metrics.MetricRegistry;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
+import org.apache.camel.core.osgi.OsgiDefaultCamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.spi.Synchronization;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
@@ -41,6 +41,8 @@ import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +53,13 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     private static final String TWIN_QUEUE_NAME_FORMAT = "%s.%s";
     private static final Logger LOG = LoggerFactory.getLogger(JmsTwinSubscriber.class);
 
-    @EndpointInject(uri = "direct:twinRpc", context = "twinRpcClient")
+    // bound to direct:twinRpc on the RPC context in init(); Camel 3 dropped the
+    // @EndpointInject context attribute that used to disambiguate the contexts
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:twinRpc", context = "twinRpcClient")
     private Endpoint endpoint;
+
+    private final CamelContext rpcCamelContext;
 
     private final Component queuingservice;
     // Logging control from Camel context.
@@ -64,14 +68,22 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     /*
        Two blueprint camel contexts couldn't be started from the same blueprint
      */
-    private final CamelContext sinkCamelContext = new DefaultCamelContext();
+    private final CamelContext sinkCamelContext;
 
     public JmsTwinSubscriber(MinionIdentity minionIdentity, Component queuingservice,
                              TracerRegistry tracerRegistry, MetricRegistry metricRegistry,
-                             String debugMaxChar) {
+                             String debugMaxChar, CamelContext rpcCamelContext, BundleContext bundleContext) {
         super(minionIdentity, tracerRegistry, metricRegistry);
         this.queuingservice = queuingservice;
         this.debugMaxChar = debugMaxChar;
+        this.rpcCamelContext = rpcCamelContext;
+        // the OSGi-aware context is required for camel's factory discovery (languages,
+        // processor factories, ...) to work across bundles. The pojosr-based tests also
+        // provide a bundle context but no bundle classloading, so only use it when this
+        // class was actually loaded from a bundle.
+        this.sinkCamelContext = FrameworkUtil.getBundle(JmsTwinSubscriber.class) != null
+                ? new OsgiDefaultCamelContext(bundleContext)
+                : new DefaultCamelContext();
     }
 
     @Override
@@ -106,10 +118,16 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     }
 
     public void init() throws Exception {
+        endpoint = rpcCamelContext.getEndpoint("direct:twinRpc");
+        template = rpcCamelContext.createProducerTemplate();
         sinkCamelContext.addComponent("queuingservice", queuingservice);
         sinkCamelContext.getGlobalOptions().put(Exchange.LOG_DEBUG_BODY_MAX_CHARS, debugMaxChar);
-        sinkCamelContext.addRoutes(new SinkRouteBuilder(this));
+        // start before adding routes: OsgiDefaultCamelContext is already initialized
+        // by its constructor, and Camel 3 only reifies route definitions that are
+        // either present at init time or added to a started context — routes added
+        // between init and start are silently never started
         sinkCamelContext.start();
+        sinkCamelContext.addRoutes(new SinkRouteBuilder(this));
         LOG.info("JMS Twin subscriber initialized");
     }
 

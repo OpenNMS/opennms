@@ -46,7 +46,17 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
 
     @Override
     public <T> List<T> find(final String query, final Object... values) {
-        return (List<T>) getHibernateTemplate().find(query, values);
+        // HibernateTemplate.find binds positional parameters 0-based, which Hibernate 5 rejects
+        // for ?1-style ordinals; bind them 1-based ourselves.
+        return getHibernateTemplate().execute(session -> {
+            final Query queryObject = session.createQuery(query);
+            if (values != null) {
+                for (int i = 0; i < values.length; i++) {
+                    queryObject.setParameter(i + 1, values[i]);
+                }
+            }
+            return (List<T>) queryObject.list();
+        });
     }
 
     @Override

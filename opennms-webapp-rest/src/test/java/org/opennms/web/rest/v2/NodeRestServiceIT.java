@@ -380,8 +380,13 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         builder.addNode("AssetCommaNode").setForeignSource("JUnit").setForeignId("AssetComma").setType(OnmsNode.NodeType.ACTIVE);
         builder.setBuilding("A,B;C");
         final OnmsNode node = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(node);
-        m_databasePopulator.getNodeDao().flush();
+        // Commit the fixture so the separate-session REST reads below can see it
+        // (a bare test-instance save is rejected in read-only FlushMode.MANUAL under Hibernate 5).
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
 
         String url = "/nodes";
 

@@ -28,6 +28,12 @@
   </build>
   <dependencies>
     <dependency>
+      <!-- TcpListener/UdpListener; camel-netty4 2.x used to provide this transitively -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-xml</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>

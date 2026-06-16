@@ -100,6 +100,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
     public static final int OPENNMS_WEB_PORT = 8980;
+    public static final int OPENNMS_WEB_HTTPS_PORT = 8443;
     private static final int OPENNMS_SSH_PORT = 8101;
     private static final int OPENNMS_SYSLOG_PORT = 10514;
     private static final int OPENNMS_SNMP_PORT = 1162;
@@ -118,6 +119,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
             .put(NetworkProtocol.HTTP, OPENNMS_WEB_PORT)
+            .put(NetworkProtocol.HTTPS, OPENNMS_WEB_HTTPS_PORT)
             .put(NetworkProtocol.JDWP, OPENNMS_DEBUG_PORT)
             .put(NetworkProtocol.SNMP, OPENNMS_SNMP_PORT)
             .put(NetworkProtocol.SYSLOG, OPENNMS_SYSLOG_PORT)

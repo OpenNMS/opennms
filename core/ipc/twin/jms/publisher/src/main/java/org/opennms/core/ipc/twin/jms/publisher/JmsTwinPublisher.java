@@ -30,8 +30,6 @@ import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Converter;
-import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
@@ -73,18 +71,19 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
 
     private final CamelContext rpcCamelContext;
 
+    private final CamelContext sinkCamelContext;
+
     private final ExecutorService executor = Executors.newFixedThreadPool(10, threadFactory);
 
-    @EndpointInject(uri = "direct:sendTwinUpdate", context = "twinSinkClient")
+    // bound to direct:sendTwinUpdate on the sink context in init(); Camel 3 dropped
+    // the @EndpointInject context attribute that used to disambiguate the two contexts
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:sendTwinUpdate", context = "twinSinkClient")
-    private Endpoint endpoint;
-
-    public JmsTwinPublisher(CamelContext camelContext, LocalTwinSubscriber twinSubscriber,
+    public JmsTwinPublisher(CamelContext camelContext, CamelContext sinkCamelContext, LocalTwinSubscriber twinSubscriber,
                             TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         super(twinSubscriber, tracerRegistry, metricRegistry);
         this.rpcCamelContext = camelContext;
+        this.sinkCamelContext = sinkCamelContext;
         camelContext.getTypeConverterRegistry().addTypeConverters(new BooleanTypeConverters());
     }
 
@@ -103,6 +102,8 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
 
     public void init() throws Exception {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            template = sinkCamelContext.createProducerTemplate();
+            template.setDefaultEndpoint(sinkCamelContext.getEndpoint("direct:sendTwinUpdate"));
             rpcCamelContext.addRoutes(new RpcRouteBuilder(this, rpcCamelContext));
             LOG.info("JMS Twin publisher initialized");
         }
@@ -136,6 +137,13 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
             }
         }, executor);
         return false;
+    }
+
+    @Override
+    public CompletableFuture<Exchange> processAsync(Exchange exchange) {
+        final CompletableFuture<Exchange> future = new CompletableFuture<>();
+        process(exchange, doneSync -> future.complete(exchange));
+        return future;
     }
 
     @Override

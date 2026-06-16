@@ -24,7 +24,7 @@ package org.opennms.core.rpc.jms;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.support.SimpleRegistry;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;

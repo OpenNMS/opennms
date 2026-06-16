@@ -55,6 +55,12 @@
             <artifactId>camel-jms</artifactId>
             <exclusions>
                 <exclusion>
+                  <!-- JMS 1.1 API; camel-jms 3.x needs the JMS 2.0 API (geronimo-jms_2.0_spec),
+                       and this jar shadowing it breaks setJMSDeliveryTime at runtime -->
+                  <groupId>org.apache.geronimo.specs</groupId>
+                  <artifactId>geronimo-jms_1.1_spec</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>

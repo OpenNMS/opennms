@@ -145,14 +145,17 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	}
 
 	public List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName) {
-		return (List<OnmsMonitoringLocation>) getHibernateTemplate().find("select distinct perspectiveLocation " +
-																		  "from OnmsMonitoredService service " +
-																		  "join service.applications application " +
-																		  "join application.perspectiveLocations perspectiveLocation " +
-																		  "where service.ipInterface.node.id = ?1 and " +
-																		  "      service.ipInterface.ipAddress = ?2 and " +
-																		  "      service.serviceType.name = ?3",
-																		  nodeId, ipAddress, serviceName);
+		// HibernateTemplate.find binds positional parameters 0-based, which Hibernate 5 rejects
+		// for ?1-style ordinals; findObjects binds them 1-based.
+		return findObjects(OnmsMonitoringLocation.class,
+						   "select distinct perspectiveLocation " +
+						   "from OnmsMonitoredService service " +
+						   "join service.applications application " +
+						   "join application.perspectiveLocations perspectiveLocation " +
+						   "where service.ipInterface.node.id = ?1 and " +
+						   "      service.ipInterface.ipAddress = ?2 and " +
+						   "      service.serviceType.name = ?3",
+						   nodeId, ipAddress, serviceName);
 	}
 
 	@Override
