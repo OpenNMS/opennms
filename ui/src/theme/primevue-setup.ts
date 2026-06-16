@@ -23,6 +23,7 @@
 import PrimeVue from 'primevue/config'
 import OpenNMSPreset from './opennms-preset'
 import 'primeicons/primeicons.css'
+import '@/styles/primevue-overrides.scss'
 
 import type { App } from 'vue'
 

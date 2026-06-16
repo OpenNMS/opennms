@@ -23,6 +23,31 @@
 import { definePreset } from '@primevue/themes'
 import Aura from '@primevue/themes/aura'
 
+/**
+ * OpenNMS PrimeVue preset (based on Aura).
+ *
+ * Goal: PrimeVue components match the existing FeatherDS look in BOTH light and
+ * dark mode out-of-the-box, so individual components do not need per-component
+ * `:deep(.p-*)` overrides.
+ *
+ * The surface / content / text / form-field / overlay token values below are the
+ * literal FeatherDS theme colors (from @featherds/styles/themes/open-light.css and
+ * open-dark.css). They are intentionally NOT expressed as `var(--feather-*)`:
+ * PrimeVue declares its `--p-*` variables on `:root` (html), whereas FeatherDS
+ * declares `--feather-*` on the `body.open-light` / `body.open-dark` class. A
+ * `var(--feather-*)` referenced from a `:root` declaration cannot resolve (the
+ * variable is defined on a descendant), so the token would compute to empty.
+ * Literal values avoid that and let PrimeVue's `darkModeSelector` switch schemes.
+ *
+ * When FeatherDS is removed (migration Phase 6) these values become the canonical
+ * OpenNMS palette — no further change required here.
+ */
+
+// FeatherDS primary brand color, referenced for form-field focus rings etc.
+// (PrimeVue token refs like `{primary.color}` resolve within PrimeVue's own
+// :root variables, so they are safe to use here.)
+const PRIMARY_FOCUS = '{primary.color}'
+
 const OpenNMSPreset = definePreset(Aura, {
   semantic: {
     primary: {
@@ -50,6 +75,35 @@ const OpenNMSPreset = definePreset(Aura, {
           100: '#f4f7fc',
           200: '#e8edf5',
           300: '#d1d5e0'
+        },
+        text: {
+          color: 'rgba(10, 12, 27, 0.9)',
+          hoverColor: 'rgba(10, 12, 27, 0.9)',
+          mutedColor: 'rgba(10, 12, 27, 0.7)',
+          hoverMutedColor: 'rgba(10, 12, 27, 0.7)'
+        },
+        content: {
+          background: '#ffffff',
+          hoverBackground: '#f4f7fc',
+          borderColor: 'rgba(10, 12, 27, 0.12)',
+          color: 'rgba(10, 12, 27, 0.9)',
+          hoverColor: 'rgba(10, 12, 27, 0.9)'
+        },
+        formField: {
+          background: '#ffffff',
+          borderColor: 'rgba(10, 12, 27, 0.12)',
+          hoverBorderColor: 'rgba(10, 12, 27, 0.12)',
+          focusBorderColor: PRIMARY_FOCUS,
+          color: 'rgba(10, 12, 27, 0.9)',
+          placeholderColor: 'rgba(10, 12, 27, 0.7)',
+          iconColor: 'rgba(10, 12, 27, 0.7)',
+          disabledBackground: '#f4f7fc',
+          disabledColor: 'rgba(10, 12, 27, 0.4)'
+        },
+        overlay: {
+          select: { background: '#ffffff', borderColor: 'rgba(10, 12, 27, 0.12)', color: 'rgba(10, 12, 27, 0.9)' },
+          popover: { background: '#ffffff', borderColor: 'rgba(10, 12, 27, 0.12)', color: 'rgba(10, 12, 27, 0.9)' },
+          modal: { background: '#ffffff', borderColor: 'rgba(10, 12, 27, 0.12)', color: 'rgba(10, 12, 27, 0.9)' }
         }
       },
       dark: {
@@ -62,49 +116,67 @@ const OpenNMSPreset = definePreset(Aura, {
         surface: {
           0: '#15182B'
         },
-        // Aura dark uses {surface.0} as white for text.color, but we set surface.0
-        // to our dark navy. Override text tokens here to keep text legible in dark mode.
         text: {
-          color: 'rgba(255, 255, 255, 0.87)',
-          hoverColor: 'rgba(255, 255, 255, 0.87)',
-          mutedColor: 'rgba(255, 255, 255, 0.6)',
+          color: 'rgb(255, 255, 255)',
+          hoverColor: 'rgb(255, 255, 255)',
+          mutedColor: 'rgba(255, 255, 255, 0.78)',
           hoverMutedColor: 'rgba(255, 255, 255, 0.78)'
         },
-        // DataTable body rows and other content areas use {content.background}.
-        // Aura dark maps that to {surface.900} (zinc.900 = #18181b), a neutral gray
-        // that doesn't match the OpenNMS navy palette. Map it to surface.0 instead.
         content: {
-          background: '{surface.0}',
+          background: '#15182B',
           hoverBackground: 'rgba(255, 255, 255, 0.06)',
-          borderColor: 'rgba(255, 255, 255, 0.12)',
-          color: '{text.color}',
-          hoverColor: '{text.hover.color}'
+          borderColor: 'rgba(255, 255, 255, 0.24)',
+          color: 'rgb(255, 255, 255)',
+          hoverColor: 'rgb(255, 255, 255)'
         },
-        // Aura dark sets formField.color to {surface.0}, which is our dark navy (#15182B) —
-        // unreadable text. Also align the form field background to the OpenNMS navy palette.
         formField: {
-          background: '{surface.0}',
-          color: '{text.color}',
-          borderColor: 'rgba(255, 255, 255, 0.2)',
+          background: '#15182B',
+          borderColor: 'rgba(255, 255, 255, 0.24)',
           hoverBorderColor: 'rgba(255, 255, 255, 0.38)',
+          focusBorderColor: PRIMARY_FOCUS,
+          color: 'rgb(255, 255, 255)',
           placeholderColor: 'rgba(255, 255, 255, 0.5)',
           iconColor: 'rgba(255, 255, 255, 0.5)',
-          disabledBackground: 'rgba(255, 255, 255, 0.05)',
-          disabledColor: 'rgba(255, 255, 255, 0.38)'
+          disabledBackground: '#0a0c1b',
+          disabledColor: 'rgba(255, 255, 255, 0.5)'
         },
-        // Select/popover overlays are teleported to body; still set their tokens so the
-        // CSS variables carry the right dark values everywhere they're inherited.
         overlay: {
-          select: {
-            background: '{surface.0}',
-            borderColor: 'rgba(255, 255, 255, 0.12)',
-            color: '{text.color}'
-          },
-          popover: {
-            background: '{surface.0}',
-            borderColor: 'rgba(255, 255, 255, 0.12)',
-            color: '{text.color}'
-          }
+          select: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' },
+          popover: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' },
+          modal: { background: '#15182B', borderColor: 'rgba(255, 255, 255, 0.24)', color: 'rgb(255, 255, 255)' }
+        }
+      }
+    }
+  },
+  components: {
+    // DataTable rows/body inherit the bridged `content.*` tokens. Headers in the
+    // FeatherDS look use the (muted) background + secondary text, and the border
+    // color is set explicitly because Aura's dark scheme hardcodes it to a
+    // neutral surface shade.
+    datatable: {
+      colorScheme: {
+        light: {
+          root: { borderColor: 'rgba(10, 12, 27, 0.12)' },
+          headerCell: { background: '#f4f7fc', color: 'rgba(10, 12, 27, 0.7)' }
+        },
+        dark: {
+          root: { borderColor: 'rgba(255, 255, 255, 0.24)' },
+          headerCell: { background: '#0a0c1b', color: 'rgba(255, 255, 255, 0.78)' }
+        }
+      }
+    },
+    // Chip label/icon default to a surface-scale color; align with body text.
+    chip: {
+      colorScheme: {
+        light: {
+          root: { color: 'rgba(10, 12, 27, 0.9)' },
+          icon: { color: 'rgba(10, 12, 27, 0.9)' },
+          removeIcon: { color: 'rgba(10, 12, 27, 0.9)' }
+        },
+        dark: {
+          root: { color: 'rgb(255, 255, 255)' },
+          icon: { color: 'rgb(255, 255, 255)' },
+          removeIcon: { color: 'rgb(255, 255, 255)' }
         }
       }
     }

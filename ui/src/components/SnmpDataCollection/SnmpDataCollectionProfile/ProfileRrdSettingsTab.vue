@@ -231,33 +231,6 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 .rra-section {
   margin-top: 20px;
 
-  :deep(.p-datatable-thead > tr > th) {
-    background-color: var(--feather-background);
-    border-bottom: 1px solid var(--feather-border-on-surface);
-    color: var(--feather-secondary-text-on-surface);
-    text-transform: uppercase;
-  }
-
-  :deep(.p-datatable-tbody > tr) {
-    background-color: var(--feather-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-datatable-tbody > tr > td) {
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-select) {
-    background-color: var(--feather-surface);
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-select-label) {
-    color: var(--feather-primary-text-on-surface);
-  }
-
   .rra-header {
     display: flex;
     align-items: center;
