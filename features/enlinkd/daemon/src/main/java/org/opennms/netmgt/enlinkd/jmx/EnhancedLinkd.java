@@ -31,7 +31,7 @@
 package org.opennms.netmgt.enlinkd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -49,21 +49,21 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
         return "enhancedLinkdContext";
     }
 
-   /** {@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public long getActiveThreads() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getActiveCount();
+            return getThreadPoolExecutor().getActiveCount();
         } else {
             return 0L;
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public long getTasksTotal() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getTaskCount();
+            return getThreadPoolExecutor().getTaskCount();
         } else {
             return 0L;
         }
@@ -73,30 +73,31 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     @Override
     public long getTasksCompleted() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getCompletedTaskCount();
+            return getThreadPoolExecutor().getCompletedTaskCount();
         } else {
             return 0L;
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public double getTaskCompletionRatio() {
         if (getThreadPoolStatsStatus()) {
-            if (getExecutor().getTaskCount() > 0) {
-                return new Double(getExecutor().getCompletedTaskCount() / new Double(getExecutor().getTaskCount()));
+            if (getThreadPoolExecutor().getTaskCount() > 0) {
+                return (double) getThreadPoolExecutor().getCompletedTaskCount() / (double) getThreadPoolExecutor().getTaskCount();
             } else {
-                return new Double(0);
+                return 0;
             }
         } else {
-            return new Double(0);
+            return 0;
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public long getNumPoolThreads() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getPoolSize();
+            return getThreadPoolExecutor().getPoolSize();
         } else {
             return 0L;
         }
@@ -106,7 +107,7 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     @Override
     public long getPeakPoolThreads() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getLargestPoolSize();
+            return getThreadPoolExecutor().getLargestPoolSize();
         } else {
             return 0L;
         }
@@ -116,7 +117,7 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     @Override
     public long getCorePoolThreads() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getCorePoolSize();
+            return getThreadPoolExecutor().getCorePoolSize();
         } else {
             return 0L;
         }
@@ -126,7 +127,7 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     @Override
     public long getMaxPoolThreads() {
         if (getThreadPoolStatsStatus()) {
-            return getExecutor().getMaximumPoolSize();
+            return getThreadPoolExecutor().getMaximumPoolSize();
         } else {
             return 0L;
         }
@@ -134,8 +135,9 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
 
     @Override
     public long getTaskQueuePendingCount() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getQueue().size();
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        if (executor != null) {
+            return executor.getTaskQueuePendingCount();
         } else {
             return 0L;
         }
@@ -143,18 +145,24 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
 
     @Override
     public long getTaskQueueRemainingCapacity() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getQueue().remainingCapacity();
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        if (executor != null) {
+            return executor.getTaskQueueRemainingCapacity();
         } else {
             return 0L;
         }
     }
 
-    private ThreadPoolExecutor getExecutor() {
-        return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
+    private LegacyPriorityExecutor getPriorityExecutor() {
+        return getDaemon().getExecutor();
+    }
+
+    private ThreadPoolExecutor getThreadPoolExecutor() {
+        return (ThreadPoolExecutor) getPriorityExecutor().getRunner();
     }
 
     private boolean getThreadPoolStatsStatus() {
-        return (getDaemon().getScheduler() instanceof LegacyScheduler);
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor != null && executor.getRunner() instanceof ThreadPoolExecutor;
     }
 }

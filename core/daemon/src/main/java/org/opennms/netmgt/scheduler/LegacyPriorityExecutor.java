@@ -150,4 +150,19 @@ public class LegacyPriorityExecutor implements PausableFiber {
         return  priorityJobPoolExecutor.toString();
     }
 
+    /**
+     * Returns the pool of threads that execute ready runnables.
+     */
+    public ExecutorService getRunner() {
+        return priorityJobPoolExecutor;
+    }
+
+    public int getTaskQueuePendingCount() {
+        return priorityQueue.size();
+    }
+
+    public int getTaskQueueRemainingCapacity() {
+        return priorityQueue.remainingCapacity();
+    }
+
 }

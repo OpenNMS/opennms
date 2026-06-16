@@ -672,7 +672,7 @@
          </mbean>
          <!-- EnhancedLinkd -->
          <mbean name="OpenNMS EnhancedLinkd" objectname="OpenNMS:Name=EnhancedLinkd">
-            <attrib name="ActiveThreads" alias="ONMSELDCountThrdAct" type="gauge"/>
+            <attrib name="ActiveThreads" alias="ONMSELDThrdAct" type="gauge"/>
             <attrib name="NumPoolThreads" alias="ONMSELDPoolThrd" type="gauge"/>
             <attrib name="CorePoolThreads" alias="ONMSELDPoolCore" type="gauge"/>
             <attrib name="MaxPoolThreads" alias="ONMSELDPoolMax" type="gauge"/>
