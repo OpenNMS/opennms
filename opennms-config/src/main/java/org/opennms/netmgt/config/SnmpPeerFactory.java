@@ -189,17 +189,27 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private static void encryptSingletonIfEnabled() {
-        final SnmpPeerFactory singleton = s_singleton;
-        if (singleton != null && singleton.encryptionEnabled) {
-            singleton.encryptSnmpConfig();
+        final SnmpPeerFactory singleton;
+        synchronized (SnmpPeerFactory.class) {
+            singleton = s_singleton;
+            if (singleton == null || !singleton.encryptionEnabled) {
+                return;
+            }
         }
+        singleton.encryptSnmpConfig();
     }
 
     private void encryptSnmpConfig() {
         initializeTextEncryptor();
-        if (textEncryptor != null) {
+        if (textEncryptor == null) {
+            return;
+        }
+        synchronized (SnmpPeerFactory.class) {
+            if (this != s_singleton) {
+                return;
+            }
             try {
-                s_singleton.saveCurrent();
+                saveCurrent();
             } catch (IOException e) {
                 LOG.debug("Exception while saving encrypted credentials");
             }
