@@ -129,6 +129,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
                 minionHandle.getId(), minionHandle.getLocation());
 
+        if (minionHandle.getId() == null || minionHandle.getId().isEmpty()) {
+            LOG.warn("Refusing to process Minion heartbeat with null 'id' for location: '{}'", minionHandle.getLocation());
+            return;
+        }
+
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
         if (minion == null) {
             minion = new OnmsMinion();
@@ -235,10 +240,6 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         // Return if minion with this foreignId and location already exists.
         String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
-        if (foreignId.isEmpty()) {
-            LOG.warn("Heartbeat received with null ID and label for location '{}', aborting this heartbeat!", minion.getLocation());
-            return;
-        }
         List<OnmsNode> nodes = nodeDao.findByForeignIdForLocation(foreignId, nextLocation);
         if (!nodes.isEmpty()) {
             //check for existing requisitions the policy and detectors are in place
