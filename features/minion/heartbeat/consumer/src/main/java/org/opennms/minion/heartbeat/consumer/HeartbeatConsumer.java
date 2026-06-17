@@ -184,7 +184,8 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                         prevLocation,
                         nextLocation) ;
             } catch (ValidationException e) {
-                throw new RuntimeException("Heartbeat provisioner failed to validate: ", e);
+               LOG.error("Heartbeat provisioner failed to validate: ", e);
+               return;
             }
 
             if (prevLocation == null) {
