@@ -207,6 +207,15 @@ const OpenNMSPreset = definePreset(Aura, {
         }
       }
     },
+    // Tooltip. Aura's dark scheme sets the tooltip text color to {surface.0},
+    // expecting a light surface — but our preset maps surface.0 to the dark navy
+    // (#15182B), which is unreadable on the dark-gray tooltip background. Force a
+    // light color in dark mode.
+    tooltip: {
+      colorScheme: {
+        dark: { root: { color: 'rgba(255, 255, 255, 0.9)' }}
+      }
+    },
     // Outlined buttons: Aura draws the border from a faint primary shade
     // (primary.200 in light, primary.700 in dark) which is low-contrast against
     // the surface. Use the button's own (primary) text color so the outline is as
