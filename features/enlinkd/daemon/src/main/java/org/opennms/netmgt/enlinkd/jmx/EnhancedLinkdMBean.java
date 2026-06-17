@@ -39,12 +39,12 @@ public interface EnhancedLinkdMBean extends BaseOnmsMBean {
     public long getTasksTotal();
     
     /**
-     * @return The cumulative number of polling tasks completed since poller startup
+     * @return The cumulative number of EnhancedLinkd discovery tasks completed since startup
      */
     public long getTasksCompleted();
     
     /**
-     * @return The ratio of completed to scheduled polling tasks since poller startup
+     * @return The ratio of completed to scheduled EnhancedLinkd discovery tasks since startup
      */
     public double getTaskCompletionRatio();
     
@@ -54,7 +54,7 @@ public interface EnhancedLinkdMBean extends BaseOnmsMBean {
     public long getNumPoolThreads();
 
     /**
-     * @return The largest size of the poller thread pool since poller startup
+     * @return The largest size of the EnhancedLinkd thread pool since startup
      */
     public long getPeakPoolThreads();
 
@@ -64,7 +64,7 @@ public interface EnhancedLinkdMBean extends BaseOnmsMBean {
     public long getCorePoolThreads();
 
     /**
-     * @return The maximum number of threads allowed in the poller's thread pool
+     * @return The maximum number of threads allowed in the EnhancedLinkd thread pool
      */
     public long getMaxPoolThreads();
 
