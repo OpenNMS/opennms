@@ -130,7 +130,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                 minionHandle.getId(), minionHandle.getLocation());
 
         if (minionHandle.getId() == null || minionHandle.getId().isEmpty()) {
-            LOG.warn("Refusing to process Minion heartbeat with null 'id' for location: '{}'", minionHandle.getLocation());
+            LOG.warn("Refusing to process Minion heartbeat with invalid 'id' for location: '{}'", minionHandle.getLocation());
             return;
         }
 
