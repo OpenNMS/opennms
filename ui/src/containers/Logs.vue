@@ -47,11 +47,10 @@ onMounted(() => logStore.getLogs())
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
 
 .card {
   @include elevation(2);
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 15px;
   position: relative;
 }
