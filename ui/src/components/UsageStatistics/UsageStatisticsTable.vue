@@ -5,29 +5,34 @@
       sortField="key"
       :sortOrder="1"
       stripedRows
-      size="small"
+      size="medium"
       scrollable
       scrollHeight="calc(100vh - 310px)"
+      tableStyle="table-layout: fixed; width: 100%"
     >
       <PColumn
         field="name"
         header="Name"
         sortable
+        style="width: 20%"
       />
       <PColumn
         field="key"
         header="Key name"
         sortable
+        style="width: 20%"
       />
       <PColumn
         field="description"
         header="Description"
         sortable
+        style="width: 40%"
       />
       <PColumn
         field="latestValue"
         header="Latest value"
         sortable
+        style="width: 20%"
       >
         <template #body="{ data }">
           <a
@@ -204,10 +209,11 @@ const showFullValue = (item: StatisticsItem) => {
 
 <style lang="scss" scoped>
 .usage-stats-table {
-  white-space: nowrap;
-
-  :deep(.p-datatable) {
-    font-size: 12px;
+  // Fixed column widths (set per-column) with wrapping cell contents, so a long
+  // Description doesn't push the Latest value column off-screen.
+  :deep(.p-datatable-tbody > tr > td) {
+    white-space: normal;
+    word-break: break-word;
   }
 }
 

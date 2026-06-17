@@ -13,7 +13,7 @@
               <span class="title">Usage Statistics Sharing</span>
             </div>
             <UsageStatisticsHeader />
-            <div class="spacer-medium"></div>
+            <div class="spacer-large"></div>
             <UsageStatisticsTable />
           </div>
         </div>
@@ -80,7 +80,7 @@ onMounted(async () => {
     }
   }
 }
-.spacer-medium {
-  margin-bottom: 0.25rem;
+.spacer-large {
+  margin-bottom: 0.75rem;
 }
 </style>
