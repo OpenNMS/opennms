@@ -36,21 +36,43 @@ export const SNACKBAR_GROUP_START = 'snackbar-start'
 
 const DEFAULT_TIMEOUT = 4000
 
+// Tracks toasts that are currently displayed (keyed by severity + group + message)
+// so that identical toasts are not stacked. Unlike the old FeatherDS snackbar —
+// which had a single slot and could only ever show one message — PrimeVue Toast
+// stacks every add(). A burst of identical messages (e.g. one validation-error
+// toast per invalid field) would otherwise produce a pile of duplicates. Distinct
+// messages still stack normally.
+const activeKeys = new Map<string, number>()
+
 const useSnackbar = () => {
   const showSnackBar = (snackbarProps: SnackbarProps) => {
     const { center, error, msg, timeout } = snackbarProps
 
+    const severity = error ? 'error' : 'success'
+    const group = (isDefined(center) ? center : true) ? SNACKBAR_GROUP_CENTER : SNACKBAR_GROUP_START
+    const life = timeout ?? DEFAULT_TIMEOUT
+    const key = `${severity}::${group}::${msg}`
+
+    // Suppress an identical toast while one is still visible.
+    if (activeKeys.has(key)) {
+      return
+    }
+
     ToastEventBus.emit('add', {
-      severity: error ? 'error' : 'success',
+      severity,
       detail: msg,
-      life: timeout ?? DEFAULT_TIMEOUT,
+      life,
       closable: true,
-      group: (isDefined(center) ? center : true) ? SNACKBAR_GROUP_CENTER : SNACKBAR_GROUP_START
+      group
     })
+
+    activeKeys.set(key, window.setTimeout(() => activeKeys.delete(key), life))
   }
 
   const hideSnackbar = () => {
     ToastEventBus.emit('remove-all-groups')
+    activeKeys.forEach(timer => window.clearTimeout(timer))
+    activeKeys.clear()
   }
 
   return {
