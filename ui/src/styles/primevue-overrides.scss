@@ -55,3 +55,10 @@
     font-weight: 700;
   }
 }
+
+// Outlined buttons read better with a slightly heavier border given the button
+// border-radius (border color comes from the preset). Not a PrimeVue token, so
+// it lives here.
+.p-button-outlined {
+  border-width: 2px;
+}

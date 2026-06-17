@@ -206,6 +206,16 @@ const OpenNMSPreset = definePreset(Aura, {
           contrast: { detailColor: 'rgba(255, 255, 255, 0.9)' }
         }
       }
+    },
+    // Outlined buttons: Aura draws the border from a faint primary shade
+    // (primary.200 in light, primary.700 in dark) which is low-contrast against
+    // the surface. Use the button's own (primary) text color so the outline is as
+    // distinct as the label. Border width is bumped to 2px in primevue-overrides.scss.
+    button: {
+      colorScheme: {
+        light: { outlined: { primary: { borderColor: '{primary.color}' }}},
+        dark: { outlined: { primary: { borderColor: '{primary.color}' }}}
+      }
     }
   }
 })
