@@ -55,10 +55,9 @@ onMounted(async () => {
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
 
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .usage-stats-container {
