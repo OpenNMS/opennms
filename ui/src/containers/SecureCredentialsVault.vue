@@ -39,8 +39,6 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-
 .scv-container {
   padding: 2px;
   margin-left: 2px;
