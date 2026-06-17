@@ -345,7 +345,9 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         File saveSourceDir = sourceFile == null ? null : sourceFile.getParentFile();
         sourceFile = getSourceFile(saveSourceDir, unitName, sourceCode);
 
-        return new JRCompilationUnit(unitName, sourceCode, sourceFile, compilationUnit.getExpressions(), sourceTask);
+        JRCompilationUnit unit = new JRCompilationUnit(unitName);
+        unit.setSource(sourceCode, sourceFile, sourceTask);
+        return unit;
     }
 
     @Override
