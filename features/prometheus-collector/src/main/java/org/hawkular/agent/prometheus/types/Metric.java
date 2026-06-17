@@ -16,6 +16,7 @@
  */
 package org.hawkular.agent.prometheus.types;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,6 +29,8 @@ public abstract class Metric {
     public abstract static class Builder<B extends Builder<?>> {
         private String name;
         private Map<String, String> labels;
+        private Instant timestamp;
+        private Instant created;
 
         @SuppressWarnings("unchecked")
         public B setName(String name) {
@@ -52,12 +55,26 @@ public abstract class Metric {
             labels.putAll(map);
             return (B) this;
         }
+        
+        @SuppressWarnings("unchecked")
+        public B setTimestamp(Instant timestamp) {
+            this.timestamp = timestamp;
+            return (B) this;
+        }
+        
+        @SuppressWarnings("unchecked")
+        public B setCreated(Instant created) {
+            this.created = created;
+            return (B) this;
+        }
 
         public abstract <T extends Metric> T build();
     }
 
     private final String name;
     private final Map<String, String> labels;
+    private final Instant timestamp;
+    private final Instant created;
 
     protected Metric(Builder<?> builder) {
         if (builder.name == null) {
@@ -66,6 +83,8 @@ public abstract class Metric {
 
         this.name = builder.name;
         this.labels = builder.labels;
+        this.timestamp = builder.timestamp;
+        this.created = builder.created;
     }
 
     public String getName() {
@@ -79,5 +98,20 @@ public abstract class Metric {
         return labels;
     }
     
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+    
+    public Instant getCreated() {
+
+        return created;
+    }
+    
+    @Override
+    public String toString() {
+
+        return "Metric [name=" + name + ", labels=" + labels + ", timestamp=" + timestamp + ", created=" + created + "]";
+    }
+
     public abstract void visit(MetricVisitor visitor);
 }

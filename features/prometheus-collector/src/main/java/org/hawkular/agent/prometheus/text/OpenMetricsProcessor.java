@@ -1,0 +1,48 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.hawkular.agent.prometheus.text;
+
+import java.io.InputStream;
+
+import org.hawkular.agent.prometheus.PrometheusMetricsProcessor;
+import org.hawkular.agent.prometheus.types.MetricFamily;
+import org.hawkular.agent.prometheus.walkers.PrometheusMetricsWalker;
+
+/**
+ * This will iterate over a list of Prometheus metrics that are given in OpenMetrics text data.
+ */
+public class OpenMetricsProcessor extends PrometheusMetricsProcessor<MetricFamily> {
+    public OpenMetricsProcessor(InputStream inputStream, PrometheusMetricsWalker theWalker) {
+        super(inputStream, theWalker);
+    }
+
+    @Override
+    public TextPrometheusMetricDataParser createPrometheusMetricDataParser() {
+        return new TextPrometheusMetricDataParser(getInputStream(), OpenMetricsFormatStrategy.INSTANCE);
+    }
+
+    @Override
+    protected MetricFamily convert(MetricFamily metricFamily) {
+        return metricFamily; // no conversion necessary - our text parser already uses the common api
+    }
+
+}

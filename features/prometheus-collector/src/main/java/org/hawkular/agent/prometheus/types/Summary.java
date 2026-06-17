@@ -111,9 +111,20 @@ public class Summary extends Metric {
         }
         return quantiles;
     }
+    
+    @Override
+    public String toString() {
+
+        return "Summary [name=" + getName() + ", labels" + getLabels() + ", timestamp=" + getTimestamp() + ", created=" + getCreated()
+                + ", sampleCount=" + sampleCount + ", sampleSum=" + sampleSum + "]";
+    }
 
     @Override
     public void visit(MetricVisitor visitor) {
         visitor.visitSummary(this);
+    }
+    
+    public static Builder builder() {
+        return new Builder();
     }
 }

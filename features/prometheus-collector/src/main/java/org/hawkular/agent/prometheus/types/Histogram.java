@@ -110,6 +110,13 @@ public class Histogram extends Metric {
         }
         return buckets;
     }
+    
+    @Override
+    public String toString() {
+
+        return "Histogram [name=" + getName() + ", labels" + getLabels() + ", timestamp=" + getTimestamp() + ", created=" + getCreated()
+                + ", sampleCount=" + sampleCount + ", sampleSum=" + sampleSum + "]";
+    }
 
     @Override
     public void visit(MetricVisitor visitor) {
