@@ -185,6 +185,11 @@
             <version>${project.version}</version>
           </dependency>
           <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-charts</artifactId>
+            <version>${jasperreportsVersion}</version>
+          </dependency>
+          <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xercesVersion}</version>
