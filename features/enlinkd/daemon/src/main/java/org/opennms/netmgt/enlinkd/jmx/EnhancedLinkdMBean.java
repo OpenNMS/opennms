@@ -34,7 +34,7 @@ public interface EnhancedLinkdMBean extends BaseOnmsMBean {
     public long getActiveThreads();
     
     /**
-     * @return The cumulative number of polling tasks scheduled since poller startup
+     * @return The cumulative number of EnhancedLinkd discovery tasks scheduled since startup
      */
     public long getTasksTotal();
     
