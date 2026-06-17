@@ -40,7 +40,7 @@ const emit = defineEmits(['update-query-parameters'])
 
 // Paginator is offset-based (`first`/`rows`) rather than page-based.
 const rows = ref<number>(props.parameters.limit)
-const first = ref(0)
+const first = ref<number>(props.parameters.offset ?? 0)
 
 // Match FeatherPagination's default page sizes, but always include the caller's
 // initial page size so the rows-per-page dropdown has a valid selection.
