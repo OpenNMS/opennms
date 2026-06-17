@@ -190,6 +190,22 @@ const OpenNMSPreset = definePreset(Aura, {
           removeIcon: { color: 'rgb(255, 255, 255)' }
         }
       }
+    },
+    // Toast (used by the Snackbar wrapper). Aura's dark scheme sets each severity's
+    // detail text to {surface.0}, expecting it to be a light surface — but our
+    // preset maps surface.0 to the dark navy (#15182B), which is unreadable on the
+    // translucent toast background. Force a light detail color in dark mode.
+    toast: {
+      colorScheme: {
+        dark: {
+          info: { detailColor: 'rgba(255, 255, 255, 0.9)' },
+          success: { detailColor: 'rgba(255, 255, 255, 0.9)' },
+          warn: { detailColor: 'rgba(255, 255, 255, 0.9)' },
+          error: { detailColor: 'rgba(255, 255, 255, 0.9)' },
+          secondary: { detailColor: 'rgba(255, 255, 255, 0.9)' },
+          contrast: { detailColor: 'rgba(255, 255, 255, 0.9)' }
+        }
+      }
     }
   }
 })

@@ -22,37 +22,40 @@
 
 import { SnackbarProps } from '@/types'
 import { isDefined } from '@vueuse/core'
-import { readonly, ref } from 'vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - no type declarations published for this entry point
+import ToastEventBus from 'primevue/toasteventbus'
 
-const isDisplayed = ref(false)
-const isCentered = ref<boolean | undefined>(true)
-const hasError = ref<boolean | undefined>(false)
-const message = ref('')
-const setTimeout = ref<number | undefined>(4000)
+// Snackbars are rendered by a PrimeVue Toast (see Common/Snackbar.vue). We emit
+// on PrimeVue's toast event bus rather than calling useToast(): useToast()
+// depends on an inject context, but this composable is also used at module scope
+// (Pinia stores, the router, services), where inject is unavailable. The event
+// bus is a module singleton and works everywhere.
+export const SNACKBAR_GROUP_CENTER = 'snackbar-center'
+export const SNACKBAR_GROUP_START = 'snackbar-start'
+
+const DEFAULT_TIMEOUT = 4000
 
 const useSnackbar = () => {
   const showSnackBar = (snackbarProps: SnackbarProps) => {
     const { center, error, msg, timeout } = snackbarProps
-    isDisplayed.value = true
-    isCentered.value = isDefined(center) ? center : true
-    hasError.value = error
-    message.value = msg
-    setTimeout.value = timeout
+
+    ToastEventBus.emit('add', {
+      severity: error ? 'error' : 'success',
+      detail: msg,
+      life: timeout ?? DEFAULT_TIMEOUT,
+      closable: true,
+      group: (isDefined(center) ? center : true) ? SNACKBAR_GROUP_CENTER : SNACKBAR_GROUP_START
+    })
   }
 
   const hideSnackbar = () => {
-    isDisplayed.value = false
-    message.value = ''
+    ToastEventBus.emit('remove-all-groups')
   }
 
   return {
     showSnackBar,
-    hideSnackbar,
-    isDisplayed: isDisplayed,
-    isCentered: readonly(isCentered),
-    hasError: readonly(hasError),
-    message: readonly(message),
-    setTimeout: readonly(setTimeout)
+    hideSnackbar
   }
 }
 

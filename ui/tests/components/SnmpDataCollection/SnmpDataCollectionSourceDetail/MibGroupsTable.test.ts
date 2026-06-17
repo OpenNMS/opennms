@@ -11,7 +11,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 
 describe('MibGroupsTable.vue', () => {
   let wrapper: VueWrapper<any>
@@ -1038,12 +1038,7 @@ describe('MibGroupsTable.vue', () => {
       showSnackBarSpy = vi.fn()
       vi.spyOn(useSnackbar, 'default').mockReturnValue({
         showSnackBar: showSnackBarSpy,
-        hideSnackbar: vi.fn(),
-        isDisplayed: ref(false),
-        isCentered: ref(false),
-        hasError: ref(false),
-        message: ref(''),
-        setTimeout: ref(5000)
+        hideSnackbar: vi.fn()
       })
 
       const pinia = createTestingPinia({
