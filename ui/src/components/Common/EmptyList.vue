@@ -15,8 +15,13 @@
   <div :class="['empty-list', bg ? 'bg' : '']">
     <h3 v-if="content.title" data-test="title">{{ content.title }}</h3>
     <div data-test="msg">{{ msg }}</div>
-    <PButton v-if="content.btn" outlined @click="content.btn?.action" data-test="btn">{{ content.btn?.label }}
-    </PButton>
+    <PButton
+      v-if="content.btn"
+      outlined
+      :label="content.btn.label"
+      data-test="btn"
+      @click="content.btn.action"
+    />
   </div>
 </template>
 
