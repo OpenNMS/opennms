@@ -30,6 +30,7 @@
               <include>com.github.librepdf:openpdf</include>
               <include>net.sf.jasperreports:jasperreports</include>
               <include>net.sf.jasperreports:jasperreports-pdf</include>
+              <include>net.sf.jasperreports:jasperreports-charts</include>
               <include>org.codehaus.castor:castor-xml</include>
               <include>org.jfree:jfreechart</include>
             </includes>
@@ -52,6 +53,16 @@
               <shadedPattern>org.opennms.shaded.jasper.org.exolab.castor</shadedPattern>
             </relocation>
           </relocations>
+          <transformers>
+            <!--
+              jasperreports core, jasperreports-charts and jasperreports-pdf each ship their own
+              jasperreports_extension.properties at the jar root. Merge them so that the charts
+              (Jackson "chart" type mapping) and pdf extension registrations survive shading.
+            -->
+            <transformer implementation="org.apache.maven.plugins.shade.resource.properties.PropertiesTransformer">
+              <resource>jasperreports_extension.properties</resource>
+            </transformer>
+          </transformers>
         </configuration>
       </plugin>
       <plugin>
@@ -64,6 +75,14 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
+              net.sf.jasperreports.charts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.base;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.convert;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.design;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.renderers;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.util;version="${jasperreportsVersion}",
               net.sf.jasperreports.compilers;version="${jasperreportsVersion}",
               net.sf.jasperreports.components;version="${jasperreportsVersion}",
               net.sf.jasperreports.components.headertoolbar;version="${jasperreportsVersion}",
@@ -214,6 +233,23 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- As of JasperReports 7.0 the (JFreeChart based) legacy charts live in a separate module -->
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports-charts</artifactId>
+      <version>${jasperreportsVersion}</version>
+      <exclusions>
+        <!-- jfreechart is shaded explicitly below to control its version -->
+        <exclusion>
+          <groupId>org.jfree</groupId>
+          <artifactId>jfreechart</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>com.github.librepdf</groupId>
       <artifactId>openpdf</artifactId>
@@ -225,12 +261,9 @@
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
-      <!-- jasper uses 1.0.19, so we shade it and minimize exposure -->
-      <version>1.0.19</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jfree</groupId>
-      <artifactId>jcommon</artifactId>
+      <!-- jasperreports-charts 7.0.x compiles against 1.5.6; we shade it and minimize exposure.
+           1.5.x absorbed jcommon, so the separate jcommon dependency is no longer needed. -->
+      <version>1.5.6</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
