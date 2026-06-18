@@ -7,6 +7,8 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { cloneDeep } from 'lodash'
 import { setActivePinia } from 'pinia'
+import PrimeVue from 'primevue/config'
+import ToggleSwitch from 'primevue/toggleswitch'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
@@ -44,20 +46,11 @@ describe('GeneralConfiguration.vue', () => {
   const mountComponent = () => {
     return mount(GeneralConfiguration, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           TableCard: {
             template: '<div><slot /></div>'
-          },
-          FeatherExpansionPanel: {
-            props: ['title'],
-            template: '<div><slot /></div>'
-          },
-          FeatherInput: true,
-          'feather-input': true,
-          FeatherButton: true,
-          'feather-button': true,
-          SwitchRender: true,
-          'switch-render': true
+          }
         }
       }
     })
@@ -146,12 +139,15 @@ describe('GeneralConfiguration.vue', () => {
     expect((wrapper.vm as any).isSaveDisabled).toBe(true)
   })
 
-  it('toggles all switch values through the component handlers', () => {
+  it('toggles all switch values through the bound ToggleSwitch components', async () => {
     const wrapper = mountComponent()
+    const switches = wrapper.findAllComponents(ToggleSwitch)
 
-    ;(wrapper.vm as any).onChangeNewSuspectOnTrap()
-    ;(wrapper.vm as any).onChangeTrapMessageStatus()
-    ;(wrapper.vm as any).onChangeTrapSourceAddressStatus()
+    // order matches the template: new-suspect, include-raw-message, use-source-address
+    switches[0].vm.$emit('update:modelValue', false)
+    switches[1].vm.$emit('update:modelValue', true)
+    switches[2].vm.$emit('update:modelValue', false)
+    await nextTick()
 
     expect((wrapper.vm as any).newSuspectOnTrap).toBe(false)
     expect((wrapper.vm as any).trapMessageStatus).toBe(true)

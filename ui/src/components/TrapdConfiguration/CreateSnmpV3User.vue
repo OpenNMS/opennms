@@ -7,34 +7,54 @@
     <div class="header">
       <div class="section-left">
         <div class="title">
-          <FeatherButton
-            icon="Back"
+          <PButton
+            text
+            aria-label="Back"
             data-test="text-button"
             @click="store.closeCreateUserDrawer"
           >
-            <FeatherIcon :icon="ChevronLeft"> </FeatherIcon>
-          </FeatherButton>
-          <h3>New SNMPv3 User</h3>
+            <FeatherIcon :icon="ChevronLeft" />
+          </PButton>
+          <h3 v-if="store.createUserDrawerState.mode === CreateEditMode.Create">New SNMPv3 User</h3>
+          <h3 v-else-if="store.createUserDrawerState.mode === CreateEditMode.Edit">Edit SNMPv3 User {{ securityName }}</h3>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="username-version-row">
         <div class="left">
-          <FeatherInput
-            label="Security Name"
-            data-test="security-name-input"
-            v-model="securityName"
-            :error="error.securityName"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PInputText
+                id="security-name"
+                data-test="security-name-input"
+                v-model="securityName"
+                :invalid="!!error.securityName"
+              />
+              <label for="security-name">Security Name</label>
+            </IftaLabel>
+            <small
+              v-if="error.securityName"
+              class="field-error"
+            >{{ error.securityName }}</small>
+          </div>
         </div>
         <div class="right">
-          <FeatherInput
-            label="Engine ID"
-            data-test="engine-id-input"
-            v-model="engineId"
-            :error="error.engineId"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PInputText
+                id="engine-id"
+                data-test="engine-id-input"
+                v-model="engineId"
+                :invalid="!!error.engineId"
+              />
+              <label for="engine-id">Engine ID</label>
+            </IftaLabel>
+            <small
+              v-if="error.engineId"
+              class="field-error"
+            >{{ error.engineId }}</small>
+          </div>
         </div>
       </div>
       <div class="row">
@@ -42,14 +62,24 @@
       </div>
       <div class="properties-row">
         <div class="left">
-          <FeatherSelect
-            label="Security Level"
-            v-model="securityLevel"
-            @update:model-value="onSecurityLevelChange"
-            :clear="'true'"
-            :options="SECURITY_LEVEL_OPTIONS"
-            :error="error.securityLevel"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PSelect
+                inputId="security-level"
+                v-model="securityLevel"
+                @update:modelValue="onSecurityLevelChange"
+                showClear
+                optionLabel="_text"
+                :options="SECURITY_LEVEL_OPTIONS"
+                :invalid="!!error.securityLevel"
+              />
+              <label for="security-level">Security Level</label>
+            </IftaLabel>
+            <small
+              v-if="error.securityLevel"
+              class="field-error"
+            >{{ error.securityLevel }}</small>
+          </div>
         </div>
         <div class="right"></div>
       </div>
@@ -58,22 +88,41 @@
         v-if="authProtocolVisible"
       >
         <div class="left">
-          <FeatherSelect
-            label="Auth Protocol"
-            v-model="authProtocol"
-            :clear="'true'"
-            :options="AUTH_PROTOCOL_OPTIONS"
-            :error="error.authProtocol"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PSelect
+                inputId="auth-protocol"
+                v-model="authProtocol"
+                showClear
+                optionLabel="_text"
+                :options="AUTH_PROTOCOL_OPTIONS"
+                :invalid="!!error.authProtocol"
+              />
+              <label for="auth-protocol">Auth Protocol</label>
+            </IftaLabel>
+            <small
+              v-if="error.authProtocol"
+              class="field-error"
+            >{{ error.authProtocol }}</small>
+          </div>
         </div>
         <div class="right">
-          <FeatherInput
-            label="Auth Passphrase"
-            type="password"
-            data-test="auth-passphrase-input"
-            v-model="authPassphrase"
-            :error="error.authPassphrase"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PInputText
+                id="auth-passphrase"
+                type="password"
+                data-test="auth-passphrase-input"
+                v-model="authPassphrase"
+                :invalid="!!error.authPassphrase"
+              />
+              <label for="auth-passphrase">Auth Passphrase</label>
+            </IftaLabel>
+            <small
+              v-if="error.authPassphrase"
+              class="field-error"
+            >{{ error.authPassphrase }}</small>
+          </div>
           <ScvInputIcon
             data-test="auth-passphrase-save-button"
             @click="store.openCredentialDrawer('auth')"
@@ -85,22 +134,41 @@
         v-if="privacyProtocolVisible"
       >
         <div class="left">
-          <FeatherSelect
-            label="Privacy Protocol"
-            v-model="privacyProtocol"
-            :clear="'true'"
-            :options="PRIVACY_PROTOCOL_OPTIONS"
-            :error="error.privacyProtocol"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PSelect
+                inputId="privacy-protocol"
+                v-model="privacyProtocol"
+                showClear
+                optionLabel="_text"
+                :options="PRIVACY_PROTOCOL_OPTIONS"
+                :invalid="!!error.privacyProtocol"
+              />
+              <label for="privacy-protocol">Privacy Protocol</label>
+            </IftaLabel>
+            <small
+              v-if="error.privacyProtocol"
+              class="field-error"
+            >{{ error.privacyProtocol }}</small>
+          </div>
         </div>
         <div class="right">
-          <FeatherInput
-            label="Privacy Passphrase"
-            type="password"
-            data-test="privacy-passphrase-input"
-            v-model="privacyPassphrase"
-            :error="error.privacyPassphrase"
-          />
+          <div class="field">
+            <IftaLabel>
+              <PInputText
+                id="privacy-passphrase"
+                type="password"
+                data-test="privacy-passphrase-input"
+                v-model="privacyPassphrase"
+                :invalid="!!error.privacyPassphrase"
+              />
+              <label for="privacy-passphrase">Privacy Passphrase</label>
+            </IftaLabel>
+            <small
+              v-if="error.privacyPassphrase"
+              class="field-error"
+            >{{ error.privacyPassphrase }}</small>
+          </div>
           <ScvInputIcon
             data-test="privacy-passphrase-save-button"
             @click="store.openCredentialDrawer('privacy')"
@@ -109,21 +177,18 @@
       </div>
     </div>
     <div class="footer">
-      <FeatherButton
-        secondary
+      <PButton
+        text
         data-test="cancel-button"
+        label="Cancel"
         @click="store.closeCreateUserDrawer"
-      >
-        Cancel
-      </FeatherButton>
-      <FeatherButton
-        primary
+      />
+      <PButton
         data-test="create-user-button"
-        @click="saveUser"
+        :label="store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User'"
         :disabled="isSaveDisabled || isSaving"
-      >
-        {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
-      </FeatherButton>
+        @click="saveUser"
+      />
     </div>
     <ScvSearchDrawer
       :isOpen="store.credentialDrawerState.visible"
@@ -145,14 +210,20 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import IftaLabel from 'primevue/iftalabel'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import { FeatherIcon } from '@featherds/icon'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
+
+const PButton = Button
+const PInputText = InputText
+const PSelect = Select
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -383,13 +454,12 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 
 .snmpv3-user-management-container {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -402,11 +472,33 @@ onMounted(() => {
         align-items: center;
         gap: 10px;
 
+        // enlarge the back-button icon (FeatherIcon scales with font-size)
+        :deep(.p-button) {
+          font-size: 1.3rem;
+        }
+
         h3 {
           @include typography.headline3;
-          color: var(--feather-text-primary);
+          color: var(--p-text-color);
         }
       }
+    }
+  }
+
+  // input field with optional error helper text
+  .field {
+    display: flex;
+    flex-direction: column;
+
+    :deep(.p-inputtext),
+    :deep(.p-select) {
+      width: 100%;
+    }
+
+    .field-error {
+      color: var(--p-red-500);
+      font-size: 0.8em;
+      margin-top: 0.25em;
     }
   }
 
@@ -434,17 +526,21 @@ onMounted(() => {
 
       h1 {
         @include typography.headline4;
-        color: var(--feather-text-primary);
+        color: var(--p-text-color);
       }
 
-      div {
+      &>div {
         flex: 1;
       }
 
       .right {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 10px;
+
+        .field {
+          flex: 1;
+        }
       }
     }
 
@@ -454,7 +550,7 @@ onMounted(() => {
       margin-bottom: 20px;
       width: 50%;
 
-      div {
+      &>div {
         flex: 1;
       }
     }
@@ -462,7 +558,7 @@ onMounted(() => {
 
   .footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 10px;
   }
 }

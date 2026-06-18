@@ -62,3 +62,14 @@
 .p-button-outlined {
   border-width: 2px;
 }
+
+// Helper/hint text shown under a form field (the small sibling of an
+// IftaLabel/FloatLabel input). Global so every converted field is consistent:
+// indent to line up with the IftaLabel label/value text (the input's left
+// padding) and use a slightly larger, readable size.
+.field-hint {
+  margin-top: 0.25em;
+  padding-left: var(--p-iftalabel-position-x, 0.75rem);
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}

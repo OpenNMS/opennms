@@ -13,17 +13,14 @@
             <label class="label">Download file in XML format:</label>
           </div>
           <div class="feather-col-6">
-            <FeatherButton
-              primary
+            <PButton
               data-test="download-xml-button"
               class="upload-download-button"
               @click="onDownload(true)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Download XML
-              </template>
-            </FeatherButton>
+              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Download XML
+            </PButton>
            </div>
         </div>
         <div class="feather-row">
@@ -31,17 +28,14 @@
             <label class="label">Download file in JSON format:</label>
           </div>
           <div class="feather-col-6">
-            <FeatherButton
-              primary
+            <PButton
               data-test="download-json-button"
               class="upload-download-button"
               @click="onDownload(false)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Download JSON
-              </template>
-            </FeatherButton>
+              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Download JSON
+            </PButton>
            </div>
         </div>
          <div class="feather-row">
@@ -49,17 +43,14 @@
             <label class="label">Upload file in XML format:</label>
           </div>
           <div class="feather-col-6">
-            <FeatherButton
-              primary
+            <PButton
               data-test="upload-xml-button"
               class="upload-download-button"
               @click="initiateUpload(true)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Upload XML
-              </template>
-            </FeatherButton>
+              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Upload XML
+            </PButton>
            </div>
         </div>
          <div class="feather-row">
@@ -67,17 +58,14 @@
             <label class="label">Upload file in JSON format:</label>
           </div>
           <div class="feather-col-6">
-            <FeatherButton
-              primary
+            <PButton
               data-test="upload-json-button"
               class="upload-download-button"
               @click="initiateUpload(false)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Upload JSON
-              </template>
-            </FeatherButton>
+              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Upload JSON
+            </PButton>
            </div>
         </div>
     </div>
@@ -98,7 +86,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import IconDownload from '@featherds/icon/action/DownloadFile'
 import IconUpload from '@featherds/icon/action/UploadFile'
@@ -109,6 +97,8 @@ import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
+
+const PButton = Button
 
 const { downloadFile } = useDownload()
 const snackbar = useSnackbar()
@@ -242,18 +232,13 @@ const performUpload = async (isXml: boolean) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/vars.scss';
-
 .trapd-config-upload-download-tab {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 80%;
   padding: 0;
   border-radius: 5px;
   margin-top: 0;
-  border: 1px solid var(variables.$border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .main-section {
     display: flex;
@@ -270,8 +255,9 @@ const performUpload = async (isXml: boolean) => {
       margin-bottom: 0.5rem;
     }
 
-    button.btn.btn-icon .upload-download-icon {
+    .upload-download-icon {
       font-size: 1.1rem;
+      margin-right: 0.5em;
     }
   }
 }

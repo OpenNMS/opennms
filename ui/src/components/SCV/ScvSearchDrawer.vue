@@ -139,10 +139,11 @@ watch(() => props.isOpen, (newVal) => {
 </script>
 
 <style lang="scss" scoped>
+// Let the PrimeVue drawer body (.p-drawer-content) be the only scroll
+// container — no nested height/overflow constraints, so the whole drawer
+// scrolls as one.
 .drawer-content {
-  height: 100%;
   margin-top: 1em;
-  overflow-y: auto;
 
   .large-spacer {
     min-height: 1em;
@@ -158,11 +159,6 @@ watch(() => props.isOpen, (newVal) => {
     }
   }
 
-  .results-table-container {
-    max-height: 30em;
-    overflow-y: auto;
-  }
-
   .key-link {
     cursor: pointer;
     color: var(--p-primary-color);
@@ -175,7 +171,7 @@ watch(() => props.isOpen, (newVal) => {
 
   .scv-drawer-button-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 </style>

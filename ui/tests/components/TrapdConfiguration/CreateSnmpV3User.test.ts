@@ -19,6 +19,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import { ISelectItemType } from '@featherds/select'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
 
@@ -48,27 +49,6 @@ vi.mock('@/stores/scvStore', () => ({
     populate: populateScvMock
   }))
 }))
-
-const FeatherInputStub = defineComponent({
-  name: 'FeatherInput',
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    label: {
-      type: String,
-      default: ''
-    },
-    dataTest: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['update:modelValue'],
-  template:
-    '<input :data-test="dataTest || label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
-})
 
 const ScvSearchDrawerStub = defineComponent({
   name: 'ScvSearchDrawer',
@@ -101,30 +81,17 @@ describe('CreateSnmpV3User.vue', () => {
   const mountComponent = () => {
     return mount(CreateSnmpV3User, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           TableCard: {
             template: '<div><slot /></div>'
           },
           FeatherIcon: true,
-          FeatherInput: FeatherInputStub,
-          'feather-input': FeatherInputStub,
-          FeatherSelect: true,
-          'feather-select': true,
           ScvInputIcon: {
             emits: ['click'],
             template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'
           },
-          ScvSearchDrawer: ScvSearchDrawerStub,
-          FeatherButton: {
-            props: ['dataTest', 'disabled'],
-            emits: ['click'],
-            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
-          },
-          'feather-button': {
-            props: ['dataTest', 'disabled'],
-            emits: ['click'],
-            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
-          }
+          ScvSearchDrawer: ScvSearchDrawerStub
         }
       }
     })
