@@ -33,6 +33,9 @@ An enhanced node list has been introduced with options for sorting and filtering
 
 == Breaking changes
 
+=== Jasper Reports engine
+We have updated the Jasper Reports engine to version 7.0.7. Custom reports created using version 6.x must be updated to work with the new version.
+
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
