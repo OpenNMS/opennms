@@ -1,4 +1,4 @@
-<jasperReport name="RrdGraph" language="java" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" isSummaryNewPage="true">
+<jasperReport name="RrdGraph" language="java" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" summaryNewPage="true">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="229"/>
@@ -61,11 +61,11 @@
 	</group>
 	<title height="62">
 		<element kind="line" uuid="27b90486-a730-46e3-b5fb-7abc7a1cd119" x="0" y="0" width="515" height="1"/>
-		<element kind="textField" uuid="09b3f611-77ec-493b-9373-a75373f7e74b" isBlankWhenNull="true" bookmarkLevel="1" x="0" y="10" width="515" height="30" style="Sans_Normal" hTextAlign="Center" fontSize="22.0">
+		<element kind="textField" uuid="09b3f611-77ec-493b-9373-a75373f7e74b" blankWhenNull="true" bookmarkLevel="1" x="0" y="10" width="515" height="30" style="Sans_Normal" hTextAlign="Center" fontSize="22.0">
 			<expression><![CDATA["ReportTitle"]]></expression>
 			<anchorNameExpression><![CDATA["Title"]]></anchorNameExpression>
 		</element>
-		<element kind="textField" uuid="e5d2d372-abb7-481f-b041-20dd8b828e22" isBlankWhenNull="true" x="0" y="40" width="515" height="20" style="Sans_Normal" hTextAlign="Center" fontSize="14.0">
+		<element kind="textField" uuid="e5d2d372-abb7-481f-b041-20dd8b828e22" blankWhenNull="true" x="0" y="40" width="515" height="20" style="Sans_Normal" hTextAlign="Center" fontSize="14.0">
 			<expression><![CDATA["DataFile"]]></expression>
 		</element>
 	</title>
@@ -92,21 +92,21 @@
 				</box>
 				<expression><![CDATA[$V{Hour}]]></expression>
 			</element>
-			<element kind="textField" uuid="27635eab-59fa-4897-93c5-f37103eb6f7a" isStretchWithOverflow="true" positionType="Float" x="50" y="0" width="150" height="15">
+			<element kind="textField" uuid="27635eab-59fa-4897-93c5-f37103eb6f7a" textAdjust="StretchHeight" positionType="Float" x="50" y="0" width="150" height="15">
 				<box leftPadding="10" rightPadding="10">
 					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<expression><![CDATA[$F{Timestamp}]]></expression>
 			</element>
-			<element kind="textField" uuid="39db5fe8-d911-486c-bf93-a0f8fc246ea0" isStretchWithOverflow="true" positionType="Float" x="200" y="0" width="150" height="15" pattern="###0.00" hTextAlign="Right">
+			<element kind="textField" uuid="39db5fe8-d911-486c-bf93-a0f8fc246ea0" textAdjust="StretchHeight" positionType="Float" x="200" y="0" width="150" height="15" pattern="###0.00" hTextAlign="Right">
 				<box leftPadding="10" rightPadding="10">
 					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<expression><![CDATA[$F{HttpLatency}]]></expression>
 			</element>
-			<element kind="textField" uuid="2ed50088-6209-4ce2-887b-9c55b47ecea5" isStretchWithOverflow="true" positionType="Float" x="350" y="0" width="165" height="15" pattern="###0.00" hTextAlign="Right">
+			<element kind="textField" uuid="2ed50088-6209-4ce2-887b-9c55b47ecea5" textAdjust="StretchHeight" positionType="Float" x="350" y="0" width="165" height="15" pattern="###0.00" hTextAlign="Right">
 				<box leftPadding="10" rightPadding="10">
 					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
@@ -142,8 +142,7 @@
 	</lastPageFooter>
 	<summary height="336" splitType="Stretch">
 		<element kind="chart" chartType="bar" uuid="76923282-ce58-45ba-b206-c2974a10c86f" x="0" y="0" width="620" height="145">
-			<dataset kind="category">
-				<dataset incrementType="Group" incrementGroup="HourGroup"/>
+			<dataset kind="category" incrementType="Group" incrementGroup="HourGroup">
 				<series>
 					<seriesExpression><![CDATA["Http Latency"]]></seriesExpression>
 					<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
@@ -160,17 +159,16 @@
 			</plot>
 		</element>
 		<element kind="chart" chartType="xyLine" uuid="f74b3899-0662-4614-b878-ad4e92763aed" x="5" y="190" width="615" height="144">
-			<dataset kind="xy">
-				<dataset incrementType="Group" incrementGroup="HourGroup"/>
+			<dataset kind="xy" incrementType="Group" incrementGroup="HourGroup">
 				<series>
 					<seriesExpression><![CDATA[$V{Hour}]]></seriesExpression>
-					<xValueExpression><![CDATA[$F{HttpLatency}]]></xValueExpression>
-					<yValueExpression><![CDATA[$V{Hour}]]></yValueExpression>
+					<xvalueExpression><![CDATA[$F{HttpLatency}]]></xvalueExpression>
+					<yvalueExpression><![CDATA[$V{Hour}]]></yvalueExpression>
 				</series>
 				<series>
 					<seriesExpression><![CDATA[$V{Hour}]]></seriesExpression>
-					<xValueExpression><![CDATA[$F{SshLatency}]]></xValueExpression>
-					<yValueExpression><![CDATA[$V{Hour}]]></yValueExpression>
+					<xvalueExpression><![CDATA[$F{SshLatency}]]></xvalueExpression>
+					<yvalueExpression><![CDATA[$V{Hour}]]></yvalueExpression>
 				</series>
 			</dataset>
 			<plot/>
