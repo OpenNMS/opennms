@@ -29,17 +29,11 @@
             <includes>
               <include>com.github.librepdf:openpdf</include>
               <include>net.sf.jasperreports:jasperreports</include>
-              <include>net.sf.jasperreports:jasperreports-charts</include>
               <include>net.sf.jasperreports:jasperreports-pdf</include>
               <include>org.codehaus.castor:castor-xml</include>
               <include>org.jfree:jfreechart</include>
             </includes>
           </artifactSet>
-          <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-              <resource>jasperreports_extension.properties</resource>
-            </transformer>
-          </transformers>
           <relocations>
             <relocation>
               <pattern>com.lowagie</pattern>
@@ -71,18 +65,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               net.sf.jasperreports.compilers;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.base;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.convert;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.design;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.fill;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.renderers;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.type;version="${jasperreportsVersion}",
-              net.sf.jasperreports.charts.util;version="${jasperreportsVersion}",
               net.sf.jasperreports.components;version="${jasperreportsVersion}",
-              net.sf.jasperreports.components.charts;version="${jasperreportsVersion}",
-              net.sf.jasperreports.components.spiderchart;version="${jasperreportsVersion}",
-              net.sf.jasperreports.components.spiderchart.type;version="${jasperreportsVersion}",
               net.sf.jasperreports.components.headertoolbar;version="${jasperreportsVersion}",
               net.sf.jasperreports.components.iconlabel;version="${jasperreportsVersion}",
               net.sf.jasperreports.components.items;version="${jasperreportsVersion}",
@@ -182,16 +165,9 @@
           <artifactId>jdtcore</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <groupId>org.jfree</groupId>
+          <artifactId>jfreechart</artifactId>
         </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jasperreports</groupId>
-      <artifactId>jasperreports-charts</artifactId>
-      <version>${jasperreportsVersion}</version>
-      <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
@@ -249,7 +225,12 @@
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
-      <version>${jfreechartVersion}</version>
+      <!-- jasper uses 1.0.19, so we shade it and minimize exposure -->
+      <version>1.0.19</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

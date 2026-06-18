@@ -1852,7 +1852,7 @@
     <jettyOsgiVersion>9.4.60</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
-    <jfreechartVersion>1.5.6</jfreechartVersion>
+    <jfreechartVersion>1.5.4</jfreechartVersion>
     <jicmpVersion>3.0.4</jicmpVersion>
     <jicmp6Version>3.0.4</jicmp6Version>
     <jinteropVersion>3.4.0</jinteropVersion>
