@@ -42,7 +42,7 @@
         <PButton
           class="button"
           outlined
-          label="Copy Json"
+          label="Copy JSON"
           @click="copyJson"
         />
       </div>

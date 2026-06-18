@@ -1,7 +1,7 @@
 <template>
   <PButton
     text
-    aria-label="SCV"
+    :aria-label="title ?? tooltipTitle"
     class="scv-edit-icon"
     v-tooltip="title ?? tooltipTitle"
     @click="$emit('click')"

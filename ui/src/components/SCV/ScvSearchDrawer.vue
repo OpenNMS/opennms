@@ -43,6 +43,7 @@
             <template #body="{ data }">
               <a
                 v-if="data.type === 'key' && data.key"
+                href="#"
                 class="key-link"
                 @click.prevent="onItemSelected(data)"
               >{{ data.key }}</a>
@@ -107,11 +108,15 @@ const credentialsLoading = ref(false)
 const filteredResults = ref<ScvSearchItem[]>([])
 const searchValue = ref<string>('')
 
-const onSearch = debounce((query: string) => {
+const runQuery = (query: string) => {
   credentialsLoading.value = true
   searchValue.value = query
   filteredResults.value = scvStore.queryCredentials(query)
   credentialsLoading.value = false
+}
+
+const onSearch = debounce((query: string) => {
+  runQuery(query)
 }, DEBOUNCE_DELAY)
 
 const onItemSelected = (item: ScvSearchItem) => {
@@ -120,6 +125,12 @@ const onItemSelected = (item: ScvSearchItem) => {
 
 watch(() => props.isOpen, (newVal) => {
   drawerOpen.value = newVal
+
+  // When the drawer opens, show the current results (empty search => all credentials)
+  // so the user sees existing entries without having to type first.
+  if (newVal) {
+    runQuery(searchValue.value)
+  }
 })
 </script>
 
