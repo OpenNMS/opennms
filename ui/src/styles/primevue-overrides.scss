@@ -42,6 +42,20 @@
   text-transform: uppercase;
 }
 
+// Taller text inputs across the app (matches the roomier FeatherDS field feel
+// and gives IftaLabel's in-field label space above the value). Height is not a
+// PrimeVue theme token, so it lives here. Applies to InputText and the inner
+// input of InputNumber (both render .p-inputtext).
+.p-inputtext {
+  height: 3.75rem;
+}
+
+// Match Select height to the taller inputs so they line up in shared rows.
+// .p-select is inline-flex with centered content, so the label stays centered.
+.p-select {
+  height: 3.75rem;
+}
+
 // FeatherDS buttons use uppercase, bold, slightly spaced label text. Match it
 // (these are FeatherDS button typography token values; text-transform and
 // letter-spacing are not expressible as PrimeVue theme tokens).
@@ -68,6 +82,9 @@
 // indent to line up with the IftaLabel label/value text (the input's left
 // padding) and use a slightly larger, readable size.
 .field-hint {
+  // block so the left padding indents every line (an inline <small> would only
+  // offset the first line, leaving wrapped lines flush against the edge)
+  display: block;
   margin-top: 0.25em;
   padding-left: var(--p-iftalabel-position-x, 0.75rem);
   font-size: 0.875rem;

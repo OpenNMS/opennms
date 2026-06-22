@@ -2,12 +2,15 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <FeatherBackButton
+        <PButton
+          text
+          class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
+          <FeatherIcon :icon="ArrowBack" />
           Go Back
-        </FeatherBackButton>
+        </PButton>
       </div>
       <div>
         <h3>
@@ -18,39 +21,51 @@
     <div class="spacer"></div>
     <div class="basic-info">
       <div class="section-content">
-        <div class="feather-row">
-          <div class="feather-col-12">
+        <div class="onms-row">
+          <div class="onms-col-12">
             <span class="label">Label:</span>
           </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-12">
-            <FeatherInput
-              label=""
+        <div class="onms-row">
+          <div class="onms-col-12">
+            <PInputText
+              class="profile-input"
               data-test="snmp-profile-label"
-              :error="errors.label"
+              :invalid="!!errors.label"
               v-model.trim="label"
-              hint="Label"
-            >
-            </FeatherInput>
+            />
+            <small
+              v-if="errors.label"
+              class="field-error"
+            >{{ errors.label }}</small>
+            <small
+              v-else
+              class="field-hint"
+            >Label</small>
           </div>
         </div>
 
-        <div class="feather-row">
-          <div class="feather-col-12">
+        <div class="onms-row">
+          <div class="onms-col-12">
             <span class="label">Filter Expression:</span>
           </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-12">
-            <FeatherInput
-              label=""
+        <div class="onms-row">
+          <div class="onms-col-12">
+            <PInputText
+              class="profile-input"
               data-test="snmp-profile-filter-expression"
-              :error="errors.filterExpression"
+              :invalid="!!errors.filterExpression"
               v-model.trim="filterExpression"
-              hint="Filter expression"
-            >
-            </FeatherInput>
+            />
+            <small
+              v-if="errors.filterExpression"
+              class="field-error"
+            >{{ errors.filterExpression }}</small>
+            <small
+              v-else
+              class="field-hint"
+            >Filter expression</small>
           </div>
         </div>
 
@@ -77,14 +92,19 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherInput } from '@featherds/input'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import { FeatherIcon } from '@featherds/icon'
+import ArrowBack from '@featherds/icon/navigation/ArrowBack'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
 import { validateProfile } from '@/lib/snmpValidator'
+
+const PButton = Button
+const PInputText = InputText
 
 const props = defineProps<{
   isCreate: boolean,
@@ -212,26 +232,27 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables' as variables;
-@use '@featherds/styles/mixins/typography';
-
 .main-content {
   padding: 0.2em;
   margin: 0.2em;
 
   border-radius: 8px;
-  background-color: var(variables.$surface);
+  background-color: var(--p-content-background);
 
   .header {
     display: flex;
     align-items: center;
     gap: 20px;
+
+    .back-button {
+      gap: 0.4em;
+    }
   }
 
   .basic-info {
     border-width: 1px;
     border-style: solid;
-    border-color: var(variables.$border-on-surface);
+    border-color: var(--p-content-border-color);
     padding: 1em;
     border-radius: 8px;
 
@@ -245,6 +266,16 @@ onMounted(() => {
 
     .dropdown {
       width: 50%;
+    }
+
+    .profile-input {
+      width: 100%;
+    }
+
+    .field-error {
+      color: var(--p-red-500);
+      font-size: 0.875rem;
+      margin-top: 0.25em;
     }
   }
 

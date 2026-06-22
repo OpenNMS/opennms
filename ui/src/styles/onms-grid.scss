@@ -20,35 +20,29 @@
 /// License.
 ///
 
-import PrimeVue from 'primevue/config'
-import Tooltip from 'primevue/tooltip'
-import OpenNMSPreset from './opennms-preset'
-import 'primeicons/primeicons.css'
-import '@/styles/primevue-overrides.scss'
-import '@/styles/onms-grid.scss'
+// OpenNMS 12-column CSS Grid layout system. Replacement for the FeatherDS
+// feather-row/feather-col grid as part of the FeatherDS -> PrimeVue migration.
+//
+// Usage:
+//   <div class="onms-row">
+//     <div class="onms-col-6">...</div>
+//     <div class="onms-col-6">...</div>
+//   </div>
+//
+// Gutters come from `gap` (no negative-margin/padding hacks). 1.5rem matches the
+// spacing of the FeatherDS grid it replaces. A column may contain its own
+// .onms-row to nest a fresh 12-column grid within that column's width.
 
-import type { App } from 'vue'
+.onms-row {
+  display: grid;
+  // minmax(0, 1fr) (not 1fr) so a wide, unbreakable child (long input value,
+  // table, etc.) can't blow out its track and break the column widths.
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem;
+}
 
-export const setupPrimeVue = (app: App) => {
-  app.use(PrimeVue, {
-    theme: {
-      preset: OpenNMSPreset,
-      options: {
-        prefix: 'p',
-        darkModeSelector: '.open-dark',
-        cssLayer: {
-          name: 'primevue',
-          order: 'primevue'
-        }
-      }
-    },
-    zIndex: {
-      overlay: 1060,
-      menu: 1060,
-      modal: 1100,
-      tooltip: 1110
-    }
-  })
-
-  app.directive('tooltip', Tooltip)
+@for $i from 1 through 12 {
+  .onms-col-#{$i} {
+    grid-column: span #{$i};
+  }
 }

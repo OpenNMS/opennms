@@ -170,6 +170,13 @@ const OpenNMSPreset = definePreset(Aura, {
     }
   },
   components: {
+    // IftaLabel (in-field top-aligned label). Aura's label font is 0.75rem which
+    // reads too small next to the input value; bump to 1rem and add a little more
+    // input top padding so the value clears the larger label.
+    iftalabel: {
+      root: { fontSize: '0.9rem' },
+      input: { paddingTop: '1.75rem' }
+    },
     // DataTable rows/body inherit the bridged `content.*` tokens. Headers in the
     // FeatherDS look use the (muted) background + secondary text, and the border
     // color is set explicitly because Aura's dark scheme hardcodes it to a

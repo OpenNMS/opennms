@@ -2,12 +2,15 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <FeatherBackButton
+        <PButton
+          text
+          class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
+          <FeatherIcon :icon="ArrowBack" />
           Go Back
-        </FeatherBackButton>
+        </PButton>
       </div>
       <div>
         <h3>
@@ -25,25 +28,16 @@
     <div class="basic-info">
       <div class="section-content">
         <h4>Configuration applies to these IP Ranges:</h4>
-        <FeatherChipList label="IP Addresses" v-if="badgeItems.length">
-          <FeatherChip
+        <div class="chip-list" v-if="badgeItems.length">
+          <PChip
             v-for="item of badgeItems"
             :key="createBadgeKey(item)"
             class="definition-chip"
-            @click="removeChip(item)"
-          >
-            <template v-if="item.type === 'range'">{{ `${item.range?.begin} - ${item.range?.end}` }}</template>
-            <template v-else-if="item.type === 'specific'">{{ item.specific }}</template>
-            <template v-else>IPLIKE: {{ item.ipMatch }}</template>
-
-            <template #icon>
-              <FeatherIcon
-                :icon="IconCancel"
-                class="icon"
-              />
-            </template>
-          </FeatherChip>
-        </FeatherChipList>
+            removable
+            :label="chipLabel(item)"
+            @remove="removeChip(item)"
+          />
+        </div>
 
         <div v-if="currentDefinition?.profileLabel">
           <div class="large-spacer"></div>
@@ -109,11 +103,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import Button from 'primevue/button'
+import Chip from 'primevue/chip'
 import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
-import IconCancel from '@featherds/icon/navigation/Cancel'
+import ArrowBack from '@featherds/icon/navigation/ArrowBack'
 import MessageDialog from '../Common/MessageDialog.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
@@ -121,6 +115,9 @@ import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinition, SnmpConfigFormErrors, IpAddressRange } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import { checkForDuplicateDefinitionItems } from '@/lib/snmpValidator'
+
+const PButton = Button
+const PChip = Chip
 
 const props = defineProps<{
   isCreate: boolean,
@@ -196,6 +193,15 @@ const createBadgeKey = (badge: DefinitionBadgeItem) => {
     return `specific-${badge.specific}`
   }
   return `ipmatch-${badge.ipMatch}`
+}
+
+const chipLabel = (badge: DefinitionBadgeItem) => {
+  if (badge.type === 'range') {
+    return `${badge.range?.begin} - ${badge.range?.end}`
+  } else if (badge.type === 'specific') {
+    return badge.specific ?? ''
+  }
+  return `IPLIKE: ${badge.ipMatch}`
 }
 
 const badgeItems = computed<DefinitionBadgeItem[]>(() => {
@@ -420,11 +426,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables' as variables;
-@use '@featherds/styles/mixins/typography';
-@use "@featherds/table/scss/table";
-
-
 .snmp-definition-message-dialog-help-body {
   p {
     margin: 0.5em 0;
@@ -435,7 +436,7 @@ onMounted(() => {
   }
 
   code {
-    background-color: var(variables.$background);
+    background-color: var(--p-content-background);
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-family: monospace;
@@ -446,19 +447,23 @@ onMounted(() => {
   padding: 0.2em;
   margin: 0.2em;
   border-radius: 8px;
-  background-color: var(variables.$surface);
+  background-color: var(--p-content-background);
 
   .header {
     display: flex;
     align-items: center;
     gap: 20px;
+
+    .back-button {
+      gap: 0.4em;
+    }
   }
 
   .info-icon {
     cursor: pointer;
     font-size: 1.5em;
     margin-left: 0.5em;
-    color: var(variables.$primary);
+    color: var(--p-primary-color);
 
     &:hover {
       opacity: 0.8;
@@ -468,7 +473,7 @@ onMounted(() => {
   .basic-info {
     border-width: 1px;
     border-style: solid;
-    border-color: var(variables.$border-on-surface);
+    border-color: var(--p-content-border-color);
     padding: 1em;
     border-radius: 8px;
 
@@ -489,8 +494,10 @@ onMounted(() => {
     min-height: 0.5em;
   }
 
-  .definition-chip {
-    background-color: var(--feather-border-on-surface);
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 </style>

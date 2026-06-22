@@ -3,6 +3,7 @@
     text
     :aria-label="title ?? tooltipTitle"
     class="scv-edit-icon"
+    :disabled="disabled"
     v-tooltip="title ?? tooltipTitle"
     @click="$emit('click')"
   >
@@ -22,6 +23,7 @@ const PButton = Button
 
 defineProps<{
   title?: string
+  disabled?: boolean
 }>()
 
 defineEmits<{
