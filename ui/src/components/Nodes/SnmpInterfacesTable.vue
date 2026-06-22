@@ -1,6 +1,6 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <table
         class="tl1 tl2 tl3, tl4, tl5"
         summary="SNMP Interfaces"

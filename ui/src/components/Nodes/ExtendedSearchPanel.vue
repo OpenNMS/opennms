@@ -1,7 +1,7 @@
 <template>
   <div class="extended-search-container">
-    <div class="feather-row add-row">
-      <div class="feather-col-5">
+    <div class="onms-row add-row">
+      <div class="onms-col-5">
         <FeatherSelect
           label="Search Type"
           :options="searchOptions"
@@ -9,13 +9,13 @@
           v-model="currentSelection"
         />
       </div>
-      <div class="feather-col-5">
+      <div class="onms-col-5">
         <FeatherInput
           v-model="searchTerm"
           label="Search Term"
         />
       </div>
-      <div class="feather-col-2 add-btn-col">
+      <div class="onms-col-2 add-btn-col">
         <FeatherButton
           secondary
           icon="Add"

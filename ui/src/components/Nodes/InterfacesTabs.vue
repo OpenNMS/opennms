@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <div class="feather-col-12 title headline3">Node Interfaces</div>
+    <div class="onms-col-12 title headline3">Node Interfaces</div>
     <FeatherTabContainer>
       <template v-slot:tabs>
         <FeatherTab>IP Interfaces</FeatherTab>

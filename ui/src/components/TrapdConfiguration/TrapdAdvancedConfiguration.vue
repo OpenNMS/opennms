@@ -2,17 +2,17 @@
   <div class="trapd-config-upload-download-tab">
     <div class="main-section">
         <h3>Trap Configuration Upload/Download</h3>
-        <div class="feather-row">
-          <div class="feather-col-12">
+        <div class="onms-row">
+          <div class="onms-col-12">
             <span class="label">You can both download and upload the entire Trap configuration in both XML and JSON formats.
               <strong>Use caution</strong> when uploading Trap configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-6">
+        <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Download file in XML format:</label>
           </div>
-          <div class="feather-col-6">
+          <div class="onms-col-6">
             <PButton
               data-test="download-xml-button"
               class="upload-download-button"
@@ -23,11 +23,11 @@
             </PButton>
            </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-6">
+        <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Download file in JSON format:</label>
           </div>
-          <div class="feather-col-6">
+          <div class="onms-col-6">
             <PButton
               data-test="download-json-button"
               class="upload-download-button"
@@ -38,11 +38,11 @@
             </PButton>
            </div>
         </div>
-         <div class="feather-row">
-          <div class="feather-col-6">
+         <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Upload file in XML format:</label>
           </div>
-          <div class="feather-col-6">
+          <div class="onms-col-6">
             <PButton
               data-test="upload-xml-button"
               class="upload-download-button"
@@ -53,11 +53,11 @@
             </PButton>
            </div>
         </div>
-         <div class="feather-row">
-          <div class="feather-col-6">
+         <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Upload file in JSON format:</label>
           </div>
-          <div class="feather-col-6">
+          <div class="onms-col-6">
             <PButton
               data-test="upload-json-button"
               class="upload-download-button"
@@ -251,7 +251,7 @@ const performUpload = async (isXml: boolean) => {
       width: 15em;
     }
 
-    .feather-row {
+    .onms-row {
       margin-bottom: 0.5rem;
     }
 

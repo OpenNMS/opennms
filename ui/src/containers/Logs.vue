@@ -1,17 +1,17 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="card">
-        <div class="feather-row">
-          <div class="feather-col-3">
+        <div class="onms-row">
+          <div class="onms-col-3">
             <Logs />
           </div>
-          <div :class="`feather-col-9`">
+          <div :class="`onms-col-9`">
             <Editor />
           </div>
         </div>
@@ -54,7 +54,7 @@ onMounted(() => logStore.getLogs())
   padding: 15px;
   position: relative;
 }
-.feather-row {
+.onms-row {
   flex-wrap: nowrap;
 }
 </style>

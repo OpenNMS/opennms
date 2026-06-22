@@ -1,10 +1,10 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12 headline3">Recent Events</div>
+    <div class="onms-row">
+      <div class="onms-col-12 headline3">Recent Events</div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <table
           class="tl1 tl2 tl3 tl4"
           summary="Recent Events"

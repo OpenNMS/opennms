@@ -1,12 +1,12 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div class="zc-container">
           <div class="content-container">
             <div class="title-search">

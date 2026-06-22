@@ -1,9 +1,9 @@
 <template>
   <div class="card">
     <div>
-      <div class="feather-row title-bar">
-        <span class="title">Nodes</span>
-        <div class="action-buttons-container">
+      <div class="onms-row title-bar">
+        <span class="title onms-col-4">Nodes</span>
+        <div class="action-buttons-container onms-col-8">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"
             :onJsonDownload="onJsonDownload"
@@ -24,8 +24,8 @@
       </div>
       <div class="spacer-large"></div>
       <div class="spacer-large"></div>
-      <div class="search-container feather-col-12">
-        <div class="feather-row">
+      <div class="search-container onms-col-12">
+        <div class="onms-row">
           <div class="filter">
             <div class="search-filter-column">
               <FeatherInput
@@ -222,8 +222,8 @@
         </div>
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div
           id="wrap"
           class="node-table"
@@ -792,7 +792,6 @@ table {
 }
 
 .title-bar {
-  justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
   padding-left: 1rem;
@@ -814,6 +813,7 @@ table {
 .action-buttons-container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 

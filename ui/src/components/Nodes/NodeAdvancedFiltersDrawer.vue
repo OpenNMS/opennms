@@ -67,8 +67,8 @@
       </div>
       <hr />
       <div class="spacer-large"></div>
-      <div class="feather-row">
-        <div class="feather-col-6">
+      <div class="onms-row">
+        <div class="onms-col-6">
           <FeatherAutocomplete
             class="filter-autocomplete"
             label="Monitoring Locations"
@@ -81,7 +81,7 @@
           >
           </FeatherAutocomplete>
         </div>
-        <div class="feather-col-6">
+        <div class="onms-col-6">
           <FeatherAutocomplete
             class="filter-autocomplete"
             label="Monitored Services"
@@ -94,8 +94,8 @@
           ></FeatherAutocomplete>
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-6">
+      <div class="onms-row">
+        <div class="onms-col-6">
           <FeatherInput
             class="filter-input"
             label="IP Address / Pattern"
@@ -103,7 +103,7 @@
             :error="errors.ipAddress"
           />
         </div>
-        <div class="feather-col-6">
+        <div class="onms-col-6">
           <FeatherInput
             class="filter-input last-filter-input"
             label="MAC Address"
@@ -111,8 +111,8 @@
           />
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-6">
+      <div class="onms-row">
+        <div class="onms-col-6">
           <FeatherInput
             class="filter-input last-filter-input"
             label="Topology (CDP/LLDP)"
@@ -133,8 +133,8 @@
         text-prop="_text"
       ></FeatherAutocomplete>
       <div class="spacer-medium"></div>
-      <div class="feather-row">
-        <div class="feather-col-12">
+      <div class="onms-row">
+        <div class="onms-col-12">
           <FeatherCheckbox
             v-model="selectedFilters.nodesWithDownAggregateStatus"
           >
@@ -142,8 +142,8 @@
           </FeatherCheckbox>
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-12">
+      <div class="onms-row">
+        <div class="onms-col-12">
           <FeatherCheckbox
             v-model="selectedFilters.nodesWithAssets"
           >

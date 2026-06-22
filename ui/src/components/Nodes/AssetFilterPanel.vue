@@ -1,7 +1,7 @@
 <template>
   <div class="asset-filter-container">
-    <div class="feather-row add-row">
-      <div class="feather-col-5">
+    <div class="onms-row add-row">
+      <div class="onms-col-5">
         <FeatherSelect
           label="Asset Field"
           :options="assetOptions"
@@ -9,13 +9,13 @@
           v-model="currentSelection"
         />
       </div>
-      <div class="feather-col-5">
+      <div class="onms-col-5">
         <FeatherInput
           v-model="assetValue"
           label="Value"
         />
       </div>
-      <div class="feather-col-2 add-btn-col">
+      <div class="onms-col-2 add-btn-col">
         <FeatherButton
           secondary
           icon="Add"

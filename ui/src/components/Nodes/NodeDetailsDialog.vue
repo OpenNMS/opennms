@@ -1,11 +1,11 @@
 <template>
   <FeatherDialog :modelValue="visible" relative :labels="labels" @update:modelValue="$emit('close')">
     <div class="node-details-content">
-      <div class="feather-row" v-for="item in nodeItems" :key="item.label">
-        <div class="feather-col-4">
+      <div class="onms-row" v-for="item in nodeItems" :key="item.label">
+        <div class="onms-col-4">
           <span class="label">{{ item.label }}</span>
         </div>
-        <div class="feather-col-8">
+        <div class="onms-col-8">
           <a v-if="item.link" :href="item.link">{{ item.text }}</a>
           <span v-else>{{ item.text }}</span>
         </div>

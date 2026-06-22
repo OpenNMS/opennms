@@ -1,9 +1,9 @@
 <template>
   <div class="column-select-container">
-    <div class="feather-row node-actions-reset">
-      <div class="feather-col-9">
+    <div class="onms-row node-actions-reset">
+      <div class="onms-col-9">
       </div>
-      <div class="feather-col-3 centered">
+      <div class="onms-col-3 centered">
         <FeatherButton secondary @click="resetToDefault">Default</FeatherButton>
       </div>
     </div>
@@ -12,15 +12,15 @@
     v-for="(col, index) in columns"
     :key="col.id"
     >
-      <div class="feather-row column-select-item-wrapper">
-        <div class="feather-col-9">
+      <div class="onms-row column-select-item-wrapper">
+        <div class="onms-col-9">
           <FeatherCheckbox
             class="checkbox"
             @update:modelValue="selectColumn(col)"
             :modelValue="col.selected"
           >{{ col.label }}</FeatherCheckbox>
         </div>
-        <div class="feather-col-3 centered">
+        <div class="onms-col-3 centered">
           <FeatherIcon :icon="upIcon" title="Move Up" @click="columnMove(true, index)" :class="getOrderIconCssClasses(true, index)" />
           <FeatherIcon :icon="downIcon" title="Move Down" @click="columnMove(false, index)" :class="getOrderIconCssClasses(false, index)" />
         </div>
@@ -133,7 +133,7 @@ button.btn.btn-icon .node-actions-icon {
   }
 }
 
-.feather-col-3.centered {
+.onms-col-3.centered {
   text-align: center;
 }
 </style>
