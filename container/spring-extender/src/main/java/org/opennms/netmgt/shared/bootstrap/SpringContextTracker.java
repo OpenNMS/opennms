@@ -70,16 +70,29 @@ class SpringContextTracker extends BundleTracker<Bundle> {
 
     private final NamespaceProviderRegistry namespaceProviderRegistry;
     private final Map<Long, ConfigurableApplicationContext> contexts = new ConcurrentHashMap<>();
+    // Per-bundle "generation" token identifying the latest context-creation task for a bundle id. A task only
+    // installs its context if it is still the current generation; a stop (removedBundle clears the token) or a
+    // restart (addingBundle replaces it) invalidates an in-flight task so it cannot overwrite a newer context.
+    private final Map<Long, Object> generations = new ConcurrentHashMap<>();
+    // Guards the compound check-then-act on contexts/generations. NOT held across refresh() (which can block on
+    // an osgi:reference), only across the short install/close critical sections, so it cannot deadlock a task.
+    private final Object lifecycleLock = new Object();
     private final AtomicInteger threadIndex = new AtomicInteger();
-    private final ExecutorService executor = Executors.newCachedThreadPool(runnable -> {
-        final Thread thread = new Thread(runnable, "spring-context-extender-" + threadIndex.incrementAndGet());
-        thread.setDaemon(true);
-        return thread;
-    });
+    private final ExecutorService executor;
 
     SpringContextTracker(BundleContext context, NamespaceProviderRegistry namespaceProviderRegistry) {
+        this(context, namespaceProviderRegistry, null);
+    }
+
+    /** Test seam: a caller may supply a controllable executor (e.g. run-on-demand) instead of the default pool. */
+    SpringContextTracker(BundleContext context, NamespaceProviderRegistry namespaceProviderRegistry, ExecutorService executor) {
         super(context, Bundle.ACTIVE, null);
         this.namespaceProviderRegistry = namespaceProviderRegistry;
+        this.executor = executor != null ? executor : Executors.newCachedThreadPool(runnable -> {
+            final Thread thread = new Thread(runnable, "spring-context-extender-" + threadIndex.incrementAndGet());
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     @Override
@@ -89,25 +102,36 @@ class SpringContextTracker extends BundleTracker<Bundle> {
             return null;
         }
         LOG.info("Creating Spring application context for bundle {} from {}", bundle.getSymbolicName(), configLocations);
-        executor.execute(() -> createApplicationContext(bundle, configLocations));
+        final Object token = new Object();
+        generations.put(bundle.getBundleId(), token);
+        executor.execute(() -> createApplicationContext(bundle, configLocations, token));
         return bundle;
     }
 
     @Override
     public void removedBundle(Bundle bundle, BundleEvent event, Bundle object) {
-        closeContext(bundle.getBundleId());
+        synchronized (lifecycleLock) {
+            // Invalidate any in-flight creation task for this bundle so it cannot install a stale context,
+            // then tear down whatever context is already installed.
+            generations.remove(bundle.getBundleId());
+            closeContextLocked(bundle.getBundleId());
+        }
     }
 
     @Override
     public void close() {
         super.close();
         executor.shutdownNow();
-        for (final Long bundleId : new ArrayList<>(contexts.keySet())) {
-            closeContext(bundleId);
+        synchronized (lifecycleLock) {
+            generations.clear();
+            for (final Long bundleId : new ArrayList<>(contexts.keySet())) {
+                closeContextLocked(bundleId);
+            }
         }
     }
 
-    private void closeContext(long bundleId) {
+    /** Removes and closes the installed context for a bundle id. Caller must hold {@link #lifecycleLock}. */
+    private void closeContextLocked(long bundleId) {
         final ConfigurableApplicationContext context = contexts.remove(bundleId);
         if (context != null) {
             try {
@@ -143,12 +167,29 @@ class SpringContextTracker extends BundleTracker<Bundle> {
         return locations;
     }
 
-    private void createApplicationContext(Bundle bundle, List<String> configLocations) {
-        if (bundle.getState() != Bundle.ACTIVE) {
-            LOG.info("Bundle {} was stopped before its Spring application context was created, skipping",
+    private void createApplicationContext(Bundle bundle, List<String> configLocations, Object token) {
+        if (generations.get(bundle.getBundleId()) != token) {
+            LOG.info("Bundle {} was stopped/restarted before its Spring application context was created, skipping",
                     bundle.getSymbolicName());
             return;
         }
+        final ConfigurableApplicationContext context;
+        try {
+            // buildContext() can block in refresh() (e.g. waiting on an osgi:reference); it must run WITHOUT
+            // holding lifecycleLock so removedBundle/close can proceed concurrently.
+            context = buildContext(bundle, configLocations);
+        } catch (Throwable t) {
+            LOG.error("Failed to start Spring application context for bundle {}", bundle.getSymbolicName(), t);
+            return;
+        }
+        installContext(bundle, token, context);
+    }
+
+    /**
+     * Builds and refreshes the Spring context for a bundle. Package-private seam so tests can supply a
+     * controllable/mock context (and simulate a slow refresh) without a live OSGi framework.
+     */
+    ConfigurableApplicationContext buildContext(Bundle bundle, List<String> configLocations) {
         // Bean classes resolve through the bundle first; Spring infrastructure classes
         // the bundle does not import (tx/aop interceptors, ...) fall back to this
         // bundle's loader, which dynamically imports org.springframework.*
@@ -172,22 +213,39 @@ class SpringContextTracker extends BundleTracker<Bundle> {
             }
 
             context.refresh();
-            contexts.put(bundle.getBundleId(), context);
-            // The bundle may have been stopped while we were blocked in refresh (e.g.
-            // waiting on an osgi:reference); removedBundle saw an empty map then, so
-            // re-check and tear the context down ourselves
-            if (bundle.getState() != Bundle.ACTIVE) {
-                LOG.info("Bundle {} was stopped while its Spring application context was starting, closing it",
-                        bundle.getSymbolicName());
-                closeContext(bundle.getBundleId());
-                return;
-            }
-            LOG.info("Started Spring application context for bundle {} ({} bean definitions)",
-                    bundle.getSymbolicName(), context.getBeanDefinitionCount());
-        } catch (Throwable t) {
-            LOG.error("Failed to start Spring application context for bundle {}", bundle.getSymbolicName(), t);
+            return context;
         } finally {
             thread.setContextClassLoader(oldTccl);
+        }
+    }
+
+    /**
+     * Installs a freshly-built context under {@link #lifecycleLock}, but only if it is still the current
+     * generation for the bundle id. The bundle may have been stopped, or stopped and restarted, while we were
+     * blocked in {@link #buildContext} (removedBundle could not cancel us because our context was not yet in
+     * the map). If so, close our now-orphaned context rather than overwrite a newer one or leak its services.
+     */
+    private void installContext(Bundle bundle, Object token, ConfigurableApplicationContext context) {
+        synchronized (lifecycleLock) {
+            if (generations.get(bundle.getBundleId()) != token) {
+                LOG.info("Bundle {} was stopped/restarted while its Spring application context was starting, closing it",
+                        bundle.getSymbolicName());
+                closeQuietly(context);
+                return;
+            }
+            // Defensively replace any previously installed context for this id before installing ours.
+            closeContextLocked(bundle.getBundleId());
+            contexts.put(bundle.getBundleId(), context);
+        }
+        LOG.info("Started Spring application context for bundle {} ({} bean definitions)",
+                bundle.getSymbolicName(), context.getBeanDefinitionCount());
+    }
+
+    private static void closeQuietly(final ConfigurableApplicationContext context) {
+        try {
+            context.close();
+        } catch (Throwable t) {
+            LOG.warn("Failed to close stale Spring application context {}", context.getDisplayName(), t);
         }
     }
 
