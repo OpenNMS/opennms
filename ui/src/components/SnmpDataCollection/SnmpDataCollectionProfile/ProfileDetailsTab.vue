@@ -7,15 +7,22 @@
     <div class="config-row">
       <div class="config-field">
         <span class="field-label">Name:</span>
-        <FeatherInput
-          v-if="isCreateMode"
-          label="Profile Name"
-          :modelValue="configDetails.name"
-          @update:modelValue="update('name', String($event))"
-          :error="errors.name"
-          data-test="profile-name-input"
-          class="settings-input"
-        />
+        <template v-if="isCreateMode">
+          <div class="settings-input">
+            <PInputText
+              :modelValue="configDetails.name"
+              @update:modelValue="update('name', String($event))"
+              :invalid="!!errors.name"
+              placeholder="Profile Name"
+              data-test="profile-name-input"
+              fluid
+            />
+            <span
+              v-if="errors.name"
+              class="field-error"
+            >{{ errors.name }}</span>
+          </div>
+        </template>
         <span
           v-else
           class="field-value"
@@ -29,20 +36,18 @@
           data-test="profile-enabled-switch"
         />
         <div class="tag">
-          <FeatherChip
+          <PTag
             v-if="configDetails.enabled"
             class="enabled-tag"
+            value="Enabled"
             data-test="status-tag"
-          >
-            Enabled
-          </FeatherChip>
-          <FeatherChip
+          />
+          <PTag
             v-if="!configDetails.enabled"
             class="disabled-tag"
+            value="Disabled"
             data-test="status-tag"
-          >
-            Disabled
-          </FeatherChip>
+          />
         </div>
       </div>
     </div>
@@ -67,16 +72,25 @@
     <div class="config-row">
       <div class="config-field">
         <span class="field-label">Max Vars Per PDU:</span>
-        <FeatherInput
-          label="Max Vars Per PDU"
-          hint="Leave empty or set to 0 to use the default value."
-          :modelValue="configDetails.maxVarsPerPdu"
-          @update:modelValue="update('maxVarsPerPdu', String($event))"
-          type="number"
-          :error="errors.maxVarsPerPdu"
-          data-test="max-vars-per-pdu"
-          class="settings-input"
-        />
+        <div class="settings-input">
+          <PInputNumber
+            :modelValue="configDetails.maxVarsPerPdu === '' ? null : Number(configDetails.maxVarsPerPdu)"
+            @update:modelValue="update('maxVarsPerPdu', $event == null ? '' : String($event))"
+            :useGrouping="false"
+            :min="0"
+            :invalid="!!errors.maxVarsPerPdu"
+            data-test="max-vars-per-pdu"
+            fluid
+          />
+          <small
+            v-if="errors.maxVarsPerPdu"
+            class="field-error"
+          >{{ errors.maxVarsPerPdu }}</small>
+          <small
+            v-else
+            class="field-hint"
+          >Leave empty or set to 0 to use the default value.</small>
+        </div>
       </div>
       <div class="config-field">
         <span class="field-label">Storage Flag:</span>
@@ -103,14 +117,18 @@
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherInput } from '@featherds/input'
 import { format } from 'date-fns-tz'
-import ToggleSwitchComponent from 'primevue/toggleswitch'
+import InputNumberComponent from 'primevue/inputnumber'
+import InputTextComponent from 'primevue/inputtext'
 import SelectComponent from 'primevue/select'
+import TagComponent from 'primevue/tag'
+import ToggleSwitchComponent from 'primevue/toggleswitch'
 
 const PToggleSwitch = ToggleSwitchComponent
 const PSelect = SelectComponent
+const PInputText = InputTextComponent
+const PInputNumber = InputNumberComponent
+const PTag = TagComponent
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel
@@ -187,9 +205,17 @@ const update = <K extends keyof ConfigDetailsModel>(key: K, value: ConfigDetails
 }
 
 .field-error {
-  color: var(--feather-error);
+  display: block;
+  color: var(--p-red-500);
   font-size: 0.8em;
-  margin-left: 8px;
+  margin-top: 0.25em;
+}
+
+.field-hint {
+  display: block;
+  color: var(--p-text-muted-color);
+  font-size: 0.8em;
+  margin-top: 0.25em;
 }
 
 .tag {
@@ -197,10 +223,9 @@ const update = <K extends keyof ConfigDetailsModel>(key: K, value: ConfigDetails
     margin: 0 !important;
     border-radius: 1em;
     background-color: #0B720C1F;
-    border-color: #0B720C;
-    border-width: 2px;
+    border: 2px solid #0B720C;
 
-    :deep(span) {
+    :deep(.p-tag-label) {
       color: #0B720C !important;
     }
   }
@@ -209,10 +234,9 @@ const update = <K extends keyof ConfigDetailsModel>(key: K, value: ConfigDetails
     margin: 0 !important;
     border-radius: 1em;
     background-color: #7575751F;
-    border-color: #757575;
-    border-width: 2px;
+    border: 2px solid #757575;
 
-    :deep(span) {
+    :deep(.p-tag-label) {
       color: #757575 !important;
     }
   }

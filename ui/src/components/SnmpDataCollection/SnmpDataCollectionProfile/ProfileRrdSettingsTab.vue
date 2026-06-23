@@ -5,29 +5,40 @@
   >
     <div class="section-header">RRD Settings</div>
     <div class="input-row">
-      <FeatherInput
-        label="RRD Step"
-        :modelValue="rrdSettings.rrdStep"
-        @update:modelValue="update('rrdStep', String($event))"
-        type="number"
-        :error="errors.rrdStep"
-        hint="RRD step size in seconds"
-        data-test="rrd-step"
-      />
+      <PIftaLabel>
+        <PInputNumber
+          :id="rrdStepId"
+          :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
+          @update:modelValue="update('rrdStep', $event == null ? '' : String($event))"
+          :useGrouping="false"
+          :min="1"
+          :invalid="!!errors.rrdStep"
+          data-test="rrd-step"
+          fluid
+        />
+        <label :for="rrdStepId">RRD Step</label>
+      </PIftaLabel>
+      <small
+        v-if="errors.rrdStep"
+        class="field-error"
+      >{{ errors.rrdStep }}</small>
+      <small
+        v-else
+        class="field-hint"
+      >RRD step size in seconds</small>
     </div>
     <div class="rra-section">
       <div class="rra-header">
         <span class="rra-title">RRAs</span>
-        <FeatherButton
-          secondary
-          icon="Add"
+        <PButton
+          outlined
           data-test="add-rra-button"
           class="add-rra-button"
           @click="addRRA"
         >
           <FeatherIcon :icon="Add" />
           Add RRA
-        </FeatherButton>
+        </PButton>
       </div>
       <PDataTable
         v-model:editingRows="editingRows"
@@ -102,13 +113,13 @@
           style="width: 4rem"
         >
           <template #body="{ data }">
-            <FeatherButton
-              icon="Delete"
+            <PButton
+              text
               data-test="delete-rra-button"
               @click="deleteRRA(data._id)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            </PButton>
           </template>
         </PColumn>
         <PColumn
@@ -131,25 +142,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
+import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
+import IftaLabelComponent from 'primevue/iftalabel'
 import InputNumberComponent from 'primevue/inputnumber'
 import SelectComponent from 'primevue/select'
 
+const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
+const PIftaLabel = IftaLabelComponent
 const PInputNumber = InputNumberComponent
 const PSelect = SelectComponent
+
+const rrdStepId = useId()
 
 const props = defineProps<{
   rrdSettings: RrdSettingsModel
@@ -224,8 +239,17 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 }
 
 .field-error {
-  color: var(--feather-error);
+  display: block;
+  color: var(--p-red-500);
   font-size: 0.8em;
+  margin-top: 0.25em;
+}
+
+.field-hint {
+  display: block;
+  color: var(--p-text-muted-color);
+  font-size: 0.8em;
+  margin-top: 0.25em;
 }
 
 .rra-section {
@@ -240,13 +264,6 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
     .rra-title {
       @include headline4;
       color: var(--feather-secondary-text-on-surface);
-    }
-
-    .add-rra-button {
-      border-radius: 0;
-      border: 1px solid var(--feather-primary);
-      width: auto;
-      padding: 0.5em 1em;
     }
   }
 }
