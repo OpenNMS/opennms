@@ -1,27 +1,49 @@
 <template>
-  <FeatherDialog
-    v-model="store.createEventConfigSourceDialogState.visible"
-    :labels="labels"
-    hide-close
-    @hidden="handleCancel"
+  <Dialog
+    v-model:visible="store.createEventConfigSourceDialogState.visible"
+    :header="labels.title"
+    :modal="true"
+    :draggable="false"
+    :closable="false"
+    :closeOnEscape="false"
   >
     <div
       v-if="!successMessage"
       class="modal-body-form"
     >
-      <div>
-        <FeatherInput
-          label="Event Configuration Source Name"
-          v-model="configName"
-          :error="error?.name"
-        />
+      <div class="field">
+        <IftaLabel>
+          <InputText
+            :id="nameInputId"
+            v-model="configName"
+            :invalid="!!error?.name"
+            fluid
+          />
+          <label :for="nameInputId">Event Configuration Source Name</label>
+        </IftaLabel>
+        <small
+          v-if="error?.name"
+          class="field-error"
+        >
+          {{ error.name }}
+        </small>
       </div>
-      <div>
-        <FeatherInput
-          label="Vendor"
-          v-model="vendor"
-          :error="error?.vendor"
-        />
+      <div class="field">
+        <IftaLabel>
+          <InputText
+            :id="vendorInputId"
+            v-model="vendor"
+            :invalid="!!error?.vendor"
+            fluid
+          />
+          <label :for="vendorInputId">Vendor</label>
+        </IftaLabel>
+        <small
+          v-if="error?.vendor"
+          class="field-error"
+        >
+          {{ error.vendor }}
+        </small>
       </div>
       <div>
         <p>
@@ -36,37 +58,38 @@
     >
       <p>The event configuration source has been created successfully.</p>
     </div>
-    <template v-slot:footer>
-      <FeatherButton @click="handleCancel"> Cancel </FeatherButton>
-      <FeatherButton
+    <template #footer>
+      <Button
+        text
+        label="Cancel"
+        @click="handleCancel"
+      />
+      <Button
         v-if="!successMessage"
-        primary
+        label="Create"
         @click="handleSave"
         :disabled="Object.keys(error || {}).length > 0"
-      >
-        Create
-      </FeatherButton>
-      <FeatherButton
+      />
+      <Button
         v-else
-        primary
+        label="View Source"
         @click="visitCreatedEventConfigSource"
-      >
-        View Source
-      </FeatherButton>
+      />
     </template>
-  </FeatherDialog>
+  </Dialog>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, Ref } from 'vue'
+import { computed, ref, Ref, useId } from 'vue'
 import { useRouter } from 'vue-router'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
-import { FeatherInput } from '@featherds/input'
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import IftaLabel from 'primevue/iftalabel'
+import InputText from 'primevue/inputtext'
 
 const router = useRouter()
 const configName = ref('')
@@ -76,6 +99,8 @@ const successMessage = ref(false)
 const snackbar = useSnackbar()
 const store = useEventConfigStore()
 const newId: Ref<number> = ref(0)
+const nameInputId = useId()
+const vendorInputId = useId()
 const labels = {
   title: 'Create New Event Source'
 }
@@ -162,4 +187,21 @@ const visitCreatedEventConfigSource = () => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.modal-body-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-red-500);
+}
+</style>
