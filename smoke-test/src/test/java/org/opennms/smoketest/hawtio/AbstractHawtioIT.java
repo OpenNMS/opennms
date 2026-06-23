@@ -38,27 +38,46 @@ public abstract class AbstractHawtioIT {
     }
 
     public void verify(final Supplier<SshClient> f) {
+
         // Ensure we are actually started the sink and are ready to listen for messages
         await().atMost(2, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
                     try (final SshClient sshClient = f.get()) {
-                        final PrintStream pipe = sshClient.openShell();
-                        final String command ="bundle:list";
-                        pipe.println(command);
-                        pipe.println("logout");
+                        final PrintStream featureListPipe = sshClient.openShell();
+                        final String featureListCommand = "feature:list";
+                        featureListPipe.println(featureListCommand);
+                        featureListPipe.println("logout");
 
-                        // Wait for karaf to process the commands
                         await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
 
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-                        final boolean bundleActive = Arrays.stream(shellOutput.split("\n"))
+                        final String featureListOutput = sshClient.getStdout();
+
+                        // check that all four hawtio features are started
+                        final boolean featureInstalled = Arrays.stream(featureListOutput.split("\n"))
+                                .filter(row -> row.matches("hawtio-\\d.\\d\\d.\\d"))
+                                .filter(bundle -> bundle.contains("Started")).count() == 4L;
+
+                        logger.info(featureListCommand);
+                        logger.info("{}", featureListOutput);
+
+                        final PrintStream bundleListPipe = sshClient.openShell();
+                        final String bundleListCommand = "bundle:list";
+                        bundleListPipe.println(bundleListCommand);
+                        bundleListPipe.println("logout");
+
+                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+
+                        final String bundleListOutput = sshClient.getStdout();
+
+                        // check that hawtio OSGi Web Console bundle is active
+                        final boolean bundleActive = Arrays.stream(bundleListOutput.split("\n"))
                                 .filter(row -> row.contains("hawtio :: OSGi Web Console"))
                                 .findFirst().filter(bundle -> bundle.contains("Active"))
                                 .isPresent();
-                        logger.info(command);
-                        logger.info("{}", shellOutput);
+
+                        logger.info(bundleListCommand);
+                        logger.info("{}", bundleListOutput);
                         return bundleActive;
                     } catch (Exception ex) {
                         logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
