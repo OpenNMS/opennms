@@ -8,6 +8,7 @@ import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reactive } from 'vue'
 
@@ -49,6 +50,7 @@ describe('EventConfigUploadFilesTab.vue', () => {
   const mountTab = () => mount(EventConfigUploadFilesTab, {
     global: {
       plugins: [PrimeVue],
+      directives: { tooltip: Tooltip },
       stubs
     }
   })
@@ -161,6 +163,8 @@ describe('EventConfigUploadFilesTab.vue', () => {
     })
 
     it('shows an error snackbar when the upload throws', async () => {
+      // The component logs the caught error; suppress the expected noise.
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(uploadEventConfigFiles).mockRejectedValue(new Error('boom'))
       wrapper.vm.eventFiles = [makeFile('a.xml')]
       await wrapper.vm.$nextTick()
@@ -168,11 +172,17 @@ describe('EventConfigUploadFilesTab.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
       expect(snackbar.showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
 
     it('does nothing when there are no files', async () => {
+      // The component warns about the empty queue; suppress the expected noise.
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       await wrapper.vm.uploadFiles()
       expect(uploadEventConfigFiles).not.toHaveBeenCalled()
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      consoleWarnSpy.mockRestore()
     })
   })
 

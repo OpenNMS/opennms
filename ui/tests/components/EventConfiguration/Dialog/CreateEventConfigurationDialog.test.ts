@@ -120,10 +120,14 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
 
     it('shows an error snackbar when the service throws', async () => {
+      // The component logs the caught error; suppress the expected noise.
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       mockAddEventConfigSource.mockRejectedValue(new Error('boom'))
       await wrapper.vm.handleSave()
       await flushPromises()
       expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
 
     it('does nothing when the name is blank', async () => {
@@ -156,9 +160,13 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
 
     it('falls back to the list when no new id is present', () => {
+      // The component logs the missing id; suppress the expected noise.
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       wrapper.vm.newId = 0
       wrapper.vm.visitCreatedEventConfigSource()
       expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration' })
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
   })
 })

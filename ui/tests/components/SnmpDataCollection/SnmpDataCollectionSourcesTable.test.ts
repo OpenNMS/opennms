@@ -4,6 +4,7 @@ import { SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
@@ -22,7 +23,10 @@ vi.mock('@/services/snmpDataCollectionService', () => ({
   downloadSnmpDataCollectionById: (...args: any[]) => mockDownloadSnmpDataCollectionById(...args),
   deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args),
   enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args),
-  getAllSnmpCollectionProfiles: (...args: any[]) => mockGetAllSnmpCollectionProfiles(...args)
+  getAllSnmpCollectionProfiles: (...args: any[]) => mockGetAllSnmpCollectionProfiles(...args),
+  // The store's fetchSnmpCollectionSources action runs on mount (before the test
+  // overrides it), so this service function must resolve cleanly.
+  filterSnmpCollectionSources: vi.fn().mockResolvedValue({ sources: [], totalRecords: 0 })
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -59,6 +63,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   const mountTable = () => mount(SnmpDataCollectionSourcesTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      directives: { tooltip: Tooltip },
       stubs
     }
   })

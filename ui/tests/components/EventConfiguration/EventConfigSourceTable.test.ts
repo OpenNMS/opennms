@@ -15,7 +15,11 @@ vi.mock('vue-router', () => ({
 
 const mockDownloadEventConfXmlBySourceId = vi.fn()
 vi.mock('@/services/eventConfigService', () => ({
-  downloadEventConfXmlBySourceId: (...args: any[]) => mockDownloadEventConfXmlBySourceId(...args)
+  downloadEventConfXmlBySourceId: (...args: any[]) => mockDownloadEventConfXmlBySourceId(...args),
+  // The store's fetchEventConfigs action runs on mount (before the test overrides it),
+  // so the service functions it chains through must resolve cleanly.
+  filterEventConfigSources: vi.fn().mockResolvedValue({ sources: [], totalRecords: 0 }),
+  getAllSourceNames: vi.fn().mockResolvedValue([])
 }))
 
 // Stub the child dialogs so this suite focuses on the table's own behaviour.

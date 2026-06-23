@@ -11,7 +11,10 @@ const mockUploadDataCollectionFiles = vi.fn()
 const mockGetAllSnmpCollectionProfiles = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   uploadDataCollectionFiles: (...args: any[]) => mockUploadDataCollectionFiles(...args),
-  getAllSnmpCollectionProfiles: (...args: any[]) => mockGetAllSnmpCollectionProfiles(...args)
+  getAllSnmpCollectionProfiles: (...args: any[]) => mockGetAllSnmpCollectionProfiles(...args),
+  // The component's onMounted calls store.fetchAllSourcesNames (before the test
+  // overrides it), so this service function must resolve cleanly.
+  getAllSnmpCollectionSourcesNamesAndIds: vi.fn().mockResolvedValue([])
 }))
 
 vi.mock('@/components/SnmpDataCollection/snmpDataCollectionSourceXmlValidator', () => ({
@@ -247,6 +250,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('shows an error snackbar when the upload throws', async () => {
+      // The component logs the caught error; suppress the expected noise.
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       mockUploadDataCollectionFiles.mockRejectedValue(new Error('boom'))
       wrapper.vm.sourceFiles = [makeFile('new.xml', { kind: 'group', isDuplicate: false })]
       await nextTick()
@@ -254,6 +259,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       await wrapper.vm.uploadFiles()
       await flushPromises()
       expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
   })
 

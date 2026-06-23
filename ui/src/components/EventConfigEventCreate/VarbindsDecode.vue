@@ -9,14 +9,14 @@
             event description:
           </p>
         </div>
-        <FeatherButton
-          secondary
+        <Button
+          outlined
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
           data-test="add-varbind-row-button"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
       <div
         v-for="(row, index) in varbindsDecodeElements"
@@ -25,31 +25,42 @@
       >
         <div class="parm-field">
           <div class="input-field">
-            <FeatherInput
-              label="Parm ID"
-              :model-value="row.parmId"
-              @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
-              data-test="varbind-index-input"
-              :error="errors.varbindsDecode?.[index]?.parmId"
-            />
+            <IftaLabel>
+              <InputText
+                :id="`varbind-parmid-${index}`"
+                :modelValue="row.parmId"
+                @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
+                data-test="varbind-index-input"
+                :invalid="!!errors.varbindsDecode?.[index]?.parmId"
+                fluid
+              />
+              <label :for="`varbind-parmid-${index}`">Parm ID</label>
+            </IftaLabel>
+            <small
+              v-if="errors.varbindsDecode?.[index]?.parmId"
+              class="field-error"
+            >
+              {{ errors.varbindsDecode?.[index]?.parmId }}
+            </small>
           </div>
           <div class="action-btns">
-            <FeatherButton
+            <Button
               class="remove"
-              secondary
+              outlined
+              severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeVarbindDecodeRow', null, index, -1)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
-            <FeatherButton
-              secondary
+            </Button>
+            <Button
+              outlined
               data-test="add-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'addDecodeRow', null, index, -1)"
             >
               <FeatherIcon :icon="Add" />
               Add Decode
-            </FeatherButton>
+            </Button>
           </div>
         </div>
         <div
@@ -58,34 +69,55 @@
           class="decode-field"
         >
           <div class="input-field">
-            <FeatherInput
-              label="Varbind Value"
-              type="number"
-              min="0"
-              :model-value="decodeRow.value"
-              @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
-              data-test="varbind-value-input"
-              :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
-            />
+            <IftaLabel>
+              <InputText
+                :id="`decode-value-${index}-${decodeIndex}`"
+                type="number"
+                min="0"
+                :modelValue="decodeRow.value"
+                @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
+                data-test="varbind-value-input"
+                :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
+                fluid
+              />
+              <label :for="`decode-value-${index}-${decodeIndex}`">Varbind Value</label>
+            </IftaLabel>
+            <small
+              v-if="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
+              class="field-error"
+            >
+              {{ errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value }}
+            </small>
           </div>
           <div class="value-field">
             <div class="input-field">
-              <FeatherInput
-                label="Decoded String"
-                :model-value="decodeRow.key"
-                @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
-                data-test="varbind-value-input"
-                :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
-              />
+              <IftaLabel>
+                <InputText
+                  :id="`decode-key-${index}-${decodeIndex}`"
+                  :modelValue="decodeRow.key"
+                  @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
+                  data-test="varbind-value-input"
+                  :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
+                  fluid
+                />
+                <label :for="`decode-key-${index}-${decodeIndex}`">Decoded String</label>
+              </IftaLabel>
+              <small
+                v-if="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
+                class="field-error"
+              >
+                {{ errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key }}
+              </small>
             </div>
-            <FeatherButton
+            <Button
               class="remove"
-              secondary
+              outlined
+              severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeDecodeRow', null, index, decodeIndex)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            </Button>
           </div>
         </div>
       </div>
@@ -97,11 +129,12 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
+import Button from 'primevue/button'
+import IftaLabel from 'primevue/iftalabel'
+import InputText from 'primevue/inputtext'
 
 const props = defineProps<{
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
@@ -154,26 +187,6 @@ watch(varbindsDecode, (newVarbindsDecode) => {
         display: flex;
         align-items: center;
         gap: 10px;
-
-        button {
-          margin: 0px;
-        }
-
-        .remove {
-          min-width: 40px !important;
-          height: 40px !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 0px;
-
-          span {
-            svg {
-              fill: #a5021f;
-              font-size: 22px;
-            }
-          }
-        }
       }
     }
 
@@ -196,24 +209,14 @@ watch(varbindsDecode, (newVarbindsDecode) => {
         .input-field {
           width: 100%;
         }
-
-        .remove {
-          min-width: 40px !important;
-          height: 40px !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 0px;
-
-          span {
-            svg {
-              fill: #a5021f;
-              font-size: 22px;
-            }
-          }
-        }
       }
     }
+  }
+
+  .field-error {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--p-red-500);
   }
 }
 </style>

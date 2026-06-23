@@ -8,6 +8,21 @@ import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
+// Hoisted so the service mock below can resolve the on-mount fetch to the same
+// source the tests assert against.
+const { mockCollectionSource } = vi.hoisted(() => ({
+  mockCollectionSource: {
+    id: 1,
+    name: 'Test Collection',
+    vendor: 'Test Vendor',
+    description: 'Test Description',
+    enabled: true,
+    uploadedBy: 'test-user',
+    createdTime: new Date('2024-01-15'),
+    lastModified: new Date('2024-02-20')
+  } as SnmpCollectionSource
+}))
+
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => ({ params: { id: '1' }})),
@@ -19,7 +34,15 @@ const mockEnableDisableSnmpDataCollectionSources = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args),
   enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args),
-  updateDataCollectionProfile: vi.fn().mockResolvedValue(true)
+  updateDataCollectionProfile: vi.fn().mockResolvedValue(true),
+  // The detail store's fetchCollectionSourceById action runs on mount (before the
+  // test overrides it), so the service functions it chains through must resolve cleanly.
+  getSnmpDataCollectionSourceById: vi.fn().mockResolvedValue(mockCollectionSource),
+  getSnmpDataCollectionResourceTypes: vi.fn().mockResolvedValue({ resourceTypes: [], totalRecords: 0 }),
+  getSnmpDataCollectionMibGroups: vi.fn().mockResolvedValue({ mibGroups: [], totalRecords: 0 }),
+  getSnmpDataCollectionSystemDefinitions: vi.fn().mockResolvedValue({ systemDefinitions: [], totalRecords: 0 }),
+  getAllResourceTypeNames: vi.fn().mockResolvedValue([]),
+  getAllMibGroupNames: vi.fn().mockResolvedValue([])
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -50,17 +73,6 @@ const stubs = {
     props: ['visible', 'sourceName', 'profiles'],
     emits: ['close', 'saved']
   }
-}
-
-const mockCollectionSource: SnmpCollectionSource = {
-  id: 1,
-  name: 'Test Collection',
-  vendor: 'Test Vendor',
-  description: 'Test Description',
-  enabled: true,
-  uploadedBy: 'test-user',
-  createdTime: new Date('2024-01-15'),
-  lastModified: new Date('2024-02-20')
 }
 
 describe('SnmpDataCollectionSourceDetail.vue', () => {
