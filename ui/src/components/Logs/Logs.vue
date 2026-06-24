@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import Listbox from 'primevue/listbox'
 import { useLogStore } from '@/stores/logStore'
@@ -26,19 +26,22 @@ const logs = computed(() => logStore.logs)
 const selectedLog = ref(logStore.selectedLog)
 const listStyle = 'max-height: calc(100vh - 260px)'
 
-// PrimeVue Listbox single-select treats a click on the already-selected option
-// as a toggle: it emits update:modelValue with null (clearing selectedLog)
-// before emitting @change. We track the loaded log separately so a re-click
-// reloads the same log and keeps the highlight, matching the old
-// FeatherListItem behavior that reloaded on every click.
-let loadedLog: string | null = logStore.selectedLog || null
+// Keep the Listbox highlight in sync with the store's selected log, including
+// when it is refreshed or changed outside this component.
+watch(() => logStore.selectedLog, (log) => {
+  selectedLog.value = log
+})
 
 const onChange = (event: { value: string | null }) => {
-  const log = event.value ?? loadedLog
+  // PrimeVue Listbox single-select treats a click on the already-selected option
+  // as a toggle: it emits update:modelValue with null (clearing selectedLog)
+  // before emitting @change. Fall back to the currently loaded log so a re-click
+  // reloads it and keeps the highlight, matching the old FeatherListItem behavior
+  // that reloaded on every click.
+  const log = event.value ?? logStore.selectedLog
   if (!log) {
     return
   }
-  loadedLog = log
   selectedLog.value = log
   logStore.getLog(log)
 }

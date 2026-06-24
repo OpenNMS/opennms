@@ -126,10 +126,14 @@ const onItemSelected = (item: ScvSearchItem) => {
 watch(() => props.isOpen, (newVal) => {
   drawerOpen.value = newVal
 
-  // When the drawer opens, show the current results (empty search => all credentials)
-  // so the user sees existing entries without having to type first.
   if (newVal) {
+    // When the drawer opens, show all current results (empty search => all
+    // credentials) so the user sees existing entries without having to type first.
     runQuery(searchValue.value)
+  } else {
+    // Reset the search on close so the next open starts fresh; otherwise the
+    // drawer (kept mounted by the parent) would reopen showing the prior query.
+    searchValue.value = ''
   }
 })
 </script>
