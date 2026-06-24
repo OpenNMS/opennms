@@ -242,6 +242,9 @@ public class JaxbXmlConverter implements ConfigConverter {
             final Unmarshaller u = jaxbContext.createUnmarshaller();
             u.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             u.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+            // Must match the wrapper used during marshaling so EclipseLink correctly restores
+            // simpleContent text content (e.g. <password salt="false">hash</password>).
+            u.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, VALUE_TAG);
 
             DynamicEntity entity = (DynamicEntity) u.unmarshal(new StringReader(wrappedJson));
 

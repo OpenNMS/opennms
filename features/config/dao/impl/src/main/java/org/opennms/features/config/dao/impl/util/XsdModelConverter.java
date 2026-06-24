@@ -167,9 +167,11 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         if (currentConfigItem.isPrimitiveType()) {
             // Make a duplicate of the current item for the primitive type; current then becomes an object with children
             ConfigItem child = new ConfigItem();
-            // special logic to handle Xml Value to attribute name mapping
+            // special logic to handle Xml Value to attribute name mapping.
+            // EclipseLink marshals simpleContent text as "__VALUE__" (JaxbXmlConverter.VALUE_TAG).
+            // If no ejaxb:body-name mapping exists, use "__VALUE__" so the generated schema matches the JSON.
             String bodyName = this.elementNameToValueNameMap.get(currentConfigItem.getName());
-            child.setName(bodyName != null ? bodyName : currentConfigItem.getName());
+            child.setName(bodyName != null ? bodyName : JaxbXmlConverter.VALUE_TAG);
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());
