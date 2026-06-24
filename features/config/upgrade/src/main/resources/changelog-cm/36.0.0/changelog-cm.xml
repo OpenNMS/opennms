@@ -20,7 +20,7 @@
 
     <changeSet author="mmerchan" id="register-schema-users-config">
         <cm:registerSchema id="users-config"/>
-        <cm:importSchemaFromXsd id="users-config" xsdFileName="users.xsd" xsdFileHash="b110da8d871efb4d550cfcd2a5c558e44d46a1d2ada307d38b9bcaad9a145fba" rootElement="userinfo"/>
+        <cm:importSchemaFromXsd id="users-config" xsdFileName="users.xsd" xsdFileHash="2c792d67c8bc35963dc3d212fbab0fea156efbc4f598261f23848aa1818faa4f" rootElement="userinfo"/>
         <cm:importConfig schemaId="users-config" filePath="users.xml"/>
     </changeSet>
 
