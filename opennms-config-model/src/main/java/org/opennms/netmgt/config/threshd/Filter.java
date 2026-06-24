@@ -34,6 +34,9 @@ import javax.xml.bind.annotation.XmlValue;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * A rule which addresses belonging to this package must
  *  pass. This package is applied only to addresses that pass this
@@ -53,8 +56,18 @@ public class Filter implements Serializable {
 
     public Filter() { }
 
+    @JsonCreator
+    public Filter(final String content) {
+        setContent(content);
+    }
+
     public Optional<String> getContent() {
         return Optional.ofNullable(m_content);
+    }
+
+    @JsonValue
+    String getJsonContent() {
+        return m_content;
     }
 
     public void setContent(final String content) {

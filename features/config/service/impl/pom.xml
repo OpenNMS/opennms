@@ -55,6 +55,21 @@
          <artifactId>jackson-datatype-jdk8</artifactId>
       </dependency>
       <dependency>
+         <groupId>com.fasterxml.jackson.module</groupId>
+         <artifactId>jackson-module-jaxb-annotations</artifactId>
+         <version>${jackson2Version}</version>
+         <exclusions>
+             <exclusion>
+                 <groupId>javax.xml.bind</groupId>
+                 <artifactId>jaxb-api</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>jakarta.xml.bind</groupId>
+                 <artifactId>jakarta.xml.bind-api</artifactId>
+             </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
           <groupId>org.apache.ws.xmlschema</groupId>
           <artifactId>xmlschema-core</artifactId>
           <version>${xmlschemaVersion}</version>

@@ -21,93 +21,134 @@
  */
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
-import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JacksonUtils;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
-import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
-import com.google.common.annotations.VisibleForTesting;
-
 public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao {
-    private final SaveableConfigContainer<ThreshdConfiguration> saveableConfigContainer;
+    public static final String CONFIG_NAME = "threshd-config";
+
     private final ConfigReloadContainer<ThreshdConfiguration> extContainer;
     private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
-    private volatile ThreshdConfiguration filesystemConfig;
+    private volatile ThreshdConfiguration dbConfig;
+    private volatile ConfigurationManagerService cms;
+    private volatile boolean initialized;
 
-    @VisibleForTesting
-    OnmsThreshdDao(JsonStore jsonStore, File configFile) {
+    public OnmsThreshdDao(JsonStore jsonStore) {
         super(jsonStore);
-        Objects.requireNonNull(configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThreshdConfiguration.class)
                 .withFolder((accumulator, next) -> accumulator.getPackages().addAll(next.getPackages()))
                 .build();
-        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
-                "threshd-configuration", Collections.singleton(this::fileSystemConfigUpdated), configFile);
-
-        reload();
+        // No I/O in the constructor — CMS is looked up lazily on first access (matches SnmpPeerFactory).
     }
 
-    public OnmsThreshdDao(JsonStore jsonStore) throws IOException {
-        this(jsonStore, ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME));
+    private ConfigurationManagerService getCms() {
+        if (cms == null) {
+            synchronized (this) {
+                if (cms == null) {
+                    cms = BeanUtils.getBean("daoContext", "configurationManagerService", ConfigurationManagerService.class);
+                    cms.registerEventHandler(EventType.UPDATE,
+                            new ConfigUpdateInfo(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID),
+                            info -> onConfigChanged());
+                }
+            }
+        }
+        return cms;
+    }
+
+    private void ensureInitialized() {
+        if (!initialized) {
+            synchronized (this) {
+                if (!initialized) {
+                    // Set the flag first so any reentrant calls during reload() (e.g. from IPMap construction
+                    // via super.reload() → getReadOnlyConfig()) don't recurse back into reload().
+                    initialized = true;
+                    reload();
+                }
+            }
+        }
     }
 
     /**
-     * @return the merged configuration consisting of the filesystem configuration and any configuration provided by
+     * @return the merged configuration consisting of the database configuration and any configuration provided by
      * extensions
      */
     @Override
     public ThreshdConfiguration getReadOnlyConfig() {
+        ensureInitialized();
         return getMergedConfig();
     }
 
     /**
-     * @return just the configuration from the filesystem since configuration provided by extensions is read only
+     * @return just the configuration from the database since configuration provided by extensions is read only
      */
     @Override
     public ThreshdConfiguration getWriteableConfig() {
-        return saveableConfigContainer.getConfig();
+        ensureInitialized();
+        return dbConfig;
     }
 
     @Override
-    public void reload() {
-        saveableConfigContainer.reload();
+    public synchronized void reload() {
+        dbConfig = loadFromDb();
+        super.reload();
+        publishMergedConfig();
     }
 
     @Override
     public void saveConfig() {
-        saveableConfigContainer.saveConfig();
+        ThreshdConfiguration config = dbConfig;
+        if (config == null) {
+            throw new IllegalStateException("No threshd configuration loaded; cannot save");
+        }
+        getCms().updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
+    }
+
+    @Override
+    public void onConfigChanged() {
+        reload();
+    }
+
+    private ThreshdConfiguration loadFromDb() {
+        return getCms().getJSONStrConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID)
+                .map(json -> ConfigConvertUtil.jsonToObject(json, ThreshdConfiguration.class))
+                .orElse(null);
     }
 
     private synchronized ThreshdConfiguration getMergedConfig() {
         ThreshdConfiguration externalConfig = extContainer.getObject();
 
-        if (filesystemConfig == null && externalConfig == null) {
+        if (dbConfig == null && externalConfig == null) {
             return null;
         } else if (externalConfig == null) {
-            return filesystemConfig;
-        } else if (filesystemConfig == null) {
+            return dbConfig;
+        } else if (dbConfig == null) {
             return externalConfig;
         }
 
-        // Create a merged config by combining the config from filesystem and the external config provided by extensions
+        // Create a merged config by combining the config from the database and the external config provided by extensions
         ThreshdConfiguration mergedConfig = new ThreshdConfiguration();
 
         List<Package> mergedPackages = new ArrayList<>();
-        mergedPackages.addAll(filesystemConfig.getPackages());
+        mergedPackages.addAll(dbConfig.getPackages());
         mergedPackages.addAll(externalConfig.getPackages());
         mergedConfig.setPackages(Collections.unmodifiableList(mergedPackages));
 
@@ -115,22 +156,15 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     }
 
     private synchronized void publishMergedConfig() {
+        ThreshdConfiguration merged = getMergedConfig();
+        if (merged == null) {
+            return;
+        }
         try {
-            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(getMergedConfig()),
+            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(merged),
                     ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void onConfigChanged() {
-        super.reload();
-        publishMergedConfig();
-    }
-
-    private synchronized void fileSystemConfigUpdated(ThreshdConfiguration updatedConfig) {
-        filesystemConfig = updatedConfig;
-        onConfigChanged();
     }
 }

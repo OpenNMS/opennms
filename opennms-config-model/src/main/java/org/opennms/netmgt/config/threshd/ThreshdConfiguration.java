@@ -51,39 +51,39 @@ public class ThreshdConfiguration implements Serializable {
      *  thresholding.
      */
     @XmlAttribute(name = "threads", required = true)
-    private Integer m_threads;
+    private Integer threads;
 
     /**
      * Package encapsulating addresses eligible for
      *  thresholding.
      */
     @XmlElement(name = "package", required = true)
-    private List<Package> m_packages = new ArrayList<>();
+    private List<Package> packages = new ArrayList<>();
 
     /**
      * Service thresholders
      */
     @XmlElement(name = "thresholder")
-    private List<Thresholder> m_thresholders = new ArrayList<>();
+    private List<Thresholder> thresholder = new ArrayList<>();
 
     public ThreshdConfiguration() { }
 
     public Integer getThreads() {
-        return m_threads;
+        return threads;
     }
 
     public void setThreads(final Integer threads) {
-        m_threads = ConfigUtils.assertNotNull(threads, "threads");
+        this.threads = ConfigUtils.assertNotNull(threads, "threads");
     }
 
     public List<Package> getPackages() {
-        return m_packages;
+        return packages;
     }
 
     public void setPackages(final List<Package> packages) {
-        if (packages == m_packages) return;
-        m_packages.clear();
-        if (packages != null) m_packages.addAll(packages);
+        if (packages == this.packages) return;
+        this.packages.clear();
+        if (packages != null) this.packages.addAll(packages);
     }
 
     public Optional<Package> getPackage(String packageName) {
@@ -93,36 +93,36 @@ public class ThreshdConfiguration implements Serializable {
     }
 
     public void addPackage(final Package p) {
-        m_packages.add(p);
+        packages.add(p);
     }
 
     public boolean removePackage(final Package p) {
-        return m_packages.remove(p);
+        return packages.remove(p);
     }
 
-    public List<Thresholder> getThresholders() {
-        return m_thresholders;
+    public List<Thresholder> getThresholder() {
+        return thresholder;
     }
 
-    public void setThresholders(final List<Thresholder> thresholders) {
-        if (thresholders == m_thresholders) return;
-        m_thresholders.clear();
-        if (thresholders != null) m_thresholders.addAll(thresholders);
+    public void setThresholder(final List<Thresholder> thresholder) {
+        if (thresholder == this.thresholder) return;
+        this.thresholder.clear();
+        if (thresholder != null) this.thresholder.addAll(thresholder);
     }
 
     public void addThresholder(final Thresholder thresholder) {
-        m_thresholders.add(thresholder);
+        this.thresholder.add(thresholder);
     }
 
     public boolean removeThresholder(final Thresholder thresholder) {
-        return m_thresholders.remove(thresholder);
+        return this.thresholder.remove(thresholder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_threads, 
-                            m_packages, 
-                            m_thresholders);
+        return Objects.hash(threads,
+                packages,
+                thresholder);
     }
 
     @Override
@@ -133,9 +133,9 @@ public class ThreshdConfiguration implements Serializable {
 
         if (obj instanceof ThreshdConfiguration) {
             final ThreshdConfiguration that = (ThreshdConfiguration)obj;
-            return Objects.equals(this.m_threads, that.m_threads)
-                    && Objects.equals(this.m_packages, that.m_packages)
-                    && Objects.equals(this.m_thresholders, that.m_thresholders);
+            return Objects.equals(this.threads, that.threads)
+                    && Objects.equals(this.packages, that.packages)
+                    && Objects.equals(this.thresholder, that.thresholder);
         }
         return false;
     }

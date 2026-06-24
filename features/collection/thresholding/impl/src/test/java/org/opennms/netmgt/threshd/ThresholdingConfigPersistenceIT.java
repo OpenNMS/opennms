@@ -25,17 +25,25 @@ import static org.awaitility.Awaitility.await;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.dao.thresholding.impl.AbstractThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.impl.AbstractThresholdingDao;
+import org.opennms.netmgt.config.dao.thresholding.impl.OnmsThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,6 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
+        "classpath*:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholdingConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment
@@ -57,6 +66,24 @@ public class ThresholdingConfigPersistenceIT {
 
     @Autowired
     private JsonStore jsonStore;
+
+    @Autowired
+    private ConfigurationManagerService configurationManagerService;
+
+    @Before
+    public void setup() {
+        // The DAOs were constructed at Spring startup with an empty CMS so dbConfig was null.
+        // Seed the CMS with valid (empty) configurations and force a reload so the DAOs
+        // pick them up and publish the merged result to the JsonStore for the Sentinel DAOs.
+        configurationManagerService.registerConfiguration(OnmsThreshdDao.CONFIG_NAME,
+                org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(new ThreshdConfiguration())));
+        configurationManagerService.registerConfiguration(OnmsThresholdingDao.CONFIG_NAME,
+                org.opennms.features.config.dao.api.ConfigDefinition.DEFAULT_CONFIG_ID,
+                new JsonAsString(ConfigConvertUtil.objectToJson(new ThresholdingConfig())));
+        threshdDao.reload();
+        thresholdingDao.reload();
+    }
 
     @Test
     public void canStoreInitialConfig() {
