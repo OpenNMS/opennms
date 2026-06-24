@@ -69,7 +69,7 @@
   <!-- CM-backed user manager: reads/writes users via kvstore_jsonb (survives pod restarts).
        The Liquibase migration (changelog-cm/36.0.0) imports users.xml into CM at startup.
        UserFactory.setInstance() bridges the legacy singleton callers (servlets, WebRoleContext). -->
-  <bean id="userManager" class="org.opennms.netmgt.dao.jaxb.UserManagerCmImpl">
+  <bean id="userManager" class="org.opennms.netmgt.config.UserManagerCmImpl">
     <constructor-arg ref="groupManager"/>
   </bean>
 

@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -34,8 +34,6 @@ import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
-import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
