@@ -111,6 +111,7 @@ public class SetCommand implements Function<ScvCli, Integer> {
 
     private static String promptForPassword() {
         final Console console = System.console();
+        int count = 0;
         if (console == null) {
             // No interactive console (e.g. input is piped/redirected); fall back to reading stdin.
             return readPasswordFromStdin();
@@ -126,9 +127,14 @@ public class SetCommand implements Function<ScvCli, Integer> {
                     return new String(first);
                 }
                 System.err.println("Passwords do not match. Please try again.");
+                count++;
             } finally {
                 Arrays.fill(first, '\0');
                 Arrays.fill(second, '\0');
+            }
+            if (count >= 5) {
+                System.err.println("Too many mismatches, giving up!");
+                return null;
             }
         }
     }
