@@ -98,6 +98,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
+    private final static String SCHEMA_NAME_USERS = "users-config";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
@@ -124,6 +125,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
                 Path.of(etcDir + "/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
+        Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/users.xml"),
+                Path.of(etcDir + "/users.xml"));
         Files.copy(Path.of("../../../opennms-config-model/src/main/resources/defaults/org.opennms.features.datachoices.cfg"),
                 Path.of(etcDir + "/org.opennms.features.datachoices.cfg"));
         FileUtils.writeStringToFile(new File(etcDir + "/"+SCHEMA_NAME_GRAPHML+"-a.cfg"), "graphLocation=a", StandardCharsets.UTF_8);
@@ -155,6 +158,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_GRAPHML).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_GRAPHML);
+        }
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_USERS).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_USERS);
         }
 
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
@@ -299,6 +306,85 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
                     () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * Verifies that the users-config Liquibase changeSet registers the XSD schema, imports
+     * users.xml into CM, and moves the source file to etc_archive/.
+     */
+    @Test
+    public void shouldRunChangelogForUsersConfig() throws LiquibaseException, ValidationException, SQLException {
+        try {
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_USERS).isEmpty());
+            assertTrue(this.cm.getJSONStrConfiguration(SCHEMA_NAME_USERS, DEFAULT_CONFIG_ID).isEmpty());
+
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-users.xml",
+                    dataSource.getConnection());
+
+            // Schema and config must be registered in CM
+            assertTrue("users-config schema should be registered after changelog",
+                    this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_USERS).isPresent());
+            assertTrue("users-config data should be in CM after changelog",
+                    this.cm.getJSONStrConfiguration(SCHEMA_NAME_USERS, DEFAULT_CONFIG_ID).isPresent());
+
+            // users.xml should be archived (moved out of etc/)
+            assertFalse("users.xml should be moved out of etc/ after import",
+                    Files.exists(Path.of(this.opennmsHome + "/etc/users.xml")));
+            assertTrue("users.xml should be archived in etc_archive/",
+                    checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", "users.xml"));
+
+            // Verify the imported data contains the admin user
+            Optional<String> usersJson = this.cm.getJSONStrConfiguration(SCHEMA_NAME_USERS, DEFAULT_CONFIG_ID);
+            assertTrue(usersJson.isPresent());
+            assertTrue("CM JSON should contain the admin user", usersJson.get().contains("admin"));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * Verifies that the users-config changeSet is idempotent: after a simulated dropdb,
+     * re-running the changelog picks up users.xml from etc_archive/ and succeeds.
+     */
+    @Test
+    public void shouldSucceedAfterDatabaseResetForUsersConfig()
+            throws LiquibaseException, ValidationException, SQLException {
+        try {
+            final String changelog =
+                    "org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-users.xml";
+
+            // First run: import users.xml into CM
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog(changelog, dataSource.getConnection());
+
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_USERS).isPresent());
+            assertTrue(this.cm.getJSONStrConfiguration(SCHEMA_NAME_USERS, DEFAULT_CONFIG_ID).isPresent());
+            assertFalse("users.xml should be archived after first run",
+                    Files.exists(Path.of(this.opennmsHome + "/etc/users.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", "users.xml"));
+
+            // Simulate dropdb: drop Liquibase tables and unregister schema
+            PreparedStatement statement = connection.prepareStatement(
+                    "DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG);
+            statement.execute();
+            statement = connection.prepareStatement(
+                    "DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+            statement.execute();
+            this.cm.unregisterSchema(SCHEMA_NAME_USERS);
+
+            // Re-run changelog — should fall back to etc_archive/ and succeed
+            cmSpy = spy(cm);
+            liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog(changelog, dataSource.getConnection());
+
+            assertTrue("users-config schema should be re-registered after DB reset",
+                    this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_USERS).isPresent());
+            assertTrue("users-config data should be re-imported after DB reset",
+                    this.cm.getJSONStrConfiguration(SCHEMA_NAME_USERS, DEFAULT_CONFIG_ID).isPresent());
         } finally {
             this.db.cleanUp();
         }

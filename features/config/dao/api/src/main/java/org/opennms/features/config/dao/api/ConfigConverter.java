@@ -30,4 +30,12 @@ public interface ConfigConverter {
      * @return json string
      */
     String xmlToJson(String xmlStr);
+
+    /**
+     * convert json string back to xml string
+     *
+     * @param jsonStr input json string (as stored by CM — root element name NOT included)
+     * @return xml string
+     */
+    String jsonToXml(String jsonStr);
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="mmerchan" id="register-schema-users-config">
+        <cm:registerSchema id="users-config"/>
+        <cm:importSchemaFromXsd id="users-config" xsdFileName="users.xsd"
+            xsdFileHash="b110da8d871efb4d550cfcd2a5c558e44d46a1d2ada307d38b9bcaad9a145fba"
+            rootElement="userinfo"/>
+        <cm:importConfig schemaId="users-config" filePath="users.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -180,13 +180,20 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /**
-     * Sets the users configuration file.
+     * Sets the users configuration file (file-backed mode only).
+     * When the CM-backed UserManagerCmImpl is in use this setter is not called and
+     * m_usersConfigurationFile remains null — that is intentional and valid.
      *
      * @param usersConfigurationFile the new users configuration file
      */
     public void setUsersConfigurationFile(String usersConfigurationFile) {
         m_usersConfigurationFile = usersConfigurationFile;
-        UserFactory.setInstance(null);
+        // Only reset the singleton in file-backed mode.  In CM mode the singleton is
+        // already set to UserManagerCmImpl via UserFactory.setInstance() and must not
+        // be wiped here.
+        if (usersConfigurationFile != null) {
+            UserFactory.setInstance(null);
+        }
     }
 
     /**
@@ -256,7 +263,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-        Assert.notNull(m_userManager);
+        // In CM mode the UserManager is injected directly and there is no backing file,
+        // so m_usersConfigurationFile is intentionally null.
+        Assert.state(m_usersConfigurationFile != null || m_userManager != null,
+                "Either usersConfigurationFile or userManager must be set");
+        Assert.notNull(m_userManager, "userManager must not be null");
     }
 }

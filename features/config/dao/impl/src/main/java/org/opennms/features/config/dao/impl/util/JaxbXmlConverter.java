@@ -226,6 +226,36 @@ public class JaxbXmlConverter implements ConfigConverter {
         }
     }
 
+    /**
+     * Convert CM-stored json string back to xml string using the same XSD-backed dynamic JAXB context.
+     * The json must NOT include the root element wrapper (consistent with how xmlToJson stores it).
+     *
+     * @param jsonStr json string as stored by CM
+     * @return xml string
+     */
+    @Override
+    public String jsonToXml(String jsonStr) {
+        try {
+            // Wrap with root element so EclipseLink can resolve the dynamic type
+            String wrappedJson = "{\"" + rootElement + "\": " + jsonStr + "}";
+
+            final Unmarshaller u = jaxbContext.createUnmarshaller();
+            u.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            u.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+
+            DynamicEntity entity = (DynamicEntity) u.unmarshal(new StringReader(wrappedJson));
+
+            final Marshaller m = jaxbContext.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            final StringWriter writer = new StringWriter();
+            m.marshal(entity, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
+            throw new SchemaConversionException(jsonStr, e);
+        }
+    }
+
     public XmlSchema getXmlSchema() {
         return xmlSchema;
     }
