@@ -56,7 +56,10 @@ public class UserManagerCmImpl extends UserManager {
 
     public static final String CONFIG_NAME = "users-config";
 
-    @Autowired
+    // required=false so that test contexts that load applicationContext-commonConfigs.xml
+    // without a CM service (e.g. topology or linkd ITs) can still load the Spring context.
+    // In production, CM is always present and init() does the real work.
+    @Autowired(required = false)
     private ConfigurationManagerService configurationManagerService;
 
     private volatile long m_lastModified = System.currentTimeMillis();
@@ -69,6 +72,10 @@ public class UserManagerCmImpl extends UserManager {
 
     @PostConstruct
     public void init() throws IOException {
+        if (configurationManagerService == null) {
+            LOG.warn("No ConfigurationManagerService available; UserManagerCmImpl is inactive (test context without CM?)");
+            return;
+        }
         if (configurationManagerService.getConfigNames().contains(CONFIG_NAME)) {
             reload();
         } else {
@@ -92,6 +99,9 @@ public class UserManagerCmImpl extends UserManager {
 
     @Override
     public synchronized void reload() throws IOException, FileNotFoundException {
+        if (configurationManagerService == null) {
+            throw new IOException("ConfigurationManagerService is not available");
+        }
         Optional<String> jsonOpt = configurationManagerService.getJSONStrConfiguration(
                 CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID);
         if (jsonOpt.isEmpty()) {
@@ -115,6 +125,9 @@ public class UserManagerCmImpl extends UserManager {
      */
     @Override
     protected void saveXML(final String writerString) throws IOException {
+        if (configurationManagerService == null) {
+            throw new IOException("ConfigurationManagerService is not available; cannot save users to CM");
+        }
         try {
             Optional<ConfigDefinition> defOpt = configurationManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
             if (defOpt.isEmpty()) {
