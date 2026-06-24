@@ -109,7 +109,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { SwitchRender } from '@featherds/switch'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
 
 const store = useSnmpDataCollectionDetailStore()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
@@ -161,8 +161,11 @@ const validateDefinition = (): SystemDefErrors => {
   if (!oidValue.value.trim()) {
     validationErrors['oidValue'] = 'OID Value is required.'
   }
-  if (oidValue.value && !OID_PATTERN.test(oidValue.value)) {
+  if (oidType.value === 'single' && oidValue.value && !OID_PATTERN.test(oidValue.value)) {
     validationErrors['oidValue'] = 'OID Value format is invalid.'
+  }
+  if (oidType.value === 'mask' && oidValue.value && !OID_MASK_PATTERN.test(oidValue.value)) {
+    validationErrors['oidValue'] = 'OID Mask format is invalid.'
   }
   if (mibGroupNames.value.length === 0) {
     validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
