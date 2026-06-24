@@ -4,26 +4,29 @@
       <FloatLabel data-test="attr-key">
         <PInputText
           ref="keyRef"
-          id="scv-attr-key"
+          :id="keyId"
           :modelValue="attributeKey"
           @update:modelValue="updateAttributeKey"
           :invalid="!!keyError"
+          :aria-describedby="keyError ? keyErrorId : undefined"
         />
-        <label for="scv-attr-key">key</label>
+        <label :for="keyId">key</label>
       </FloatLabel>
       <small
         v-if="keyError"
+        :id="keyErrorId"
         class="field-error"
+        role="alert"
       >{{ keyError }}</small>
     </div>
     <div class="input">
       <FloatLabel data-test="attr-value">
         <PInputText
-          id="scv-attr-value"
+          :id="valueId"
           :modelValue="attributeValue"
           @update:modelValue="updateAttributeValue"
         />
-        <label for="scv-attr-value">value</label>
+        <label :for="valueId">value</label>
       </FloatLabel>
     </div>
 
@@ -75,6 +78,12 @@ const keyRef = ref()
 const keyError = ref()
 const credentials = computed<SCVCredentials>(() => scvStore.credentials)
 
+// Unique ids per attribute row so labels, inputs and error messages stay
+// associated when multiple SCVAttribute rows render together.
+const keyId = computed(() => `scv-attr-key-${props.attributeIndex}`)
+const keyErrorId = computed(() => `scv-attr-key-error-${props.attributeIndex}`)
+const valueId = computed(() => `scv-attr-value-${props.attributeIndex}`)
+
 const isDuplicateKey = (key: string) => {
   // check to see if the key already exists in another prop
   const entries = Object.entries(credentials.value.attributes)
@@ -124,7 +133,7 @@ onMounted(() => (keyRef.value?.$el as HTMLInputElement)?.focus())
   }
 
   .field-error {
-    color: var(--p-red-500);
+    color: var(--p-error-color);
   }
 }
 </style>

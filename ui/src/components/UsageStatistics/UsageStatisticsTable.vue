@@ -5,34 +5,39 @@
       sortField="key"
       :sortOrder="1"
       stripedRows
-      size="medium"
+      size="large"
       scrollable
       scrollHeight="calc(100vh - 310px)"
       tableStyle="table-layout: fixed; width: 100%"
+      aria-label="Usage Statistics Sharing"
     >
       <PColumn
         field="name"
         header="Name"
         sortable
         style="width: 20%"
+        :pt="columnHeaderPt"
       />
       <PColumn
         field="key"
         header="Key name"
         sortable
         style="width: 20%"
+        :pt="columnHeaderPt"
       />
       <PColumn
         field="description"
         header="Description"
         sortable
         style="width: 40%"
+        :pt="columnHeaderPt"
       />
       <PColumn
         field="latestValue"
         header="Latest value"
         sortable
         style="width: 20%"
+        :pt="columnHeaderPt"
       >
         <template #body="{ data }">
           <a
@@ -87,6 +92,11 @@ import MessageDialog from '@/components/Common/MessageDialog.vue'
 
 const PDataTable = DataTable
 const PColumn = Column
+
+// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via
+// the passthrough so the header cells stay associated with their columns for
+// screen readers (the FeatherDS table set scope="col" per column).
+const columnHeaderPt = { headerCell: { scope: 'col' } }
 
 interface StatisticsItem {
   // this is just for sorting

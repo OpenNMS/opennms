@@ -62,6 +62,16 @@ const OpenNMSPreset = definePreset(Aura, {
       800: '#131736',
       900: '#0a0c1b'
     },
+    // Semantic status colors. Components must reference these (var(--p-success-color)
+    // etc.) for anything with status meaning, rather than the raw palette primitives
+    // (--p-green-500 …), so a theme can remap status colors in one place. Names mirror
+    // PrimeVue's Toast/Message severities (success / info / warn / error) so the same
+    // vocabulary applies to component CSS and to severity props. These replace the old
+    // FeatherDS $success / $error / $warning vars.
+    success: { color: '{green.500}' },
+    info: { color: '{blue.500}' },
+    warn: { color: '{yellow.500}' },
+    error: { color: '{red.500}' },
     colorScheme: {
       light: {
         primary: {

@@ -24,10 +24,20 @@ import { SORT } from '@featherds/table'
 
 export type UpdateModelFunction = (_value: any) => any
 
+// String values match PrimeVue's Toast/Message severities exactly, so a value
+// can be emitted straight to the toast event bus (see useSnackbar).
+export enum MessageSeverity {
+  Error = 'error',
+  Info = 'info',
+  Success = 'success',
+  Warn = 'warn'
+}
+
 export interface SnackbarProps {
   msg: string
   center?: boolean
   error?: boolean
+  severity?: MessageSeverity
   timeout?: number
 }
 

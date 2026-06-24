@@ -26,10 +26,21 @@ const logs = computed(() => logStore.logs)
 const selectedLog = ref(logStore.selectedLog)
 const listStyle = 'max-height: calc(100vh - 260px)'
 
+// PrimeVue Listbox single-select treats a click on the already-selected option
+// as a toggle: it emits update:modelValue with null (clearing selectedLog)
+// before emitting @change. We track the loaded log separately so a re-click
+// reloads the same log and keeps the highlight, matching the old
+// FeatherListItem behavior that reloaded on every click.
+let loadedLog: string | null = logStore.selectedLog || null
+
 const onChange = (event: { value: string | null }) => {
-  if (event.value) {
-    logStore.getLog(event.value)
+  const log = event.value ?? loadedLog
+  if (!log) {
+    return
   }
+  loadedLog = log
+  selectedLog.value = log
+  logStore.getLog(log)
 }
 </script>
 

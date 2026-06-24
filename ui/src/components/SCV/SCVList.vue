@@ -25,10 +25,21 @@ const aliases = computed<string[]>(() => scvStore.aliases)
 const isEditing = computed<boolean>(() => scvStore.isEditing)
 const listStyle = 'max-height: calc(100vh - 210px)'
 
+// PrimeVue Listbox single-select treats a click on the already-selected option
+// as a toggle: it emits update:modelValue with null (clearing selectedAlias)
+// before emitting @change. We track the loaded alias separately so a re-click
+// reloads the same alias and keeps the highlight, matching the old
+// FeatherListItem behavior that reloaded on every click.
+let loadedAlias: string | null = null
+
 const onChange = (event: { value: string | null }) => {
-  if (event.value) {
-    scvStore.getCredentialsByAlias(event.value)
+  const alias = event.value ?? loadedAlias
+  if (!alias) {
+    return
   }
+  loadedAlias = alias
+  selectedAlias.value = alias
+  scvStore.getCredentialsByAlias(alias)
 }
 
 // The highlight only applies while an alias is being edited; clear it when the
@@ -36,6 +47,7 @@ const onChange = (event: { value: string | null }) => {
 watch(isEditing, (editing) => {
   if (!editing) {
     selectedAlias.value = null
+    loadedAlias = null
   }
 })
 </script>

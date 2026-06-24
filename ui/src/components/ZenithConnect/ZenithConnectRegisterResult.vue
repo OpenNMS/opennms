@@ -267,7 +267,7 @@ onMounted(async () => {
   }
 
   .register-success {
-    background-color: var(--p-green-500);
+    background-color: var(--p-success-color);
     color: white;
     border-radius: 5px;
     text-align: center;
@@ -275,7 +275,7 @@ onMounted(async () => {
   }
 
   .register-failed {
-    background-color: var(--p-red-500);
+    background-color: var(--p-error-color);
     color: white;
     border-radius: 5px;
     text-align: center;

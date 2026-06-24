@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { SnackbarProps } from '@/types'
+import { MessageSeverity, SnackbarProps } from '@/types'
 import { isDefined } from '@vueuse/core'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - no type declarations published for this entry point
@@ -46,9 +46,10 @@ const activeKeys = new Map<string, number>()
 
 const useSnackbar = () => {
   const showSnackBar = (snackbarProps: SnackbarProps) => {
-    const { center, error, msg, timeout } = snackbarProps
+    const { center, error, msg, severity: severityProp, timeout } = snackbarProps
 
-    const severity = error ? 'error' : 'success'
+    // Prefer an explicit severity; fall back to the legacy error boolean.
+    const severity = severityProp ?? (error ? MessageSeverity.Error : MessageSeverity.Success)
     const group = (isDefined(center) ? center : true) ? SNACKBAR_GROUP_CENTER : SNACKBAR_GROUP_START
     const life = timeout ?? DEFAULT_TIMEOUT
     const key = `${severity}::${group}::${msg}`

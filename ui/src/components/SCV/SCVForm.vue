@@ -9,12 +9,15 @@
           :modelValue="scvStore.credentials.alias"
           @update:modelValue="updateAlias"
           :invalid="!!aliasError"
+          :aria-describedby="aliasError ? 'scv-alias-error' : undefined"
         />
         <label for="scv-alias">Alias</label>
       </FloatLabel>
       <small
         v-if="aliasError"
+        id="scv-alias-error"
         class="field-error"
+        role="alert"
       >{{ aliasError }}</small>
     </div>
 
@@ -39,12 +42,15 @@
             :modelValue="scvStore.credentials.password"
             @update:modelValue="updatePassword"
             :invalid="!!passwordError"
+            :aria-describedby="passwordError ? 'scv-password-error' : undefined"
           />
           <label for="scv-password">Password</label>
         </FloatLabel>
         <small
           v-if="passwordError"
+          id="scv-password-error"
           class="field-error"
+          role="alert"
         >{{ passwordError }}</small>
       </div>
     </form>
@@ -212,7 +218,7 @@ const addAttribute = () => scvStore.addAttribute()
   }
 
   .field-error {
-    color: var(--p-red-500);
+    color: var(--p-error-color);
   }
 
   .add-btn {
