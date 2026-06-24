@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cpape" id="register-schema-threshd-config">
+        <cm:registerSchema id="threshd-config"/>
+        <cm:importSchemaFromXsd id="threshd-config" xsdFileName="thresholding.xsd" xsdFileHash="4c66e906a71b4852eda4daf81d9d04efa4ee730d7a3ec1efa4df9a03069c9544" rootElement="threshd-configuration"/>
+        <cm:importConfig schemaId="threshd-config" filePath="threshd-configuration.xml"/>
+    </changeSet>
+
+    <changeSet author="cpape" id="register-schema-thresholding-config">
+        <cm:registerSchema id="thresholding-config"/>
+        <cm:importSchemaFromXsd id="thresholding-config" xsdFileName="thresholding.xsd" xsdFileHash="4c66e906a71b4852eda4daf81d9d04efa4ee730d7a3ec1efa4df9a03069c9544" rootElement="thresholding-config"/>
+        <cm:importConfig schemaId="thresholding-config" filePath="thresholds.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

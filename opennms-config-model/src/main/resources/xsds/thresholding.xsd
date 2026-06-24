@@ -6,6 +6,7 @@
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
 		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  xmlns:ejaxb="http://xmlns.opennms.org/xsd/config/extended-schema-for-jaxb"
 		  elementFormDefault="qualified" version="1.1">
   <annotation>
     <documentation>XML Schema for the thresholding related configuration</documentation>
@@ -483,7 +484,7 @@
     
   </complexType>
 
-  <element name="resource-filter">
+  <element name="resource-filter" ejaxb:body-name="content">
     <complexType>
       <simpleContent>
         <extension base="string">

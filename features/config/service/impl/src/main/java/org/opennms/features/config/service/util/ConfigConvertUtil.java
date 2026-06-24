@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.opennms.features.config.exception.ConfigConversionException;
 
 public class ConfigConvertUtil {
@@ -37,6 +38,10 @@ public class ConfigConvertUtil {
     // version during a downgrade, rollback, or rolling upgrade. See NMS-19970 / NMS-19723.
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            // Register JAXB annotation introspector with SECONDARY priority so that Jackson annotations
+            // (e.g. @JsonProperty) still take precedence, while @XmlElement / @XmlAttribute names are
+            // honored as a fallback.
+            .registerModule(new JaxbAnnotationModule().setPriority(JaxbAnnotationModule.Priority.SECONDARY))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
 

@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlValue;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name = "resource-filter")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("thresholding.xsd")
@@ -45,7 +47,8 @@ public class ResourceFilter implements Serializable {
      * internal content storage
      */
     @XmlValue
-    private String m_content;
+    @JsonProperty("content")
+    private String content;
 
     @XmlAttribute(name = "field", required = true)
     private String m_field;
@@ -53,11 +56,11 @@ public class ResourceFilter implements Serializable {
     public ResourceFilter() { }
 
     public Optional<String> getContent() {
-        return Optional.ofNullable(m_content);
+        return Optional.ofNullable(content);
     }
 
     public void setContent(final String content) {
-        m_content = ConfigUtils.normalizeString(content);
+        this.content = ConfigUtils.normalizeString(content);
     }
 
     public String getField() {
@@ -70,7 +73,7 @@ public class ResourceFilter implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_content, m_field);
+        return Objects.hash(content, m_field);
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ResourceFilter implements Serializable {
 
         if (obj instanceof ResourceFilter) {
             final ResourceFilter that = (ResourceFilter)obj;
-            return Objects.equals(this.m_content, that.m_content)
+            return Objects.equals(this.content, that.content)
                     && Objects.equals(this.m_field, that.m_field);
         }
         return false;
