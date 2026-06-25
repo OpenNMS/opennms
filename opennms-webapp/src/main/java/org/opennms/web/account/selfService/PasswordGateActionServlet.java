@@ -40,8 +40,6 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initUserFactory("PasswordGateActionServlet");
-
         final String skip = request.getParameter("skip");
 
         if (skip != null && skip.equals("1")) {
@@ -50,6 +48,7 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
             return;
         }
 
+        initUserFactory("PasswordGateActionServlet");
         final UserManager userFactory = UserFactory.getInstance();
         final String userid = request.getRemoteUser();
         final User user = userFactory.getUser(userid);

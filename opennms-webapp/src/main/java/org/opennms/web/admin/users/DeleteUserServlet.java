@@ -54,7 +54,9 @@ public class DeleteUserServlet extends HttpServlet {
 
         // now save to the xml file
         try {
-            UserFactory.init();
+            if (UserFactory.getInstance() == null) {
+                UserFactory.init();
+            }
             UserManager userFactory = UserFactory.getInstance();
             userFactory.deleteUser(userID);
         } catch (Throwable e) {

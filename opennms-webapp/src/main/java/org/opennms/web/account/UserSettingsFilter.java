@@ -78,7 +78,9 @@ public class UserSettingsFilter implements Filter {
             return Optional.empty();
         }
         try {
-            UserFactory.init();
+            if (UserFactory.getInstance() == null) {
+                UserFactory.init();
+            }
             UserManager userFactory = UserFactory.getInstance();
             return Optional.ofNullable(userFactory.getUser(userId));
         } catch (IOException e) {

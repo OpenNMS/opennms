@@ -54,10 +54,12 @@ public class AddNewUserServlet extends HttpServlet {
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            UserFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("AddNewUserServlet: Error initialising user factory." + e);
+        if (UserFactory.getInstance() == null) {
+            try {
+                UserFactory.init();
+            } catch (Throwable e) {
+                throw new ServletException("AddNewUserServlet: Error initialising user factory." + e);
+            }
         }
         UserManager userFactory = UserFactory.getInstance();
 

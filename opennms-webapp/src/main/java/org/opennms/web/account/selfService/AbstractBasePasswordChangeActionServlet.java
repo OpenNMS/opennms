@@ -44,6 +44,9 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
     public static final String SAME_CHARACTER_REGEX = "(.)\\1{5}";
 
     protected void initUserFactory(String servletName) throws ServletException {
+        if (UserFactory.getInstance() != null) {
+            return;  // Spring context already initialized the factory (CM-backed or disk-based)
+        }
         try {
             UserFactory.init();
         } catch (Throwable e) {
