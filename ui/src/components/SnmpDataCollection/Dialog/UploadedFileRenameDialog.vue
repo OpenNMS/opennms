@@ -42,7 +42,11 @@
           v-if="renameFile"
           class="new-file-name-input"
         >
-          <IftaLabel>
+          <FormField
+            label="New File Name"
+            :for="fileNameInputId"
+            :error="error"
+          >
             <InputText
               :id="fileNameInputId"
               :modelValue="newFileName"
@@ -52,14 +56,7 @@
               @update:model-value="onChangeFileName"
               data-test="file-name"
             />
-            <label :for="fileNameInputId">New File Name</label>
-          </IftaLabel>
-          <small
-            v-if="error"
-            class="field-error"
-          >
-            {{ error }}
-          </small>
+          </FormField>
         </div>
       </div>
       <template #footer>
@@ -86,8 +83,8 @@ import { SnmpDataCollectionSourceNamesAndIds, UploadSnmpDataCollectionFileType }
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Dialog from 'primevue/dialog'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   visible: boolean,
@@ -233,11 +230,5 @@ watch(() => props.visible, (val) => {
 
 .new-file-name-input {
   margin-top: 1rem;
-}
-
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500);
 }
 </style>

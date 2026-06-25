@@ -6,21 +6,21 @@
       </div>
       <div class="action-container">
         <div class="search-container">
-          <FloatLabel variant="on">
+          <FormField>
             <IconField>
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
               <InputText
                 :id="searchId"
                 :modelValue="store.sourcesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
                 data-test="search-input"
-                fluid
+                placeholder="Search by Source, Vendor, UEI or Label"
+                :aria-label="'Search by Source, Vendor, UEI or Label'"
               />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
             </IconField>
-            <label :for="searchId">Search by Source, Vendor, UEI or Label</label>
-          </FloatLabel>
+          </FormField>
         </div>
         <div class="refresh">
           <Button
@@ -146,7 +146,6 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import FloatLabel from 'primevue/floatlabel'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -155,6 +154,7 @@ import Menu from 'primevue/menu'
 import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'

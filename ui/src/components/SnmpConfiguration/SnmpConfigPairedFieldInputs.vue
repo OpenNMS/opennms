@@ -4,7 +4,13 @@
       <div class="onms-col-6" v-for="field in [fieldPair.field1, fieldPair.field2]" :key="field.key">
 
         <!-- select -->
-        <IftaLabel v-if="field.isSelect">
+        <FormField
+          v-if="field.isSelect"
+          :label="field.label"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
+          :hint="field.hint"
+        >
           <PSelect
             :inputId="fieldId(field.key)"
             class="paired-input"
@@ -15,12 +21,17 @@
             :modelValue="(selectModel as any)[field.key]"
             @update:modelValue="(val: any) => handleFormSelectUpdate(String(field.key), val, field.isNumeric)"
           />
-          <label :for="fieldId(field.key)">{{ field.label }}</label>
-        </IftaLabel>
+        </FormField>
 
         <!-- SCV-enabled text input with vault search icon -->
         <div class="scv-input-row" v-else-if="field.scvEnabled">
-          <IftaLabel class="scv-input-grow">
+          <FormField
+            class="scv-input-grow"
+            :label="field.label"
+            :for="fieldId(field.key)"
+            :error="(props.validationErrors as any)[field.key]"
+            :hint="field.hint"
+          >
             <PInputText
               :id="fieldId(field.key)"
               class="paired-input scv-enabled-input"
@@ -30,8 +41,7 @@
               :invalid="!!(props.validationErrors as any)[field.key]"
               @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
             />
-            <label :for="fieldId(field.key)">{{ field.label }}</label>
-          </IftaLabel>
+          </FormField>
           <div class="scv-icon-container">
             <ScvInputIcon
               :disabled="field.disabled"
@@ -41,7 +51,13 @@
         </div>
 
         <!-- numeric input -->
-        <IftaLabel v-else-if="field.isNumeric">
+        <FormField
+          v-else-if="field.isNumeric"
+          :label="field.label"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
+          :hint="field.hint"
+        >
           <PInputNumber
             :inputId="fieldId(field.key)"
             class="paired-input"
@@ -52,11 +68,16 @@
             :invalid="!!(props.validationErrors as any)[field.key]"
             @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), true)"
           />
-          <label :for="fieldId(field.key)">{{ field.label }}</label>
-        </IftaLabel>
+        </FormField>
 
         <!-- plain text input -->
-        <IftaLabel v-else>
+        <FormField
+          v-else
+          :label="field.label"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
+          :hint="field.hint"
+        >
           <PInputText
             :id="fieldId(field.key)"
             class="paired-input"
@@ -66,17 +87,7 @@
             :invalid="!!(props.validationErrors as any)[field.key]"
             @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
           />
-          <label :for="fieldId(field.key)">{{ field.label }}</label>
-        </IftaLabel>
-
-        <small
-          v-if="(props.validationErrors as any)[field.key]"
-          class="field-error"
-        >{{ (props.validationErrors as any)[field.key] }}</small>
-        <small
-          v-else-if="field.hint"
-          class="field-hint"
-        >{{ field.hint }}</small>
+        </FormField>
      </div>
     </div>
   </div>
@@ -86,10 +97,10 @@
 import { computed, onMounted, ref, useId, watch } from 'vue'
 
 import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import IftaLabel from 'primevue/iftalabel'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
 
 const PInputText = InputText
@@ -207,12 +218,6 @@ onMounted(() => {
     margin-bottom: 0.75rem;
   }
 
-  // each IftaLabel-wrapped control fills its grid column
-  :deep(.p-iftalabel) {
-    display: block;
-    width: 100%;
-  }
-
   .paired-input {
     width: 100%;
 
@@ -222,7 +227,7 @@ onMounted(() => {
   }
 
   // SCV-enabled field: input grows, vault icon sits beside it, centered against
-  // the taller IftaLabel input
+  // the taller FormField input
   .scv-input-row {
     display: flex;
     align-items: center;
@@ -235,12 +240,6 @@ onMounted(() => {
 
   .scv-icon-container {
     padding: 0.2em;
-  }
-
-  .field-error {
-    color: var(--p-red-500);
-    font-size: 0.875rem;
-    margin-top: 0.25em;
   }
 }
 </style>

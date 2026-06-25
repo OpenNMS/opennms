@@ -20,80 +20,68 @@
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <InputText
-              :id="nameId"
-              v-model.trim="name"
-              :invalid="!!errors.name"
-              data-test="resource-type-name-input"
-              fluid
-            />
-            <label :for="nameId">Name</label>
-          </IftaLabel>
-          <small
-            v-if="errors.name"
-            class="field-error"
-          >{{ errors.name }}</small>
-        </div>
+        <FormField
+          label="Name"
+          :for="nameId"
+          :error="errors.name"
+        >
+          <InputText
+            :id="nameId"
+            v-model.trim="name"
+            :invalid="!!errors.name"
+            data-test="resource-type-name-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <InputText
-              :id="labelId"
-              v-model.trim="label"
-              :invalid="!!errors.label"
-              data-test="resource-type-label-input"
-              fluid
-            />
-            <label :for="labelId">Label</label>
-          </IftaLabel>
-          <small
-            v-if="errors.label"
-            class="field-error"
-          >{{ errors.label }}</small>
-        </div>
+        <FormField
+          label="Label"
+          :for="labelId"
+          :error="errors.label"
+        >
+          <InputText
+            :id="labelId"
+            v-model.trim="label"
+            :invalid="!!errors.label"
+            data-test="resource-type-label-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <InputText
-              :id="resourceLabelId"
-              v-model.trim="resourceLabel"
-              :invalid="!!errors.resourceLabel"
-              data-test="resource-type-resource-label-input"
-              fluid
-            />
-            <label :for="resourceLabelId">Resource Label</label>
-          </IftaLabel>
-          <small
-            v-if="errors.resourceLabel"
-            class="field-error"
-          >{{ errors.resourceLabel }}</small>
-        </div>
+        <FormField
+          label="Resource Label"
+          :for="resourceLabelId"
+          :error="errors.resourceLabel"
+        >
+          <InputText
+            :id="resourceLabelId"
+            v-model.trim="resourceLabel"
+            :invalid="!!errors.resourceLabel"
+            data-test="resource-type-resource-label-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <AutoComplete
-              :inputId="storageStrategyId"
-              v-model="storageStrategy"
-              :suggestions="storageStrategyResults"
-              optionLabel="_text"
-              @complete="onSearchStorageStrategy"
-              :invalid="!!errors.storageStrategy"
-              dropdown
-              fluid
-              class="my-autocomplete"
-            />
-            <label :for="storageStrategyId">Storage Strategy</label>
-          </IftaLabel>
-          <small
-            v-if="errors.storageStrategy"
-            class="field-error"
-          >{{ errors.storageStrategy }}</small>
-        </div>
+        <FormField
+          label="Storage Strategy"
+          :for="storageStrategyId"
+          :error="errors.storageStrategy"
+        >
+          <AutoComplete
+            :inputId="storageStrategyId"
+            v-model="storageStrategy"
+            :suggestions="storageStrategyResults"
+            optionLabel="_text"
+            @complete="onSearchStorageStrategy"
+            :invalid="!!errors.storageStrategy"
+            dropdown
+            fluid
+            class="my-autocomplete"
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="storage-strategy-table-container">
@@ -154,26 +142,23 @@
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <AutoComplete
-              :inputId="persistenceSelectorStrategyId"
-              v-model="persistenceSelectorStrategy"
-              :suggestions="persistenceSelectorStrategyResults"
-              optionLabel="_text"
-              @complete="onSearchPersistenceSelectorStrategy"
-              :invalid="!!errors.persistenceSelectorStrategy"
-              dropdown
-              fluid
-              class="my-autocomplete"
-            />
-            <label :for="persistenceSelectorStrategyId">Persistence Selector Strategy</label>
-          </IftaLabel>
-          <small
-            v-if="errors.persistenceSelectorStrategy"
-            class="field-error"
-          >{{ errors.persistenceSelectorStrategy }}</small>
-        </div>
+        <FormField
+          label="Persistence Selector Strategy"
+          :for="persistenceSelectorStrategyId"
+          :error="errors.persistenceSelectorStrategy"
+        >
+          <AutoComplete
+            :inputId="persistenceSelectorStrategyId"
+            v-model="persistenceSelectorStrategy"
+            :suggestions="persistenceSelectorStrategyResults"
+            optionLabel="_text"
+            @complete="onSearchPersistenceSelectorStrategy"
+            :invalid="!!errors.persistenceSelectorStrategy"
+            dropdown
+            fluid
+            class="my-autocomplete"
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="persistence-selector-strategy-table-container">
@@ -242,7 +227,11 @@
         </div>
         <div class="spacer"></div>
         <div class="content">
-          <IftaLabel>
+          <FormField
+            label="Key"
+            :for="keyId"
+            :error="parameterErrors.key"
+          >
             <InputText
               :id="keyId"
               v-model.trim="key"
@@ -250,15 +239,14 @@
               data-test="resource-type-parameter-key-input"
               fluid
             />
-            <label :for="keyId">Key</label>
-          </IftaLabel>
-          <small
-            v-if="parameterErrors.key"
-            class="field-error"
-          >{{ parameterErrors.key }}</small>
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <IftaLabel>
+          <FormField
+            label="Value"
+            :for="valueId"
+            :error="parameterErrors.value"
+          >
             <InputText
               :id="valueId"
               v-model.trim="value"
@@ -266,12 +254,7 @@
               data-test="resource-type-parameter-value-input"
               fluid
             />
-            <label :for="valueId">Value</label>
-          </IftaLabel>
-          <small
-            v-if="parameterErrors.value"
-            class="field-error"
-          >{{ parameterErrors.value }}</small>
+          </FormField>
         </div>
         <div class="spacer"></div>
         <div class="footer">
@@ -314,6 +297,7 @@
 import { computed, nextTick, ref, useId, watch, watchEffect } from 'vue'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { KEY_PATTERN, PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionResourceTypePayloadToServer } from '@/mappers/snmpDataCollection.mapper'
@@ -330,7 +314,6 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 
@@ -722,13 +705,6 @@ watch(
     display: flex;
     align-items: center;
     gap: 5px;
-  }
-
-  .field-error {
-    display: block;
-    color: var(--p-red-500);
-    font-size: 0.8em;
-    margin-top: 0.25em;
   }
 
   .sub-container {

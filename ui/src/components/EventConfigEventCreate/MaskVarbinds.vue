@@ -19,7 +19,10 @@
         class="form-row"
       >
         <div class="dropdown">
-          <IftaLabel>
+          <FormField
+            :for="`varbind-type-${index}`"
+            :error="errors.varbinds?.[index]?.type"
+          >
             <Select
               :inputId="`varbind-type-${index}`"
               :options="MaskVarbindsTypeOptions"
@@ -31,15 +34,19 @@
               :invalid="!!errors.varbinds?.[index]?.type"
               data-test="varbind-type-select"
               fluid
+              placeholder="Varbind Type"
+              :aria-label="'Varbind Type'"
             />
-            <label :for="`varbind-type-${index}`">Varbind Type</label>
-          </IftaLabel>
+          </FormField>
         </div>
         <div
           v-if="row.type._value === MaskVarbindsTypeValue.vbNumber"
           class="dropdown"
         >
-          <IftaLabel>
+          <FormField
+            :for="`varbind-number-${index}`"
+            :error="errors.varbinds?.[index]?.index"
+          >
             <InputText
               :id="`varbind-number-${index}`"
               type="number"
@@ -49,15 +56,19 @@
               data-test="varbind-number-input"
               :invalid="!!errors.varbinds?.[index]?.index"
               fluid
+              placeholder="Varbind Number"
+              :aria-label="'Varbind Number'"
             />
-            <label :for="`varbind-number-${index}`">Varbind Number</label>
-          </IftaLabel>
+          </FormField>
         </div>
         <div
           v-if="row.type._value === MaskVarbindsTypeValue.vbOid"
           class="dropdown"
         >
-          <IftaLabel>
+          <FormField
+            :for="`varbind-oid-${index}`"
+            :error="errors.varbinds?.[index]?.index"
+          >
             <InputText
               :id="`varbind-oid-${index}`"
               :modelValue="row.index"
@@ -65,13 +76,17 @@
               data-test="varbind-oid-input"
               :invalid="!!errors.varbinds?.[index]?.index"
               fluid
+              placeholder="Varbind OID"
+              :aria-label="'Varbind OID'"
             />
-            <label :for="`varbind-oid-${index}`">Varbind OID</label>
-          </IftaLabel>
+          </FormField>
         </div>
         <div class="input-field">
           <div class="value-input">
-            <IftaLabel>
+            <FormField
+              :for="`varbind-value-${index}`"
+              :error="errors.varbinds?.[index]?.value"
+            >
               <InputText
                 :id="`varbind-value-${index}`"
                 :modelValue="row.value"
@@ -79,9 +94,10 @@
                 data-test="varbind-value-input"
                 :invalid="!!errors.varbinds?.[index]?.value"
                 fluid
+                placeholder="Varbind Value"
+                :aria-label="'Varbind Value'"
               />
-              <label :for="`varbind-value-${index}`">Varbind Value</label>
-            </IftaLabel>
+            </FormField>
           </div>
           <Button
             outlined
@@ -106,9 +122,9 @@ import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import { ISelectItemType } from '@featherds/select'
 import Button from 'primevue/button'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'
 
 const emit = defineEmits<{

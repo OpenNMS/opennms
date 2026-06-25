@@ -17,35 +17,35 @@
 
     <div class="section">
       <div class="section-content">
-        <div class="onms-row">
-          <div class="onms-col-4">
-            <label class="label">IP Address:</label>
-          </div>
-          <div class="onms-col-8">
-            <PInputText
-              class="lookup-input"
-              data-test="lookup-ip-address-input"
-              v-model.trim="lookupIpAddress"
-            />
-            <small class="field-hint">Enter IP Address</small>
-          </div>
-        </div>
-        <div class="onms-row">
-          <div class="onms-col-4">
-            <label class="label">Location:</label>
-          </div>
-          <div class="onms-col-8">
-            <PSelect
-              class="lookup-input"
-              data-test="snmp-monitoring-location-select"
-              optionLabel="_text"
-              :options="monitoringLocations"
-              :modelValue="lookupMonitoringLocation"
-              @update:modelValue="(val: any) => lookupMonitoringLocation = val"
-            />
-            <small class="field-hint">Select a monitoring location</small>
-          </div>
-        </div>
+        <FormField
+          class="lookup-field"
+          label="IP Address"
+          for="snmp-lookup-ip-address"
+          hint="Enter IP Address"
+        >
+          <PInputText
+            id="snmp-lookup-ip-address"
+            class="lookup-input"
+            data-test="lookup-ip-address-input"
+            v-model.trim="lookupIpAddress"
+          />
+        </FormField>
+        <FormField
+          class="lookup-field"
+          label="Location"
+          for="snmp-lookup-location"
+          hint="Select a monitoring location"
+        >
+          <PSelect
+            inputId="snmp-lookup-location"
+            class="lookup-input"
+            data-test="snmp-monitoring-location-select"
+            optionLabel="_text"
+            :options="monitoringLocations"
+            :modelValue="lookupMonitoringLocation"
+            @update:modelValue="(val: any) => lookupMonitoringLocation = val"
+          />
+        </FormField>
 
         <div class="onms-row">
           <div class="onms-col-12">
@@ -87,6 +87,7 @@ import Select from 'primevue/select'
 import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
 import { ISelectItemType } from '@featherds/select'
+import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -223,10 +224,6 @@ watch(() => props.autoLookupIpAddress, (ip) => {
   .info-section {
     margin-bottom: 1em;
 
-    .label {
-      color: var(--p-text-color);
-    }
-
     .info-icon {
       cursor: pointer;
       font-size: 1.5em;
@@ -241,6 +238,10 @@ watch(() => props.autoLookupIpAddress, (ip) => {
 
   .onms-row {
     margin-bottom: 0.5rem;
+  }
+
+  .lookup-field {
+    margin-bottom: 1rem;
   }
 
   .lookup-input {

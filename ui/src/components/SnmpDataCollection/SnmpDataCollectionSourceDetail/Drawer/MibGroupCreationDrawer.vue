@@ -21,43 +21,37 @@
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">General Details</div>
-        <div>
-          <IftaLabel>
-            <InputText
-              :id="nameId"
-              v-model.trim="name"
-              :invalid="!!errors.name"
-              data-test="mib-group-name-input"
-              fluid
-            />
-            <label :for="nameId">Name</label>
-          </IftaLabel>
-          <small
-            v-if="errors.name"
-            class="field-error"
-          >{{ errors.name }}</small>
-        </div>
+        <FormField
+          label="Name"
+          :for="nameId"
+          :error="errors.name"
+        >
+          <InputText
+            :id="nameId"
+            v-model.trim="name"
+            :invalid="!!errors.name"
+            data-test="mib-group-name-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <IftaLabel>
-            <Select
-              :inputId="ifTypeId"
-              :modelValue="ifType"
-              @update:modelValue="ifType = $event"
-              :options="IF_TYPE_FILTERS_OPTIONS"
-              optionLabel="_text"
-              :invalid="!!errors.ifType"
-              data-test="mib-group-if-type-input"
-              fluid
-            />
-            <label :for="ifTypeId">Interface Type</label>
-          </IftaLabel>
-          <small
-            v-if="errors.ifType"
-            class="field-error"
-          >{{ errors.ifType }}</small>
-        </div>
+        <FormField
+          label="Interface Type"
+          :for="ifTypeId"
+          :error="errors.ifType"
+        >
+          <Select
+            :inputId="ifTypeId"
+            :modelValue="ifType"
+            @update:modelValue="ifType = $event"
+            :options="IF_TYPE_FILTERS_OPTIONS"
+            optionLabel="_text"
+            :invalid="!!errors.ifType"
+            data-test="mib-group-if-type-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="table-container">
@@ -134,7 +128,11 @@
         </div>
         <div class="spacer"></div>
         <div class="content">
-          <IftaLabel>
+          <FormField
+            label="OID"
+            :for="oidId"
+            :error="mibObjectErrors.oid"
+          >
             <InputText
               :id="oidId"
               v-model.trim="oid"
@@ -142,15 +140,14 @@
               data-test="mib-object-oid-input"
               fluid
             />
-            <label :for="oidId">OID</label>
-          </IftaLabel>
-          <small
-            v-if="mibObjectErrors.oid"
-            class="field-error"
-          >{{ mibObjectErrors.oid }}</small>
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <IftaLabel>
+          <FormField
+            label="Instance"
+            :for="instanceId"
+            :error="mibObjectErrors.instance"
+          >
             <Select
               :inputId="instanceId"
               :modelValue="instance"
@@ -161,15 +158,14 @@
               data-test="mib-object-instance-input"
               fluid
             />
-            <label :for="instanceId">Instance</label>
-          </IftaLabel>
-          <small
-            v-if="mibObjectErrors.instance"
-            class="field-error"
-          >{{ mibObjectErrors.instance }}</small>
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <IftaLabel>
+          <FormField
+            label="Alias"
+            :for="aliasId"
+            :error="mibObjectErrors.alias"
+          >
             <InputText
               :id="aliasId"
               v-model.trim="alias"
@@ -177,15 +173,14 @@
               data-test="mib-object-alias-input"
               fluid
             />
-            <label :for="aliasId">Alias</label>
-          </IftaLabel>
-          <small
-            v-if="mibObjectErrors.alias"
-            class="field-error"
-          >{{ mibObjectErrors.alias }}</small>
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <IftaLabel>
+          <FormField
+            label="Data Type"
+            :for="dataTypeId"
+            :error="mibObjectErrors.type"
+          >
             <Select
               :inputId="dataTypeId"
               :modelValue="dataType"
@@ -196,12 +191,7 @@
               data-test="mib-object-data-type-input"
               fluid
             />
-            <label :for="dataTypeId">Data Type</label>
-          </IftaLabel>
-          <small
-            v-if="mibObjectErrors.type"
-            class="field-error"
-          >{{ mibObjectErrors.type }}</small>
+          </FormField>
         </div>
         <div class="spacer"></div>
         <div class="footer">
@@ -255,11 +245,11 @@ import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
 import { ISelectItemType } from '@featherds/select'
+import FormField from '@/components/Common/FormField.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
@@ -587,13 +577,6 @@ watch(
     display: flex;
     align-items: center;
     gap: 5px;
-  }
-
-  .field-error {
-    display: block;
-    color: var(--p-red-500);
-    font-size: 0.8em;
-    margin-top: 0.25em;
   }
 
   .sub-container {

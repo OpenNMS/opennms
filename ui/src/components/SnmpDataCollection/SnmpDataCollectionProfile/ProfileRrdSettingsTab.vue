@@ -5,7 +5,12 @@
   >
     <div class="section-header">RRD Settings</div>
     <div class="input-row">
-      <PIftaLabel>
+      <FormField
+        label="RRD Step"
+        :for="rrdStepId"
+        :error="errors.rrdStep"
+        hint="RRD step size in seconds"
+      >
         <PInputNumber
           :id="rrdStepId"
           :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
@@ -16,16 +21,7 @@
           data-test="rrd-step"
           fluid
         />
-        <label :for="rrdStepId">RRD Step</label>
-      </PIftaLabel>
-      <small
-        v-if="errors.rrdStep"
-        class="field-error"
-      >{{ errors.rrdStep }}</small>
-      <small
-        v-else
-        class="field-hint"
-      >RRD step size in seconds</small>
+      </FormField>
     </div>
     <div class="rra-section">
       <div class="rra-header">
@@ -153,14 +149,13 @@ import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import IftaLabelComponent from 'primevue/iftalabel'
 import InputNumberComponent from 'primevue/inputnumber'
 import SelectComponent from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 
 const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PIftaLabel = IftaLabelComponent
 const PInputNumber = InputNumberComponent
 const PSelect = SelectComponent
 
@@ -241,13 +236,6 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 .field-error {
   display: block;
   color: var(--p-red-500);
-  font-size: 0.8em;
-  margin-top: 0.25em;
-}
-
-.field-hint {
-  display: block;
-  color: var(--p-text-muted-color);
   font-size: 0.8em;
   margin-top: 0.25em;
 }

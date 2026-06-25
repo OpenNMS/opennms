@@ -3,21 +3,21 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FloatLabel variant="on">
+          <FormField>
             <IconField>
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
               <InputText
                 :id="searchId"
                 :modelValue="store.profilesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
                 data-test="search-input"
-                fluid
+                placeholder="Search by Profile Name"
+                :aria-label="'Search by Profile Name'"
               />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
             </IconField>
-            <label :for="searchId">Search by Profile Name</label>
-          </FloatLabel>
+          </FormField>
         </div>
       </div>
       <div class="section-right">
@@ -123,7 +123,6 @@ import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import FloatLabel from 'primevue/floatlabel'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -137,6 +136,7 @@ import { useRouter } from 'vue-router'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
+import FormField from '@/components/Common/FormField.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 

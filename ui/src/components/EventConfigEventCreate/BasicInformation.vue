@@ -32,7 +32,11 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="spacer"></div>
-    <IftaLabel class="my-autocomplete">
+    <FormField
+      label="Source Name"
+      :for="sourceNameId"
+      class="my-autocomplete"
+    >
       <AutoComplete
         :inputId="sourceNameId"
         :disabled="store.selectedSource?.name && store.selectedSource?.id ? true : false"
@@ -46,8 +50,7 @@
         fluid
         @complete="search($event.query)"
       />
-      <label :for="sourceNameId">Source Name</label>
-    </IftaLabel>
+    </FormField>
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="basic-info">
@@ -56,165 +59,131 @@
           <h3>Basic Information</h3>
         </div>
         <div class="spacer"></div>
-        <label class="label">Event UEI:</label>
-        <div class="spacer"></div>
-        <InputText
-          data-test="event-uei"
-          :invalid="!!errors.uei"
-          :modelValue="eventUei"
-          @update:model-value="eventUei = ($event ?? '').trim()"
-          fluid
-        />
-        <small
-          v-if="errors.uei"
-          class="field-error"
+        <FormField
+          label="Event UEI"
+          :for="eventUeiId"
+          :error="errors.uei"
+          hint="e.g., 'uei.opennms.org/vendor/application/eventname'"
         >
-          {{ errors.uei }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          e.g., 'uei.opennms.org/vendor/application/eventname'
-        </small>
-        <div class="spacer"></div>
-        <label class="label">Event Label:</label>
-        <div class="spacer"></div>
-        <InputText
-          data-test="event-label"
-          :invalid="!!errors.eventLabel"
-          :modelValue="eventLabel"
-          @update:model-value="eventLabel = ($event ?? '').trim()"
-          fluid
-        />
-        <small
-          v-if="errors.eventLabel"
-          class="field-error"
-        >
-          {{ errors.eventLabel }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          e.g., 'Vendor Application Event Name'
-        </small>
-        <div class="spacer"></div>
-        <label class="label">Event Description:</label>
-        <div class="spacer"></div>
-        <Textarea
-          :modelValue="eventDescription"
-          @update:model-value="eventDescription = ($event ?? '').trim()"
-          :invalid="!!errors.description"
-          data-test="event-description"
-          rows="10"
-          autoResize
-          fluid
-        />
-        <small
-          v-if="errors.description"
-          class="field-error"
-        >
-          {{ errors.description }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          Provide a detailed description of the event.
-        </small>
-        <div class="spacer"></div>
-        <label class="label">Operator Instructions:</label>
-        <div class="spacer"></div>
-        <Textarea
-          :modelValue="operatorInstructions"
-          @update:model-value="operatorInstructions = ($event ?? '').trim()"
-          data-test="operator-instructions"
-          rows="5"
-          autoResize
-          fluid
-        />
-        <small class="field-hint">
-          Instructions for operators when this event occurs.
-        </small>
-        <div class="spacer"></div>
-        <label class="label">Log Message Destination:</label>
-        <div class="spacer"></div>
-        <div class="dropdown">
-          <Select
-            data-test="event-destination"
-            :invalid="!!errors.dest"
-            :options="DestinationOptions"
-            optionLabel="_text"
-            showClear
-            :modelValue="destination?._value ? destination : null"
-            @update:model-value="onSelectChange(destination, $event)"
+          <InputText
+            :id="eventUeiId"
+            data-test="event-uei"
+            :invalid="!!errors.uei"
+            :modelValue="eventUei"
+            @update:model-value="eventUei = ($event ?? '').trim()"
             fluid
           />
-        </div>
-        <small
-          v-if="errors.dest"
-          class="field-error"
-        >
-          {{ errors.dest }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          Select the destination for the log message.
-        </small>
+        </FormField>
         <div class="spacer"></div>
-        <label class="label">Log Message:</label>
-        <div class="spacer"></div>
-        <Textarea
-          :modelValue="logMessage"
-          @update:model-value="logMessage = ($event ?? '').trim()"
-          :invalid="!!errors.logmsg"
-          data-test="log-message"
-          rows="5"
-          autoResize
-          fluid
-        />
-        <small
-          v-if="errors.logmsg"
-          class="field-error"
+        <FormField
+          label="Event Label"
+          :for="eventLabelId"
+          :error="errors.eventLabel"
+          hint="e.g., 'Vendor Application Event Name'"
         >
-          {{ errors.logmsg }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          Provide the log message for this event.
-        </small>
-        <div class="spacer"></div>
-        <label class="label">Severity:</label>
-        <div class="spacer"></div>
-        <div class="dropdown">
-          <Select
-            data-test="event-severity"
-            :invalid="!!errors.severity"
-            :options="SeverityOptions"
-            optionLabel="_text"
-            showClear
-            :modelValue="severity?._value ? severity : null"
-            @update:model-value="onSelectChange(severity, $event)"
+          <InputText
+            :id="eventLabelId"
+            data-test="event-label"
+            :invalid="!!errors.eventLabel"
+            :modelValue="eventLabel"
+            @update:model-value="eventLabel = ($event ?? '').trim()"
             fluid
           />
+        </FormField>
+        <div class="spacer"></div>
+        <FormField
+          label="Event Description"
+          :for="eventDescriptionId"
+          :error="errors.description"
+          hint="Provide a detailed description of the event."
+        >
+          <Textarea
+            :id="eventDescriptionId"
+            :modelValue="eventDescription"
+            @update:model-value="eventDescription = ($event ?? '').trim()"
+            :invalid="!!errors.description"
+            data-test="event-description"
+            rows="10"
+            autoResize
+            fluid
+          />
+        </FormField>
+        <div class="spacer"></div>
+        <FormField
+          label="Operator Instructions"
+          :for="operatorInstructionsId"
+          hint="Instructions for operators when this event occurs."
+        >
+          <Textarea
+            :id="operatorInstructionsId"
+            :modelValue="operatorInstructions"
+            @update:model-value="operatorInstructions = ($event ?? '').trim()"
+            data-test="operator-instructions"
+            rows="5"
+            autoResize
+            fluid
+          />
+        </FormField>
+        <div class="spacer"></div>
+        <div class="dropdown">
+          <FormField
+            label="Log Message Destination"
+            :for="destinationId"
+            :error="errors.dest"
+            hint="Select the destination for the log message."
+          >
+            <Select
+              :inputId="destinationId"
+              data-test="event-destination"
+              :invalid="!!errors.dest"
+              :options="DestinationOptions"
+              optionLabel="_text"
+              showClear
+              :modelValue="destination?._value ? destination : null"
+              @update:model-value="onSelectChange(destination, $event)"
+              fluid
+            />
+          </FormField>
         </div>
-        <small
-          v-if="errors.severity"
-          class="field-error"
+        <div class="spacer"></div>
+        <FormField
+          label="Log Message"
+          :for="logMessageId"
+          :error="errors.logmsg"
+          hint="Provide the log message for this event."
         >
-          {{ errors.severity }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          Select the severity of the event.
-        </small>
+          <Textarea
+            :id="logMessageId"
+            :modelValue="logMessage"
+            @update:model-value="logMessage = ($event ?? '').trim()"
+            :invalid="!!errors.logmsg"
+            data-test="log-message"
+            rows="5"
+            autoResize
+            fluid
+          />
+        </FormField>
+        <div class="spacer"></div>
+        <div class="dropdown">
+          <FormField
+            label="Severity"
+            :for="severityId"
+            :error="errors.severity"
+            hint="Select the severity of the event."
+          >
+            <Select
+              :inputId="severityId"
+              data-test="event-severity"
+              :invalid="!!errors.severity"
+              :options="SeverityOptions"
+              optionLabel="_text"
+              showClear
+              :modelValue="severity?._value ? severity : null"
+              @update:model-value="onSelectChange(severity, $event)"
+              fluid
+            />
+          </FormField>
+        </div>
         <div class="spacer"></div>
         <div>
           <AlarmDataInfo
@@ -282,42 +251,32 @@
       :closeOnEscape="false"
     >
       <div class="modal-body-form">
-        <div class="field">
-          <IftaLabel>
-            <InputText
-              :id="configNameId"
-              v-model="configName"
-              :invalid="!!sourceCreationErrors?.name"
-              data-test="source-name"
-              fluid
-            />
-            <label :for="configNameId">Event Configuration Source Name</label>
-          </IftaLabel>
-          <small
-            v-if="sourceCreationErrors?.name"
-            class="field-error"
-          >
-            {{ sourceCreationErrors.name }}
-          </small>
-        </div>
-        <div class="field">
-          <IftaLabel>
-            <InputText
-              :id="vendorId"
-              v-model="vendor"
-              :invalid="!!sourceCreationErrors?.vendor"
-              data-test="vendor"
-              fluid
-            />
-            <label :for="vendorId">Vendor</label>
-          </IftaLabel>
-          <small
-            v-if="sourceCreationErrors?.vendor"
-            class="field-error"
-          >
-            {{ sourceCreationErrors.vendor }}
-          </small>
-        </div>
+        <FormField
+          label="Event Configuration Source Name"
+          :for="configNameId"
+          :error="sourceCreationErrors?.name"
+        >
+          <InputText
+            :id="configNameId"
+            v-model="configName"
+            :invalid="!!sourceCreationErrors?.name"
+            data-test="source-name"
+            fluid
+          />
+        </FormField>
+        <FormField
+          label="Vendor"
+          :for="vendorId"
+          :error="sourceCreationErrors?.vendor"
+        >
+          <InputText
+            :id="vendorId"
+            v-model="vendor"
+            :invalid="!!sourceCreationErrors?.vendor"
+            data-test="vendor"
+            fluid
+          />
+        </FormField>
       </div>
       <template #footer>
         <Button
@@ -354,11 +313,11 @@ import { ISelectItemType } from '@featherds/select'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
 import vkbeautify from 'vkbeautify'
+import FormField from '@/components/Common/FormField.vue'
 import AlarmDataInfo from './AlarmDataInfo.vue'
 import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
@@ -377,6 +336,13 @@ const eventConfigStore = useEventConfigStore()
 const sourceNameId = useId()
 const configNameId = useId()
 const vendorId = useId()
+const eventUeiId = useId()
+const eventLabelId = useId()
+const eventDescriptionId = useId()
+const operatorInstructionsId = useId()
+const destinationId = useId()
+const logMessageId = useId()
+const severityId = useId()
 const eventUei = ref('')
 const eventLabel = ref('')
 const eventDescription = ref('')
@@ -897,10 +863,6 @@ onMounted(async () => {
     padding: 10px;
     border-radius: 8px;
 
-    .label {
-      font-weight: 600;
-    }
-
     .section-content {
       width: 50%;
     }
@@ -919,18 +881,6 @@ onMounted(async () => {
     justify-content: flex-end;
     gap: 10px;
   }
-
-  .field-error {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-red-500);
-  }
-
-  .field-hint {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-text-muted-color);
-  }
 }
 
 .modal-body-form {
@@ -938,16 +888,5 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-
-  .field {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500);
 }
 </style>

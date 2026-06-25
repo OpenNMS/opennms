@@ -21,53 +21,37 @@
     <div class="spacer"></div>
     <div class="basic-info">
       <div class="section-content">
-        <div class="onms-row">
-          <div class="onms-col-12">
-            <span class="label">Label:</span>
-          </div>
-        </div>
-        <div class="onms-row">
-          <div class="onms-col-12">
-            <PInputText
-              class="profile-input"
-              data-test="snmp-profile-label"
-              :invalid="!!errors.label"
-              v-model.trim="label"
-            />
-            <small
-              v-if="errors.label"
-              class="field-error"
-            >{{ errors.label }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Label</small>
-          </div>
-        </div>
+        <FormField
+          class="profile-field"
+          label="Label"
+          for="snmp-profile-label"
+          :error="errors.label"
+          hint="Label"
+        >
+          <PInputText
+            id="snmp-profile-label"
+            class="profile-input"
+            data-test="snmp-profile-label"
+            :invalid="!!errors.label"
+            v-model.trim="label"
+          />
+        </FormField>
 
-        <div class="onms-row">
-          <div class="onms-col-12">
-            <span class="label">Filter Expression:</span>
-          </div>
-        </div>
-        <div class="onms-row">
-          <div class="onms-col-12">
-            <PInputText
-              class="profile-input"
-              data-test="snmp-profile-filter-expression"
-              :invalid="!!errors.filterExpression"
-              v-model.trim="filterExpression"
-            />
-            <small
-              v-if="errors.filterExpression"
-              class="field-error"
-            >{{ errors.filterExpression }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Filter expression</small>
-          </div>
-        </div>
+        <FormField
+          class="profile-field"
+          label="Filter Expression"
+          for="snmp-profile-filter-expression"
+          :error="errors.filterExpression"
+          hint="Filter expression"
+        >
+          <PInputText
+            id="snmp-profile-filter-expression"
+            class="profile-input"
+            data-test="snmp-profile-filter-expression"
+            :invalid="!!errors.filterExpression"
+            v-model.trim="filterExpression"
+          />
+        </FormField>
 
         <div class="large-spacer"></div>
 
@@ -100,6 +84,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
+import FormField from '@/components/Common/FormField.vue'
 import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
 import { validateProfile } from '@/lib/snmpValidator'
 
@@ -268,15 +253,14 @@ onMounted(() => {
       width: 50%;
     }
 
+    .profile-field {
+      margin-bottom: 1rem;
+    }
+
     .profile-input {
       width: 100%;
     }
 
-    .field-error {
-      color: var(--p-red-500);
-      font-size: 0.875rem;
-      margin-top: 0.25em;
-    }
   }
 
   .large-spacer {

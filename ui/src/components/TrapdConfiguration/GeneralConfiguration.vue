@@ -18,45 +18,33 @@
       />
     </div>
     <div class="section">
-      <div class="field">
-        <IftaLabel>
-          <PInputNumber
-            inputId="trap-port"
-            v-model="port"
-            :min="MIN_PORT"
-            :max="MAX_PORT"
-            :useGrouping="false"
-            :invalid="!!trapConfigError.port"
-          />
-          <label for="trap-port">Port</label>
-        </IftaLabel>
-        <small
-          v-if="trapConfigError.port"
-          class="field-error"
-        >{{ trapConfigError.port }}</small>
-        <small
-          v-else
-          class="field-hint"
-        >Default: 10162</small>
-      </div>
-      <div class="field">
-        <IftaLabel>
-          <PInputText
-            id="trap-bind-address"
-            v-model="bindAddress"
-            :invalid="!!trapConfigError.bindAddress"
-          />
-          <label for="trap-bind-address">Bind Address</label>
-        </IftaLabel>
-        <small
-          v-if="trapConfigError.bindAddress"
-          class="field-error"
-        >{{ trapConfigError.bindAddress }}</small>
-        <small
-          v-else
-          class="field-hint"
-        >* for all, or specify IP address</small>
-      </div>
+      <FormField
+        label="Port"
+        for="trap-port"
+        :error="trapConfigError.port"
+        hint="Default: 10162"
+      >
+        <PInputNumber
+          inputId="trap-port"
+          v-model="port"
+          :min="MIN_PORT"
+          :max="MAX_PORT"
+          :useGrouping="false"
+          :invalid="!!trapConfigError.port"
+        />
+      </FormField>
+      <FormField
+        label="Bind Address"
+        for="trap-bind-address"
+        :error="trapConfigError.bindAddress"
+        hint="* for all, or specify IP address"
+      >
+        <PInputText
+          id="trap-bind-address"
+          v-model="bindAddress"
+          :invalid="!!trapConfigError.bindAddress"
+        />
+      </FormField>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -95,92 +83,68 @@
           </div>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <div class="field">
-            <IftaLabel>
-              <PInputNumber
-                inputId="trap-threads"
-                v-model="threads"
-                :min="0"
-                :useGrouping="false"
-                :invalid="!!trapConfigError.threads"
-              />
-              <label for="trap-threads">Threads</label>
-            </IftaLabel>
-            <small
-              v-if="trapConfigError.threads"
-              class="field-error"
-            >{{ trapConfigError.threads }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Default: 0</small>
-          </div>
+          <FormField
+            label="Threads"
+            for="trap-threads"
+            :error="trapConfigError.threads"
+            hint="Default: 0"
+          >
+            <PInputNumber
+              inputId="trap-threads"
+              v-model="threads"
+              :min="0"
+              :useGrouping="false"
+              :invalid="!!trapConfigError.threads"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <div class="field">
-            <IftaLabel>
-              <PInputNumber
-                inputId="trap-queue-size"
-                v-model="queueSize"
-                :min="0"
-                :useGrouping="false"
-                :invalid="!!trapConfigError.queueSize"
-              />
-              <label for="trap-queue-size">Queue Size</label>
-            </IftaLabel>
-            <small
-              v-if="trapConfigError.queueSize"
-              class="field-error"
-            >{{ trapConfigError.queueSize }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Default: 10000</small>
-          </div>
+          <FormField
+            label="Queue Size"
+            for="trap-queue-size"
+            :error="trapConfigError.queueSize"
+            hint="Default: 10000"
+          >
+            <PInputNumber
+              inputId="trap-queue-size"
+              v-model="queueSize"
+              :min="0"
+              :useGrouping="false"
+              :invalid="!!trapConfigError.queueSize"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <div class="field">
-            <IftaLabel>
-              <PInputNumber
-                inputId="trap-batch-size"
-                v-model="batchSize"
-                :min="0"
-                :useGrouping="false"
-                :invalid="!!trapConfigError.batchSize"
-              />
-              <label for="trap-batch-size">Batch Size</label>
-            </IftaLabel>
-            <small
-              v-if="trapConfigError.batchSize"
-              class="field-error"
-            >{{ trapConfigError.batchSize }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Default: 1000</small>
-          </div>
+          <FormField
+            label="Batch Size"
+            for="trap-batch-size"
+            :error="trapConfigError.batchSize"
+            hint="Default: 1000"
+          >
+            <PInputNumber
+              inputId="trap-batch-size"
+              v-model="batchSize"
+              :min="0"
+              :useGrouping="false"
+              :invalid="!!trapConfigError.batchSize"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <div class="field">
-            <IftaLabel>
-              <PInputNumber
-                inputId="trap-batch-interval"
-                v-model="batchInterval"
-                :min="0"
-                :useGrouping="false"
-                :invalid="!!trapConfigError.batchInterval"
-              />
-              <label for="trap-batch-interval">Batch Interval ms</label>
-            </IftaLabel>
-            <small
-              v-if="trapConfigError.batchInterval"
-              class="field-error"
-            >{{ trapConfigError.batchInterval }}</small>
-            <small
-              v-else
-              class="field-hint"
-            >Default: 500ms</small>
-          </div>
+          <FormField
+            label="Batch Interval ms"
+            for="trap-batch-interval"
+            :error="trapConfigError.batchInterval"
+            hint="Default: 500ms"
+          >
+            <PInputNumber
+              inputId="trap-batch-interval"
+              v-model="batchInterval"
+              :min="0"
+              :useGrouping="false"
+              :invalid="!!trapConfigError.batchInterval"
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
         </div>
@@ -217,7 +181,7 @@ import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
 import Button from 'primevue/button'
-import IftaLabel from 'primevue/iftalabel'
+import FormField from '../Common/FormField.vue'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
@@ -435,33 +399,13 @@ watch(() => store.trapdConfig, () => {
     }
   }
 
-  // input field with optional hint/error helper text
-  .field {
-    display: flex;
-    flex-direction: column;
-
-    :deep(.p-inputtext),
-    :deep(.p-inputnumber) {
-      width: 100%;
-    }
-
-    // .field-hint is styled globally (primevue-overrides.scss); keep the error
-    // aligned and sized to match it
-    .field-error {
-      color: var(--p-red-500);
-      font-size: 0.875rem;
-      margin-top: 0.25em;
-      padding-left: var(--p-iftalabel-position-x, 0.75rem);
-    }
-  }
-
   .expansion-panel {
     .expansion-section {
       width: 45%;
       margin-top: 1.5em;
 
-      // keep the stacked IftaLabel fields from smooshing together
-      .field {
+      // keep the stacked fields from smooshing together
+      .form-field {
         margin-top: 1em;
       }
 

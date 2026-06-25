@@ -16,9 +16,12 @@
     <div class="spacer"></div>
     <div v-if="enableAlarmData">
       <div class="dropdown">
-        <label class="label">Alarm Type:</label>
-        <div class="spacer"></div>
-        <IftaLabel>
+        <FormField
+          label="Alarm Type"
+          :for="alarmTypeId"
+          :error="errors.alarmType"
+          hint="Select the alarm type."
+        >
           <Select
             :inputId="alarmTypeId"
             :options="AlarmTypeOptions"
@@ -30,20 +33,7 @@
             @update:model-value="$emit('setAlarmData', 'alarmType', $event)"
             fluid
           />
-          <label :for="alarmTypeId">Alarm Type</label>
-        </IftaLabel>
-        <small
-          v-if="errors.alarmType"
-          class="field-error"
-        >
-          {{ errors.alarmType }}
-        </small>
-        <small
-          v-else
-          class="field-hint"
-        >
-          Select the alarm type.
-        </small>
+        </FormField>
       </div>
       <div class="spacer"></div>
       <div class="alarm-check">
@@ -56,9 +46,12 @@
         <label for="auto-clean-checkbox">Auto Clean</label>
       </div>
       <div class="spacer"></div>
-      <div class="label">Alarm Reduction Key:</div>
-      <div class="spacer"></div>
-      <IftaLabel>
+      <FormField
+        label="Alarm Reduction Key"
+        :for="reductionKeyId"
+        :error="errors?.reductionKey"
+        hint="Provide the reduction key for the alarm."
+      >
         <InputText
           :id="reductionKeyId"
           :modelValue="alarmReductionKey"
@@ -67,24 +60,14 @@
           fluid
           @update:model-value="$emit('setAlarmData', 'reductionKey', $event)"
         />
-        <label :for="reductionKeyId">Alarm Reduction Key</label>
-      </IftaLabel>
-      <small
-        v-if="errors?.reductionKey"
-        class="field-error"
-      >
-        {{ errors.reductionKey }}
-      </small>
-      <small
-        v-else
-        class="field-hint"
-      >
-        Provide the reduction key for the alarm.
-      </small>
+      </FormField>
       <div class="spacer"></div>
-      <div class="label">Alarm Clear Key:</div>
-      <div class="spacer"></div>
-      <IftaLabel>
+      <FormField
+        label="Alarm Clear Key"
+        :for="clearKeyId"
+        :error="errors.clearKey"
+        hint="Provide the clear key for the alarm."
+      >
         <InputText
           :id="clearKeyId"
           :modelValue="alarmClearKey"
@@ -93,20 +76,7 @@
           fluid
           @update:model-value="$emit('setAlarmData', 'clearKey', $event)"
         />
-        <label :for="clearKeyId">Alarm Clear Key</label>
-      </IftaLabel>
-      <small
-        v-if="errors.clearKey"
-        class="field-error"
-      >
-        {{ errors.clearKey }}
-      </small>
-      <small
-        v-else
-        class="field-hint"
-      >
-        Provide the clear key for the alarm.
-      </small>
+      </FormField>
       <div class="spacer"></div>
     </div>
   </div>
@@ -118,9 +88,9 @@ import { ref, useId, watch } from 'vue'
 import { EventFormErrors } from '@/types/eventConfig'
 import { ISelectItemType } from '@featherds/select'
 import Checkbox from 'primevue/checkbox'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'
 
 defineEmits<{ (e: 'setAlarmData', key: string, value: any): void }>()
@@ -171,18 +141,6 @@ watch(() => props, (newVal) => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .field-error {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-red-500);
-  }
-
-  .field-hint {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-text-muted-color);
   }
 }
 </style>

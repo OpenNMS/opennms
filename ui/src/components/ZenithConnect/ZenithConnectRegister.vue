@@ -39,28 +39,37 @@
           </PPanel>
 
           <div class="form-fields">
-            <FloatLabel class="input">
+            <FormField
+              class="input"
+              label="Zenith Connect URL"
+              for="zc-url"
+            >
               <PInputText
                 id="zc-url"
                 v-model="zenithUrl"
               />
-              <label for="zc-url">Zenith Connect URL</label>
-            </FloatLabel>
-            <FloatLabel class="input">
+            </FormField>
+            <FormField
+              class="input"
+              label="OpenNMS System ID"
+              for="zc-system-id"
+            >
               <PInputText
                 id="zc-system-id"
                 :modelValue="systemId"
                 disabled
               />
-              <label for="zc-system-id">OpenNMS System ID</label>
-            </FloatLabel>
-            <FloatLabel class="input">
+            </FormField>
+            <FormField
+              class="input"
+              label="OpenNMS System Display Name"
+              for="zc-display-name"
+            >
               <PInputText
                 id="zc-display-name"
                 v-model="displayName"
               />
-              <label for="zc-display-name">OpenNMS System Display Name</label>
-            </FloatLabel>
+            </FormField>
             <div class="btns">
               <PButton
                 label="Register with Zenith"
@@ -87,7 +96,7 @@ import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
 import InputText from 'primevue/inputtext'
-import FloatLabel from 'primevue/floatlabel'
+import FormField from '@/components/Common/FormField.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
@@ -228,10 +237,6 @@ onMounted(async () => {
 
       .input {
         width: 50%;
-
-        :deep(.p-inputtext) {
-          width: 100%;
-        }
       }
 
       .spacer {

@@ -3,21 +3,21 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FloatLabel variant="on">
+          <FormField>
             <IconField>
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
               <InputText
                 :id="searchId"
                 :modelValue="store.sourcesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
                 data-test="search-input"
-                fluid
+                placeholder="Search by Source, Vendor or Description"
+                :aria-label="'Search by Source, Vendor or Description'"
               />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
             </IconField>
-            <label :for="searchId">Search by Source, Vendor or Description</label>
-          </FloatLabel>
+          </FormField>
         </div>
       </div>
       <div class="section-right">
@@ -171,7 +171,6 @@ import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import FloatLabel from 'primevue/floatlabel'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -189,6 +188,7 @@ import {
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 import SnmpDataCollectionChangeStatusDialog from './Dialog/SnmpDataCollectionChangeStatusDialog.vue'

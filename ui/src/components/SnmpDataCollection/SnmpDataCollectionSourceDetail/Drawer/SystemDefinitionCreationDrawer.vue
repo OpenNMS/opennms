@@ -21,7 +21,11 @@
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">General Details</div>
-        <IftaLabel>
+        <FormField
+          label="Name"
+          :for="nameId"
+          :error="errors.name"
+        >
           <InputText
             :id="nameId"
             v-model.trim="name"
@@ -29,12 +33,7 @@
             data-test="system-def-name-input"
             fluid
           />
-          <label :for="nameId">Name</label>
-        </IftaLabel>
-        <small
-          v-if="errors.name"
-          class="field-error"
-        >{{ errors.name }}</small>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="radio-group">
@@ -63,7 +62,11 @@
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <IftaLabel>
+        <FormField
+          label="OID Value"
+          :for="oidValueId"
+          :error="errors.oidValue"
+        >
           <InputText
             :id="oidValueId"
             v-model.trim="oidValue"
@@ -71,31 +74,29 @@
             data-test="system-def-oid-value-input"
             fluid
           />
-          <label :for="oidValueId">OID Value</label>
-        </IftaLabel>
-        <small
-          v-if="errors.oidValue"
-          class="field-error"
-        >{{ errors.oidValue }}</small>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">MIB Groups</div>
-        <AutoComplete
-          class="my-autocomplete"
-          v-model="mibGroupNames"
-          multiple
-          :suggestions="results"
-          optionLabel="_text"
-          @complete="search"
-          data-test="system-def-mib-groups-input"
-          :invalid="!!errors.mibGroupNames"
-          dropdown
-          fluid
-        />
-        <small
-          v-if="errors.mibGroupNames"
-          class="field-error"
-        >{{ errors.mibGroupNames }}</small>
+        <FormField
+          label="MIB Groups"
+          :for="mibGroupId"
+          :error="errors.mibGroupNames"
+        >
+          <AutoComplete
+            :inputId="mibGroupId"
+            class="my-autocomplete"
+            v-model="mibGroupNames"
+            multiple
+            :suggestions="results"
+            optionLabel="_text"
+            @complete="search"
+            data-test="system-def-mib-groups-input"
+            :invalid="!!errors.mibGroupNames"
+            dropdown
+            fluid
+          />
+        </FormField>
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
@@ -129,15 +130,16 @@ import { IAutocompleteItemType } from '@featherds/autocomplete'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
 import RadioButton from 'primevue/radiobutton'
 import ToggleSwitch from 'primevue/toggleswitch'
+import FormField from '@/components/Common/FormField.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
 const oidValueId = useId()
+const mibGroupId = useId()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
 const status = ref<boolean>(DEFAULT_STATUS)
 const oidValue = ref<string>('')

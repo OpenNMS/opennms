@@ -9,7 +9,12 @@
           <div class="onms-col-6">
             <div class="onms-row">
               <div class="onms-col-6">
-                <IftaLabel>
+                <FormField
+                  label="First or Specific IP Address"
+                  :for="`${uid}-first-ip`"
+                  :error="errors.firstIpAddress"
+                  hint="First IP Address in range or specific IP"
+                >
                   <PInputText
                     :id="`${uid}-first-ip`"
                     class="ip-input"
@@ -17,19 +22,15 @@
                     :invalid="!!errors.firstIpAddress"
                     v-model.trim="firstIpAddress"
                   />
-                  <label :for="`${uid}-first-ip`">First or Specific IP Address</label>
-                </IftaLabel>
-                <small
-                  v-if="errors.firstIpAddress"
-                  class="field-error"
-                >{{ errors.firstIpAddress }}</small>
-                <small
-                  v-else
-                  class="field-hint"
-                >First IP Address in range or specific IP</small>
+                </FormField>
               </div>
               <div class="onms-col-6">
-                <IftaLabel>
+                <FormField
+                  label="Last IP Address (for IP Range)"
+                  :for="`${uid}-last-ip`"
+                  :error="errors.lastIpAddress"
+                  hint="Last IP Address in range (leave blank if not a range)"
+                >
                   <PInputText
                     :id="`${uid}-last-ip`"
                     class="ip-input"
@@ -37,23 +38,19 @@
                     :invalid="!!errors.lastIpAddress"
                     v-model.trim="lastIpAddress"
                   />
-                  <label :for="`${uid}-last-ip`">Last IP Address (for IP Range)</label>
-                </IftaLabel>
-                <small
-                  v-if="errors.lastIpAddress"
-                  class="field-error"
-                >{{ errors.lastIpAddress }}</small>
-                <small
-                  v-else
-                  class="field-hint"
-                >Last IP Address in range (leave blank if not a range)</small>
+                </FormField>
               </div>
             </div>
           </div>
           <div class="onms-col-6">
             <div class="onms-row">
               <div class="onms-col-6">
-                <IftaLabel>
+                <FormField
+                  label="IPLIKE Expression"
+                  :for="`${uid}-ipmatch`"
+                  :error="errors.ipMatch"
+                  hint="IPLIKE Expression (cannot be used with First/Last IP)"
+                >
                   <PInputText
                     :id="`${uid}-ipmatch`"
                     class="ip-input"
@@ -61,16 +58,7 @@
                     :invalid="!!errors.ipMatch"
                     v-model.trim="ipMatchValue"
                   />
-                  <label :for="`${uid}-ipmatch`">IPLIKE Expression</label>
-                </IftaLabel>
-                <small
-                  v-if="errors.ipMatch"
-                  class="field-error"
-                >{{ errors.ipMatch }}</small>
-                <small
-                  v-else
-                  class="field-hint"
-                >IPLIKE Expression (cannot be used with First/Last IP)</small>
+                </FormField>
               </div>
               <div class="onms-col-6 add-range-col">
                 <PButton
@@ -93,7 +81,10 @@
 
     <div class="onms-row">
       <div class="onms-col-6" v-if="!props.suppressMonitoringLocation">
-        <IftaLabel>
+        <FormField
+          label="Monitoring Location"
+          for="snmp-monitoring-location-select"
+        >
           <PSelect
             inputId="snmp-monitoring-location-select"
             class="dropdown-select"
@@ -103,12 +94,14 @@
             :modelValue="selectedMonitoringLocation"
             @update:modelValue="(val: any) => selectedMonitoringLocation = val"
           />
-          <label for="snmp-monitoring-location-select">Monitoring Location</label>
-        </IftaLabel>
+        </FormField>
       </div>
       <div :class="!props.suppressMonitoringLocation ? 'onms-col-6' : 'onms-col-12'">
         <div class="dropdown">
-          <IftaLabel>
+          <FormField
+            label="Version"
+            for="snmp-definition-version"
+          >
             <PSelect
               inputId="snmp-definition-version"
               class="dropdown-select"
@@ -118,8 +111,7 @@
               :modelValue="snmpVersion"
               @update:modelValue="onSnmpVersionUpdated"
             />
-            <label for="snmp-definition-version">Version</label>
-          </IftaLabel>
+          </FormField>
         </div>
       </div>
     </div>
@@ -254,7 +246,6 @@ import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Checkbox from 'primevue/checkbox'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { ISelectItemType } from '@featherds/select'
@@ -263,6 +254,7 @@ import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/sn
 import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo, SnmpSecurityLevel } from '@/types/snmpConfig'
 import { validateDefinition, SecurityLevelSelectionOptions, SnmpAuthProtocols, SnmpPrivacyProtocols } from '@/lib/snmpValidator'
 import { withDefaultHints } from '@/lib/snmpConfigHelpers'
+import FormField from '@/components/Common/FormField.vue'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
@@ -644,12 +636,6 @@ onMounted(() => {
     width: 50%;
   }
 
-  // IftaLabel-wrapped controls fill their grid column
-  :deep(.p-iftalabel) {
-    display: block;
-    width: 100%;
-  }
-
   // inputs/selects should fill their grid column
   .ip-input,
   .dropdown-select {
@@ -673,12 +659,6 @@ onMounted(() => {
       min-width: 8rem;
       margin-top: 0.5rem;
     }
-  }
-
-  .field-error {
-    color: var(--p-red-500);
-    font-size: 0.875rem;
-    margin-top: 0.25em;
   }
 
   .onms-row {

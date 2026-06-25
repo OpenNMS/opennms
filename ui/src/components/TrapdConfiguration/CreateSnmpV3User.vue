@@ -23,38 +23,32 @@
     <div class="content">
       <div class="username-version-row">
         <div class="left">
-          <div class="field">
-            <IftaLabel>
-              <PInputText
-                id="security-name"
-                data-test="security-name-input"
-                v-model="securityName"
-                :invalid="!!error.securityName"
-              />
-              <label for="security-name">Security Name</label>
-            </IftaLabel>
-            <small
-              v-if="error.securityName"
-              class="field-error"
-            >{{ error.securityName }}</small>
-          </div>
+          <FormField
+            label="Security Name"
+            for="security-name"
+            :error="error.securityName"
+          >
+            <PInputText
+              id="security-name"
+              data-test="security-name-input"
+              v-model="securityName"
+              :invalid="!!error.securityName"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <div class="field">
-            <IftaLabel>
-              <PInputText
-                id="engine-id"
-                data-test="engine-id-input"
-                v-model="engineId"
-                :invalid="!!error.engineId"
-              />
-              <label for="engine-id">Engine ID</label>
-            </IftaLabel>
-            <small
-              v-if="error.engineId"
-              class="field-error"
-            >{{ error.engineId }}</small>
-          </div>
+          <FormField
+            label="Engine ID"
+            for="engine-id"
+            :error="error.engineId"
+          >
+            <PInputText
+              id="engine-id"
+              data-test="engine-id-input"
+              v-model="engineId"
+              :invalid="!!error.engineId"
+            />
+          </FormField>
         </div>
       </div>
       <div class="row">
@@ -62,24 +56,21 @@
       </div>
       <div class="properties-row">
         <div class="left">
-          <div class="field">
-            <IftaLabel>
-              <PSelect
-                inputId="security-level"
-                v-model="securityLevel"
-                @update:modelValue="onSecurityLevelChange"
-                showClear
-                optionLabel="_text"
-                :options="SECURITY_LEVEL_OPTIONS"
-                :invalid="!!error.securityLevel"
-              />
-              <label for="security-level">Security Level</label>
-            </IftaLabel>
-            <small
-              v-if="error.securityLevel"
-              class="field-error"
-            >{{ error.securityLevel }}</small>
-          </div>
+          <FormField
+            label="Security Level"
+            for="security-level"
+            :error="error.securityLevel"
+          >
+            <PSelect
+              inputId="security-level"
+              v-model="securityLevel"
+              @update:modelValue="onSecurityLevelChange"
+              showClear
+              optionLabel="_text"
+              :options="SECURITY_LEVEL_OPTIONS"
+              :invalid="!!error.securityLevel"
+            />
+          </FormField>
         </div>
         <div class="right"></div>
       </div>
@@ -88,41 +79,35 @@
         v-if="authProtocolVisible"
       >
         <div class="left">
-          <div class="field">
-            <IftaLabel>
-              <PSelect
-                inputId="auth-protocol"
-                v-model="authProtocol"
-                showClear
-                optionLabel="_text"
-                :options="AUTH_PROTOCOL_OPTIONS"
-                :invalid="!!error.authProtocol"
-              />
-              <label for="auth-protocol">Auth Protocol</label>
-            </IftaLabel>
-            <small
-              v-if="error.authProtocol"
-              class="field-error"
-            >{{ error.authProtocol }}</small>
-          </div>
+          <FormField
+            label="Auth Protocol"
+            for="auth-protocol"
+            :error="error.authProtocol"
+          >
+            <PSelect
+              inputId="auth-protocol"
+              v-model="authProtocol"
+              showClear
+              optionLabel="_text"
+              :options="AUTH_PROTOCOL_OPTIONS"
+              :invalid="!!error.authProtocol"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <div class="field">
-            <IftaLabel>
-              <PInputText
-                id="auth-passphrase"
-                type="password"
-                data-test="auth-passphrase-input"
-                v-model="authPassphrase"
-                :invalid="!!error.authPassphrase"
-              />
-              <label for="auth-passphrase">Auth Passphrase</label>
-            </IftaLabel>
-            <small
-              v-if="error.authPassphrase"
-              class="field-error"
-            >{{ error.authPassphrase }}</small>
-          </div>
+          <FormField
+            label="Auth Passphrase"
+            for="auth-passphrase"
+            :error="error.authPassphrase"
+          >
+            <PInputText
+              id="auth-passphrase"
+              type="password"
+              data-test="auth-passphrase-input"
+              v-model="authPassphrase"
+              :invalid="!!error.authPassphrase"
+            />
+          </FormField>
           <ScvInputIcon
             data-test="auth-passphrase-save-button"
             @click="store.openCredentialDrawer('auth')"
@@ -134,41 +119,35 @@
         v-if="privacyProtocolVisible"
       >
         <div class="left">
-          <div class="field">
-            <IftaLabel>
-              <PSelect
-                inputId="privacy-protocol"
-                v-model="privacyProtocol"
-                showClear
-                optionLabel="_text"
-                :options="PRIVACY_PROTOCOL_OPTIONS"
-                :invalid="!!error.privacyProtocol"
-              />
-              <label for="privacy-protocol">Privacy Protocol</label>
-            </IftaLabel>
-            <small
-              v-if="error.privacyProtocol"
-              class="field-error"
-            >{{ error.privacyProtocol }}</small>
-          </div>
+          <FormField
+            label="Privacy Protocol"
+            for="privacy-protocol"
+            :error="error.privacyProtocol"
+          >
+            <PSelect
+              inputId="privacy-protocol"
+              v-model="privacyProtocol"
+              showClear
+              optionLabel="_text"
+              :options="PRIVACY_PROTOCOL_OPTIONS"
+              :invalid="!!error.privacyProtocol"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <div class="field">
-            <IftaLabel>
-              <PInputText
-                id="privacy-passphrase"
-                type="password"
-                data-test="privacy-passphrase-input"
-                v-model="privacyPassphrase"
-                :invalid="!!error.privacyPassphrase"
-              />
-              <label for="privacy-passphrase">Privacy Passphrase</label>
-            </IftaLabel>
-            <small
-              v-if="error.privacyPassphrase"
-              class="field-error"
-            >{{ error.privacyPassphrase }}</small>
-          </div>
+          <FormField
+            label="Privacy Passphrase"
+            for="privacy-passphrase"
+            :error="error.privacyPassphrase"
+          >
+            <PInputText
+              id="privacy-passphrase"
+              type="password"
+              data-test="privacy-passphrase-input"
+              v-model="privacyPassphrase"
+              :invalid="!!error.privacyPassphrase"
+            />
+          </FormField>
           <ScvInputIcon
             data-test="privacy-passphrase-save-button"
             @click="store.openCredentialDrawer('privacy')"
@@ -211,7 +190,7 @@ import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
 import Button from 'primevue/button'
-import IftaLabel from 'primevue/iftalabel'
+import FormField from '../Common/FormField.vue'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { FeatherIcon } from '@featherds/icon'
@@ -485,23 +464,6 @@ onMounted(() => {
     }
   }
 
-  // input field with optional error helper text
-  .field {
-    display: flex;
-    flex-direction: column;
-
-    :deep(.p-inputtext),
-    :deep(.p-select) {
-      width: 100%;
-    }
-
-    .field-error {
-      color: var(--p-red-500);
-      font-size: 0.8em;
-      margin-top: 0.25em;
-    }
-  }
-
   .content {
     .username-version-row {
       display: flex;
@@ -538,7 +500,7 @@ onMounted(() => {
         align-items: center;
         gap: 10px;
 
-        .field {
+        .form-field {
           flex: 1;
         }
       }

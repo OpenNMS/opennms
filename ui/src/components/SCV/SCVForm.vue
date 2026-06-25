@@ -1,58 +1,56 @@
 <template>
   <div class="form-container" id="scv">
     <p class="title">{{ isEditing ? 'Update' : 'Add' }} Credentials</p>
-    <div class="alias-input">
-      <FloatLabel data-test="alias-input">
-        <PInputText
-          id="scv-alias"
-          :disabled="isEditing"
-          :modelValue="scvStore.credentials.alias"
-          @update:modelValue="updateAlias"
-          :invalid="!!aliasError"
-          :aria-describedby="aliasError ? 'scv-alias-error' : undefined"
-        />
-        <label for="scv-alias">Alias</label>
-      </FloatLabel>
-      <small
-        v-if="aliasError"
-        id="scv-alias-error"
-        class="field-error"
-        role="alert"
-      >{{ aliasError }}</small>
-    </div>
+    <FormField
+      class="alias-input"
+      data-test="alias-input"
+      label="Alias"
+      for="scv-alias"
+      :error="aliasError"
+      v-slot="{ errorId, invalid }"
+    >
+      <PInputText
+        id="scv-alias"
+        :disabled="isEditing"
+        :modelValue="scvStore.credentials.alias"
+        @update:modelValue="updateAlias"
+        :invalid="invalid"
+        :aria-describedby="errorId"
+      />
+    </FormField>
 
     <form autocomplete="off" class="row">
-      <div class="input">
-        <FloatLabel data-test="username-input">
-          <PInputText
-            id="scv-username"
-            autocomplete="new-username"
-            :modelValue="scvStore.credentials.username"
-            @update:modelValue="updateUsername"
-          />
-          <label for="scv-username">Username</label>
-        </FloatLabel>
-      </div>
+      <FormField
+        class="input"
+        data-test="username-input"
+        label="Username"
+        for="scv-username"
+      >
+        <PInputText
+          id="scv-username"
+          autocomplete="new-username"
+          :modelValue="scvStore.credentials.username"
+          @update:modelValue="updateUsername"
+        />
+      </FormField>
 
-      <div class="input">
-        <FloatLabel data-test="password-input">
-          <PInputText
-            id="scv-password"
-            autocomplete="new-password"
-            :modelValue="scvStore.credentials.password"
-            @update:modelValue="updatePassword"
-            :invalid="!!passwordError"
-            :aria-describedby="passwordError ? 'scv-password-error' : undefined"
-          />
-          <label for="scv-password">Password</label>
-        </FloatLabel>
-        <small
-          v-if="passwordError"
-          id="scv-password-error"
-          class="field-error"
-          role="alert"
-        >{{ passwordError }}</small>
-      </div>
+      <FormField
+        class="input"
+        data-test="password-input"
+        label="Password"
+        for="scv-password"
+        :error="passwordError"
+        v-slot="{ errorId, invalid }"
+      >
+        <PInputText
+          id="scv-password"
+          autocomplete="new-password"
+          :modelValue="scvStore.credentials.password"
+          @update:modelValue="updatePassword"
+          :invalid="invalid"
+          :aria-describedby="errorId"
+        />
+      </FormField>
     </form>
 
     <div class="large-spacer"></div>
@@ -100,7 +98,6 @@
 import { computed, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import FloatLabel from 'primevue/floatlabel'
 import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
@@ -108,6 +105,7 @@ import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
+import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
 
 const PInputText = InputText
@@ -197,28 +195,17 @@ const addAttribute = () => scvStore.addAttribute()
     display: flex;
     flex-direction: row;
     gap: 10px;
-    // room above the inputs for the floating labels
+    // vertical spacing above the field row
     margin-top: 2rem;
   }
 
   .alias-input {
     width: calc(50% - 5px);
-    // room above the input for the floating label
+    // vertical spacing above the field
     margin-top: 2rem;
   }
   .input {
     width: 50%;
-  }
-
-  .alias-input,
-  .input {
-    :deep(.p-inputtext) {
-      width: 100%;
-    }
-  }
-
-  .field-error {
-    color: var(--p-error-color);
   }
 
   .add-btn {

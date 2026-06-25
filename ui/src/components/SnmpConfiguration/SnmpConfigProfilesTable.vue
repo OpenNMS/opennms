@@ -3,10 +3,12 @@
     <div class="header">
       <div class="action-container">
         <div class="search-container">
-          <FloatLabel class="search-field" variant="on">
+          <FormField class="search-field">
             <IconField>
               <PInputText
                 id="snmp-profiles-search"
+                placeholder="Search label or filter"
+                aria-label="Search label or filter"
                 v-model="searchTerm"
                 @update:modelValue="(val) => onSearchChange(val as string)"
               />
@@ -14,8 +16,7 @@
                 <FeatherIcon :icon="IconSearch" />
               </InputIcon>
             </IconField>
-            <label for="snmp-profiles-search">Search label or filter</label>
-          </FloatLabel>
+          </FormField>
         </div>
         <div class="refresh">
           <PButton
@@ -102,7 +103,6 @@ import { debounce } from 'lodash'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import FloatLabel from 'primevue/floatlabel'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -113,6 +113,7 @@ import IconEdit from '@featherds/icon/action/Edit'
 import IconSearch from '@featherds/icon/action/Search'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
 
 import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'

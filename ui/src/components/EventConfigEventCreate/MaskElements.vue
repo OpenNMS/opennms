@@ -18,7 +18,10 @@
         class="form-row"
       >
         <div class="dropdown">
-          <IftaLabel>
+          <FormField
+            :for="`mask-element-name-${index}`"
+            :error="errors.maskElements?.[index]?.name"
+          >
             <Select
               :inputId="`mask-element-name-${index}`"
               :options="availableMaskOptions(index)"
@@ -31,19 +34,17 @@
               @update:modelValue="$emit('setMaskElements', 'setName', $event, index)"
               data-test="mask-element-name"
               fluid
+              placeholder="Name"
+              :aria-label="'Name'"
             />
-            <label :for="`mask-element-name-${index}`">Element Name</label>
-          </IftaLabel>
-          <small
-            v-if="errors.maskElements?.[index]?.name"
-            class="field-error"
-          >
-            {{ errors.maskElements?.[index]?.name }}
-          </small>
+          </FormField>
         </div>
         <div class="input-field">
           <div class="value-input">
-            <IftaLabel>
+            <FormField
+              :for="`mask-element-value-${index}`"
+              :error="errors.maskElements?.[index]?.value"
+            >
               <InputText
                 :id="`mask-element-value-${index}`"
                 :modelValue="row.value"
@@ -51,15 +52,10 @@
                 @update:model-value="$emit('setMaskElements', 'setValue', $event, index)"
                 data-test="mask-element-value"
                 fluid
+                placeholder="Value"
+                :aria-label="'Value'"
               />
-              <label :for="`mask-element-value-${index}`">Element Value</label>
-            </IftaLabel>
-            <small
-              v-if="errors.maskElements?.[index]?.value"
-              class="field-error"
-            >
-              {{ errors.maskElements?.[index]?.value }}
-            </small>
+            </FormField>
           </div>
           <Button
             outlined
@@ -84,9 +80,9 @@ import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import { ISelectItemType } from '@featherds/select'
 import Button from 'primevue/button'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { MaskElementNameOptions } from './constants'
 
 defineEmits<{
@@ -148,12 +144,6 @@ watch(() => props, () => {
         flex: 1;
       }
     }
-  }
-
-  .field-error {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-red-500);
   }
 }
 </style>

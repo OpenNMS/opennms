@@ -11,40 +11,30 @@
       v-if="!successMessage"
       class="modal-body-form"
     >
-      <div class="field">
-        <IftaLabel>
-          <InputText
-            :id="nameInputId"
-            v-model="configName"
-            :invalid="!!error?.name"
-            fluid
-          />
-          <label :for="nameInputId">Event Configuration Source Name</label>
-        </IftaLabel>
-        <small
-          v-if="error?.name"
-          class="field-error"
-        >
-          {{ error.name }}
-        </small>
-      </div>
-      <div class="field">
-        <IftaLabel>
-          <InputText
-            :id="vendorInputId"
-            v-model="vendor"
-            :invalid="!!error?.vendor"
-            fluid
-          />
-          <label :for="vendorInputId">Vendor</label>
-        </IftaLabel>
-        <small
-          v-if="error?.vendor"
-          class="field-error"
-        >
-          {{ error.vendor }}
-        </small>
-      </div>
+      <FormField
+        label="Event Configuration Source Name"
+        :for="nameInputId"
+        :error="error?.name"
+      >
+        <InputText
+          :id="nameInputId"
+          v-model="configName"
+          :invalid="!!error?.name"
+          fluid
+        />
+      </FormField>
+      <FormField
+        label="Vendor"
+        :for="vendorInputId"
+        :error="error?.vendor"
+      >
+        <InputText
+          :id="vendorInputId"
+          v-model="vendor"
+          :invalid="!!error?.vendor"
+          fluid
+        />
+      </FormField>
       <div>
         <p>
           Please note that this source will be created with 0 event configurations. You can add event configurations
@@ -88,8 +78,8 @@ import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 
 const router = useRouter()
 const configName = ref('')
@@ -192,16 +182,5 @@ const visitCreatedEventConfigSource = () => {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-
-  .field {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500);
 }
 </style>

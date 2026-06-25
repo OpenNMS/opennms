@@ -25,7 +25,10 @@
       >
         <div class="parm-field">
           <div class="input-field">
-            <IftaLabel>
+            <FormField
+              :for="`varbind-parmid-${index}`"
+              :error="errors.varbindsDecode?.[index]?.parmId"
+            >
               <InputText
                 :id="`varbind-parmid-${index}`"
                 :modelValue="row.parmId"
@@ -33,15 +36,10 @@
                 data-test="varbind-index-input"
                 :invalid="!!errors.varbindsDecode?.[index]?.parmId"
                 fluid
+                placeholder="Parm ID"
+                :aria-label="'Parm ID'"
               />
-              <label :for="`varbind-parmid-${index}`">Parm ID</label>
-            </IftaLabel>
-            <small
-              v-if="errors.varbindsDecode?.[index]?.parmId"
-              class="field-error"
-            >
-              {{ errors.varbindsDecode?.[index]?.parmId }}
-            </small>
+            </FormField>
           </div>
           <div class="action-btns">
             <Button
@@ -69,7 +67,10 @@
           class="decode-field"
         >
           <div class="input-field">
-            <IftaLabel>
+            <FormField
+              :for="`decode-value-${index}-${decodeIndex}`"
+              :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
+            >
               <InputText
                 :id="`decode-value-${index}-${decodeIndex}`"
                 type="number"
@@ -79,35 +80,28 @@
                 data-test="varbind-value-input"
                 :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
                 fluid
+                placeholder="Varbind Value"
+                :aria-label="'Varbind Value'"
               />
-              <label :for="`decode-value-${index}-${decodeIndex}`">Varbind Value</label>
-            </IftaLabel>
-            <small
-              v-if="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
-              class="field-error"
-            >
-              {{ errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value }}
-            </small>
+            </FormField>
           </div>
           <div class="value-field">
             <div class="input-field">
-              <IftaLabel>
+              <FormField
+                :for="`decode-key-${index}-${decodeIndex}`"
+                :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
+              >
                 <InputText
                   :id="`decode-key-${index}-${decodeIndex}`"
                   :modelValue="decodeRow.key"
                   @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
-                  data-test="varbind-value-input"
+                  data-test="decode-key-input"
                   :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
                   fluid
+                  placeholder="Decoded String"
+                  :aria-label="'Decoded String'"
                 />
-                <label :for="`decode-key-${index}-${decodeIndex}`">Decoded String</label>
-              </IftaLabel>
-              <small
-                v-if="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
-                class="field-error"
-              >
-                {{ errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key }}
-              </small>
+              </FormField>
             </div>
             <Button
               class="remove"
@@ -133,8 +127,8 @@ import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import Button from 'primevue/button'
-import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
@@ -213,10 +207,5 @@ watch(varbindsDecode, (newVarbindsDecode) => {
     }
   }
 
-  .field-error {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--p-red-500);
-  }
 }
 </style>

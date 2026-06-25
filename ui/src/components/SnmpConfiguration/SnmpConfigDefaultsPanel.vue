@@ -35,29 +35,41 @@
         </div>
         <div class="onms-col-5">
           <!-- Select dropdown for version, securityLevel, authProtocol, privacyProtocol -->
-          <PSelect
+          <FormField
             v-if="param.isSelect"
-            class="snmp-config-defaults-select"
-            :data-test="`snmp-config-default-${param.key}`"
-            optionLabel="_text"
-            showClear
-            :options="param.selectOptions"
-            :modelValue="selectModel[param.key]"
-            :invalid="!!(formErrors as any)[param.key]"
-            @update:modelValue="(val: any) => handleSelectUpdate(param.key, val)"
-          />
+            :error="(formErrors as any)[param.key]"
+            :hint="param.hint"
+          >
+            <PSelect
+              class="snmp-config-defaults-select"
+              :data-test="`snmp-config-default-${param.key}`"
+              :aria-label="param.label"
+              optionLabel="_text"
+              showClear
+              :options="param.selectOptions"
+              :modelValue="selectModel[param.key]"
+              :invalid="!!(formErrors as any)[param.key]"
+              @update:modelValue="(val: any) => handleSelectUpdate(param.key, val)"
+            />
+          </FormField>
 
           <!-- Input with SCV button -->
           <div v-else-if="param.scvEnabled" class="onms-row scv-input-row">
             <div class="onms-col-10">
-              <PInputText
-                class="snmp-config-defaults-input"
-                :data-test="`snmp-config-default-${param.key}`"
-                :type="param.inputType"
-                :invalid="!!(formErrors as any)[param.key]"
-                :modelValue="(formConfig[param.key] as string)"
-                @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
-              />
+              <FormField
+                :error="(formErrors as any)[param.key]"
+                :hint="param.hint"
+              >
+                <PInputText
+                  class="snmp-config-defaults-input"
+                  :data-test="`snmp-config-default-${param.key}`"
+                  :aria-label="param.label"
+                  :type="param.inputType"
+                  :invalid="!!(formErrors as any)[param.key]"
+                  :modelValue="(formConfig[param.key] as string)"
+                  @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+                />
+              </FormField>
             </div>
             <div class="onms-col-2">
               <div class="scv-icon-container">
@@ -67,35 +79,37 @@
           </div>
 
           <!-- Regular numeric input -->
-          <PInputNumber
+          <FormField
             v-else-if="param.inputType === 'number'"
-            class="snmp-config-defaults-input"
-            :inputProps="{ 'data-test': `snmp-config-default-${param.key}` }"
-            :useGrouping="false"
-            :invalid="!!(formErrors as any)[param.key]"
-            :modelValue="(formConfig[param.key] as number)"
-            @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
-          />
+            :error="(formErrors as any)[param.key]"
+            :hint="param.hint"
+          >
+            <PInputNumber
+              class="snmp-config-defaults-input"
+              :inputProps="{ 'data-test': `snmp-config-default-${param.key}`, 'aria-label': param.label }"
+              :useGrouping="false"
+              :invalid="!!(formErrors as any)[param.key]"
+              :modelValue="(formConfig[param.key] as number)"
+              @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+            />
+          </FormField>
 
           <!-- Regular text input -->
-          <PInputText
+          <FormField
             v-else
-            class="snmp-config-defaults-input"
-            :data-test="`snmp-config-default-${param.key}`"
-            :type="param.inputType"
-            :invalid="!!(formErrors as any)[param.key]"
-            :modelValue="(formConfig[param.key] as string)"
-            @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
-          />
-
-          <small
-            v-if="(formErrors as any)[param.key]"
-            class="field-error"
-          >{{ (formErrors as any)[param.key] }}</small>
-          <small
-            v-else-if="param.hint"
-            class="field-hint"
-          >{{ param.hint }}</small>
+            :error="(formErrors as any)[param.key]"
+            :hint="param.hint"
+          >
+            <PInputText
+              class="snmp-config-defaults-input"
+              :data-test="`snmp-config-default-${param.key}`"
+              :aria-label="param.label"
+              :type="param.inputType"
+              :invalid="!!(formErrors as any)[param.key]"
+              :modelValue="(formConfig[param.key] as string)"
+              @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+            />
+          </FormField>
         </div>
       </div>
 
@@ -151,6 +165,7 @@ import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
 import { ISelectItemType } from '@featherds/select'
 
+import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '@/components/SCV/ScvSearchDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -562,12 +577,6 @@ onMounted(() => {
     :deep(.p-inputtext) {
       width: 100%;
     }
-  }
-
-  .field-error {
-    color: var(--p-red-500);
-    font-size: 0.875rem;
-    margin-top: 0.25em;
   }
 
   .onms-row {

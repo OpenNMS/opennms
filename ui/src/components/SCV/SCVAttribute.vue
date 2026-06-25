@@ -1,34 +1,34 @@
 <template>
   <div class="attribute-container" id="scv-attribute">
-    <div class="input">
-      <FloatLabel data-test="attr-key">
-        <PInputText
-          ref="keyRef"
-          :id="keyId"
-          :modelValue="attributeKey"
-          @update:modelValue="updateAttributeKey"
-          :invalid="!!keyError"
-          :aria-describedby="keyError ? keyErrorId : undefined"
-        />
-        <label :for="keyId">key</label>
-      </FloatLabel>
-      <small
-        v-if="keyError"
-        :id="keyErrorId"
-        class="field-error"
-        role="alert"
-      >{{ keyError }}</small>
-    </div>
-    <div class="input">
-      <FloatLabel data-test="attr-value">
-        <PInputText
-          :id="valueId"
-          :modelValue="attributeValue"
-          @update:modelValue="updateAttributeValue"
-        />
-        <label :for="valueId">value</label>
-      </FloatLabel>
-    </div>
+    <FormField
+      class="input"
+      data-test="attr-key"
+      label="key"
+      :for="keyId"
+      :error="keyError"
+      v-slot="{ errorId, invalid }"
+    >
+      <PInputText
+        ref="keyRef"
+        :id="keyId"
+        :modelValue="attributeKey"
+        @update:modelValue="updateAttributeKey"
+        :invalid="invalid"
+        :aria-describedby="errorId"
+      />
+    </FormField>
+    <FormField
+      class="input"
+      data-test="attr-value"
+      label="value"
+      :for="valueId"
+    >
+      <PInputText
+        :id="valueId"
+        :modelValue="attributeValue"
+        @update:modelValue="updateAttributeValue"
+      />
+    </FormField>
 
     <PButton
       text
@@ -45,10 +45,10 @@
 import { computed, onMounted, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import FloatLabel from 'primevue/floatlabel'
 import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Remove'
+import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
@@ -81,7 +81,6 @@ const credentials = computed<SCVCredentials>(() => scvStore.credentials)
 // Unique ids per attribute row so labels, inputs and error messages stay
 // associated when multiple SCVAttribute rows render together.
 const keyId = computed(() => `scv-attr-key-${props.attributeIndex}`)
-const keyErrorId = computed(() => `scv-attr-key-error-${props.attributeIndex}`)
 const valueId = computed(() => `scv-attr-value-${props.attributeIndex}`)
 
 const isDuplicateKey = (key: string) => {
@@ -121,19 +120,11 @@ onMounted(() => (keyRef.value?.$el as HTMLInputElement)?.focus())
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  // room above the inputs for the floating labels
+  // vertical spacing above the attribute row
   margin-top: 2rem;
 
   .input {
     width: 50%;
-
-    :deep(.p-inputtext) {
-      width: 100%;
-    }
-  }
-
-  .field-error {
-    color: var(--p-error-color);
   }
 }
 </style>

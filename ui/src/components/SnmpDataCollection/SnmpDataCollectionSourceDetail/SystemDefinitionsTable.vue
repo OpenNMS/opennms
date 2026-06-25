@@ -3,21 +3,21 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FloatLabel variant="on">
+          <FormField>
             <IconField>
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
               <InputText
                 :id="searchId"
                 :modelValue="store.systemDefsSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
                 data-test="search-input"
-                fluid
+                placeholder="Search by Name"
+                :aria-label="'Search by Name'"
               />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
             </IconField>
-            <label :for="searchId">Search by Name</label>
-          </FloatLabel>
+          </FormField>
         </div>
         <div class="refresh">
           <Button
@@ -175,7 +175,6 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import FloatLabel from 'primevue/floatlabel'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -183,6 +182,7 @@ import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import Tag from 'primevue/tag'
 import EmptyList from '../../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'

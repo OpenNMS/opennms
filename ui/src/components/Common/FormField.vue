@@ -1,6 +1,7 @@
 <template>
   <div class="form-field">
     <label
+      v-if="label"
       :for="controlId"
       class="form-field__label"
     >
@@ -10,10 +11,15 @@
         aria-hidden="true"
       >*</span>
     </label>
-    <slot />
+    <slot
+      :errorId="errorId"
+      :invalid="invalid"
+    />
     <small
       v-if="error"
+      :id="errorId"
       class="field-error"
+      role="alert"
     >{{ error }}</small>
     <small
       v-else-if="hint"
@@ -26,12 +32,13 @@
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  label: string
+  label?: string
   for?: string
   required?: boolean
   error?: string
   hint?: string
 }>(), {
+  label: undefined,
   for: undefined,
   required: false,
   error: undefined,
@@ -40,6 +47,10 @@ const props = withDefaults(defineProps<{
 
 // `for` is a reserved word; alias it for use in the template.
 const controlId = computed(() => props.for)
+const invalid = computed(() => !!props.error)
+// Programmatic input→error association for screen readers. Defined only when
+// there is both an error to point at and a control id to anchor it to.
+const errorId = computed(() => (props.error && props.for ? `${props.for}-error` : undefined))
 </script>
 
 <style lang="scss" scoped>
@@ -60,6 +71,12 @@ const controlId = computed(() => props.for)
   :deep(.p-inputnumber),
   :deep(.p-select) {
     width: 100%;
+  }
+
+  // The global .field-hint keeps an IftaLabel-era left indent; neutralize it
+  // here so the hint aligns flush-left with the label and error inside FormField.
+  :deep(.field-hint) {
+    padding-left: 0;
   }
 }
 

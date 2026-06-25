@@ -13,7 +13,11 @@
       <h4>Find existing credentials, searching by alias or key.</h4>
       <div class="large-spacer"></div>
 
-      <FloatLabel class="search-field">
+      <FormField
+        class="search-field"
+        label="Search for credentials"
+        for="scv-search"
+      >
         <IconField>
           <PInputText
             id="scv-search"
@@ -24,8 +28,7 @@
             <FeatherIcon :icon="SearchIcon" />
           </InputIcon>
         </IconField>
-        <label for="scv-search">Search for credentials</label>
-      </FloatLabel>
+      </FormField>
 
       <div class="large-spacer"></div>
 
@@ -76,7 +79,7 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import FloatLabel from 'primevue/floatlabel'
+import FormField from '@/components/Common/FormField.vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -150,7 +153,7 @@ watch(() => props.isOpen, (newVal) => {
   }
 
   .search-field {
-    // room above the input for the floating label
+    // vertical spacing above the search field
     margin-top: 1em;
 
     :deep(.p-inputtext),
