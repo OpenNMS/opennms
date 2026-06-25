@@ -308,7 +308,7 @@
             "example": null,
             "default": true
           },
-          "statement": {
+          "__VALUE__": {
             "type": "string",
             "example": null
           }
