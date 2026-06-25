@@ -29,7 +29,6 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
@@ -108,11 +107,9 @@ public class UserManagerCmImpl extends UserManager {
             throw new FileNotFoundException(
                     "No users configuration found in CM for config: " + CONFIG_NAME);
         }
-        Optional<ConfigDefinition> defOpt = configurationManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
-        if (defOpt.isEmpty()) {
-            throw new IOException("No CM schema registered for " + CONFIG_NAME);
-        }
-        String xmlStr = XsdHelper.getConverter(defOpt.get()).jsonToXml(jsonOpt.get());
+        String xmlStr = configurationManagerService.getConverter(CONFIG_NAME)
+                .orElseThrow(() -> new IOException("No CM schema registered for " + CONFIG_NAME))
+                .jsonToXml(jsonOpt.get());
         try (ByteArrayInputStream bais = new ByteArrayInputStream(xmlStr.getBytes(StandardCharsets.UTF_8))) {
             parseXML(bais);
         }
@@ -129,11 +126,9 @@ public class UserManagerCmImpl extends UserManager {
             throw new IOException("ConfigurationManagerService is not available; cannot save users to CM");
         }
         try {
-            Optional<ConfigDefinition> defOpt = configurationManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
-            if (defOpt.isEmpty()) {
-                throw new IOException("No CM schema registered for " + CONFIG_NAME);
-            }
-            String json = XsdHelper.getConverter(defOpt.get()).xmlToJson(writerString);
+            String json = configurationManagerService.getConverter(CONFIG_NAME)
+                    .orElseThrow(() -> new IOException("No CM schema registered for " + CONFIG_NAME))
+                    .xmlToJson(writerString);
             configurationManagerService.updateConfiguration(
                     CONFIG_NAME,
                     ConfigDefinition.DEFAULT_CONFIG_ID,
