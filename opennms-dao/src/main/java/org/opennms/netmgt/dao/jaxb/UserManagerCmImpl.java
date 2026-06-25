@@ -19,11 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -33,31 +34,35 @@ import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * CM-backed UserManager: stores users in the kvstore_jsonb table (via ConfigurationManagerService)
  * instead of the users.xml file on disk. This survives Kubernetes pod restarts.
  *
+ * Lives in opennms-dao (OpenNMS-only) so that the opennms-config bundle — which is deployed in
+ * BOTH OpenNMS and Minion — carries no CM imports and resolves cleanly in the Minion.
+ *
  * The Liquibase migration in changelog-cm/36.0.0 imports the initial users.xml into CM
  * at startup. Afterwards all reads and writes go through this class.
  *
- * Thread safety: inherited read/write locks from UserManager guard m_users. The CM
- * UPDATE event callback only sets a flag (no lock acquired), and the actual reload
- * happens lazily in doUpdate() before the next operation acquires any lock.
+ * Startup sequence:
+ *   1. commonContext (opennms-config): UserFactory.init() creates a disk-based or empty-stub instance.
+ *   2. daoContext (opennms-dao): this bean initialises, loads from CM, then calls
+ *      UserFactory.setInstance(this) to replace the stub singleton.
  */
 public class UserManagerCmImpl extends UserManager {
     private static final Logger LOG = LoggerFactory.getLogger(UserManagerCmImpl.class);
 
     public static final String CONFIG_NAME = "users-config";
 
-    // required=false so that test contexts that load applicationContext-commonConfigs.xml
-    // without a CM service (e.g. topology or linkd ITs) can still load the Spring context.
-    // In production, CM is always present and init() does the real work.
+    // required=false so that test contexts that load applicationContext-dao.xml
+    // without a CM service can still load the Spring context.
     @Autowired(required = false)
     private ConfigurationManagerService configurationManagerService;
 
@@ -65,7 +70,12 @@ public class UserManagerCmImpl extends UserManager {
     // Set to true by the CM update callback; cleared and acted on by doUpdate().
     private volatile boolean m_needsReload = false;
 
-    public UserManagerCmImpl(final GroupManager groupManager) {
+    public UserManagerCmImpl() {
+        super(GroupFactory.getInstance());
+    }
+
+    /** Package-private for tests that need to supply a specific GroupManager. */
+    UserManagerCmImpl(final GroupManager groupManager) {
         super(groupManager);
     }
 
@@ -90,7 +100,7 @@ public class UserManagerCmImpl extends UserManager {
     private void onConfigUpdated(final ConfigUpdateInfo info) {
         // Called by CM when any client updates the users-config. Only bump the timestamp
         // and flag a reload — do NOT try to acquire any lock here (could deadlock if a
-        // write operation is in progress and holds the write lock when the CM fires the
+        // write operation is in progress and holds the write lock when CM fires the
         // synchronous callback).
         m_lastModified = System.currentTimeMillis();
         m_needsReload = true;
@@ -116,10 +126,6 @@ public class UserManagerCmImpl extends UserManager {
         m_lastModified = System.currentTimeMillis();
     }
 
-    /**
-     * Persist the marshalled Userinfo XML to CM by converting it to the XSD-based JSON
-     * format (same format produced by the Liquibase import).
-     */
     @Override
     protected void saveXML(final String writerString) throws IOException {
         if (configurationManagerService == null) {
@@ -142,10 +148,6 @@ public class UserManagerCmImpl extends UserManager {
         }
     }
 
-    /**
-     * Called before every read/write operation. Reloads from CM if the update callback
-     * signalled that the config changed externally.
-     */
     @Override
     protected void doUpdate() throws IOException, FileNotFoundException {
         if (m_needsReload) {
@@ -159,10 +161,6 @@ public class UserManagerCmImpl extends UserManager {
         return m_needsReload;
     }
 
-    /**
-     * Returns the epoch-millis timestamp of the last CM load or save. Used by
-     * SpringSecurityUserDaoImpl to detect when its cached user map is stale.
-     */
     @Override
     public long getLastModified() {
         return m_lastModified;

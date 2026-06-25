@@ -42,7 +42,7 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
-import org.opennms.netmgt.config.UserManagerCmImpl;
+import org.opennms.netmgt.dao.jaxb.UserManagerCmImpl;
 import org.opennms.netmgt.config.mock.MockGroupManager;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.model.OnmsUser;

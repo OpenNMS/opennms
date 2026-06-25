@@ -66,18 +66,11 @@
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.GroupConfig" ref="groupManager" />
 
-  <!-- CM-backed user manager: reads/writes users via kvstore_jsonb (survives pod restarts).
-       The Liquibase migration (changelog-cm/36.0.0) imports users.xml into CM at startup.
-       UserFactory.setInstance() bridges the legacy singleton callers (servlets, WebRoleContext). -->
-  <bean id="userManager" class="org.opennms.netmgt.config.UserManagerCmImpl">
-    <constructor-arg ref="groupManager"/>
+  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
   </bean>
 
-  <bean id="userManager-singleton-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-        depends-on="userManager">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.setInstance</value></property>
-    <property name="arguments"><list><ref bean="userManager"/></list></property>
-  </bean>
+  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
   

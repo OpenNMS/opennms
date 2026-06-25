@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>UserFactory class.</p>
@@ -43,6 +45,7 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @version $Id: $
  */
 public class UserFactory extends UserManager {
+    private static final Logger LOG = LoggerFactory.getLogger(UserFactory.class);
     private static final long RELOAD_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
 
     /**
@@ -73,6 +76,15 @@ public class UserFactory extends UserManager {
     private AtomicLong m_lastReloadCheck = new AtomicLong(0);
 
     /**
+     * Stub constructor: used when users.xml is absent (e.g. migrated to CM in Kubernetes).
+     * Starts with an empty user map; UserManagerCmImpl (in daoContext) will call
+     * UserFactory.setInstance() to replace this stub once CM is available.
+     */
+    UserFactory(final GroupManager groupManager) {
+        super(groupManager);
+    }
+
+    /**
      * Initializes the factory
      *
      * @throws java.io.IOException if any.
@@ -90,13 +102,17 @@ public class UserFactory extends UserManager {
      * @throws java.io.FileNotFoundException if any.
      */
     public static synchronized void init() throws IOException, FileNotFoundException {
-        
         if (instance == null || !initialized) {
             GroupFactory.init();
-            instance = new UserFactory();
+            try {
+                instance = new UserFactory();
+            } catch (FileNotFoundException e) {
+                LOG.warn("users.xml not found on disk (likely migrated to CM); " +
+                         "starting with empty user state until UserManagerCmImpl replaces this stub via setInstance()", e);
+                instance = new UserFactory(GroupFactory.getInstance());
+            }
             initialized = true;
         }
-
     }
 
     /**
@@ -163,7 +179,7 @@ public class UserFactory extends UserManager {
     @Override
     public boolean isUpdateNeeded() {
         if (m_usersConfFile == null) {
-            return true;
+            return false;  // stub — no file to check; setInstance() will replace this
         }
 
         final long now = System.currentTimeMillis();
@@ -195,6 +211,9 @@ public class UserFactory extends UserManager {
      */
     @Override
     public void doUpdate() throws IOException, FileNotFoundException {
+        if (m_usersConfFile == null) {
+            return;  // stub — no file to reload from; setInstance() will replace this
+        }
         if (isUpdateNeeded()) {
             reload();
         }

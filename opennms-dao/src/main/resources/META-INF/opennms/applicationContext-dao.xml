@@ -133,6 +133,21 @@
   <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TrapdConfigDao" ref="trapdConfigDao" />
 
+  <!-- CM-backed UserManager: stores users in kvstore_jsonb so they survive pod restarts.
+       The Liquibase migration (changelog-cm/36.0.0) seeds users.xml into CM at startup.
+       setInstance() replaces the disk-based or empty-stub singleton from commonContext. -->
+  <bean id="userManagerCm" class="org.opennms.netmgt.dao.jaxb.UserManagerCmImpl"/>
+  <bean id="userManagerCm-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+        depends-on="userManagerCm">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.setInstance</value></property>
+    <property name="arguments"><list><ref bean="userManagerCm"/></list></property>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManagerCm">
+    <onmsgi:service-properties>
+      <entry key="service.ranking" value="10"/>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
     <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory
