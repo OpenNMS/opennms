@@ -21,6 +21,7 @@
  */
 package org.opennms.features.config.service.impl;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -29,9 +30,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.exception.ConfigAlreadyExistsException;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.exception.ConfigRuntimeException;
@@ -219,5 +222,16 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(String configName) {
         return configStoreDao.getConfigs(configName);
+    }
+
+    @Override
+    public Optional<ConfigConverter> getConverter(String configName) {
+        return getRegisteredConfigDefinition(configName).map(def -> {
+            try {
+                return XsdHelper.getConverter(def);
+            } catch (IOException e) {
+                throw new ConfigRuntimeException("Failed to build XML converter for config: " + configName, e);
+            }
+        });
     }
 }

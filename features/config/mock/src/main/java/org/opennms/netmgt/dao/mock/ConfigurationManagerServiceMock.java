@@ -298,4 +298,16 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         }
         return new HashSet<>();
     }
+
+    @Override
+    public Optional<ConfigConverter> getConverter(String configName) {
+        return getRegisteredConfigDefinition(configName).map(def -> {
+            try {
+                return XsdHelper.getConverter(def);
+            } catch (IOException e) {
+                LOG.error("Failed to build XML converter for config: {}", configName, e);
+                return null;
+            }
+        });
+    }
 }

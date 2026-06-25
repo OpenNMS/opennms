@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -60,9 +62,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -84,14 +91,22 @@ public class FilesystemRestService {
             "groovy",
             "bsh",
             "dcb");
+    private static final String USERS_XML_CM_CONFIG_NAME = "users-config";
+
+    @Autowired(required = false)
+    private ConfigurationManagerService configurationManagerService;
+
     private final java.nio.file.Path usersXml;
 
     public FilesystemRestService() {
+        java.nio.file.Path p = null;
         try {
-            this.usersXml = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
+            p = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // users.xml has been migrated to CM and moved out of etc/; skip the path-based access restriction
+            LOG.debug("users.xml not found on disk (likely migrated to CM); users.xml access restriction will not be enforced by FilesystemRestService");
         }
+        this.usersXml = p;
     }
 
     FilesystemRestService(final java.nio.file.Path usersXml) {
@@ -111,7 +126,7 @@ public class FilesystemRestService {
 
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
-                    .filter(p -> !p.equals(usersXml) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
+                    .filter(p -> usersXml == null || !p.equals(usersXml) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p, securityContext))
                     .sorted()
@@ -165,7 +180,45 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for reading files.");
         }
+        if (isCmManagedUsersXml(fileName)) {
+            if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+                throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
+            }
+            return getUsersXmlFromCm();
+        }
         return fileContents(ensureFileIsAllowed(fileName, securityContext));
+    }
+
+    private boolean isCmManagedUsersXml(String fileName) {
+        return usersXml == null && "users.xml".equals(Paths.get(fileName).getFileName().toString());
+    }
+
+    private Response getUsersXmlFromCm() {
+        if (configurationManagerService == null) {
+            throw new WebApplicationException(
+                    "users.xml has been migrated to CM but the CM service is unavailable.",
+                    Response.Status.SERVICE_UNAVAILABLE);
+        }
+        try {
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(
+                    USERS_XML_CM_CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID);
+            if (json.isEmpty()) {
+                throw new WebApplicationException("users.xml not found in CM.", Response.Status.NOT_FOUND);
+            }
+            Optional<ConfigConverter> converter = configurationManagerService.getConverter(USERS_XML_CM_CONFIG_NAME);
+            if (converter.isEmpty()) {
+                throw new WebApplicationException(
+                        "No CM schema registered for users-config.", Response.Status.INTERNAL_SERVER_ERROR);
+            }
+            String xml = converter.get().jsonToXml(json.get());
+            return Response.ok(xml).type(MediaType.APPLICATION_XML)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "users.xml")
+                    .build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e);
+        }
     }
 
     @POST
@@ -178,6 +231,40 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for uploading file contents.");
         }
+        if (isCmManagedUsersXml(fileName)) {
+            if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+                throw new ForbiddenException("ADMIN role is required for writing users.xml file contents.");
+            }
+            if (configurationManagerService == null) {
+                throw new WebApplicationException(
+                        "users.xml has been migrated to CM but the CM service is unavailable.",
+                        Response.Status.SERVICE_UNAVAILABLE);
+            }
+            // Validate XML, then convert and store in CM
+            final File tempFile = File.createTempFile("upload-", "users.xml");
+            try {
+                tempFile.deleteOnExit();
+                final InputStream in = attachment.getObject(InputStream.class);
+                Files.copy(in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                maybeValidateXml(tempFile);
+                final String xml = Files.readString(tempFile.toPath(), StandardCharsets.UTF_8);
+                Optional<ConfigConverter> converter = configurationManagerService.getConverter(USERS_XML_CM_CONFIG_NAME);
+                if (converter.isEmpty()) {
+                    throw new WebApplicationException(
+                            "No CM schema registered for users-config.", Response.Status.INTERNAL_SERVER_ERROR);
+                }
+                final String json = converter.get().xmlToJson(xml);
+                configurationManagerService.updateConfiguration(
+                        USERS_XML_CM_CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
+                        new JsonAsString(json), true);
+                return "Successfully updated users.xml in CM.";
+            } finally {
+                if (!tempFile.delete()) {
+                    LOG.warn("Failed to delete temporary file '{}' when uploading users.xml.", tempFile);
+                }
+            }
+        }
+
         final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName, securityContext);
 
         // Write the contents a temporary file
@@ -210,6 +297,11 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for deleting file contents.");
         }
+        if (isCmManagedUsersXml(fileName)) {
+            throw new WebApplicationException(
+                    "users.xml has been migrated to CM and cannot be deleted via the filesystem API. Use the /rest/users API instead.",
+                    Response.Status.GONE);
+        }
         final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName, securityContext);
         Files.delete(targetPath);
         return String.format("Successfully deleted to '%s'.", targetPath);
@@ -239,7 +331,7 @@ public class FilesystemRestService {
         final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
         final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
 
-        if (fileNormalized.equals(usersXml) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+        if (usersXml != null && fileNormalized.equals(usersXml) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
         }
 

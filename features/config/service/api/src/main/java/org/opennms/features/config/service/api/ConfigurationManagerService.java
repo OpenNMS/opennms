@@ -22,6 +22,7 @@
 package org.opennms.features.config.service.api;
 
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ValidationException;
@@ -145,4 +146,10 @@ public interface ConfigurationManagerService {
      * @param configName
      */
     Set<String> getConfigIds(String configName);
+
+    /**
+     * Get an XML/JSON converter for the given config schema.
+     * Returns empty if the schema is not registered or does not support XML conversion.
+     */
+    Optional<ConfigConverter> getConverter(String configName);
 }
