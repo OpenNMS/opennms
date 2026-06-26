@@ -136,7 +136,7 @@
   <!-- CM-backed UserManager: stores users in kvstore_jsonb so they survive pod restarts.
        The Liquibase migration (changelog-cm/36.0.0) seeds users.xml into CM at startup.
        setInstance() replaces the disk-based or empty-stub singleton from commonContext. -->
-  <bean id="userManagerCm" class="org.opennms.netmgt.dao.jaxb.UserManagerCmImpl"/>
+  <bean id="userManagerCm" class="org.opennms.netmgt.dao.jaxb.UserManagerCmImpl" primary="true"/>
   <bean id="userManagerCm-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
         depends-on="userManagerCm">
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.setInstance</value></property>
