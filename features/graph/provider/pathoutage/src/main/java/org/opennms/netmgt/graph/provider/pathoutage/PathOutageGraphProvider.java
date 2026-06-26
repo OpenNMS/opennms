@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
@@ -86,10 +87,14 @@ public class PathOutageGraphProvider implements GraphProvider {
                     .property(GenericProperties.Enrichment.RESOLVE_NODES, true)
                     .property(GenericProperties.Enrichment.DEFAULT_STATUS, true);
 
-            final List<OnmsNode> nodes = nodeDao.findAll();
+            // Only nodes that actually have a parent matter here; the top-level
+            // parents are reached through getParent() below. Filtering in the
+            // query keeps parentless nodes out of memory and the loop.
+            final List<OnmsNode> nodes = nodeDao.findMatching(
+                    new CriteriaBuilder(OnmsNode.class).isNotNull("parent").toCriteria());
 
-            // First pass: collect the participating node ids (children with a parent,
-            // plus those parents) and their labels, and remember the parent->child pairs.
+            // First pass: collect the participating node ids (the children above
+            // plus their parents) and their labels, and remember the parent->child pairs.
             final Map<Integer, String> labelById = Maps.newHashMap();
             final Set<Integer> participating = new LinkedHashSet<>();
             // child -> parent: value-based (unlike a Set of arrays), and a child

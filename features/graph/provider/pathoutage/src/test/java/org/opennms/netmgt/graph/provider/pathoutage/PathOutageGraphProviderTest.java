@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -78,7 +79,13 @@ public class PathOutageGraphProviderTest {
         final OnmsNode sw = node(2, "switch", router);
         final OnmsNode server = node(3, "server", sw);
         final OnmsNode standalone = node(4, "standalone", null);
-        when(nodeDao.findAll()).thenReturn(Arrays.asList(router, sw, server, standalone));
+        // The provider queries only nodes with a parent (isNotNull("parent")); mimic
+        // that filter so router (top of the tree, reached via getParent()) and the
+        // standalone node are excluded from the result the provider sees.
+        when(nodeDao.findMatching(any(Criteria.class))).thenReturn(
+                Arrays.asList(router, sw, server, standalone).stream()
+                        .filter(n -> n.getParent() != null)
+                        .collect(Collectors.toList()));
 
         final GenericGraph graph = provider.loadGraph().asGenericGraph();
 
@@ -106,7 +113,8 @@ public class PathOutageGraphProviderTest {
 
     @Test
     public void emptyWhenNoParentsAreConfigured() {
-        when(nodeDao.findAll()).thenReturn(Arrays.asList(node(1, "a", null), node(2, "b", null)));
+        // No node has a parent, so the parent-filtered query returns nothing.
+        when(nodeDao.findMatching(any(Criteria.class))).thenReturn(Collections.emptyList());
         final GenericGraph graph = provider.loadGraph().asGenericGraph();
         assertTrue(graph.getVertices().isEmpty());
         assertTrue(graph.getEdges().isEmpty());
@@ -114,7 +122,7 @@ public class PathOutageGraphProviderTest {
 
     @Test
     public void emptyWhenThereAreNoNodes() {
-        when(nodeDao.findAll()).thenReturn(Collections.emptyList());
+        when(nodeDao.findMatching(any(Criteria.class))).thenReturn(Collections.emptyList());
         final GenericGraph graph = provider.loadGraph().asGenericGraph();
         assertTrue(graph.getVertices().isEmpty());
         assertTrue(graph.getEdges().isEmpty());
