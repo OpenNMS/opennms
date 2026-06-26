@@ -58,7 +58,7 @@ public class FilesystemRestServiceTest {
 
     @Test
     public void testXmlValidation() throws IOException {
-        final FilesystemRestService filesystemRestService = new FilesystemRestService(null);
+        final FilesystemRestService filesystemRestService = new FilesystemRestService();
         final HttpServer httpServer = HttpServer.create(new InetSocketAddress(1337), 10);
         httpServer.createContext("/", new TestHttpHandler());
         httpServer.setExecutor(null);

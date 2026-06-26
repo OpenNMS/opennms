@@ -40,6 +40,12 @@
       <artifactId>jasypt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <!-- Available at runtime via the OpenNMS lib directory; declared provided so the fat-jar stays thin. -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>

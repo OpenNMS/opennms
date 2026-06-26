@@ -105,6 +105,7 @@
 	<include file="35.0.0/changelog.xml"/>
 	<include file="36.0.0/changelog.xml"/>
 	<include file="36.0.1/changelog.xml"/>
+	<include file="36.0.2/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

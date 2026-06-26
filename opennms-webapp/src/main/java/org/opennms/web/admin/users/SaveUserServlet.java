@@ -60,7 +60,6 @@ public class SaveUserServlet extends HttpServlet {
                 throw new ServletException("Error: user " + newUser.getUserId() + " is read-only!");
             }
 
-            // now save to the XML file
             try {
                 userFactory.saveUser(newUser.getUserId(), newUser);
             } catch (Throwable e) {

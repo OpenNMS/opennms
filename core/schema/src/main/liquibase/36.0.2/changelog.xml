@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Primary user store: replaces users.xml -->
+    <changeSet author="emaki" id="36.0.2-users-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users">
+            <column name="user_id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="full_name" type="varchar(256)"/>
+            <column name="user_comments" type="text"/>
+            <column name="password" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password_salt" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tui_pin" type="varchar(32)"/>
+            <column name="time_zone_id" type="varchar(64)"/>
+            <column name="email" type="varchar(256)"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token_salt_count" type="integer" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="users"/>
+        </rollback>
+    </changeSet>
+
+    <!-- One-to-many: user ROLE_ADMIN, ROLE_USER, ROLE_RTC, etc. -->
+    <changeSet author="emaki" id="36.0.2-user-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_roles">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="fk_user_roles_user_id"
+            baseTableName="user_roles" baseColumnNames="user_id"
+            referencedTableName="users" referencedColumnNames="user_id"
+            onDelete="CASCADE"/>
+
+        <addUniqueConstraint tableName="user_roles" columnNames="user_id, role"
+            constraintName="uq_user_roles_user_id_role"/>
+
+        <rollback>
+            <dropTable tableName="user_roles"/>
+        </rollback>
+    </changeSet>
+
+    <!-- One-to-many: email, pagerEmail, workPhone, mobilePhone, xmppAddress, etc. -->
+    <changeSet author="emaki" id="36.0.2-user-contacts-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_contacts"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_contacts">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_type" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_info" type="text"/>
+            <column name="service_provider" type="text"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="fk_user_contacts_user_id"
+            baseTableName="user_contacts" baseColumnNames="user_id"
+            referencedTableName="users" referencedColumnNames="user_id"
+            onDelete="CASCADE"/>
+
+        <addUniqueConstraint tableName="user_contacts" columnNames="user_id, contact_type"
+            constraintName="uq_user_contacts_user_id_type"/>
+
+        <rollback>
+            <dropTable tableName="user_contacts"/>
+        </rollback>
+    </changeSet>
+
+    <!-- One-to-many: notification duty schedules (e.g. "MoTuWeThFrSaSu800-2300") -->
+    <changeSet author="emaki" id="36.0.2-user-duty-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_duty_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_duty_schedules">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="fk_user_duty_schedules_user_id"
+            baseTableName="user_duty_schedules" baseColumnNames="user_id"
+            referencedTableName="users" referencedColumnNames="user_id"
+            onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="user_duty_schedules"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

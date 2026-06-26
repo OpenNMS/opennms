@@ -931,6 +931,7 @@ public abstract class UserManager implements UserConfig {
             for (final User curUser : usersList) {
             	m_users.put(curUser.getUserId(), curUser);
             }
+            _saveCurrent();
         } finally {
             m_writeLock.unlock();
         }
@@ -973,7 +974,7 @@ public abstract class UserManager implements UserConfig {
     /**
      * Saves into "users.xml" file
      */
-    private void _saveCurrent() throws Exception {
+    protected void _saveCurrent() throws Exception {
         final List<User> users = new ArrayList<>(m_users.values());
     
         final Userinfo userinfo = new Userinfo();

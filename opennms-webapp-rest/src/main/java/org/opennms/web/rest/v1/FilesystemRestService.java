@@ -59,7 +59,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,18 +83,7 @@ public class FilesystemRestService {
             "groovy",
             "bsh",
             "dcb");
-    private final java.nio.file.Path usersXml;
-
     public FilesystemRestService() {
-        try {
-            this.usersXml = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    FilesystemRestService(final java.nio.file.Path usersXml) {
-        this.usersXml = usersXml;
     }
 
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
@@ -111,7 +99,6 @@ public class FilesystemRestService {
 
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
-                    .filter(p -> !p.equals(usersXml) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p, securityContext))
                     .sorted()
@@ -165,7 +152,8 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for reading files.");
         }
-        return fileContents(ensureFileIsAllowed(fileName, securityContext));
+        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName, securityContext);
+        return fileContents(targetPath);
     }
 
     @POST
@@ -238,10 +226,6 @@ public class FilesystemRestService {
     private java.nio.file.Path ensureFileIsAllowed(String fileName, SecurityContext securityContext) {
         final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
         final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
-
-        if (fileNormalized.equals(usersXml) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
-        }
 
         if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
             throw new BadRequestException("Cannot access files outside of folder! Filename given: " + fileName);

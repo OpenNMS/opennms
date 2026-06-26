@@ -79,7 +79,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUser(name);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading user from database", e);
         }
     }
     
@@ -87,7 +87,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUsers().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading user from database", e);
         }
     }
     
@@ -121,7 +121,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             }
             return webUsers;
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading user from database", e);
         }
 
     }
