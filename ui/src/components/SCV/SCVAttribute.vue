@@ -1,38 +1,60 @@
 <template>
   <div class="attribute-container" id="scv-attribute">
-    <FeatherInput
-      data-test="attr-key"
-      ref="keyRef"
-      label="key"
-      @update:modelValue="updateAttributeKey"
-      :modelValue="attributeKey"
-      :error="keyError"
-      class="input"
-    />
-    <FeatherInput
-      data-test="attr-value"
-      label="value"
-      @update:modelValue="updateAttributeValue"
-      :modelValue="attributeValue"
-      class="input"
-    />
+    <div class="input">
+      <FloatLabel data-test="attr-key">
+        <PInputText
+          ref="keyRef"
+          :id="keyId"
+          :modelValue="attributeKey"
+          @update:modelValue="updateAttributeKey"
+          :invalid="!!keyError"
+          :aria-describedby="keyError ? keyErrorId : undefined"
+        />
+        <label :for="keyId">key</label>
+      </FloatLabel>
+      <small
+        v-if="keyError"
+        :id="keyErrorId"
+        class="field-error"
+        role="alert"
+      >{{ keyError }}</small>
+    </div>
+    <div class="input">
+      <FloatLabel data-test="attr-value">
+        <PInputText
+          :id="valueId"
+          :modelValue="attributeValue"
+          @update:modelValue="updateAttributeValue"
+        />
+        <label :for="valueId">value</label>
+      </FloatLabel>
+    </div>
 
-    <FeatherButton icon="Remove attribute" @click="removeAttribute" data-test="rm-attr-btn">
+    <PButton
+      text
+      aria-label="Remove attribute"
+      data-test="rm-attr-btn"
+      @click="removeAttribute"
+    >
       <FeatherIcon :icon="Delete" />
-    </FeatherButton>
+    </PButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-import { FeatherInput } from '@featherds/input'
-import { FeatherButton } from '@featherds/button'
+import InputText from 'primevue/inputtext'
+import FloatLabel from 'primevue/floatlabel'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Remove'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
+
+const PInputText = InputText
+const PButton = Button
 
 const scvStore = useScvStore()
 const emit = defineEmits(['set-key-error'])
@@ -55,6 +77,12 @@ const props = defineProps({
 const keyRef = ref()
 const keyError = ref()
 const credentials = computed<SCVCredentials>(() => scvStore.credentials)
+
+// Unique ids per attribute row so labels, inputs and error messages stay
+// associated when multiple SCVAttribute rows render together.
+const keyId = computed(() => `scv-attr-key-${props.attributeIndex}`)
+const keyErrorId = computed(() => `scv-attr-key-error-${props.attributeIndex}`)
+const valueId = computed(() => `scv-attr-value-${props.attributeIndex}`)
 
 const isDuplicateKey = (key: string) => {
   // check to see if the key already exists in another prop
@@ -85,15 +113,27 @@ const updateAttributeValue: UpdateModelFunction = (value: string) =>
 
 const removeAttribute = () => scvStore.removeAttribute(props.attributeKey)
 
-onMounted(() => keyRef.value.focus())
+onMounted(() => (keyRef.value?.$el as HTMLInputElement)?.focus())
 </script>
 
 <style lang="scss" scoped>
 .attribute-container {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
+  // room above the inputs for the floating labels
+  margin-top: 2rem;
+
   .input {
     width: 50%;
+
+    :deep(.p-inputtext) {
+      width: 100%;
+    }
+  }
+
+  .field-error {
+    color: var(--p-error-color);
   }
 }
 </style>

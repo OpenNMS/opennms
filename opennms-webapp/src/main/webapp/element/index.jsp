@@ -236,7 +236,8 @@ function submitNodeSearch(params) {
       <div class="card-body">
         <div>
             <ul class="list-unstyled">
-              <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+              <li><a href="ui/#/nodes?nodesWithAssets=true">All nodes with asset info (Nodes page)</a></li>
+              <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info (Assets page)</a></li>
             </ul>
         </div>
 

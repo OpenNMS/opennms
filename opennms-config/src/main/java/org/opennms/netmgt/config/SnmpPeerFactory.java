@@ -88,7 +88,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * The singleton instance of this factory
      */
-    private static SnmpPeerFactory s_singleton = null;
+    private static volatile SnmpPeerFactory s_singleton = null;
 
 
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();

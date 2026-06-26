@@ -2,7 +2,7 @@
   <div class="card">
     <div>
       <div class="feather-row title-bar">
-        <span class="title">Node List</span>
+        <span class="title">Nodes</span>
         <div class="action-buttons-container">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"
@@ -39,8 +39,17 @@
               </FeatherInput>
             </div>
             <div>
+              <FeatherIcon
+                :icon="InfoIcon"
+                class="info-icon"
+                title="Node Search Help"
+                @click="isHelpMessageDialogVisible = true"
+                data-test="nodes-info-icon"
+              />
+            </div>
+            <div>
               <FeatherButton
-                icon="FilterAlt"
+                icon="Advanced Filters"
                 @click="() => nodeStructureStore.openInstancesDrawerModal()"
               >
                 <FeatherIcon :icon="FilterAlt" />
@@ -127,7 +136,7 @@
                     @click="removeExtendedSearchItem(value)"
                   />
                 </template>
-                {{ `Extended Search: ${value.name} ${value.value}` }}
+                {{ `${value.name} ${value.value}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -140,7 +149,20 @@
                     @click="nodeStructureStore.removeIpAddress()"
                   />
                 </template>
-                {{ `IP Address: ${nodeStructureStore.queryFilter.ipAddress}` }}
+                {{ `IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.macAddress"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeMacAddress()"
+                  />
+                </template>
+                {{ `MAC Address: ${nodeStructureStore.queryFilter.macAddress}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -154,6 +176,46 @@
                   />
                 </template>
                 {{ `Topology: ${topologyTerm}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeDownAggregateStatus()"
+                  />
+                </template>
+                Down nodes only
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="nodeStructureStore.queryFilter.nodesWithAssets"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeNodesWithAssets()"
+                  />
+                </template>
+                Nodes with asset info
+              </FeatherChip>
+
+              <FeatherChip
+                v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
+                :key="assetFilter.column"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="nodeStructureStore.removeAssetFilter(assetFilter.column)"
+                  />
+                </template>
+                {{ `Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}` }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -342,6 +404,24 @@
   </NodeDetailsDialog>
   <NodeAdvancedFiltersDrawer />
   <ColumnSelectionDrawer />
+
+  <MessageDialog
+    :visible="isHelpMessageDialogVisible"
+    :relative="true"
+    maxHeight="22em"
+    maxWidth="50em"
+    title="Node Search"
+    @close="isHelpMessageDialogVisible = false"
+  >
+    <template #content>
+      <div>
+        <p>You may search by node name or exact IP address here.</p>
+        <p>Searching by name is a case-insensitive, inclusive search.</p>
+        <p>For example, searching on serv would find any of serv, Service, Reserved, NTSERV, UserVortex, etc. The underscore character acts as a single character wildcard. The percent character acts as a multiple character wildcard.</p>
+        <p>For more advanced search options, please open the Advanced Filters drawer.</p>
+      </div>
+    </template>
+  </MessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -370,9 +450,11 @@ import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import InfoIcon from '@featherds/icon/action/Info'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import MessageDialog from '../Common/MessageDialog.vue'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -384,6 +466,7 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
+import { getAssetColumnLabel } from './hooks/queryStringParser'
 import { getTableCssClasses } from './utils'
 import EmptyList from '../Common/EmptyList.vue'
 
@@ -395,6 +478,7 @@ const { generateBlob, generateDownload, getExportData } = useNodeExport()
 const { buildUpdatedNodeStructureQueryParameters, getExtendedSearchValues } = useNodeQuery()
 const visibleColumnStart = ref(0)
 const visibleColumnsCount = 5
+const isHelpMessageDialogVisible = ref(false)
 
 const visibleColumns = computed(() => {
   return nodeStructureStore.columns
@@ -708,11 +792,23 @@ table {
 }
 
 .title-bar {
-  display: flex;
   justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+.search-container {
+  .info-icon {
+    cursor: pointer;
+    font-size: 1.5em;
+    margin-left: 0.5em;
+    color: var(variables.$primary);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 
 .action-buttons-container {

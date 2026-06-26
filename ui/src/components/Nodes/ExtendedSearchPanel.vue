@@ -204,37 +204,10 @@ onMounted(() => {
     :deep(.p-datatable-tbody > tr > td) {
       padding: 0.25rem 0.5rem;
       vertical-align: middle;
-      border-color: var(--feather-border-on-surface);
-      color: var(--feather-primary-text-on-surface);
     }
 
     :deep(.p-datatable-thead > tr > th) {
       padding: 0.4rem 0.5rem;
-      background-color: var(--feather-background);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      color: var(--feather-secondary-text-on-surface);
-      text-transform: uppercase;
-    }
-
-    :deep(.p-datatable-tbody > tr) {
-      background-color: var(--feather-elevation-background-8);
-      color: var(--feather-primary-text-on-surface);
-    }
-
-    :deep(.p-select) {
-      background-color: var(--feather-surface);
-      border-color: var(--feather-border-on-surface);
-      color: var(--feather-primary-text-on-surface);
-    }
-
-    :deep(.p-inputtext) {
-      background-color: var(--feather-elevation-background-8);
-      border-color: var(--feather-border-on-surface);
-      color: var(--feather-primary-text-on-surface);
-    }
-
-    :deep(.p-select-label) {
-      color: var(--feather-primary-text-on-surface);
     }
   }
 }

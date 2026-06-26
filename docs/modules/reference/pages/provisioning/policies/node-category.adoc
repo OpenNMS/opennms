@@ -1,4 +1,77 @@
 = Node Categorization Policy
 :description: Learn about the Node Categorization policy in OpenNMS {page-component-title} to set categories to assign to provisioned nodes.
 
-The Node Categorization policy lets you set categories to assign to provisioned nodes.
+The Node Categorization policy (`NodeCategorySettingPolicy`) assigns a surveillance category to nodes that match its criteria.
+The policy runs during a node scan and adds the category to the node; if the named category does not already exist, {page-component-title} creates it.
+
+Each policy assigns a single category, so apply one policy per category you want to set.
+The policy adds categories; it does not remove categories a node already has.
+The assignment is reapplied on each subsequent scan or reimport.
+
+== Parameters
+
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Required
+
+| category
+| Name of the surveillance category to assign to matching nodes.
+| yes
+|===
+
+This policy also accepts the common `matchBehavior` parameter that controls how the match criteria below combine.
+See xref:reference:provisioning/policies.adoc[Policies] for `matchBehavior` and the `~` regular-expression prefix.
+
+== Match criteria
+
+Match against any of the following node properties.
+String values match as a substring unless prefixed with `~`, which evaluates the value as a regular expression.
+
+[options="header", cols="1,3"]
+|===
+| Property
+| Description
+
+| type
+| Node type (for example, `A` for active).
+
+| sysObjectId
+| SNMP sysObjectID, which begins with the vendor's enterprise OID.
+
+| sysName
+| SNMP sysName.
+
+| sysDescription
+| SNMP sysDescr.
+
+| sysLocation
+| SNMP sysLocation.
+
+| sysContact
+| SNMP sysContact.
+
+| label
+| Node label, usually the hostname.
+
+| labelSource
+| Source of the node label (for example, user-defined or hostname).
+
+| netBiosName
+| NetBIOS name.
+
+| netBiosDomain
+| NetBIOS domain.
+
+| operatingSystem
+| Operating system.
+
+| foreignId
+| Requisition foreign ID.
+
+| foreignSource
+| Requisition foreign source.
+|===
+
+For configuration examples, see xref:reference:provisioning/policies/examples.adoc#assign-categories[Assign categories].

@@ -13,7 +13,7 @@
               <span class="title">Usage Statistics Sharing</span>
             </div>
             <UsageStatisticsHeader />
-            <div class="spacer-medium"></div>
+            <div class="spacer-large"></div>
             <UsageStatisticsTable />
           </div>
         </div>
@@ -55,10 +55,9 @@ onMounted(async () => {
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
 
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .usage-stats-container {
@@ -81,7 +80,7 @@ onMounted(async () => {
     }
   }
 }
-.spacer-medium {
-  margin-bottom: 0.25rem;
+.spacer-large {
+  margin-bottom: 0.75rem;
 }
 </style>

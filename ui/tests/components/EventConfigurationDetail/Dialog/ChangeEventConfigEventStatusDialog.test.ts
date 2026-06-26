@@ -2,18 +2,17 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { FeatherDialog } from '@featherds/dialog'
-import { FeatherButton } from '@featherds/button'
 import ChangeEventConfigEventStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigEventStatusDialog.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 
-vi.mock('@featherds/dialog', () => ({
-  FeatherDialog: {
-    name: 'FeatherDialog',
-    template: '<div><slot></slot><slot name="footer"></slot></div>',
-    props: ['labels', 'modelValue']
-  }
-}))
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 describe('ChangeEventConfigEventStatusDialog.vue', () => {
   let wrapper: VueWrapper<any>
@@ -39,9 +38,8 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
     wrapper = mount(ChangeEventConfigEventStatusDialog, {
       global: {
         plugins: [pinia],
-        components: {
-          FeatherDialog,
-          FeatherButton
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -54,30 +52,30 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
 
   describe('Dialog Rendering', () => {
     it('renders dialog correctly with title', () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
       expect(dialog.exists()).toBe(true)
-      expect(dialog.props('labels')).toEqual({ title: 'Change Event Configuration Event Status' })
+      expect(dialog.props('title')).toBe('Change Event Configuration Event Status')
     })
 
-    it('renders FeatherDialog with visible prop true when dialog is visible', () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
-      expect(dialog.props('modelValue')).toBe(true)
+    it('renders ConfirmationDialog with visible prop true when dialog is visible', () => {
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(true)
     })
 
-    it('renders FeatherDialog with visible prop false when dialog is hidden', async () => {
+    it('renders ConfirmationDialog with visible prop false when dialog is hidden', async () => {
       store.changeEventConfigEventStatusDialogState.visible = false
       await wrapper.vm.$nextTick()
-      const dialog = wrapper.findComponent(FeatherDialog)
-      expect(dialog.props('modelValue')).toBe(false)
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(false)
     })
 
     it('renders Cancel and Save buttons', () => {
-      const buttons = wrapper.findAllComponents(FeatherButton)
-      expect(buttons.length).toBe(2)
-      const cancelBtn = buttons.find(btn => btn.text().toLowerCase().includes('cancel'))
-      const saveBtn = buttons.find(btn => btn.text().toLowerCase().includes('save'))
-      expect(cancelBtn).toBeTruthy()
-      expect(saveBtn).toBeTruthy()
+      const cancelBtn = wrapper.find('.cancel-btn')
+      const saveBtn = wrapper.find('.action-btn')
+      expect(cancelBtn.exists()).toBe(true)
+      expect(saveBtn.exists()).toBe(true)
+      expect(cancelBtn.text().toLowerCase()).toContain('cancel')
+      expect(saveBtn.text().toLowerCase()).toContain('save')
     })
 
     it('renders confirmation question', () => {
@@ -166,20 +164,18 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
 
   describe('Cancel Button', () => {
     it('calls hideChangeEventConfigEventStatusDialog on Cancel click', async () => {
-      const cancelBtn = wrapper
-        .findAllComponents(FeatherButton)
-        .find(btn => btn.text().toLowerCase().includes('cancel'))
+      const cancelBtn = wrapper.find('.cancel-btn')
 
-      await cancelBtn?.trigger('click')
+      await cancelBtn.trigger('click')
       expect(store.hideChangeEventConfigEventStatusDialog).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('Save Button - Change Status', () => {
     it('calls disableEventConfigEvent when event is enabled and Save clicked', async () => {
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(store.disableEventConfigEvent).toHaveBeenCalledWith(10)
@@ -194,9 +190,9 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(store.enableEventConfigEvent).toHaveBeenCalledWith(11)
@@ -208,9 +204,9 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       store.changeEventConfigEventStatusDialogState.eventConfigEvent = null as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(store.disableEventConfigEvent).not.toHaveBeenCalled()
@@ -227,9 +223,9 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       } as any
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(store.disableEventConfigEvent).toHaveBeenCalledWith(0)
@@ -243,9 +239,9 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       const testError = new Error('Disable failed')
       store.disableEventConfigEvent = vi.fn().mockRejectedValue(testError)
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error changing event configuration event status:', testError)
@@ -263,9 +259,9 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       store.enableEventConfigEvent = vi.fn().mockRejectedValue(testError)
       await wrapper.vm.$nextTick()
 
-      const saveBtn = wrapper.findAllComponents(FeatherButton).find(btn => btn.text().toLowerCase().includes('save'))
+      const saveBtn = wrapper.find('.action-btn')
 
-      await saveBtn?.trigger('click')
+      await saveBtn.trigger('click')
       await flushPromises()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error changing event configuration event status:', testError)
@@ -273,10 +269,10 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
     })
   })
 
-  describe('Dialog Hidden Event', () => {
-    it('calls hideChangeEventConfigEventStatusDialog when dialog emits hidden event', async () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
-      await dialog.vm.$emit('hidden')
+  describe('Dialog Cancel Event', () => {
+    it('calls hideChangeEventConfigEventStatusDialog when dialog emits cancel event', async () => {
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      await dialog.vm.$emit('cancel')
       expect(store.hideChangeEventConfigEventStatusDialog).toHaveBeenCalled()
     })
   })

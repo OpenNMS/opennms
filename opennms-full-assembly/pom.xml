@@ -161,7 +161,7 @@
               </artifactItems>
             </configuration>
           </execution>
-          <!-- Unpack hawtio, excluding the vulnerable org.json version bundled by hawtio -->
+          <!-- Unpack hawtio, excluding vulnerable versions of org.json and jackson-core bundled by hawtio -->
           <execution>
             <id>unpack-hawtio</id>
             <phase>process-resources</phase>
@@ -176,7 +176,7 @@
                   <artifactId>hawtio-default</artifactId>
                   <version>${hawtio.version}</version>
                   <type>war</type>
-                  <excludes>WEB-INF/lib/json-2*.jar</excludes>
+                  <excludes>WEB-INF/lib/json-2*.jar,WEB-INF/lib/jackson-*.jar</excludes>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -194,6 +194,36 @@
                   <groupId>org.json</groupId>
                   <artifactId>json</artifactId>
                   <version>${jsonVersion}</version>
+                  <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Replace hawtio's outdated jackson-core with the project's version -->
+          <execution>
+            <id>copy-jackson-for-hawtio</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-core</artifactId>
+                  <version>${jackson2Version}</version>
+                  <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-annotations</artifactId>
+                  <version>${jackson2Version}</version>
+                  <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-databind</artifactId>
+                  <version>${jackson2Version}</version>
                   <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>

@@ -3,18 +3,16 @@ import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import * as eventConfigService from '@/services/eventConfigService'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 
-vi.mock('@featherds/dialog', () => ({
-  FeatherDialog: {
-    name: 'FeatherDialog',
-    template: '<div><slot></slot><slot name="footer"></slot></div>',
-    props: ['labels', 'modelValue'],
-    emits: ['hidden']
-  }
-}))
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -65,7 +63,9 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     wrapper = mount(DeleteEventConfigSourceDialog, {
       global: {
         plugins: [pinia],
-        components: { FeatherButton, FeatherDialog }
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
+        }
       }
     })
 
@@ -78,24 +78,24 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
 
   describe('Dialog Rendering', () => {
     it('renders dialog when visible is true', () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
       expect(dialog.exists()).toBe(true)
-      expect(dialog.props('labels')).toEqual({
-        title: 'Delete Event Configuration Source'
-      })
+      expect(dialog.props('title')).toBe('Delete Event Configuration Source')
     })
 
     it('hides dialog when visible is false', async () => {
       store.deleteEventConfigSourceDialogState.visible = false
       await wrapper.vm.$nextTick()
-      expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
+      expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
     })
 
     it('renders Cancel and Delete buttons', () => {
-      const buttons = wrapper.findAllComponents(FeatherButton)
-      expect(buttons.length).toBe(2)
-      expect(buttons.some((b: VueWrapper) => b.text().includes('Cancel'))).toBe(true)
-      expect(buttons.some((b: VueWrapper) => b.text().includes('Delete'))).toBe(true)
+      const cancelBtn = wrapper.find('.cancel-btn')
+      const deleteBtn = wrapper.find('.action-btn')
+      expect(cancelBtn.exists()).toBe(true)
+      expect(deleteBtn.exists()).toBe(true)
+      expect(cancelBtn.text()).toContain('Cancel')
+      expect(deleteBtn.text()).toContain('Delete')
     })
 
     it('renders confirmation question', () => {
@@ -145,9 +145,9 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
 
   describe('Cancel Button', () => {
     it('calls hideDeleteEventConfigSourceDialog when Cancel is clicked', async () => {
-      const cancelBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Cancel'))
-      expect(cancelBtn?.exists()).toBe(true)
-      await cancelBtn?.trigger('click')
+      const cancelBtn = wrapper.find('.cancel-btn')
+      expect(cancelBtn.exists()).toBe(true)
+      await cancelBtn.trigger('click')
       expect(store.hideDeleteEventConfigSourceDialog).toHaveBeenCalled()
     })
   })
@@ -156,8 +156,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     it('calls deleteEventConfigSourceById and navigates on success', async () => {
       vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
 
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(eventConfigService.deleteEventConfigSourceById).toHaveBeenCalledWith(1)
@@ -168,8 +168,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     it('does not show snackbar on successful deletion', async () => {
       vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
 
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(mockShowSnackBar).not.toHaveBeenCalled()
@@ -181,8 +181,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(false)
 
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to delete event configuration source')
@@ -196,8 +196,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
       const testError = new Error('Delete failed')
       vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockRejectedValue(testError)
 
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error deleting event configuration source:', testError)
@@ -210,8 +210,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
       await wrapper.vm.$nextTick()
 
       const mockDelete = vi.spyOn(eventConfigService, 'deleteEventConfigSourceById')
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(mockDelete).not.toHaveBeenCalled()
@@ -225,8 +225,8 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
       vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
       await wrapper.vm.$nextTick()
 
-      const deleteBtn = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
-      await deleteBtn?.trigger('click')
+      const deleteBtn = wrapper.find('.action-btn')
+      await deleteBtn.trigger('click')
       await flushPromises()
 
       expect(eventConfigService.deleteEventConfigSourceById).toHaveBeenCalledWith(0)
@@ -234,10 +234,10 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     })
   })
 
-  describe('Dialog Hidden Event', () => {
-    it('calls hideDeleteEventConfigSourceDialog when dialog emits hidden event', async () => {
-      const dialog = wrapper.findComponent(FeatherDialog)
-      dialog.vm.$emit('hidden')
+  describe('Dialog Dismiss Event', () => {
+    it('calls hideDeleteEventConfigSourceDialog when dialog emits cancel event', async () => {
+      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      dialog.vm.$emit('cancel')
       expect(store.hideDeleteEventConfigSourceDialog).toHaveBeenCalled()
     })
   })

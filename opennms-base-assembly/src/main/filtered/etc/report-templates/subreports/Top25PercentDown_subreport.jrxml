@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Top25PercentDown_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport name="Top25PercentDown_subreport" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6dc0261-a724-46bf-98f4-1b34dd8d933b">
 	<property name="ireport.zoom" value="1.9487171000000014"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+	<parameter name="ONMS_REPORT_DIR" forPrompting="false" class="java.lang.String">
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.Integer" isForPrompting="false">
+	<parameter name="TIME_RANGE" forPrompting="false" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
-	<parameter name="CATEGORY_NAME" class="java.lang.String" isForPrompting="false">
+	<parameter name="CATEGORY_NAME" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="END_TIME" class="java.util.Date">
@@ -22,14 +21,13 @@
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="START_TIME_STRING" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="END_TIME_STRING" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{END_TIME})]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[SELECT
+	<query language="sql"><![CDATA[SELECT
 	node_outages.categoryname,
 	node_outages.nodelabel,
 	node_outages.nodesyslocation,
@@ -137,8 +135,7 @@ GROUP BY
 ORDER BY
 	outages_percent DESC
 
-LIMIT 25]]>
-	</queryString>
+LIMIT 25]]></query>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodesyslocation" class="java.lang.String"/>
@@ -151,43 +148,27 @@ LIMIT 25]]>
 	<field name="avail_percent" class="java.lang.Double"/>
 	<field name="outages_percent" class="java.lang.Double"/>
 	<field name="avail_total" class="java.lang.Double"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<columnHeader>
-		<band height="50">
-			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="0" y="30" width="148" height="20"/>
-				<textElement/>
-				<text><![CDATA[Node]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="148" y="30" width="151" height="20"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Down]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Sub-sub-header" x="0" y="0" width="299" height="20"/>
-				<textElement/>
-				<text><![CDATA[Top 25 Nodes Down (%)]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<columnHeader height="50">
+		<element kind="staticText" uuid="da6d73cb-9eb4-4258-81da-7463545fef04" x="0" y="30" width="148" height="20" style="Sub-sub-sub-header">
+			<text><![CDATA[Node]]></text>
+		</element>
+		<element kind="staticText" uuid="0db37343-b1fc-4822-870d-42e7952c6c25" x="148" y="30" width="151" height="20" hTextAlign="Right" style="Sub-sub-sub-header">
+			<text><![CDATA[Down]]></text>
+		</element>
+		<element kind="staticText" uuid="22996c8a-971c-4953-941d-7689bd867fbd" x="0" y="0" width="299" height="20" style="Sub-sub-header">
+			<text><![CDATA[Top 25 Nodes Down (%)]]></text>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement style="Body" x="0" y="0" width="148" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00">
-				<reportElement style="Body" x="148" y="0" width="151" height="20"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[String.format("%10.2f", $F{outages_percent}) + "%"]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="7e519183-11a0-4449-8eb9-31bc9f26dbde" x="0" y="0" width="148" height="20" style="Body">
+				<expression><![CDATA[$F{nodelabel}]]></expression>
+			</element>
+			<element kind="textField" uuid="b86e13d7-0d5c-45fb-affa-43baa2803ce2" x="148" y="0" width="151" height="20" pattern="###0.00" hTextAlign="Right" style="Body">
+				<expression><![CDATA[String.format("%10.2f", $F{outages_percent}) + "%"]]></expression>
+			</element>
 		</band>
 	</detail>
-	<noData>
-		<band height="50"/>
-	</noData>
+	<noData height="50"/>
 </jasperReport>

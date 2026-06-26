@@ -1,0 +1,64 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+// Global PrimeVue tweaks that match the FeatherDS look but cannot be expressed
+// as theme tokens. Colors/backgrounds/borders are handled by the preset
+// (opennms-preset.ts) — keep this file for non-token, structural rules only.
+//
+// Rules are intentionally unlayered so they win over PrimeVue's `@layer primevue`
+// styles. Remove this file when FeatherDS is dropped (migration Phase 6) if the
+// PrimeVue defaults are acceptable at that point.
+
+// The app font (OpenSans) is applied per-FeatherDS-component, not globally on
+// <body>, and PrimeVue components don't set their own font. Teleported overlays
+// (e.g. Select / AutoComplete dropdown panels appended to <body>) therefore fall
+// back to the browser default font. Apply the app font to every PrimeVue
+// component so inline and teleported components alike match FeatherDS.
+.p-component {
+  font-family: OpenSans, Helvetica, Arial, sans-serif;
+}
+
+// FeatherDS data tables render column headers in uppercase.
+.p-datatable-thead > tr > th {
+  text-transform: uppercase;
+}
+
+// FeatherDS buttons use uppercase, bold, slightly spaced label text. Match it
+// (these are FeatherDS button typography token values; text-transform and
+// letter-spacing are not expressible as PrimeVue theme tokens).
+.p-button {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08929em;
+  font-weight: 700;
+
+  .p-button-label {
+    font-weight: 700;
+  }
+}
+
+// Outlined buttons read better with a slightly heavier border given the button
+// border-radius (border color comes from the preset). Not a PrimeVue token, so
+// it lives here.
+.p-button-outlined {
+  border-width: 2px;
+}

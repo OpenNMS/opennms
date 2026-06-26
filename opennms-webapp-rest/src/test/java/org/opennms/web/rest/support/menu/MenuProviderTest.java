@@ -90,7 +90,7 @@ public class MenuProviderTest {
         MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
         final String[] expectedNames = new String[] {
-                "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Nodes", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
                 "Logs", "Secure Credentials Vault", "Connect to Zenith"
         };
         List<String> actualNames = getMenuNames(infoMenu);
@@ -117,7 +117,7 @@ public class MenuProviderTest {
         MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
         final String[] expectedNames = new String[] {
-                "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Nodes", "Nodes (Legacy)", "Assets", "Path Outages", "Device Configs", "External Requisitions",
                 "Logs", "Secure Credentials Vault"
         };
 
@@ -136,7 +136,7 @@ public class MenuProviderTest {
 
         // Should not have any admin-only roles
         final String[] expectedNames = new String[] {
-            "Node List", "Nodes (Legacy)", "Assets", "Path Outages"
+            "Nodes", "Nodes (Legacy)", "Assets", "Path Outages"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);
@@ -154,7 +154,7 @@ public class MenuProviderTest {
 
         // Should not have any admin-only roles, but should have file system manager roles
         final String[] expectedNames = new String[] {
-            "Node List", "Nodes (Legacy)", "Assets", "Path Outages", "File Editor"
+            "Nodes", "Nodes (Legacy)", "Assets", "Path Outages", "File Editor"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);

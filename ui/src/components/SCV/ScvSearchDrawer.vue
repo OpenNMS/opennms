@@ -1,10 +1,11 @@
 <template>
-  <FeatherDrawer
+  <PDrawer
     data-test="scv-drawer"
-    @hidden="emit('hidden')"
-    v-model="drawerOpen"
-    :labels="{ close: 'close', title: 'Use an Existing Credential' }"
-    width="40em"
+    v-model:visible="drawerOpen"
+    position="right"
+    header="Use an Existing Credential"
+    :style="{ width: '40em' }"
+    @hide="emit('hidden')"
   >
     <div class="drawer-content">
       <h3>Use an existing credential</h3>
@@ -12,81 +13,84 @@
       <h4>Find existing credentials, searching by alias or key.</h4>
       <div class="large-spacer"></div>
 
-      <FeatherInput
-        :modelValue="searchValue"
-        @update:modelValue="val => onSearch(val as string)"
-        label="Search for credentials"
-      >
-        <template v-slot:post>
-          <FeatherIcon :icon="SearchIcon" />
-        </template>
-      </FeatherInput>
+      <FloatLabel class="search-field">
+        <IconField>
+          <PInputText
+            id="scv-search"
+            :modelValue="searchValue"
+            @update:modelValue="val => onSearch(val as string)"
+          />
+          <InputIcon>
+            <FeatherIcon :icon="SearchIcon" />
+          </InputIcon>
+        </IconField>
+        <label for="scv-search">Search for credentials</label>
+      </FloatLabel>
 
       <div class="large-spacer"></div>
 
       <div class="results-table-container">
-        <table
-          class="data-table"
+        <PDataTable
+          :value="filteredResults"
           aria-label="SCV Search Results Table"
         >
-          <thead>
-            <tr>
-              <th>Alias</th>
-              <th>Key</th>
-            </tr>
-          </thead>
-          <tbody v-if="filteredResults.length > 0">
-            <tr
-              v-for="(item, index) of filteredResults"
-              :key="`${item.alias}-${item.key}-${index}`"
-              style="cursor: pointer;"
-            >
-              <td>
-                {{ item.type === 'alias' ? item.alias : '' }}
-              </td>
-              <td v-if="item.type === 'key' && item.key">
-                <a @click.prevent="onItemSelected(item)">{{ item.type === 'key' ? item.key : '' }}</a>
-              </td>
-              <td v-else></td>
-            </tr>
-          </tbody>
-          <tbody v-else>
-            <tr>
-              <td
-                colspan="2"
-                style="text-align: center; font-style: italic;"
-              >
-                No results found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <PColumn header="Alias">
+            <template #body="{ data }">
+              {{ data.type === 'alias' ? data.alias : '' }}
+            </template>
+          </PColumn>
+          <PColumn header="Key">
+            <template #body="{ data }">
+              <a
+                v-if="data.type === 'key' && data.key"
+                href="#"
+                class="key-link"
+                @click.prevent="onItemSelected(data)"
+              >{{ data.key }}</a>
+            </template>
+          </PColumn>
+          <template #empty>
+            <div class="empty-results">No results found.</div>
+          </template>
+        </PDataTable>
       </div>
+
       <div class="large-spacer"></div>
       <div class="scv-drawer-button-container">
-        <FeatherButton
-          secondary
+        <PButton
+          text
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
+          label="Cancel"
           @click="drawerOpen = false"
-          >Cancel</FeatherButton
-        >
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </PDrawer>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Drawer from 'primevue/drawer'
+import FloatLabel from 'primevue/floatlabel'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherInput } from '@featherds/input'
 import SearchIcon from '@featherds/icon/action/Search'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
+
+const PButton = Button
+const PColumn = Column
+const PDataTable = DataTable
+const PDrawer = Drawer
+const PInputText = InputText
 
 const props = defineProps<{
   isOpen: boolean
@@ -104,11 +108,15 @@ const credentialsLoading = ref(false)
 const filteredResults = ref<ScvSearchItem[]>([])
 const searchValue = ref<string>('')
 
-const onSearch = debounce((query: string) => {
+const runQuery = (query: string) => {
   credentialsLoading.value = true
   searchValue.value = query
   filteredResults.value = scvStore.queryCredentials(query)
   credentialsLoading.value = false
+}
+
+const onSearch = debounce((query: string) => {
+  runQuery(query)
 }, DEBOUNCE_DELAY)
 
 const onItemSelected = (item: ScvSearchItem) => {
@@ -117,51 +125,52 @@ const onItemSelected = (item: ScvSearchItem) => {
 
 watch(() => props.isOpen, (newVal) => {
   drawerOpen.value = newVal
+
+  if (newVal) {
+    // When the drawer opens, show all current results (empty search => all
+    // credentials) so the user sees existing entries without having to type first.
+    runQuery(searchValue.value)
+  } else {
+    // Reset the search on close so the next open starts fresh; otherwise the
+    // drawer (kept mounted by the parent) would reopen showing the prior query.
+    searchValue.value = ''
+  }
 })
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/table/scss/table" as table;
-@use "@featherds/styles/mixins/typography";
-@use "@featherds/styles/themes/variables";
-
 .drawer-content {
   height: 100%;
   margin-top: 1em;
-  padding: 1em 1.5em 1em 1.5em;
   overflow-y: auto;
 
   .large-spacer {
     min-height: 1em;
   }
 
+  .search-field {
+    // room above the input for the floating label
+    margin-top: 1em;
+
+    :deep(.p-inputtext),
+    :deep(.p-iconfield) {
+      width: 100%;
+    }
+  }
+
   .results-table-container {
     max-height: 30em;
     overflow-y: auto;
+  }
 
-    table.data-table {
-      width: 100%;
-      @include table.table;
-      @include table.table-condensed;
-      border: 1px solid var(variables.$border-on-surface);
+  .key-link {
+    cursor: pointer;
+    color: var(--p-primary-color);
+  }
 
-      >thead {
-        background-color: var(variables.$border-on-surface);
-        padding: 1em;
-        text-transform: uppercase;
-
-        th {
-          padding: 0.5em 1em 0.5em 1em;
-          text-align: left;
-        }
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-      }
-    }
+  .empty-results {
+    text-align: center;
+    font-style: italic;
   }
 
   .scv-drawer-button-container {

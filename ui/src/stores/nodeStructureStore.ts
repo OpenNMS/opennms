@@ -25,6 +25,7 @@ import { defaultColumns } from '@/components/Nodes/utils'
 import { hasNonEmptyProperty } from '@/lib/utils'
 import API from '@/services'
 import {
+  AssetFilter,
   Category,
   DrawerState,
   ExtendedSearchValue,
@@ -104,6 +105,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
       (queryFilter.value.selectedServices?.length ?? 0) > 0 ||
       !!queryFilter.value.ipAddress?.length ||
+      !!queryFilter.value.macAddress?.length ||
+      !!queryFilter.value.nodesWithDownAggregateStatus ||
+      !!queryFilter.value.nodesWithAssets ||
+      (queryFilter.value.assetFilters?.length ?? 0) > 0 ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams) ||
@@ -137,6 +142,34 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = {
       ...queryFilter.value,
       ipAddress
+    }
+  }
+
+  const setFilterWithMacAddress = async (macAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      macAddress
+    }
+  }
+
+  const setFilterWithDownAggregateStatus = async (nodesWithDownAggregateStatus: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithDownAggregateStatus
+    }
+  }
+
+  const setFilterWithNodesWithAssets = async (nodesWithAssets: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithAssets
+    }
+  }
+
+  const setFilterWithAssetFilters = async (assetFilters: AssetFilter[]) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: [...assetFilters]
     }
   }
 
@@ -281,6 +314,22 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.ipAddress = prefs.nodeFilter.ipAddress
       }
 
+      if (prefs.nodeFilter.macAddress) {
+        filter.macAddress = prefs.nodeFilter.macAddress
+      }
+
+      if (prefs.nodeFilter.nodesWithDownAggregateStatus) {
+        filter.nodesWithDownAggregateStatus = true
+      }
+
+      if (prefs.nodeFilter.nodesWithAssets) {
+        filter.nodesWithAssets = true
+      }
+
+      if (prefs.nodeFilter.assetFilters?.length) {
+        filter.assetFilters = [...prefs.nodeFilter.assetFilters]
+      }
+
       if (prefs.nodeFilter.topology) {
         filter.topology = prefs.nodeFilter.topology
       }
@@ -344,6 +393,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value.selectedMonitoringLocations = queryFilter.value.selectedMonitoringLocations.filter(
       loc => loc.name !== locationName
     )
+    // Also update the autocomplete-backed ref (read by the drawer on reopen); otherwise a removed
+    // location chip would reappear in the drawer's selection. Mirrors removeCategory/removeService.
+    selectedMonitoringLocations.value = selectedMonitoringLocations.value.filter(
+      loc => loc.name !== locationName
+    )
   }
 
   const removeExtendedSearch = (item: ExtendedSearchValue) => {
@@ -361,6 +415,25 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
   const removeIpAddress = () => {
     queryFilter.value = { ...queryFilter.value, ipAddress: '' }
+  }
+
+  const removeMacAddress = () => {
+    queryFilter.value = { ...queryFilter.value, macAddress: '' }
+  }
+
+  const removeDownAggregateStatus = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithDownAggregateStatus: false }
+  }
+
+  const removeNodesWithAssets = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithAssets: false }
+  }
+
+  const removeAssetFilter = (column: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      assetFilters: (queryFilter.value.assetFilters ?? []).filter(f => f.column !== column)
+    }
   }
 
   const removeTopology = () => {
@@ -438,6 +511,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     resetColumnSelectionToDefault,
     setCategoryMode,
     setFilterWithIpAddress,
+    setFilterWithMacAddress,
+    setFilterWithDownAggregateStatus,
+    setFilterWithNodesWithAssets,
+    setFilterWithAssetFilters,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
     setFilterWithSysParams,
@@ -460,6 +537,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeCategory2,
     removeExtendedSearch,
     removeIpAddress,
+    removeMacAddress,
+    removeDownAggregateStatus,
+    removeNodesWithAssets,
+    removeAssetFilter,
     removeTopology,
     setExtendedSearchParams,
     removeFlow,

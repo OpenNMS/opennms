@@ -122,15 +122,5 @@ const removeSource = (name: string) => {
   :deep(.p-datatable-thead) {
     display: none;
   }
-
-  :deep(.p-datatable-tbody > tr) {
-    background-color: var(--feather-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-datatable-tbody > tr > td) {
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
 }
 </style>

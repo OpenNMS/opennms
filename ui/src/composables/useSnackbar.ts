@@ -20,39 +20,65 @@
 /// License.
 ///
 
-import { SnackbarProps } from '@/types'
+import { MessageSeverity, SnackbarProps } from '@/types'
 import { isDefined } from '@vueuse/core'
-import { readonly, ref } from 'vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - no type declarations published for this entry point
+import ToastEventBus from 'primevue/toasteventbus'
 
-const isDisplayed = ref(false)
-const isCentered = ref<boolean | undefined>(true)
-const hasError = ref<boolean | undefined>(false)
-const message = ref('')
-const setTimeout = ref<number | undefined>(4000)
+// Snackbars are rendered by a PrimeVue Toast (see Common/Snackbar.vue). We emit
+// on PrimeVue's toast event bus rather than calling useToast(): useToast()
+// depends on an inject context, but this composable is also used at module scope
+// (Pinia stores, the router, services), where inject is unavailable. The event
+// bus is a module singleton and works everywhere.
+export const SNACKBAR_GROUP_CENTER = 'snackbar-center'
+export const SNACKBAR_GROUP_START = 'snackbar-start'
+
+const DEFAULT_TIMEOUT = 4000
+
+// Tracks toasts that are currently displayed (keyed by severity + group + message)
+// so that identical toasts are not stacked. Unlike the old FeatherDS snackbar —
+// which had a single slot and could only ever show one message — PrimeVue Toast
+// stacks every add(). A burst of identical messages (e.g. one validation-error
+// toast per invalid field) would otherwise produce a pile of duplicates. Distinct
+// messages still stack normally.
+const activeKeys = new Map<string, number>()
 
 const useSnackbar = () => {
   const showSnackBar = (snackbarProps: SnackbarProps) => {
-    const { center, error, msg, timeout } = snackbarProps
-    isDisplayed.value = true
-    isCentered.value = isDefined(center) ? center : true
-    hasError.value = error
-    message.value = msg
-    setTimeout.value = timeout
+    const { center, error, msg, severity: severityProp, timeout } = snackbarProps
+
+    // Prefer an explicit severity; fall back to the legacy error boolean.
+    const severity = severityProp ?? (error ? MessageSeverity.Error : MessageSeverity.Success)
+    const group = (isDefined(center) ? center : true) ? SNACKBAR_GROUP_CENTER : SNACKBAR_GROUP_START
+    const life = timeout ?? DEFAULT_TIMEOUT
+    const key = `${severity}::${group}::${msg}`
+
+    // Suppress an identical toast while one is still visible.
+    if (activeKeys.has(key)) {
+      return
+    }
+
+    ToastEventBus.emit('add', {
+      severity,
+      detail: msg,
+      life,
+      closable: true,
+      group
+    })
+
+    activeKeys.set(key, window.setTimeout(() => activeKeys.delete(key), life))
   }
 
   const hideSnackbar = () => {
-    isDisplayed.value = false
-    message.value = ''
+    ToastEventBus.emit('remove-all-groups')
+    activeKeys.forEach(timer => window.clearTimeout(timer))
+    activeKeys.clear()
   }
 
   return {
     showSnackBar,
-    hideSnackbar,
-    isDisplayed: isDisplayed,
-    isCentered: readonly(isCentered),
-    hasError: readonly(hasError),
-    message: readonly(message),
-    setTimeout: readonly(setTimeout)
+    hideSnackbar
   }
 }
 

@@ -1,37 +1,61 @@
 <template>
   <div class="form-container" id="scv">
     <p class="title">{{ isEditing ? 'Update' : 'Add' }} Credentials</p>
-    <FeatherInput
-      data-test="alias-input"
-      :disabled="isEditing"
-      label="Alias"
-      @update:modelValue="updateAlias"
-      :modelValue="scvStore.credentials.alias"
-      :error="aliasError"
-      class="alias-input"
-    />
+    <div class="alias-input">
+      <FloatLabel data-test="alias-input">
+        <PInputText
+          id="scv-alias"
+          :disabled="isEditing"
+          :modelValue="scvStore.credentials.alias"
+          @update:modelValue="updateAlias"
+          :invalid="!!aliasError"
+          :aria-describedby="aliasError ? 'scv-alias-error' : undefined"
+        />
+        <label for="scv-alias">Alias</label>
+      </FloatLabel>
+      <small
+        v-if="aliasError"
+        id="scv-alias-error"
+        class="field-error"
+        role="alert"
+      >{{ aliasError }}</small>
+    </div>
 
     <form autocomplete="off" class="row">
-      <FeatherInput
-        data-test="username-input"
-        autocomplete="new-username"
-        label="Username"
-        @update:modelValue="updateUsername"
-        :modelValue="scvStore.credentials.username"
-        class="input"
-      />
+      <div class="input">
+        <FloatLabel data-test="username-input">
+          <PInputText
+            id="scv-username"
+            autocomplete="new-username"
+            :modelValue="scvStore.credentials.username"
+            @update:modelValue="updateUsername"
+          />
+          <label for="scv-username">Username</label>
+        </FloatLabel>
+      </div>
 
-      <FeatherInput
-        data-test="password-input"
-        autocomplete="new-password"
-        label="Password"
-        @update:modelValue="updatePassword"
-        :modelValue="scvStore.credentials.password"
-        :error="passwordError"
-        class="input"
-      />
+      <div class="input">
+        <FloatLabel data-test="password-input">
+          <PInputText
+            id="scv-password"
+            autocomplete="new-password"
+            :modelValue="scvStore.credentials.password"
+            @update:modelValue="updatePassword"
+            :invalid="!!passwordError"
+            :aria-describedby="passwordError ? 'scv-password-error' : undefined"
+          />
+          <label for="scv-password">Password</label>
+        </FloatLabel>
+        <small
+          v-if="passwordError"
+          id="scv-password-error"
+          class="field-error"
+          role="alert"
+        >{{ passwordError }}</small>
+      </div>
     </form>
 
+    <div class="large-spacer"></div>
     <div class="add-btn" @click="addAttribute" data-test="add-attr-btn">
       <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
       Add attribute
@@ -45,31 +69,29 @@
       @set-key-error="setKeyError"
     />
 
+    <div class="large-spacer"></div>
     <div class="btns">
-      <FeatherButton
+      <PButton
         v-if="!isEditing"
         data-test="add-creds-btn"
         :disabled="disabled"
-        primary
-        @click="addCredentials">
-          Add Credentials
-      </FeatherButton>
+        label="Add Credentials"
+        @click="addCredentials"
+      />
 
-      <FeatherButton
+      <PButton
         v-if="isEditing"
         data-test="update-creds-btn"
         :disabled="disabled"
-        primary
-        @click="updateCredentials">
-          Update Credentials
-      </FeatherButton>
+        label="Update Credentials"
+        @click="updateCredentials"
+      />
 
-      <FeatherButton
-        primary
+      <PButton
         data-test="clear-btn"
-        @click="clearCredentials">
-          Clear Form
-      </FeatherButton>
+        label="Clear Form"
+        @click="clearCredentials"
+      />
     </div>
   </div>
 </template>
@@ -77,8 +99,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherInput } from '@featherds/input'
-import { FeatherButton } from '@featherds/button'
+import InputText from 'primevue/inputtext'
+import FloatLabel from 'primevue/floatlabel'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
@@ -86,6 +109,9 @@ import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import SCVAttribute from './SCVAttribute.vue'
+
+const PInputText = InputText
+const PButton = Button
 
 const scvStore = useScvStore()
 const keyError = ref(false)
@@ -149,13 +175,12 @@ const addAttribute = () => scvStore.addAttribute()
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 
 .form-container {
   @include elevation(1);
-  background: var($surface);
+  background: var(--p-content-background);
   height: calc(100vh - 149px);
   display: flex;
   flex-direction: column;
@@ -172,13 +197,28 @@ const addAttribute = () => scvStore.addAttribute()
     display: flex;
     flex-direction: row;
     gap: 10px;
+    // room above the inputs for the floating labels
+    margin-top: 2rem;
   }
 
   .alias-input {
     width: calc(50% - 5px);
+    // room above the input for the floating label
+    margin-top: 2rem;
   }
   .input {
     width: 50%;
+  }
+
+  .alias-input,
+  .input {
+    :deep(.p-inputtext) {
+      width: 100%;
+    }
+  }
+
+  .field-error {
+    color: var(--p-error-color);
   }
 
   .add-btn {
@@ -190,14 +230,11 @@ const addAttribute = () => scvStore.addAttribute()
   .btns {
     display: flex;
     flex-direction: row;
+    gap: 0.5rem;
   }
-}
-</style>
 
-<style lang="scss">
-#scv {
-  .feather-input-sub-text {
-    min-height: 0.4rem !important;
+  .large-spacer {
+    min-height: 1em;
   }
 }
 </style>

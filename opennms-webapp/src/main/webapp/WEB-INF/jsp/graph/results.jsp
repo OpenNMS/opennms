@@ -262,7 +262,7 @@
                     <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
                     <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" resourceid ="${resultSet.resource.id}" graphname="${graph.name}" graphtitle = "${graph.title}">
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
-                            <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
+                            <a style="padding-right: 3px" title="Add ${graph.title} to Graph Collection">
                                 <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
                                     <i class="fas fa-plus" aria-hidden="true"></i>
                                 </button>

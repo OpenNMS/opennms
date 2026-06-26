@@ -22,10 +22,14 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  parseAssetFilters,
   parseCategories,
+  parseDownAggregateStatus,
+  parseNodesWithAssets,
   parseFlows,
   parseForeignSource,
   parseIplike,
+  isIplikePattern,
   parseMaclike,
   parseMib2Params,
   parseMonitoredServices,
@@ -131,12 +135,59 @@ describe('Nodes queryStringParser test', () => {
       ['invalid iplike', { iplike: 'abc' }, null],
       ['invalid iplike localhost', { iplike: 'localhost' }, null],
       ['invalid partial iplike', { iplike: '192.168.' }, null],
-      ['invalid iplike', { iplike: 'A.B.C.D' }, null]
+      ['invalid iplike', { iplike: 'A.B.C.D' }, null],
+
+      ['iplike wildcard pattern from iplike param', { iplike: '192.168.1.*' }, '192.168.1.*'],
+      ['iplike wildcard pattern from ipAddress param', { ipAddress: '10.*.*.*' }, '10.*.*.*'],
+      ['iplike prefers iplike param over ipAddress', { iplike: '10.*.*.*', ipAddress: '192.168.1.1' }, '10.*.*.*'],
+      ['iplike all wildcards', { iplike: '*.*.*.*' }, '*.*.*.*'],
+      ['iplike IPv6 wildcard from iplike param', { iplike: '2001:db8:*:*:*:*:*:*' }, '2001:db8:*:*:*:*:*:*'],
+      ['iplike IPv6 wildcard from ipAddress param', { ipAddress: 'fe80:*:*:*:*:*:*:*' }, 'fe80:*:*:*:*:*:*:*']
     ]) (
       'parseIpLike: %s',
       (title, queryObject, expected) => {
         const result = parseIplike(queryObject)
         expect(result).toEqual(expected)
+      }
+    )
+  })
+
+  describe('isIplikePattern', () => {
+    test.each([
+      // wildcard patterns
+      ['accepts 192.168.1.*', '192.168.1.*', true],
+      ['accepts *.*.*.*', '*.*.*.*', true],
+      ['accepts 10.*.*.*', '10.*.*.*', true],
+      ['accepts 2001:db8:*:*:*:*:*:*', '2001:db8:*:*:*:*:*:*', true],
+      ['accepts *:*:*:*:*:*:*:*', '*:*:*:*:*:*:*:*', true],
+      ['accepts fe80:*:*:*:*:*:*:*', 'fe80:*:*:*:*:*:*:*', true],
+      ['accepts 2001:db8:85a3:*:*:8a2e:*:7334', '2001:db8:85a3:*:*:8a2e:*:7334', true],
+      // IPv4 range patterns (hyphen per-octet)
+      ['accepts 10.0.0.1-255 — range in last octet', '10.0.0.1-255', true],
+      ['accepts 10.9.1-3.* — range in third octet with wildcard', '10.9.1-3.*', true],
+      ['accepts 10.0-255.0-255.0-255 — ranges in multiple octets', '10.0-255.0-255.0-255', true],
+      // IPv4 comma list patterns
+      ['accepts 192.168.0,1.* — list in third octet', '192.168.0,1.*', true],
+      ['accepts 192.168.1,2,3-255.* — list with ranges', '192.168.1,2,3-255.*', true],
+      ['accepts 10.0.0.1,5,10-20 — comma list without wildcard', '10.0.0.1,5,10-20', true],
+      ['accepts 192.168.1,2,3-255.* — list with ranges and wildcard in last octet', '192.168.1,2,3-255.*', true],
+      // space normalization: spaces around commas are stripped before matching
+      ['accepts 192.168.0, 1.* — space after comma is normalized', '192.168.0, 1.*', true],
+      ['accepts 192.168.1, 2, 3-255.* — spaces after commas normalized', '192.168.1, 2, 3-255.*', true],
+      // IPv6 range patterns
+      ['accepts 2001:0-ffff:*:*:*:*:*:* — range in second hextet', '2001:0-ffff:*:*:*:*:*:*', true],
+      // rejection cases
+      ['rejects plain text', 'notanip', false],
+      ['rejects exact IP without wildcard', '192.168.1.100', false],
+      ['rejects empty string', '', false],
+      ['rejects exact IPv6, no * — handled by isIP() not isIplikePattern', '2001:db8::1', false],
+      ['rejects invalid hex group gggg (g is not hex)', '2001:db8:gggg:*:*:*:*:*', false],
+      ['rejects 9 groups (too many)', '2001:db8:*:*:*:*:*:*:extra', false],
+      ['rejects cross-octet range notation (not valid iplike)', '10.0.0.1-10.0.0.255', false]
+    ]) (
+      'isIplikePattern: %s',
+      (title, value, expected) => {
+        expect(isIplikePattern(value)).toBe(expected)
       }
     )
   })
@@ -371,6 +422,76 @@ describe('Nodes queryStringParser test', () => {
       ['empty maclike', { maclike: '' }, null]
     ]) ('parseMaclike: %s', (title, queryObject, expected) => {
       expect(parseMaclike(queryObject)).toEqual(expected)
+    })
+  })
+
+  describe('parseDownAggregateStatus', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithDownAggregateStatus: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithDownAggregateStatus: 'TRUE' }, true],
+      ['boolean true', { nodesWithDownAggregateStatus: true }, true],
+      ['false', { nodesWithDownAggregateStatus: 'false' }, false],
+      ['garbage', { nodesWithDownAggregateStatus: 'yes' }, false]
+    ]) ('parseDownAggregateStatus: %s', (title, queryObject, expected) => {
+      expect(parseDownAggregateStatus(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseNodesWithAssets', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithAssets: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithAssets: 'TRUE' }, true],
+      ['boolean true', { nodesWithAssets: true }, true],
+      ['false', { nodesWithAssets: 'false' }, false],
+      ['garbage', { nodesWithAssets: 'yes' }, false]
+    ]) ('parseNodesWithAssets: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithAssets(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseAssetFilters', () => {
+    test.each([
+      ['empty', {}, []],
+      ['column only', { assetColumn: 'building' }, []],
+      ['value only', { assetValue: 'HQ' }, []],
+      ['single valid building', { assetColumn: 'building', assetValue: 'HQ' }, [{ column: 'building', value: 'HQ' }]],
+      ['single valid region', { assetColumn: 'region', assetValue: 'East' }, [{ column: 'region', value: 'East' }]],
+      ['disallowed column (geolocation) skipped', { assetColumn: 'city', assetValue: 'Pittsburgh' }, []],
+      ['unknown column skipped', { assetColumn: 'bogus', assetValue: 'X' }, []]
+    ]) ('parseAssetFilters: %s', (title, queryObject, expected) => {
+      expect(parseAssetFilters(queryObject)).toEqual(expected)
+    })
+
+    test('pairs repeated column/value params by index', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'region'],
+        assetValue: ['HQ', 'East']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'region', value: 'East' }
+      ])
+    })
+
+    test('skips disallowed columns within a repeated set', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'city', 'rack'],
+        assetValue: ['HQ', 'Pittsburgh', 'R1']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'rack', value: 'R1' }
+      ])
+    })
+
+    test('duplicate columns keep the last value', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'building'],
+        assetValue: ['HQ', 'DC2']
+      })
+      expect(result).toEqual([{ column: 'building', value: 'DC2' }])
     })
   })
 

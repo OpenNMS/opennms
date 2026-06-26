@@ -34,15 +34,82 @@
     </div>
 </template>
 
+<script lang="ts">
+import API from '@/services'
+
+// Module scope, unlike `<script setup>` bindings which are created per component
+// instance: the specs are large and the REST responses are deliberately
+// uncacheable, so they are fetched once and kept for the lifetime of the SPA session.
+let cachedSpecs: [Record<string, unknown>, Record<string, unknown>] | null = null
+
+// RapiDoc may normalize the spec it is handed in place, so never share the cached
+// objects with it directly.
+const cloneSpec = (spec: Record<string, unknown>): Record<string, unknown> =>
+  JSON.parse(JSON.stringify(spec))
+
+// The generated specs carry "example": null on most operations, and null members
+// inside "examples" maps, both of which crash RapiDoc's example normalization
+// (typeof null === 'object', so it dereferences null.value) and leave an uncaught
+// TypeError per affected parameter and response panel. Drop them before rendering.
+const stripNullExamples = (key: string, value: unknown): unknown => {
+  if ((key === 'example' || key === 'examples') && value === null) {
+    return undefined
+  }
+  if (key === 'examples' && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).filter(([, v]) => v !== null))
+  }
+  return value
+}
+
+const sanitizeSpec = (spec: Record<string, unknown>): Record<string, unknown> =>
+  JSON.parse(JSON.stringify(spec, stripNullExamples))
+
+const fetchSpecs = async (): Promise<[Record<string, unknown>, Record<string, unknown>]> => {
+  if (cachedSpecs) {
+    return cachedSpecs
+  }
+
+  const http = 'http', https = 'https'
+  const protocol = window.location.protocol.slice(0, -1)
+
+  const [openApiSpec, openApiSpecV1] = await Promise.all([API.getOpenApi(), API.getOpenApiV1()])
+
+  let modifiedOpenApiSpec = openApiSpec
+  let modifiedOpenApiV1Spec = openApiSpecV1
+
+  if (protocol === https) {
+    const openApiSpecString = JSON.stringify(openApiSpec)
+    const modifiedOpenApiSpecString = openApiSpecString.includes(https)
+      ? openApiSpecString
+      : openApiSpecString.replaceAll(http, https)
+    modifiedOpenApiSpec = JSON.parse(modifiedOpenApiSpecString)
+    const openApiSpecStringV1 = JSON.stringify(openApiSpecV1)
+    const modifiedOpenApiSpecStringV1 = openApiSpecStringV1.includes(https)
+      ? openApiSpecStringV1
+      : openApiSpecStringV1.replaceAll(http, https)
+    modifiedOpenApiV1Spec = JSON.parse(modifiedOpenApiSpecStringV1)
+  }
+
+  modifiedOpenApiSpec = sanitizeSpec(modifiedOpenApiSpec)
+  modifiedOpenApiV1Spec = sanitizeSpec(modifiedOpenApiV1Spec)
+
+  // an empty object means the fetch failed; let the next mount retry instead of caching it
+  if (Object.keys(modifiedOpenApiSpec).length > 0 && Object.keys(modifiedOpenApiV1Spec).length > 0) {
+    cachedSpecs = [modifiedOpenApiSpec, modifiedOpenApiV1Spec]
+  }
+
+  return [modifiedOpenApiSpec, modifiedOpenApiV1Spec]
+}
+</script>
+
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import 'rapidoc'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-import API from '@/services'
 
 const appStore = useAppStore()
 const menuStore = useMenuStore()
@@ -68,36 +135,45 @@ const getTheme = computed(() => {
   return 'light'
 })
 
+// The v1 doc starts below the fold, so rendering it is deferred until it is
+// about to be scrolled into view.
+let v1Observer: IntersectionObserver | null = null
+let v1Rendered = false
+
 const setup = async () => {
   const docEl = document.getElementById('thedoc')
   const docElV1 = document.getElementById('thedocV1')
-  const http = 'http', https = 'https'
-  const protocol = window.location.protocol.slice(0, -1)
 
-  const openApiSpec = await API.getOpenApi()
-  const openApiSpecV1 = await API.getOpenApiV1()
+  const [openApiSpec, openApiSpecV1] = await fetchSpecs()
 
-  let modifiedOpenApiSpec = openApiSpec
-  let modifiedOpenApiV1Spec = openApiSpecV1
-
-  if (protocol === https) {
-    const openApiSpecString = JSON.stringify(openApiSpec)
-    const modifiedOpenApiSpecString = openApiSpecString.includes(https)
-      ? openApiSpecString
-      : openApiSpecString.replaceAll(http, https)
-    modifiedOpenApiSpec = JSON.parse(modifiedOpenApiSpecString)
-    const openApiSpecStringV1 = JSON.stringify(openApiSpecV1)
-    const modifiedOpenApiSpecStringV1 = openApiSpecStringV1.includes(https)
-      ? openApiSpecStringV1
-      : openApiSpecStringV1.replaceAll(http, https)
-    modifiedOpenApiV1Spec = JSON.parse(modifiedOpenApiSpecStringV1)
+  if (!doc.value) {
+    // the component was unmounted while the specs were being fetched
+    return
   }
 
-  doc.value.loadSpec(modifiedOpenApiSpec)
-  docV1.value.loadSpec(modifiedOpenApiV1Spec)
-
+  doc.value.loadSpec(cloneSpec(openApiSpec))
   setTheme(docEl)
   setTheme(docElV1)
+
+  const renderV1 = () => {
+    v1Rendered = true
+    docV1.value?.loadSpec(cloneSpec(openApiSpecV1))
+  }
+
+  v1Observer?.disconnect()
+  if (v1Rendered) {
+    // re-running for a theme change: the v1 doc is already visible, reload it directly
+    renderV1()
+  } else if (docElV1) {
+    v1Observer = new IntersectionObserver((entries) => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        v1Observer?.disconnect()
+        v1Observer = null
+        renderV1()
+      }
+    }, { rootMargin: '600px 0px' })
+    v1Observer.observe(docElV1)
+  }
 }
 
 const setTheme = (element: HTMLElement | null) => {
@@ -129,6 +205,11 @@ watch(getTheme, () => setup())
 
 onMounted(async () => {
   setup()
+})
+
+onUnmounted(() => {
+  v1Observer?.disconnect()
+  v1Observer = null
 })
 </script>
 

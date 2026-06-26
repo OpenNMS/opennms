@@ -98,8 +98,9 @@ Add additional parameters as key/value pairs in the *Advanced Options* area.
 | Default
 
 | cimTimeout
-| Timeout, in milliseconds, used to test interface addresses for a reachable CIM service.
-Increase this value only if you have problems discovering CIM services on host systems.
+| Timeout, in milliseconds, for the direct connection to a host system's CIM service (port 5989).
+A host whose CIM port is unreachable fails within this timeout instead of stalling the import.
+Increase this value only if reachable hosts are being missed during discovery.
 | 3000
 
 | hostSystemServices

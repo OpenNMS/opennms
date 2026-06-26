@@ -549,10 +549,6 @@ watch(() => route.params.id, (id: string | string[]) => {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-
-            :deep(.p-chip-label) {
-              color: var(--feather-primary-text-on-surface);
-            }
           }
 
           .no-profiles-text {
