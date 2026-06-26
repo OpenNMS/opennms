@@ -544,6 +544,8 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
+  /** Present when the plugin registers a global overlay component (ALEC-302 / OIA UIExtension.getGlobalModuleFileName). */
+  globalModuleFileName?: string
 }
 
 export enum SetOperator {

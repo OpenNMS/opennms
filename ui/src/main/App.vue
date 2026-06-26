@@ -20,13 +20,24 @@
       <Footer />
     </template>
   </FeatherAppLayout>
+
+  <!-- Global plugin overlays: plugins that declare a globalModuleFileName are mounted
+       here so they are visible on every page, not just under Plugins > menu entry.
+       Teleport renders outside FeatherAppLayout to avoid z-index / overflow clipping. -->
+  <Teleport to="body">
+    <GlobalPlugin
+      v-for="plugin in globalPlugins"
+      :key="plugin.extensionId"
+      :plugin="plugin"
+    />
+  </Teleport>
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Footer from '@/components/Layout/Footer.vue'
@@ -34,6 +45,7 @@ import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
 import Spinner from '@/components/Common/Spinner.vue'
 import Snackbar from '@/components/Common/Snackbar.vue'
+import GlobalPlugin from '@/components/Plugin/GlobalPlugin.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -47,6 +59,8 @@ const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
 const nodeStructureStore = useNodeStructureStore()
 const pluginStore = usePluginStore()
+
+const globalPlugins = computed(() => pluginStore.plugins.filter(p => p.globalModuleFileName))
 
 onMounted(() => {
   authStore.getWhoAmI()
