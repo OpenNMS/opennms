@@ -88,6 +88,28 @@ describe('FormField.vue', () => {
     expect(input.attributes('data-invalid')).toBe('false')
   })
 
+  it('auto-associates the error with a slotted input even when the consumer does not wire aria-describedby', async () => {
+    const wrapper = mount(FormField, {
+      props: { label: 'Port', for: 'trap-port', error: 'Port is required' },
+      slots: { default: '<input data-test="control" />' }
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('input[data-test="control"]').attributes('aria-describedby')).toBe('trap-port-error')
+  })
+
+  it('removes the auto-associated aria-describedby when the error clears', async () => {
+    const wrapper = mount(FormField, {
+      props: { label: 'Port', for: 'trap-port', error: 'Port is required' },
+      slots: { default: '<input data-test="control" />' }
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('input[data-test="control"]').attributes('aria-describedby')).toBe('trap-port-error')
+
+    await wrapper.setProps({ error: undefined })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('input[data-test="control"]').attributes('aria-describedby')).toBeUndefined()
+  })
+
   it('renders no label element when label is omitted', () => {
     const wrapper = mount(FormField, {
       props: { for: 'x', error: 'Bad' },

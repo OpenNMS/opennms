@@ -54,7 +54,4 @@ onMounted(() => logStore.getLogs())
   padding: 15px;
   position: relative;
 }
-.onms-row {
-  flex-wrap: nowrap;
-}
 </style>

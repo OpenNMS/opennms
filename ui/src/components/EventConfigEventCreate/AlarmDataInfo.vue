@@ -106,7 +106,6 @@ const alarmTypeId = useId()
 const reductionKeyId = useId()
 const clearKeyId = useId()
 const enableAlarmData = ref(false)
-const enableAutoClean = ref(false)
 const alarmReductionKey = ref('')
 const alarmClearKey = ref('')
 const selectedEventAlarmType = ref<ISelectItemType>({ _text: '', _value: '' })
@@ -114,7 +113,6 @@ const selectedEventAlarmType = ref<ISelectItemType>({ _text: '', _value: '' })
 watch(() => props, (newVal) => {
   enableAlarmData.value = newVal.addAlarmData
   alarmReductionKey.value = newVal.reductionKey
-  enableAutoClean.value = newVal.autoClean
   alarmClearKey.value = newVal.clearKey
   selectedEventAlarmType.value = {
     _text: newVal.alarmType._text,

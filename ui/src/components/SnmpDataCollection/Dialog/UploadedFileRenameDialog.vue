@@ -139,16 +139,16 @@ const validateName = () => {
 }
 
 const onChangeFileName = (value: any) => {
-  if (value) {
-    newFileName.value = value.trim()
-    validateName()
-  }
+  newFileName.value = (value ?? '').trim()
+  validateName()
 }
 
 const saveChanges = () => {
   if (overwriteFile.value) {
+    resolved = true
     emits('overwrite')
   } else if (renameFile.value && validateName() && props.index >= 0 && props.index < props.fileBucket.length) {
+    resolved = true
     emits('rename', newFileName.value)
   }
 }

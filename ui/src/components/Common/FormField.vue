@@ -1,5 +1,8 @@
 <template>
-  <div class="form-field">
+  <div
+    ref="rootEl"
+    class="form-field"
+  >
     <label
       v-if="label"
       :for="controlId"
@@ -29,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -51,6 +54,31 @@ const invalid = computed(() => !!props.error)
 // Programmatic input→error association for screen readers. Defined only when
 // there is both an error to point at and a control id to anchor it to.
 const errorId = computed(() => (props.error && props.for ? `${props.for}-error` : undefined))
+
+// Associate the error message with the slotted control for assistive tech.
+// FormField can't set attributes on slot content from the template, and a
+// declarative `:aria-describedby` on the control is unreliable across PrimeVue
+// types (e.g. InputNumber merges fallthrough attrs onto its wrapper <span>, not
+// the inner <input>). So target the real focusable input/textarea directly.
+// Additive and idempotent: controls that already wire `errorId` themselves
+// (the `v-slot="{ errorId }"` pattern) resolve to the same id. Plain Selects
+// render no input and are simply skipped (the error keeps its role="alert").
+const rootEl = ref<HTMLElement | null>(null)
+
+const syncAriaDescribedby = () => {
+  const control = rootEl.value?.querySelector<HTMLElement>('input, textarea')
+  if (!control) {
+    return
+  }
+  if (errorId.value) {
+    control.setAttribute('aria-describedby', errorId.value)
+  } else if (props.for && control.getAttribute('aria-describedby') === `${props.for}-error`) {
+    control.removeAttribute('aria-describedby')
+  }
+}
+
+onMounted(syncAriaDescribedby)
+watch(errorId, () => nextTick(syncAriaDescribedby))
 </script>
 
 <style lang="scss" scoped>

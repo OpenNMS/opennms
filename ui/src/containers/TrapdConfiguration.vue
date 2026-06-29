@@ -1,7 +1,7 @@
 <template>
   <div class="trap-configuration-container">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>

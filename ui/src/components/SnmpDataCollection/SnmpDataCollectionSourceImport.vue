@@ -134,9 +134,10 @@
     <div class="container">
       <DataTable
         v-if="orderedSourceFiles.length"
+        v-model:first="firstRow"
+        v-model:rows="rowsPerPage"
         :value="orderedSourceFiles"
         paginator
-        :rows="10"
         :rowsPerPageOptions="[10, 20, 50, 100, 200]"
         class="data-table"
         data-test="import-files-table"
@@ -294,6 +295,9 @@ const sourceFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as SnmpDataCollectionSourceUploadResponse)
 const sourceFiles = ref<UploadSnmpDataCollectionFileType[]>([])
 const isLoading = ref(false)
+// Client-side paginator state, kept in sync so removeFile() can clamp the page.
+const firstRow = ref(0)
+const rowsPerPage = ref(10)
 const snackbar = useSnackbar()
 const displayRenameDialog = ref(false)
 const selectedIndex = ref<number | null>(null)
@@ -377,6 +381,11 @@ const removeFile = (file: UploadSnmpDataCollectionFileType) => {
     return
   }
   sourceFiles.value.splice(sourceIndex, 1)
+  // Keep the paginator on a valid page once the row count shrinks.
+  const remaining = sourceFiles.value.length
+  if (remaining > 0 && firstRow.value >= remaining) {
+    firstRow.value = (Math.ceil(remaining / rowsPerPage.value) - 1) * rowsPerPage.value
+  }
 }
 
 const openFileDialog = () => {

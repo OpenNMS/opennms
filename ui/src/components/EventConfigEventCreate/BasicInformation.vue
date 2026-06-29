@@ -325,11 +325,9 @@ import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
 import VarbindsDecode from './VarbindsDecode.vue'
 
-const loading = ref(false)
 const timeout = ref<number>(-1)
 const results = ref<Array<IAutocompleteItemType>>([])
 const selectedSource = ref<IAutocompleteItemType>()
-const createSourceDialog = ref(false)
 const router = useRouter()
 const store = useEventModificationStore()
 const eventConfigStore = useEventConfigStore()
@@ -449,7 +447,6 @@ const resetValues = () => {
   varbinds.value = []
   varbindsDecode.value = []
   selectedSource.value = { _text: '', _value: -1 }
-  createSourceDialog.value = false
 }
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
@@ -820,13 +817,11 @@ const setSelectedSource = (item: any) => {
 }
 
 const search = (query: string) => {
-  loading.value = true
   clearTimeout(timeout.value)
   timeout.value = window.setTimeout(() => {
     results.value = eventConfigStore.uploadedSources
       .filter(s => s.name.toLowerCase().includes(query.toLowerCase()))
       .map(x => ({ _text: x.name, _value: x.id }))
-    loading.value = false
   }, 500)
 }
 

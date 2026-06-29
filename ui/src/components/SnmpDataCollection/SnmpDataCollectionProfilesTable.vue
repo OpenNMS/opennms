@@ -34,6 +34,7 @@
 
     <DataTable
       v-if="searchedProfiles.length"
+      v-model:first="firstRow"
       :value="searchedProfiles"
       paginator
       dataKey="id"
@@ -147,6 +148,9 @@ const searchId = useId()
 
 const showDeleteConfirmation = ref(false)
 const profileToDelete = ref<SnmpCollectionProfile | null>(null)
+// First-row index of the client-side paginator; reset on search so a query
+// that shrinks the result set can't leave the user stranded on an empty page.
+const firstRow = ref(0)
 
 const emptyListContent = {
   msg: 'No results found.'
@@ -187,6 +191,7 @@ const toggleRowMenu = (event: Event, profile: SnmpCollectionProfile) => {
 }
 
 const onChangeSearchTerm = (value: string | undefined) => {
+  firstRow.value = 0
   store.onChangeProfilesSearchTerm(value ?? '')
 }
 

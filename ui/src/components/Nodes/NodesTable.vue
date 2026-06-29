@@ -24,8 +24,8 @@
       </div>
       <div class="spacer-large"></div>
       <div class="spacer-large"></div>
-      <div class="search-container onms-col-12">
-        <div class="onms-row">
+      <div class="search-container">
+        <div class="search-row">
           <div class="filter">
             <div class="search-filter-column">
               <FeatherInput
@@ -795,6 +795,15 @@ table {
   align-items: center;
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+// Lay the search filter and the chip list out side by side, content-sized.
+// (This was a flexbox `feather-row`; a CSS-Grid `onms-row` would squeeze the
+// unclassed children into 1fr tracks and overflow the 450px search input.)
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .search-container {
