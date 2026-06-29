@@ -51,9 +51,32 @@
 }
 
 // Match Select height to the taller inputs so they line up in shared rows.
-// .p-select is inline-flex with centered content, so the label stays centered.
+// The root is inline-flex with the default `align-items: stretch`, so at the
+// taller height the label stretches full-height and its text pins to the top;
+// center it so the value/placeholder sits vertically centered (same fix as
+// .p-multiselect below).
 .p-select {
   height: 3.75rem;
+  align-items: center;
+}
+
+// Exception: the rows-per-page dropdown inside a DataTable/Paginator is a
+// .p-select, so it inherits the roomy 3.75rem above and towers over the
+// paginator nav buttons. Pin it to the paginator's own nav-button height so the
+// pager row lines up. Applies to every PrimeVue Paginator app-wide.
+.p-paginator-rpp-dropdown {
+  height: var(--p-paginator-nav-button-height);
+}
+
+// Match MultiSelect to the taller inputs/selects when empty; min-height (not a
+// fixed height) so its chip display can still grow as items are selected.
+// The root is inline-flex with the default `align-items: stretch`, which lets
+// the label-container fill the taller control but leaves the label text pinned
+// to the top; center it so the value/placeholder sits vertically centered (the
+// same way .p-select renders).
+.p-multiselect {
+  min-height: 3.75rem;
+  align-items: center;
 }
 
 // FeatherDS buttons use uppercase, bold, slightly spaced label text. Match it

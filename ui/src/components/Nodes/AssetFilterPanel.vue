@@ -2,30 +2,34 @@
   <div class="asset-filter-container">
     <div class="onms-row add-row">
       <div class="onms-col-5">
-        <FeatherSelect
-          label="Asset Field"
-          :options="assetOptions"
-          :textProp="'title'"
-          v-model="currentSelection"
-        />
+        <FormField label="Asset Field">
+          <Select
+            v-model="currentSelection"
+            :options="assetOptions"
+            optionLabel="title"
+            placeholder="Select a field"
+            data-test="asset-field-select"
+          />
+        </FormField>
       </div>
       <div class="onms-col-5">
-        <FeatherInput
-          v-model="assetValue"
-          label="Value"
-        />
+        <FormField label="Value">
+          <InputText
+            v-model="assetValue"
+            data-test="asset-value-input"
+          />
+        </FormField>
       </div>
       <div class="onms-col-2 add-btn-col">
-        <FeatherButton
-          secondary
-          icon="Add"
-          data-test="add-asset-filter-button"
+        <Button
+          outlined
+          data-test="asset-add-button"
           class="add-asset-filter-button"
           @click="onAddAssetFilter"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
     </div>
 
@@ -46,13 +50,13 @@
       </PColumn>
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
-          <FeatherButton
-            icon="Delete"
+          <Button
+            text
             data-test="delete-asset-filter-button"
             @click="removeGridItem(data.column)"
           >
             <FeatherIcon :icon="DeleteIcon" />
-          </FeatherButton>
+          </Button>
         </template>
       </PColumn>
     </PDataTable>
@@ -64,19 +68,19 @@ import { onMounted, ref } from 'vue'
 
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import InputTextComponent from 'primevue/inputtext'
-import { FeatherButton } from '@featherds/button'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import DeleteIcon from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import FormField from '@/components/Common/FormField.vue'
 import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PInputText = InputTextComponent
+const PInputText = InputText
 
 interface GridItem {
   column: string
@@ -84,11 +88,12 @@ interface GridItem {
   value: string
 }
 
-const assetOptions: ISelectItemType[] = ASSET_COLUMN_OPTIONS.map(o => ({ title: o.label, value: o.value }))
+interface AssetOption { title: string; value: string }
+const assetOptions: AssetOption[] = ASSET_COLUMN_OPTIONS.map(o => ({ title: o.label, value: o.value }))
 
 const nodeStructureStore = useNodeStructureStore()
 const assetValue = ref('')
-const currentSelection = ref<ISelectItemType | undefined>(undefined)
+const currentSelection = ref<AssetOption | undefined>(undefined)
 const gridItems = ref<GridItem[]>([])
 
 const onAddAssetFilter = () => {
@@ -128,7 +133,7 @@ const resetFromStore = () => {
   currentSelection.value = undefined
 }
 
-defineExpose({ applyToStore, resetFromStore })
+defineExpose({ applyToStore, resetFromStore, currentSelection, assetValue, gridItems })
 
 onMounted(() => {
   resetFromStore()
@@ -149,7 +154,8 @@ onMounted(() => {
 
   .add-btn-col {
     display: flex;
-    padding-bottom: 0.25rem;
+    align-items: flex-end;
+    padding-bottom: 0.5rem;
   }
 
   .asset-filter-table {

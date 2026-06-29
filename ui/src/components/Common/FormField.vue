@@ -95,9 +95,16 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
     height: 3rem;
   }
 
+  // MultiSelect grows with its chip display, so normalize via min-height to
+  // match the other controls when empty while still allowing it to grow.
+  :deep(.p-multiselect) {
+    min-height: 3rem;
+  }
+
   :deep(.p-inputtext),
   :deep(.p-inputnumber),
-  :deep(.p-select) {
+  :deep(.p-select),
+  :deep(.p-multiselect) {
     width: 100%;
   }
 
