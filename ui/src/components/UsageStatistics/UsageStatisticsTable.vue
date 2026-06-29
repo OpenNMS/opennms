@@ -96,7 +96,7 @@ const PColumn = Column
 // PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via
 // the passthrough so the header cells stay associated with their columns for
 // screen readers (the FeatherDS table set scope="col" per column).
-const columnHeaderPt = { headerCell: { scope: 'col' } }
+const columnHeaderPt = { headerCell: { scope: 'col' }}
 
 interface StatisticsItem {
   // this is just for sorting

@@ -494,6 +494,11 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     gap: 5px;
+
+    // enlarge the button icons (FeatherIcon scales with font-size)
+    :deep(.p-button) {
+      font-size: 1.3rem;
+    }
   }
 }
 </style>

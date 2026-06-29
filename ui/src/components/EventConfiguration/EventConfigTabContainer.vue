@@ -38,4 +38,12 @@ const onTabChange = (value: string | number) => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.event-config-tab-container {
+  .tabs {
+    :deep(.p-tab) {
+      text-transform: uppercase;
+    }
+  }
+}
+</style>

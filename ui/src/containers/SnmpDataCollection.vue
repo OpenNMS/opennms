@@ -33,6 +33,7 @@
     </div>
     <div class="tab-container">
       <Tabs
+        class="tabs"
         :value="store.activeTab"
         @update:value="onTabChange"
       >
@@ -141,6 +142,12 @@ const downloadConfig = async (format: 'xml' | 'json') => {
 
   .tab-container {
     padding: 0px 40px 0px 40px;
+
+    .tabs {
+      :deep(.p-tab) {
+        text-transform: uppercase;
+      }
+    }
   }
 }
 </style>

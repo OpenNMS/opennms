@@ -149,7 +149,9 @@
         v-if="!isCreateMode"
         class="tab-container"
       >
-        <PTabs v-model:value="store.activeTab">
+        <PTabs
+          class="tabs"
+          v-model:value="store.activeTab">
           <PTabList>
             <PTab :value="0">System Definitions</PTab>
             <PTab :value="1">MIB Groups</PTab>
@@ -605,6 +607,12 @@ watch(() => route.params.id, (id: string | string[]) => {
     .tab-container {
       margin-top: 25px;
       padding: 10px;
+
+      .tabs {
+        :deep(.p-tab) {
+          text-transform: uppercase;
+        }
+      }
     }
 
     .create-action-row {

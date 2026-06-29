@@ -36,7 +36,7 @@
       </div>
     </div>
     <TableCard class="content">
-      <PTabs v-model:value="activeTab">
+      <PTabs v-model:value="activeTab" class="tabs">
         <PTabList>
           <PTab :value="0">Profile Details</PTab>
           <PTab :value="1">Sources</PTab>
@@ -423,6 +423,12 @@ onMounted(async () => {
       margin-top: 0;
       padding-top: 20px;
       border-top: 1px solid var(--p-content-border-color);
+    }
+
+    .tabs {
+      :deep(.p-tab) {
+        text-transform: uppercase;
+      }
     }
   }
 }

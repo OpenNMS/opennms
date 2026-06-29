@@ -1,7 +1,7 @@
 <template>
   <TableCard class="snmp-config-definitions-table">
     <div class="header">
-      <div class="action-container">
+      <div class="header-content-container">
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
@@ -27,9 +27,9 @@
             New Definition
           </PButton>
         </div>
-       </div>
+      </div>
     </div>
-    <div class="container">
+    <div class="table-container">
       <PDataTable
         :value="definitionRows"
         paginator
@@ -333,7 +333,7 @@ const onSearchChange = (value: string | number | undefined) => {
     justify-content: space-between;
     margin-bottom: 1rem;
 
-    .action-container {
+    .header-content-container {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -372,7 +372,7 @@ const onSearchChange = (value: string | number | undefined) => {
     }
   }
 
-  .container {
+  .table-container {
     .ip-address-badge-wrapper {
       display: flex;
       flex-wrap: wrap;

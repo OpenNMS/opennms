@@ -4,9 +4,9 @@
       <div class="title-container">
         <!-- <span class="title"> SNMP Interfaces </span> -->
       </div>
-      <div class="action-container">
+      <div class="header-content-container">
         <div class="search-container">
-          <FormField>
+          <FormField class="search-field">
             <IconField>
               <InputText
                 :id="searchId"
@@ -238,7 +238,6 @@ onMounted(async () => {
 
   .header {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 20px;
 
     .title-container {
@@ -246,15 +245,53 @@ onMounted(async () => {
       align-items: center;
     }
 
-    .action-container {
+    .header-content-container {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: flex-start;
       gap: 5px;
       width: 30%;
 
       .search-container {
-        width: 80%;
+        // width: 80%;
+
+        flex: 0 0 auto;
+        min-width: 30em;
+
+        .search-field {
+          width: 100%;
+
+          // make the input (and its IconField wrapper) fill the field so the
+          // search icon sits at the input's right edge rather than floating far
+          // out in the container
+          :deep(.p-iconfield) {
+            display: block;
+            width: 100%;
+          }
+
+          :deep(.p-inputtext) {
+            width: 100%;
+            padding-right: 2.75rem;
+          }
+
+          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // keep it near the right edge, vertically centered
+          :deep(.p-inputicon) {
+            font-size: 1.75rem;
+            right: 0.625rem;
+            margin-top: -0.875rem;
+          }
+        }
+
+        .refresh {
+          display: flex;
+
+          :deep(.p-inputicon) {
+            font-size: 1.75rem;
+            right: 0.625rem;
+            margin-top: -0.875rem;
+          }
+        }
       }
     }
   }
