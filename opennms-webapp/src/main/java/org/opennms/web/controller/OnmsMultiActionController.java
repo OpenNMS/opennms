@@ -24,6 +24,7 @@ package org.opennms.web.controller;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * {@link #handleRequest} or {@link #handleRequestInternal} (e.g. to wrap dispatch in a transaction).</p>
  */
 public abstract class OnmsMultiActionController extends AbstractController {
+
+    /**
+     * Framework lifecycle methods that must never be treated as dispatch targets. Both are public
+     * {@code ModelAndView (HttpServletRequest, HttpServletResponse)} methods (inherited from
+     * {@link AbstractController}, or overridden by subclasses), so without this guard a request such as
+     * {@code /event/handleRequest.htm} would resolve to one of them and re-enter this dispatcher, recursing
+     * until a {@link StackOverflowError} (a trivially reachable DoS). They are not valid actions.
+     */
+    private static final Set<String> RESERVED_METHOD_NAMES = Set.of("handleRequest", "handleRequestInternal");
 
     public OnmsMultiActionController() {
         // Accept all HTTP methods, matching MultiActionController (do not restrict to GET/HEAD/POST).
@@ -106,6 +116,10 @@ public abstract class OnmsMultiActionController extends AbstractController {
 
     /** Finds a public handler method by name returning a ModelAndView and taking (request, response[, command]). */
     private Method findHandlerMethod(final String methodName) {
+        if (RESERVED_METHOD_NAMES.contains(methodName)) {
+            // Never dispatch to the framework lifecycle methods; doing so re-enters this dispatcher (recursion).
+            return null;
+        }
         for (final Method method : getClass().getMethods()) {
             if (!method.getName().equals(methodName) || !ModelAndView.class.isAssignableFrom(method.getReturnType())) {
                 continue;
