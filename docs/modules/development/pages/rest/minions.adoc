@@ -1,0 +1,114 @@
+
+= Minions API
+
+The Minions API exposes the Minions registered with OpenNMS. Two versions are available: the read-only v1 API under `/rest/minions`, and the full CRUD v2 API under `/api/v2/minions`.
+
+A Minion is represented by the `OnmsMinion` model: `id`, `label`, `location`, `type`, `status`, `version`, `date`, `lastCheckedIn`, and a `properties` map.
+
+== Version 1 (`/rest/minions`)
+
+The v1 API is read-only and produces `application/xml`, `application/json`, and `application/atom+xml`.
+
+[caption=]
+.Minions API (v1) GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/rest/minions`                 | Lists all Minions (with `totalCount`). Supports the standard v1 criteria query parameters.
+| `/rest/minions/count`           | Returns the total number of Minions. Produces `text/plain`.
+| `/rest/minions/\{minionId}`     | Fetches a single Minion by ID. Returns `404` if it does not exist.
+| `/rest/minions/\{minionId}/\{key}` | Fetches a single property value of a Minion. Produces `text/plain`.
+
+|===
+
+== Version 2 (`/api/v2/minions`)
+
+The v2 API supports full CRUD and produces/consumes `application/json` and `application/xml`.
+
+=== GETs (reading data)
+
+[caption=]
+.Minions API (v2) GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/minions`                         | Lists Minions. Supports `limit`, `offset`, `orderBy`, `order`, and FIQL search (`_s`). Returns `204 No Content` when there are no matches.
+| `/api/v2/minions/count`                   | Returns the number of matching Minions. Produces `text/plain`.
+| `/api/v2/minions/properties`              | Lists the searchable properties. Optional `q` filters the list.
+| `/api/v2/minions/properties/\{propertyId}` | Lists the available values for a searchable property. Optional `q` and `limit`.
+| `/api/v2/minions/\{id}`                    | Fetches a single Minion by ID. Returns `404` if it does not exist.
+
+|===
+
+=== POSTs (Creating Data)
+
+[caption=]
+.Minions API (v2) POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/minions` | Creates a new Minion. Returns `201 Created` with a `Location` header.
+
+|===
+
+=== PUT (modifying data)
+
+[caption=]
+.Minions API (v2) PUT functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/minions`        | Bulk-updates the matching Minions. Consumes `application/x-www-form-urlencoded`.
+| `/api/v2/minions/\{id}`  | Replaces a single Minion. Consumes `application/json` or `application/xml`. The `id` must match the `id` in the payload, otherwise `400 Bad Request`.
+| `/api/v2/minions/\{id}`  | Updates individual properties of a single Minion. Consumes `application/x-www-form-urlencoded`.
+
+|===
+
+=== DELETEs (Removing Data)
+
+[caption=]
+.Minions API (v2) DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/minions`       | Deletes all Minions matching the current query.
+| `/api/v2/minions/\{id}` | Deletes a single Minion by ID. Also fires a `monitoringSystemDeleted` event and removes the node from the Minion's provisioning requisition.
+
+|===
+
+== Examples using cURL
+
+.List all Minions (v1)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/minions"
+----
+
+.Fetch a single Minion (v1)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/minions/00000000-0000-0000-0000-000000ddba11"
+----
+
+.Response
+[source,json]
+----
+{"id":"00000000-0000-0000-0000-000000ddba11","label":"minion-01","location":"Raleigh","type":"Minion","status":"Up","lastCheckedIn":"2026-06-30T12:00:00.000-04:00"}
+----
+
+.List Minions with a FIQL filter (v2)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/minions?_s=location%3D%3DRaleigh"
+----
+
+.Delete a Minion (v2)
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/api/v2/minions/00000000-0000-0000-0000-000000ddba11"
+----

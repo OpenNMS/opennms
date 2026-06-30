@@ -1,0 +1,65 @@
+
+= GraphML API
+
+The `/graphml` endpoint stores and retrieves named GraphML graphs (used by the topology and graph features). It is mounted under `/opennms/rest/graphml` and produces/consumes `application/xml` (GraphML). The `\{graph-name}` path element names the graph.
+
+== GETs (reading data)
+
+[caption=]
+.GraphML API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/graphml/\{graph-name}` | Retrieves the stored GraphML graph with the given name as GraphML XML.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `application/xml` (a GraphML document).
+
+[caption=]
+.GraphML API POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/graphml/\{graph-name}` | Creates a new GraphML graph stored under the given name from the posted GraphML XML. Returns `201 Created`, or `500` if a graph with that name already exists or the GraphML fails validation.
+
+|===
+
+== DELETEs (Removing Data)
+
+[caption=]
+.GraphML API DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/graphml/\{graph-name}` | Deletes the stored GraphML graph with the given name.
+
+|===
+
+== Examples using cURL
+
+.Create a graph from a GraphML file
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/xml' \
+  --data-binary @my-graph.xml \
+  "http://127.0.0.1:8980/opennms/rest/graphml/my-graph"
+----
+
+.Fetch a stored graph
+[source,bash]
+----
+curl -u admin:admin -H 'Accept: application/xml' \
+  "http://127.0.0.1:8980/opennms/rest/graphml/my-graph"
+----
+
+.Delete a stored graph
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/rest/graphml/my-graph"
+----

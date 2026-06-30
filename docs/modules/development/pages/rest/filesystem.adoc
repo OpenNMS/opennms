@@ -1,0 +1,89 @@
+
+= Filesystem API
+
+The `/filesystem` endpoint exposes a restricted view of editable configuration files under `$OPENNMS_HOME/etc`.
+
+All operations require the `FILESYSTEM EDITOR` role; editing `users.xml` additionally requires the `ADMIN` role.
+Only files with one of the following extensions are accessible: `xml`, `properties`, `boot`, `cfg`, `drl`, `groovy`, `bsh`, `dcb`, and a file must reside within `etc` (search depth 4).
+
+== GETs (reading data)
+
+[caption=]
+.Filesystem API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/filesystem`             | Lists the accessible files. Optional query parameter `changedFilesOnly` (boolean) restricts the list to files that differ from the shipped defaults. Produces `application/json`.
+| `/filesystem/extensions`  | Lists the supported file extensions. Produces `application/json`.
+| `/filesystem/help`        | Returns Markdown help for a file. Query parameter `f` (String) selects the file. Produces `text/markdown`.
+| `/filesystem/contents`    | Returns the contents of a file. Query parameter `f` (String) selects the file. The response content type is derived from the file. Returns `204 No Content` if the file does not exist.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `multipart/form-data` and produces `text/html`.
+
+[caption=]
+.Filesystem API POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/filesystem/contents`    a|
+Uploads (creates or overwrites) a file.
+
+* `f` (String, query parameter): the target file name.
+* `upload` (multipart part): the file content.
+
+XML files are validated before being written.
+
+|===
+
+== DELETEs (Removing Data)
+
+`DELETE` produces `text/html`.
+
+[caption=]
+.Filesystem API DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/filesystem/contents`    | Deletes a file. Query parameter `f` (String) selects the file.
+
+|===
+
+== Examples using cURL
+
+.List the accessible files
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/filesystem"
+----
+
+.List only files that have changed from their defaults
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/filesystem?changedFilesOnly=true"
+----
+
+.Read a file's contents
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/filesystem/contents?f=discovery-configuration.xml"
+----
+
+.Upload (overwrite) a file
+[source,bash]
+----
+curl -u admin:admin -F "upload=@discovery-configuration.xml" \
+  "http://127.0.0.1:8980/opennms/rest/filesystem/contents?f=discovery-configuration.xml"
+----
+
+.Delete a file
+[source,bash]
+----
+curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/rest/filesystem/contents?f=obsolete.xml"
+----
