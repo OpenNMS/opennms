@@ -28,7 +28,7 @@ Get SNMP interfaces whose node are in the foreign source `Servers` and are assoc
 
 [source, bash]
 ----
-curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node.foreignSource==Servers;ipInterfaces.ipAddress=127.0.0.1"
+curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node.foreignSource==Servers;ipInterfaces.ipAddress==127.0.0.1"
 ----
 
 == PUTs/POSTs (modifying data)

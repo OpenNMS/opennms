@@ -33,7 +33,27 @@ The following operations are supported:
 
 | /snmpConfig/\{ipaddress}
 | Add or update the SNMP configuration for a given IP address.
+Accepts an XML or JSON `snmp-info` document, or `application/x-www-form-urlencoded` form parameters (see below).
 |===
+
+=== Form-urlencoded PUT
+
+In addition to an XML/JSON request body, `PUT /snmpConfig/\{ipaddress}` also accepts a request with `Content-Type: application/x-www-form-urlencoded`, updating the SNMP configuration from individual form parameters rather than a serialized `snmp-info` document.
+The resource selects this variant based on the request `Content-Type`.
+Accepted form parameters (matching the `snmp-info` attributes) include:
+`version`, `port`, `retries`, `timeout`, `location`, `community`, `readCommunity`, `writeCommunity`,
+`maxVarsPerPdu`, `maxRepetitions`, `maxRequestSize`, `proxyHost`,
+`securityName`, `securityLevel`, `authPassPhrase`, `authProtocol`, `privPassPhrase`, `privProtocol`,
+`engineId`, `contextEngineId`, `contextName`, `enterpriseId`, and `TTL`.
+
+.Example: update individual properties with form parameters
+[source,bash]
+----
+curl -u admin:admin -X PUT \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "version=v2c" -d "readCommunity=public" -d "timeout=2000" \
+     http://127.0.0.1:8980/opennms/rest/snmpConfig/10.1.1.1
+----
 
 == Determine API version
 
