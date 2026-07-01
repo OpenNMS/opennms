@@ -17,7 +17,7 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('NodeDetails.vue', () => {
-  const mountComponent = (id = 42) => {
+  const mountComponent = (id = '42') => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
 
@@ -59,17 +59,17 @@ describe('NodeDetails.vue', () => {
   })
 
   it('calls nodeStore.getNodeById with the id prop on mount', async () => {
-    const { nodeStore } = mountComponent(42)
+    const { nodeStore } = mountComponent('42')
     await flushPromises()
 
     expect(nodeStore.getNodeById).toHaveBeenCalledWith({ id: '42' })
   })
 
   it('calls nodeStore.getNodeById again when id prop changes', async () => {
-    const { wrapper, nodeStore } = mountComponent(42)
+    const { wrapper, nodeStore } = mountComponent('42')
     await flushPromises()
 
-    await wrapper.setProps({ id: 99 })
+    await wrapper.setProps({ id: '99' })
     await flushPromises()
 
     expect(nodeStore.getNodeById).toHaveBeenCalledTimes(2)

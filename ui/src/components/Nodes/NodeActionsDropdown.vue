@@ -2,8 +2,9 @@
   <Button
     text
     title="Node Actions"
+    aria-label="Node Actions"
     aria-haspopup="true"
-    aria-controls="node-actions-menu"
+    :aria-controls="menuId"
     data-test="node-actions-button"
     @click="toggle"
   >
@@ -13,7 +14,7 @@
     />
   </Button>
   <Menu
-    id="node-actions-menu"
+    :id="menuId"
     ref="menu"
     :model="items"
     popup
@@ -46,6 +47,7 @@ const props = defineProps({
 
 const menuIcon = markRaw(MoreVert)
 const menu = ref()
+const menuId = computed(() => `node-actions-menu-${props.node.id}`)
 
 const linkItems = [
   { name: 'events', label: 'Events' },

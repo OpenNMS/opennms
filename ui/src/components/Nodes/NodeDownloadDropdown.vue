@@ -2,6 +2,7 @@
   <Button
     text
     title="Download"
+    aria-label="Download"
     aria-haspopup="true"
     aria-controls="node-download-menu"
     class="node-download-dropdown"

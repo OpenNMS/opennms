@@ -33,21 +33,21 @@ const nodeStore = useNodeStore()
 
 const props = defineProps({
   id: {
-    type: Number
+    type: String
   }
 })
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
-const items: BreadCrumb[] = [
+const items = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
   { label: 'Nodes', to: '/' },
   { label: 'Node Details', to: '#', position: 'last' }
-]
+])
 
 const fetchNode = () => {
-  if (props.id != null) {
-    nodeStore.getNodeById({ id: String(props.id) } as Node)
+  if (props.id) {
+    nodeStore.getNodeById({ id: props.id } as Node)
   }
 }
 
