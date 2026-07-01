@@ -14,7 +14,7 @@ NOTE: If not otherwise specified, the `Content-Type` of the request and response
 | /device-config
 | GET
 | Retrieves all the configurations, sorted by `lastUpdated`.
-This API also supports the following query paramaters: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `ipInterfaceId`, `configType`, `status`, `createdAfter`, and `createdBefore`.
+This API also supports the following query parameters: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `ipInterfaceId`, `configType`, `status`, `createdAfter`, and `createdBefore`.
 
 | /device-config/\{id}
 | GET
