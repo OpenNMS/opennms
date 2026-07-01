@@ -11,7 +11,7 @@ The `/geocoding` endpoint manages the geocoder configuration used to resolve nod
 |===
 | Resource  | Description
 
-| `/api/v2/geocoding/config`    | Returns the active geocoder manager configuration: `{ "activeGeocoderId": <string|null> }`.
+| `/api/v2/geocoding/config`    | Returns the active geocoder manager configuration: `{ "activeGeocoderId": <string\|null> }`.
 | `/api/v2/geocoding/geocoders` | Lists all registered geocoder services with their per-provider configuration. Returns `204 No Content` if there are none.
 
 |===
