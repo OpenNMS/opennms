@@ -28,20 +28,22 @@ The list endpoints accept the query parameters `limit`, `offset`, `orderBy`, `or
 
 == Examples using cURL
 
+NOTE: The `summary/*` endpoints return a plain JSON array; request them with `Accept: application/json` (the default XML representation is not available for these endpoints).
+
 .Severity summary of nodes (by alarms)
 [source,bash]
 ----
-curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/status/summary/nodes/Alarms"
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/summary/nodes/Alarms"
 ----
 
 .List nodes with a severity filter
 [source,bash]
 ----
-curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/status/nodes/Alarms?limit=10&severityFilter=Major&severityFilter=Critical"
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/nodes/Alarms?limit=10&severityFilter=Major&severityFilter=Critical"
 ----
 
 .List applications by status
 [source,bash]
 ----
-curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/status/applications?limit=10&offset=0"
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/applications?limit=10&offset=0"
 ----
