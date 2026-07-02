@@ -25,12 +25,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.osgi.util.tracker.ServiceTracker;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Unit tests for {@link OsgiServiceReferenceFactoryBean}, focused on the dynamic-proxy rebinding behavior
@@ -119,6 +124,54 @@ public class OsgiServiceReferenceFactoryBeanTest {
         when(tracker.waitForService(anyLong())).thenReturn(null);
 
         assertThrows(IllegalStateException.class, () -> newBean(tracker).getObject());
+    }
+
+    /** Consumer whose destroy method calls through the proxy, as a SessionFactory teardown would. */
+    public static class GreeterConsumer implements DisposableBean {
+        private final Greeter greeter;
+        Throwable destroyFailure;
+        GreeterConsumer(Greeter greeter) {
+            this.greeter = greeter;
+        }
+        @Override
+        public void destroy() {
+            try {
+                greeter.greet();
+            } catch (Throwable t) {
+                destroyFailure = t;
+            }
+        }
+    }
+
+    /**
+     * During context close the referenced service is typically already unregistered; a consumer bean's
+     * destroy method calling through the proxy must fail fast, NOT park in waitForService(5min) — the
+     * extender closes contexts on the OSGi event thread under its lifecycle lock, so that wait would
+     * hang container shutdown. ContextClosedEvent fires before bean destruction, which is what arms
+     * the fail-fast; if this regresses, the verify below sees a second waitForService call.
+     */
+    @Test
+    public void consumerDestroyMethodFailsFastDuringContextClose() throws Exception {
+        final Greeter a = mock(Greeter.class);
+        final ServiceTracker<Object, Object> tracker = mockTracker();
+        when(tracker.waitForService(anyLong())).thenReturn(a);
+        // Present while the context starts, unregistered by the time it shuts down.
+        when(tracker.getService()).thenReturn(a, (Object) null);
+
+        final GenericApplicationContext context = new GenericApplicationContext();
+        context.registerBean("greeterRef", OsgiServiceReferenceFactoryBean.class, () -> newBean(tracker));
+        context.registerBean("consumer", GreeterConsumer.class,
+                () -> new GreeterConsumer(context.getBean(Greeter.class)));
+        context.refresh();
+        final GreeterConsumer consumer = context.getBean(GreeterConsumer.class);
+
+        context.close();
+
+        assertNotNull("consumer destroy method must have failed (service is gone)", consumer.destroyFailure);
+        assertTrue("expected fail-fast IllegalStateException, got " + consumer.destroyFailure,
+                consumer.destroyFailure instanceof IllegalStateException);
+        // Exactly one wait: the mandatory-reference wait in getObject(). The shutdown-path call must not wait.
+        verify(tracker, times(1)).waitForService(anyLong());
     }
 
     @Test

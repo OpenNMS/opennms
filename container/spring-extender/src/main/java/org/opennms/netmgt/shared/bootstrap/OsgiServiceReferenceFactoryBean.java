@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -49,7 +51,8 @@ import org.springframework.util.ClassUtils;
  * is reconfigured or reinstalled), already-injected consumer beans transparently follow the new
  * service instead of being pinned to the stopped one until the whole consumer context restarts.</p>
  */
-public class OsgiServiceReferenceFactoryBean implements FactoryBean<Object>, BeanClassLoaderAware, DisposableBean {
+public class OsgiServiceReferenceFactoryBean implements FactoryBean<Object>, BeanClassLoaderAware, DisposableBean,
+        ApplicationListener<ContextClosedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiServiceReferenceFactoryBean.class);
 
@@ -61,8 +64,13 @@ public class OsgiServiceReferenceFactoryBean implements FactoryBean<Object>, Bea
     private String filter;
     private ClassLoader beanClassLoader;
 
-    private ServiceTracker<Object, Object> tracker;
+    private volatile ServiceTracker<Object, Object> tracker;
     private Object proxy;
+    // Once the owning context starts closing, proxy calls must fail fast instead of blocking in
+    // waitForService: during shutdown the referenced service is typically being torn down too, and the
+    // extender closes contexts on the OSGi event thread while holding its lifecycle lock — a 5-minute
+    // wait there hangs the whole container shutdown.
+    private volatile boolean closing;
 
     @Override
     public synchronized Object getObject() throws Exception {
@@ -128,12 +136,22 @@ public class OsgiServiceReferenceFactoryBean implements FactoryBean<Object>, Bea
                         break;
                 }
             }
-            Object service = tracker.getService();
-            if (service == null) {
+            final ServiceTracker<Object, Object> currentTracker = tracker;
+            if (currentTracker == null) {
+                throw new IllegalStateException(String.format(
+                        "OSGi service reference '%s' has been destroyed", interfaceName));
+            }
+            Object service = currentTracker.getService();
+            if (service == null && !closing) {
                 // The backing service is transiently gone (mid-restart); wait for the replacement.
-                service = tracker.waitForService(TIMEOUT_MS);
+                service = currentTracker.waitForService(TIMEOUT_MS);
             }
             if (service == null) {
+                if (closing) {
+                    throw new IllegalStateException(String.format(
+                            "OSGi service '%s'%s is unavailable and its consuming context is closing; not waiting",
+                            interfaceName, filter == null ? "" : " with filter " + filter));
+                }
                 throw new IllegalStateException(String.format(
                         "OSGi service '%s'%s is unavailable after waiting %dms", interfaceName,
                         filter == null ? "" : " with filter " + filter, TIMEOUT_MS));
@@ -165,8 +183,20 @@ public class OsgiServiceReferenceFactoryBean implements FactoryBean<Object>, Bea
         this.beanClassLoader = classLoader;
     }
 
+    /**
+     * {@link ContextClosedEvent} is published <em>before</em> any bean is destroyed, whereas
+     * {@link #destroy()} only runs after the consumer beans (which depend on this factory's product)
+     * have already been destroyed. Flipping the flag here is what lets a consumer's destroy method
+     * fail fast instead of parking in waitForService while the container shuts down.
+     */
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        closing = true;
+    }
+
     @Override
     public synchronized void destroy() {
+        closing = true;
         if (tracker != null) {
             tracker.close();
             tracker = null;

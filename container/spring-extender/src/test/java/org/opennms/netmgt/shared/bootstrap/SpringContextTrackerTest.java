@@ -69,6 +69,11 @@ public class SpringContextTrackerTest {
     private static final class TestableTracker extends SpringContextTracker {
         private final Deque<ConfigurableApplicationContext> toReturn;
         int buildCount = 0;
+        // Makes the first N buildContext calls throw, simulating e.g. the database service not appearing
+        // within the osgi:reference wait during boot.
+        int failFirstN = 0;
+        // Retries captured instead of scheduled, so tests control when (and whether) a retry runs.
+        final Deque<Runnable> retries = new ArrayDeque<>();
         // One-shot hook run mid-build to deterministically simulate the bundle changing state while a task is
         // blocked in refresh() (e.g. stop+restart), exercising the install-time generation guard.
         Runnable onBuild;
@@ -79,6 +84,9 @@ public class SpringContextTrackerTest {
         @Override
         ConfigurableApplicationContext buildContext(Bundle bundle, List<String> configLocations) {
             buildCount++;
+            if (buildCount <= failFirstN) {
+                throw new IllegalStateException("simulated context-creation failure " + buildCount);
+            }
             final ConfigurableApplicationContext ctx = toReturn.poll();
             if (onBuild != null) {
                 final Runnable hook = onBuild;
@@ -86,6 +94,10 @@ public class SpringContextTrackerTest {
                 hook.run();
             }
             return ctx;
+        }
+        @Override
+        void scheduleRetry(Runnable retry, long delayMillis) {
+            retries.add(retry);
         }
     }
 
@@ -145,6 +157,45 @@ public class SpringContextTrackerTest {
         exec.runNext();                                // task observes it is stale and returns early
 
         assertTrue("buildContext must not run for a task invalidated before it started", tracker.buildCount == 0);
+    }
+
+    @Test
+    public void failedContextCreationIsRetriedUntilItSucceeds() {
+        final ConfigurableApplicationContext ctx = mockContext();
+        final Deque<ConfigurableApplicationContext> queue = new ArrayDeque<>();
+        queue.add(ctx);
+        final ManualExecutor exec = new ManualExecutor();
+        final TestableTracker tracker = new TestableTracker(mock(BundleContext.class), exec, queue);
+        tracker.failFirstN = 2;
+        final Bundle bundle = mockBundle(1L);
+
+        tracker.addingBundle(bundle, null);
+        exec.runNext();                          // attempt 1 fails -> retry scheduled
+        assertTrue("a retry must be scheduled after a failed creation", tracker.retries.size() == 1);
+        tracker.retries.poll().run();            // attempt 2 fails again -> another retry
+        assertTrue(tracker.retries.size() == 1);
+        tracker.retries.poll().run();            // attempt 3 succeeds and installs
+
+        assertTrue(tracker.retries.isEmpty());
+        verify(ctx, never()).close();
+        tracker.removedBundle(bundle, null, bundle);
+        verify(ctx).close();                     // proves the retried context was the one installed
+    }
+
+    @Test
+    public void retryIsAbandonedOnceTheBundleStops() {
+        final ManualExecutor exec = new ManualExecutor();
+        final TestableTracker tracker = new TestableTracker(mock(BundleContext.class), exec, new ArrayDeque<>());
+        tracker.failFirstN = Integer.MAX_VALUE;
+        final Bundle bundle = mockBundle(1L);
+
+        tracker.addingBundle(bundle, null);
+        exec.runNext();                                // attempt 1 fails -> retry scheduled
+        tracker.removedBundle(bundle, null, bundle);   // bundle stops -> generation invalidated
+        tracker.retries.poll().run();                  // stale retry observes the token and gives up
+
+        assertTrue("no further retries after the bundle stopped", tracker.retries.isEmpty());
+        assertTrue("stale retry must not attempt another build", tracker.buildCount == 1);
     }
 
     @Test

@@ -32,8 +32,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -68,6 +72,15 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     private static final String WILDCARD = "*";
     private static final String DEFAULT_CONFIG_DIR = "META-INF/spring";
 
+    // A failed context creation (e.g. the database service not appearing within the osgi:reference wait
+    // at boot) is retried with capped exponential backoff rather than abandoned: Gemini kept waiting for
+    // unsatisfied mandatory dependencies, and a bundle that sits ACTIVE without its context (and without
+    // its services) until someone manually restarts it is a silent outage.
+    private static final long RETRY_DELAY_MS = SystemProperties.getLong(
+            "org.opennms.spring.extender.contextRetryDelayMillis", TimeUnit.SECONDS.toMillis(30));
+    private static final long MAX_RETRY_DELAY_MS = SystemProperties.getLong(
+            "org.opennms.spring.extender.contextRetryMaxDelayMillis", TimeUnit.MINUTES.toMillis(5));
+
     private final NamespaceProviderRegistry namespaceProviderRegistry;
     private final Map<Long, ConfigurableApplicationContext> contexts = new ConcurrentHashMap<>();
     // Per-bundle "generation" token identifying the latest context-creation task for a bundle id. A task only
@@ -79,6 +92,11 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     private final Object lifecycleLock = new Object();
     private final AtomicInteger threadIndex = new AtomicInteger();
     private final ExecutorService executor;
+    private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
+        final Thread thread = new Thread(runnable, "spring-context-extender-retry");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     SpringContextTracker(BundleContext context, NamespaceProviderRegistry namespaceProviderRegistry) {
         this(context, namespaceProviderRegistry, null);
@@ -104,7 +122,7 @@ class SpringContextTracker extends BundleTracker<Bundle> {
         LOG.info("Creating Spring application context for bundle {} from {}", bundle.getSymbolicName(), configLocations);
         final Object token = new Object();
         generations.put(bundle.getBundleId(), token);
-        executor.execute(() -> createApplicationContext(bundle, configLocations, token));
+        executor.execute(() -> createApplicationContext(bundle, configLocations, token, 1));
         return bundle;
     }
 
@@ -121,6 +139,7 @@ class SpringContextTracker extends BundleTracker<Bundle> {
     @Override
     public void close() {
         super.close();
+        retryScheduler.shutdownNow();
         executor.shutdownNow();
         synchronized (lifecycleLock) {
             generations.clear();
@@ -167,7 +186,7 @@ class SpringContextTracker extends BundleTracker<Bundle> {
         return locations;
     }
 
-    private void createApplicationContext(Bundle bundle, List<String> configLocations, Object token) {
+    private void createApplicationContext(Bundle bundle, List<String> configLocations, Object token, int attempt) {
         if (generations.get(bundle.getBundleId()) != token) {
             LOG.info("Bundle {} was stopped/restarted before its Spring application context was created, skipping",
                     bundle.getSymbolicName());
@@ -179,10 +198,38 @@ class SpringContextTracker extends BundleTracker<Bundle> {
             // holding lifecycleLock so removedBundle/close can proceed concurrently.
             context = buildContext(bundle, configLocations);
         } catch (Throwable t) {
-            LOG.error("Failed to start Spring application context for bundle {}", bundle.getSymbolicName(), t);
+            final long delay = retryDelayMillis(attempt);
+            LOG.error("Failed to start Spring application context for bundle {} (attempt {}); retrying in {}ms",
+                    bundle.getSymbolicName(), attempt, delay, t);
+            scheduleRetry(() -> createApplicationContext(bundle, configLocations, token, attempt + 1), delay);
             return;
         }
         installContext(bundle, token, context);
+    }
+
+    private static long retryDelayMillis(int attempt) {
+        final long delay = RETRY_DELAY_MS << Math.min(attempt - 1, 20);
+        return delay < 0 || delay > MAX_RETRY_DELAY_MS ? MAX_RETRY_DELAY_MS : delay;
+    }
+
+    /**
+     * Re-dispatches a failed creation attempt to {@link #executor} after a delay (the scheduler thread must
+     * never run buildContext itself — it can block for minutes). Stale retries are discarded by the
+     * generation-token check at the top of createApplicationContext, exactly like first attempts.
+     * Package-private seam so tests can capture the retry instead of sleeping.
+     */
+    void scheduleRetry(final Runnable retry, final long delayMillis) {
+        try {
+            retryScheduler.schedule(() -> {
+                try {
+                    executor.execute(retry);
+                } catch (RejectedExecutionException e) {
+                    // the extender is shutting down
+                }
+            }, delayMillis, TimeUnit.MILLISECONDS);
+        } catch (RejectedExecutionException e) {
+            // the extender is shutting down
+        }
     }
 
     /**
