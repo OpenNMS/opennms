@@ -300,7 +300,11 @@
     <feature name="spring-jms" description="Spring 5.3.x JMS support" version="${springOsgiVersion}">
         <feature version="[5.3,5.4)">spring-tx</feature>
         <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+        <!-- JMS 2.0 API: spring-jms 5.3 imports javax.jms unversioned and camel-jms 3.x needs the
+             2.0 API at runtime (see features/distributed/core/jms/pom.xml), so never ship the 1.1
+             spec here where it can shadow the 2.0 exporter. Consumers of the 1.1 export
+             (activemq-client) get it from the opennms-distributed-core-jms feature. -->
+        <bundle dependency="true" start-level="10">mvn:javax.jms/javax.jms-api/${jmsApiVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/${springVersion}
         </bundle>
