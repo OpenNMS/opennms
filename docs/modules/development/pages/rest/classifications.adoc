@@ -207,7 +207,7 @@ If multiple rules are imported (to user-defined group) from a CSV file all exist
 .Create a single rule
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"name": "http", "port":"80,8080", "protocols":["tcp", "udp"]}' http://localhost:8980/opennms/rest/classifications
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"name": "http", "dstPort":"80,8080", "protocols":["tcp", "udp"], "group": {"id": 2}}' http://localhost:8980/opennms/rest/classifications
 ----
 
 .Response
@@ -221,7 +221,7 @@ Location: http://localhost:8980/opennms/rest/classifications/6616
 .Verify classification engine (rule exists)
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"80"}' http://localhost:8980/opennms/rest/classifications/classify
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "srcAddress": "10.0.0.1", "srcPort": "55555", "dstAddress": "192.168.0.1", "dstPort": "80", "exporterAddress": "10.0.0.1"}' http://localhost:8980/opennms/rest/classifications/classify
 ----
 
 .Response
@@ -235,7 +235,7 @@ curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol":
 .Verify classification engine (no rule exists)
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"8980"}' http://localhost:8980/opennms/rest/classifications/classify
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "srcAddress": "10.0.0.1", "srcPort": "55555", "dstAddress": "192.168.0.1", "dstPort": "8980", "exporterAddress": "10.0.0.1"}' http://localhost:8980/opennms/rest/classifications/classify
 ----
 
 .Response
