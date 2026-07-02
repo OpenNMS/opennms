@@ -111,8 +111,9 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
      */
     public void init() throws IOException {
         if (alarmSyncClear && !alarmSync) {
-            // alarmSyncClear is a strategy for reconciliation, so it has no effect without alarmSync.
-            LOG.warn("alarmSyncClear is enabled but alarmSync is disabled; ignoring alarmSyncClear.");
+            // alarmSyncClear is a strategy for reconciliation, so it has no effect while alarmSync is off.
+            LOG.warn("alarmSyncClear is set but alarmSync is disabled, so alarm synchronization is not "
+                    + "running and alarmSyncClear has no effect. Set alarmSync=true to use it.");
         }
 
         if (!isEnabled()) {
@@ -237,7 +238,8 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             // Grab a reference to the state tracker
             final AlarmCallbackStateTracker stateTracker = kafkaProducer.getAlarmCallbackStateTracker();
 
-            // Push deletes for keys that are in the ktable, but not in the database
+            // Reconcile keys that are in the ktable, but not in the database: either tombstone them
+            // or, when alarmSyncClear is set, republish them as CLEARED.
             final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb).stream()
                     // Only remove it if the alarm we have dates before the snapshot
                     .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
@@ -245,6 +247,9 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             reductionKeysNotInDb.forEach(rkey -> {
                 final OpennmsModelProtos.Alarm onTopic = alarmsInKtableByReductionKey.get(rkey);
                 if (onTopic == null) {
+                    // Unparseable topic value (getAlarms() already logged the parse failure); nothing
+                    // actionable here since we have no alarm to clear or a valid id to tombstone.
+                    LOG.debug("Skipping reconciliation for reduction key with no readable topic value: {}", rkey);
                     return;
                 }
                 if (alarmSyncClear) {

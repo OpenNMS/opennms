@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
@@ -616,7 +617,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             await().atMost(10, TimeUnit.SECONDS)
                     .until(() -> countClearedRecords(reductionKey) > clearsBefore);
             fail("A second reconciliation re-emitted a clear for an already-cleared orphan!");
-        } catch (Exception e) {
+        } catch (ConditionTimeoutException e) {
             // expected: no additional clear record was produced
         }
     }
