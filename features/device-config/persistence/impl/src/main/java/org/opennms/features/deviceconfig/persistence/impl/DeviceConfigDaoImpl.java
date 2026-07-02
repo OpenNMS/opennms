@@ -422,6 +422,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         saveOrUpdate(deviceConfig);
     }
 
+    @Transactional
     public void deleteDeviceConfigs(Collection<DeviceConfig> entities) throws DataAccessException{
         super.deleteAll(entities);
     }

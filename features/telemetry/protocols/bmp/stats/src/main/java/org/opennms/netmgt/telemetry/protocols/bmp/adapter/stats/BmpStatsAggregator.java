@@ -110,12 +110,27 @@ public class BmpStatsAggregator {
     private SessionUtils sessionUtils;
 
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updatePeerStats, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByAsn, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByPrefix, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updatePeerRibCountStats, 0, 15, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 60, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsIpOrigins, 0, 60, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updatePeerStats", this::updatePeerStats), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsByAsn", this::updateStatsByAsn), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsByPrefix", this::updateStatsByPrefix), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updatePeerRibCountStats", this::updatePeerRibCountStats), 0, 15, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateGlobalRibsAndAsnInfo", this::updateGlobalRibsAndAsnInfo), 0, 60, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsIpOrigins", this::updateStatsIpOrigins), 0, 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * An exception escaping a task permanently cancels its scheduleAtFixedRate schedule
+     * (e.g. a constraint violation surfacing at transaction commit), so catch everything
+     * and let the next interval retry.
+     */
+    private static Runnable guarded(final String taskName, final Runnable task) {
+        return () -> {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                LOG.error("BMP stats task {} failed; will retry at the next scheduled interval", taskName, t);
+            }
+        };
     }
 
     public void destroy() {

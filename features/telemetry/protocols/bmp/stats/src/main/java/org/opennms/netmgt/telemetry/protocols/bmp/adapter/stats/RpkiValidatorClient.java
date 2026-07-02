@@ -95,7 +95,16 @@ public class RpkiValidatorClient {
 
     public void init() {
         Long hourOfTheDayInMinutes = Utils.getHourOfTheDayInMinutes(hourOfTheDay);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateRpkiInfo, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
+        // An exception escaping the task permanently cancels the scheduleAtFixedRate schedule
+        // (e.g. a constraint violation surfacing at transaction commit), so catch everything
+        // and let the next interval retry.
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                updateRpkiInfo();
+            } catch (Throwable t) {
+                LOG.error("RPKI info update failed; will retry at the next scheduled interval", t);
+            }
+        }, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
     }
 
     public void destroy() {
