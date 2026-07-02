@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -52,9 +53,25 @@ public class OnmsMultiActionControllerTest {
      * mirrors {@code EventController}/{@code AlarmFilterController} (so the test proves the guard catches the
      * subclass-declared override, which a {@code getDeclaredMethods()}-only fix would miss).
      */
+    public static class SampleCommand {
+        private Integer alarm;
+
+        public Integer getAlarm() {
+            return alarm;
+        }
+
+        public void setAlarm(final Integer alarm) {
+            this.alarm = alarm;
+        }
+    }
+
     public static class SampleController extends OnmsMultiActionController {
         public ModelAndView myAction(final HttpServletRequest request, final HttpServletResponse response) {
             return new ModelAndView("myActionView");
+        }
+
+        public ModelAndView commandAction(final HttpServletRequest request, final HttpServletResponse response, final SampleCommand command) {
+            return new ModelAndView("commandActionView", "alarm", command.getAlarm());
         }
 
         @Override
@@ -92,5 +109,24 @@ public class OnmsMultiActionControllerTest {
     public void handleRequestInternalPathIsRejected() {
         assertThrows(ServletException.class,
                 () -> controller.handleRequestInternal(get("/sample/handleRequestInternal.htm"), new MockHttpServletResponse()));
+    }
+
+    @Test
+    public void bindsCommandFromRequestParameters() throws Exception {
+        final MockHttpServletRequest request = get("/sample/commandAction.htm");
+        request.setParameter("alarm", "42");
+        final ModelAndView mv = controller.handleRequestInternal(request, new MockHttpServletResponse());
+        assertEquals("commandActionView", mv.getViewName());
+        assertEquals(Integer.valueOf(42), mv.getModel().get("alarm"));
+    }
+
+    @Test
+    public void mistypedCommandParameterIsRejected() {
+        // As MultiActionController.bind() did via closeNoCatch(): a type mismatch must reject the request,
+        // not invoke the handler with the property left null (e.g. updateTicket(null) downstream).
+        final MockHttpServletRequest request = get("/sample/commandAction.htm");
+        request.setParameter("alarm", "abc");
+        assertThrows(ServletRequestBindingException.class,
+                () -> controller.handleRequestInternal(request, new MockHttpServletResponse()));
     }
 }

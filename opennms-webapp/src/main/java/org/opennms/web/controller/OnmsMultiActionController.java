@@ -142,6 +142,9 @@ public abstract class OnmsMultiActionController extends AbstractController {
         final Object command = ctor.newInstance();
         final ServletRequestDataBinder binder = new ServletRequestDataBinder(command, objectName);
         binder.bind(request);
+        // As MultiActionController.bind() did: reject the request (ServletRequestBindingException) on any
+        // binding error, rather than invoking the handler with the mistyped property left null/default.
+        binder.closeNoCatch();
         return command;
     }
 }
