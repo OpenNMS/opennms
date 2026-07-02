@@ -1934,7 +1934,6 @@
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
-    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>2.0.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
     <osgiVersion>8.0.0</osgiVersion>

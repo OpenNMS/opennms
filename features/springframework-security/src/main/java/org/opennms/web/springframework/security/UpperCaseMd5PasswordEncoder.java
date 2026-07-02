@@ -23,6 +23,7 @@ package org.opennms.web.springframework.security;
 
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 
 /**
@@ -31,9 +32,22 @@ import org.springframework.util.DigestUtils;
  * handling) so that pre-existing OpenNMS password hashes continue to validate.</p>
  *
  * <p>Spring Security 5.x removed {@code org.springframework.security.authentication.encoding}, so the
- * hashing is implemented directly here rather than by extending the removed {@code Md5PasswordEncoder}.</p>
+ * hashing is implemented directly here rather than by extending the removed {@code Md5PasswordEncoder}.
+ * It implements the current {@link PasswordEncoder} contract so it can still be wired as the
+ * {@code passwordEncoder} of a {@code DaoAuthenticationProvider} in user-maintained
+ * {@code spring-security.d} configurations.</p>
  */
-public class UpperCaseMd5PasswordEncoder {
+public class UpperCaseMd5PasswordEncoder implements PasswordEncoder {
+
+    @Override
+    public String encode(final CharSequence rawPassword) {
+        return encodePassword(rawPassword == null ? null : rawPassword.toString(), null);
+    }
+
+    @Override
+    public boolean matches(final CharSequence rawPassword, final String encodedPassword) {
+        return encodedPassword != null && encode(rawPassword).equalsIgnoreCase(encodedPassword);
+    }
 
     public String encodePassword(final String rawPass, final Object salt) {
         final byte[] bytes = mergePasswordAndSalt(rawPass, salt).getBytes(StandardCharsets.UTF_8);
