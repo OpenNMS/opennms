@@ -10,7 +10,7 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
   name: 'ConfirmationDialog',
-  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
 

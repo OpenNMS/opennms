@@ -20,6 +20,9 @@
     <!-- Topologies -->
     <module>topologies</module>
 
+    <!-- Custom topology views + the image assets they reference -->
+    <module>topology-views</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 

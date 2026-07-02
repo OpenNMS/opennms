@@ -9,13 +9,11 @@
         <h3>SNMPv3 User Management</h3>
       </div>
       <div class="section-right">
-        <FeatherButton
-          primary
+        <PButton
           data-test="add-user-button"
+          label="Add User"
           @click="store.openCreateUserDrawer(CreateEditMode.Create, -1)"
-        >
-          Add User
-        </FeatherButton>
+        />
       </div>
     </div>
     <div class="info-section">
@@ -31,61 +29,60 @@
       />
     </div>
     <div class="table-container">
-      <table
-        class="data-table"
+      <PDataTable
+        :value="tableRecords"
         aria-label="SNMPv3 Users Table"
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
-            >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
+        <PColumn
+          field="securityName"
+          header="Security Name"
+          sortable
+        />
+        <PColumn
+          field="securityLevel"
+          header="Security Level"
+          sortable
         >
-          <tr
-            v-for="(user, index) in tableRecords"
-            :key="index"
-          >
-            <td>{{ user.securityName }}</td>
-            <td>{{ displaySecurityLevel(user.securityLevel) }}</td>
-            <td>{{ user.authProtocol }}</td>
-            <td>{{ user.privacyProtocol }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit User"
-                  data-test="edit-user-button"
-                  @click="store.openCreateUserDrawer(CreateEditMode.Edit, index)"
-                >
-                  <FeatherIcon :icon="Edit"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherButton
-                  icon="Delete User"
-                  data-test="delete-user-button"
-                  @click="openDeleteUserDialog(index)"
-                >
-                  <FeatherIcon :icon="Delete"> </FeatherIcon>
-                </FeatherButton>
-              </div>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div v-if="!tableRecords.length">
-        <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
-      </div>
+          <template #body="{ data }">
+            {{ displaySecurityLevel(data.securityLevel) }}
+          </template>
+        </PColumn>
+        <PColumn
+          field="authProtocol"
+          header="Authentication Protocol"
+          sortable
+        />
+        <PColumn
+          field="privacyProtocol"
+          header="Privacy Protocol"
+          sortable
+        />
+        <PColumn header="Action">
+          <template #body="{ data }">
+            <div class="action-container">
+              <PButton
+                text
+                aria-label="Edit User"
+                data-test="edit-user-button"
+                @click="store.openCreateUserDrawer(CreateEditMode.Edit, userIndex(data))"
+              >
+                <FeatherIcon :icon="Edit" />
+              </PButton>
+              <PButton
+                text
+                aria-label="Delete User"
+                data-test="delete-user-button"
+                @click="openDeleteUserDialog(userIndex(data))"
+              >
+                <FeatherIcon :icon="Delete" />
+              </PButton>
+            </div>
+          </template>
+        </PColumn>
+        <template #empty>
+          <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
+        </template>
+      </PDataTable>
     </div>
     <DeleteUserConfirmationDialog
       :index="deleteUserIndex"
@@ -111,14 +108,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
 import InfoIcon from '@featherds/icon/action/Info'
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import useSnackbar from '@/composables/useSnackbar'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
@@ -130,6 +128,10 @@ import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.
 import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
+const PButton = Button
+const PColumn = Column
+const PDataTable = DataTable
+
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
 const tableRecords = ref<SnmpV3User[]>([])
@@ -138,26 +140,9 @@ const deleteDialogVisible = ref<boolean>(false)
 const isDeleting = ref(false)
 const isMessageDialogVisible = ref(false)
 
-const columns = computed(() => [
-  { id: 'securityName', label: 'Security Name' },
-  { id: 'securityLevel', label: 'Security Level' },
-  { id: 'authenticationProtocol', label: 'Authentication Protocol' },
-  { id: 'privacyProtocol', label: 'Privacy Protocol' }
-])
-
-const sort = reactive({
-  securityName: SORT.NONE,
-  securityLevel: SORT.NONE,
-  authenticationProtocol: SORT.NONE,
-  privacyProtocol: SORT.NONE
-}) as any
-
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
-}
+// Resolve a row back to its index in the store's user list. DataTable may
+// reorder rows when sorting, so we can't rely on the rendered row index.
+const userIndex = (user: SnmpV3User) => store.snmpV3Users.indexOf(user)
 
 const openDeleteUserDialog = (index: number) => {
   deleteUserIndex.value = index
@@ -215,15 +200,12 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
 
 .snmp-v3-user-management {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -233,12 +215,12 @@ watch(
     .section-left {
       h3 {
         @include typography.headline3;
-        color: var(--feather-text-primary);
+        color: var(--p-text-color);
       }
 
       p {
         @include typography.body-large;
-        color: var(--feather-text-secondary);
+        color: var(--p-text-muted-color);
       }
     }
   }
@@ -247,14 +229,14 @@ watch(
     margin-bottom: 1em;
 
     .label {
-      color: var(variables.$primary-text-on-surface);
+      color: var(--p-text-color);
     }
 
     .info-icon {
       cursor: pointer;
       font-size: 1.5em;
       margin-left: 0.5em;
-      color: var(variables.$primary);
+      color: var(--p-primary-color);
 
       &:hover {
         opacity: 0.8;
@@ -267,39 +249,14 @@ watch(
   }
 
   .table-container {
-    table {
-      width: 100%;
-      @include table.table;
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
 
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
+      // enlarge the edit/delete icons (FeatherIcon scales with font-size)
+      :deep(.p-button) {
+        font-size: 1.3rem;
       }
     }
   }

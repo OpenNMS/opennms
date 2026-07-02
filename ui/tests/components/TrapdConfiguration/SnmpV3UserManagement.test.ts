@@ -3,10 +3,10 @@ import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
 
@@ -23,43 +23,6 @@ vi.mock('@/composables/useSnackbar', () => ({
 vi.mock('@/services/trapdConfigurationService', () => ({
   updateTrapdConfiguration: vi.fn()
 }))
-
-const FeatherButtonStub = defineComponent({
-  name: 'FeatherButton',
-  props: {
-    dataTest: {
-      type: String,
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    icon: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['click'],
-  template:
-    '<button :data-test="dataTest" :disabled="disabled" :aria-label="icon" @click="$emit(\'click\')"><slot /></button>'
-})
-
-const FeatherSortHeaderStub = defineComponent({
-  name: 'FeatherSortHeader',
-  props: {
-    property: {
-      type: String,
-      default: ''
-    },
-    sort: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['sort-changed'],
-  template: '<th><button :data-test="`sort-${property}`"><slot /></button></th>'
-})
 
 const DeleteDialogStub = defineComponent({
   name: 'DeleteUserConfirmationDialog',
@@ -107,6 +70,7 @@ describe('SnmpV3UserManagement.vue', () => {
   const mountComponent = () => {
     return mount(SnmpV3UserManagement, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           TableCard: {
             template: '<div><slot /></div>'
@@ -116,15 +80,8 @@ describe('SnmpV3UserManagement.vue', () => {
             template: '<div data-test="empty-list">{{ content.msg }}</div>'
           },
           DeleteUserConfirmationDialog: DeleteDialogStub,
-          FeatherButton: FeatherButtonStub,
-          'feather-button': FeatherButtonStub,
-          FeatherSortHeader: FeatherSortHeaderStub,
-          'feather-sort-header': FeatherSortHeaderStub,
           FeatherIcon: true,
-          'feather-icon': true,
-          TransitionGroup: {
-            template: '<tbody><slot /></tbody>'
-          }
+          'feather-icon': true
         }
       }
     })
@@ -195,7 +152,7 @@ describe('SnmpV3UserManagement.vue', () => {
     await nextTick()
 
     expect(wrapper.find('[data-test="empty-list"]').text()).toBe('No SNMPv3 users found')
-    expect(wrapper.findAll('tbody tr')).toHaveLength(0)
+    expect(wrapper.findAll('[data-test="edit-user-button"]')).toHaveLength(0)
   })
 
   it('opens create user drawer in create mode from the add user button', async () => {
@@ -351,6 +308,15 @@ describe('SnmpV3UserManagement.vue', () => {
     expect((wrapper.vm as any).tableRecords).toEqual([])
   })
 
+  it('resolves the store index for a row even when the table is re-sorted', () => {
+    const wrapper = mountComponent()
+
+    // userIndex maps a row object back to its position in the store list,
+    // which is what edit/delete rely on (DataTable may reorder rows on sort)
+    expect((wrapper.vm as any).userIndex(users[0])).toBe(0)
+    expect((wrapper.vm as any).userIndex(users[1])).toBe(1)
+  })
+
   it('shows user-not-found error and closes dialog when selected index is out of range', async () => {
     const wrapper = mountComponent()
     ;(wrapper.vm as any).openDeleteUserDialog(99)
@@ -363,38 +329,5 @@ describe('SnmpV3UserManagement.vue', () => {
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user not found.', error: true })
     expect((wrapper.vm as any).deleteUserIndex).toBe(null)
     expect((wrapper.vm as any).deleteDialogVisible).toBe(false)
-  })
-
-  it('updates sort state when a sort header emits sort-changed', async () => {
-    const wrapper = mountComponent()
-    const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-
-    expect(sortHeaders).toHaveLength(4)
-    await sortHeaders[1].vm.$emit('sort-changed', {
-      property: 'securityLevel',
-      value: SORT.ASCENDING
-    })
-    await nextTick()
-
-    expect((wrapper.vm as any).sort.securityName).toBe(SORT.NONE)
-    expect((wrapper.vm as any).sort.securityLevel).toBe(SORT.ASCENDING)
-    expect((wrapper.vm as any).sort.authenticationProtocol).toBe(SORT.NONE)
-    expect((wrapper.vm as any).sort.privacyProtocol).toBe(SORT.NONE)
-  })
-
-  it('sortChanged resets previous sort values before applying the next property', () => {
-    const wrapper = mountComponent()
-
-    ;(wrapper.vm as any).sort.securityName = SORT.DESCENDING
-    ;(wrapper.vm as any).sort.securityLevel = SORT.ASCENDING
-    ;(wrapper.vm as any).sortChanged({
-      property: 'privacyProtocol',
-      value: SORT.ASCENDING
-    })
-
-    expect((wrapper.vm as any).sort.securityName).toBe(SORT.NONE)
-    expect((wrapper.vm as any).sort.securityLevel).toBe(SORT.NONE)
-    expect((wrapper.vm as any).sort.authenticationProtocol).toBe(SORT.NONE)
-    expect((wrapper.vm as any).sort.privacyProtocol).toBe(SORT.ASCENDING)
   })
 })

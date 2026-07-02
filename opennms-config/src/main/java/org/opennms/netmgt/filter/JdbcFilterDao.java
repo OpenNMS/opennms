@@ -708,7 +708,11 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
-            return "WHERE " + sqlRule;
+            // Wrap the parsed rule in parentheses so that any clauses appended by callers
+            // (the isManaged/deleted filter, ipaddr/nodeID/service constraints) apply to the
+            // whole rule rather than binding only to the last branch of a top-level OR.
+            // Without this, "a | b" + " AND ipaddr = ?" parses as "a OR (b AND ipaddr = ?)".
+            return "WHERE (" + sqlRule + ")";
         }
         return "";
     }

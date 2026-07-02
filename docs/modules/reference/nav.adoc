@@ -32,6 +32,7 @@
 ** xref:performance-data-collection/collectors/tca.adoc[]
 ** xref:performance-data-collection/collectors/vmware.adoc[]
 ** xref:performance-data-collection/collectors/vmware-cim.adoc[]
+** xref:performance-data-collection/collectors/vmware-datastore.adoc[]
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
 ** xref:performance-data-collection/collectors/xml-examples.adoc[]

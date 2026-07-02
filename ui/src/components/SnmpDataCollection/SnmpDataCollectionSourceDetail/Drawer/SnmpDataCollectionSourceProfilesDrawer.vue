@@ -1,12 +1,12 @@
 <template>
-  <FeatherDrawer
+  <Drawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
-    v-model="isVisible"
-    :labels="{ close: 'close', title: `Edit Profiles for ${props.sourceName}` }"
-    hide-close
-    @hidden="close"
-    width="40rem"
+    v-model:visible="isVisible"
+    position="right"
+    :header="`Edit Profiles for ${props.sourceName}`"
+    :style="{ width: '40rem' }"
+    @hide="close"
     class="source-profiles-drawer"
   >
     <div class="container">
@@ -39,21 +39,19 @@
         completeOnFocus
       />
       <div class="button-row">
-        <FeatherButton
+        <Button
+          text
+          label="Cancel"
           @click="close"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
           data-test="save-profiles-button"
+          label="Save"
           @click="save"
-        >
-          Save
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </Drawer>
 </template>
 
 <script lang="ts" setup>
@@ -61,10 +59,10 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
 import AutoCompleteComponent from 'primevue/autocomplete'
+import Button from 'primevue/button'
 import ChipComponent from 'primevue/chip'
+import Drawer from 'primevue/drawer'
 
 const PChip = ChipComponent
 const PAutoComplete = AutoCompleteComponent
