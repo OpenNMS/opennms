@@ -1,80 +1,65 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <table
-        class="tl1 tl2 tl3, tl4, tl5"
-        summary="SNMP Interfaces"
-      >
-        <thead>
-          <tr>
-            <th scope="col">SNMP ifIndex</th>
-            <th scope="col">SNMP ifDescr</th>
-            <th scope="col">SNMP ifName</th>
-            <th scope="col">SNMP ifAlias</th>
-            <th scope="col">SNMP ifSpeed</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="snmpInterface in snmpInterfaces"
-            :key="snmpInterface.id"
-          >
-            <td>{{ snmpInterface.ifIndex }}</td>
-            <td>{{ snmpInterface.ifDescr || 'N/A' }}</td>
-            <td>{{ snmpInterface.ifName || 'N/A' }}</td>
-            <td>{{ snmpInterface.ifAlias || 'N/A' }}</td>
-            <td>
-              <span v-html="snmpInterface.ifSpeed"></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <Pagination
-    :payload="payload"
-    :parameters="queryParameters"
-    @update-query-parameters="updateQueryParameters"
-    :query="snmpInterfacesQuery"
-    :getTotalCount="getSnmpInterfacesTotalCount"
-  />
+  <DataTable
+    lazy
+    :value="nodeStore.snmpInterfaces"
+    paginator
+    :rows="pageSize"
+    :first="first"
+    :totalRecords="nodeStore.snmpInterfacesTotalCount"
+    :rowsPerPageOptions="[5, 10, 20, 50]"
+    data-test="snmp-interfaces-table"
+    @page="onPage"
+  >
+    <Column field="ifIndex" header="SNMP ifIndex" />
+    <Column field="ifDescr" header="SNMP ifDescr">
+      <template #body="{ data }">{{ data.ifDescr || 'N/A' }}</template>
+    </Column>
+    <Column field="ifName" header="SNMP ifName">
+      <template #body="{ data }">{{ data.ifName || 'N/A' }}</template>
+    </Column>
+    <Column field="ifAlias" header="SNMP ifAlias">
+      <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
+    </Column>
+    <Column field="ifSpeed" header="SNMP ifSpeed">
+      <template #body="{ data }"><span v-html="data.ifSpeed" /></template>
+    </Column>
+    <template #empty>
+      <EmptyList :content="emptyListContent" data-test="empty-list" />
+    </template>
+  </DataTable>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import { computed } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
-import Pagination from '../Common/Pagination.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import { type DataTablePageEvent } from 'primevue/datatable'
+import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
-import useQueryParameters from '@/composables/useQueryParams'
-import { QueryParameters } from '@/types'
 
-const route = useRoute()
-const optionalPayload = { id: route.params.id }
 const nodeStore = useNodeStore()
+const route = useRoute()
 
-const snmpInterfacesQuery = async (payload: QueryParameters) => {
-  nodeStore.getNodeSnmpInterfaces({ id: route.params.id as string, queryParameters: payload })
-}
+const pageSize = ref(5)
+const first = ref(0)
+const emptyListContent = { msg: 'No results found.' }
 
-const getSnmpInterfacesTotalCount = () => {
-  return nodeStore.snmpInterfacesTotalCount
-}
-
-const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
+const queryParameters = ref({
   limit: 5,
   offset: 0
-}, snmpInterfacesQuery, optionalPayload)
+})
 
-const snmpInterfaces = computed(() => nodeStore.snmpInterfaces)
-</script>
-
-<style lang="scss">
-@use "@featherds/table/scss/table";
-table {
-  @include table;
+const onPage = (event: DataTablePageEvent) => {
+  first.value = event.first
+  pageSize.value = event.rows
+  queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }
+  nodeStore.getNodeSnmpInterfaces({ id: route.params.id as string, queryParameters: queryParameters.value })
 }
-</style>
+
+onMounted(() => {
+  nodeStore.getNodeSnmpInterfaces({ id: route.params.id as string, queryParameters: queryParameters.value })
+})
+
+defineExpose({ onPage })
+</script>

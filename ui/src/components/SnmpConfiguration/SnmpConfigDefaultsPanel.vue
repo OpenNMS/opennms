@@ -14,86 +14,116 @@
 
       <div class="large-spacer" />
 
-      <div class="feather-row header-row">
-        <div class="feather-col-3">
+      <div class="onms-row header-row">
+        <div class="onms-col-3">
           <label class="label">Parameter</label>
         </div>
-        <div class="feather-col-4">
+        <div class="onms-col-4">
           <label class="label">System Default Value</label>
         </div>
-        <div class="feather-col-5">
+        <div class="onms-col-5">
           <label class="label">User Defined Overrides</label>
         </div>
       </div>
 
-      <div class="feather-row" v-for="param in parameters" :key="param.key">
-        <div class="feather-col-3">
+      <div class="onms-row" v-for="param in parameters" :key="param.key">
+        <div class="onms-col-3">
           <label class="label">{{ param.label }}</label>
         </div>
-        <div class="feather-col-4">
+        <div class="onms-col-4">
           <span>{{ param.defaultValue }}</span>
         </div>
-        <div class="feather-col-5">
+        <div class="onms-col-5">
           <!-- Select dropdown for version, securityLevel, authProtocol, privacyProtocol -->
-          <FeatherSelect
+          <FormField
             v-if="param.isSelect"
-            class="snmp-config-defaults-select"
-            :label="param.label"
-            :hint="param.hint"
-            :options="param.selectOptions"
-            :modelValue="selectModel[param.key]"
             :error="(formErrors as any)[param.key]"
-            @update:modelValue="(val: any) => handleSelectUpdate(param.key, val)"
-          />
+            :hint="param.hint"
+          >
+            <PSelect
+              class="snmp-config-defaults-select"
+              :data-test="`snmp-config-default-${param.key}`"
+              :aria-label="param.label"
+              optionLabel="_text"
+              showClear
+              :options="param.selectOptions"
+              :modelValue="selectModel[param.key]"
+              :invalid="!!(formErrors as any)[param.key]"
+              @update:modelValue="(val: any) => handleSelectUpdate(param.key, val)"
+            />
+          </FormField>
 
           <!-- Input with SCV button -->
-          <div v-else-if="param.scvEnabled" class="feather-row scv-input-row">
-            <div class="feather-col-10">
-              <FeatherInput
-                class="snmp-config-defaults-input"
-                label=""
-                :hint="param.hint"
+          <div v-else-if="param.scvEnabled" class="onms-row scv-input-row">
+            <div class="onms-col-10">
+              <FormField
                 :error="(formErrors as any)[param.key]"
-                v-model="(formConfig[param.key] as string | number)"
-                @update:model-value="(val) => handleInputUpdate(param.key, val)"
-                :type="param.inputType"
-              />
+                :hint="param.hint"
+              >
+                <PInputText
+                  class="snmp-config-defaults-input"
+                  :data-test="`snmp-config-default-${param.key}`"
+                  :aria-label="param.label"
+                  :type="param.inputType"
+                  :invalid="!!(formErrors as any)[param.key]"
+                  :modelValue="(formConfig[param.key] as string)"
+                  @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+                />
+              </FormField>
             </div>
-            <div class="feather-col-2">
+            <div class="onms-col-2">
               <div class="scv-icon-container">
                 <ScvInputIcon @click="() => onScvButtonClick(param.key)" />
               </div>
             </div>
           </div>
 
-          <!-- Regular input -->
-          <FeatherInput
-            v-else
-            class="snmp-config-defaults-input"
-            label=""
-            :hint="param.hint"
+          <!-- Regular numeric input -->
+          <FormField
+            v-else-if="param.inputType === 'number'"
             :error="(formErrors as any)[param.key]"
-            v-model="(formConfig[param.key] as string | number)"
-            @update:model-value="(val) => handleInputUpdate(param.key, val)"
-            :type="param.inputType"
-          />
+            :hint="param.hint"
+          >
+            <PInputNumber
+              class="snmp-config-defaults-input"
+              :inputProps="{ 'data-test': `snmp-config-default-${param.key}`, 'aria-label': param.label }"
+              :useGrouping="false"
+              :invalid="!!(formErrors as any)[param.key]"
+              :modelValue="(formConfig[param.key] as number)"
+              @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+            />
+          </FormField>
+
+          <!-- Regular text input -->
+          <FormField
+            v-else
+            :error="(formErrors as any)[param.key]"
+            :hint="param.hint"
+          >
+            <PInputText
+              class="snmp-config-defaults-input"
+              :data-test="`snmp-config-default-${param.key}`"
+              :aria-label="param.label"
+              :type="param.inputType"
+              :invalid="!!(formErrors as any)[param.key]"
+              :modelValue="(formConfig[param.key] as string)"
+              @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
+            />
+          </FormField>
         </div>
       </div>
 
-      <div class="feather-row">
-        <div class="feather-col-12">
-          <FeatherButton
-            secondary
+      <div class="onms-row button-row">
+        <div class="onms-col-12">
+          <PButton
+            outlined
+            label="Reset to System Defaults"
             @click="onReset"
-          >
-            Reset to System Defaults
-          </FeatherButton>
-           <FeatherButton
-            primary
+          />
+           <PButton
+            label="Save"
             @click="onSave"
-          >
-            Save
-          </FeatherButton>
+          />
         </div>
       </div>
     </div>
@@ -127,12 +157,15 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import { FeatherIcon } from '@featherds/icon'
 import InfoIcon from '@featherds/icon/action/Info'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@featherds/select'
 
+import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '@/components/SCV/ScvSearchDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -160,6 +193,11 @@ import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/sn
 import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
 import MessageDialog from '../Common/MessageDialog.vue'
+
+const PButton = Button
+const PInputNumber = InputNumber
+const PInputText = InputText
+const PSelect = Select
 
 // SNMP Version options
 const SnmpVersions: ISelectItemType[] = [
@@ -509,10 +547,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-
 .snmp-config-defaults-panel {
   .main-section {
     max-width: 80em;
@@ -536,20 +570,21 @@ onMounted(() => {
     margin-bottom: 1.5rem;
   }
 
-  .feather-row {
-    margin-bottom: 0.5rem;
+  .snmp-config-defaults-input,
+  .snmp-config-defaults-select {
+    min-width: 20rem;
+
+    :deep(.p-inputtext) {
+      width: 100%;
+    }
+  }
+
+  .onms-row {
+    margin-bottom: 1.25rem;
     align-items: center;
 
-    .feather-input-container.snmp-config-defaults-input {
-      min-width: 20rem;
-    }
-
-    .feather-input-container.snmp-config-defaults-select {
-      min-width: 20rem;
-    }
-
     &.header-row {
-      border-bottom: 1px solid var(--feather-border-on-surface);
+      border-bottom: 1px solid var(--p-content-border-color);
       padding-bottom: 0.5rem;
       margin-bottom: 1rem;
     }
@@ -557,16 +592,24 @@ onMounted(() => {
     &.scv-input-row {
       margin-bottom: 0;
     }
+
+    &.button-row {
+      button.p-button {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+        min-width: 8rem;
+      }
+    }
   }
 
   .info-icon {
     font-size: 1.5em;
-    color: var(--feather-primary-text-on-surface);
+    color: var(--p-text-color);
     margin-left: 0.25em;
     cursor: pointer;
   }
 
-  .feather-col-4 {
+  .onms-col-4 {
     display: flex;
     align-items: center;
   }
@@ -574,21 +617,18 @@ onMounted(() => {
   .scv-icon-container {
     padding: 0.2em;
     margin-left: 0.5em;
-    margin-top: -1.5em;  // vertical centering
     display: flex;
     align-items: center;
     cursor: pointer;
   }
 }
 
-.feather-dialog {
-  .message-dialog-content-body {
-    max-width: 60em;
-    overflow-y: auto;
+.message-dialog-content-body {
+  max-width: 60em;
+  overflow-y: auto;
 
-    p {
-      margin-top: 1rem;
-    }
+  p {
+    margin-top: 1rem;
   }
 }
 </style>

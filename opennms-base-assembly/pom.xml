@@ -199,6 +199,11 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresqlVersion}</version>
           </dependency>
+          <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${jackson2Version}</version>
+          </dependency>
         </dependencies>
       </plugin>
       <plugin>
@@ -1197,6 +1202,20 @@
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Topology Views + Assets persistence (custom views; background
+         images and custom node icons referenced by views). -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Postgres BlobStore for topology-asset image bytes (only the no-op
+         blob store ships in lib otherwise). -->
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

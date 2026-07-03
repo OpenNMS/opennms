@@ -191,4 +191,7 @@ export interface SnmpFieldInfo {
   // if true, just display the 'hint', do not display the default value.
   // this is useful for fields that might display sensitive information, such as passwords or passphrases.
   skipDefaultHint?: boolean
+
+  // if true, the field's input/select (and any SCV icon) is disabled
+  disabled?: boolean
 }

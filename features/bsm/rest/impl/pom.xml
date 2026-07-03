@@ -64,6 +64,21 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- The shared CXF v2 context instantiates every REST resource; these
+         provide the topology-views module (view + asset models) + the
+         jsonStore bean, which webapp-rest declares as provided (non-transitive). -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>

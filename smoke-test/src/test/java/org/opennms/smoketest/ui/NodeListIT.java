@@ -83,13 +83,13 @@ public class NodeListIT extends OpenNMSSeleniumIT {
         wait.until(pageContainsText("Test_Node1"));
 
         // find the Actions menu for this node
-        findElementByXpath("//div[@class='node-table']/table/tbody/tr/td//button[@title='Node Actions']");
+        findElementByXpath("//div[contains(@class, 'node-table')]/table/tbody/tr/td//button[@title='Node Actions']");
 
         // find the node row in the table
-        findElementByXpath("//div[@class='node-table']/table/tbody/tr/td/a[text()='Test_Node1']");
+        findElementByXpath("//div[contains(@class, 'node-table')]/table/tbody/tr/td/a[text()='Test_Node1']");
 
         // find the node link
-        String nodeLinkXpath = String.format("//div[@class='node-table']/table/tbody/tr/td/a[contains(@href, 'element/node.jsp?node=%d')]", savedNodeId);
+        String nodeLinkXpath = String.format("//div[contains(@class, 'node-table')]/table/tbody/tr/td/a[contains(@href, 'element/node.jsp?node=%d')]", savedNodeId);
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(nodeLinkXpath)));
 
