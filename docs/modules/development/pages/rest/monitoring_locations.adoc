@@ -1,0 +1,148 @@
+
+= Monitoring Locations API
+
+The Monitoring Locations API manages the monitoring locations (used by Minions and the perspective poller). Two versions are available: v1 under `/rest/monitoringLocations`, and v2 under `/api/v2/monitoringLocations`.
+
+NOTE: This is distinct from the xref:rest/monitoring_systems.adoc[Monitoring Systems API] (`/monitoringSystems`).
+
+== Version 1 (`/rest/monitoringLocations`)
+
+The v1 API produces `application/xml`, `application/json`, and `application/atom+xml`.
+
+=== GETs (reading data)
+
+[caption=]
+.Monitoring Locations API (v1) GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/rest/monitoringLocations`                       | Lists all monitoring locations, sorted by name.
+| `/rest/monitoringLocations/default`               | Fetches the default (first) monitoring location.
+| `/rest/monitoringLocations/count`                 | Returns the number of monitoring locations. Produces `text/plain`.
+| `/rest/monitoringLocations/\{monitoringLocation}` | Fetches a single location by name. Returns `404` if it does not exist.
+
+|===
+
+=== POSTs (Creating Data)
+
+[caption=]
+.Monitoring Locations API (v1) POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/rest/monitoringLocations` | Adds a new monitoring location. Consumes `application/xml`, `application/json`, or `application/atom+xml`.
+
+|===
+
+=== PUT (modifying data)
+
+[caption=]
+.Monitoring Locations API (v1) PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/rest/monitoringLocations/\{monitoringLocation}` | Updates properties of a location. Consumes `application/x-www-form-urlencoded`.
+
+|===
+
+=== DELETEs (Removing Data)
+
+[caption=]
+.Monitoring Locations API (v1) DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/rest/monitoringLocations/\{monitoringLocation}` | Deletes a monitoring location by name.
+
+|===
+
+== Version 2 (`/api/v2/monitoringLocations`)
+
+The v2 API supports full CRUD and produces/consumes `application/json` and `application/xml`.
+
+=== GETs (reading data)
+
+[caption=]
+.Monitoring Locations API (v2) GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/monitoringLocations`                         | Lists locations. Supports `limit`, `offset`, `orderBy`, `order`, and FIQL search (`_s`). Returns `204 No Content` when there are no matches.
+| `/api/v2/monitoringLocations/count`                   | Returns the number of matching locations. Produces `text/plain`.
+| `/api/v2/monitoringLocations/properties`              | Lists the searchable properties. Optional `q` filters the list.
+| `/api/v2/monitoringLocations/properties/\{propertyId}` | Lists the available values for a searchable property. Optional `q` and `limit`.
+| `/api/v2/monitoringLocations/\{id}`                    | Fetches a single location by name.
+
+|===
+
+=== POSTs (Creating Data)
+
+[caption=]
+.Monitoring Locations API (v2) POST function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/monitoringLocations` | Creates a new location. Returns `201 Created` with a `Location` header.
+
+|===
+
+=== PUT (modifying data)
+
+[caption=]
+.Monitoring Locations API (v2) PUT functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/monitoringLocations`        | Bulk-updates the matching locations. Consumes `application/x-www-form-urlencoded`.
+| `/api/v2/monitoringLocations/\{id}`  | Replaces a single location. Consumes `application/json` or `application/xml`. The `id` must match the location name in the payload, otherwise `400 Bad Request`.
+| `/api/v2/monitoringLocations/\{id}`  | Updates individual properties of a single location. Consumes `application/x-www-form-urlencoded`.
+
+|===
+
+=== DELETEs (Removing Data)
+
+[caption=]
+.Monitoring Locations API (v2) DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/monitoringLocations`       | Deletes all locations matching the current query.
+| `/api/v2/monitoringLocations/\{id}` | Deletes a single location by name.
+
+|===
+
+== Examples using cURL
+
+.List all monitoring locations (v1)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/monitoringLocations"
+----
+
+.Fetch the default location (v1)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/monitoringLocations/default"
+----
+
+.Create a monitoring location (v2)
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"location-name":"Raleigh","monitoring-area":"Raleigh","priority":100}' \
+  "http://127.0.0.1:8980/opennms/api/v2/monitoringLocations"
+----
+
+.Fetch a single location (v2)
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/monitoringLocations/Raleigh"
+----

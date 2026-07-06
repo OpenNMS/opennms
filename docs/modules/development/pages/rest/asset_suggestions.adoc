@@ -1,0 +1,36 @@
+
+= Asset Suggestions API
+
+The `/assets/suggestions` endpoint returns the distinct, existing values for each editable asset record property. These values are useful for populating auto-complete suggestions when editing node assets. It produces `application/xml`, `application/json`, and `application/atom+xml`.
+
+== GETs (reading data)
+
+[caption=]
+.Asset Suggestions API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/assets/suggestions` | Fetches a map of asset property names to the list of distinct values currently stored for that property. The properties `class`, `geolocation`, `lastModifiedDate`, and `lastModifiedBy` are excluded.
+
+|===
+
+== Examples using cURL
+
+.Get the asset suggestions
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/assets/suggestions"
+----
+
+.Response
+[source,json]
+----
+{
+  "suggestions": {
+    "city": ["Pittsboro"],
+    "region": ["East Coast"],
+    "vendor": ["Cisco"]
+  }
+}
+----
