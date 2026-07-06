@@ -205,14 +205,17 @@ initConfig() {
         echo "datasource.password = ${POSTGRES_PASSWORD}" >> ${DB_CONFIG}
         echo "datasource.databaseName = ${POSTGRES_DB}" >> ${DB_CONFIG}
 
-        parseEnvironment
-        applyFeatureBootTemplates
-
         # Mark as configured
         echo "Configured $(date)" > ${SENTINEL_HOME}/etc/configured
     else
         echo "OpenNMS Sentinel is already configured, skipped."
     fi
+
+    # Re-applied on every start (not gated by the configured marker) so that
+    # environment-driven config takes effect on container restarts, matching
+    # the old confd behavior where templates were re-rendered on every start.
+    parseEnvironment
+    applyFeatureBootTemplates
 }
 
 applyOverlayConfig() {
