@@ -185,11 +185,24 @@ const OpenNMSPreset = definePreset(Aura, {
       colorScheme: {
         light: {
           root: { borderColor: 'rgba(10, 12, 27, 0.12)' },
-          headerCell: { background: '#f4f7fc', color: 'rgba(10, 12, 27, 0.7)' }
+          // selected* pins the sorted-column header to the normal header look;
+          // Aura defaults headerCell.selectedBackground to {highlight.background}
+          // (a light primary.50 tint), which reads wrong on the dark header.
+          headerCell: {
+            background: '#f4f7fc',
+            color: 'rgba(10, 12, 27, 0.7)',
+            selectedBackground: '#f4f7fc',
+            selectedColor: 'rgba(10, 12, 27, 0.7)'
+          }
         },
         dark: {
           root: { borderColor: 'rgba(255, 255, 255, 0.24)' },
-          headerCell: { background: '#0a0c1b', color: 'rgba(255, 255, 255, 0.78)' }
+          headerCell: {
+            background: '#0a0c1b',
+            color: 'rgba(255, 255, 255, 0.78)',
+            selectedBackground: '#0a0c1b',
+            selectedColor: 'rgba(255, 255, 255, 0.78)'
+          }
         }
       }
     },

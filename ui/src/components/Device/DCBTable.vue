@@ -269,7 +269,12 @@ const numberOfSelectedDevices = computed<number>(() => {
 // for enabling / disabling table buttons (history, backup, d/l, compare...)
 const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceStore.deviceConfigBackups.length))
 const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceStore.deviceConfigBackups.length === 1))
-const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
+
+const singleConfigSelectedHasNoServiceName = computed<boolean>(() => {
+  const backupId = selectedDeviceConfigIds.value?.length > 0 ? selectedDeviceConfigIds.value[0] : null
+  return singleConfigSelected.value && backupId !== null && !getDeviceConfigBackupById(backupId)?.serviceName
+})
+
 const getDeviceConfigBackupById = (id: number) => deviceStore.deviceConfigBackups.filter(backup => backup.id === id)[0]
 
 const onSort = (event: DataTableSortEvent) => {
