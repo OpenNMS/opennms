@@ -1,11 +1,23 @@
 <template>
-  <FeatherButton class="compare-btn" icon="Compare configs" @click="emit('onCompare')">
+  <PButton
+    text
+    class="compare-btn"
+    aria-label="Compare configs"
+    v-tooltip="'Compare configs'"
+    @click="emit('onCompare')"
+  >
     <FeatherIcon :icon="Compare" />
-  </FeatherButton>
+  </PButton>
 
-  <FeatherButton class="dwnld-btn" icon="Download config" @click="onDownload">
+  <PButton
+    text
+    class="dwnld-btn"
+    aria-label="Download config"
+    v-tooltip="'Download config'"
+    @click="onDownload"
+  >
     <FeatherIcon :icon="Download" />
-  </FeatherButton>
+  </PButton>
 
   <span class="title">
     {{ selectedConfig?.configName }}
@@ -35,13 +47,15 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Download from '@featherds/icon/action/DownloadFile'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useDeviceStore } from '@/stores/deviceStore'
+
+const PButton = Button
 
 const emit = defineEmits(['onCompare'])
 
@@ -67,7 +81,6 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 
 .title {
@@ -91,7 +104,7 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
 
     .history-date {
       @include body-small;
-      color: var($primary);
+      color: var(--p-primary-color);
       margin-top: 5px;
 
       &.selected {

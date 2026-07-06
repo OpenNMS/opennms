@@ -14,189 +14,151 @@
       <div class="config-column">
         <div>Configurations:</div>
         <div class="btn-container">
-          <FeatherButton
+          <PButton
+            text
+            class="dcb-action-btn"
             data-test="view-history-btn"
             @click="onViewHistory"
             :disabled="!singleConfigSelected"
-            text
           >
-            <template v-slot:icon>
-              <FeatherIcon :icon="History" />
-            </template>
+            <FeatherIcon :icon="History" class="btn-icon" />
             View History
-          </FeatherButton>
+          </PButton>
 
-          <FeatherButton
+          <PButton
+            text
+            class="dcb-action-btn"
             data-test="download-btn"
             @click="onDownload"
             :disabled="noConfigsSelected"
-            text
           >
-            <template v-slot:icon>
-              <FeatherIcon :icon="Download" />
-            </template>
+            <FeatherIcon :icon="Download" class="btn-icon" />
             Download
-          </FeatherButton>
+          </PButton>
 
-          <FeatherButton
+          <PButton
+            text
+            class="dcb-action-btn"
             data-test="backup-now-btn"
             @click="onBackupNow"
             :disabled="noConfigsSelected || singleConfigSelectedHasNoServiceName"
-            text
           >
-            <template v-slot:icon>
-              <FeatherIcon :icon="Backup" />
-            </template>
+            <FeatherIcon :icon="Backup" class="btn-icon" />
             Backup
-          </FeatherButton>
+          </PButton>
 
-          <FeatherButton
+          <PButton
+            text
+            class="dcb-action-btn"
             data-test="compare-btn"
             @click="onCompare"
             :disabled="!singleConfigSelected"
-            text
           >
-            <template v-slot:icon>
-              <FeatherIcon :icon="Compare" />
-            </template>
+            <FeatherIcon :icon="Compare" class="btn-icon" />
             Compare
-          </FeatherButton>
+          </PButton>
         </div>
       </div>
     </div>
   </div>
 
-  <div
-    ref="tableWrap"
-    id="wrap"
-    class="dcb-table"
-  >
-    <table summary="Device Config Backup">
-      <thead>
-        <tr>
-          <th>
-            <FeatherCheckbox
-              v-model="all"
-              @update:modelValue="selectAll"
-              data-test="all-checkbox"
-              class="dcb-all-checkbox"
+  <div ref="tableWrap" class="dcb-table">
+    <PDataTable
+      :value="deviceStore.deviceConfigBackups"
+      dataKey="id"
+      lazy
+      scrollable
+      scrollHeight="calc(100vh - 310px)"
+      stripedRows
+      size="small"
+      :sortField="sortField"
+      :sortOrder="sortOrder"
+      @sort="onSort"
+      aria-label="Device Config Backup"
+    >
+      <PColumn :pt="columnHeaderPt">
+        <template #header>
+          <PCheckbox
+            binary
+            :modelValue="all"
+            @update:modelValue="onSelectAll"
+            data-test="all-checkbox"
+            class="dcb-all-checkbox"
+          />
+        </template>
+        <template #body="{ data }">
+          <PCheckbox
+            binary
+            class="dcb-config-checkbox"
+            :modelValue="all || selectedDeviceConfigBackups[data.id]"
+            @update:modelValue="selectCheckbox(data)"
+          />
+        </template>
+      </PColumn>
+
+      <PColumn field="deviceName" header="Node Name" sortable :pt="columnHeaderPt">
+        <template #body="{ data }">
+          <a
+            :href="computeNodeLink(data.nodeId)"
+            @click="onNodeLinkClick(data.nodeId)"
+            target="_blank"
+          >
+            {{ data.deviceName }}
+            <FeatherIcon
+              v-if="data.configType !== 'default'"
+              :icon="Speed"
+              v-tooltip="data.configName"
             />
-          </th>
-          <FeatherSortHeader
-            scope="col"
-            property="deviceName"
-            :sort="sortStates.deviceName"
-            v-on:sort-changed="sortByColumnHandler"
-            >Node Name</FeatherSortHeader
-          >
+          </a>
+        </template>
+      </PColumn>
 
-          <FeatherSortHeader
-            scope="col"
-            property="ipAddress"
-            :sort="sortStates.ipAddress"
-            v-on:sort-changed="sortByColumnHandler"
-            >IP Address</FeatherSortHeader
-          >
+      <PColumn field="ipAddress" header="IP Address" sortable :pt="columnHeaderPt" />
+      <PColumn field="location" header="Location" sortable :pt="columnHeaderPt" />
 
-          <FeatherSortHeader
-            scope="col"
-            property="location"
-            :sort="sortStates.location"
-            v-on:sort-changed="sortByColumnHandler"
-            >Location</FeatherSortHeader
-          >
-
-          <FeatherSortHeader
-            scope="col"
-            property="lastBackup"
-            :sort="sortStates.lastBackup"
-            v-on:sort-changed="sortByColumnHandler"
-            >Last Backup Date</FeatherSortHeader
-          >
-
-          <FeatherSortHeader
-            scope="col"
-            property="lastUpdated"
-            :sort="sortStates.lastUpdated"
-            v-on:sort-changed="sortByColumnHandler"
-            >Last Attempted</FeatherSortHeader
-          >
-
-          <th>
-            <DCBTableStatusDropdown />
-          </th>
-
-          <th>Schedule Date</th>
-          <th>Schedule Interval</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="config in deviceStore.deviceConfigBackups"
-          :key="config.id"
-        >
-          <td>
-            <FeatherCheckbox
-              class="dcb-config-checkbox"
-              @update:modelValue="selectCheckbox(config)"
-              :modelValue="all || selectedDeviceConfigBackups[config.id]"
-            />
-          </td>
-          <td>
-            <a
-              :href="computeNodeLink(config.nodeId)"
-              @click="onNodeLinkClick(config.nodeId)"
-              target="_blank">
-            <!--
-            <router-link
-              :to="`/node/${config.nodeId}`"
-              target="_blank"
-            >
-            -->
-              {{ config.deviceName }}
-              <FeatherTooltip
-                :title="config.configName"
-                v-slot="{ attrs, on }">
-                <FeatherIcon
-                  v-bind="attrs" v-on="on"
-                  v-if="config.configType !== 'default'"
-                  :icon="Speed"
-                />
-              </FeatherTooltip>
-            </a>
-          </td>
-          <td>{{ config.ipAddress }}</td>
-          <td>{{ config.location }}</td>
-          <td
+      <PColumn field="lastBackup" header="Last Backup Date" sortable :pt="columnHeaderPt">
+        <template #body="{ data }">
+          <span
             class="last-backup-date pointer"
-            @click="onLastBackupDateClick(config)"
+            @click="onLastBackupDateClick(data)"
+            v-tooltip="'View config'"
           >
-            <FeatherTooltip
-              title="View config"
-              v-slot="{ attrs, on }">
-              <span
-                v-bind="attrs"
-                v-on="on"
-                v-date
-                >{{ config.lastBackupDate }}
-              </span>
-            </FeatherTooltip>
-          </td>
-          <td v-date>{{ config.lastUpdatedDate }}</td>
-          <td>
-            <div
-              :class="config.backupStatus"
-              class="option"
-            >
-              {{ config.backupStatus === 'none' ? 'No Backup' : config.backupStatus }}
-            </div>
-          </td>
-          <td v-date>{{ config.nextScheduledBackupDate }}</td>
-          <td>{{ Object.values(config.scheduledInterval)[0] }}</td>
-        </tr>
-      </tbody>
-    </table>
+            <span v-date>{{ data.lastBackupDate }}</span>
+          </span>
+        </template>
+      </PColumn>
+
+      <PColumn field="lastUpdated" header="Last Attempted" sortable :pt="columnHeaderPt">
+        <template #body="{ data }">
+          <span v-date>{{ data.lastUpdatedDate }}</span>
+        </template>
+      </PColumn>
+
+      <PColumn :pt="columnHeaderPt">
+        <template #header>
+          <DCBTableStatusDropdown />
+        </template>
+        <template #body="{ data }">
+          <div :class="data.backupStatus" class="option">
+            {{ data.backupStatus === 'none' ? 'No Backup' : data.backupStatus }}
+          </div>
+        </template>
+      </PColumn>
+
+      <PColumn header="Schedule Date" :pt="columnHeaderPt">
+        <template #body="{ data }">
+          <span v-date>{{ data.nextScheduledBackupDate }}</span>
+        </template>
+      </PColumn>
+
+      <PColumn header="Schedule Interval" :pt="columnHeaderPt">
+        <template #body="{ data }">
+          {{ Object.values(data.scheduledInterval)[0] }}
+        </template>
+      </PColumn>
+    </PDataTable>
   </div>
+
   <DCBModal
     @close="dcbModalVisible = false"
     :visible="dcbModalVisible"
@@ -220,14 +182,14 @@
   setup
   lang="ts"
 >
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useScroll } from '@vueuse/core'
 
-import { FeatherSortHeader, SORT } from '@featherds/table'
-import { FeatherSortObject } from '@/types'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherTooltip } from '@featherds/tooltip'
-import { FeatherButton } from '@featherds/button'
+import DataTable, { DataTableSortEvent } from 'primevue/datatable'
+import Column from 'primevue/column'
+import Checkbox from 'primevue/checkbox'
+import Button from 'primevue/button'
+import { SORT } from '@featherds/table'
 import { FeatherIcon } from '@featherds/icon'
 import History from '@featherds/icon/action/Restore'
 import Download from '@featherds/icon/action/DownloadFile'
@@ -244,6 +206,15 @@ import { useDeviceStore } from '@/stores/deviceStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
 
+const PDataTable = DataTable
+const PColumn = Column
+const PCheckbox = Checkbox
+const PButton = Button
+
+// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
+// passthrough so header cells stay associated with their columns for screen readers.
+const columnHeaderPt = { headerCell: { scope: 'col' }}
+
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',
   DCBModalViewHistoryContent = 'DCBModalViewHistoryContent',
@@ -257,16 +228,13 @@ const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)
 const tableWrap = ref<HTMLElement | null>(null)
+const scrollContainer = ref<HTMLElement | null>(null)
 const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
-const sortStates: Record<string, SORT> = reactive({
-  deviceName: SORT.ASCENDING,
-  ipAddress: SORT.NONE,
-  location: SORT.NONE,
-  lastBackup: SORT.NONE,
-  lastUpdated: SORT.NONE
-})
-const { arrivedState, directions } = useScroll(tableWrap.value as HTMLElement, {
+const sortField = ref('deviceName')
+const sortOrder = ref(1)
+
+const { arrivedState, directions } = useScroll(scrollContainer, {
   offset: { bottom: 300 }
 })
 
@@ -304,22 +272,24 @@ const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDevi
 const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
 const getDeviceConfigBackupById = (id: number) => deviceStore.deviceConfigBackups.filter(backup => backup.id === id)[0]
 
-const sortByColumnHandler = (sortObj: FeatherSortObject) => {
-  for (const key in sortStates) {
-    sortStates[key] = SORT.NONE
-  }
-
-  sortStates[`${sortObj.property}`] = sortObj.value
+const onSort = (event: DataTableSortEvent) => {
+  sortField.value = event.sortField as string
+  sortOrder.value = (event.sortOrder as number) ?? 1
 
   const newQueryParams: DeviceConfigQueryParams = {
     limit: defaultQuerySize,
     offset: 0,
-    order: sortObj.value,
-    orderBy: sortObj.property
+    order: sortOrder.value === 1 ? SORT.ASCENDING : SORT.DESCENDING,
+    orderBy: sortField.value
   }
 
   deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
   deviceStore.getDeviceConfigBackups()
+}
+
+const onSelectAll = (val: boolean) => {
+  all.value = val
+  selectAll()
 }
 
 const selectAll = () => {
@@ -370,15 +340,9 @@ const getMoreDeviceConfigBackups = () => {
 }
 
 onMounted(() => {
-  const wrap = document.getElementById('wrap')
-  const thead = document.querySelector('thead')
-
-  if (wrap && thead) {
-    wrap.addEventListener('scroll', function () {
-      const translate = 'translate(0,' + this.scrollTop + 'px)'
-      thead.style.transform = translate
-    })
-  }
+  // Point the infinite-scroll watcher at the DataTable's internal scroll
+  // container (sticky header + striping are handled by the DataTable itself).
+  scrollContainer.value = tableWrap.value?.querySelector('.p-datatable-table-container') as HTMLElement | null
 })
 </script>
 
@@ -386,44 +350,29 @@ onMounted(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
 
-#wrap {
-  height: calc(100vh - 310px);
-  overflow: auto;
-  white-space: nowrap;
+.dcb-table {
+  :deep(.last-backup-date) {
+    color: var(--p-primary-color);
 
-  table {
-    margin-top: 0px !important;
-    font-size: 12px !important;
-    @include table;
-    @include table-condensed;
-    @include row-striped;
-
-    .last-backup-date {
-      color: var($primary);
-
-      span:hover {
-        font-weight: 600;
-      }
-    }
-
-    .option {
-      margin-left: 8px;
-      height: 43px;
-      line-height: 3.5;
-      padding-left: 15px;
-      text-transform: capitalize;
+    span:hover {
+      font-weight: 600;
     }
   }
 
-  thead {
-    z-index: 2;
-    position: relative;
-    background: var($surface);
+  :deep(.option) {
+    margin-left: 8px;
+    height: 43px;
+    line-height: 3.5;
+    padding-left: 15px;
+    text-transform: capitalize;
+  }
+}
+
+.dcb-action-btn {
+  .btn-icon {
+    margin-right: 0.4rem;
   }
 }
 
@@ -435,7 +384,6 @@ onMounted(() => {
   .config-header {
     display: flex;
     flex-direction: row;
-    font-family: var($font-family);
     @include subtitle2;
 
     .config-column {
@@ -446,39 +394,16 @@ onMounted(() => {
       .config-number {
         margin-top: 5px;
       }
-
-      .btn-container {
-        .btn {
-          margin-top: 0px;
-        }
-      }
     }
 
     .divider {
       height: 46px;
       margin: 0px 13px 0px 35px;
-      border-left: 1px solid var($shade-4);
+      border-left: 1px solid var(--p-content-border-color);
     }
   }
 }
 a:visited {
-  color: var($clickable-normal) !important;
-}
-</style>
-
-<style lang="scss">
-.dcb-config-checkbox,
-.dcb-all-checkbox {
-  margin-bottom: 0px !important;
-}
-.dcb-config-checkbox {
-  label {
-    display: none;
-  }
-}
-.dcb-table {
-  .feather-checkbox {
-    width: 20px;
-  }
+  color: var(--p-primary-color) !important;
 }
 </style>
