@@ -14,7 +14,7 @@ NOTE: If not otherwise specified, the `Content-Type` of the request and response
 | /device-config
 | GET
 | Retrieves all the configurations, sorted by `lastUpdated`.
-This API also supports the following query paramaters: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `configType`, `createdAfter`, and `createdBefore`.
+This API also supports the following query parameters: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `ipInterfaceId`, `configType`, `status`, `createdAfter`, and `createdBefore`.
 
 | /device-config/\{id}
 | GET
@@ -27,7 +27,7 @@ This API also supports the following query paramaters: `limit`, `offset`, `order
 | /device-config/latest
 | GET
 | Retrieves the latest configuration for all devices.
-This API supports the following query parameters: `limit`, `offset`, `orderBy`, `order`, `search`, and `status`.
+This API supports the following query parameters: `limit`, `offset`, `orderBy`, `order`, `search`, `status`, and `pageEnter`.
 
 | /device-config/download?id=\{id1, id2}
 | GET
@@ -36,6 +36,14 @@ This API supports the following query parameters: `limit`, `offset`, `orderBy`, 
 | /device-config/backup
 | POST
 | Trigger backup for a given interface and location.
+
+| /device-config?id=\{id1, id2}
+| DELETE
+| Delete multiple device configurations given a comma-separated list of database IDs.
+
+| /device-config/\{id}
+| DELETE
+| Delete the single device configuration with the given ID (database ID).
 |===
 
 == Examples:

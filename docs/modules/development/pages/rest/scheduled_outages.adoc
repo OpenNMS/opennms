@@ -14,6 +14,22 @@
 
 | /sched-outages/\{outagename}
 | Get the details of a specific outage.
+
+| /sched-outages/\{outagename}/nodeInOutage/\{nodeId}
+| Check whether the node with the given ID is currently in outage for the named scheduled outage.
+Returns `true` or `false` as plain text.
+
+| /sched-outages/\{outagename}/interfaceInOutage/\{ipAddr}
+| Check whether the interface with the given IP address is currently in outage for the named scheduled outage.
+Returns `true` or `false` as plain text.
+
+| /sched-outages/nodeInOutage/\{nodeId}
+| Check whether the node with the given ID is currently in outage for any scheduled outage.
+Returns `true` or `false` as plain text.
+
+| /sched-outages/interfaceInOutage/\{ipAddr}
+| Check whether the interface with the given IP address is currently in outage for any scheduled outage.
+Returns `true` or `false` as plain text.
 |===
 
 == POST (setting data)

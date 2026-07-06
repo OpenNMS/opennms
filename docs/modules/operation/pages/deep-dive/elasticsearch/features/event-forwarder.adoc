@@ -87,6 +87,9 @@ The index names used to store the events use the following form: `opennms-raw-ev
 opennms-events-raw-2017-01/eventdata/11549
 ----
 
+NOTE: Forwarded events are written to time-based indices that {page-component-title} does not expire.
+See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>> to avoid filling the Elasticsearch disk.
+
 == Viewing events using Kibana Sense
 
 https://www.elastic.co/guide/en/sense/current/installing.html[Kibana Sense] is a Kibana app that lets you run queries directly against Elasticsearch.
