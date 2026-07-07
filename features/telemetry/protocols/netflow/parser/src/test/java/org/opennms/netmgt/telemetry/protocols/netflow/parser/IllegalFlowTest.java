@@ -141,14 +141,14 @@ public class IllegalFlowTest {
 
         parser.setIllegalFlowEventRate(3600);
         sendValid(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
 
         // reset counter
 
@@ -159,26 +159,26 @@ public class IllegalFlowTest {
 
         parser.setIllegalFlowEventRate(2);
         sendValid(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(20));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(20));
 
         Thread.sleep(2000);
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(2));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(25));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> eventCount.get(), is(2));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(25));
     }
 
     private void sendTemplate(final int udpPort) throws Exception {

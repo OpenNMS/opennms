@@ -195,16 +195,13 @@ public class SyslogEventForwarderTest {
 
         forwarder.forward(event, node);
 
-        Thread.sleep(100);
-
-        BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
-
-        List<String> messages = new LinkedList<>();
-        String line = null;
-
-        while ((line = r.readLine()) != null) {
-            messages.add(line);
-            Thread.sleep(10);
+        // Wait until the test syslog server has received the forwarded event.
+        // Polls instead of a fixed sleep (awaitility is not on this module's test classpath).
+        final long deadline = System.currentTimeMillis() + 10000;
+        List<String> messages = readMessages();
+        while (messages.size() < 1 && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+            messages = readMessages();
         }
 
         Assert.assertTrue("Log messages sent: 1, Log messages received: " + messages.size(), 1 == messages.size());
@@ -213,6 +210,19 @@ public class SyslogEventForwarderTest {
 
         forwarder.reload();
         forwarder.shutdown();
+    }
+
+    /**
+     * Reads all messages received so far by the test syslog server.
+     */
+    private List<String> readMessages() throws IOException {
+        final BufferedReader reader = new BufferedReader(new StringReader(m_logStream.readStream()));
+        final List<String> messages = new LinkedList<>();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            messages.add(line);
+        }
+        return messages;
     }
 
 }

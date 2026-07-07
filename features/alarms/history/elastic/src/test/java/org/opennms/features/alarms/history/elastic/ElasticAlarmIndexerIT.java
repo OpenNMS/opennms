@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
-import org.awaitility.Awaitility;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -74,8 +73,6 @@ public class ElasticAlarmIndexerIT {
     @BeforeClass
     public static void classSetUp() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        Awaitility.setDefaultPollDelay(1, TimeUnit.SECONDS);
-        Awaitility.setDefaultPollInterval(5, TimeUnit.SECONDS);
     }
 
     @Before
@@ -111,7 +108,7 @@ public class ElasticAlarmIndexerIT {
         issueSnapshotWithPreAndPostCalls(alarms);
 
         // Wait for the alarms to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(now), equalTo(N));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(now), equalTo(N));
 
 
         // Advance the clock
@@ -122,7 +119,7 @@ public class ElasticAlarmIndexerIT {
         issueSnapshotWithPreAndPostCalls(Collections.emptyList());
 
         // Wait for the deletes to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(then), equalTo(0L));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> alarmHistoryRepo.getNumActiveAlarmsAt(then), equalTo(0L));
     }
 
     private void issueSnapshotWithPreAndPostCalls(List<OnmsAlarm> alarms) {

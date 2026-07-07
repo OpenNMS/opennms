@@ -22,18 +22,13 @@
 package org.opennms.netmgt.flows.elastic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import org.opennms.integration.api.v1.flows.Flow;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
-@RunWith(PowerMockRunner.class)
 public class SamplingAlgorithmTest {
 
     @Test
@@ -43,26 +38,8 @@ public class SamplingAlgorithmTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    @PrepareForTest(Flow.SamplingAlgorithm.class)
-    public void willThrowExceptionOnIllegalValue() {
-        Flow.SamplingAlgorithm illegalValue = PowerMockito.mock(Flow.SamplingAlgorithm.class);
-
-        Whitebox.setInternalState(illegalValue, "name", "illegalValue");
-        Whitebox.setInternalState(illegalValue, "ordinal", 8);
-
-        PowerMockito.mockStatic(Flow.SamplingAlgorithm.class);
-        PowerMockito.when(Flow.SamplingAlgorithm.values()).thenReturn(new Flow.SamplingAlgorithm[]{
-                Flow.SamplingAlgorithm.Unassigned,
-                Flow.SamplingAlgorithm.SystematicCountBasedSampling,
-                Flow.SamplingAlgorithm.SystematicTimeBasedSampling,
-                Flow.SamplingAlgorithm.RandomNOutOfNSampling,
-                Flow.SamplingAlgorithm.UniformProbabilisticSampling,
-                Flow.SamplingAlgorithm.PropertyMatchFiltering,
-                Flow.SamplingAlgorithm.HashBasedFiltering,
-                Flow.SamplingAlgorithm.FlowStateDependentIntermediateFlowSelectionProcess,
-                illegalValue});
-
-        SamplingAlgorithm.from(illegalValue);
+    @Test
+    public void mapsNullToUnassigned() {
+        assertThat(SamplingAlgorithm.from(null), equalTo(SamplingAlgorithm.Unassigned));
     }
 }

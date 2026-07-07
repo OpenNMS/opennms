@@ -550,7 +550,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         await().atMost(1, TimeUnit.MINUTES)
                 .ignoreExceptions()
-                .pollDelay(5, TimeUnit.SECONDS)
                 .until(() -> kafkaProducer.getDataSync().isReady());
         
         // Force an alarm sync
@@ -603,7 +602,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaServer.startKafkaServer();
 
         // Verify alarm is received
-        await().pollDelay(5, TimeUnit.SECONDS).atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
+        await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
     }
 
     private KafkaMessageConsumerRunner startConsumer() {

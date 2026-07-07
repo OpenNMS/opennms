@@ -87,7 +87,7 @@ public class DefaultDirectionIT {
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()));
 
             // wait for entries to show up
-            with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
+            with().await().atMost(1, MINUTES).ignoreExceptions().until(() -> {
                 final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
                 LOG.info("Response: {} documents", searchResponse.getHits().getTotalHits());
                 return searchResponse.getHits().getTotalHits() > 0;

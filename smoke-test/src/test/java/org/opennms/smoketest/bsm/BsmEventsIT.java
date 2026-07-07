@@ -63,7 +63,7 @@ public class BsmEventsIT {
 
         final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
 
-        final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
                         .toCriteria()), notNullValue());
@@ -73,7 +73,7 @@ public class BsmEventsIT {
 
         restClient.sendEvent(getServiceProblemEvent(42, "Minor"));
 
-        final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
                         .toCriteria()), notNullValue());
@@ -89,7 +89,7 @@ public class BsmEventsIT {
 
         final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
 
-        final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsAlarm onmsAlarm1 = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
                         .eq("severity", OnmsSeverity.MAJOR)
@@ -99,7 +99,7 @@ public class BsmEventsIT {
 
         restClient.sendEvent(getServiceDeletedEvent(42));
 
-        final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsAlarm onmsAlarm2 = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/bsm/serviceProblem")
                         .eq("id", onmsAlarm1.getId())

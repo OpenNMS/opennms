@@ -39,11 +39,13 @@ public abstract class SyslogdTestUtils {
          * bind to the port. Otherwise, we will get test errors for
          * missing anticipated events, etc.
          */
+        // TODO(flaky-cleanup): no observable readiness signal on Syslogd/SyslogReceiver to await on
         try { Thread.sleep(3000); } catch (InterruptedException e) {}
     }
     
     public static void waitForSyslogdToReload() {
         //wait till syslog stops and starts again, no other way to check this
+        // TODO(flaky-cleanup): no observable reload-complete signal on Syslogd to await on
         try { Thread.sleep(6000); } catch (InterruptedException e) {}
     }
 

@@ -24,7 +24,7 @@ package org.opennms.netmgt.provision.service;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -179,7 +179,7 @@ public class NodeInfoScanIT {
         Tracer tracer = GlobalTracer.get();
         Span mockSpan = tracer.buildSpan("Mock").start();
         when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
-        when(provisionService.buildAndStartSpan(anyString(), anyObject())).thenReturn(mockSpan);
+        when(provisionService.buildAndStartSpan(anyString(), any())).thenReturn(mockSpan);
     }
 
 

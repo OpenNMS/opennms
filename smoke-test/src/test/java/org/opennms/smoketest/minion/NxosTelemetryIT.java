@@ -69,7 +69,7 @@ public class NxosTelemetryIT {
         final Date startOfTest = new Date();
         final OnmsNode onmsNode = addRequisition(stack, false, startOfTest);
         final InetSocketAddress opennmsNxosPort = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.NXOS);
-        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
                 .until(() -> {
                     sendNxosTelemetryMessage(opennmsNxosPort);
                     return matchRrdFileFromNodeResource(onmsNode.getId());
@@ -81,7 +81,7 @@ public class NxosTelemetryIT {
         final Date startOfTest = new Date();
         final OnmsNode onmsNode = addRequisition(stack, true, startOfTest);
         final InetSocketAddress minionNxosPort = stack.minion().getNetworkProtocolAddress(NetworkProtocol.NXOS);
-        await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until(() -> {
                     sendNxosTelemetryMessage(minionNxosPort);
                     return matchRrdFileFromNodeResource(onmsNode.getId());
@@ -133,7 +133,7 @@ public class NxosTelemetryIT {
 
         NodeDao nodeDao = stack.postgres().dao(NodeDaoHibernate.class);
 
-        final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(30, SECONDS)
+        final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
                         .ge("createTime", startOfTest).eq("label", label).toCriteria()), notNullValue());
 

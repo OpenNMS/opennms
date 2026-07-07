@@ -50,7 +50,9 @@ public class JMXCollectorIT {
     @Test
     public void canPerformAdhocJmxCollection() throws Exception {
         final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 // Issue the collection and verify that a known string appears in the output
                 // Which string it is doesn't really matter provided that it is only returned when the collection
                 // was successfull

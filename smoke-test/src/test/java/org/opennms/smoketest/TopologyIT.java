@@ -899,6 +899,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
             builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
             OpenNMSSeleniumIT.stack.opennms().getRestClient().sendEvent(builder.getEvent());
+            // TODO(flaky-cleanup): topology reload completion is not observable via REST/shell
             Thread.sleep(5000); // Wait to allow the event to be processed
         }
     }

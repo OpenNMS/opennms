@@ -343,6 +343,9 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         m_collectd.setServiceCollector("HTTP", m_collector);
         m_collectd.init();
         m_collectd.start();
+        // TODO(flaky-cleanup): no observable readiness signal; RRD anticipation is verified by the
+        // @JUnitCollector framework only after the test method returns, so we can only give collectd
+        // a fixed window to run here.
         Thread.sleep(10000);
         m_collectd.stop();
     }

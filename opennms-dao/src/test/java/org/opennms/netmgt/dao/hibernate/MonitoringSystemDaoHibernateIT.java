@@ -1,13 +1,12 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.UUID;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.junit5.OpenNMSSpringJupiterTest;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -17,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
+@OpenNMSSpringJupiterTest
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -49,7 +48,7 @@ public class MonitoringSystemDaoHibernateIT implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testSystemId = UUID.randomUUID().toString().toLowerCase();
 
@@ -59,7 +58,7 @@ public class MonitoringSystemDaoHibernateIT implements InitializingBean {
         m_databasePopulator.populateDatabase();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         m_databasePopulator.resetDatabase(true);
     }

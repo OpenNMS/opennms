@@ -197,7 +197,7 @@ public abstract class AbstractAdapterIT {
 
         // Verify creation
         final NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
-        final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(30, SECONDS)
+        final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
                         .eq("foreignSource", createInfo.foreignSource)
                         .eq("foreignId", createInfo.foreignId)

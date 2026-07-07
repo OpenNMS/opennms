@@ -63,7 +63,6 @@ public class RouteInfoPersistIT {
         routeInfoClient.updateRouteInfo(resourceURL.getPath());
         // bmp-test.db has 2705 elements but one is duplicate.
         await().atMost(30, TimeUnit.SECONDS)
-                .pollDelay(1, TimeUnit.SECONDS)
                 .pollInterval(1, TimeUnit.SECONDS)
                 .until(() -> bmpRouteInfoDao.countAll() >= 2704);
     }

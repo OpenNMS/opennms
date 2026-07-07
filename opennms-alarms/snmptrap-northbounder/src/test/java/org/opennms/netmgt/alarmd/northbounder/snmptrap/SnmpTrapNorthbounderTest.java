@@ -113,8 +113,8 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
         // Verify the nortbound alarm and send it to the test receiver
         Assert.assertTrue(nbi.accepts(alarm));
         nbi.forwardAlarms(Collections.singletonList(alarm));
-        Thread.sleep(5000); // Introduce a delay to make sure the trap was sent and received.
-        Assert.assertEquals(1, getTrapsReceivedCount());
+        // Wait until the trap was sent and received.
+        waitForTrapsReceived(1, 25000);
     }
 
 }

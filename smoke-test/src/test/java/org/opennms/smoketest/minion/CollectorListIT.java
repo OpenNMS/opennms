@@ -82,14 +82,18 @@ public class CollectorListIT {
     @Test
     public void canLoadCollectorsOnMinion() throws Exception {
         final InetSocketAddress sshAddr = stack.minion().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.minion().isRunning())
+                .ignoreExceptions()
                 .until(() -> listAndVerifyCollectors(sshAddr, expectedMinionCollectors), hasSize(0));
     }
 
     @Test
     public void canLoadCollectorsOnOpenNMS() throws Exception {
         final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 .until(() -> listAndVerifyCollectors(sshAddr, expectedOpenNMSCollectors), hasSize(0));
     }
 

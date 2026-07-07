@@ -78,7 +78,9 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
 
     @Test
     public void testKafkaAlarmStoreData() throws Exception {
-        await().atMost(2, MINUTES).pollInterval(15, SECONDS)
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 .until(this::triggerAlarmAndListReductionKeysInKtable, containsString("uei.opennms.org/alarms/trigger:::kafka-producer-test"));
     }
 
@@ -105,7 +107,7 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         DetectorsOnMinionIT.addRequisition(stack.opennms().getRestClient(), null, localhost);
         HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
-        final OnmsNode onmsNode = await().atMost(1, MINUTES).pollInterval(15, SECONDS)
+        final OnmsNode onmsNode = await().atMost(1, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
                         .ge("createTime", startOfTest)
                         .eq("label", localhost).toCriteria()), notNullValue());
@@ -115,11 +117,13 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         KafkaMessageConsumerRunner kafkaConsumer = new KafkaMessageConsumerRunner(stack.kafka().getBootstrapServers(), "metrics");
         kafkaConsumer.setNodeId(nodeId);
         Executors.newSingleThreadExecutor().execute(kafkaConsumer);
-        await().atMost(2, MINUTES).pollInterval(15, SECONDS)
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 .until(() -> persistCollectionData(stack, nodeId), containsString("Persisted collection"));
 
         // Can't get proto3 in here, so only verify non-null
-        await().atMost(1, MINUTES).pollInterval(15, SECONDS).until(kafkaConsumer::getValue, not(nullValue()));
+        await().atMost(1, MINUTES).pollInterval(1, SECONDS).until(kafkaConsumer::getValue, not(nullValue()));
         kafkaConsumer.stop();
     }
 

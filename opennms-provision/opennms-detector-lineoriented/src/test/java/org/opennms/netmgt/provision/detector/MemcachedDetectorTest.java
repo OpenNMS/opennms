@@ -94,8 +94,7 @@ public class MemcachedDetectorTest implements InitializingBean {
             }
         };
         m_server.init();
-        m_server.startServer();
-        Thread.sleep(100); // make sure the server is really started
+        m_server.startServer(); // blocks until the server thread is started and accepting connections
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(1000);
@@ -122,8 +121,7 @@ public class MemcachedDetectorTest implements InitializingBean {
             }
         };
         m_server.init();
-        m_server.startServer();
-        Thread.sleep(100); // make sure the server is really started
+        m_server.startServer(); // blocks until the server thread is started and accepting connections
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(1000);

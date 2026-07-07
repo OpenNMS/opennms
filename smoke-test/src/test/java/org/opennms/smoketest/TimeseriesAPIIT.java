@@ -81,7 +81,8 @@ public class TimeseriesAPIIT {
 
         //Wait for data
         await().atMost(5, TimeUnit.MINUTES)
-                .pollInterval(15, TimeUnit.SECONDS)
+                .pollInterval(5, TimeUnit.SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
                 .until(() -> karafShell.runCommandOnce("opennms:get-tss-plugin-metrics",
                         output -> Arrays.stream(output.split("\n"))
                                    .filter(line -> line.contains("data points"))

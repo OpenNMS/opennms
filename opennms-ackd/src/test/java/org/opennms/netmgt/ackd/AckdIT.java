@@ -152,32 +152,40 @@ public class AckdIT implements InitializingBean {
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
         
         m_daemon.restartReaders(false);
-        Thread.sleep(30);
-        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
-        
+        waitForReaderState(reader, AckReaderState.STARTED);
+
         m_daemon.pauseReaders();
-        Thread.sleep(30);
-        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.PAUSED.equals(reader.getState()));
-        
+        waitForReaderState(reader, AckReaderState.PAUSED);
+
         m_daemon.resumeReaders();
-        Thread.sleep(30);
-        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.RESUMED.equals(reader.getState()));
-        
+        waitForReaderState(reader, AckReaderState.RESUMED);
+
         readerConfig.setEnabled(false);
         m_daemon.restartReaders(true);
-        Thread.sleep(300);
-        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
-        
+        waitForReaderState(reader, AckReaderState.STOPPED);
+
         m_daemon.resumeReaders();
         Thread.sleep(30);
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
         
         readerConfig.setEnabled(true);
         m_daemon.startReaders();
-        Thread.sleep(300);
-        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
-                
+        waitForReaderState(reader, AckReaderState.STARTED);
+
         m_daemon.destroy();
+    }
+
+    /**
+     * Waits until the reader has reached the expected state, and asserts it.
+     * Polls instead of a fixed sleep to keep the test fast (awaitility is not
+     * on this module's test classpath).
+     */
+    private static void waitForReaderState(final AckReader reader, final AckReaderState expectedState) throws InterruptedException {
+        final long deadline = System.currentTimeMillis() + 10000;
+        while (!expectedState.equals(reader.getState()) && System.currentTimeMillis() < deadline) {
+            Thread.sleep(20);
+        }
+        Assert.assertTrue("Unexpected reader state: " + reader.getState(), expectedState.equals(reader.getState()));
     }
     
 

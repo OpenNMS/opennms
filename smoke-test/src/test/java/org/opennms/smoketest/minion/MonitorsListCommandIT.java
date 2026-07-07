@@ -117,14 +117,18 @@ public class MonitorsListCommandIT {
     @Test
     public void canLoadMonitorsOnMinion() throws Exception {
         final InetSocketAddress sshAddr = stack.minion().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.minion().isRunning())
+                .ignoreExceptions()
                 .until(() -> listAndVerifyMonitors("Minion", sshAddr), hasSize(0));
     }
 
     @Test
     public void canLoadMonitorsOnOpenNMS() throws Exception {
         final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 .until(() -> listAndVerifyMonitors("OpenNMS", sshAddr), hasSize(0));
     }
 

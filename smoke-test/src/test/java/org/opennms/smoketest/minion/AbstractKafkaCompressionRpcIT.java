@@ -55,7 +55,9 @@ public abstract class AbstractKafkaCompressionRpcIT {
     @Test
     public void verifyKafkaRpcWithTcpServiceDetection() {
         addRequisition(stack().opennms().getRestClient(), stack().minion().getLocation(), LOCALHOST);
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack().opennms().isRunning())
+                .ignoreExceptions()
                 .until(() -> detectTcpAtLocationMinion(stack()), containsString("'TCP' WAS detected on 127.0.0.1"));
     }
 
@@ -74,7 +76,9 @@ public abstract class AbstractKafkaCompressionRpcIT {
 
     @Test
     public void verifyKafkaRpcWithJdbcServiceDetection() {
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack().opennms().isRunning())
+                .ignoreExceptions()
                 .until(this::detectJdbcAtLocationMinion, containsString("'JDBC' WAS detected"));
     }
 

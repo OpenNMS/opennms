@@ -24,6 +24,7 @@ package org.opennms.netmgt.dao;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -121,8 +123,9 @@ public class DefaultDataCollectionConfigDaoIT {
         currentDate = new Date(target.lastModified());
 
         // Wait and check if the data was changed.
-        Thread.sleep(2000l);
-        Assert.assertFalse(currentDate.after(dao.getLastUpdate()));
+        final Date modifiedDate = currentDate;
+        Awaitility.await().atMost(Duration.ofSeconds(10))
+                .untilAsserted(() -> Assert.assertFalse(modifiedDate.after(dao.getLastUpdate())));
 
         FileUtils.deleteDirectory(dest);
     }

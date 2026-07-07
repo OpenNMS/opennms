@@ -98,6 +98,7 @@ public class SyslogKafkaElasticsearchIT {
         // Warm up the routes
         SyslogUtils.sendMessage(stack.minion().getSyslogAddress(), sender, 100);
 
+        // TODO(flaky-cleanup): fixed pacing after route warm-up; no observable condition to await on
         for (int i = 1; i <= 15; i++) {
             Thread.sleep(1000);
             LOG.info("Slept for " + i + " seconds");
@@ -141,7 +142,7 @@ public class SyslogKafkaElasticsearchIT {
                 "}";
 
         try (JestClient client = factory.getObject()) {
-            with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
+            with().pollInterval(1, SECONDS).await().atMost(5, MINUTES).until(() -> {
                     LOG.debug("SEARCH QUERY: {}", queryString);
                     SearchResult response = client.execute(
                             new Search.Builder(queryString)

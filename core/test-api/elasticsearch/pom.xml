@@ -127,7 +127,7 @@
      </dependency>
      <dependency>
        <groupId>org.hamcrest</groupId>
-       <artifactId>hamcrest-library</artifactId>
+       <artifactId>hamcrest</artifactId>
        <scope>compile</scope>
      </dependency>
   </dependencies>

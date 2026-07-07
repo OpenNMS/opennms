@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.test-api</artifactId>
+    <version>36.0.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.core.test-api</groupId>
+  <artifactId>org.opennms.core.test-api.junit5</artifactId>
+  <name>OpenNMS :: Core :: Test API :: JUnit 5</name>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.core.test.junit5.*;version="${project.version}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <!--
+    NOTE: this module deliberately does NOT depend on the other test-api modules. The
+    bootstrapper loads the OpenNMS TestExecutionListeners reflectively (exactly like
+    OpenNMSJUnit4ClassRunner), so consuming modules bring only the test-api modules they
+    need — and modules like opennms-dao, which some test-api modules transitively depend
+    on, can still use this harness without a dependency cycle.
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
+      <type>pom</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit5Version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <!--
+        surefire/failsafe run a module's own test-classpath engines with their bundled (older)
+        junit-platform-launcher unless a matching launcher is on the test classpath; providing
+        it here keeps every consumer of this harness aligned automatically
+      -->
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>${junit5PlatformVersion}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

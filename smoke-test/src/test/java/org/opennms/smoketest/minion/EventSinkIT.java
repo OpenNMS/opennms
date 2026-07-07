@@ -67,7 +67,7 @@ public class EventSinkIT {
         assertTrue("failed to send event from Minion", sendEventFromMinion());
         HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
-        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/alarms/trigger")
                         .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
@@ -81,7 +81,7 @@ public class EventSinkIT {
         assertTrue("failed to send event from Sentinel", sendEventFromSentinel());
         HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
-        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/threshold/relativeChangeExceeded")
                         .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 

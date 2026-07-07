@@ -83,7 +83,7 @@ public class NotifdIT {
         NotificationDao notificationDao = stack.postgres().dao(NotificationDaoHibernate.class);
         Criteria criteria = new CriteriaBuilder(OnmsNotification.class).createAlias("node", "node")
                 .eq("node.id", node.getId()).toCriteria();
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(10, TimeUnit.SECONDS)
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS)
                 .until(DaoUtils.countMatchingCallable(notificationDao, criteria), greaterThan(0));
 
         // Send a node Up event

@@ -75,7 +75,8 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
     public void testQuickAddNode() throws Exception {
         clickMenuItem("manageInventoryMenu", "Add a Single Node");
 
-        Thread.sleep(5000);
+        // Wait for the quick-add form to render; the loop below retries until the fields accept input
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignSource")));
 
         long end = System.currentTimeMillis() + LOAD_TIMEOUT;
 

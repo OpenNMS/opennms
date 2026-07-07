@@ -199,7 +199,7 @@ public class JtiIT {
         Files.write(scriptFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
         //Files.setLastModifiedTime(newFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
 
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(30, TimeUnit.SECONDS).until(() -> {
+        await().atMost(30, TimeUnit.SECONDS).until(() -> {
             final InetAddress newAddress = InetAddressUtils.getLocalHostAddress();
             final DatagramPacket newPacket = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, newAddress, port);
             try (final DatagramSocket newSocket = new DatagramSocket();) {

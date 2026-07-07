@@ -87,7 +87,6 @@ public class NsclientDetectorTest implements InitializingBean {
         };
         m_server.init();
         m_server.startServer();
-        Thread.sleep(100); // make sure the server is really started
         // Initialize Detector
         m_detector.setServiceName("NSclient++");
         m_detector.setPort(m_server.getLocalPort());

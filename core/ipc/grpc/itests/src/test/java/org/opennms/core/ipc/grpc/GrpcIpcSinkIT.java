@@ -92,7 +92,7 @@ public class GrpcIpcSinkIT {
 
         Assert.assertEquals(0, meter.getCount());
         // Verify that async message gets delivered after server started.
-        await().atMost(20, TimeUnit.SECONDS).pollDelay(3, TimeUnit.SECONDS).pollInterval(3, TimeUnit.SECONDS)
+        await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
                 .until(() -> {
                     startServer();
                     // Sending this message ensures that sink stream is initialized, since this is sync module, it shouldn't block

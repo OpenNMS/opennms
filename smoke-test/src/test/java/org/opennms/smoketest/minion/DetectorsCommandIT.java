@@ -114,14 +114,18 @@ public class DetectorsCommandIT {
     @Test
     public void canLoadDetectorsOnMinion() throws Exception {
         final InetSocketAddress sshAddr = stack.minion().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+            .failFast("container is no longer running", () -> !stack.minion().isRunning())
+            .ignoreExceptions()
             .until(() -> listAndVerifyDetectors("Minion", sshAddr), hasSize(0));
     }
 
     @Test
     public void canLoadDetectorsOnOpenNMS() throws Exception {
         final InetSocketAddress sshAddr = stack.opennms().getSshAddress();
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+            .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+            .ignoreExceptions()
             .until(() -> listAndVerifyDetectors("OpenNMS", sshAddr), hasSize(0));
     }
 

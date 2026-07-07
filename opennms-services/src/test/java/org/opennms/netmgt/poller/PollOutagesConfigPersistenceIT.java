@@ -108,7 +108,7 @@ public class PollOutagesConfigPersistenceIT {
     }
     
     private void waitForInitialConfig() {
-        await().atMost(10, TimeUnit.SECONDS).until(() ->
+        await().atMost(10, TimeUnit.SECONDS).ignoreExceptions().until(() ->
                 jsonStore.get(AbstractPollOutagesDao.JSON_STORE_KEY,
                         ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent());
     }

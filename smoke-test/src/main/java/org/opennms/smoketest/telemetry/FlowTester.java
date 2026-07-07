@@ -113,7 +113,7 @@ public class FlowTester {
 
             // Verify the flow count via the REST API
             runAfter.add(flowTester -> {
-                with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
+                with().pollInterval(1, SECONDS).await().atMost(1, MINUTES)
                     .until(() -> restclient.getFlowCount(0L, System.currentTimeMillis()), equalTo((long) totalFlowCount));
             });
         }
@@ -127,7 +127,7 @@ public class FlowTester {
 
 
             // Verify the flow count via the REST API
-            runAfter.add((flowTester) -> with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
+            runAfter.add((flowTester) -> with().pollInterval(1, SECONDS).await().atMost(1, MINUTES)
                                      .until(() -> restClient.getFlowCount(0L, System.currentTimeMillis()), equalTo((long) totalFlowCount)));
         }
     }
@@ -240,7 +240,7 @@ public class FlowTester {
         Objects.requireNonNull(verifyCallback);
 
         // Verify
-        with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
+        with().pollInterval(1, SECONDS).await().atMost(5, MINUTES).until(() -> {
             try {
                 LOG.info("Querying elastic search");
                 return verifyCallback.test();

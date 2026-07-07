@@ -160,4 +160,20 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
         trapNotifications.clear();
     }
 
+    /**
+     * Waits until the expected number of traps has been received, and asserts the count.
+     * <p>Polls instead of a fixed sleep to keep the tests fast; awaitility is not on
+     * this module's test classpath.</p>
+     *
+     * @param expectedCount the expected number of traps
+     * @param timeoutMillis the maximum time to wait in milliseconds
+     */
+    protected void waitForTrapsReceived(final int expectedCount, final long timeoutMillis) throws InterruptedException {
+        final long deadline = System.currentTimeMillis() + timeoutMillis;
+        while (getTrapsReceivedCount() < expectedCount && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+        }
+        Assert.assertEquals(expectedCount, getTrapsReceivedCount());
+    }
+
 }

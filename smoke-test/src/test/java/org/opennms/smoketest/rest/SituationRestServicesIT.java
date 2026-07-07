@@ -94,7 +94,7 @@ public class SituationRestServicesIT {
         restClient.sendEvent(getServiceProblemEvent("Major", "uei.opennms.org/bsm/serviceProblem"));
         restClient.sendEvent(getServiceProblemEvent("Minor", "uei.opennms.org/traps/A10/axFan1Failure"));
 
-        await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.MINUTES).pollInterval(1, TimeUnit.SECONDS)
                 .until(() -> restClient.getAlarms().size() >= 2);
 
         List<Integer> alarmIds = new ArrayList<>();
@@ -141,7 +141,7 @@ public class SituationRestServicesIT {
         );
 
         AlarmDao dao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
-        OnmsAlarm newAlarm = await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS)
+        OnmsAlarm newAlarm = await().atMost(2, TimeUnit.MINUTES).pollInterval(1, TimeUnit.SECONDS)
                 .until(DaoUtils.findMatchingCallable(
                         dao,
                         new CriteriaBuilder(OnmsAlarm.class)
@@ -173,7 +173,7 @@ public class SituationRestServicesIT {
     public void test3_removeAlarm() {
         final int beforeCount = fetchRelatedCount();
         AlarmDao dao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
-        OnmsAlarm target = await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS)
+        OnmsAlarm target = await().atMost(2, TimeUnit.MINUTES).pollInterval(1, TimeUnit.SECONDS)
                 .until(DaoUtils.findMatchingCallable(
                         dao,
                         new CriteriaBuilder(OnmsAlarm.class)

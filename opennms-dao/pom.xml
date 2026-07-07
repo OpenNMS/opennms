@@ -46,6 +46,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
       <scope>test</scope>
     </dependency>

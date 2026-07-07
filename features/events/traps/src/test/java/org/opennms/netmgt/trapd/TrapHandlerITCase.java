@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.trapd;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -428,11 +429,9 @@ public class TrapHandlerITCase implements InitializingBean {
         Event event = anticipateEvent(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, m_ip, m_nodeId);
         m_eventMgr.sendNow(event);
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+        // Wait until the interface-to-node cache maps the interface to the node
+        await().until(() -> m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip)
+                .map(id -> id == m_nodeId).orElse(false));
 
         sendTrap("v1", null, 6, 1);
 
@@ -467,11 +466,9 @@ public class TrapHandlerITCase implements InitializingBean {
         }});
         m_eventMgr.sendNow(event);
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+        // Wait until the interface-to-node cache maps the interface to the new node
+        await().until(() -> m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip)
+                .map(id -> id == nodeId).orElse(false));
 
         sendTrap("v1", null, 6, 1);
 
@@ -497,11 +494,8 @@ public class TrapHandlerITCase implements InitializingBean {
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
         anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, nodeId);
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+        // Wait until the interface-to-node cache entry has been removed
+        await().until(() -> !m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip).isPresent());
 
         sendTrap("v1", null, 6, 1);
 

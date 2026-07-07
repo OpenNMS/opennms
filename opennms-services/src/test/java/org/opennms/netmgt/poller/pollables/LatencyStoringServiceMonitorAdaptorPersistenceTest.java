@@ -24,7 +24,6 @@ package org.opennms.netmgt.poller.pollables;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -163,7 +162,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
                 anyList(),
                 anyList())).thenReturn(null);
 
-        // verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
+        // verify(m_rrdStrategy, atLeastOnce()).createFile(any());
 
         when(m_rrdStrategy.openFile(eq(getResponseTimeRoot().toPath()
                 .resolve(pathToResourceInResponseTime.resolve("smtp-base.rrd")).toString()))).thenReturn(null);
@@ -245,7 +244,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
                 anyList(),
                 isNull());
 
-        verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(m_rrdStrategy, atLeastOnce()).createFile(any());
         verify(m_rrdStrategy, atLeastOnce()).openFile(eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").resolve(expectedName + ".rrd").toString()));
 
         clearInvocations(m_rrdStrategy);

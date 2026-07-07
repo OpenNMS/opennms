@@ -85,7 +85,7 @@ public class JtiTelemetryIT {
         final Date startOfTest = new Date();
         final OnmsNode onmsNode = sendNewSuspectEvent(stack, false, startOfTest);
         final InetSocketAddress opennmsJtiPort = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.JTI);
-        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
                 .until(() -> {
                     sendJtiTelemetryMessage(opennmsJtiPort);
                     return matchRrdFileFromNodeResource(onmsNode.getId());
@@ -97,7 +97,7 @@ public class JtiTelemetryIT {
         final Date startOfTest = new Date();
         final OnmsNode onmsNode = sendNewSuspectEvent(stack, true, startOfTest);
         final InetSocketAddress minionJtiPort = stack.minion().getNetworkProtocolAddress(NetworkProtocol.JTI);
-        await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                 .until(() -> {
                     sendJtiTelemetryMessage(minionJtiPort);
                     return matchRrdFileFromNodeResource(onmsNode.getId());
@@ -150,7 +150,7 @@ public class JtiTelemetryIT {
                 .eq("eventUei", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI).ge("eventTime", startOfTest)
                 .eq("ipAddr", Inet4Address.getByName(SENDER_IP)).toCriteria();
 
-        await().atMost(1, MINUTES).pollInterval(10, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria),
+        await().atMost(1, MINUTES).pollInterval(1, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria),
                 greaterThan(0));
 
         final OnmsNode onmsNode = await().atMost(1, MINUTES).pollInterval(5, SECONDS)

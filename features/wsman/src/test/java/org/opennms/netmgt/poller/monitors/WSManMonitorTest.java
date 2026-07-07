@@ -22,7 +22,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -95,12 +95,12 @@ public class WSManMonitorTest {
 
         Definition agentConfig = new Definition();
         WSManConfigDao configDao = mock(WSManConfigDao.class);
-        when(configDao.getAgentConfig(anyObject())).thenReturn(agentConfig);
+        when(configDao.getAgentConfig(any())).thenReturn(agentConfig);
 
         WSManClient client = mock(WSManClient.class);
         when(client.get(resourceUri, selectors)).thenReturn(response);
         WSManClientFactory clientFactory = mock(WSManClientFactory.class);
-        when(clientFactory.getClient(anyObject())).thenReturn(client);
+        when(clientFactory.getClient(any())).thenReturn(client);
 
         WsManMonitor monitor = new WsManMonitor();
         monitor.setWSManConfigDao(configDao);

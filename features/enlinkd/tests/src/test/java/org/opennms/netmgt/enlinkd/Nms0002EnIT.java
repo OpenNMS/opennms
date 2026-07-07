@@ -113,7 +113,6 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         }
 
         assertTrue(m_linkd.runSingleSnmpCollection(switchCisco.getId()));
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(switchCisco.getId()));
         final List<LldpLink> topologyB = m_lldpLinkDao.findAll();
         printLldpTopology(topologyB);

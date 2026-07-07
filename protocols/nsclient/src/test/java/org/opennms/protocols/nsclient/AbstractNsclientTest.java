@@ -68,7 +68,6 @@ public abstract class AbstractNsclientTest {
         };
         m_server.init();
         m_server.startServer();
-        Thread.sleep(100); // make sure the server is really started
     }
 
     public void stopServer() throws Exception {

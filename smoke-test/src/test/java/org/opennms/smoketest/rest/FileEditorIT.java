@@ -49,6 +49,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.mina.util.Base64;
+import org.awaitility.Awaitility;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -102,7 +103,15 @@ public class FileEditorIT {
 
         addUserAPI();
 
-        Thread.sleep(5000);
+        // Wait until the new user is picked up by the user config cache and can authenticate
+        Awaitility.await().atMost(30, java.util.concurrent.TimeUnit.SECONDS)
+                .pollInterval(1, java.util.concurrent.TimeUnit.SECONDS)
+                .ignoreExceptions()
+                .until(() -> {
+                    try (Response response = postRequest(STACK.opennms().getBaseUrlExternal() + REST_FILESYSTEM + "/contents?f=" + FILE_NAME, "GET", null, USERNAME, PASSWORD)) {
+                        return response.code() != 401;
+                    }
+                });
     }
 
     /**

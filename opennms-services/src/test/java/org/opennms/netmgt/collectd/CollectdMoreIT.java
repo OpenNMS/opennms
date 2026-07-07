@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.collectd;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -37,6 +38,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -255,10 +257,10 @@ public class CollectdMoreIT {
 
         m_collectd.onEvent(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
-        Thread.sleep(2000);
-        
-        assertNotNull(m_serviceCollector);
-        assertEquals(1, m_serviceCollector.getCollectCount());
+        await().atMost(Duration.ofMillis(10000)).untilAsserted(() -> {
+            assertNotNull(m_serviceCollector);
+            assertEquals(1, m_serviceCollector.getCollectCount());
+        });
 
         verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
         verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();

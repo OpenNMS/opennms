@@ -303,8 +303,7 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(collectionSet6);
 
         // Only node 5 should be forwarded
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
-                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        await().atMost(1, TimeUnit.MINUTES)                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
                 .map(CollectionSetProtos.CollectionSet::getResourceList)
                 .flatMap(Collection::stream)
@@ -339,8 +338,7 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(collectionSet5);
 
         // Only node1 with foreign source should be forwarded
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
-                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        await().atMost(1, TimeUnit.MINUTES)                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
                 .map(CollectionSetProtos.CollectionSet::getResourceList)
                 .flatMap(Collection::stream)
@@ -375,8 +373,7 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(responseTimeCollectionSet);
 
         // Only response time resource should be forwarded
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
-                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        await().atMost(1, TimeUnit.MINUTES)                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
                 .map(CollectionSetProtos.CollectionSet::getResourceList)
                 .flatMap(Collection::stream)
@@ -419,8 +416,7 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(collectionSet6);
 
         // Only node1 and node5 should be forwarded
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
-                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
+        await().atMost(1, TimeUnit.MINUTES)                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
                 .map(CollectionSetProtos.CollectionSet::getResourceList)
                 .flatMap(Collection::stream)
@@ -458,8 +454,7 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(collectionSet6);
 
         // Both should be forwarded when filter is disabled
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
-                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
+        await().atMost(1, TimeUnit.MINUTES)                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
                 .map(CollectionSetProtos.CollectionSet::getResourceList)
                 .flatMap(Collection::stream)

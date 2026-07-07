@@ -172,7 +172,7 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
 
                 try {
                     // Creating SmbFile object
-                    smbFile = new SmbFile(fullUrl, authedCtx);
+                    smbFile = createSmbFile(fullUrl, authedCtx);
                     // Setting the defined timeout
                     smbFile.setConnectTimeout(tracker.getConnectionTimeout());
                     // Does the file exists?
@@ -242,6 +242,13 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         }
 
         return serviceStatus;
+    }
+
+    /**
+     * Factory method for the SmbFile so tests can substitute mocks.
+     */
+    protected SmbFile createSmbFile(final String url, final CIFSContext context) throws MalformedURLException {
+        return new SmbFile(url, context);
     }
 
     private void closeContext(final CIFSContext context) {

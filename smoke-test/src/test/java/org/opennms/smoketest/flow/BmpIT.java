@@ -171,7 +171,7 @@ public class BmpIT {
         KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
         karafShell.runCommand("opennms:sync-node-cache");
 
-        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
                 .until(() -> {
                     sendBmpTelemetryMessage(bgpTelemetryAddress);
                     return matchRrdFileFromNodeResource("SmokeTests:TestNode");

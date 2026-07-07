@@ -123,14 +123,14 @@ public class ClockSkewIT {
 
         // check for the event to appear
         final EventDao eventDao = stack.postgres().getDaoFactory().getDao(EventDaoHibernate.class);
-        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class)
                         .eq("eventUei", "uei.opennms.org/internal/telemetry/clockSkewDetected")
                         .toCriteria()), notNullValue());
 
         // check for the alarm to appear
         final AlarmDao alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
-        final OnmsAlarm onmsAlarm = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
+        final OnmsAlarm onmsAlarm = await().atMost(2, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                         .eq("uei", "uei.opennms.org/translator/telemetry/clockSkewDetected")
                         .toCriteria()), notNullValue());

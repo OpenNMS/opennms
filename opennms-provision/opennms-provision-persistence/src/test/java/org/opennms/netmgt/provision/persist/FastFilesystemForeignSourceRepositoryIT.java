@@ -21,11 +21,13 @@
  */
 package org.opennms.netmgt.provision.persist;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +83,9 @@ public class FastFilesystemForeignSourceRepositoryIT extends ForeignSourceReposi
         Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
         m_foreignSourceRepository.save(r);
         m_foreignSourceRepository.flush();
-        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
+        // Wait for the watcher's thread to cache the requisition
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() ->
+                Assert.assertNotNull(m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName)));
         return r;
     }
 
@@ -91,7 +95,9 @@ public class FastFilesystemForeignSourceRepositoryIT extends ForeignSourceReposi
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
         m_foreignSourceRepository.flush();
-        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
+        // Wait for the watcher's thread to cache the foreign source
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() ->
+                Assert.assertFalse(m_foreignSourceRepository.getForeignSource(foreignSource).isDefault()));
         return fs;
     }
 
@@ -106,12 +112,19 @@ public class FastFilesystemForeignSourceRepositoryIT extends ForeignSourceReposi
         n.getCategories().add(new RequisitionCategory("Rebels"));
         r.getNodes().add(n); // Add a new node
         JaxbUtils.marshal(r, new FileWriter(getRequisitionFile()));
-        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
+        // Wait for the watcher's thread to cache the updated requisition (3 nodes after the modification above)
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            Requisition cached = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+            Assert.assertNotNull(cached);
+            Assert.assertEquals(3, cached.getNodes().size());
+        });
     }
 
     private void deleteRequisition() throws Exception {
         Assert.assertTrue(getRequisitionFile().delete());
-        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
+        // Wait for the watcher's thread to evict the requisition from the cache
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() ->
+                Assert.assertNull(m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName)));
     }
 
     @Test

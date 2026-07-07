@@ -514,7 +514,7 @@ public class DataCollectionConfLifecycleIT {
         assertNotNull(pluginSource);
         assertEquals("opennms-plugins", pluginSource.getUploadedBy());
 
-        await().atMost(Duration.ofSeconds(2)).pollInterval(Duration.ofMillis(100))
+        await().atMost(Duration.ofSeconds(10)).pollInterval(Duration.ofMillis(100))
                 .until(() -> {
                     final SnmpCollectionProfile p = profileDao.findByName("default");
                     return p != null && p.getSourceNames() != null

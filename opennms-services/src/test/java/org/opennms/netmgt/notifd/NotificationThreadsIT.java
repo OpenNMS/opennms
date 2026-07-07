@@ -89,8 +89,7 @@ public class NotificationThreadsIT extends NotificationsITCase  {
         // Wait until all M notifications have been executed
         // This validates that all of the M notifications end up
         // being invoked
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(10, TimeUnit.SECONDS)
                 .until(ThreadLockingNotificationStrategy::getNotificationsSent, equalTo((long)M));
     }
 

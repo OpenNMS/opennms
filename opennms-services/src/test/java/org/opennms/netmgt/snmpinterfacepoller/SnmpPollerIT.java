@@ -95,7 +95,7 @@ public class SnmpPollerIT implements TemporaryDatabaseAware<MockDatabase> {
     public void testIgnoredInterfaces() throws Exception {
         SnmpInterfaceDao snmpInterfaceDao = ((DefaultPollContext)m_pollableNetwork.getContext()).getSnmpInterfaceDao();
 
-        await().atMost(Duration.ofSeconds(10)).pollInterval(Duration.ofMillis(500)).untilAsserted(() -> {
+        await().atMost(Duration.ofSeconds(10)).pollInterval(Duration.ofMillis(500)).ignoreExceptions().untilAsserted(() -> {
             var interfaces = snmpInterfaceDao.findAll();
 
             OnmsSnmpInterface ethIf = interfaces.stream().filter(snmpIf -> snmpIf.getIfType() == 6).findFirst().orElseThrow();

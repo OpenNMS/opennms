@@ -21,11 +21,13 @@
  */
 package org.opennms.netmgt.eventd;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.junit.After;
@@ -81,7 +83,6 @@ import org.hibernate.Transaction;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EventdIT implements InitializingBean {
-    private static final long SLEEP_TIME = 50;
 
     @Autowired
     private EventIpcManager m_eventdIpcMgr;
@@ -138,9 +139,8 @@ public class EventdIT implements InitializingBean {
         assertNotNull(node);
         sendNodeDownEvent(null, node);
 
-        while(m_eventDao.countMatching(cb.toCriteria()) < 1) {
-            Thread.sleep(SLEEP_TIME);
-        }
+        await().atMost(Duration.ofSeconds(30)).ignoreExceptions()
+                .until(() -> m_eventDao.countMatching(cb.toCriteria()) >= 1);
 
         final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
         System.err.println("matching = " + matching);
@@ -150,9 +150,8 @@ public class EventdIT implements InitializingBean {
         assertNotNull(node);
         Event generatedEvent = sendNodeDownEvent(null, node);
 
-        while(m_eventDao.countMatching(cb.toCriteria()) < 2) {
-            Thread.sleep(SLEEP_TIME);
-        }
+        await().atMost(Duration.ofSeconds(30)).ignoreExceptions()
+                .until(() -> m_eventDao.countMatching(cb.toCriteria()) >= 2);
 
         assertEquals(2, m_eventDao.countMatching(cb.toCriteria()));
 
@@ -182,9 +181,8 @@ public class EventdIT implements InitializingBean {
         final Integer serviceId = svc.getServiceId();
         sendServiceDownEvent(null, svc);
 
-        while(m_eventDao.countMatching(cb.toCriteria()) != 1) {
-            Thread.sleep(SLEEP_TIME);
-        }
+        await().atMost(Duration.ofSeconds(30)).ignoreExceptions()
+                .until(() -> m_eventDao.countMatching(cb.toCriteria()) == 1);
         assertEquals(1, m_eventDao.countMatching(cb.toCriteria()));
         assertEquals("service ID for event", serviceId, m_eventDao.findMatching(cb.toCriteria()).get(0).getServiceType().getId());
     }
@@ -206,9 +204,8 @@ public class EventdIT implements InitializingBean {
         final Event event = e.getEvent();
         m_eventdIpcMgr.sendNow(event);
 
-        while(m_eventDao.countMatching(cb.toCriteria()) < 1) {
-            Thread.sleep(SLEEP_TIME);
-        }
+        await().atMost(Duration.ofSeconds(30)).ignoreExceptions()
+                .until(() -> m_eventDao.countMatching(cb.toCriteria()) >= 1);
 
         final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
         System.err.println("matching = " + matching);

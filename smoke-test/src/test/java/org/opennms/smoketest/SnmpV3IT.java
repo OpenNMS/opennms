@@ -80,10 +80,10 @@ public class SnmpV3IT {
                 }
             }, 0, 5, TimeUnit.SECONDS);
             // Check if there is at least one alarm
-            await().atMost(30, SECONDS).pollInterval(5, SECONDS).pollDelay(5, SECONDS)
+            await().atMost(30, SECONDS).pollInterval(5, SECONDS)
                     .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
             // Check if multiple traps are getting received not just the first one
-            await().atMost(30, SECONDS).pollInterval(5, SECONDS).pollDelay(5, SECONDS)
+            await().atMost(30, SECONDS).pollInterval(5, SECONDS)
                     .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                                     .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("counter", 3).toCriteria()),
                             notNullValue());

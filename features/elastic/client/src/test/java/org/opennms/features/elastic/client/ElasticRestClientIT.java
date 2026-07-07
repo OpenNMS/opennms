@@ -85,9 +85,6 @@ public class ElasticRestClientIT {
 
         String[] hosts = {elasticsearch.getHttpHostAddress()};
         client = new DefaultElasticRestClient(hosts);
-
-        Awaitility.setDefaultTimeout(15, TimeUnit.SECONDS);
-        Awaitility.setDefaultPollInterval(500, TimeUnit.MILLISECONDS);
     }
 
     @After
@@ -122,7 +119,7 @@ public class ElasticRestClientIT {
         LOG.info("Applied {} templates", count);
         assertEquals("Should have applied 4 templates", 4, count);
 
-        Awaitility.await().atMost(60, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> {
+        Awaitility.await().atMost(60, TimeUnit.SECONDS).until(() -> {
             try {
                 Request request = new Request("GET", "/_index_template/" + indexTemplate);
                 Response response = client.getRestClient().performRequest(request);
@@ -465,6 +462,7 @@ public class ElasticRestClientIT {
             }, executor);
 
             // Wait to ensure operation starts and begins retrying
+            // TODO(flaky-cleanup): no observable signal for "began retrying" while the proxy is down
             Thread.sleep(4000);
 
             // Re-enable the proxy to restore connectivity

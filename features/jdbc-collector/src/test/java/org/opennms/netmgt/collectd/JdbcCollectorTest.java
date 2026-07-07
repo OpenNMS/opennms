@@ -23,7 +23,6 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -189,7 +188,7 @@ public class JdbcCollectorTest {
 
         JdbcAgentState jdbcAgentState = mock(JdbcAgentState.class);
         when(jdbcAgentState.groupIsAvailable(any(String.class))).thenReturn(true);
-        when(jdbcAgentState.executeJdbcQuery(anyObject(), anyObject())).thenReturn(resultSet);
+        when(jdbcAgentState.executeJdbcQuery(any(), any())).thenReturn(resultSet);
         jdbcCollector.setJdbcAgentState(jdbcAgentState);
 
         Map<String, Object> params = new HashMap<>();

@@ -170,6 +170,36 @@ public class SyslogNorthBounderIT {
     }
 
     /**
+     * Reads all messages received so far by the test syslog server.
+     */
+    protected List<String> readMessages() throws IOException {
+        final BufferedReader reader = new BufferedReader(new StringReader(m_logStream.readStream()));
+        final List<String> messages = new LinkedList<>();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            messages.add(line);
+        }
+        return messages;
+    }
+
+    /**
+     * Waits until the test syslog server has received the expected number of messages,
+     * asserts the count and returns the messages. Polls instead of a fixed sleep to
+     * keep the tests fast (awaitility is not on this module's test classpath).
+     */
+    protected List<String> waitForMessages(final int expectedCount, final long timeoutMillis) throws IOException, InterruptedException {
+        final long deadline = System.currentTimeMillis() + timeoutMillis;
+        List<String> messages = readMessages();
+        while (messages.size() < expectedCount && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+            messages = readMessages();
+        }
+        Assert.assertTrue("Log messages sent: " + expectedCount + ", Log messages received: " + messages.size(),
+                expectedCount == messages.size());
+        return messages;
+    }
+
+    /**
      * Getting ready for tests.
      *
      * @throws InterruptedException the interrupted exception
@@ -280,19 +310,8 @@ public class SyslogNorthBounderIT {
             nbi.forwardAlarms(alarms);
         }        
 
-        Thread.sleep(100);
-
-        BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
-
-        List<String> messages = new LinkedList<>();
-        String line = null;
-
-        while ((line = r.readLine()) != null) {
-            messages.add(line);
-            Thread.sleep(10);
-        }
-
-        Assert.assertTrue("Log messages sent: 7, Log messages received: " + messages.size(), 7 == messages.size());
+        // Wait until the test syslog server has received all messages
+        List<String> messages = waitForMessages(7, 10000);
 
         for (String message : messages) {
             System.out.println(message);

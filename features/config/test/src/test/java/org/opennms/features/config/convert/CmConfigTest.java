@@ -22,7 +22,6 @@
 package org.opennms.features.config.convert;
 
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -56,11 +55,12 @@ abstract public class CmConfigTest<T> {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void xmlToObjectWithCompare() throws IOException {
         Object object = ConfigConvertUtil.jsonToObject(getJsonStr(), objectClass);
         // try match with equals if fail back to use SamePropertyValuesAs
         if(!simpleObject.equals(object)){
-            MatcherAssert.assertThat(simpleObject, new SamePropertyValuesAs(object));
+            MatcherAssert.assertThat(simpleObject, org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs((T) object));
         }
     }
 

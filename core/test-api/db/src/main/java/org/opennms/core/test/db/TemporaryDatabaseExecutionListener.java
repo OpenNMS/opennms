@@ -21,8 +21,6 @@
  */
 package org.opennms.core.test.db;
 
-import org.junit.Test;
-import org.junit.internal.MethodSorter;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.HikariCPConnectionFactory;
 import org.opennms.core.db.XADataSourceFactory;
@@ -162,6 +160,28 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         ((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
     }
 
+    /**
+     * Sorts methods the same way JUnit 4's {@code MethodSorter.DEFAULT} does (name hash,
+     * then name). The databases created in {@link #beforeTestClass(TestContext)} are handed
+     * out in this order, so it must match the order in which JUnit 4 runs test methods.
+     */
+    private static final Comparator<Method> JUNIT4_DEFAULT_METHOD_ORDER = (m1, m2) -> {
+        final int i1 = m1.getName().hashCode();
+        final int i2 = m2.getName().hashCode();
+        if (i1 != i2) {
+            return i1 < i2 ? -1 : 1;
+        }
+        final int byName = m1.getName().compareTo(m2.getName());
+        return byName != 0 ? byName : m1.toString().compareTo(m2.toString());
+    };
+
+    private static boolean isTestMethod(final Method method) {
+        return Arrays.stream(method.getAnnotations()).anyMatch(a -> {
+            final String name = a.annotationType().getName();
+            return "org.junit.Test".equals(name) || "org.junit.jupiter.api.Test".equals(name);
+        });
+    }
+
     public static List<Method> getOrderedTestMethods(Class<?> testClass) {
         final List<Method> methods = new LinkedList<>();
         getOrderedTestMethods(testClass, methods);
@@ -169,7 +189,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     }
 
     public static void getOrderedTestMethods(Class<?> testClass, List<Method> methods) {
-        methods.addAll(Arrays.asList(MethodSorter.getDeclaredMethods(testClass)));
+        final Method[] declaredMethods = testClass.getDeclaredMethods();
+        Arrays.sort(declaredMethods, JUNIT4_DEFAULT_METHOD_ORDER);
+        methods.addAll(Arrays.asList(declaredMethods));
         final Class<?> testSuperClass = testClass.getSuperclass();
         if (testSuperClass != null) {
             getOrderedTestMethods(testSuperClass, methods);
@@ -199,7 +221,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         for (Method method : getOrderedTestMethods(testContext.getTestClass())) {
             if (method != null) {
                 final JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
-                boolean methodHasTest = method.getAnnotation(Test.class) != null;
+                boolean methodHasTest = isTestMethod(method);
                 if (methodHasTest) {
                     // If there is a method-specific annotation, use it to create the temporary database
                     if (methodJtd != null) {

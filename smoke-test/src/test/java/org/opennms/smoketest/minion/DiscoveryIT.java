@@ -123,7 +123,7 @@ public class DiscoveryIT {
                 .ge("eventTime", startOfTest)
                 .toCriteria();
 
-        await().atMost(1, MINUTES).pollInterval(10, SECONDS)
+        await().atMost(1, MINUTES).pollInterval(1, SECONDS)
                 .until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThan(0));
     }
 }

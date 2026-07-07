@@ -41,14 +41,10 @@ package org.opennms.netmgt.collectd.vmware;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-import static org.powermock.api.support.membermodification.MemberModifier.suppress;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,16 +62,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.protocols.vmware.ServiceInstancePool;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 import org.sblim.wbem.cim.CIMDataType;
 import org.sblim.wbem.cim.CIMInstance;
-import org.sblim.wbem.cim.CIMNameSpace;
 import org.sblim.wbem.cim.CIMObject;
 import org.sblim.wbem.cim.CIMObjectPath;
 import org.sblim.wbem.cim.CIMProperty;
@@ -110,8 +104,6 @@ import com.vmware.vim25.mo.VirtualMachine;
 import com.vmware.vim25.mo.util.MorUtil;
 import com.vmware.vim25.ws.WSClient;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ServiceInstance.class, PerformanceManager.class, VmwareViJavaAccess.class, MorUtil.class, PerfProviderSummary.class, HostSystem.class, HostNetworkSystem.class, CIMClient.class})
 public class VmwareViJavaAccessTest {
 
     private VmwareViJavaAccess vmwareViJavaAccess;
@@ -123,6 +115,9 @@ public class VmwareViJavaAccessTest {
     private HostNetworkSystem mockHostNetworkSystem;
     private HostSystem mockHostSystem;
     private CIMClient mockCIMClient;
+
+    private MockedStatic<MorUtil> morUtilMock;
+    private MockedConstruction<CIMClient> cimClientConstruction;
 
     private ManagedObjectReference managedObjectReferenceVirtualMachine;
     private ManagedObjectReference managedObjectReferenceHostSystem;
@@ -182,7 +177,6 @@ public class VmwareViJavaAccessTest {
         // setup AboutInfo
         mockAboutInfo = mock(AboutInfo.class);
 
-        whenNew(ServiceInstance.class).withParameterTypes(URL.class, String.class, String.class).withArguments(new URL("https://hostname/sdk"), "username", "password").thenReturn(mockServiceInstance);
         when(mockServiceInstance.getServerConnection()).thenReturn(mockServerConnection);
         when(mockServiceInstance.getPerformanceManager()).thenReturn(mockPerformanceManager);
         when(mockServiceInstance.getAboutInfo()).thenReturn(mockAboutInfo);
@@ -191,7 +185,7 @@ public class VmwareViJavaAccessTest {
         virtualMachine = new VirtualMachine(null, managedObjectReferenceVirtualMachine);
         hostSystem = new HostSystem(null, managedObjectReferenceHostSystem);
 
-        Whitebox.setInternalState(VmwareViJavaAccess.class, "m_serviceInstancePool", new ServiceInstancePool(){
+        VmwareViJavaAccess.setServiceInstancePool(new ServiceInstancePool() {
             @Override
             public synchronized ServiceInstance retain(String host, String username, String password, int timeout) throws MalformedURLException, RemoteException {
                 return mockServiceInstance;
@@ -200,10 +194,10 @@ public class VmwareViJavaAccessTest {
 
         // setup MorUtil
 
-        mockStatic(MorUtil.class);
-        when(MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceManagedEntity)).thenReturn(managedEntity);
-        when(MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceVirtualMachine)).thenReturn(virtualMachine);
-        when(MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceHostSystem)).thenReturn(hostSystem);
+        morUtilMock = Mockito.mockStatic(MorUtil.class);
+        morUtilMock.when(() -> MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceManagedEntity)).thenReturn(managedEntity);
+        morUtilMock.when(() -> MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceVirtualMachine)).thenReturn(virtualMachine);
+        morUtilMock.when(() -> MorUtil.createExactManagedEntity(mockServerConnection, managedObjectReferenceHostSystem)).thenReturn(hostSystem);
 
         // setup about info
 
@@ -311,7 +305,9 @@ public class VmwareViJavaAccessTest {
         // setup HostNetworkSystem
         mockHostNetworkSystem = mock(HostNetworkSystem.class);
 
-        // setup CIMClient
+        // setup CIMClient: production code constructs its own CIMClient, so every
+        // construction is intercepted and stubbed; the constructed mock replaces the
+        // plain placeholder below so the test can verify against it
         mockCIMClient = mock(CIMClient.class);
 
         // setup the cim objects
@@ -330,18 +326,22 @@ public class VmwareViJavaAccessTest {
         when(mockHostSystem.getHostNetworkSystem()).thenReturn(mockHostNetworkSystem);
         when(mockHostSystem.acquireCimServicesTicket()).thenReturn(hostServiceTicket);
         when(mockHostNetworkSystem.getNetworkInfo()).thenReturn(hostNetworkInfo);
-        whenNew(CIMClient.class).withParameterTypes(CIMNameSpace.class, Principal.class, Object.class).withArguments(any(),  any(), any()).thenReturn(mockCIMClient);
-
-        suppress(method(CIMClient.class, "useMPost"));
-
-        when(mockCIMClient.enumerateInstances(new CIMObjectPath("cimClass"))).thenReturn(Collections.enumeration(cimObjects));
 
         SessionProperties sessionProperties = new SessionProperties();
-        when(mockCIMClient.getSessionProperties()).thenReturn(sessionProperties);
+
+        cimClientConstruction = Mockito.mockConstruction(CIMClient.class, (mock, context) -> {
+            when(mock.enumerateInstances(new CIMObjectPath("cimClass"))).thenReturn(Collections.enumeration(cimObjects));
+            when(mock.getSessionProperties()).thenReturn(sessionProperties);
+            mockCIMClient = mock;
+        });
     }
 
     @After
     public void tearDown() throws Exception {
+        cimClientConstruction.close();
+        morUtilMock.close();
+        VmwareViJavaAccess.setServiceInstancePool(new ServiceInstancePool());
+
         verifyNoMoreInteractions(mockAboutInfo);
         verifyNoMoreInteractions(mockCIMClient);
         verifyNoMoreInteractions(mockHostNetworkSystem);
@@ -494,8 +494,9 @@ public class VmwareViJavaAccessTest {
             Assert.assertTrue(returnedCimObjects.contains(cimObject));
         }
 
+        Assert.assertEquals(1, cimClientConstruction.constructed().size());
+
         verify(mockCIMClient, atLeastOnce()).getSessionProperties();
-        verify(mockCIMClient, atLeastOnce()).useMPost(false);
         verify(mockCIMClient, atLeastOnce()).useMPost(false);
         verify(mockCIMClient, atLeastOnce()).enumerateInstances(any(CIMObjectPath.class));
         verify(mockHostNetworkSystem, atLeastOnce()).getNetworkInfo();

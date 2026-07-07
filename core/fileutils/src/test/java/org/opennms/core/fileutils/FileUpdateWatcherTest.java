@@ -75,7 +75,7 @@ public class FileUpdateWatcherTest {
         BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
         writer.write(hello);
         writer.close();
-        Awaitility.await().atMost(5, SECONDS).pollDelay(0, SECONDS).pollInterval(2, SECONDS)
+        Awaitility.await().atMost(5, SECONDS)
         .untilTrue(reloadCalled);
         fileWatcher.destroy();
     }

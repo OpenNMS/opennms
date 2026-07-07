@@ -1374,16 +1374,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     private void waitForHookCount(QueueMultipleDownsHook hook, long count) throws InterruptedException {
-        final long interval = 50;
-        long timeout = 10000;
-        while(timeout >= 0) {
-            Thread.sleep(interval);
-            timeout -= interval;
-            if (hook.getCount() == count) {
-                break;
-            }
-        }
-        assertEquals(count, hook.getCount());
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(count, hook.getCount()));
     }
 
     /**

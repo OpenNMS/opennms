@@ -63,7 +63,7 @@ public class DetectorsOnMinionIT {
     public void checkServicesDetectedOnMinion() throws ClientProtocolException, IOException, InterruptedException {
         RestClient client = stack.opennms().getRestClient();
         addRequisition(client, "MINION", LOCALHOST);
-        await().atMost(5, MINUTES).pollDelay(0, SECONDS).pollInterval(30, SECONDS)
+        await().atMost(5, MINUTES).pollInterval(1, SECONDS)
                 .until(getnumberOfServicesDetected(client), greaterThan(0));
     }
     

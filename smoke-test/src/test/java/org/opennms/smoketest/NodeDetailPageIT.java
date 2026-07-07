@@ -107,6 +107,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
             eventBuilder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
             stack.opennms().getRestClient().sendEvent(eventBuilder.getEvent());
+            // TODO(flaky-cleanup): topology reload completion is not observable via REST/shell
             Thread.sleep(5000); // Wait to allow the event to be processed
 
             // Navigate to the node details page

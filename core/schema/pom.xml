@@ -113,5 +113,10 @@
       <artifactId>spock-junit4</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- align the platform launcher with the engines on this classpath (spock, vintage) -->
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+    </dependency>
   </dependencies>
 </project>

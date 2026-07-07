@@ -509,7 +509,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_bridgeMacLinkDao.countAll());
 
 
-        Thread.sleep(200);
         
         m_linkd.runDiscoveryBridgeDomains();
                 
@@ -614,7 +613,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(31,m_bridgeMacLinkDao.countAll());
 
 
-        Thread.sleep(200);
         
         m_linkd.runDiscoveryBridgeDomains();
                 
@@ -718,7 +716,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(40,m_bridgeMacLinkDao.countAll());
 
 
-        Thread.sleep(200);
         
         m_linkd.runDiscoveryBridgeDomains();
                 

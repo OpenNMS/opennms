@@ -44,8 +44,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import static org.awaitility.Awaitility.await;
+
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -193,10 +196,7 @@ public class ImportSchedulerIT implements InitializingBean {
         m_importScheduler.getScheduler().scheduleJob(detail, trigger);
         m_importScheduler.start();
         
-        int callCheck = 0;
-        while (!callTracker.getCalled() && callCheck++ < 2 ) {
-            Thread.sleep(5000);
-        }
+        await().atMost(Duration.ofSeconds(10)).until(callTracker::getCalled);
         
         //TODO: need to fix the interrupted exception that occurs in the provisioner
         

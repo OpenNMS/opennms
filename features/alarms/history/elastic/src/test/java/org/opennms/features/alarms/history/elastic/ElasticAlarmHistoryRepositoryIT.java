@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
-import org.awaitility.Awaitility;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -87,14 +86,10 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.setIndexAllUpdates(true);
         indexer.init();
 
-        // Increase the default timeout for these tests
-        Awaitility.setDefaultTimeout(1, TimeUnit.MINUTES);
-        Awaitility.setDefaultPollInterval(5, TimeUnit.SECONDS);
-
         PseudoClock.getInstance().reset();
 
         // Wait until ES is up and running - initially there should be no documents
-        await().ignoreExceptions()
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions()
                 .until(repo::getActiveAlarmsNow, hasSize(equalTo(0)));
     }
 
@@ -113,8 +108,8 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // The alarm does exist at this time
-        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 1).orElse(null), notNullValue());
-        await().until(() -> repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 1).orElse(null), notNullValue());
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 1).orElse(null), notNullValue());
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 1).orElse(null), notNullValue());
 
         // The alarm didn't exist and this time
         assertThat(repo.getAlarmWithDbIdAt(a1.getId(), 0).orElse(null), nullValue());
@@ -127,7 +122,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         updateAlarmWithEvent(a1, a1.getId(), 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
-        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 2).get().getCounter(), equalTo(2));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 2).get().getCounter(), equalTo(2));
         assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 2).get().getCounter(), equalTo(2));
 
         // t=3
@@ -137,7 +132,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
         indexer.handleDeletedAlarm(a1.getId(), a1.getReductionKey());
 
-        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 4).get().getDeletedTime(), notNullValue());
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 4).get().getDeletedTime(), notNullValue());
         assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 4).get().getDeletedTime(), notNullValue());
     }
 
@@ -156,7 +151,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // A single state change
-        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(1)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(1)));
         assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(1)));
 
         // t=2
@@ -167,7 +162,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // Two state changes
-        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(2)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(2)));
         assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(2)));
 
         // t=3
@@ -178,7 +173,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleDeletedAlarm(a1.getId(), a1.getReductionKey());
 
         // Three state changes
-        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(3)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(3)));
         assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(3)));
     }
 
@@ -197,7 +192,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // One alarm active
-        await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
         assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(1L));
 
         // t=2
@@ -208,7 +203,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleNewOrUpdatedAlarm(a2);
 
         // Two alarms active
-        await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(2)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(2)));
         assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(2L));
 
         // t=3
@@ -218,7 +213,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleDeletedAlarm(a2.getId(), a2.getReductionKey());
 
         // One alarm active
-        await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
         assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(1L));
 
         // t=4
@@ -228,7 +223,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         indexer.handleDeletedAlarm(a1.getId(), a1.getReductionKey());
 
         // No alarms
-        await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(0)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(0)));
         assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(0L));
     }
 
@@ -255,7 +250,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Wait until we have two results
 
-        await().until(() -> repo.getLastStateOfAllAlarms(0, 10), hasSize(equalTo(2)));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().until(() -> repo.getLastStateOfAllAlarms(0, 10), hasSize(equalTo(2)));
         List<AlarmState> alarms = repo.getLastStateOfAllAlarms(0, 10);
 
         // a1 should be deleted

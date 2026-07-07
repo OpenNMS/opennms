@@ -24,11 +24,8 @@ package org.opennms.netmgt.poller.monitors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -44,32 +41,23 @@ import jcifs.smb.SmbFilenameFilter;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-/**
- * WARNING: Powermock has a bug that prevents this test from running properly on 
- * JDK version 1.7u65 or higher. We need to either update Powermock when the bug
- * is fixed or see if the regression in the JDK is fixed so that the test runs.
- * 
- * @see https://code.google.com/p/powermock/issues/detail?id=504
- * @see http://hg.openjdk.java.net/jdk9/hs-rt/hotspot/rev/4986ca806899
- * @see http://www.takipiblog.com/oracles-latest-java-8-update-broke-your-tools-how-did-it-happen/
- */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({SmbFile.class, JCifsMonitor.class})
 public class JCifsMonitorTest {
     private SmbFile mockSmbFileValidPath;
     private SmbFile mockSmbFileInvalidPath;
     private SmbFile mockSmbFolderNotEmpty;
     private SmbFile mockSmbFolderEmpty;
     private SmbFile mockSmbFileSmbException;
-    private SmbFile mockSmbFileMalformedUrlException;
     private SmbFile mockSmbFileSmbHost;
+
+    /**
+     * JCifsMonitor subclass whose SmbFile factory hands out the mocks above instead of
+     * opening real CIFS connections.
+     */
+    private JCifsMonitor jCifsMonitor;
 
     @Before
     public void setUp() throws Exception {
@@ -77,33 +65,47 @@ public class JCifsMonitorTest {
 
         mockSmbFileValidPath = mock(SmbFile.class);
         when(mockSmbFileValidPath.exists()).thenReturn(true);
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/validPath"), isA(CIFSContext.class)).thenReturn(mockSmbFileValidPath);
 
         mockSmbFileInvalidPath = mock(SmbFile.class);
         when(mockSmbFileInvalidPath.exists()).thenReturn(false);
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/invalidPath"), isA(CIFSContext.class)).thenReturn(mockSmbFileInvalidPath);
 
         mockSmbFolderEmpty = mock(SmbFile.class);
         when(mockSmbFolderEmpty.exists()).thenReturn(true);
         when(mockSmbFolderEmpty.list(any(SmbFilenameFilter.class))).thenReturn(new String[]{});
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/folderEmpty"), isA(CIFSContext.class)).thenReturn(mockSmbFolderEmpty);
 
         mockSmbFolderNotEmpty = mock(SmbFile.class);
         when(mockSmbFolderNotEmpty.exists()).thenReturn(true);
         when(mockSmbFolderNotEmpty.list(any(SmbFilenameFilter.class))).thenReturn(new String[]{"ABCD", "ACBD", "DCBA", "DABC"});
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/folderNotEmpty"), isA(CIFSContext.class)).thenReturn(mockSmbFolderNotEmpty);
 
         mockSmbFileSmbException = mock(SmbFile.class);
         when(mockSmbFileSmbException.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/smbException"), isA(CIFSContext.class)).thenReturn(mockSmbFileSmbException);
-
-        mockSmbFileMalformedUrlException = mock(SmbFile.class);
-        when(mockSmbFileMalformedUrlException.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://10.123.123.123/malformedUrlException"), isA(CIFSContext.class)).thenThrow(new MalformedURLException("nah, you blew it buddy"));
 
         mockSmbFileSmbHost = mock(SmbFile.class);
         when(mockSmbFileSmbHost.exists()).thenThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        whenNew(SmbFile.class).withParameterTypes(String.class, CIFSContext.class).withArguments(eq("smb://192.168.0.123/smbException"), isA(CIFSContext.class)).thenReturn(mockSmbFileSmbHost);
+
+        jCifsMonitor = new JCifsMonitor() {
+            @Override
+            protected SmbFile createSmbFile(final String url, final CIFSContext context) throws MalformedURLException {
+                switch (url) {
+                    case "smb://10.123.123.123/validPath":
+                        return mockSmbFileValidPath;
+                    case "smb://10.123.123.123/invalidPath":
+                        return mockSmbFileInvalidPath;
+                    case "smb://10.123.123.123/folderEmpty":
+                        return mockSmbFolderEmpty;
+                    case "smb://10.123.123.123/folderNotEmpty":
+                        return mockSmbFolderNotEmpty;
+                    case "smb://10.123.123.123/smbException":
+                        return mockSmbFileSmbException;
+                    case "smb://10.123.123.123/malformedUrlException":
+                        throw new MalformedURLException("nah, you blew it buddy");
+                    case "smb://192.168.0.123/smbException":
+                        return mockSmbFileSmbHost;
+                    default:
+                        throw new IllegalStateException("unexpected SMB url " + url);
+                }
+            }
+        };
     }
 
     @Test
@@ -112,10 +114,6 @@ public class JCifsMonitorTest {
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-
-        // replay(mockSmbFolderEmpty, mockSmbFolderNotEmpty, mockSmbFileValidPath, mockSmbFileInvalidPath, SmbFile.class);
-
-        JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
         PollStatus pollStatus;
 
@@ -287,8 +285,6 @@ public class JCifsMonitorTest {
         MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
 
         Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
-
-        JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
         m.put("username", "{ipAddr}");
         m.put("password", "{nodeLabel}");

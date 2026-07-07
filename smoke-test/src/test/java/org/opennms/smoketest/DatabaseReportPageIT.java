@@ -208,7 +208,7 @@ public class DatabaseReportPageIT extends UiPageTest {
             );
 
         // Ensure it was posted
-        await().atMost(2, MINUTES).pollInterval(10, SECONDS).until(
+        await().atMost(2, MINUTES).pollInterval(1, SECONDS).ignoreExceptions().until(
             () -> {
                 final String response = given().basePath("/files").get()
                         .then()

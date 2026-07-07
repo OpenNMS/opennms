@@ -131,36 +131,14 @@ public class SyslogNorthBounderWithFiltersIT extends SyslogNorthBounderIT {
             nbi.forwardAlarms(alarms);
         }
 
-        Thread.sleep(100); // Induce a delay (based on the parent code)
-
         // Extract the log messages and verify the content
-        BufferedReader reader = new BufferedReader(new StringReader(m_logStream.readStream()));
-        List<String> messages = getMessagesFromBuffer(reader);
-        Assert.assertTrue("Log messages sent: 2, Log messages received: " + messages.size(), 2 == messages.size());
+        List<String> messages = waitForMessages(2, 10000);
         Assert.assertTrue(messages.get(0).contains("ALARM 10 FROM NODE agalue@TestGroup"));
         Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE 10.0.1.1"));
         Assert.assertTrue(messages.get(0).contains("FIRST:2017-03-01 11:59:59"));
         Assert.assertTrue(messages.get(0).contains("LAST:2018-03-01 11:59:59"));
-        reader.close();
         // Remove the temporary configuration file
         configFile.delete();
-    }
-
-    /**
-     * Gets the messages from buffer.
-     *
-     * @param reader the reader
-     * @return the messages from buffer
-     * @throws Exception the exception
-     */
-    private List<String> getMessagesFromBuffer(BufferedReader reader) throws Exception {
-        List<String> messages = new LinkedList<>();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            messages.add(line);
-            Thread.sleep(10);
-        }
-        return messages;
     }
 
 }

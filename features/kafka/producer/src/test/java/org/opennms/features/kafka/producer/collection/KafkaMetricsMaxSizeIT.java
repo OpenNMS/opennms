@@ -88,7 +88,7 @@ public class KafkaMetricsMaxSizeIT {
         Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(140)))).thenReturn(true);
         CollectionSetProtos.CollectionSet collectionSet = buildCollectionSet();
         kafkaPersister.bisectAndSendMessageToKafka(collectionSet);
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(3));
+        await().atMost(30, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(3));
         MatcherAssert.assertThat(kafkaConsumer.getNumOfMetricRecords().get(), Matchers.greaterThan(1));
         List<CollectionSetProtos.CollectionSet> collectionSetList = kafkaConsumer.getCollectionSetValues();
         CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();
@@ -118,7 +118,7 @@ public class KafkaMetricsMaxSizeIT {
 
         CollectionSetProtos.CollectionSet input = builderWithResources.build();
         kafkaPersister.bisectAndSendMessageToKafka(input);
-        await().atMost(60, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(16));
+        await().atMost(60, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(16));
         CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();
         result.setTimestamp(timeStamp);
         CollectionSetProtos.CollectionSetResource.Builder resourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
@@ -161,7 +161,7 @@ public class KafkaMetricsMaxSizeIT {
         Mockito.when(kafkaPersister.getDisableMetricsSplitting()).thenReturn(true);
         CollectionSetProtos.CollectionSet collectionSet = buildCollectionSet();
         kafkaPersister.bisectAndSendMessageToKafka(collectionSet);
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        await().atMost(30, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
         MatcherAssert.assertThat(kafkaConsumer.getNumOfMetricRecords().get(), Matchers.is(1));
         List<CollectionSetProtos.CollectionSet> collectionSetList = kafkaConsumer.getCollectionSetValues();
         CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();

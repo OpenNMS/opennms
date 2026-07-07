@@ -20,7 +20,7 @@
   </bean>
 
   <!-- EventConfDao mock - we'll configure it for tests -->
-  <bean id="eventConfDao" class="org.mockito.Mockito" factory-method="mock">
+  <bean id="eventConfDao" class="org.opennms.core.test.MockitoFactoryBean">
     <constructor-arg value="org.opennms.netmgt.config.api.EventConfDao"/>
   </bean>
 

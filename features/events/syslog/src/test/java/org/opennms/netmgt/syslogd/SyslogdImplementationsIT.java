@@ -152,6 +152,7 @@ public class SyslogdImplementationsIT implements InitializingBean {
     private void doTestSyslogd(SyslogReceiver receiver) throws Exception {
         Thread listener = new Thread(receiver);
         listener.start();
+        // TODO(flaky-cleanup): no observable readiness signal on SyslogReceiver to await on
         Thread.sleep(3000);
 
         final int eventCount = 100;

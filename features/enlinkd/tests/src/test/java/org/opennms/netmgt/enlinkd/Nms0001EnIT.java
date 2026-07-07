@@ -31,11 +31,14 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.awaitility.Awaitility.await;
 
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -250,8 +253,9 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.execSingleSnmpCollection(froh.getId()));
 
-        Thread.sleep(200);
-        persist(m_isisLinkDao::flush);
-        assertEquals(2, m_isisLinkDao.countAll());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            persist(m_isisLinkDao::flush);
+            assertEquals(2, m_isisLinkDao.countAll());
+        });
     }
 }

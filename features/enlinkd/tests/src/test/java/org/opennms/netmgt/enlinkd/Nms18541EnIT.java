@@ -92,32 +92,25 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(ms01.getId()));
         assertEquals(2,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms02.getId()));
         assertEquals(4,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms03.getId()));
         assertEquals(5,m_lldpLinkDao.countAll());
         assertEquals(3,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms04.getId()));
         assertEquals(9,m_lldpLinkDao.countAll());
         assertEquals(4,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms08.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
         assertEquals(5,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms09.getId()));
         assertEquals(19,m_lldpLinkDao.countAll());
         assertEquals(6,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
         m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
 
-        Thread.sleep(200);
         OnmsTopology topologyA =m_linkd.getLldpTopologyUpdater().getTopology();
         assertNotNull(topologyA);
         printOnmsTopology(topologyA);
@@ -128,7 +121,6 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_lldpLinkDao.countAll());
         assertEquals(7,m_lldpElementDao.countAll());
 
-        Thread.sleep(200);
         m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
 
         OnmsTopology topology = m_linkd.getLldpTopologyUpdater().getTopology();
@@ -176,19 +168,15 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms01.getId()));
         assertEquals(17,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms02.getId()));
         assertEquals(19,m_lldpLinkDao.countAll());
         assertEquals(3,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms03.getId()));
         assertEquals(20,m_lldpLinkDao.countAll());
         assertEquals(4,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
 
         m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
@@ -200,7 +188,6 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
 
         assertNotNull(topology);
         printOnmsTopology(topology);
-        Thread.sleep(200);
 
         assertEquals(4,topology.getVertices().size());
         assertEquals(3,topology.getEdges().size());
@@ -241,11 +228,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms01.getId()));
         assertEquals(17,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);
@@ -299,11 +284,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms02.getId()));
         assertEquals(17,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);
@@ -356,11 +339,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms03.getId()));
         assertEquals(16,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);
@@ -413,11 +394,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms04.getId()));
         assertEquals(19,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);
@@ -470,11 +449,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms08.getId()));
         assertEquals(18,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);
@@ -527,11 +504,9 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(qfx.getId()));
         assertEquals(15,m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
-        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms09.getId()));
         assertEquals(22,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
-        Thread.sleep(200);
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
         m_lldpLinkDao.findAll().forEach(EnLinkdTestHelper::printLldpLink);

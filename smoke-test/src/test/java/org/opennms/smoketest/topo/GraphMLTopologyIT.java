@@ -363,6 +363,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         event.setCreationTime(null);
         event.setTime(null);
         sendPost("/rest/events", JaxbUtils.marshal(event), 202);
+        // TODO(flaky-cleanup): topology reload completion is not observable via REST/shell
         Thread.sleep(5000); // Wait to allow the event to be processed
     }
 
@@ -374,6 +375,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         graphmlDocument.create(restClient);
 
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
+        // TODO(flaky-cleanup): the Vaadin topology provider registration has no pollable observable;
+        // opennms:graph-list reflects the (separate) graph service, not this factory
         Thread.sleep(20000);
     }
 
@@ -381,6 +384,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         graphmlDocument.delete(restClient);
 
         // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
+        // TODO(flaky-cleanup): see importGraph() — no pollable observable for factory cleanup
         Thread.sleep(20000);
     }
 

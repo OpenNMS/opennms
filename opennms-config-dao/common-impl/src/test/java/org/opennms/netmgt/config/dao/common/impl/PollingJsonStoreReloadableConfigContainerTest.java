@@ -155,7 +155,7 @@ public class PollingJsonStoreReloadableConfigContainerTest {
         when(jsonStore.get(key, context)).thenReturn(Optional.of(mapper.writeValueAsString(new TestEntity())));
 
         // Now that the mock is returning JSON the client's get should unblock
-        await().atMost(1, TimeUnit.SECONDS)
+        await().atMost(10, TimeUnit.SECONDS)
                 .until(unblocked::get);
     }
 

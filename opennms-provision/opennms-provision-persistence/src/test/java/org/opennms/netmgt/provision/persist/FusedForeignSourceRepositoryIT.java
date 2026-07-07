@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.provision.persist;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -226,9 +228,7 @@ public class FusedForeignSourceRepositoryIT extends ForeignSourceRepositoryTestC
         Resource resource = new UrlResource(node1Snapshot);
         doImport(resource);
 
-        Thread.sleep(5);
-        List<String> files = getImports(foreignSource);
-        assertEquals(1, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(1, getImports(foreignSource).size()));
 
         System.err.println("=== create another snapshot, but don't import it yet ===");
         initial.putNode(createNode("2"));
@@ -236,9 +236,7 @@ public class FusedForeignSourceRepositoryIT extends ForeignSourceRepositoryTestC
         m_pending.save(initial);
         final URL node2Snapshot = createSnapshot(foreignSource);
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(3, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(3, getImports(foreignSource).size()));
 
         System.err.println("=== create yet another snapshot, and don't import it yet ===");
         initial.putNode(createNode("3"));
@@ -246,16 +244,12 @@ public class FusedForeignSourceRepositoryIT extends ForeignSourceRepositoryTestC
         m_pending.save(initial);
         final URL node3Snapshot = createSnapshot(foreignSource);
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(4, files.size());
-        
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(4, getImports(foreignSource).size()));
+
         System.err.println("=== import of the second file finishes ===");
         doImport(new UrlResource(node2Snapshot));
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(2, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(2, getImports(foreignSource).size()));
 
         System.err.println("=== fourth node is sent to the ReST interface ===");
         final Requisition currentPending = RequisitionFileUtils.getLatestPendingOrSnapshotRequisition(m_pending, foreignSource);
@@ -266,23 +260,17 @@ public class FusedForeignSourceRepositoryIT extends ForeignSourceRepositoryTestC
         m_pending.save(currentPending);
         final URL node4Snapshot = createSnapshot(foreignSource);
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(4, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(4, getImports(foreignSource).size()));
 
         System.err.println("=== import of the third file finishes ===");
         doImport(new UrlResource(node3Snapshot));
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(2, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(2, getImports(foreignSource).size()));
 
         System.err.println("=== import of the fourth file finishes ===");
         doImport(new UrlResource(node4Snapshot));
 
-        Thread.sleep(5);
-        files = getImports(foreignSource);
-        assertEquals(1, files.size());
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertEquals(1, getImports(foreignSource).size()));
     }
 
     protected List<String> getImports(final String foreignSource) {

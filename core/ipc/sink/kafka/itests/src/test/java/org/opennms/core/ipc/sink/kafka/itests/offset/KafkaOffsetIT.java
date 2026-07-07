@@ -77,7 +77,7 @@ public class KafkaOffsetIT {
         kafkaConsumer.startConsumer();
         KafkaMessageProducer kafkaProducer = new KafkaMessageProducer(kafkaServer.getKafkaConnectString());
         kafkaProducer.produce();
-        await().atMost(30, SECONDS).pollDelay(5, SECONDS).pollInterval(5, SECONDS)
+        await().atMost(30, SECONDS)
                 .until(matchGroupName(offsetProvider));
 
     }

@@ -21,6 +21,7 @@
  */
 package org.opennms.core.tracker;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,6 +33,7 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -324,16 +326,16 @@ public class RequestTrackerTest {
         rt.sendRequest(req);
 
         // this gives the rt threads a chance to work
-        Thread.sleep(50);
+        await().atMost(Duration.ofMillis(10000)).untilAsserted(() -> {
+            // no error
+            assertNull(cb.error);
+            // no timeout
+            assertNull(cb.timeoutTimestamp);
 
-        // no error
-        assertNull(cb.error);
-        // no timeout
-        assertNull(cb.timeoutTimestamp);
-
-        // expect a reply
-        assertNotNull(cb.response);
-        assertNotNull(cb.responseTimestamp);
+            // expect a reply
+            assertNotNull(cb.response);
+            assertNotNull(cb.responseTimestamp);
+        });
 
         // expect the reply very quickly (no more than 50 millis)
         long delay = cb.responseTimestamp - req.getSentTimestamp();

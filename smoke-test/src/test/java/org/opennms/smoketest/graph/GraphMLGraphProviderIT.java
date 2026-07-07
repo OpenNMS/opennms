@@ -84,15 +84,15 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
     private void importGraph() throws InterruptedException {
         graphmlDocument.create(restClient);
 
-        // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
-        Thread.sleep(20000);
+        // Wait for the GraphMLMetaTopologyFactory to initialize the new Topology
+        karafShell.runCommand("opennms:graph-list -a", output -> output.contains(LABEL));
     }
 
     private void deleteGraph() throws InterruptedException {
         graphmlDocument.delete(restClient);
 
-        // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
-        Thread.sleep(20000);
+        // Wait for the GraphMLMetaTopologyFactory to clean up afterwards
+        karafShell.runCommand("opennms:graph-list -a", output -> !output.contains(LABEL));
     }
 
 }

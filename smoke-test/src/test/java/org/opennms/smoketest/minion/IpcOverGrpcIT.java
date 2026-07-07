@@ -54,7 +54,9 @@ public class IpcOverGrpcIT {
     public void verifyGrpcRpcWithTcpServiceDetection() {
         // Add node and interface with minion location.
         addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), LOCALHOST);
-        await().atMost(3, MINUTES).pollInterval(15, SECONDS)
+        await().atMost(3, MINUTES).pollInterval(5, SECONDS)
+                .failFast("container is no longer running", () -> !stack.opennms().isRunning())
+                .ignoreExceptions()
                 .until(() -> RpcOverKafkaIT.detectTcpAtLocationMinion(stack), containsString("'TCP' WAS detected on 127.0.0.1"));
     }
 

@@ -111,7 +111,7 @@ public class KafkaFlowForwarderIT {
 
         KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConfig, topicName, useJson);
         Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->
+        await().atMost(30, TimeUnit.SECONDS).until(() ->
                 getFlowDocuments().size(), Matchers.greaterThan(0));
         getFlowDocuments().forEach(flowDocument -> {
             assertEquals(FlowDocumentTest.getMockFlow().getSrcAddr(), flowDocument.getSrcAddress());

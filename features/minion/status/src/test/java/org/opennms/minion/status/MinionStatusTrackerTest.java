@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyListOf;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -396,7 +396,7 @@ public class MinionStatusTrackerTest {
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA, minionB, minionC, minionD));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA, nodeB, nodeC, nodeD));
-        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(outages);
+        when(m_outageDao.newestCurrentOutages(anyList())).thenReturn(outages);
 
         System.err.println("old=" + old);
         System.err.println("now=" + now);
@@ -465,7 +465,7 @@ public class MinionStatusTrackerTest {
         // refresh() query
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestCurrentOutages(anyList())).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 
@@ -493,7 +493,7 @@ public class MinionStatusTrackerTest {
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestCurrentOutages(anyList())).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 

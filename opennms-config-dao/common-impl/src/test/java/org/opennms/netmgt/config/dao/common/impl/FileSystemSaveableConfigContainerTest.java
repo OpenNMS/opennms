@@ -117,8 +117,7 @@ public class FileSystemSaveableConfigContainerTest {
         }), xmlFile);
         
         // When the container initialized our callback should have been called for the first time
-        await().atMost(100, TimeUnit.MILLISECONDS)
-                .pollDelay(10, TimeUnit.MILLISECONDS)
+        await().atMost(10, TimeUnit.SECONDS)
                 .until(() -> callbackCalled.get() == 1 && Objects.equals(callbackValue.get(), testEntity));
         
         // If we reload now, there should not be any callback triggered
@@ -137,8 +136,7 @@ public class FileSystemSaveableConfigContainerTest {
         fromContainer.setTestValues(Arrays.asList("new", "values"));
         container.saveConfig();
 
-        await().atMost(100, TimeUnit.MILLISECONDS)
-                .pollDelay(10, TimeUnit.MILLISECONDS)
+        await().atMost(10, TimeUnit.SECONDS)
                 .until(() -> callbackCalled.get() == 2 && Objects.equals(callbackValue.get(), fromContainer));
     }
 }

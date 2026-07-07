@@ -203,12 +203,12 @@ public class DcbEndToEndIT {
 
         localNode = await()
                 .atMost(3, MINUTES)
-                .pollInterval(30, SECONDS)
+                .pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class).eq("foreignId", "local").toCriteria()), notNullValue());
 
         remoteNode = await()
                 .atMost(3, MINUTES)
-                .pollInterval(30, SECONDS)
+                .pollInterval(1, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class).eq("foreignId", "remote").toCriteria()), notNullValue());
 
         localInterface = ipInterfaceDao.findPrimaryInterfaceByNodeId(localNode.getId());

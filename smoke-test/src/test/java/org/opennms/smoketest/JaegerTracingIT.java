@@ -69,7 +69,6 @@ public class JaegerTracingIT {
         await("Wait for a 'trapd.listener.config' trace with two spans")
                 .atMost(20, TimeUnit.SECONDS)
                 .pollInterval(1, TimeUnit.SECONDS)
-                .pollDelay(0, TimeUnit.SECONDS)
                 .ignoreException(AssertionError.class)
                 .until(
                         () -> {
@@ -92,7 +91,6 @@ public class JaegerTracingIT {
         await("Wait for a 'Echo' trace with two spans")
                 .atMost(20, TimeUnit.SECONDS)
                 .pollInterval(1, TimeUnit.SECONDS)
-                .pollDelay(0, TimeUnit.SECONDS)
                 .ignoreException(AssertionError.class)
                 .untilAsserted(() ->
                         givenWithFailureDetails((spec) -> {

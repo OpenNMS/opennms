@@ -88,8 +88,7 @@ public class ElasticAlarmHistoryBlackboxIT {
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         // Wait until ES is up and running - initially there should be no documents
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
-                .ignoreExceptions()
+        await().atMost(1, TimeUnit.MINUTES)                .ignoreExceptions()
                 .until(alarmHistoryRepo::getActiveAlarmsNow, hasSize(equalTo(0)));
     }
 
@@ -323,12 +322,10 @@ public class ElasticAlarmHistoryBlackboxIT {
     private Runnable waitForNAlarmsInES(int numAlarms) {
         return () -> {
             // Don't tear down until we have the expected number of alarms in ES and they are all marked as deleted.
-            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
-                    .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
+            await().atMost(2, TimeUnit.MINUTES)                    .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
                             hasSize(equalTo(numAlarms)));
             // All of the alarms are in ES now, wait until they are deleted
-            await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
-                    .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
+            await().atMost(2, TimeUnit.MINUTES)                    .until(() -> alarmHistoryRepo.getLastStateOfAllAlarms(0, System.currentTimeMillis()),
                             everyItem(ExtAlarmsMatchers.wasDeleted()));
         };
     }
