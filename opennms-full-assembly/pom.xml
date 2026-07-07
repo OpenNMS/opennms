@@ -458,7 +458,6 @@
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
                 <feature>smack</feature>
-                <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>

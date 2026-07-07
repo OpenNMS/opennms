@@ -125,7 +125,7 @@ public class EventdIT implements InitializingBean {
     public void tearDown() {
         m_eventd.onStop();
         m_databasePopulator.resetDatabase();
-        //MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     @Test(timeout=30000)

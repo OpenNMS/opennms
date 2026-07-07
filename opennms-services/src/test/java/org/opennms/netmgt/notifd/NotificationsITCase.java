@@ -187,6 +187,9 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
         // m_db.drop();
         MockNotificationStrategy.setAnticipator(null);
+        if (!allowAllLogMessages) {
+            MockLogAppender.assertNoWarningsOrGreater();
+        }
     }
     
     public void testDoNothing() {
