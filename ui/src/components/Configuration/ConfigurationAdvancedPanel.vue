@@ -205,15 +205,21 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 }
 .item-wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   > div {
     width: 100%;
   }
   > div:first-child {
     margin-right: 16px;
   }
+  // Offset past the FormField label (~1.6875rem) and center within the input's
+  // height so the delete icon lines up with the input row, not the hint below it.
   > button:last-child {
     margin-left: 8px;
+    margin-top: 1.6875rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
   }
 }
 .autocomplete-empty {
@@ -222,6 +228,7 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
+  margin-top: 1rem;
 }
 .delete-icon {
   color: var(--p-red-500);

@@ -200,7 +200,7 @@ const updateCronValue = (type: string, val: string) => {
 }
 .flex-center {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 .full-width {
     width: 100%;
@@ -208,6 +208,11 @@ const updateCronValue = (type: string, val: string) => {
 .icon {
     display: flex;
     align-items: center;
+    // Offset past the FormField label (~1.6875rem) and center within the input's
+    // height so the icon lines up with the input row, not the label or any
+    // hint/error rendered below it.
+    height: 3rem;
+    margin-top: 1.6875rem;
     .help-icon {
         font-size: 1.5rem;
     }
