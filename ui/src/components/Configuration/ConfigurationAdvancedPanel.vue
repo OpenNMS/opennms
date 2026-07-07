@@ -205,7 +205,7 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 }
 .item-wrapper {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   > div {
     width: 100%;
   }
@@ -225,5 +225,6 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 }
 .delete-icon {
   color: var(--p-red-500);
+  font-size: 1.5rem;
 }
 </style>

@@ -200,11 +200,20 @@ const updateCronValue = (type: string, val: string) => {
 }
 .flex-center {
     display: flex;
+    align-items: center;
 }
 .full-width {
     width: 100%;
 }
+.icon {
+    display: flex;
+    align-items: center;
+    .help-icon {
+        font-size: 1.5rem;
+    }
+}
 .side-label {
+    margin-top: 1rem;
     .group-label {
         display: block;
         font-weight: 700;

@@ -229,6 +229,9 @@ const getError = (key: string) => {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+:deep(.form-field) {
+  margin-bottom: 1.25rem;
+}
 .last-input {
   margin-bottom: 10px;
 }
