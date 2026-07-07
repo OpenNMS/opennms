@@ -137,6 +137,11 @@ const rescanToEnglish = (rescanVal: string) => {
 }
 .flex {
   display: flex;
+
+  // Enlarge the edit/delete glyphs (FeatherIcon scales with font-size)
+  :deep(svg) {
+    font-size: 1.25em;
+  }
 }
 .delete-icon {
   color: var(--p-red-500);
