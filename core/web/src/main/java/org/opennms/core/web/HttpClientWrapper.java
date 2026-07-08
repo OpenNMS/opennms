@@ -250,9 +250,10 @@ public class HttpClientWrapper implements Closeable {
     }
 
     /**
-     * Only follow HTTP redirects whose target stays on the host of the original
-     * request. Use this when the client authenticates with credentials or a client
-     * certificate that should not be presented to arbitrary redirect targets.
+     * Only follow HTTP redirects whose target has the same scheme, host, and
+     * effective port as the original request. Use this when the client
+     * authenticates with credentials or a client certificate that should not be
+     * presented to other redirect targets.
      */
     public HttpClientWrapper restrictRedirectsToSameHost() {
         LOG.debug("restrictRedirectsToSameHost()");
@@ -577,10 +578,11 @@ public class HttpClientWrapper implements Closeable {
     }
 
     /**
-     * A redirect strategy that only follows redirects whose target is on the same
-     * host as the original request, so that credentials or a client certificate
-     * are not presented to other hosts. Redirects with an unparseable location
-     * are not followed.
+     * A redirect strategy that only follows redirects whose target has the same
+     * scheme, host, and effective port as the original request, so that credentials
+     * or a client certificate are not presented to other services — including a
+     * different service on the same host, or the same host over plain HTTP.
+     * Redirects with an unparseable location are not followed.
      */
     static class SameHostRedirectStrategy extends DefaultRedirectStrategy {
         @Override
@@ -600,7 +602,7 @@ public class HttpClientWrapper implements Closeable {
                 return false;
             }
             if (location.getHost() == null) {
-                // A relative redirect stays on the same host
+                // A relative redirect stays on the same scheme, host, and port
                 return true;
             }
             final HttpHost target = HttpClientContext.adapt(context).getTargetHost();
@@ -608,7 +610,32 @@ public class HttpClientWrapper implements Closeable {
                 LOG.warn("Not following redirect from host {} to other host {}", target == null ? null : target.getHostName(), location.getHost());
                 return false;
             }
+            // A scheme-relative location (//host/path) inherits the request scheme
+            final String locationScheme = location.getScheme() != null ? location.getScheme() : target.getSchemeName();
+            if (!target.getSchemeName().equalsIgnoreCase(locationScheme)) {
+                LOG.warn("Not following redirect from scheme {} to other scheme {} on host {}", target.getSchemeName(), locationScheme, target.getHostName());
+                return false;
+            }
+            final int targetPort = effectivePort(target.getSchemeName(), target.getPort());
+            final int locationPort = effectivePort(locationScheme, location.getPort());
+            if (targetPort != locationPort) {
+                LOG.warn("Not following redirect from port {} to other port {} on host {}", targetPort, locationPort, target.getHostName());
+                return false;
+            }
             return true;
+        }
+
+        private static int effectivePort(final String scheme, final int port) {
+            if (port >= 0) {
+                return port;
+            }
+            if ("https".equalsIgnoreCase(scheme)) {
+                return 443;
+            }
+            if ("http".equalsIgnoreCase(scheme)) {
+                return 80;
+            }
+            return port;
         }
     }
 }

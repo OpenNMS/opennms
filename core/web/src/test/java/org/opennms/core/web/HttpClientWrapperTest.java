@@ -61,6 +61,20 @@ public class HttpClientWrapperTest {
         assertFalse(isRedirected("https://scrape-target.example/metrics", "http://[unparseable"));
     }
 
+    @Test
+    public void sameHostRedirectStrategyRefusesOtherSchemesAndPorts() throws Exception {
+        // A scheme downgrade would move credentials onto plain HTTP
+        assertFalse(isRedirected("https://scrape-target.example/metrics", "http://scrape-target.example/metrics"));
+        // A different port may be a different service on the same host
+        assertFalse(isRedirected("https://scrape-target.example/metrics", "https://scrape-target.example:8443/metrics"));
+        assertFalse(isRedirected("https://scrape-target.example:9100/metrics", "https://scrape-target.example/metrics"));
+        // The default port for the scheme is the same service whether implicit or explicit
+        assertTrue(isRedirected("https://scrape-target.example/metrics", "https://scrape-target.example:443/other"));
+        assertTrue(isRedirected("https://scrape-target.example:9100/metrics", "https://scrape-target.example:9100/other"));
+        // A scheme-relative location inherits the request scheme
+        assertTrue(isRedirected("https://scrape-target.example/metrics", "//scrape-target.example/other"));
+    }
+
     private static boolean isRedirected(final String requestUri, final String location) throws Exception {
         final HttpClientContext context = HttpClientContext.create();
         context.setTargetHost(HttpHost.create(requestUri.substring(0, requestUri.indexOf('/', 8))));

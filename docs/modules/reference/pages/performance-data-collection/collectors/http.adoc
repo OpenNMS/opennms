@@ -103,7 +103,7 @@ If a Minion performs the collection, the files must also exist at the same path 
 
 To avoid storing passwords in plain text, store them in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and reference them as `${scv:alias:key}`.
 
-When `key-store` is set, HTTP redirects are followed only when the target stays on the host of the original URI, so that the client certificate is not presented to other hosts.
+When `key-store` is set, HTTP redirects are followed only when the target keeps the same scheme, host, and port as the original URI, so that the client certificate is not presented to other services.
 
 == HTTP collection configuration
 
