@@ -53,7 +53,55 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | Should the system-wide proxy settings be used? Configure system proxy settings
 via <<operation:deep-dive/admin/configuration/system-properties.adoc#system-properties, system properties>>.
 | false
+
+| trust-store
+| Path to a keystore file that contains the CA or server certificates to trust for HTTPS URIs.
+When set, server certificates are validated; see <<ref-collector-http-tls, HTTPS and mutual TLS>>.
+| n/a
+
+| trust-store-type
+| Type of the truststore file (for example, `PKCS12` or `JKS`).
+| PKCS12
+
+| trust-store-password
+| Password of the truststore file.
+| n/a
+
+| key-store
+| Path to a keystore file that contains a client certificate and its private key.
+When set, the certificate is presented to servers that request one (mutual TLS).
+| n/a
+
+| key-store-type
+| Type of the keystore file (for example, `PKCS12` or `JKS`).
+| PKCS12
+
+| key-store-password
+| Password of the keystore file.
+| n/a
+
+| key-password
+| Password of the private key, if it differs from the keystore password.
+| The `key-store-password` value.
+
+| hostname-verification
+| Whether to verify that the server certificate matches the host in the URI.
+This applies only when `trust-store` or `key-store` is set.
+| true
 |===
+
+[[ref-collector-http-tls]]
+== HTTPS and mutual TLS
+
+By default, the HttpCollector accepts any server certificate for HTTPS URIs, without validation.
+This historical behavior is unchanged.
+
+Setting `trust-store` and/or `key-store` switches the collector to validated TLS: the server certificate is checked against the truststore (or the JVM's default trust anchors when only `key-store` is set), the certificate's hostname is verified, and the client certificate from the keystore is presented to servers that request one (mutual TLS).
+
+The keystore and truststore files must be readable by the {page-component-title} process.
+If a Minion performs the collection, the files must also exist at the same path on that Minion; they are not distributed automatically.
+
+To avoid storing passwords in plain text, store them in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and reference them as `${scv:alias:key}`.
 
 == HTTP collection configuration
 

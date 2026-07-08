@@ -28,7 +28,9 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
@@ -44,9 +46,11 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Header;
+import org.opennms.protocols.xml.config.Parameter;
 import org.opennms.protocols.xml.config.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,6 +121,18 @@ public class HttpUrlConnection extends URLConnection {
 
             if(m_request.getParameterAsBoolean("use-system-proxy")){
                 m_clientWrapper.useSystemProxySettings();
+            }
+
+            // Custom trust anchors and/or client certificate (mutual TLS);
+            // takes precedence over disable-ssl-verification when both are set
+            final Map<String, Object> parameters = new HashMap<>();
+            for (final Parameter parameter : m_request.getParameters()) {
+                parameters.put(parameter.getName(), parameter.getValue());
+            }
+            try {
+                HttpClientWrapperConfigHelper.setSSLContextIfConfigured(m_clientWrapper, parameters);
+            } catch (final GeneralSecurityException e) {
+                throw new IOException("Failed to configure TLS from the request parameters", e);
             }
         }
 
