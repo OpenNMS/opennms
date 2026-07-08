@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.Header;
@@ -91,6 +92,7 @@ public class HttpClientWrapper implements Closeable {
     private Integer m_connectionTimeout;
     private Integer m_retries;
     private Map<String,SSLContext> m_sslContext = new HashMap<>();
+    private Set<String> m_sslContextsWithHostnameVerification = new LinkedHashSet<>();
 
     private Set<HttpRequestInterceptor> m_requestInterceptors = new LinkedHashSet<>();
     private Set<HttpResponseInterceptor> m_responseInterceptors = new LinkedHashSet<>();
@@ -197,6 +199,31 @@ public class HttpClientWrapper implements Closeable {
         LOG.debug("useRelaxedSSL: scheme={}", scheme);
         assertNotInitialized();
         m_sslContext.put(scheme, SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+        return this;
+    }
+
+    /**
+     * Use the given SSLContext for connections with the given scheme, with standard
+     * hostname verification. Use this to supply custom trust anchors and/or client
+     * key material (mutual TLS), e.g. built by {@link SslContextFactory}.
+     */
+    public HttpClientWrapper setSSLContext(final String scheme, final SSLContext sslContext) {
+        return setSSLContext(scheme, sslContext, true);
+    }
+
+    /**
+     * Use the given SSLContext for connections with the given scheme, optionally
+     * disabling hostname verification.
+     */
+    public HttpClientWrapper setSSLContext(final String scheme, final SSLContext sslContext, final boolean verifyHostname) {
+        LOG.debug("setSSLContext: scheme={}, verifyHostname={}", scheme, verifyHostname);
+        assertNotInitialized();
+        m_sslContext.put(scheme, sslContext);
+        if (verifyHostname) {
+            m_sslContextsWithHostnameVerification.add(scheme);
+        } else {
+            m_sslContextsWithHostnameVerification.remove(scheme);
+        }
         return this;
     }
 
@@ -366,9 +393,10 @@ public class HttpClientWrapper implements Closeable {
         ret.m_socketTimeout = m_socketTimeout;
         ret.m_connectionTimeout = m_connectionTimeout;
         ret.m_retries = m_retries;
-        for (final Map.Entry<String,SSLContext> entry : ret.m_sslContext.entrySet()) {
+        for (final Map.Entry<String,SSLContext> entry : m_sslContext.entrySet()) {
             ret.m_sslContext.put(entry.getKey(), entry.getValue());
         }
+        ret.m_sslContextsWithHostnameVerification.addAll(m_sslContextsWithHostnameVerification);
         for (final HttpRequestInterceptor interceptor : m_requestInterceptors) {
             ret.m_requestInterceptors.add(interceptor);
         }
@@ -480,7 +508,10 @@ public class HttpClientWrapper implements Closeable {
     protected void configureSSLContext(final HttpClientBuilder builder) {
         final RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory>create();
         for (final Map.Entry<String,SSLContext> entry : m_sslContext.entrySet()) {
-            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(entry.getValue(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            final HostnameVerifier hostnameVerifier = m_sslContextsWithHostnameVerification.contains(entry.getKey())
+                    ? SSLConnectionSocketFactory.getDefaultHostnameVerifier()
+                    : SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(entry.getValue(), hostnameVerifier);
             registryBuilder.register(entry.getKey(), sslConnectionFactory);
         }
         if (!m_sslContext.containsKey("http")) {
