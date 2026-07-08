@@ -190,6 +190,8 @@ const applyCustomTime = () => {
 </style>
 
 <style lang="scss">
+@import "@featherds/styles/mixins/typography";
+
 .graph-controls-panel {
   .menu-content {
     display: flex;
