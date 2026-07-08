@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!--
+      Prototype schema for PostgresFlowRepository.
+
+      Design: a small set of "hot" columns (the fields the FlowQueryService filters and
+      aggregations actually touch) plus the full enriched flow as jsonb, so no flow field is
+      ever lost and the table never has to enumerate every possible Netflow/IPFIX attribute.
+
+      Proration parity note: delta_switched (netflow.delta_switched) and last_switched
+      (netflow.last_switched) are the flow's time range used by the Elastic proportional_sum
+      aggregation; bytes and sampling_interval feed the value. flow_ts is the @timestamp
+      equivalent used for row selection (TimeRangeFilter) and is the partition key.
+    -->
+
+    <changeSet author="opennms" id="flows-postgres-flow-table" runInTransaction="false">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="flow"/></not>
+        </preConditions>
+        <sql splitStatements="false"><![CDATA[
+            CREATE TABLE flow (
+                flow_ts          timestamptz NOT NULL,
+                received_at      timestamptz NOT NULL DEFAULT now(),
+                delta_switched   bigint      NOT NULL,   -- proration range start (netflow.delta_switched)
+                last_switched    bigint      NOT NULL,   -- proration range end   (netflow.last_switched)
+                first_switched   bigint,
+                bytes            bigint,
+                packets          bigint,
+                sampling_interval double precision,
+                direction        text,                   -- INGRESS / EGRESS (Directional<>)
+                application      text,                   -- netflow.application
+                convo_key        text,                   -- netflow.convo_key
+                src_addr         inet,
+                dst_addr         inet,
+                protocol         smallint,
+                dscp             smallint,                -- DscpFilter + LimitedCardinalityField.DSCP
+                exporter_node_id integer,                 -- ExporterNodeFilter
+                input_snmp       integer,                 -- SnmpInterfaceIdFilter (input)
+                output_snmp      integer,                 -- SnmpInterfaceIdFilter (output)
+                location         text,
+                document         jsonb       NOT NULL     -- full enriched flow
+            ) PARTITION BY RANGE (flow_ts);
+        ]]></sql>
+        <rollback><sql>DROP TABLE IF EXISTS flow;</sql></rollback>
+    </changeSet>
+
+    <changeSet author="opennms" id="flows-postgres-flow-indexes" runInTransaction="false">
+        <sql splitStatements="true"><![CDATA[
+            CREATE INDEX IF NOT EXISTS flow_ts_idx           ON flow (flow_ts);
+            CREATE INDEX IF NOT EXISTS flow_application_idx  ON flow (application);
+            CREATE INDEX IF NOT EXISTS flow_convo_key_idx    ON flow (convo_key);
+            CREATE INDEX IF NOT EXISTS flow_exporter_idx     ON flow (exporter_node_id);
+            CREATE INDEX IF NOT EXISTS flow_document_gin_idx ON flow USING gin (document);
+        ]]></sql>
+    </changeSet>
+
+    <!--
+      Partition maintenance function, invoked by vacuumd (internal DB) or a repo-side
+      scheduled task (external DB). Pre-creates upcoming daily partitions and drops those
+      older than the retention window. Uses flow_pYYYYMMDD naming keyed on flow_ts day.
+    -->
+    <changeSet author="opennms" id="flows-postgres-maintain-fn" runInTransaction="false">
+        <sql splitStatements="false" endDelimiter="\n/\n"><![CDATA[
+            CREATE OR REPLACE FUNCTION flow_maintain_partitions(retention_days int DEFAULT 14,
+                                                                premake_days int DEFAULT 3)
+            RETURNS void AS $$
+            DECLARE
+                d          date;
+                part_name  text;
+                cutoff     date := (now()::date - make_interval(days => retention_days))::date;
+                child      record;
+                child_date date;
+            BEGIN
+                -- Pre-create today + upcoming daily partitions.
+                FOR i IN 0..premake_days LOOP
+                    d := (now()::date + i);
+                    part_name := format('flow_p%s', to_char(d, 'YYYYMMDD'));
+                    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = part_name) THEN
+                        BEGIN
+                            EXECUTE format(
+                                'CREATE TABLE %I PARTITION OF flow FOR VALUES FROM (%L) TO (%L)',
+                                part_name, d::timestamptz, (d + 1)::timestamptz);
+                        EXCEPTION WHEN others THEN
+                            RAISE NOTICE 'flow_maintain_partitions: could not create %: %', part_name, SQLERRM;
+                        END;
+                    END IF;
+                END LOOP;
+
+                -- Drop partitions whose day is older than the retention cutoff.
+                FOR child IN
+                    SELECT c.relname AS relname
+                    FROM pg_inherits i
+                    JOIN pg_class c ON c.oid = i.inhrelid
+                    JOIN pg_class p ON p.oid = i.inhparent
+                    WHERE p.relname = 'flow' AND c.relname ~ '^flow_p[0-9]{8}$'
+                LOOP
+                    child_date := to_date(right(child.relname, 8), 'YYYYMMDD');
+                    IF child_date < cutoff THEN
+                        EXECUTE format('DROP TABLE IF EXISTS %I', child.relname);
+                    END IF;
+                END LOOP;
+            END;
+            $$ LANGUAGE plpgsql;
+        ]]></sql>
+        <rollback><sql>DROP FUNCTION IF EXISTS flow_maintain_partitions(int, int);</sql></rollback>
+    </changeSet>
+
+    <!-- Default partition (safety net for stragglers) + initial partition set. -->
+    <changeSet author="opennms" id="flows-postgres-initial-partitions" runInTransaction="false">
+        <sql splitStatements="true"><![CDATA[
+            CREATE TABLE IF NOT EXISTS flow_default PARTITION OF flow DEFAULT;
+            SELECT flow_maintain_partitions(14, 3);
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

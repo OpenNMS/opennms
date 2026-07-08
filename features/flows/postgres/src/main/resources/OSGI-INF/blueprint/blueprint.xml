@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+              http://www.osgi.org/xmlns/blueprint/v1.0.0
+              https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+              http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+              http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="postgresFlowProperties"
+                             persistent-id="org.opennms.features.flows.persistence.postgres"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <!-- "opennms" = internal DB; set to a named datasource from opennms-datasources.xml for external/scale -->
+            <cm:property name="dataSourceName" value="opennms"/>
+            <cm:property name="batchSize" value="1000"/>
+            <cm:property name="flushIntervalMs" value="500"/>
+            <cm:property name="queueCapacity" value="100000"/>
+            <cm:property name="runSchemaChangelog" value="true"/>
+            <cm:property name="queryThreads" value="4"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="postgresFlowMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="postgresFlowRepository"
+          class="org.opennms.netmgt.flows.postgres.PostgresFlowRepository"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <property name="dataSourceName" value="${dataSourceName}"/>
+        <property name="batchSize" value="${batchSize}"/>
+        <property name="flushIntervalMs" value="${flushIntervalMs}"/>
+        <property name="queueCapacity" value="${queueCapacity}"/>
+        <property name="runSchemaChangelog" value="${runSchemaChangelog}"/>
+    </bean>
+
+    <!-- Auto-binds to the flow Pipeline, which fans persist() out to every registered repository. -->
+    <service ref="postgresFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository">
+        <service-properties>
+            <entry key="flows.repository.id" value="postgres"/>
+        </service-properties>
+    </service>
+
+    <!-- Read path. Note: the flows framework consumes a single FlowQueryService; to exercise the
+         Postgres read path, deploy this instead of the Elastic query service (or select by the
+         flows.query.id service-property). -->
+    <bean id="postgresFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.PostgresFlowQueryService"
+          init-method="start" destroy-method="stop">
+        <property name="dataSourceName" value="${dataSourceName}"/>
+        <property name="threads" value="${queryThreads}"/>
+    </bean>
+
+    <service ref="postgresFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService">
+        <service-properties>
+            <entry key="flows.query.id" value="postgres"/>
+        </service-properties>
+    </service>
+
+</blueprint>

@@ -4,6 +4,14 @@
     DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
   </statement>
 
+  <statement transactional="false">
+    <!-- Postgres flow repository (opennms-flows-postgres feature): pre-create upcoming daily
+         partitions and drop expired ones. Guarded so it is a no-op on stock installs where the
+         function is absent (elastic-only, or the flow schema lives in an external database that
+         vacuumd cannot reach). Arguments are retention_days, premake_days. -->
+    DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions') THEN PERFORM flow_maintain_partitions(14, 3); END IF; END $$;
+  </statement>
+
   <statement>
     <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
     DELETE FROM node WHERE node.nodeType = 'D';

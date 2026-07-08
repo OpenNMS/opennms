@@ -1214,6 +1214,20 @@
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.core/${project.version}</bundle>
     </feature>
+    <feature name="opennms-flows-postgres" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Postgres">
+        <details>Optional PostgreSQL-backed FlowRepository/FlowQueryService (jsonb). Install alongside or instead of the Elasticsearch flow persistence.</details>
+        <feature>opennms-flows</feature>
+        <feature version="[4.2,4.3)">spring-jdbc</feature>
+        <feature>postgresql</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <!-- liquibase-core 3.6.3 is already an OSGi bundle whose manifest mandatorily imports
+             org.yaml.snakeyaml [1.18,2.0); the rest of OpenNMS ships snakeyaml 2.x (out of range),
+             so pin a 1.x jar for liquibase to wire to. Reference liquibase-core as a plain bundle:
+             pax-url wrap: does not rewrite an existing bundle manifest. -->
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/1.31</bundle>
+        <bundle>mvn:org.liquibase/liquibase-core/${liquibaseVersion}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.postgres/${project.version}</bundle>
+    </feature>
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>
         <feature>opennms-situation-feedback-api</feature>
