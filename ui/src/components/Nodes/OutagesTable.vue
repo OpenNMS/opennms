@@ -1,84 +1,55 @@
 <template>
-  <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12 headline3">Recent Outages</div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
-        <table
-          class="tl1 tl2 tl3"
-          summary="Outages"
-        >
-          <thead>
-            <tr>
-              <th scope="col">IP Address</th>
-              <th scope="col">Host Name</th>
-              <th scope="col">Service Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="outage in outages"
-              :key="outage.outageId"
-            >
-              <td>{{ outage.ipAddress }}</td>
-              <td>{{ outage.hostname }}</td>
-              <td>{{ outage.serviceName }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <Pagination
-      :payload="payload"
-      :parameters="queryParameters"
-      @update-query-parameters="updateQueryParameters"
-      :query="getNodeOutages"
-      :getTotalCount="getOutagesTotalCount"
-    />
-  </div>
+  <DataTable
+    lazy
+    :value="nodeStore.outages"
+    paginator
+    :rows="pageSize"
+    :first="first"
+    :totalRecords="nodeStore.outagesTotalCount"
+    :rowsPerPageOptions="[5, 10, 20, 50]"
+    data-test="outages-table"
+    @page="onPage"
+  >
+    <Column field="ipAddress" header="IP Address" />
+    <Column field="hostname" header="Host Name" />
+    <Column field="serviceName" header="Service Name" />
+    <template #empty>
+      <EmptyList :content="emptyListContent" data-test="empty-list" />
+    </template>
+  </DataTable>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import Pagination from '../Common/Pagination.vue'
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import { type DataTablePageEvent } from 'primevue/datatable'
+import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
-import useQueryParameters from '@/composables/useQueryParams'
-import { QueryParameters } from '@/types'
 
 const nodeStore = useNodeStore()
 const route = useRoute()
 
-const getNodeOutages = async (payload: QueryParameters) => {
-  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: payload })
-}
+const pageSize = ref(10)
+const first = ref(0)
+const emptyListContent = { msg: 'No results found.' }
 
-const getOutagesTotalCount = () => {
-  return nodeStore.outagesTotalCount
-}
-
-const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
+const queryParameters = ref({
   limit: 10,
   offset: 0
-}, getNodeOutages)
+})
 
-const outages = computed(() => nodeStore.outages)
+const onPage = (event: DataTablePageEvent) => {
+  first.value = event.first
+  pageSize.value = event.rows
+  queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }
+  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
+}
+
+onMounted(() => {
+  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: queryParameters.value })
+})
+
+defineExpose({ onPage })
 </script>
-
-<style
-  lang="scss"
-  scoped
->
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/elevation";
-.card {
-  @include elevation(2);
-  padding: 15px;
-  margin-bottom: 15px;
-}
-table {
-  @include table;
-}
-</style>

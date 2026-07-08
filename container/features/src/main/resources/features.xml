@@ -393,7 +393,6 @@
         <bundle start-level="8">mvn:javax.jms/javax.jms-api/${jmsApiVersion}</bundle>
         <bundle start-level="8">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
 
-        <bundle>mvn:org.apache.activemq/activemq-camel/${activemqCamelVersion}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
     <feature name="opennms-model" version="${project.version}" description="OpenNMS :: Model">

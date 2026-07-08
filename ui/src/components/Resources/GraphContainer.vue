@@ -18,10 +18,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { StartEndTime } from '@/types'
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import Graph from './Graph.vue'
 
 defineEmits(['addGraphDefinition'])
@@ -54,7 +54,7 @@ const displayContainer = computed(() => {
   return false
 })
 </script>
-  
+
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
@@ -71,4 +71,3 @@ const displayContainer = computed(() => {
   }
 }
 </style>
-  

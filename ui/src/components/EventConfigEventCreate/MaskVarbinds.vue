@@ -3,15 +3,15 @@
     <div class="section-content">
       <div class="mask-varbinds-header">
         <h3>Mask Varbinds</h3>
-        <FeatherButton
-          secondary
+        <Button
+          outlined
           @click="$emit('setVarbinds', 'addVarbindRow', null, -1)"
           data-test="add-varbind-row-button"
           :disabled="!hasMaskElements"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
       <div
         v-for="(row, index) in maskVarbinds"
@@ -19,58 +19,94 @@
         class="form-row"
       >
         <div class="dropdown">
-          <FeatherSelect
-            label="Varbind Type"
-            :options="MaskVarbindsTypeOptions"
-            :modelValue="MaskVarbindsTypeOptions.find(
-            (o: ISelectItemType) => o._value === row.type._value
-          )"
-            @update:modelValue="$emit('setVarbinds', 'setVarbindType', $event, index)"
+          <FormField
+            :for="`varbind-type-${index}`"
             :error="errors.varbinds?.[index]?.type"
-            data-test="varbind-type-select"
-          />
+          >
+            <Select
+              :inputId="`varbind-type-${index}`"
+              :options="MaskVarbindsTypeOptions"
+              optionLabel="_text"
+              :modelValue="MaskVarbindsTypeOptions.find(
+                (o: ISelectItemType) => o._value === row.type._value
+              )"
+              @update:modelValue="$emit('setVarbinds', 'setVarbindType', $event, index)"
+              :invalid="!!errors.varbinds?.[index]?.type"
+              data-test="varbind-type-select"
+              fluid
+              placeholder="Varbind Type"
+              :aria-label="'Varbind Type'"
+            />
+          </FormField>
         </div>
         <div
           v-if="row.type._value === MaskVarbindsTypeValue.vbNumber"
           class="dropdown"
         >
-          <FeatherInput
-            type="number"
-            label="Varbind Number"
-            min="0"
-            :model-value="row.index"
-            @update:model-value="$emit('setVarbinds', 'setVarbindNumber', $event, index)"
-            data-test="varbind-number-input"
+          <FormField
+            :for="`varbind-number-${index}`"
             :error="errors.varbinds?.[index]?.index"
-          />
+          >
+            <InputText
+              :id="`varbind-number-${index}`"
+              type="number"
+              min="0"
+              :modelValue="row.index"
+              @update:model-value="$emit('setVarbinds', 'setVarbindNumber', $event, index)"
+              data-test="varbind-number-input"
+              :invalid="!!errors.varbinds?.[index]?.index"
+              fluid
+              placeholder="Varbind Number"
+              :aria-label="'Varbind Number'"
+            />
+          </FormField>
         </div>
         <div
           v-if="row.type._value === MaskVarbindsTypeValue.vbOid"
           class="dropdown"
         >
-          <FeatherInput
-            label="Varbind OID"
-            :model-value="row.index"
-            @update:model-value="$emit('setVarbinds', 'setVarbindOid', $event, index)"
-            data-test="varbind-oid-input"
+          <FormField
+            :for="`varbind-oid-${index}`"
             :error="errors.varbinds?.[index]?.index"
-          />
+          >
+            <InputText
+              :id="`varbind-oid-${index}`"
+              :modelValue="row.index"
+              @update:model-value="$emit('setVarbinds', 'setVarbindOid', $event, index)"
+              data-test="varbind-oid-input"
+              :invalid="!!errors.varbinds?.[index]?.index"
+              fluid
+              placeholder="Varbind OID"
+              :aria-label="'Varbind OID'"
+            />
+          </FormField>
         </div>
         <div class="input-field">
-          <FeatherInput
-            label="Varbind Value"
-            :model-value="row.value"
-            @update:model-value="$emit('setVarbinds', 'setValue', $event, index)"
-            data-test="varbind-value-input"
-            :error="errors.varbinds?.[index]?.value"
-          />
-          <FeatherButton
-            secondary
+          <div class="value-input">
+            <FormField
+              :for="`varbind-value-${index}`"
+              :error="errors.varbinds?.[index]?.value"
+            >
+              <InputText
+                :id="`varbind-value-${index}`"
+                :modelValue="row.value"
+                @update:model-value="$emit('setVarbinds', 'setValue', $event, index)"
+                data-test="varbind-value-input"
+                :invalid="!!errors.varbinds?.[index]?.value"
+                fluid
+                placeholder="Varbind Value"
+                :aria-label="'Varbind Value'"
+              />
+            </FormField>
+          </div>
+          <Button
+            outlined
+            severity="danger"
             data-test="remove-varbind-row-button"
             @click="$emit('setVarbinds', 'removeVarbindRow', null, index)"
           >
             <FeatherIcon :icon="Delete" />
-          </FeatherButton>
+          </Button>
         </div>
       </div>
     </div>
@@ -78,13 +114,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, toRefs, watch } from 'vue'
+
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@featherds/select'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'
 
 const emit = defineEmits<{
@@ -113,9 +153,6 @@ watch(maskElements, () => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-
 .mask-varbinds {
   .mask-varbinds-header {
     display: flex;
@@ -141,27 +178,10 @@ watch(maskElements, () => {
       align-items: flex-start;
       gap: 10px;
 
-      >div {
+      .value-input {
         flex: 1;
-      }
-
-      >button {
-        min-width: 40px !important;
-        height: 40px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 0px;
-
-        span {
-          svg {
-            fill: #a5021f;
-            font-size: 22px;
-          }
-        }
       }
     }
   }
 }
 </style>
-

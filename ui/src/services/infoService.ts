@@ -29,7 +29,7 @@ const getInfo = async (): Promise<AppInfo> => {
   try {
     const resp = await rest.get(endpoint)
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return {} as AppInfo
   }
 }

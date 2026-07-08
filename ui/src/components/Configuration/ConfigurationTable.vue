@@ -95,7 +95,7 @@
   setup
   lang="ts"
 >
-import { ComputedRef, PropType } from 'vue'
+import { computed, ComputedRef, PropType, reactive } from 'vue'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherButton } from '@featherds/button'
@@ -151,7 +151,7 @@ const filteredItems = computed(() => {
   let myItems: Array<ProvisionDServerConfiguration> = [...itemList.value]
 
   // obfuscate password
-  myItems = myItems.map((item) => ({
+  myItems = myItems.map(item => ({
     ...item,
     [RequisitionData.ImportURL]: ConfigurationHelper.obfuscatePassword(item[RequisitionData.ImportURL])
   }))
@@ -254,4 +254,3 @@ table {
   max-width: 260px;
 }
 </style>
-

@@ -80,8 +80,8 @@
       "roles": null,
       "items": [
         {
-          "id": "nodeList",
-          "name": "Node List",
+          "id": "nodes",
+          "name": "Nodes",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
@@ -241,7 +241,7 @@
         },
         {
           "id": "kscReports",
-          "name": "Metrics Dashboard (KSC Reports)",
+          "name": "Graph Collections",
           "url": "KSC/index.jsp",
           "locationMatch": "ksc",
           "roles": null

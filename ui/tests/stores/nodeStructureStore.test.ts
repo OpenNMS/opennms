@@ -369,13 +369,21 @@ describe('useNodeStructureStore', () => {
   })
 
   describe('removeMonitoringLocation', () => {
-    it('removes from queryFilter by name', () => {
+    it('removes from queryFilter and the selectedMonitoringLocations ref by name', () => {
       store.queryFilter.selectedMonitoringLocations = [monitoringLocations[0], monitoringLocations[1]]
+      store.selectedMonitoringLocations = [
+        { _text: monitoringLocations[0].name, _value: monitoringLocations[0].name, name: monitoringLocations[0].name },
+        { _text: monitoringLocations[1].name, _value: monitoringLocations[1].name, name: monitoringLocations[1].name }
+      ]
 
       store.removeMonitoringLocation({ _value: 'Default', name: monitoringLocations[0].name })
 
       expect(store.queryFilter.selectedMonitoringLocations).toHaveLength(1)
       expect(store.queryFilter.selectedMonitoringLocations[0].name).toBe(monitoringLocations[1].name)
+
+      // the autocomplete-backed ref (read by the drawer on reopen) must also drop the removed location
+      expect(store.selectedMonitoringLocations).toHaveLength(1)
+      expect((store.selectedMonitoringLocations[0] as any).name).toBe(monitoringLocations[1].name)
     })
   })
 
@@ -459,7 +467,7 @@ describe('useNodeStructureStore', () => {
     it('applies searchTerm from filter', async () => {
       await store.setFromNodePreferences({
         nodeColumns: [],
-        nodeFilter: { searchTerm: 'hello', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
+        nodeFilter: { searchTerm: 'hello', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
       })
 
       expect(store.queryFilter.searchTerm).toBe('hello')
@@ -468,7 +476,7 @@ describe('useNodeStructureStore', () => {
     it('applies selectedCategories from filter', async () => {
       await store.setFromNodePreferences({
         nodeColumns: [],
-        nodeFilter: { searchTerm: '', selectedCategories: [categories[0]], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any } }
+        nodeFilter: { searchTerm: '', selectedCategories: [categories[0]], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
       })
 
       expect(store.queryFilter.selectedCategories).toEqual([categories[0]])

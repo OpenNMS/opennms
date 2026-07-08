@@ -112,6 +112,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import { computed, onMounted, reactive } from 'vue'
+
 import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'

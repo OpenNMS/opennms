@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { FeatherSidenav } from '@featherds/sidebar'
 import { MenuListEntry } from '@featherds/menu'
 import { performLogout } from '@/services/logoutService'

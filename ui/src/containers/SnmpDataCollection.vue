@@ -1,7 +1,7 @@
 <template>
   <div class="snmp-data-collection-container">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
@@ -14,54 +14,53 @@
            this, an operator can grab the full pre-edit state on disk and
            push it back via the Import tab. -->
       <div class="header-actions">
-        <FeatherDropdown>
-          <template v-slot:trigger="{ attrs, on }">
-            <FeatherButton
-              secondary
-              v-bind="attrs"
-              v-on="on"
-              data-test="download-config-button"
-            >
-              <FeatherIcon :icon="DownloadIcon" /> Download Data Collection Config
-            </FeatherButton>
-          </template>
-          <FeatherDropdownItem
-            data-test="download-config-xml"
-            @click="downloadConfig('xml')"
-          >
-            Download XML
-          </FeatherDropdownItem>
-          <FeatherDropdownItem
-            data-test="download-config-json"
-            @click="downloadConfig('json')"
-          >
-            Download JSON
-          </FeatherDropdownItem>
-        </FeatherDropdown>
+        <Button
+          outlined
+          aria-haspopup="true"
+          aria-controls="download-config-menu"
+          data-test="download-config-button"
+          @click="toggleDownloadMenu"
+        >
+          <FeatherIcon :icon="DownloadIcon" /> Download Data Collection Config
+        </Button>
+        <Menu
+          id="download-config-menu"
+          ref="downloadMenu"
+          :model="downloadMenuItems"
+          popup
+        />
       </div>
     </div>
     <div class="tab-container">
-      <FeatherTabContainer v-model="store.activeTab">
-        <template v-slot:tabs>
-          <FeatherTab>Data Collection Sources</FeatherTab>
-          <FeatherTab>Import Data Collection Sources</FeatherTab>
-          <FeatherTab>Profiles</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <SnmpDataCollectionSourcesTable />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <SnmpDataCollectionSourceImport />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <SnmpDataCollectionProfilesTable />
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <Tabs
+        class="tabs"
+        :value="store.activeTab"
+        @update:value="onTabChange"
+      >
+        <TabList>
+          <Tab :value="0">Data Collection Sources</Tab>
+          <Tab :value="1">Import Data Collection Sources</Tab>
+          <Tab :value="2">Profiles</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel :value="0">
+            <SnmpDataCollectionSourcesTable />
+          </TabPanel>
+          <TabPanel :value="1">
+            <SnmpDataCollectionSourceImport />
+          </TabPanel>
+          <TabPanel :value="2">
+            <SnmpDataCollectionProfilesTable />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
@@ -71,11 +70,16 @@ import { downloadDatacollectionConfig } from '@/services/snmpDataCollectionServi
 import { useMenuStore } from '@/stores/menuStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import DownloadIcon from '@featherds/icon/action/DownloadFile'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import Button from 'primevue/button'
+import type { MenuItem } from 'primevue/menuitem'
+import Menu from 'primevue/menu'
+import Tab from 'primevue/tab'
+import TabList from 'primevue/tablist'
+import TabPanel from 'primevue/tabpanel'
+import TabPanels from 'primevue/tabpanels'
+import Tabs from 'primevue/tabs'
 
 const menuStore = useMenuStore()
 const store = useSnmpDataCollectionStore()
@@ -87,6 +91,20 @@ const breadcrumbs = computed<BreadCrumb[]>(() => ([
   { label: 'SNMP Data Collection', to: '#', position: 'last' }
 ]))
 
+const onTabChange = (value: string | number) => {
+  store.activeTab = Number(value)
+}
+
+const downloadMenu = ref()
+const downloadMenuItems = computed<MenuItem[]>(() => ([
+  { label: 'Download XML', command: () => downloadConfig('xml') },
+  { label: 'Download JSON', command: () => downloadConfig('json') }
+]))
+
+const toggleDownloadMenu = (event: Event) => {
+  downloadMenu.value?.toggle(event)
+}
+
 const downloadConfig = async (format: 'xml' | 'json') => {
   try {
     const blob = await downloadDatacollectionConfig(format)
@@ -95,7 +113,7 @@ const downloadConfig = async (format: 'xml' | 'json') => {
     link.download = `datacollection-config.${format}`
     link.click()
     window.URL.revokeObjectURL(link.href)
-  } catch (e) {
+  } catch (_e) {
     snackbar.showSnackBar({
       msg: `Failed to download datacollection-config (${format}).`,
       error: true
@@ -124,7 +142,12 @@ const downloadConfig = async (format: 'xml' | 'json') => {
 
   .tab-container {
     padding: 0px 40px 0px 40px;
+
+    .tabs {
+      :deep(.p-tab) {
+        text-transform: uppercase;
+      }
+    }
   }
 }
 </style>
-

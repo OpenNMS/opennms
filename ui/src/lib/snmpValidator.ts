@@ -60,7 +60,7 @@ export const validateSnmpConfiguration = (config: SnmpBaseConfiguration, snmpVer
   // Validate SCV patterns for any fields that are enabled for SCV
   // Note, currently we are enabling SCV expressions only for string fields, not for numeric fields
   // If scvEnabled is ever added to a numeric field, the numeric validation below would also fire
-  scvEnabledKeys.forEach(key => {
+  scvEnabledKeys.forEach((key) => {
     const value = (config as any)[key]
 
     if (typeof value === 'string' && SCV_PREFIX_REGEX.test(value)) {
@@ -108,7 +108,7 @@ export const validateSnmpConfiguration = (config: SnmpBaseConfiguration, snmpVer
     ttl: 'TTL'
   }
 
-  numericFields.forEach(field => {
+  numericFields.forEach((field) => {
     const value = (config as any)[field]
 
     if (value !== undefined) {
@@ -143,7 +143,7 @@ export const validateDefinition = (
     errors.snmpVersion = 'SNMP Version must be one of: ' + SNMP_VERSIONS.join(', ')
   }
 
-  // If we are saving, we do not want to validate the IP address form fields, since in that case they are being ignored 
+  // If we are saving, we do not want to validate the IP address form fields, since in that case they are being ignored
   // and the actual definition ranges are already in the badges
   if (!isSaving) {
     const isEmptyIps = !firstIpAddress && !lastIpAddress && !ipMatch

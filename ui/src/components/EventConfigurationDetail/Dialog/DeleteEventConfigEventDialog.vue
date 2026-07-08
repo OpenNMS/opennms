@@ -19,6 +19,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useRouter } from 'vue-router'
+
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteEventConfigEventBySourceId } from '@/services/eventConfigService'

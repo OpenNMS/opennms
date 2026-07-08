@@ -1,12 +1,12 @@
 <template>
-  <FeatherDrawer
+  <Drawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
-    v-model="isVisible"
-    :labels="{ close: 'close', title: `Edit Profiles for ${props.sourceName}` }"
-    hide-close
-    @hidden="close"
-    width="40rem"
+    v-model:visible="isVisible"
+    position="right"
+    :header="`Edit Profiles for ${props.sourceName}`"
+    :style="{ width: '40rem' }"
+    @hide="close"
     class="source-profiles-drawer"
   >
     <div class="container">
@@ -39,30 +39,30 @@
         completeOnFocus
       />
       <div class="button-row">
-        <FeatherButton
+        <Button
+          text
+          label="Cancel"
           @click="close"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
           data-test="save-profiles-button"
+          label="Save"
           @click="save"
-        >
-          Save
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </Drawer>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
+
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
 import AutoCompleteComponent from 'primevue/autocomplete'
+import Button from 'primevue/button'
 import ChipComponent from 'primevue/chip'
+import Drawer from 'primevue/drawer'
 
 const PChip = ChipComponent
 const PAutoComplete = AutoCompleteComponent
@@ -157,11 +157,6 @@ watch(() => props.visible, async (visible) => {
   flex-wrap: wrap;
   gap: 8px;
   min-height: 40px;
-
-  :deep(.p-chip-label),
-  :deep(.p-chip-remove-icon) {
-    color: var(--feather-primary-text-on-surface);
-  }
 }
 
 .empty-text {
@@ -181,40 +176,6 @@ watch(() => props.visible, async (visible) => {
 
   :deep(.btn + .btn) {
     margin-left: 0 !important;
-  }
-}
-
-:deep(.p-autocomplete-input) {
-  font-family: var(--feather-font-family);
-  background: var(--feather-background);
-  color: var(--feather-primary-text-on-surface);
-  border-color: var(--feather-border-on-surface);
-}
-</style>
-
-<style lang="scss">
-@use '@featherds/styles/themes/variables';
-
-// Overlay is teleported to body; :deep() can't reach it.
-// Un-layered global CSS wins over PrimeVue's @layer primevue styles.
-.p-autocomplete-overlay {
-  font-family: var(--feather-font-family);
-}
-
-.open-dark {
-  .p-autocomplete-overlay {
-    background: var(variables.$surface);
-    color: var(variables.$primary-text-on-surface);
-    border-color: var(variables.$border-on-surface);
-  }
-
-  .p-autocomplete-option {
-    color: var(variables.$primary-text-on-surface);
-
-    &.p-autocomplete-option-selected,
-    &:not(.p-disabled):hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
   }
 }
 </style>

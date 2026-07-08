@@ -1,13 +1,11 @@
 <template>
-  <FeatherDrawer
-    id="column-selection-drawer"
-    data-test="column-selection-drawer"
-    @hidden="nodeStructureStore.columnsDrawerState.visible = false"
-    v-model="nodeStructureStore.columnsDrawerState.visible"
-    :labels="{ close: 'close', title: 'Customize Columns' }"
-    width="55em"
+  <Drawer
+    v-model:visible="drawerVisible"
+    position="right"
+    header="Customize Columns"
+    :style="{ width: '55em' }"
   >
-    <div class="feather-drawer-custom-padding">
+    <div class="drawer-content">
       <section>
         <h3>Customize the available columns</h3>
         <p>Select which columns you wish to showcase</p>
@@ -19,66 +17,54 @@
         handle=".drag-handle"
         class="columns-drag-container"
       >
-        <template #item="{ index }">
+        <template #item="{ element, index }">
           <div class="column-row">
-            <FeatherButton icon="Apps" text>
+            <Button text class="drag-btn">
               <FeatherIcon class="close-icon drag-handle" :icon="Apps" />
-            </FeatherButton>
-            <FeatherSelect
-              v-model="selectedColumns[index]"
+            </Button>
+            <Select
+              v-model="element.value"
               :options="getAvailableOptions(index)"
-              text-prop="name"
-              value-prop="value"
-              :placeholder="'Select column...'"
-              :label="`Column ${index + 1}`"
+              optionLabel="name"
+              optionValue="value"
+              :placeholder="`Column ${index + 1}`"
               class="columns-selector"
             />
-            <FeatherButton icon="Cancel" text @click="removeColumn(index)">
+            <Button
+              text
+              :data-test="`remove-column-${index}`"
+              @click="removeColumn(index)"
+            >
               <FeatherIcon class="close-icon" :icon="Cancel" />
-            </FeatherButton>
+            </Button>
           </div>
         </template>
       </Draggable>
       <div class="spacer-medium"></div>
       <div class="button-row">
-        <FeatherButton
-          primary
-          @click="customizeTable"
-        >
-          Save
-        </FeatherButton>
-        <FeatherButton
-          secondary
+        <Button @click="customizeTable">Save</Button>
+        <Button
+          outlined
           :disabled="selectedColumns.length >= 10"
           @click="addColumn"
-        >
-          Add Column
-        </FeatherButton>
-        <FeatherButton
-          secondary
-          @click="resetColumns"
-        >
-          Reset Columns
-        </FeatherButton>
-        <FeatherButton
-          secondary
-          @click="nodeStructureStore.columnsDrawerState.visible = false"
-        >
-          Close
-        </FeatherButton>
+        >Add Column</Button>
+        <Button outlined @click="resetColumns">Reset Columns</Button>
+        <Button outlined @click="nodeStructureStore.columnsDrawerState.visible = false">Close</Button>
       </div>
     </div>
-  </FeatherDrawer>
+  </Drawer>
 </template>
 
 <script lang="ts" setup>
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
+import { computed, ref, watch } from 'vue'
+
 import { FeatherIcon } from '@featherds/icon'
 import Apps from '@featherds/icon/navigation/Apps'
 import Cancel from '@featherds/icon/navigation/Cancel'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import Draggable from 'vuedraggable'
+import Button from 'primevue/button'
+import Drawer from 'primevue/drawer'
+import Select from 'primevue/select'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'
@@ -86,7 +72,16 @@ import { defaultColumns } from './utils'
 
 const nodeStructureStore = useNodeStructureStore()
 const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
-const selectedColumns = ref<ISelectItemType[]>([])
+const selectedColumns = ref<{ name: string; value: string }[]>([])
+
+const drawerVisible = computed({
+  get: () => nodeStructureStore.columnsDrawerState.visible,
+  set: (val: boolean) => {
+    if (!val) {
+      nodeStructureStore.columnsDrawerState.visible = false
+    }
+  }
+})
 
 const initializeSelectedColumns = (columns: NodeColumnSelectionItem[]) => {
   selectedColumns.value = columns
@@ -119,13 +114,20 @@ const removeColumn = (index: number) => {
   selectedColumns.value = selectedColumns.value.filter((_, i) => i !== index)
 }
 
-const customizeTable = async() => {
-  nodeStructureStore.columns = selectedColumns.value.map((col, index) => ({
-    id: col.value as string,
-    label: col.name as string,
-    selected: true,
-    order: index
-  }))
+const customizeTable = async () => {
+  // Resolve each column's label from the canonical definitions by id. The
+  // per-row Select binds `optionValue="value"`, so selecting a column updates
+  // only `col.value` (the id) and never `col.name` — trusting `col.name` here
+  // persisted an empty label for any re-added/changed column, which rendered as
+  // a header with no text. The id is always correct, so derive the label from it.
+  nodeStructureStore.columns = selectedColumns.value
+    .filter(col => col.value)
+    .map((col, index) => ({
+      id: col.value as string,
+      label: columns.value.find(c => c.id === col.value)?.label ?? (col.name as string),
+      selected: true,
+      order: index
+    }))
 
   const nodePrefs = await nodeStructureStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
@@ -145,12 +147,7 @@ watch(() => nodeStructureStore.columns, (newColumns) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-
-.feather-drawer-custom-padding {
+.drawer-content {
   padding: 20px;
   height: 100%;
   overflow: auto;
@@ -164,42 +161,26 @@ watch(() => nodeStructureStore.columns, (newColumns) => {
   margin-bottom: 0.25rem;
 }
 
-.footer {
-  display: flex;
-  padding-top: 20px;
-}
-
 .column-row {
   display: flex;
   gap: 1rem;
   width: 80%;
   margin-bottom: 1rem;
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
   padding-left: 10px;
   padding-top: 3px;
   padding-bottom: 3px;
   border-radius: 5px;
-}
-
-.column-header {
-  font-weight: bold;
-  width: 100px;
-}
-
-button.primary {
-  margin-top: 2rem;
-  background-color: #1d2f75;
-  color: white;
-  padding: 0.5em 1.5em;
-  border: none;
+  align-items: center;
 }
 
 .columns-selector {
-    width: 80%;
+  width: 80%;
 }
 
-:deep(.feather-input-sub-text) {
-    display: none;
+.drag-btn {
+  cursor: grab;
+  padding: 0;
 }
 
 .button-row {
@@ -207,9 +188,5 @@ button.primary {
   flex-direction: row;
   gap: 1rem;
   align-items: flex-start;
-
- :deep(.btn + .btn) {
-    margin-left: 0 !important;
-  }
 }
 </style>

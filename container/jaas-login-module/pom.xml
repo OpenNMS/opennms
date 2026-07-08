@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.1</version>
+        <version>36.0.2</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -26,6 +26,7 @@
                         <Bundle-Activator>org.opennms.container.jaas.Activator</Bundle-Activator>
                         <Import-Package>
                             org.apache.karaf.jaas.config;version="${karafVersion}",
+                            org.apache.karaf.jaas.modules.publickey;version="${karafVersion}",
                             *
                         </Import-Package>
                         <Export-Package>org.opennms.container.jaas.*</Export-Package>

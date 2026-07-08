@@ -1,18 +1,12 @@
 <template>
-  <td :class="text ? 'pointer' : ''">
-    <FeatherTooltip
-      :title="text"
-      :alignment="PointerAlignment.left"
-      :placement="PopoverPlacement.top"
-      v-if="text"
-      v-slot="{ attrs, on }">
-        <span v-bind="attrs" v-on="on">{{ ellipsify(text, 30) }}</span>
-    </FeatherTooltip>
-  </td>
+  <span
+    v-if="text"
+    v-tooltip.top="text"
+    class="pointer"
+  >{{ ellipsify(text, 30) }}</span>
 </template>
 
 <script setup lang="ts">
-import { FeatherTooltip, PointerAlignment, PopoverPlacement } from '@featherds/tooltip'
 import { ellipsify } from '@/lib/utils'
 
 defineProps({
@@ -21,5 +15,10 @@ defineProps({
     type: String
   }
 })
-
 </script>
+
+<style lang="scss" scoped>
+.pointer {
+  cursor: pointer;
+}
+</style>

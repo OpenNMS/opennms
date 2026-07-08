@@ -2,9 +2,16 @@ import { mount, VueWrapper } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherDialog } from '@featherds/dialog'
-import { FeatherButton } from '@featherds/button'
 import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration/Dialog/ChangeEventConfigSourceStatusDialog.vue'
+
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   let wrapper: VueWrapper<any>
@@ -34,8 +41,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          FeatherDialog,
-          FeatherButton
+          ConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -47,24 +53,24 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   })
 
   it('renders dialog correctly with title and message', () => {
-    const dialog = wrapper.findComponent(FeatherDialog)
+    const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
     expect(dialog.exists()).toBe(true)
-    expect(dialog.props('labels')?.title).toBe('Change Event Configuration Source Status')
+    expect(dialog.props('title')).toBe('Change Event Configuration Source Status')
   })
 
   it('calls hideChangeEventConfigSourceStatusDialog on Cancel click', async () => {
-    const cancelBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'cancel')
+    const cancelBtn = wrapper.find('.cancel-btn')
 
-    expect(cancelBtn).toBeTruthy()
-    await cancelBtn?.trigger('click')
+    expect(cancelBtn.exists()).toBe(true)
+    await cancelBtn.trigger('click')
 
     expect(store.hideChangeEventConfigSourceStatusDialog).toHaveBeenCalledTimes(1)
   })
 
   it('calls disableEventConfigSource on Save click when enabled', async () => {
-    const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'save')
+    const saveBtn = wrapper.find('.action-btn')
 
-    await saveBtn?.trigger('click')
+    await saveBtn.trigger('click')
 
     expect(store.disableEventConfigSource).toHaveBeenCalledWith(1)
     expect(store.hideChangeEventConfigSourceStatusDialog).toHaveBeenCalled()
@@ -88,9 +94,9 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     }
     await wrapper.vm.$nextTick()
 
-    const saveBtn = wrapper.findAllComponents(FeatherButton).find((btn) => btn.text().toLowerCase() === 'save')
+    const saveBtn = wrapper.find('.action-btn')
 
-    await saveBtn?.trigger('click')
+    await saveBtn.trigger('click')
 
     expect(store.enableEventConfigSource).toHaveBeenCalledWith(1)
     expect(store.hideChangeEventConfigSourceStatusDialog).toHaveBeenCalled()
@@ -102,9 +108,8 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders FeatherDialog with visible prop true', () => {
-    const dialog = wrapper.findComponent(FeatherDialog)
-    expect(dialog.props('modelValue')).toBe(true)
+  it('renders ConfirmationDialog with visible prop true', () => {
+    const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+    expect(dialog.props('visible')).toBe(true)
   })
 })
-

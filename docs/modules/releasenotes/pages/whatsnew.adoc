@@ -105,6 +105,9 @@ IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org
 The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
 See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
 
+=== Jasper Reports engine
+We have updated the Jasper Reports engine to version 7.0.7. Custom reports created using version 6.x must be updated to work with the new version.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
@@ -112,4 +115,14 @@ These provided auto-rotating, dashlet-composed displays intended for wall-mounte
 
 The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
 There is no drop-in replacement.
+
+=== KSC Reports renamed to Graph Collections
+
+The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
+The global search category formerly named *KSC Report* is now *Graph Collection*.
+
+This is a user-facing label change only.
+The underlying configuration file (`etc/ksc-performance-reports.xml`), the REST endpoints under `/rest/ksc`, the `KSC/*.jsp` page URLs, and the internal identifiers are unchanged, so existing reports, saved bookmarks, and API integrations continue to work without modification.
+
+NOTE: Update any of your own documentation, runbooks, training material, or UI automation that refers to *KSC Reports* by name — including tests that match on the old menu label or the *KSC Report* search category — to use *Graph Collections*.
 

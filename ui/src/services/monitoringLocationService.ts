@@ -32,13 +32,13 @@ export const getMonitoringLocations = async (): Promise<MonitoringLocationApiRes
     const data = resp.data as MonitoringLocationApiResponse
 
     // map these to typed fields for clarity in calling code
-    data.location.forEach(loc => {
+    data.location.forEach((loc) => {
       loc.name = loc['location-name']
       loc.area = loc['monitoring-area']
     })
 
     return data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

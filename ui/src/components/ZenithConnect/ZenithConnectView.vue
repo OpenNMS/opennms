@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="zc-container">
         <div class="content-container">
           <div class="title-search">
@@ -15,88 +15,84 @@
             <h3>Current Registrations</h3>
           </div>
           <div class="registrations-container">
-            <table>
-              <thead>
-                <th>Registration Status</th>
-                <th>Registered On</th>
-                <th>Active</th>
-                <th>System ID</th>
-                <th>Display Name</th>
-                <th>Access Token</th>
-                <th>Refresh Token</th>
-                <th>Actions</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <div v-if="currentRegistration?.registered">
-                      <div class="register-success">Registered</div>
-                    </div>
-                    <div v-else>
-                      <div class="register-failed">Unregistered</div>
-                    </div>
-                  </td>
-                  <td>{{ formatRegistrationDate(currentRegistration) }}</td>
-                  <td>
-                    <div v-if="currentRegistration?.active">
-                      <div class="register-success">Active</div>
-                    </div>
-                    <div v-else>
-                      <div class="register-failed">Inactive</div>
-                    </div>
-                  </td>
-                  <td>{{ currentRegistration?.systemId }}</td>
-                  <td>{{ currentRegistration?.displayName }}</td>
-                  <td>
-                    <div>
-                      {{ ellipsify(currentRegistration?.accessToken ?? '', 30) }}
-                      <FeatherButton
-                        primary
-                        icon="Copy Access Token"
-                        @click.prevent="() => onCopyToken(currentRegistration?.accessToken ?? '')"
-                      >
-                        <FeatherIcon :icon="icons.ContentCopy"/>
-                      </FeatherButton>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      {{ ellipsify(currentRegistration?.refreshToken ?? '', 30) }}
-                      <FeatherButton
-                        primary
-                        icon="Copy Refresh Token"
-                        @click.prevent="() => onCopyToken(currentRegistration?.refreshToken ?? '')"
-                      >
-                        <FeatherIcon :icon="icons.ContentCopy"/>
-                      </FeatherButton>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <FeatherButton
-                        primary
-                        :disabled="!currentRegistration?.registered || !currentRegistration?.systemId"
-                        @click.prevent="() => onSendData(currentRegistration)"
-                      >
-                        Send Data
-                      </FeatherButton>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <PDataTable :value="registrationRows">
+              <PColumn header="Registration Status">
+                <template #body="{ data }">
+                  <div
+                    v-if="data.registered"
+                    class="register-success"
+                  >Registered</div>
+                  <div
+                    v-else
+                    class="register-failed"
+                  >Unregistered</div>
+                </template>
+              </PColumn>
+              <PColumn header="Registered On">
+                <template #body="{ data }">{{ formatRegistrationDate(data) }}</template>
+              </PColumn>
+              <PColumn header="Active">
+                <template #body="{ data }">
+                  <div
+                    v-if="data.active"
+                    class="register-success"
+                  >Active</div>
+                  <div
+                    v-else
+                    class="register-failed"
+                  >Inactive</div>
+                </template>
+              </PColumn>
+              <PColumn
+                field="systemId"
+                header="System ID"
+              />
+              <PColumn
+                field="displayName"
+                header="Display Name"
+              />
+              <PColumn header="Access Token">
+                <template #body="{ data }">
+                  {{ ellipsify(data.accessToken ?? '', 30) }}
+                  <PButton
+                    aria-label="Copy Access Token"
+                    @click.prevent="() => onCopyToken(data.accessToken ?? '')"
+                  >
+                    <FeatherIcon :icon="icons.ContentCopy" />
+                  </PButton>
+                </template>
+              </PColumn>
+              <PColumn header="Refresh Token">
+                <template #body="{ data }">
+                  {{ ellipsify(data.refreshToken ?? '', 30) }}
+                  <PButton
+                    aria-label="Copy Refresh Token"
+                    @click.prevent="() => onCopyToken(data.refreshToken ?? '')"
+                  >
+                    <FeatherIcon :icon="icons.ContentCopy" />
+                  </PButton>
+                </template>
+              </PColumn>
+              <PColumn header="Actions">
+                <template #body="{ data }">
+                  <PButton
+                    label="Send Data"
+                    :disabled="!data.registered || !data.systemId"
+                    @click.prevent="() => onSendData(data)"
+                  />
+                </template>
+              </PColumn>
+            </PDataTable>
           </div>
           <div class="spacer"></div>
           <h3>Register</h3>
           <div>
             Register your Meridian instance with Zenith in order to send data:
             <div class="spacer"></div>
-            <FeatherButton
-              primary
+            <PButton
+              label="Register with Zenith"
               @click="gotoRegister"
-            >
-              Register with Zenith
-            </FeatherButton>
+            />
           </div>
         </div>
       </div>
@@ -105,8 +101,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, markRaw, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { format as fnsFormat } from 'date-fns'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import { FeatherIcon } from '@featherds/icon'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -117,6 +118,10 @@ import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration } from '@/types/zenithConnect'
 import ContentCopy from '@featherds/icon/action/ContentCopy'
 
+const PButton = Button
+const PDataTable = DataTable
+const PColumn = Column
+
 const menuStore = useMenuStore()
 const zenithConnectStore = useZenithConnectStore()
 const router = useRouter()
@@ -124,6 +129,7 @@ const { showSnackBar } = useSnackbar()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const currentRegistration = computed<ZenithConnectRegistration | undefined>(() => zenithConnectStore.currentRegistration)
+const registrationRows = computed(() => [currentRegistration.value ?? {} as ZenithConnectRegistration])
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -182,67 +188,44 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-@import "@featherds/table/scss/table";
 
-.card {
-  background: var($surface);
-  padding: 0px 20px 20px 20px;
+.zc-container {
+  display: flex;
 
-  .zc-container {
-    display: flex;
+  .content-container {
+    width: 35rem;
+    flex: auto;
 
-    .content-container {
-      width: 35rem;
-      flex: auto;
+    .title-search {
+      display: flex;
+      justify-content: space-between;
 
-      .title-search {
-        display: flex;
-        justify-content: space-between;
-
-        .title {
-          @include headline1;
-          margin: 16px 0px 16px 19px;
-          display: block;
-        }
-      }
-
-      .instructions {
-        width: 70%;
-      }
-
-      .input {
-        width: 50%;
-      }
-
-      .spacer {
-        margin-bottom: 1rem;
+      .title {
+        @include headline1;
+        margin: 16px 0px 16px 19px;
+        display: block;
       }
     }
 
-    .register-success {
-      background-color: var($success);
-      color: white;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
+    .spacer {
+      margin-bottom: 1rem;
     }
+  }
 
-    .register-failure {
-      background-color: var($error);
-      color: white;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
-    }
+  .register-success {
+    background-color: var(--p-success-color);
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+  }
 
-    table {
-      @include table();
-      &.condensed {
-        @include table-condensed();
-      }
-      margin-top: 0px;
-    }
+  .register-failed {
+    background-color: var(--p-error-color);
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
   }
 }
 </style>

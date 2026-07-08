@@ -49,7 +49,9 @@ import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
 
 const cronTabLength = (cronTab: string) => {
-  if(!cronTab) return 0
+  if (!cronTab) {
+    return 0
+  }
 
   return cronTab.replace(/\s$/, '').split(' ').length
 }
@@ -57,8 +59,8 @@ const cronTabLength = (cronTab: string) => {
 const obfuscatePassword = (url: string) => {
   const regexPasswordValue = /(password=)([^&]+)/
   const matched = url.match(regexPasswordValue) || []
-  
-  if(matched.length > 0) {
+
+  if (matched.length > 0) {
     const passwordObfuscated = '*'.repeat(matched[2].length)
 
     return url.replace(regexPasswordValue, `$1${passwordObfuscated}`)
@@ -93,7 +95,7 @@ const checkForDuplicateName = (
 const isCronAdvancedFormat = (cronFormatted: string) => {
   const cronFormattedList = cronFormatted.split(' ')
   const [sec,,, DoM, mth, DoW, yr] = cronFormattedList // yr (7th part: 1970-2099): can't be set in UI
-  
+
   const regexDoMWeekdays = /\d+W/g
   const regexDoWLastNthDay = /[L#]/g
   const regexAnyOtherSpecChars = /[,-/]/g
@@ -102,7 +104,7 @@ const isCronAdvancedFormat = (cronFormatted: string) => {
   const hasMth = mth !== '*' // specific month can't be set in UI
   const hasDoMWeekdays = regexDoMWeekdays.test(DoM) // 15W (the nearest weekday to the 15th of the month): can't be set in UI
   const hasDoWLastNthDay = regexDoWLastNthDay.test(DoW) // L and #: can't be set in UI
-  const hasAnyOtherSpecChars = cronFormattedList.some((p) => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
+  const hasAnyOtherSpecChars = cronFormattedList.some(p => regexAnyOtherSpecChars.test(p)) // [,-/]: can't be set in UI
 
   return hasSec || hasMth || hasDoMWeekdays || hasDoWLastNthDay || hasAnyOtherSpecChars || yr
 }
@@ -114,10 +116,10 @@ const isCronAdvancedFormat = (cronFormatted: string) => {
  * @returns A formatted object for display to humans
  */
 const convertCronTabToLocal = (cronFormatted: string) => {
-  const cronFormattedList = cronFormatted.split(' ') 
+  const cronFormattedList = cronFormatted.split(' ')
   const [, min, hr, DoM] = [...cronFormattedList]
   let [,,,,, DoW] = [...cronFormattedList]
-  
+
   const occuranceEmptyProps = {
     name: '',
     id: 0
@@ -129,11 +131,13 @@ const convertCronTabToLocal = (cronFormatted: string) => {
   }
 
   const prefixZero = (num: number) => {
-    if(num >= 10) return num
+    if (num >= 10) {
+      return num
+    }
 
     return `0${num}`
   }
-  
+
   let advancedProps = {
     advancedCrontab: false,
     occuranceAdvanced: ''
@@ -141,20 +145,20 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 
   let time = `${prefixZero(parseInt(hr))}:${prefixZero(parseInt(min))}`
 
-  if(isCronAdvancedFormat(cronFormatted)) {
+  if (isCronAdvancedFormat(cronFormatted)) {
     advancedProps = {
       advancedCrontab: true,
       occuranceAdvanced: cronFormatted
     }
-    
+
     time = '00:00'
   } else {
     const hasDoM = (dayOfMonth: string) => {
       const regexDoM = /[1-31L]/g
-  
+
       return regexDoM.test(dayOfMonth)
     }
-  
+
     /**
      * SUN...SAT pattern: additional expression support for the UI basic mode, if Day of Week (DoW) was set with name (SUN...SAT) in advanced mode.
      * Note
@@ -164,25 +168,27 @@ const convertCronTabToLocal = (cronFormatted: string) => {
      */
     const hasDoW = (dayOfWeek: string) => {
       const regexDoW = /([1-7])|(SUN)|(MON)|(TUE)|(WED)|(THU)|(FRI)|(SAT)/g
-      const dowMatched = dayOfWeek.match(regexDoW) 
-      
-      if(!dowMatched) return false
-  
-      if(!Number.isInteger(Number(dayOfWeek))) {
-        DoW = (weekNameTypes.find((d) => d.name === dowMatched[0]) || {}).id?.toString() || '?'
+      const dowMatched = dayOfWeek.match(regexDoW)
+
+      if (!dowMatched) {
+        return false
       }
-  
+
+      if (!Number.isInteger(Number(dayOfWeek))) {
+        DoW = (weekNameTypes.find(d => d.name === dowMatched[0]) || {}).id?.toString() || '?'
+      }
+
       return true
     }
-    
-    if(hasDoW(DoW)) {
-      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Weekly') || occuranceEmptyProps
-      occuranceSection.occuranceWeek = weekTypes.find((d) => d.id === parseInt(DoW)) || occuranceEmptyProps
-    } else if(hasDoM(DoM)) {
-      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Monthly') || occuranceEmptyProps
-      occuranceSection.occuranceDay = dayTypes.find((d) => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
+
+    if (hasDoW(DoW)) {
+      occuranceSection.occurance = scheduleTypes.find(d => d.name === 'Weekly') || occuranceEmptyProps
+      occuranceSection.occuranceWeek = weekTypes.find(d => d.id === parseInt(DoW)) || occuranceEmptyProps
+    } else if (hasDoM(DoM)) {
+      occuranceSection.occurance = scheduleTypes.find(d => d.name === 'Monthly') || occuranceEmptyProps
+      occuranceSection.occuranceDay = dayTypes.find(d => d.id === (DoM === 'L' ? 32 : parseInt(DoM))) || occuranceEmptyProps
     } else {
-      occuranceSection.occurance = scheduleTypes.find((d) => d.name === 'Daily') || occuranceEmptyProps
+      occuranceSection.occurance = scheduleTypes.find(d => d.name === 'Daily') || occuranceEmptyProps
     }
   }
 
@@ -205,22 +211,24 @@ const convertCronTabToLocal = (cronFormatted: string) => {
 const getQueryStringFromAdvancedOptions = (queryPart = '', advancedOptions: AdvancedOption[], type = ''): string => {
   let optionString = ''
   let queryPartList = queryPart.split('&')
-  
-  advancedOptions.forEach(({key, value}) => {
-    if(key.name && value) {
+
+  advancedOptions.forEach(({ key, value }) => {
+    if (key.name && value) {
       optionString += (optionString?.length > 0 ? '&' : '').concat(`${key.name}=${value}`)
     }
 
-    if(type === RequisitionTypes.VMWare) {
+    if (type === RequisitionTypes.VMWare) {
       // if username and/or password is set in both input field and in Advanced Options section, then remove it from query Part, hence the one in Advanced Options takes precedence
-      queryPartList = queryPart.split('&').filter((q) => !q.includes(key.name))
+      queryPartList = queryPart.split('&').filter(q => !q.includes(key.name))
     }
   })
 
-  if(queryPart?.length === 0 && optionString?.length === 0) return ''
+  if (queryPart?.length === 0 && optionString?.length === 0) {
+    return ''
+  }
 
   const optionsStringSplit = optionString?.split('&')
-  const uniqueQuery = [...new Set([...queryPartList, ...optionsStringSplit])].filter((q) => q.length > 0)
+  const uniqueQuery = [...new Set([...queryPartList, ...optionsStringSplit])].filter(q => q.length > 0)
 
   return `?${uniqueQuery.join('&')}`
 }
@@ -238,20 +246,20 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
   const path = localItem.urlPath.split('?')[0]
   let query = localItem.urlPath.split('?')[1]
 
-  if(type === RequisitionTypes.DNS) {
+  if (type === RequisitionTypes.DNS) {
     host = `${localItem.host}/${localItem.zone || ''}`
     if (localItem.foreignSource) {
       host += `/${localItem.foreignSource}`
     }
-  } else if(type === RequisitionTypes.File) {
+  } else if (type === RequisitionTypes.File) {
     host = `${localItem.path}`
-  } else if(type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
+  } else if (type === RequisitionTypes.HTTP || type === RequisitionTypes.HTTPS) {
     host = `${localItem.host}${path}`
-  } else if(type === RequisitionTypes.RequisitionPlugin) {
+  } else if (type === RequisitionTypes.RequisitionPlugin) {
     // Note: the following needs to be revalidated to ensure it's working as expected once the option is reactivated in the External Source input field
     host = localItem.subType.value
     protocol = RequisitionTypes.RequisitionPluginForServer
-  } else if(type === RequisitionTypes.VMWare) {
+  } else if (type === RequisitionTypes.VMWare) {
     host = localItem.host
 
     if (localItem.foreignSource) {
@@ -264,11 +272,13 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
 
     query = usernameQuery && passwordQuery ? `${usernameQuery}&${passwordQuery}` : usernameQuery || passwordQuery
   }
-  
+
   const fullURL = `${protocol}://${host}`
 
   // File type accepts all characters as path value, including separator character (?), which also means it does not have url query part. Hence we just return the path content as is.
-  if(type === RequisitionTypes.File) return fullURL
+  if (type === RequisitionTypes.File) {
+    return fullURL
+  }
 
   const queryString = getQueryStringFromAdvancedOptions(query, localItem.advancedOptions, type)
 
@@ -287,17 +297,17 @@ const convertItemToURL = (localItem: LocalConfiguration) => {
  * @returns crontab-ready string
  */
 const convertLocalToCronTab = (item: LocalConfiguration) => {
-  let schedule = ''
+  let schedule: string
 
   // only translate if expression is in basic format
-  if(!item.advancedCrontab) {
+  if (!item.advancedCrontab) {
     const occurance = item.occurance
     const time = item.time
     const [hoursd, minutesd] = time.split(':')
     const hours = parseInt(hoursd)
     const minutes = parseInt(minutesd)
-  
-    switch(occurance.name) {
+
+    switch (occurance.name) {
       case 'Daily':
         schedule = `0 ${minutes} ${hours} * * ?`
         break
@@ -375,7 +385,7 @@ const convertServerConfigurationToLocal = (clickedItem: ProvisionDServerConfigur
   } = convertCronTabToLocal(clickedItem[RequisitionData.CronSchedule])
 
   const urlVars = convertURLToLocal(clickedItem[RequisitionData.ImportURL])
-  
+
   return {
     name: clickedItem[RequisitionData.ImportName],
     rescanBehavior,
@@ -517,7 +527,7 @@ const createBlankSubConfiguration = () => {
  * Convert our Cron Schedules to Human Readable String.
  */
 const cronToEnglish = (cronFormatted: string) => {
-  let error = ''
+  let error: string
 
   const tabLength = cronTabLength(cronFormatted)
   if (tabLength > 0 && tabLength < 6 ) {
@@ -529,7 +539,7 @@ const cronToEnglish = (cronFormatted: string) => {
       error = typeof e === 'string' ? e : 'Error Parsing Crontab'
     }
   }
-  
+
   return error
 }
 
@@ -638,7 +648,7 @@ const findFullType = (typeRaw: string) => {
  * @returns The hostname portion of the URL
  */
 const findHost = (url: Array<string>) => {
-  let host = ''
+  let host: string
   if (url[2].includes('?')) {
     const vals = url[2].split('?')
     host = vals[0]
@@ -656,7 +666,7 @@ const findHost = (url: Array<string>) => {
 const findSubType = (url: Array<string>) => {
   let subType = { id: 0, name: '', value: '' }
   const typeRaw = url[2].split('?')[0]
-  const foundSubType = requisitionSubTypes.find((item) => item.value.toLowerCase() === typeRaw)
+  const foundSubType = requisitionSubTypes.find(item => item.value.toLowerCase() === typeRaw)
   if (foundSubType) {
     subType = foundSubType
   }
@@ -700,7 +710,9 @@ const getHostHint = (type: string) => {
  */
 const parseAdvancedOptions = (fullURL: string, type: string, subType: string) => {
   // File type does not support url query part (?key=value&...), hence no advanced options parsing is required
-  if(type === RequisitionTypes.File) return []
+  if (type === RequisitionTypes.File) {
+    return []
+  }
 
   return fullURL.includes('?')
     ? fullURL
@@ -728,7 +740,7 @@ const parseHint = (key: string, type: string, subType: string) => {
   } else if (type === RequisitionTypes.DNS) {
     keys = dnsKeys
   }
-  return keys.find((d) => d.name === key)?.hint
+  return keys.find(d => d.name === key)?.hint
 }
 
 /**
@@ -794,7 +806,7 @@ const validateHost = (host: string) => {
 
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
   const isHostValid =
-    ipRegex({exact: true}).test(host)
+    ipRegex({ exact: true }).test(host)
     || isValidDomain(host)
     || customHostnameRegex.test(host)
 
@@ -833,7 +845,7 @@ const validateZoneField = (fieldVal: string) => {
  */
 const validateRequisitionNameField = (fieldVal: string) => {
   const regex = /^[\s]|[/\\?&*'"]|[\s]$/
-  
+
   return regex.test(fieldVal) ? ErrorStrings.InvalidRequisitionName : ''
 }
 
@@ -909,7 +921,7 @@ const validateLocalItem = (
       errors.hasErrors = true
     }
   }
-  
+
   return errors
 }
 
@@ -972,7 +984,7 @@ const validatePath = (path: string) => {
     pathError = ErrorStrings.Required('File path')
   } else if (!path.startsWith('/')) {
     pathError = ErrorStrings.FilePathStart
-  } else if(/[?]/gm.test(path)) {
+  } else if (/[?]/gm.test(path)) {
     pathError = ErrorStrings.FilePathWithQueryChar
   }
   return pathError
@@ -1009,7 +1021,11 @@ const copyToClipboard = (text: string) => {
     textArea.focus()
     textArea.select()
     return new Promise<void>((res, rej) => {
-      document.execCommand('copy') ? res() : rej()
+      if (document.execCommand('copy')) {
+        res()
+      } else {
+        rej()
+      }
       textArea.remove()
     })
   }

@@ -1,66 +1,61 @@
 <template>
-  <div>
-    <div
-      ref="tableWrap"
-      id="wrap"
-      class="usage-stats-table"
+  <div class="usage-stats-table">
+    <PDataTable
+      :value="tableData"
+      sortField="key"
+      :sortOrder="1"
+      stripedRows
+      size="large"
+      scrollable
+      scrollHeight="calc(100vh - 310px)"
+      tableStyle="table-layout: fixed; width: 100%"
+      aria-label="Usage Statistics Sharing"
     >
-      <table summary="Usage Statistics Sharing">
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              scope="col"
-              property="name"
-              :sort="sortStates.name"
-              v-on:sort-changed="sortByColumnHandler"
-              >Name</FeatherSortHeader
-            >
-
-            <FeatherSortHeader
-              scope="col"
-              property="key"
-              :sort="sortStates.key"
-              v-on:sort-changed="sortByColumnHandler"
-              >Key name</FeatherSortHeader
-            >
-
-            <FeatherSortHeader
-              scope="col"
-              property="description"
-              :sort="sortStates.description"
-              v-on:sort-changed="sortByColumnHandler"
-              >Description</FeatherSortHeader
-            >
-
-            <FeatherSortHeader
-              scope="col"
-              property="latestValue"
-              :sort="sortStates.latestValue"
-              v-on:sort-changed="sortByColumnHandler"
-              >Latest value</FeatherSortHeader
-            >
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="row in filteredData"
-            :key="row.key"
-          >
-            <td>{{ row.name }}</td>
-            <td>{{ row.key }}</td>
-            <td>{{ row.description }}</td>
-            <td v-if="row.isLink">
-              <a href="#" @click.prevent="() => showFullValue(row)">See full value</a>
-            </td>
-            <td v-else-if="shouldClipValue(row)">
-              {{ getClippedValue(row) }}
-              <a href="#" @click.prevent="() => showFullValue(row)">See full value</a>
-            </td>
-            <td v-else>{{ row.latestValue }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <PColumn
+        field="name"
+        header="Name"
+        sortable
+        style="width: 20%"
+        :pt="columnHeaderPt"
+      />
+      <PColumn
+        field="key"
+        header="Key name"
+        sortable
+        style="width: 20%"
+        :pt="columnHeaderPt"
+      />
+      <PColumn
+        field="description"
+        header="Description"
+        sortable
+        style="width: 40%"
+        :pt="columnHeaderPt"
+      />
+      <PColumn
+        field="latestValue"
+        header="Latest value"
+        sortable
+        style="width: 20%"
+        :pt="columnHeaderPt"
+      >
+        <template #body="{ data }">
+          <a
+            v-if="data.isLink"
+            href="#"
+            @click.prevent="() => showFullValue(data)"
+          >See full value</a>
+          <template v-else-if="shouldClipValue(data)">
+            {{ getClippedValue(data) }}
+            <a
+              href="#"
+              @click.prevent="() => showFullValue(data)"
+            >See full value</a>
+          </template>
+          <template v-else>{{ data.latestValue }}</template>
+        </template>
+      </PColumn>
+    </PDataTable>
   </div>
   <MessageDialog
     :visible="showValueModalVisible"
@@ -82,16 +77,26 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { isNumber, isString } from '@/lib/utils'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
-import { FeatherSortObject } from '@/types'
 import {
   UsageStatisticsData,
   UsageStatisticsMetadata,
   UsageStatisticsMetadataItem
 } from '@/types/usageStatistics'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import MessageDialog from '@/components/Common/MessageDialog.vue'
+
+const PDataTable = DataTable
+const PColumn = Column
+
+// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via
+// the passthrough so the header cells stay associated with their columns for
+// screen readers (the FeatherDS table set scope="col" per column).
+const columnHeaderPt = { headerCell: { scope: 'col' }}
 
 interface StatisticsItem {
   // this is just for sorting
@@ -107,23 +112,15 @@ const STRING_CLIP_LENGTH = 100
 
 const usageStatisticsStore = useUsageStatisticsStore()
 
-const sortStates: Record<string, SORT> = reactive({
-  name: SORT.NONE,
-  key: SORT.ASCENDING,
-  description: SORT.NONE,
-  latestValue: SORT.NONE
-})
-
 const showValueModalContent = ref('')
 const showValueModalSubtitle = ref('')
 const showValueModalVisible = ref(false)
 
-const currentSort = ref({ property: 'key', value: SORT.ASCENDING } as FeatherSortObject)
 const statistics = computed<UsageStatisticsData>(() => usageStatisticsStore.statistics )
 const metadata = computed<UsageStatisticsMetadata>(() => usageStatisticsStore.metadata )
 
-const metadataMap = computed<Map<string,UsageStatisticsMetadataItem>>(() => {
-  const map = new Map<string,UsageStatisticsMetadataItem>()
+const metadataMap = computed<Map<string, UsageStatisticsMetadataItem>>(() => {
+  const map = new Map<string, UsageStatisticsMetadataItem>()
 
   for (const obj of metadata.value.metadata) {
     const item = {
@@ -139,7 +136,8 @@ const metadataMap = computed<Map<string,UsageStatisticsMetadataItem>>(() => {
   return map
 })
 
-const filteredData = computed<StatisticsItem[]>(() => {
+// Row data. Sorting/striping/sticky-header are handled by the DataTable.
+const tableData = computed<StatisticsItem[]>(() => {
   const items = [] as StatisticsItem[]
 
   if (statistics.value && metadata.value) {
@@ -149,40 +147,17 @@ const filteredData = computed<StatisticsItem[]>(() => {
 
       const { isLink, latestValue } = getLatestValue(statsValue, metaItem)
 
-      const statsItem = {
+      items.push({
         key,
         name: metaItem?.name || '',
         description: metaItem?.description || '',
         isLink,
         latestValue
-      } as StatisticsItem
-
-      items.push(statsItem)
+      } as StatisticsItem)
     }
   }
 
-  // Determine Sort Order
-  let sortOrderValues = [0, 0]
-  if (currentSort.value.value === SORT.ASCENDING) {
-    sortOrderValues = [-1, 1]
-  } else if (currentSort.value.value === SORT.DESCENDING) {
-    sortOrderValues = [1, -1]
-  }
-
-  // Sort the Items
-  const currentSortKey = currentSort.value.property
-
-  const sortedItems = items.sort((a, b) => {
-    if (a[currentSortKey] > b[currentSortKey]) {
-      return sortOrderValues[0]
-    } else if (a[currentSortKey] < b[currentSortKey]) {
-      return sortOrderValues[1]
-    } else {
-      return 0
-    }
-  })
-
-  return sortedItems
+  return items
 })
 
 const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem | undefined) => {
@@ -226,15 +201,6 @@ const getClippedValue = (row: StatisticsItem) => {
   return `${row.latestValue.substring(0, STRING_CLIP_LENGTH)}...`
 }
 
-const sortByColumnHandler = (sortObj: FeatherSortObject) => {
-  for (const key in sortStates) {
-    sortStates[key] = SORT.NONE
-  }
-
-  sortStates[`${sortObj.property}`] = sortObj.value
-  currentSort.value = sortObj
-}
-
 const showFullValue = (item: StatisticsItem) => {
   const obj = statistics.value[item.key] || {}
 
@@ -249,51 +215,15 @@ const showFullValue = (item: StatisticsItem) => {
   showValueModalContent.value = json
   showValueModalVisible.value = true
 }
-
-onMounted(() => {
-  const wrap = document.getElementById('wrap')
-  const thead = document.querySelector('div.usage-stats-table table thead') as HTMLElement
-
-  if (wrap && thead) {
-    wrap.addEventListener('scroll', function () {
-      const translate = `translate(0, ${this.scrollTop}px)`
-      thead.style.transform = translate
-    })
-  }
-})
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-@import "@featherds/table/scss/table";
-
-#wrap {
-  height: calc(100vh - 310px);
-  overflow: auto;
-  white-space: nowrap;
-
-  table {
-    margin-top: 0px !important;
-    font-size: 12px !important;
-    @include table;
-    @include table-condensed;
-    @include row-striped;
-
-    .option {
-      margin-left: 8px;
-      height: 43px;
-      line-height: 3.5;
-      padding-left: 15px;
-      text-transform: capitalize;
-    }
-  }
-
-  thead {
-    z-index: 2;
-    position: relative;
-    background: var($surface);
+.usage-stats-table {
+  // Fixed column widths (set per-column) with wrapping cell contents, so a long
+  // Description doesn't push the Latest value column off-screen.
+  :deep(.p-datatable-tbody > tr > td) {
+    white-space: normal;
+    word-break: break-word;
   }
 }
 

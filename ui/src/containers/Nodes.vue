@@ -1,19 +1,21 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="card">
         <NodesTable />
       </div>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
@@ -34,7 +36,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Node List', to: '#', position: 'last' }
+    { label: 'Nodes', to: '#', position: 'last' }
   ]
 })
 
@@ -101,15 +103,19 @@ watch(
 
 onMounted(() => {
   const prefs = loadNodePreferences()
-  if (handleQuery(prefs)) return
-  if (prefs) nodeStructureStore.setFromNodePreferences(prefs)
+  if (handleQuery(prefs)) {
+    return
+  }
+  if (prefs) {
+    nodeStructureStore.setFromNodePreferences(prefs)
+  }
 })
 
 watch(() => route.query, () => {
   handleQuery(loadNodePreferences())
 })
 </script>
-  
+
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
 

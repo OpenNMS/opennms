@@ -173,7 +173,6 @@ test('Validate host fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('[2345:0425:2CA1:0000:0000:0567:5673:23b5]:443')).toEqual('')
 
 
-
   expect(ConfigurationHelper.validateHost('-domaindotcom')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('domain com')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('bad@host:com')).toEqual(ErrorStrings.InvalidHostname)

@@ -32,7 +32,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
@@ -51,7 +51,7 @@ import {
   FeatherTabContainer,
   FeatherTabPanel
 } from '@featherds/tabs'
-import { PropType } from 'vue'
+import { PropType, computed, onMounted, ref, watch } from 'vue'
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -133,7 +133,7 @@ const options = computed<ChartOptions>(() => ({
         text: convertedGraphDataRef.value.verticalLabel
       } as TitleOptions,
       ticks: {
-        callback: (value) => yAxisFormatter(value as number),
+        callback: value => yAxisFormatter(value as number),
         maxTicksLimit: 8
       },
       stacked: false
@@ -148,7 +148,7 @@ const options = computed<ChartOptions>(() => ({
 
 const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabels: { name: string, statement: string }[]) => {
   const label = graphData.value?.labels[index] || ''
-  const datasetLabelObj = datasetLabels.filter((datasetLabel) => datasetLabel.name === label)[0]
+  const datasetLabelObj = datasetLabels.filter(datasetLabel => datasetLabel.name === label)[0]
   const seriesObjs = []
   const datasets = []
 
@@ -175,7 +175,7 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
 
   for (const obj of seriesObjs) {
     if (obj.name !== undefined) {
-      const index = convertedGraphDataRef.value.series.findIndex((series) => series.name === obj.name)
+      const index = convertedGraphDataRef.value.series.findIndex(series => series.name === obj.name)
       datasets.push({
         hidden: Boolean(obj.type === 'hidden'),
         fill: areaOrStack ? {
@@ -221,8 +221,8 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
   const step = Math.floor((end - start) / 1000)
   const expression = []
 
-  const metricsWithExpressions = source.filter((metric) => Boolean(metric.expression))
-  const metricsWithoutExpressions = source.filter((metric) => Boolean(!metric.expression))
+  const metricsWithExpressions = source.filter(metric => Boolean(metric.expression))
+  const metricsWithoutExpressions = source.filter(metric => Boolean(!metric.expression))
 
   for (const metric of metricsWithExpressions) {
     expression.push({
@@ -302,7 +302,7 @@ watch(props.time, () => render(true))
 
 onMounted(() => render())
 </script>
-  
+
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 .container {

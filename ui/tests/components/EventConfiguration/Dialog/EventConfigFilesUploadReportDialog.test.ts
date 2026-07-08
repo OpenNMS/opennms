@@ -1,19 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import EventConfigFilesUploadReportDialog from '@/components/EventConfiguration/Dialog/EventConfigFilesUploadReportDialog.vue'
 import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 
-vi.mock('@featherds/dialog', () => ({
-  FeatherDialog: {
-    name: 'FeatherDialog',
-    template: '<div><slot></slot><slot name="footer"></slot></div>',
-    props: ['labels', 'modelValue']
-  }
-}))
+// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// component's logic via the wrapper's public API (props + ok/cancel events),
+// independent of the underlying dialog library.
+const ConfirmationDialogStub = {
+  name: 'ConfirmationDialog',
+  template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
+  props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
+}
 
 describe('EventConfigFilesUploadReportDialog', () => {
   let wrapper: any
@@ -58,9 +57,8 @@ describe('EventConfigFilesUploadReportDialog', () => {
       },
       global: {
         plugins: [pinia],
-        components: {
-          FeatherButton,
-          FeatherDialog
+        stubs: {
+          ConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -69,10 +67,8 @@ describe('EventConfigFilesUploadReportDialog', () => {
   })
 
   it('renders the dialog when visible is true', () => {
-    expect(wrapper.findComponent(FeatherDialog).exists()).toBe(true)
-    expect(wrapper.findComponent(FeatherDialog).props('labels')).toEqual({
-      title: 'Upload Report'
-    })
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('title')).toBe('Upload Report')
   })
 
   it('displays the correct status message for mixed success and errors', () => {
@@ -131,18 +127,18 @@ describe('EventConfigFilesUploadReportDialog', () => {
   })
 
   it('calls fetchEventConfigs and closes dialog when Close button is clicked', async () => {
-    const closeButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Close'))
-    expect(closeButton?.exists()).toBe(true)
-    await closeButton?.trigger('click')
+    const closeButton = wrapper.find('.cancel-btn')
+    expect(closeButton.exists()).toBe(true)
+    await closeButton.trigger('click')
     await flushPromises()
     expect(store.fetchEventConfigs).toHaveBeenCalled()
     expect(store.$state.uploadedEventConfigFilesReportDialogState.visible).toBe(false)
   })
 
   it('calls fetchEventConfigs, resets active tab, and closes dialog when View Uploaded Files button is clicked', async () => {
-    const viewButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('View Uploaded Files'))
-    expect(viewButton?.exists()).toBe(true)
-    await viewButton?.trigger('click')
+    const viewButton = wrapper.find('.action-btn')
+    expect(viewButton.exists()).toBe(true)
+    await viewButton.trigger('click')
     await flushPromises()
     expect(store.fetchEventConfigs).toHaveBeenCalled()
     expect(store.resetActiveTab).toHaveBeenCalled()
@@ -152,6 +148,6 @@ describe('EventConfigFilesUploadReportDialog', () => {
   it('hides the dialog when visible is false', async () => {
     store.$state.uploadedEventConfigFilesReportDialogState.visible = false
     await wrapper.vm.$nextTick()
-    expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
+    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
   })
 })

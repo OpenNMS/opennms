@@ -32,7 +32,7 @@ const getGeolocationConfig = async (): Promise<GeolocationConfigItem | false> =>
   try {
     const resp = await v2.get(endpoint)
     return resp.data as GeolocationConfigItem
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

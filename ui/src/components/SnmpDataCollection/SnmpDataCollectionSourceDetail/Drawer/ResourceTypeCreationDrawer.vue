@@ -1,74 +1,87 @@
 <template>
-  <FeatherDrawer
+  <Drawer
     id="drawer"
     data-test="resource-type-drawer"
-    v-model="store.resourceTypeDrawerState.visible"
-    :labels="{ close: 'close', title: drawerTitle }"
-    hide-close
-    @hidden="closeResourceTypeDrawer"
-    width="80rem"
+    v-model:visible="store.resourceTypeDrawerState.visible"
+    position="right"
+    :header="drawerTitle"
+    :style="{ width: '80rem' }"
+    @hide="closeResourceTypeDrawer"
     class="resource-type-drawer"
   >
     <div class="container">
-      <div class="header">
-        <div class="title-container">
-          <h2 class="title">{{ drawerTitle }}</h2>
-        </div>
-      </div>
       <div class="content">
         <div class="switch-row">
-          <SwitchRender
-            :checked="status"
-            @click="onChangeStatus"
+          <ToggleSwitch
+            v-model="status"
             data-test="system-def-status-input"
           />
           <label class="switch-label">{{ status ? 'Enabled' : 'Disabled' }}</label>
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherInput
-            label="Name"
-            data-test="resource-type-name-input"
+        <FormField
+          label="Name"
+          :for="nameId"
+          :error="errors.name"
+        >
+          <InputText
+            :id="nameId"
             v-model.trim="name"
-            :error="errors.name"
+            :invalid="!!errors.name"
+            data-test="resource-type-name-input"
+            fluid
           />
-        </div>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherInput
-            label="Label"
-            data-test="resource-type-label-input"
+        <FormField
+          label="Label"
+          :for="labelId"
+          :error="errors.label"
+        >
+          <InputText
+            :id="labelId"
             v-model.trim="label"
-            :error="errors.label"
+            :invalid="!!errors.label"
+            data-test="resource-type-label-input"
+            fluid
           />
-        </div>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherInput
-            label="Resource Label"
-            data-test="resource-type-resource-label-input"
+        <FormField
+          label="Resource Label"
+          :for="resourceLabelId"
+          :error="errors.resourceLabel"
+        >
+          <InputText
+            :id="resourceLabelId"
             v-model.trim="resourceLabel"
-            :error="errors.resourceLabel"
+            :invalid="!!errors.resourceLabel"
+            data-test="resource-type-resource-label-input"
+            fluid
           />
-        </div>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherAutocomplete
-            class="my-autocomplete"
-            label="Storage Strategy"
-            type="single"
-            text-prop="_text"
+        <FormField
+          label="Storage Strategy"
+          :for="storageStrategyId"
+          :error="errors.storageStrategy"
+        >
+          <AutoComplete
+            :inputId="storageStrategyId"
             v-model="storageStrategy"
-            :loading="storageStrategyLoading"
-            :results="storageStrategyResults"
-            @search="onSearchStorageStrategy"
-            :error="errors.storageStrategy"
-          ></FeatherAutocomplete>
-        </div>
+            :suggestions="storageStrategyResults"
+            optionLabel="_text"
+            @complete="onSearchStorageStrategy"
+            :invalid="!!errors.storageStrategy"
+            dropdown
+            fluid
+            class="my-autocomplete"
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="storage-strategy-table-container">
@@ -77,91 +90,75 @@
               <h3>Storage Strategy Parameters</h3>
             </div>
             <div class="action">
-              <FeatherButton
-                secondary
+              <Button
+                outlined
+                label="Add Storage Strategy Parameter"
                 data-test="add-storage-strategy-button"
                 @click="openStorageStrategyDrawer(CreateEditMode.Create)"
-              >
-                Add Storage Strategy Parameter
-              </FeatherButton>
+              />
             </div>
           </div>
-          <table
-            class="storage-strategy-data-table"
-            aria-label="Storage Strategy Data Table"
+          <DataTable
+            :value="storageStrategyParams"
+            paginator
+            :rows="3"
+            :rowsPerPageOptions="[3, 6, 9]"
+            data-test="storage-strategy-table"
           >
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Value</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <TransitionGroup
-              name="data-table"
-              tag="tbody"
-            >
-              <tr
-                v-for="(param, index) in storageStrategyParamsObjects"
-                :key="index"
-              >
-                <td>{{ param.key }}</td>
-                <td>{{ param.value }}</td>
-                <td>
-                  <div class="action-container">
-                    <FeatherButton
-                      icon="Edit Storage Strategy Parameter"
-                      data-test="edit-storage-strategy-button"
-                      @click="openStorageStrategyDrawer(CreateEditMode.Edit, index, param)"
-                    >
-                      <FeatherIcon :icon="Edit"> </FeatherIcon>
-                    </FeatherButton>
-                    <FeatherButton
-                      icon="Delete Storage Strategy Parameter"
-                      data-test="delete-storage-strategy-button"
-                      @click="deleteStorageStrategy(index)"
-                    >
-                      <FeatherIcon :icon="Delete"> </FeatherIcon>
-                    </FeatherButton>
-                  </div>
-                </td>
-              </tr>
-            </TransitionGroup>
-          </table>
-          <div
-            class="alerts-pagination"
-            v-if="storageStrategyParamsObjects.length"
-          >
-            <FeatherPagination
-              :modelValue="storageStrategyParamsPage"
-              :pageSize="storageStrategyParamsPageSize"
-              :total="storageStrategyParamsTotal"
-              :pageSizes="[3, 6, 9]"
-              @update:modelValue="onStorageStrategyParamsPageChange"
-              @update:pageSize="onStorageStrategyParamsPageSizeChange"
-              data-test="FeatherPagination"
+            <Column
+              field="key"
+              header="Key"
             />
-          </div>
-          <div v-if="!storageStrategyParamsObjects.length">
-            <EmptyList :content="{ msg: 'No Storage Strategy parameters added yet.' }" />
-          </div>
+            <Column
+              field="value"
+              header="Value"
+            />
+            <Column header="Action">
+              <template #body="{ data }">
+                <div class="action-container">
+                  <Button
+                    text
+                    title="Edit Storage Strategy Parameter"
+                    data-test="edit-storage-strategy-button"
+                    @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
+                  >
+                    <FeatherIcon :icon="Edit" />
+                  </Button>
+                  <Button
+                    text
+                    title="Delete Storage Strategy Parameter"
+                    data-test="delete-storage-strategy-button"
+                    @click="deleteStorageStrategy(storageStrategyParams.indexOf(data))"
+                  >
+                    <FeatherIcon :icon="Delete" />
+                  </Button>
+                </div>
+              </template>
+            </Column>
+            <template #empty>
+              <EmptyList :content="{ msg: 'No Storage Strategy parameters added yet.' }" />
+            </template>
+          </DataTable>
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherAutocomplete
-            class="my-autocomplete"
-            label="Persistence Selector Strategy"
-            type="single"
-            text-prop="_text"
+        <FormField
+          label="Persistence Selector Strategy"
+          :for="persistenceSelectorStrategyId"
+          :error="errors.persistenceSelectorStrategy"
+        >
+          <AutoComplete
+            :inputId="persistenceSelectorStrategyId"
             v-model="persistenceSelectorStrategy"
-            :loading="persistenceSelectorStrategyLoading"
-            :results="persistenceSelectorStrategyResults"
-            @search="onSearchPersistenceSelectorStrategy"
-            :error="errors.persistenceSelectorStrategy"
-          >
-          </FeatherAutocomplete>
-        </div>
+            :suggestions="persistenceSelectorStrategyResults"
+            optionLabel="_text"
+            @complete="onSearchPersistenceSelectorStrategy"
+            :invalid="!!errors.persistenceSelectorStrategy"
+            dropdown
+            fluid
+            class="my-autocomplete"
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="persistence-selector-strategy-table-container">
@@ -170,74 +167,55 @@
               <h3>Persistence Selector Strategy Parameters</h3>
             </div>
             <div class="action">
-              <FeatherButton
-                secondary
+              <Button
+                outlined
+                label="Add Persistence Selector Strategy Parameter"
                 data-test="add-persistence-selector-strategy-button"
                 @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Create)"
-              >
-                Add Persistence Selector Strategy Parameter
-              </FeatherButton>
+              />
             </div>
           </div>
-          <table
-            class="persistence-selector-strategy-data-table"
-            aria-label="Persistence Selector Strategy Data Table"
+          <DataTable
+            :value="persistenceSelectorStrategyParams"
+            paginator
+            :rows="3"
+            :rowsPerPageOptions="[3, 6, 9]"
+            data-test="persistence-selector-strategy-table"
           >
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Value</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <TransitionGroup
-              name="data-table"
-              tag="tbody"
-            >
-              <tr
-                v-for="(param, index) in persistenceSelectorStrategyParamsObjects"
-                :key="index"
-              >
-                <td>{{ param.key }}</td>
-                <td>{{ param.value }}</td>
-                <td>
-                  <div class="action-container">
-                    <FeatherButton
-                      icon="Edit Persistence Selector Strategy Parameter"
-                      data-test="edit-persistence-selector-strategy-button"
-                      @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, index, param)"
-                    >
-                      <FeatherIcon :icon="Edit"> </FeatherIcon>
-                    </FeatherButton>
-                    <FeatherButton
-                      icon="Delete Persistence Selector Strategy Parameter"
-                      data-test="delete-persistence-selector-strategy-button"
-                      @click="deletePersistenceSelectorStrategy(index)"
-                    >
-                      <FeatherIcon :icon="Delete"> </FeatherIcon>
-                    </FeatherButton>
-                  </div>
-                </td>
-              </tr>
-            </TransitionGroup>
-          </table>
-          <div
-            class="alerts-pagination"
-            v-if="persistenceSelectorStrategyParamsObjects.length"
-          >
-            <FeatherPagination
-              :modelValue="persistenceSelectorStrategyParamsPage"
-              :pageSize="persistenceSelectorStrategyParamsPageSize"
-              :total="persistenceSelectorStrategyParamsTotal"
-              :pageSizes="[3, 6, 9]"
-              @update:modelValue="onPersistenceSelectorStrategyParamsPageChange"
-              @update:pageSize="onPersistenceSelectorStrategyParamsPageSizeChange"
-              data-test="FeatherPagination"
+            <Column
+              field="key"
+              header="Key"
             />
-          </div>
-          <div v-if="!persistenceSelectorStrategyParamsObjects.length">
-            <EmptyList :content="{ msg: 'No Persistence Selector Strategy parameters added yet.' }" />
-          </div>
+            <Column
+              field="value"
+              header="Value"
+            />
+            <Column header="Action">
+              <template #body="{ data }">
+                <div class="action-container">
+                  <Button
+                    text
+                    title="Edit Persistence Selector Strategy Parameter"
+                    data-test="edit-persistence-selector-strategy-button"
+                    @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
+                  >
+                    <FeatherIcon :icon="Edit" />
+                  </Button>
+                  <Button
+                    text
+                    title="Delete Persistence Selector Strategy Parameter"
+                    data-test="delete-persistence-selector-strategy-button"
+                    @click="deletePersistenceSelectorStrategy(persistenceSelectorStrategyParams.indexOf(data))"
+                  >
+                    <FeatherIcon :icon="Delete" />
+                  </Button>
+                </div>
+              </template>
+            </Column>
+            <template #empty>
+              <EmptyList :content="{ msg: 'No Persistence Selector Strategy parameters added yet.' }" />
+            </template>
+          </DataTable>
         </div>
       </div>
       <div
@@ -245,68 +223,81 @@
         v-if="resourceTypeDrawerState.visible"
       >
         <div class="header">
-          <h2>{{ parameterDrawerTitle }}</h2>
+          <h4>{{ parameterDrawerTitle }}</h4>
         </div>
         <div class="spacer"></div>
         <div class="content">
-          <FeatherInput
+          <FormField
             label="Key"
-            v-model.trim="key"
-            data-test="resource-type-parameter-key-input"
+            :for="keyId"
             :error="parameterErrors.key"
-          />
+          >
+            <InputText
+              :id="keyId"
+              v-model.trim="key"
+              :invalid="!!parameterErrors.key"
+              data-test="resource-type-parameter-key-input"
+              fluid
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
+          <FormField
             label="Value"
-            v-model.trim="value"
-            data-test="resource-type-parameter-value-input"
+            :for="valueId"
             :error="parameterErrors.value"
-          />
+          >
+            <InputText
+              :id="valueId"
+              v-model.trim="value"
+              :invalid="!!parameterErrors.value"
+              data-test="resource-type-parameter-value-input"
+              fluid
+            />
+          </FormField>
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <FeatherButton
+          <Button
+            text
+            label="Cancel"
             data-test="cancel-resource-type-parameter-button"
             @click="closeParameterDrawer"
-          >
-            Cancel
-          </FeatherButton>
-          <FeatherButton
-            primary
+          />
+          <Button
+            label="Save"
             data-test="save-resource-type-parameter-button"
             @click="saveResourceTypeParameter"
             :disabled="isParameterSaveDisabled"
-          >
-            Save
-          </FeatherButton>
+          />
         </div>
       </div>
       <div
         class="footer"
         v-if="!resourceTypeDrawerState.visible"
       >
-        <FeatherButton
+        <Button
+          text
+          label="Cancel"
           data-test="cancel-resource-type"
           @click="closeResourceTypeDrawer"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
+          label="Save"
           data-test="save-resource-type"
           @click="saveResourceType"
           :disabled="isSaveDisabled"
-        >
-          Save
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </Drawer>
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, ref, useId, watch, watchEffect } from 'vue'
+
 import EmptyList from '@/components/Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { KEY_PATTERN, PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionResourceTypePayloadToServer } from '@/mappers/snmpDataCollection.mapper'
@@ -314,39 +305,36 @@ import { createResourceType, updateResourceType } from '@/services/snmpDataColle
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { SwitchRender } from '@featherds/switch'
+import AutoComplete from 'primevue/autocomplete'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Drawer from 'primevue/drawer'
+import InputText from 'primevue/inputtext'
+import ToggleSwitch from 'primevue/toggleswitch'
 
-const storageStrategyLoading = ref(false)
-const storageStrategyTimeout = ref(-1)
-const persistenceSelectorStrategyLoading = ref(false)
-const persistenceSelectorStrategyTimeout = ref(-1)
+const store = useSnmpDataCollectionDetailStore()
+const nameId = useId()
+const labelId = useId()
+const resourceLabelId = useId()
+const storageStrategyId = useId()
+const persistenceSelectorStrategyId = useId()
+const keyId = useId()
+const valueId = useId()
 const persistenceSelectorStrategyResults = ref([] as IAutocompleteItemType[])
 const storageStrategyResults = ref([] as IAutocompleteItemType[])
-const store = useSnmpDataCollectionDetailStore()
 const name = ref('')
 const resourceLabel = ref('')
 const label = ref('')
 const status = ref(true)
 const storageStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const storageStrategyParams = ref<StorageStrategyForm[]>([])
-const storageStrategyParamsPage = ref(1)
-const storageStrategyParamsPageSize = ref(3)
-const storageStrategyParamsTotal = ref(0)
-const storageStrategyParamsObjects = ref<StorageStrategyForm[]>([])
 const persistenceSelectorStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const persistenceSelectorStrategyParams = ref<PersistSelectorStrategyForm[]>([])
-const persistenceSelectorStrategyParamsPage = ref(1)
-const persistenceSelectorStrategyParamsPageSize = ref(3)
-const persistenceSelectorStrategyParamsTotal = ref(0)
-const persistenceSelectorStrategyParamsObjects = ref<PersistSelectorStrategyForm[]>([])
 const errors = ref<ResourceTypeErrors>({})
 const snackbar = useSnackbar()
 const isSaveDisabled = ref(true)
@@ -384,56 +372,25 @@ const parameterDrawerTitle = computed(() => {
   return 'Parameter'
 })
 
-const onChangeStatus = () => {
-  status.value = !status.value
-}
+const buildStrategyResults = (options: string[], query: string): IAutocompleteItemType[] => {
+  const q = (query || '').toLowerCase()
+  const filtered = options
+    .filter(x => x.toLowerCase().indexOf(q) > -1)
+    .map(x => ({ _text: x, _value: x }))
 
-const onSearchStorageStrategy = async (q: string) => {
-  storageStrategyLoading.value = true
-  if (storageStrategyTimeout.value !== -1) {
-    clearTimeout(storageStrategyTimeout.value)
+  // If no matches found and query is not empty, offer the typed value as a custom option
+  if (filtered.length === 0 && query.trim()) {
+    filtered.push({ _text: query, _value: query })
   }
-  storageStrategyTimeout.value = window.setTimeout(() => {
-    const filteredOptions = STORAGE_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
-        _text: x,
-        _value: x
-      }))
-
-    // If no matches found and query is not empty, add custom option
-    if (filteredOptions.length === 0 && q.trim()) {
-      filteredOptions.push({
-        _text: q,
-        _value: q
-      })
-    }
-
-    storageStrategyResults.value = filteredOptions
-    storageStrategyLoading.value = false
-  }, 500)
+  return filtered
 }
 
-const onStorageStrategyParamsPageChange = (page: number) => {
-  storageStrategyParamsPage.value = page
-  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((page - 1) * storageStrategyParamsPageSize.value, page * storageStrategyParamsPageSize.value)
+const onSearchStorageStrategy = (event: { query: string }) => {
+  storageStrategyResults.value = buildStrategyResults(STORAGE_STRATEGY_OPTIONS, event.query)
 }
 
-const onStorageStrategyParamsPageSizeChange = (pageSize: number) => {
-  storageStrategyParamsPageSize.value = pageSize
-  storageStrategyParamsPage.value = 1
-  storageStrategyParamsObjects.value = storageStrategyParams.value.slice(0, pageSize)
-}
-
-const onPersistenceSelectorStrategyParamsPageChange = (page: number) => {
-  persistenceSelectorStrategyParamsPage.value = page
-  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((page - 1) * persistenceSelectorStrategyParamsPageSize.value, page * persistenceSelectorStrategyParamsPageSize.value)
-}
-
-const onPersistenceSelectorStrategyParamsPageSizeChange = (pageSize: number) => {
-  persistenceSelectorStrategyParamsPageSize.value = pageSize
-  persistenceSelectorStrategyParamsPage.value = 1
-  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice(0, pageSize)
+const onSearchPersistenceSelectorStrategy = (event: { query: string }) => {
+  persistenceSelectorStrategyResults.value = buildStrategyResults(PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, event.query)
 }
 
 const openStorageStrategyDrawer = (
@@ -441,52 +398,18 @@ const openStorageStrategyDrawer = (
   storageStrategyIndex = -1,
   storageStrategyObject: StorageStrategyForm | null = null
 ) => {
-  const actualIndex = isEditMode === CreateEditMode.Edit ? (storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value + storageStrategyIndex : storageStrategyIndex
   resourceTypeDrawerState.value.visible = true
   resourceTypeDrawerState.value.type = 'storageStrategy'
   resourceTypeDrawerState.value.isEditMode = isEditMode
-  resourceTypeDrawerState.value.storageStrategyIndex = actualIndex
+  resourceTypeDrawerState.value.storageStrategyIndex = storageStrategyIndex
   resourceTypeDrawerState.value.storageStrategyObject = storageStrategyObject
 }
 
 const deleteStorageStrategy = (index: number) => {
-  const actualIndex = (storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value + index
-  storageStrategyParams.value.splice(actualIndex, 1)
-  storageStrategyParamsTotal.value = storageStrategyParams.value.length
-
-  // If current page is now empty and we're not on the first page, go back one page
-  const maxPage = Math.max(1, Math.ceil(storageStrategyParamsTotal.value / storageStrategyParamsPageSize.value))
-  if (storageStrategyParamsPage.value > maxPage) {
-    storageStrategyParamsPage.value = maxPage
+  if (index < 0) {
+    return
   }
-
-  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
-}
-
-const onSearchPersistenceSelectorStrategy = async (q: string) => {
-  persistenceSelectorStrategyLoading.value = true
-  if (persistenceSelectorStrategyTimeout.value !== -1) {
-    clearTimeout(persistenceSelectorStrategyTimeout.value)
-  }
-  persistenceSelectorStrategyTimeout.value = window.setTimeout(() => {
-    const filteredOptions = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
-        _text: x,
-        _value: x
-      }))
-
-    // If no matches found and query is not empty, add custom option
-    if (filteredOptions.length === 0 && q.trim()) {
-      filteredOptions.push({
-        _text: q,
-        _value: q
-      })
-    }
-
-    persistenceSelectorStrategyResults.value = filteredOptions
-    persistenceSelectorStrategyLoading.value = false
-  }, 500)
+  storageStrategyParams.value.splice(index, 1)
 }
 
 const openPersistenceSelectorStrategyDrawer = (
@@ -494,27 +417,18 @@ const openPersistenceSelectorStrategyDrawer = (
   persistenceSelectorStrategyIndex = -1,
   persistenceSelectorStrategyObject: PersistSelectorStrategyForm | null = null
 ) => {
-  const actualIndex = isEditMode === CreateEditMode.Edit ? (persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value + persistenceSelectorStrategyIndex : persistenceSelectorStrategyIndex
   resourceTypeDrawerState.value.visible = true
   resourceTypeDrawerState.value.type = 'persistenceSelectorStrategy'
   resourceTypeDrawerState.value.isEditMode = isEditMode
-  resourceTypeDrawerState.value.persistenceSelectorStrategyIndex =
-    actualIndex
+  resourceTypeDrawerState.value.persistenceSelectorStrategyIndex = persistenceSelectorStrategyIndex
   resourceTypeDrawerState.value.persistenceSelectorStrategyObject = persistenceSelectorStrategyObject
 }
 
 const deletePersistenceSelectorStrategy = (index: number) => {
-  const actualIndex = (persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value + index
-  persistenceSelectorStrategyParams.value.splice(actualIndex, 1)
-  persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
-
-  // If current page is now empty and we're not on the first page, go back one page
-  const maxPage = Math.max(1, Math.ceil(persistenceSelectorStrategyParamsTotal.value / persistenceSelectorStrategyParamsPageSize.value))
-  if (persistenceSelectorStrategyParamsPage.value > maxPage) {
-    persistenceSelectorStrategyParamsPage.value = maxPage
+  if (index < 0) {
+    return
   }
-
-  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
+  persistenceSelectorStrategyParams.value.splice(index, 1)
 }
 
 const closeResourceTypeDrawer = async () => {
@@ -527,14 +441,6 @@ const closeResourceTypeDrawer = async () => {
   persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
   persistenceSelectorStrategyParams.value = []
   errors.value = {}
-  storageStrategyParamsObjects.value = []
-  persistenceSelectorStrategyParamsObjects.value = []
-  storageStrategyParamsPage.value = 1
-  persistenceSelectorStrategyParamsPage.value = 1
-  storageStrategyParamsPageSize.value = 3
-  persistenceSelectorStrategyParamsPageSize.value = 3
-  storageStrategyParamsTotal.value = 0
-  persistenceSelectorStrategyParamsTotal.value = 0
   closeParameterDrawer()
   await store.closeResourceTypeDrawer()
 }
@@ -590,7 +496,6 @@ const closeParameterDrawer = () => {
   key.value = ''
   value.value = ''
   isParameterSaveDisabled.value = true
-  resourceTypeDrawerState.value.visible = false
   resourceTypeDrawerState.value = {
     type: null,
     visible: false,
@@ -619,8 +524,6 @@ const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy',
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
       storageStrategyParams.value.push({ key, value })
     }
-    storageStrategyParamsTotal.value = storageStrategyParams.value.length
-    storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
   }
   if (type === 'persistenceSelectorStrategy') {
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.persistenceSelectorStrategyIndex > -1) {
@@ -629,8 +532,6 @@ const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy',
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
       persistenceSelectorStrategyParams.value.push({ key, value })
     }
-    persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
-    persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
   }
   closeParameterDrawer()
 }
@@ -692,10 +593,6 @@ const loadResourceTypeData = () => {
       })
     }
   }
-  storageStrategyParamsTotal.value = storageStrategyParams.value.length
-  persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
-  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
-  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
 }
 
 const loadResourceTypeParameterData = () => {
@@ -705,7 +602,7 @@ const loadResourceTypeParameterData = () => {
       key.value = parameter.key
       value.value = parameter.value
     }
-  } 
+  }
   if (resourceTypeDrawerState.value.type === 'persistenceSelectorStrategy' && resourceTypeDrawerState.value.persistenceSelectorStrategyObject) {
     const parameter = resourceTypeDrawerState.value.persistenceSelectorStrategyObject
     if (parameter) {
@@ -755,14 +652,6 @@ watch(
       persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
       persistenceSelectorStrategyParams.value = []
       errors.value = {}
-      storageStrategyParamsObjects.value = []
-      persistenceSelectorStrategyParamsObjects.value = []
-      storageStrategyParamsPage.value = 1
-      persistenceSelectorStrategyParamsPage.value = 1
-      storageStrategyParamsPageSize.value = 3
-      persistenceSelectorStrategyParamsPageSize.value = 3
-      storageStrategyParamsTotal.value = 0
-      persistenceSelectorStrategyParamsTotal.value = 0
     }
   },
   { immediate: true }
@@ -770,35 +659,29 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import '@featherds/styles/themes/variables';
 @import '@featherds/styles/mixins/typography';
-@import '@featherds/table/scss/table';
-@import '@/styles/_transitionDataTable';
 
 .container {
   margin-top: 10px;
-  padding: 25px;
-  height: 100vh;
-  overflow-y: scroll;
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .title-container {
-      display: flex;
-      align-items: center;
-
-      .title {
-        @include headline3;
-      }
-    }
-  }
 
   .content {
     .spacer {
       min-height: 0.5em;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .switch-label {
+        font-size: 12px;
+        font-weight: 600;
+      }
+    }
+
+    .my-autocomplete {
+      width: 100%;
     }
 
     .persistence-selector-strategy-table-container,
@@ -815,32 +698,20 @@ watch(
           }
         }
       }
-
-      table {
-        width: 100%;
-        @include table;
-
-        thead {
-          background: var($background);
-          text-transform: uppercase;
-        }
-
-        td {
-          white-space: nowrap;
-          box-shadow: none;
-          border-bottom: 1px solid var($border-on-surface);
-
-          .action-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-          }
-        }
-      }
     }
   }
 
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   .sub-container {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 6px;
+    margin-top: 1rem;
+
     .header {
       padding: 20px;
       margin: 0;
@@ -874,4 +745,3 @@ watch(
   }
 }
 </style>
-

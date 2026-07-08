@@ -2,6 +2,57 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.2]]
+
+== Release 36.0.2
+
+=== Bug
+
+* Improve the URL parsing from requests (Issue https://issues.opennms.org/browse/NMS-19905[NMS-19905])
+* Allow unknown properties when deserializing CM configurations (Issue https://issues.opennms.org/browse/NMS-19970[NMS-19970])
+* Filter are missing on the Alarm page (Issue https://issues.opennms.org/browse/NMS-19852[NMS-19852])
+* Filter rules with a top-level OR ignore appended constraints, causing over-matching and full-table scans (Issue https://issues.opennms.org/browse/NMS-19928[NMS-19928])
+* Help API Page in UI loads very slowly (Issue https://issues.opennms.org/browse/NMS-19883[NMS-19883])
+* Make scvcli prompt for password (Issue https://issues.opennms.org/browse/NMS-19033[NMS-19033])
+* Minion will start without a valid id (Issue https://issues.opennms.org/browse/NMS-19882[NMS-19882])
+* Rescan gets stuck on new nodes (Issue https://issues.opennms.org/browse/NMS-19547[NMS-19547])
+* Resolve potential wedge in CamelRpcClientFactory for local (Issue https://issues.opennms.org/browse/NMS-19951[NMS-19951])
+* Startup deadlock in SnmpPeerFactory::getSecureCredentialsScope() (Issue https://issues.opennms.org/browse/NMS-19901[NMS-19901])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-19786[NMS-19786])
+* Update commons-io:commons-io library (Issue https://issues.opennms.org/browse/NMS-17997[NMS-17997])
+* Update java-21-openjdk-headless library (Issue https://issues.opennms.org/browse/NMS-19633[NMS-19633])
+* Update net.sf.jasperreports:jasperreports library (Issue https://issues.opennms.org/browse/NMS-19379[NMS-19379])
+* Update org.apache.activemq:activemq-broker library (Issue https://issues.opennms.org/browse/NMS-19844[NMS-19844])
+* Update org.apache.neethi:neethi library (Issue https://issues.opennms.org/browse/NMS-19784[NMS-19784])
+* Update org.json:json library (Issue https://issues.opennms.org/browse/NMS-17999[NMS-17999])
+* Update rsync library (Issues https://issues.opennms.org/browse/NMS-19859[NMS-19859], https://issues.opennms.org/browse/NMS-19912[NMS-19912])
+* Update uglify-js library (Issue https://issues.opennms.org/browse/NMS-19704[NMS-19704])
+* Upgrade Netty to 4.2.15 to resolve CVEs (Issue https://issues.opennms.org/browse/NMS-19880[NMS-19880])
+* VMware Importer fails when ESXi Host CIM can't be directly reached (Issue https://issues.opennms.org/browse/NMS-19902[NMS-19902])
+
+=== Enhancement
+
+* Add Datastore Monitoring for VMware (Issue https://issues.opennms.org/browse/NMS-19849[NMS-19849])
+* Add SSH Key support for Karaf on Core (Issue https://issues.opennms.org/browse/NMS-19953[NMS-19953])
+* Log startup success at info instead of debug for manager.log (Issue https://issues.opennms.org/browse/NMS-19881[NMS-19881])
+* Remove unmaintainted activemq-camel (Issue https://issues.opennms.org/browse/NMS-19879[NMS-19879])
+* Rename KSC Reports Feature (Issue https://issues.opennms.org/browse/NMS-19771[NMS-19771])
+* Topology (Preview): REST API for operator-defined info-panel templates (node and edge scoped) (Issue https://issues.opennms.org/browse/NMS-19876[NMS-19876])
+* Topology (Preview): REST API for persisting custom topology views (Issue https://issues.opennms.org/browse/NMS-19874[NMS-19874])
+
+=== Task
+
+* Add remaining searches from Search Inventory to Vue Node List (Issue https://issues.opennms.org/browse/NMS-19855[NMS-19855])
+* Fix issues re node list filtering: deleted interfaces, UI service filters (Issue https://issues.opennms.org/browse/NMS-19850[NMS-19850])
+* Migrate Vue Nodes page to use PrimeVue (Issue https://issues.opennms.org/browse/NMS-19620[NMS-19620])
+* NodeDetailPageIT#verifyTimeline is flaky (Issue https://issues.opennms.org/browse/NMS-16980[NMS-16980])
+* PrimeVue Migration: Convert Screens including SNMP Data Collection and Trap Config (Issue https://issues.opennms.org/browse/NMS-19909[NMS-19909])
+* PrimeVue Migration: Convert common components (Issue https://issues.opennms.org/browse/NMS-19904[NMS-19904])
+* PrimeVue Migration: Convert initial easy set of screens (Issue https://issues.opennms.org/browse/NMS-19906[NMS-19906])
+* PrimeVue Migration: Foundation and styling presets (Issue https://issues.opennms.org/browse/NMS-19843[NMS-19843])
+* Small issues after eslint 10 update (Issue https://issues.opennms.org/browse/NMS-19868[NMS-19868])
+* Update to eslint 10 in /ui, remove auto-imports (Issue https://issues.opennms.org/browse/NMS-19842[NMS-19842])
+
 [[releasenotes-changelog-36.0.1]]
 
 == Release 36.0.1

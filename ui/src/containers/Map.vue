@@ -23,6 +23,8 @@
 
 <!-- used to keep map alive once loaded -->
 <script lang="ts">
+import { onMounted, ref } from 'vue'
+
 export default { name: 'MapKeepAlive' }
 </script>
 

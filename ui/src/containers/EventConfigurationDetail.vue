@@ -6,40 +6,36 @@
     <div class="header">
       <div class="title-container">
         <div>
-          <FeatherBackButton
+          <Button
+            text
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
           >
+            <FeatherIcon :icon="ArrowBack" />
             Go Back
-          </FeatherBackButton>
+          </Button>
         </div>
         <div>
           <h1>Manage Event Config for a Source</h1>
         </div>
       </div>
       <div class="action-container">
-        <FeatherButton
-          primary
+        <Button
+          label="Add Event Config"
           data-test="add-event-config"
           @click="onAddEventClick(store.selectedSource)"
-        >
-          Add Event Config
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
+          :label="store.selectedSource.enabled ? 'Disable Source' : 'Enable Source'"
           @click="store.showChangeEventConfigSourceStatusDialog(store.selectedSource)"
           data-test="enable-disable-source"
-        >
-          {{ store.selectedSource.enabled ? 'Disable Source' : 'Enable Source' }}
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
+          label="Delete Source"
           @click="store.showDeleteEventConfigSourceDialog(store.selectedSource)"
           data-test="delete-source"
           v-if="store.selectedSource.vendor !== VENDOR_OPENNMS"
-        >
-          Delete Source
-        </FeatherButton>
+        />
       </div>
     </div>
 
@@ -93,16 +89,17 @@
     class="not-found-container"
   >
     <p>No event configuration found.</p>
-    <FeatherButton
-      primary
+    <Button
+      label="Go Back"
       @click="router.push({ name: 'Event Configuration' })"
-    >
-      Go Back
-    </FeatherButton>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import ChangeEventConfigSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
@@ -111,8 +108,9 @@ import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import Button from 'primevue/button'
 import { format } from 'date-fns-tz'
 
 const store = useEventConfigDetailStore()
@@ -139,8 +137,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
 
 .event-config-container {
   margin: 0 auto;
@@ -170,10 +167,10 @@ onMounted(async () => {
   }
 
   .config-details-box {
-    border: 1px solid var($primary);
+    border: 1px solid var(--p-primary-color);
     border-radius: 4px;
     padding: 20px;
-    background: var($surface);
+    background: var(--p-content-background);
     margin-bottom: 30px;
 
     .config-row {
@@ -189,12 +186,12 @@ onMounted(async () => {
         .field-label {
           font-weight: bold;
           margin-right: 10px;
-          color: var(--feather-secondary-text-on-surface);
+          color: var(--p-text-muted-color);
           min-width: 80px;
         }
 
         .field-value {
-          color: var(--feather-secondary-text-on-surface);
+          color: var(--p-text-muted-color);
         }
       }
 
@@ -222,9 +219,8 @@ onMounted(async () => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include typography.headline3;
     margin: 0;
   }
 }
 </style>
-

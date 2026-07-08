@@ -1,25 +1,19 @@
 <template>
-  <FeatherDrawer
+  <Drawer
     id="drawer"
     data-test="system-definition-drawer"
-    v-model="store.systemDefDrawerState.visible"
-    :labels="{ close: 'close', title: drawerTitle }"
-    hide-close
-    width="40rem"
+    v-model:visible="store.systemDefDrawerState.visible"
+    position="right"
+    :header="drawerTitle"
+    :style="{ width: '40rem' }"
+    @hide="store.closeSystemDefDrawer"
     class="system-definition-drawer"
   >
     <div class="container">
-      <div class="drawer-header">
-        <h2>{{ drawerTitle }}</h2>
-      </div>
-      <div class="spacer"></div>
       <div class="drawer-content">
-        <div class="spacer"></div>
-        <div class="spacer"></div>
         <div class="switch-row">
-          <SwitchRender
-            :checked="status"
-            @click="onChangeStatus"
+          <ToggleSwitch
+            v-model="status"
             data-test="system-def-status-input"
           />
           <label class="switch-label">{{ status ? 'Enabled' : 'Disabled' }}</label>
@@ -27,95 +21,129 @@
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">General Details</div>
-        <FeatherInput
+        <FormField
           label="Name"
-          v-model.trim="name"
-          data-test="system-def-name-input"
+          :for="nameId"
           :error="errors.name"
-        />
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-        <FeatherRadioGroup
-          :label="'OID Type'"
-          v-model.trim="oidType"
-          data-test="system-def-oid-type-input"
-          :error="errors.oidType"
         >
-          <FeatherRadio
-            v-for="item in OID_TYPE_OPTIONS"
-            :value="item.value"
-            :key="item.name"
+          <InputText
+            :id="nameId"
+            v-model.trim="name"
+            :invalid="!!errors.name"
+            data-test="system-def-name-input"
+            fluid
+          />
+        </FormField>
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <div class="radio-group">
+          <span class="radio-group-label">OID Type</span>
+          <div
+            class="radio-options"
+            data-test="system-def-oid-type-input"
           >
-            {{ item.name }}
-          </FeatherRadio>
-        </FeatherRadioGroup>
+            <div
+              v-for="item in OID_TYPE_OPTIONS"
+              :key="item.name"
+              class="radio-option"
+            >
+              <RadioButton
+                v-model="oidType"
+                :inputId="`oid-type-${item.value}`"
+                :value="item.value"
+              />
+              <label :for="`oid-type-${item.value}`">{{ item.name }}</label>
+            </div>
+          </div>
+          <small
+            v-if="errors.oidType"
+            class="field-error"
+          >{{ errors.oidType }}</small>
+        </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherInput
+        <FormField
           label="OID Value"
-          v-model.trim="oidValue"
-          data-test="system-def-oid-value-input"
+          :for="oidValueId"
           :error="errors.oidValue"
-        />
+        >
+          <InputText
+            :id="oidValueId"
+            v-model.trim="oidValue"
+            :invalid="!!errors.oidValue"
+            data-test="system-def-oid-value-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">MIB Groups</div>
-        <FeatherAutocomplete
-          class="my-autocomplete"
+        <FormField
           label="MIB Groups"
-          type="multi"
-          v-model="mibGroupNames"
-          :loading="loading"
-          :results="results"
-          @search="search"
-          data-test="system-def-mib-groups-input"
+          :for="mibGroupId"
           :error="errors.mibGroupNames"
-        ></FeatherAutocomplete>
+        >
+          <AutoComplete
+            :inputId="mibGroupId"
+            class="my-autocomplete"
+            v-model="mibGroupNames"
+            multiple
+            :suggestions="results"
+            optionLabel="_text"
+            @complete="search"
+            data-test="system-def-mib-groups-input"
+            :invalid="!!errors.mibGroupNames"
+            dropdown
+            fluid
+          />
+        </FormField>
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
-        <FeatherButton
-          secondary
+        <Button
+          outlined
+          label="Cancel"
           data-test="cancel-button"
           @click="store.closeSystemDefDrawer"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <Button
+          label="Save Definition"
           data-test="save-button"
           :disabled="isSaveDisabled"
           @click="saveSystemDef"
-        >
-          Save Definition
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </Drawer>
 </template>
 
 <script setup lang="ts">
+import { computed, ref, useId, watch, watchEffect } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
 import { createSystemDefinition, updateSystemDefinition } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
-import { FeatherInput } from '@featherds/input'
-import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-import { SwitchRender } from '@featherds/switch'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
+import { IAutocompleteItemType } from '@featherds/autocomplete'
+import AutoComplete from 'primevue/autocomplete'
+import Button from 'primevue/button'
+import Drawer from 'primevue/drawer'
+import InputText from 'primevue/inputtext'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
+import RadioButton from 'primevue/radiobutton'
+import ToggleSwitch from 'primevue/toggleswitch'
+import FormField from '@/components/Common/FormField.vue'
 
 const store = useSnmpDataCollectionDetailStore()
+const nameId = useId()
+const oidValueId = useId()
+const mibGroupId = useId()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
 const status = ref<boolean>(DEFAULT_STATUS)
 const oidValue = ref<string>('')
 const name = ref<string>('')
-const timeout = ref<any>(null)
-const loading = ref<boolean>(false)
 const results = ref<Array<IAutocompleteItemType>>([])
 const mibGroupNames = ref<Array<IAutocompleteItemType>>([])
 const snackbar = useSnackbar()
@@ -128,7 +156,7 @@ const drawerTitle = computed(() =>
 )
 
 const loadInitialData = () => {
-  mibGroupNames.value = store.mibGroupNames.map((name) => ({ _text: name, _value: name }))
+  mibGroupNames.value = store.mibGroupNames.map(name => ({ _text: name, _value: name }))
   if (store.systemDefDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     oidType.value = DEFAULT_OID_TYPE
@@ -159,8 +187,11 @@ const validateDefinition = (): SystemDefErrors => {
   if (!oidValue.value.trim()) {
     validationErrors['oidValue'] = 'OID Value is required.'
   }
-  if (oidValue.value && !OID_PATTERN.test(oidValue.value)) {
+  if (oidType.value === 'single' && oidValue.value && !OID_PATTERN.test(oidValue.value)) {
     validationErrors['oidValue'] = 'OID Value format is invalid.'
+  }
+  if (oidType.value === 'mask' && oidValue.value && !OID_MASK_PATTERN.test(oidValue.value)) {
+    validationErrors['oidValue'] = 'OID Mask format is invalid.'
   }
   if (mibGroupNames.value.length === 0) {
     validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
@@ -168,24 +199,11 @@ const validateDefinition = (): SystemDefErrors => {
   return validationErrors
 }
 
-const onChangeStatus = () => {
-  status.value = !status.value
-}
-
-const search = (q: string) => {
-  loading.value = true
-  if (timeout.value) {
-    clearTimeout(timeout.value)
-  }
-  timeout.value = setTimeout(() => {
-    results.value = store.mibGroupNames
-      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
-        _text: x,
-        _value: x
-      }))
-    loading.value = false
-  }, 500)
+const search = (event: { query: string }) => {
+  const q = event.query.toLowerCase()
+  results.value = store.mibGroupNames
+    .filter(x => x.toLowerCase().indexOf(q) > -1)
+    .map(x => ({ _text: x, _value: x }))
 }
 
 const saveSystemDef = async () => {
@@ -206,7 +224,7 @@ const saveSystemDef = async () => {
       oidType.value === 'mask' ? oidValue.value : '',
       [],
       [],
-      mibGroupNames.value.map((x) => x._value as string),
+      mibGroupNames.value.map(x => x._value as string),
       status.value,
       store.selectedSystemDef?.id || 0,
       store.systemDefDrawerState.isEditMode
@@ -228,7 +246,7 @@ const saveSystemDef = async () => {
     } else {
       snackbar.showSnackBar({ msg: 'An error occurred while saving the System Definition.', error: true })
     }
-  } catch (error) {
+  } catch (_error) {
     snackbar.showSnackBar({ msg: 'An error occurred while saving the System Definition.', error: true })
   }
 }
@@ -262,17 +280,11 @@ watch(
 
 .system-definition-drawer {
   .container {
-    .drawer-header {
-      padding: 40px 20px;
-    }
-
     .spacer {
       min-height: 0.5em;
     }
 
     .drawer-content {
-      padding: 0 20px;
-
       .label {
         @include headline4;
         margin-bottom: 0.5em;
@@ -288,10 +300,40 @@ watch(
           font-weight: 600;
         }
       }
+
+      .radio-group {
+        .radio-group-label {
+          display: block;
+          @include headline4;
+          margin-bottom: 0.5em;
+        }
+
+        .radio-options {
+          display: flex;
+          gap: 1.5rem;
+        }
+
+        .radio-option {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+
+      .my-autocomplete {
+        width: 100%;
+      }
+
+      .field-error {
+        display: block;
+        color: var(--p-red-500);
+        font-size: 0.8em;
+        margin-top: 0.25em;
+      }
     }
 
     .drawer-footer {
-      padding: 20px;
+      padding: 20px 0;
       display: flex;
       justify-content: flex-end;
       gap: 10px;
@@ -299,4 +341,3 @@ watch(
   }
 }
 </style>
-

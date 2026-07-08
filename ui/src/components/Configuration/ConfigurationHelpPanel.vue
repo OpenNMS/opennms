@@ -41,7 +41,7 @@
   lang="ts"
   setup
 >
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
@@ -55,7 +55,7 @@ import { LocalConfiguration } from './configuration.types'
  */
 const props = defineProps({
   active: Boolean,
-  onClose: { 
+  onClose: {
     type: Function as PropType<(payload: MouseEvent) => void>,
     required: true
   },
@@ -290,4 +290,3 @@ const helpText = computed(() => {
   }
 }
 </style>
-

@@ -29,7 +29,7 @@ import { SnmpBaseConfiguration, SnmpFieldInfo } from '@/types/snmpConfig'
  */
 export const withDefaultHints = (fields: SnmpFieldInfo[], defaults: SnmpBaseConfiguration): SnmpFieldInfo[] => {
   const defaultsMap = defaults as Record<string, unknown>
-  return fields.map(field => {
+  return fields.map((field) => {
     const value = defaultsMap[field.key]
     if (value === undefined || value === null || value === '' || field.skipDefaultHint) {
       return field

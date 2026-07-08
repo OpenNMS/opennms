@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, QueryParameters } from '@/types'
+import { ref } from 'vue'
 
 export const useIpInterfacesStore = defineStore('ipInterfacesStore', () => {
   const ipInterfaces = ref([] as IpInterface[])

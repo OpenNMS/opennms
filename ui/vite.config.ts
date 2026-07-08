@@ -23,8 +23,6 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-import AutoImport from 'unplugin-auto-import/vite'
-
 // for process.env.VITE_APP_LOGO_NAME in resolve.alias
 import dotenv from 'dotenv'
 dotenv.config()
@@ -50,20 +48,11 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => tag.includes('rapi-doc')
+          isCustomElement: tag => tag.includes('rapi-doc')
         }
       }
     }),
-    svgLoader(),
-
-    // https://github.com/antfu/unplugin-auto-import
-    AutoImport({
-      imports: ['vue', 'vue-router', '@vueuse/core'],
-      eslintrc: {
-        enabled: true,
-        filepath: './.eslintrc-auto-import.json'
-      }
-    })
+    svgLoader()
   ],
   test: {
     dir: './tests',

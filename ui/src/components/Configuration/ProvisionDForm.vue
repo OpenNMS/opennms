@@ -147,7 +147,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
-import { PropType } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 import Help from '@featherds/icon/action/Help'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
@@ -177,7 +177,7 @@ watch(formActive, () => {
   }
 })
 
-const updateExternalSource: UpdateModelFunction = (val: {name:string}) => {
+const updateExternalSource: UpdateModelFunction = (val: { name:string }) => {
   props.updateFormValue('type', val)
   updateHint(val.name)
 }
@@ -193,7 +193,7 @@ const updateCronValue = (type:string, val:string) => {
  **/
 const updateHint = (val:string) => {
   const hint = ConfigurationHelper.getHostHint(val)
-  ConfigurationHelper.forceSetHint({hint}, 0,'.host-update')
+  ConfigurationHelper.forceSetHint({ hint }, 0, '.host-update')
 }
 </script>
 <style
@@ -213,4 +213,3 @@ const updateHint = (val:string) => {
     width: 100%;
 }
 </style>
-

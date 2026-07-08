@@ -70,6 +70,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import javax.xml.bind.ValidationException;
+
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatConsumer.class);
@@ -127,6 +129,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
                 minionHandle.getId(), minionHandle.getLocation());
 
+        if (minionHandle.getId() == null || minionHandle.getId().isBlank()) {
+            LOG.warn("Refusing to process Minion heartbeat with invalid 'id' for location: '{}'", minionHandle.getLocation());
+            return;
+        }
+
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
         if (minion == null) {
             minion = new OnmsMinion();
@@ -172,9 +179,14 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         executor.execute(() -> {
 
-            this.provision(onmsMinion,
-                    prevLocation,
-                    nextLocation);
+            try {
+                this.provision(onmsMinion,
+                        prevLocation,
+                        nextLocation) ;
+            } catch (ValidationException e) {
+               LOG.error("Heartbeat provisioner failed to validate: ", e);
+               return;
+            }
 
             if (prevLocation == null) {
                 final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
@@ -202,14 +214,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                 }
             }
         });
-
-
-
     }
 
     private void provision(final OnmsMinion minion,
                            final String prevLocation,
-                           final String nextLocation) {
+                           final String nextLocation) throws ValidationException {
         // Return fast if automatic provisioning is disabled
         if (!PROVISIONING) {
             return;
@@ -302,6 +311,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             requisitionNode.setForeignId(foreignId);
             requisitionNode.setLocation(minion.getLocation());
             requisitionNode.putInterface(requisitionInterface);
+            requisitionNode.validate();
 
             nextRequisition.putNode(requisitionNode);
             nextRequisition.setDate(new Date());

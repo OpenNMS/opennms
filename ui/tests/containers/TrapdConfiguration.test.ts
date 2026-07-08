@@ -6,6 +6,7 @@ import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { showSnackBarMock } = vi.hoisted(() => ({
@@ -34,32 +35,16 @@ describe('TrapdConfiguration.vue', () => {
   const mountComponent = () => {
     return mount(TrapdConfiguration, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           GeneralConfiguration: true,
           SnmpV3UserManagement: true,
           CreateSnmpV3User: true,
-          FeatherTabContainer: {
-            template: '<div><slot name="tabs" /><slot /></div>'
-          },
-          FeatherTab: {
-            template: '<div><slot /></div>'
-          },
-          FeatherTabPanel: {
-            template: '<div><slot /></div>'
-          },
-          FeatherButton: {
-            template: '<button @click="$emit(\'click\')"><slot /></button>'
-          },
+          TrapdAdvancedConfiguration: true,
           BreadCrumbs: true
         }
       }
     })
-  }
-
-  const createXmlFile = (name = 'trapd.xml', content = '<trapd-configuration />') => {
-    const file = new File([content], name, { type: 'text/xml' })
-    vi.spyOn(file, 'text').mockResolvedValue(content)
-    return file
   }
 
   beforeEach(() => {

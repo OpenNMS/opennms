@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { useFileEditorStore } from '@/stores/fileEditorStore'

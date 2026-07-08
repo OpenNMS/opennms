@@ -21,6 +21,7 @@
 ///
 
 import {
+  AssetFilter,
   Category,
   MatchType,
   MonitoringLocation,
@@ -65,14 +66,20 @@ export const parseCategories = (queryObject: any, categories: Category[]): {
 
   const resolveCategory = (vals: string[]): Category[] => {
     const result: Category[] = []
-    vals.forEach(c => {
-      if (!c) return
+    vals.forEach((c) => {
+      if (!c) {
+        return
+      }
       if (/^\d+$/.test(c)) {
         const item = categories.find(x => x.id === parseInt(c))
-        if (item) result.push(item)
+        if (item) {
+          result.push(item)
+        }
       } else {
         const item = categories.find(x => x.name.toLowerCase() === c.toLowerCase())
-        if (item) result.push(item)
+        if (item) {
+          result.push(item)
+        }
       }
     })
     return result
@@ -133,13 +140,50 @@ export const parseFlows = (queryObject: any) => {
 }
 
 /**
- * Currently this accepts anything in any valid IPv4 or IPv6 format (see `is-ip`), but
- * some formats may not actually be supported by our FIQL search.
+ * Returns true if value looks like an IPv4 or IPv6 iplike pattern (wildcard, range, or list).
+ *
+ * IPv4: 1-4 dot-separated segments, each being * | N | N-M | N,M | N-M,P-Q,...
+ *   Examples: 192.168.1.*, 10.9.1-3.*, 10.0.0.1-255, 192.168.0,1,2.*
+ * IPv6: 1-8 colon-separated hextets, each being * | H | H-H | H,H,...  (hex values)
+ *   Examples: 2001:db8:*:*:*:*:*:*, fe80:*:*:*:*:*:*:*, 2001:0-ffff:*:*:*:*:*:*
+ *
+ * Returns false for plain exact IPs (use isIP() for those) and for garbage.
+ * Compressed IPv6 notation (::) is not supported in patterns — only in exact addresses.
+ * Ranges are per-segment only; cross-segment notation like 10.0.0.1-10.0.0.255 is invalid.
+ */
+export const isIplikePattern = (value: string): boolean => {
+  // Normalize spaces around commas so "1, 2, 3" is treated the same as "1,2,3"
+  const v = value.replace(/\s*,\s*/g, ',')
+  // Must contain at least one pattern character to be an iplike pattern (not a plain IP)
+  if (!v.includes('*') && !v.includes('-') && !v.includes(',')) {
+    return false
+  }
+  if (v.includes('.')) {
+    // IPv4: each octet is * | N | N-M | list of those
+    const seg = '(\\*|\\d+(?:-\\d+)?(?:,\\d+(?:-\\d+)?)*)'
+    return new RegExp(`^${seg}(\\.${seg}){0,3}$`).test(v)
+  }
+  if (v.includes(':')) {
+    // IPv6: each hextet is * | H | H-H | list of those (hex digits only)
+    const seg = '(\\*|[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?(?:,[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?)*)'
+    return new RegExp(`^${seg}(:${seg}){0,7}$`).test(v)
+  }
+  return false
+}
+
+/**
+ * Parses an IP address or iplike pattern from a URL query object.
+ * Accepts exact IPv4/IPv6 addresses and IPv4 iplike wildcard patterns like 192.168.1.*.
+ * Priority: `iplike` param over `ipAddress` param.
  */
 export const parseIplike = (queryObject: any) => {
   const ip = queryObject.iplike as string || queryObject.ipAddress as string || ''
 
-  if (ip && isIP(ip)) {
+  if (!ip) {
+    return null
+  }
+
+  if (isIP(ip) || isIplikePattern(ip)) {
     return ip
   }
 
@@ -269,8 +313,10 @@ export const parseMib2Params = (queryObject: any): NodeQuerySysParams | null => 
 
 /**
  * Maps legacy maclike/snmpphysaddr params to a stripped, lowercase MAC address string
- * suitable for wildcard FIQL matching against snmpInterface.physAddr.
- * Colons and dashes are stripped to match the format stored in the database.
+ * suitable for matching against snmpInterface.physAddr.
+ * All non-hex characters (separators like ':' and '-', plus any stray FIQL characters such as
+ * ',' or ';') are stripped, both to match the format stored in the database and to keep the value
+ * safe for the FIQL expression.
  */
 export const parseMaclike = (queryObject: any): string | null => {
   const mac = queryObject.maclike as string || queryObject.snmpphysaddr as string || ''
@@ -279,7 +325,73 @@ export const parseMaclike = (queryObject: any): string | null => {
     return null
   }
 
-  return mac.replace(/[:-]/g, '').toLowerCase()
+  return mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+}
+
+/**
+ * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL,
+ * with human-readable labels for the asset-filter dropdown. Geolocation-backed fields
+ * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties,
+ * so an `assetRecord.city` query would be invalid.
+ */
+export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
+  { value: 'building', label: 'Building' },
+  { value: 'floor', label: 'Floor' },
+  { value: 'room', label: 'Room' },
+  { value: 'rack', label: 'Rack' },
+  { value: 'region', label: 'Region' },
+  { value: 'division', label: 'Division' },
+  { value: 'department', label: 'Department' },
+  { value: 'category', label: 'Category' },
+  { value: 'displayCategory', label: 'Display Category' },
+  { value: 'circuitId', label: 'Circuit ID' }
+]
+
+/** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
+export const ALLOWED_ASSET_COLUMNS = new Set(ASSET_COLUMN_OPTIONS.map(o => o.value))
+
+/** Display label for an asset column key (falls back to the key itself). */
+export const getAssetColumnLabel = (column: string): string =>
+  ASSET_COLUMN_OPTIONS.find(o => o.value === column)?.label ?? column
+
+/**
+ * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.
+ */
+export const parseDownAggregateStatus = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithDownAggregateStatus ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Returns true if the `nodesWithAssets` query param requests only nodes that have asset info.
+ */
+export const parseNodesWithAssets = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithAssets ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Parses asset-field filters from `assetColumn` + `assetValue` query params.
+ * Each param may be a single value (vue-router string) or repeated (array); the two are paired
+ * by index. Pairs with an empty value or a column not in ALLOWED_ASSET_COLUMNS are skipped, and
+ * duplicate columns keep the last value. Returns [] when none are valid.
+ */
+export const parseAssetFilters = (queryObject: any): AssetFilter[] => {
+  const toArray = (v: any): string[] =>
+    Array.isArray(v) ? (v as string[]) : v ? [v as string] : []
+
+  const columns = toArray(queryObject.assetColumn)
+  const values = toArray(queryObject.assetValue)
+
+  const byColumn = new Map<string, string>()
+  const count = Math.min(columns.length, values.length)
+  for (let i = 0; i < count; i++) {
+    const column = columns[i]
+    const value = values[i]
+    if (column && value && ALLOWED_ASSET_COLUMNS.has(column)) {
+      byColumn.set(column, value)
+    }
+  }
+
+  return Array.from(byColumn, ([column, value]) => ({ column, value }))
 }
 
 /**
@@ -292,7 +404,9 @@ export const parseMonitoredServices = (
   serviceTypes: ServiceType[]
 ): string[] => {
   const raw = queryObject.monitoredService ?? queryObject.service
-  if (!raw) return []
+  if (!raw) {
+    return []
+  }
 
   const resolve = (val: string): string | null => {
     if (/^\d+$/.test(val)) {

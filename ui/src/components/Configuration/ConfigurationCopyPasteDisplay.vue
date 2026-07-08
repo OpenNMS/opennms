@@ -35,6 +35,8 @@
   setup
   lang="ts"
 >
+import { computed, reactive, ref } from 'vue'
+
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ContentCopy from '@featherds/icon/action/ContentCopy'

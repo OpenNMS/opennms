@@ -6,15 +6,18 @@
     <div class="section-header">Sources</div>
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
-      <FeatherAutocomplete
-        type="single"
-        label="Add Source"
-        textProp="name"
-        :modelValue="selectedAutoSource"
-        @update:modelValue="onSourceSelected"
-        @search="onSourceSearch"
-        :results="sourceSearchResults"
+      <PAutoComplete
+        v-model="autocompleteQuery"
+        :suggestions="sourceSearchResults"
+        optionLabel="name"
+        @complete="onSourceSearch"
+        @option-select="onSourceSelected($event.value)"
+        placeholder="Add Source"
+        :forceSelection="true"
         data-test="add-source-autocomplete"
+        dropdown
+        completeOnFocus
+        fluid
       />
     </div>
     <div class="sources-card">
@@ -29,13 +32,13 @@
         <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
         <PColumn style="width: 4rem">
           <template #body="{ data }">
-            <FeatherButton
-              icon="Delete"
+            <PButton
+              text
               data-test="delete-source-button"
               @click="removeSource(data.name)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            </PButton>
           </template>
         </PColumn>
       </PDataTable>
@@ -44,18 +47,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
+import AutoCompleteComponent from 'primevue/autocomplete'
+import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 
+const PAutoComplete = AutoCompleteComponent
+const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 
-interface SourceItem extends IAutocompleteItemType {
+interface SourceItem {
   name: string
   id: number
 }
@@ -69,26 +76,25 @@ const emit = defineEmits<{
 }>()
 
 const store = useSnmpDataCollectionStore()
-const selectedAutoSource = ref<SourceItem | undefined>(undefined)
+const autocompleteQuery = ref<string | SourceItem>('')
 const sourceSearchResults = ref<SourceItem[]>([])
 
 const sortedSources = computed(() =>
   [...props.sources].sort((a, b) => a.localeCompare(b)).map(name => ({ name }))
 )
 
-const onSourceSearch = (query: string) => {
-  const q = query.toLowerCase()
+const onSourceSearch = (event: { query: string }) => {
+  const q = event.query.toLowerCase()
   sourceSearchResults.value = store.uploadedSourceNames
     .filter(s => !props.sources.includes(s.name))
     .filter(s => s.name.toLowerCase().includes(q))
     .map(s => ({ name: s.name, id: s.id }))
 }
 
-const onSourceSelected = (item: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
-  const source = item as SourceItem | undefined
-  if (source && !Array.isArray(source)) {
+const onSourceSelected = (source: SourceItem | undefined) => {
+  if (source) {
     emit('update:sources', [...props.sources, source.name])
-    selectedAutoSource.value = undefined
+    autocompleteQuery.value = ''
     sourceSearchResults.value = []
   }
 }
@@ -119,16 +125,6 @@ const removeSource = (name: string) => {
 .sources-card {
   :deep(.p-datatable-thead) {
     display: none;
-  }
-
-  :deep(.p-datatable-tbody > tr) {
-    background-color: var(--feather-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-datatable-tbody > tr > td) {
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
   }
 }
 </style>

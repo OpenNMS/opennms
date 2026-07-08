@@ -35,14 +35,12 @@ export const mapUserToServer = (payload: any): SnmpV3User => {
     user.authPassphrase = null
     user.privacyProtocol = null
     user.privacyPassphrase = null
-  }
-  else if (payload.securityLevel === 2) {
+  } else if (payload.securityLevel === 2) {
     user.authProtocol = payload.authProtocol
     user.authPassphrase = payload.authPassphrase
     user.privacyProtocol = null
     user.privacyPassphrase = null
-  }
-  else if (payload.securityLevel === 3) {
+  } else if (payload.securityLevel === 3) {
     user.authProtocol = payload.authProtocol
     user.authPassphrase = payload.authPassphrase
     user.privacyProtocol = payload.privacyProtocol

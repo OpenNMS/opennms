@@ -21,9 +21,9 @@
  */
 package org.opennms.core.ipc.twin.jms;
 
-import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
+import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.After;
 import org.junit.Before;
@@ -92,7 +92,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
     @Autowired
     @Qualifier("queuingservice")
-    private ActiveMQComponent queuingservice;
+    private JmsComponent queuingservice;
 
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {

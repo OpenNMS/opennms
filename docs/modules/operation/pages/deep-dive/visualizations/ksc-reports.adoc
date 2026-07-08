@@ -1,15 +1,15 @@
 
 [[ksc-reports]]
-= KSC Reports
-:description: Learn about KSC reports in {page-component-title}, which display prefabricated graphical views of collected data.
+= Graph Collections
+:description: Learn about graph collections in {page-component-title}, which display prefabricated graphical views of collected data.
 
-KSC reports provide a way to generate prefabricated graphical views of collected data.
-A report displays its data in its defined order (columns, rows, and so on).
+Graph collections (formerly KSC reports) provide a way to generate prefabricated graphical views of collected data.
+A graph collection displays its data in its defined order (columns, rows, and so on).
 
 == Configuration
 
-You can configure KSC reports in the {page-component-title} web UI.
-To do so, click menu:Reports[KSC Reports] in the top menu bar.
+You can configure graph collections in the {page-component-title} web UI.
+To do so, click menu:Reports[Graph Collections] in the top menu bar.
 
 The following is an example report entry that uses a custom index and graphs:
 
@@ -44,6 +44,6 @@ For more information, see `org.opennms.netmgt.config.KSC_PerformanceReportFactor
 
 NOTE: Make sure that each report's `id` is unique.
 
-== Use KSC reports
+== Use graph collections
 
-The KSC Reports section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.
+The Graph Collections section on the {page-component-title} home page includes a drop-down list from which you can select configured graph collections.

@@ -34,7 +34,7 @@ const addZenithRegistration = async (request: ZenithConnectRegistration): Promis
     if (resp.status === 200 || resp.status === 201) {
       return resp.data as ZenithConnectRegistration
     }
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 
@@ -50,7 +50,7 @@ const getZenithRegistrations = async (): Promise<ZenithConnectRegistrations | fa
     if (resp.status === 200) {
       return resp.data as ZenithConnectRegistrations
     }
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 

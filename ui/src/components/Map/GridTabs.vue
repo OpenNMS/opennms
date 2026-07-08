@@ -8,6 +8,9 @@
   <router-view />
 </template>
 <script setup lang="ts">
+import { computed, onActivated, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 import { useMapStore } from '@/stores/mapStore'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
 import { Alarm, Node } from '@/types'

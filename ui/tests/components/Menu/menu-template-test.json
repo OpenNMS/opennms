@@ -14,7 +14,7 @@
   "displayAddNodeButton": false,
   "sideMenuInitialExpand": false,
   "copyrightDates": "2002-2026",
-  "version": "36.0.1",
+  "version": "36.0.2",
   "menus": [
     {
       "id": "testHeader",
@@ -30,8 +30,8 @@
       "roles": null,
       "items": [
         {
-          "id": "nodeList",
-          "name": "Node List",
+          "id": "nodes",
+          "name": "Nodes",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null

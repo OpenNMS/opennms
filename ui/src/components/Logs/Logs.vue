@@ -1,94 +1,60 @@
 <template>
-  <Search />
-  <div class="sidebar-relative-container">
-    <div class="file-tools">
-      <FeatherButton
-        class="btn"
-        :disabled="!selectedLog"
-        icon="Scroll to selected log."
-        @click="scrollToSelectedLog"
-      >
-        <FeatherIcon :icon="SupportCenter" />
-      </FeatherButton>
-    </div>
-    <div class="logs-sidebar">
-      <p
-        :id="log === selectedLog ? 'selected' : ''"
-        :class="{ 'selected': log === selectedLog }"
-        class="pointer"
-        v-for="(log, index) in logs"
-        :key="log"
-        @click="getLog(log)"
-      >
-        <span class="subtitle1">{{ Number(index) + 1 }}:&nbsp;</span>
-        <span class="subtitle2">{{ log }}</span>
-      </p>
-    </div>
+  <div class="logs-sidebar">
+    <h3>Search Logs</h3>
+    <PListbox
+      v-model="selectedLog"
+      :options="logs"
+      filter
+      filterPlaceholder="Search logs"
+      class="logs-listbox"
+      :listStyle="listStyle"
+      @change="onChange"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
-import SupportCenter from '@featherds/icon/action/SupportCenter'
-import Search from './Search.vue'
+import { computed, ref, watch } from 'vue'
+
+import Listbox from 'primevue/listbox'
 import { useLogStore } from '@/stores/logStore'
 
-const logStore = useLogStore()
-const selectedLog = computed(() => logStore.selectedLog)
-const logs = computed(() => logStore.getFilteredLogs())
-const getLog = (log: string) => logStore.getLog(log)
+const PListbox = Listbox
 
-const scrollToSelectedLog = () => {
-  const selected = document.getElementById('selected')
-  if (selected) {
-    selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
+const logStore = useLogStore()
+const logs = computed(() => logStore.logs)
+const selectedLog = ref(logStore.selectedLog)
+const listStyle = 'max-height: calc(100vh - 260px)'
+
+// Keep the Listbox highlight in sync with the store's selected log, including
+// when it is refreshed or changed outside this component.
+watch(() => logStore.selectedLog, (log) => {
+  selectedLog.value = log
+})
+
+const onChange = (event: { value: string | null }) => {
+  // PrimeVue Listbox single-select treats a click on the already-selected option
+  // as a toggle: it emits update:modelValue with null (clearing selectedLog)
+  // before emitting @change. Fall back to the currently loaded log so a re-click
+  // reloads it and keeps the highlight, matching the old FeatherListItem behavior
+  // that reloaded on every click.
+  const log = event.value ?? logStore.selectedLog
+  if (!log) {
+    return
   }
+  selectedLog.value = log
+  logStore.getLog(log)
 }
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-.sidebar-relative-container {
-  position: relative;
-
-  .file-tools {
-    position: sticky;
-    width: 100%;
-    height: 30px;
-    background: var($shade-4);
-
-    .btn {
-      margin: 0px;
-      float: right;
-      height: 25px !important;
-      width: 25px !important;
-      min-width: 25px !important;
-      margin-top: 2px;
-      svg {
-        font-size: 20px !important;
-      }
-    }
+.logs-sidebar {
+  h3 {
+    margin: 0 0 0.5rem 0;
   }
-  .logs-sidebar {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: calc(100vh - 212px);
-    word-break: break-all;
-    border: 1px solid var($border-on-surface);
 
-    p {
-      margin: 0px;
-      padding: 5px;
-      padding-left: 10px;
-    }
-
-    .selected {
-      background: var($shade-3);
-      span {
-        color: var($primary);
-      }
-    }
+  .logs-listbox {
+    width: 100%;
   }
 }
 </style>

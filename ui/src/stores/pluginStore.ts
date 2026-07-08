@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { Plugin } from '@/types'
+import { ref } from 'vue'
 
 export const usePluginStore = defineStore('pluginStore', () => {
   const plugins = ref([] as Plugin[])

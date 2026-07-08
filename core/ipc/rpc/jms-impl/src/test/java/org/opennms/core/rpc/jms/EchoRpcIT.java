@@ -21,8 +21,8 @@
  */
 package org.opennms.core.rpc.jms;
 
-import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
+import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.junit.ClassRule;
@@ -68,7 +68,7 @@ public class EchoRpcIT extends org.opennms.core.rpc.camel.EchoRpcIT {
 
     @Autowired
     @Qualifier("queuingservice")
-    private ActiveMQComponent queuingservice;
+    private JmsComponent queuingservice;
 
     @Autowired
     @Qualifier("rpcClient")

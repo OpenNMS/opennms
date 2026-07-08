@@ -9,26 +9,23 @@
     <div class="spacer-medium"></div>
     <div class="flex title-padding">
       <div id="status-chip-wrapper">
-        <FeatherChipList mode="single" label="Usage statistics status">
-          <FeatherChip
-            :id="status.enabled ? 'chip-status-enabled' : 'chip-status-disabled'"
-          >
-            <template #icon>
-              <FeatherIcon :icon="status.enabled ? CheckCircle : Remove" />
-            </template>
-              {{ status.enabled ? 'Enabled' : 'Disabled' }}
-          </FeatherChip>
-        </FeatherChipList>
+        <PTag
+          :severity="status.enabled ? 'success' : 'secondary'"
+          aria-label="Usage statistics status"
+        >
+          <FeatherIcon :icon="status.enabled ? CheckCircle : Remove" />
+          <span>{{ status.enabled ? 'Enabled' : 'Disabled' }}</span>
+        </PTag>
       </div>
       <div
         class="flex button-wrapper"
       >
-        <FeatherButton
+        <PButton
           class="button"
-          secondary
+          outlined
+          :label="status.enabled ? 'Disable' : 'Enable'"
           @click="updateStatus"
-          >{{ status.enabled ? 'Disable' : 'Enable' }}</FeatherButton
-        >
+        />
       </div>
     </div>
     <div class="spacer-large"></div>
@@ -42,20 +39,22 @@
       <div
         class="flex button-wrapper"
       >
-        <FeatherButton
+        <PButton
           class="button"
-          secondary
+          outlined
+          label="Copy JSON"
           @click="copyJson"
-          >Copy Json</FeatherButton
-        >
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import { computed } from 'vue'
+
+import Button from 'primevue/button'
+import Tag from 'primevue/tag'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Remove from '@featherds/icon/action/Remove'
@@ -63,6 +62,9 @@ import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
 import useSnackbar from '@/composables/useSnackbar'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { UsageStatisticsData, UsageStatisticsStatus } from '@/types/usageStatistics'
+
+const PButton = Button
+const PTag = Tag
 
 const { showSnackBar } = useSnackbar()
 const usageStatisticsStore = useUsageStatisticsStore()
@@ -96,10 +98,6 @@ const updateStatus = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-
 .usage-stats-header {
   display: flex;
   flex-direction: column;
@@ -120,30 +118,9 @@ const updateStatus = () => {
   margin-bottom: 2rem;
 }
 
-#chip-status-enabled {
-  background-color: rgb(201, 220, 205);
-
-  .label {
-    color: rgb(51, 112, 33);
-    font-size: 3rem;
+#status-chip-wrapper {
+  :deep(.feather-icon) {
+    font-size: 1rem;
   }
-  .feather-icon {
-    color: rgb(51, 112, 33);
-  }
-}
-
-#chip-status-disabled {
-  background-color: rgb(219, 221, 224);
-  font-size: 1rem;
-  .label {
-    color: rgb(117, 117, 117);
-  }
-  .feather-icon {
-    color: rgb(117, 117, 117);
-  }
-}
-
-#status-chip-wrapper div.chip-list.single div.chip {
-  margin-left: 0px;
 }
 </style>

@@ -57,12 +57,14 @@
 import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { format } from 'd3'
-import { PropType } from 'vue'
+import { PropType, ref } from 'vue'
 
 const displayRawValues = ref(false)
 const d3format = format('.3s')
 const formatColumnValue = (num: number) => {
-  if (isNaN(num)) return 'N/A'
+  if (isNaN(num)) {
+    return 'N/A'
+  }
   return d3format(num)
 }
 
@@ -142,4 +144,3 @@ const highlightTableText = () => {
   }
 }
 </style>
-

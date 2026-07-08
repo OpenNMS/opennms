@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.support;
 
-import static org.opennms.web.rest.support.CriteriaValueConverters.BOOLEAN_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.CHARACTER_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;

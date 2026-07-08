@@ -88,7 +88,7 @@ import { FeatherSelect } from '@featherds/select'
 import { FeatherInput } from '@featherds/input'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import { LocalConfiguration, LocalErrors } from './configuration.types'
 import { ErrorStrings } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
@@ -127,7 +127,9 @@ const scheduledTime = computed(() => {
 
 const errorRegex = /^Error/
 const advancedCronTabHasErrorInHint = computed(() => {
-  if(!props.config.advancedCrontab || !errorRegex.test(ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced))) return ''
+  if (!props.config.advancedCrontab || !errorRegex.test(ConfigurationHelper.cronToEnglish(props.config.occuranceAdvanced))) {
+    return ''
+  }
 
   return 'error'
 })
@@ -190,4 +192,3 @@ div a.link {
     }
 }
 </style>
-
