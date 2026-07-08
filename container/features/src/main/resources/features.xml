@@ -161,7 +161,7 @@
     <feature name="hibernate5" version="${hibernateVersion}" description="Hibernate :: Hibernate ORM">
         <feature>commons-collections</feature>
         <feature>dom4j</feature>
-        <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}</bundle>
+        <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.internal.ast</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle dependency="true">mvn:javax.persistence/javax.persistence-api/2.2</bundle>
@@ -234,20 +234,6 @@
     <feature name="rate-limited-logger" version="${rateLimitedLoggerVersion}" description="Rate Limited Logger">
         <feature>joda-time</feature>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}$Bundle-SymbolicName=com.swrve.rate-limited-logger&amp;Bundle-Version=${rateLimitedLoggerVersion}</bundle>
-    </feature>
-    <!-- version attr is the clean OSGi version 5.8.16 (the ServiceMix coord ${springSecurityVersion}=5.8.16_1
-         is not a valid OSGi version). OpenID dropped (module removed in Security 5.x); spring-security-aspects
-         wrap dropped (unused). -->
-    <feature name="spring-security-opennms" version="${springSecurityOsgiVersion}" description="Spring :: Security">
-        <feature version="[5.3,5.4)">spring-web</feature>
-        <feature>commons-codec</feature>
-        <feature>javax.servlet</feature>
-        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Bundle-SymbolicName=org.springframework.ldap.core&amp;Bundle-Version=${springLdapVersion}&amp;Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-core/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-config/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-ldap/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-remoting/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-web/${springSecurityVersion}</bundle>
     </feature>
     <feature name="jicmp" version="${jicmpVersion}" description="jicmp">
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -877,7 +863,6 @@
         <feature>javax.servlet</feature>
         <feature>jcifs</feature>
         <feature>jldap</feature>
-        <feature>spring-security-opennms</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-dhcpd</feature>

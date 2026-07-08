@@ -135,6 +135,9 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         super.close();
 
         try {
+            if (template != null) {
+                template.stop();
+            }
             sinkCamelContext.stop();
         } catch (final Exception e) {
             throw new IOException(e);

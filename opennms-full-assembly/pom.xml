@@ -331,8 +331,6 @@
                 <feature>spring-oxm/${springOsgiVersion}</feature>
                 <feature>spring-test/${springOsgiVersion}</feature>
                 <feature>spring-tx/${springOsgiVersion}</feature>
-                <feature>spring-web/${springOsgiVersion}</feature>
-                <feature>spring-websocket/${springOsgiVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
                 <feature>activemq-broker-noweb</feature>
@@ -458,7 +456,6 @@
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
                 <feature>smack</feature>
-                <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>
@@ -572,7 +569,6 @@
                 <feature>opennms-discovery</feature>
                 <feature>opennms-events-daemon</feature>
                 <feature>opennms-reporting</feature>
-                <feature>opennms-webapp</feature>
               </features>
               <repository>${project.build.directory}/experimental-repo</repository>
             </configuration>

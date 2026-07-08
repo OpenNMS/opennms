@@ -147,8 +147,6 @@
                 <feature>spring-oxm/${springOsgiVersion}</feature>
                 <feature>spring-test/${springOsgiVersion}</feature>
                 <feature>spring-tx/${springOsgiVersion}</feature>
-                <feature>spring-web/${springOsgiVersion}</feature>
-                <feature>spring-websocket/${springOsgiVersion}</feature>
 
               </features>
               <repository>${project.build.directory}/paxexam/test-repo</repository>

@@ -227,7 +227,7 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>17</javase>
+                      <javase>21</javase>
                       <descriptors>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
@@ -237,6 +237,7 @@
                           <descriptor>file:${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/karaf-extensions.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/spring-legacy.xml</descriptor>
+                          <descriptor>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</descriptor>
                       </descriptors>
                       <distribution>org.apache.karaf.features:framework</distribution>
                       <framework>
@@ -245,6 +246,10 @@
                           <feature>shell</feature>
                           <feature>bundle</feature>
                           <feature>eventadmin</feature>
+                          <!-- provides osgi.implementation=osgi.http (required e.g. by jolokia) and
+                               lets several dao/persistence feature chains resolve; the assemblies
+                               install http at runtime -->
+                          <feature>http</feature>
                       </framework>
                       <features>
                           <!-- core features -->
