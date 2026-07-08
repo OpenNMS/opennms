@@ -67,6 +67,9 @@
   <service interface="org.opennms.integration.api.v1.flows.FlowRepository" ref="switchedKafkaFlowForwarder">
     <service-properties>
       <entry key="flows.repository.id" value="kafka" />
+      <!-- A forwarder, not a primary store: always receives flows and is exempt from the
+           highest-ranked-store override, so it coexists with Elasticsearch or PostgreSQL. -->
+      <entry key="flows.repository.forwarder" value="true" />
     </service-properties>
   </service>
 

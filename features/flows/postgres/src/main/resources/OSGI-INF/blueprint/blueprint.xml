@@ -35,16 +35,20 @@
         <property name="runSchemaChangelog" value="${runSchemaChangelog}"/>
     </bean>
 
-    <!-- Auto-binds to the flow Pipeline, which fans persist() out to every registered repository. -->
-    <service ref="postgresFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository">
+    <!-- The flow Pipeline persists only to the highest service-ranked tier of repositories, so ranking
+         100 (above the default Elasticsearch repository's 0) makes installing this feature override
+         Elasticsearch persistence entirely — no dual-write, no operator configuration. Uninstalling the
+         feature removes this service and the pipeline falls back to Elasticsearch. -->
+    <service ref="postgresFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository" ranking="100">
         <service-properties>
             <entry key="flows.repository.id" value="postgres"/>
         </service-properties>
     </service>
 
-    <!-- Read path. Note: the flows framework consumes a single FlowQueryService; to exercise the
-         Postgres read path, deploy this instead of the Elastic query service (or select by the
-         flows.query.id service-property). -->
+    <!-- Read path. The flows REST/consumer side delegates to the highest service-ranked FlowQueryService;
+         registering at ranking 100 (above Elasticsearch's default 0) means simply installing this feature
+         forces flow reads onto PostgreSQL with no operator configuration, and uninstalling it falls back
+         to the Elasticsearch reads. -->
     <bean id="postgresFlowQueryService"
           class="org.opennms.netmgt.flows.postgres.PostgresFlowQueryService"
           init-method="start" destroy-method="stop">
@@ -52,7 +56,7 @@
         <property name="threads" value="${queryThreads}"/>
     </bean>
 
-    <service ref="postgresFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService">
+    <service ref="postgresFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" ranking="100">
         <service-properties>
             <entry key="flows.query.id" value="postgres"/>
         </service-properties>
