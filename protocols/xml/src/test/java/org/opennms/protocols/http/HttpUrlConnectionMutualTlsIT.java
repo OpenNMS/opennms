@@ -62,7 +62,7 @@ public class HttpUrlConnectionMutualTlsIT {
                 tlsResource("server.p12"), "PKCS12", "server-store-pw", null,
                 tlsResource("server-truststore.p12"), "PKCS12", "server-trust-pw");
 
-        server = HttpsServer.create(new InetSocketAddress("localhost", 0), 0);
+        server = HttpsServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.setHttpsConfigurator(new HttpsConfigurator(serverContext) {
             @Override
             public void configure(final HttpsParameters params) {

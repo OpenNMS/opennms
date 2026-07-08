@@ -176,6 +176,7 @@ This applies only when `trust-store` or `key-store` is set, and takes precedence
 NOTE: The keystore and truststore files must be readable by the {page-component-title} process.
 If a Minion performs the collection, the files must also exist at the same path on that Minion; they are not distributed automatically.
 To avoid storing the passwords in plain text, store them in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and reference them as `${scv:alias:key}`.
+When `key-store` is set, HTTP redirects are followed only when the target stays on the host of the source URL, so that the client certificate is not presented to other hosts.
 These parameters apply to the JSON collector as well, which uses the same HTTP request mechanism.
 
 === HTTP headers

@@ -51,6 +51,23 @@ public class SslContextFactoryTest {
                 null, null, null));
     }
 
+    @Test
+    public void canBuildFromJksKeyStoreWithSeparateKeyPassword() throws Exception {
+        assertNotNull(SslContextFactory.buildSslContext(
+                tlsResource("client.jks"), "JKS", "jks-store-pw", "jks-key-pw",
+                null, null, null));
+    }
+
+    @Test
+    public void failsOnWrongKeyPassword() throws Exception {
+        try {
+            SslContextFactory.buildSslContext(tlsResource("client.jks"), "JKS", "jks-store-pw", "wrong-key-pw", null, null, null);
+            fail("Expected the private key to fail to load");
+        } catch (IOException | GeneralSecurityException e) {
+            // expected
+        }
+    }
+
     @Test(expected = IOException.class)
     public void failsOnMissingKeyStore() throws Exception {
         SslContextFactory.buildSslContext(tlsResource("no-such-store.p12"), null, "secret", null, null, null, null);

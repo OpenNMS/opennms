@@ -118,6 +118,9 @@ To avoid storing passwords in plain text, store them in the xref:operation:deep-
 Setting `hostname-verification` to `false` disables validation of the server certificate's hostname.
 This weakens the protection that TLS provides; prefer issuing certificates that match the scraped host names.
 
+When `key-store` is set, HTTP redirects are followed only when the target stays on the host of the original URL, so that the client certificate is not presented to other hosts.
+An endpoint that redirects scrapes to a different host will appear to return no metrics; point the `url` parameter at the final location instead.
+
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
 == Prometheus collector use
 

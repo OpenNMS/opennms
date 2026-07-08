@@ -73,8 +73,10 @@ public class HttpClientWrapperConfigHelper {
      * hostname-verification parameter.
      */
     public static void setSSLContextIfConfigured(HttpClientWrapper httpClientWrapper, Map<String, Object> keyedParameters) throws GeneralSecurityException, IOException {
-        final String keyStorePath = getKeyedString(keyedParameters, PARAMETER_KEYS.keyStore.getKey());
-        final String trustStorePath = getKeyedString(keyedParameters, PARAMETER_KEYS.trustStore.getKey());
+        // Blank paths count as unset: an unresolvable metadata reference (e.g. ${scv:...})
+        // interpolates to an empty string, which must not fail the whole collection
+        final String keyStorePath = getKeyedPath(keyedParameters, PARAMETER_KEYS.keyStore.getKey());
+        final String trustStorePath = getKeyedPath(keyedParameters, PARAMETER_KEYS.trustStore.getKey());
         if (keyStorePath == null && trustStorePath == null) {
             return;
         }
@@ -86,8 +88,12 @@ public class HttpClientWrapperConfigHelper {
                 trustStorePath,
                 getKeyedString(keyedParameters, PARAMETER_KEYS.trustStoreType.getKey()),
                 getKeyedString(keyedParameters, PARAMETER_KEYS.trustStorePassword.getKey()));
-        final boolean verifyHostname = getKeyedBoolean(keyedParameters, PARAMETER_KEYS.hostnameVerification.getKey(), true);
+        final boolean verifyHostname = getKeyedStrictBoolean(keyedParameters, PARAMETER_KEYS.hostnameVerification.getKey(), true);
         httpClientWrapper.setSSLContext("https", sslContext, verifyHostname);
+        if (keyStorePath != null) {
+            // Don't present the client certificate to arbitrary redirect targets
+            httpClientWrapper.restrictRedirectsToSameHost();
+        }
         LOG.debug("setting SSLContext on HttpClientWrapper: keyStore={}, trustStore={}, verifyHostname={}", keyStorePath, trustStorePath, verifyHostname);
     }
 
@@ -95,6 +101,33 @@ public class HttpClientWrapperConfigHelper {
         if (map == null) return null;
         final Object value = map.get(key);
         return value instanceof String ? (String) value : null;
+    }
+
+    private static String getKeyedPath(final Map<String, Object> map, final String key) {
+        final String value = getKeyedString(map, key);
+        return value == null || value.trim().isEmpty() ? null : value;
+    }
+
+    /**
+     * Like getKeyedBoolean, but only accepts "true" and "false"; any other value is
+     * ignored with a warning so that a typo cannot flip a security-relevant setting
+     * away from its default.
+     */
+    private static boolean getKeyedStrictBoolean(final Map<String, Object> map, final String key, final boolean defaultValue) {
+        if (map == null) return defaultValue;
+
+        final Object value = map.get(key);
+        if (value == null) return defaultValue;
+
+        if (value instanceof Boolean) {
+            return ((Boolean)value).booleanValue();
+        }
+        if (value instanceof String) {
+            if ("true".equalsIgnoreCase((String)value)) return true;
+            if ("false".equalsIgnoreCase((String)value)) return false;
+        }
+        LOG.warn("Ignoring invalid value '{}' for parameter {}, using default {}", value, key, defaultValue);
+        return defaultValue;
     }
 
     // TODO: silly to pull in org.opennms.core.lib just for this, refactor org.opennms.core.utils.ParameterMap someday

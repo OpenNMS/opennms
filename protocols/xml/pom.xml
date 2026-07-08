@@ -90,6 +90,12 @@
             <goals>
               <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <!-- Keep the TLS test key material out of the published test-jar -->
+              <excludes>
+                <exclude>tls/**</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>

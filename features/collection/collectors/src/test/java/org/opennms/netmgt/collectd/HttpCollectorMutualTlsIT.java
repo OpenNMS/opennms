@@ -78,7 +78,7 @@ public class HttpCollectorMutualTlsIT {
                 tlsResource("server-truststore.p12"), "PKCS12", "server-trust-pw");
 
         // Requires a client certificate
-        mutualTlsServer = HttpsServer.create(new InetSocketAddress("localhost", 0), 0);
+        mutualTlsServer = HttpsServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         mutualTlsServer.setHttpsConfigurator(new HttpsConfigurator(serverContext) {
             @Override
             public void configure(final HttpsParameters params) {
@@ -91,7 +91,7 @@ public class HttpCollectorMutualTlsIT {
         mutualTlsServer.start();
 
         // Self-signed certificate, no client certificate required
-        plainTlsServer = HttpsServer.create(new InetSocketAddress("localhost", 0), 0);
+        plainTlsServer = HttpsServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         plainTlsServer.setHttpsConfigurator(new HttpsConfigurator(serverContext));
         addDocumentHandler(plainTlsServer);
         plainTlsServer.start();
