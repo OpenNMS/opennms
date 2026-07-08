@@ -126,6 +126,9 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     }
 
     public void destroy() {
+        if (template != null) {
+            template.stop();
+        }
         onDestroy();
     }
 

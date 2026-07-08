@@ -111,6 +111,9 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
 
     public void close() throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            if (template != null) {
+                template.stop();
+            }
             executor.shutdownNow();
             LOG.info("JMS Twin publisher stopped");
         }

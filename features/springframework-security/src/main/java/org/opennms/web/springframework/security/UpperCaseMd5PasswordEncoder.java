@@ -22,6 +22,7 @@
 package org.opennms.web.springframework.security;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
@@ -46,7 +47,12 @@ public class UpperCaseMd5PasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(final CharSequence rawPassword, final String encodedPassword) {
-        return encodedPassword != null && encode(rawPassword).equalsIgnoreCase(encodedPassword);
+        if (encodedPassword == null) {
+            return false;
+        }
+        // constant-time comparison; case-normalize since stored hashes may be lower-case
+        return MessageDigest.isEqual(encode(rawPassword).getBytes(StandardCharsets.UTF_8),
+                encodedPassword.toUpperCase().getBytes(StandardCharsets.UTF_8));
     }
 
     public String encodePassword(final String rawPass, final Object salt) {

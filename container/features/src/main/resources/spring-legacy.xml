@@ -348,24 +348,4 @@
         </bundle>
     </feature>
 
-    <feature name="spring-web" description="Spring 5.3.x Web support" version="${springOsgiVersion}">
-        <feature version="[5.3,5.4)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/${springVersion}
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/${springVersion}
-        </bundle>
-        <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
-    </feature>
-
-    <feature name="spring-websocket" description="Spring 5.3.x WebSocket support" version="${springOsgiVersion}">
-        <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-        <feature version="[5.3,5.4)">spring-web</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/${springVersion}
-        </bundle>
-    </feature>
-
 </features>

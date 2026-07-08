@@ -284,6 +284,9 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     }
 
     public void stop() {
+        if (template != null) {
+            template.stop();
+        }
         if (executor != null) {
             executor.shutdownNow();
         }
