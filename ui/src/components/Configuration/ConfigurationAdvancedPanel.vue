@@ -20,6 +20,7 @@
             dropdown
             @complete="(e) => search(e.query, props.type, props.subType, index)"
             @item-select="(e) => onKeySelect(e.value, index)"
+            @update:modelValue="(val) => onKeyInput(val, index)"
           >
             <template #empty>
               <div class="autocomplete-empty">{{ labels.noResults }}</div>
@@ -56,7 +57,6 @@
   lang="ts"
 >
 import { PropType, computed, reactive, ref } from 'vue'
-
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -64,9 +64,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
-
 import { orderBy } from 'lodash'
-
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
@@ -117,6 +115,23 @@ const buttonAddDisabled = computed(() => {
 const onKeySelect = (key: AdvancedKey, index: number) => {
   // The parent passes a reactive items array and expects in-place mutation here
   // (the original used v-model="item.key" for the same effect).
+  // eslint-disable-next-line vue/no-mutating-props
+  props.items[index].key = key
+  props.advancedKeyUpdate(key, index)
+}
+
+const onKeyInput = (val: unknown, index: number) => {
+  if (val === null) {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.items[index].key = { name: '', _text: '', id: (props.items[index]?.key as any)?.id ?? index + 1 }
+    props.advancedKeyUpdate(props.items[index].key, index)
+    return
+  }
+
+  const key: AdvancedKey = typeof val === 'string'
+    ? { name: val, _text: val, id: (props.items[index]?.key as any)?.id ?? index + 1 }
+    : (val as AdvancedKey)
+
   // eslint-disable-next-line vue/no-mutating-props
   props.items[index].key = key
   props.advancedKeyUpdate(key, index)

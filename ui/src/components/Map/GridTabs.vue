@@ -1,8 +1,8 @@
 <template>
   <PTabs :value="activeTab" class="tabs">
     <PTabList>
-      <PTab value="alarms" @click="goToAlarms">Alarms({{ alarms.length }})</PTab>
-      <PTab value="nodes" @click="goToNodes">Nodes({{ nodes.length }})</PTab>
+      <PTab value="alarms" @click="goToAlarms">Alarms ({{ alarms.length }})</PTab>
+      <PTab value="nodes" @click="goToNodes">Nodes ({{ nodes.length }})</PTab>
     </PTabList>
   </PTabs>
   <router-view />
@@ -40,5 +40,9 @@ const goToNodes = () => router.push('/map/nodes')
   padding-bottom: 10px;
   margin-bottom: -29px;
   background: var(--p-content-background);
+
+  :deep(.p-tab) {
+    text-transform: uppercase;
+  }
 }
 </style>

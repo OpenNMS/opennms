@@ -2,7 +2,11 @@
   <th
     scope="col"
     class="sortable-th"
+    tabindex="0"
+    :aria-sort="sort === SORT.ASCENDING ? 'ascending' : sort === SORT.DESCENDING ? 'descending' : 'none'"
     @click="onClick"
+    @keydown.enter.prevent="onClick"
+    @keydown.space.prevent="onClick"
   >
     <slot />
     <span class="sort-indicator" aria-hidden="true">{{ indicator }}</span>

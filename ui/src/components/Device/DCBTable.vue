@@ -80,6 +80,8 @@
         <template #header>
           <PCheckbox
             binary
+            inputId="dcb-select-all"
+            aria-label="Select all configurations"
             :modelValue="all"
             @update:modelValue="onSelectAll"
             data-test="all-checkbox"
@@ -90,8 +92,10 @@
           <PCheckbox
             binary
             class="dcb-config-checkbox"
+            :disabled="all"
+            :aria-label="`Select ${data.deviceName}`"
             :modelValue="all || selectedDeviceConfigBackups[data.id]"
-            @update:modelValue="selectCheckbox(data)"
+            @update:modelValue="() => selectCheckbox(data)"
           />
         </template>
       </PColumn>
@@ -101,7 +105,6 @@
           <a
             :href="computeNodeLink(data.nodeId)"
             @click="onNodeLinkClick(data.nodeId)"
-            target="_blank"
           >
             {{ data.deviceName }}
             <FeatherIcon

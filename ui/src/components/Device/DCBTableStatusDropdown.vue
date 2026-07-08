@@ -3,6 +3,9 @@
     class="pointer dcb-table-status-trigger"
     menu-trigger
     aria-haspopup="true"
+    tabindex="0"
+    @keydown.enter.prevent="toggleMenu"
+    @keydown.space.prevent="toggleMenu"
     @click="toggleMenu"
   >
     Backup Status
