@@ -1,35 +1,36 @@
 <template>
-  <FeatherDropdown
-    class="user-notification-menubar-dropdown"
-    :modelValue="expanded"
-    @update:modelValue="(val: any) => updateDisplay(val)"
-  >
-    <template v-slot:trigger="{ attrs, on }">
-      <div @mouseenter="showMenu" class="user-notification-badge-wrapper">
-        <span
-          :class="['notification-badge-pill', userNotificationBadgeClass]">
-          {{ notificationSummary.userUnacknowledgedCount }}
-        </span>
-        <span
-          :class="['notification-badge-pill', teamNotificationBadgeClass]">
-          {{ notificationSummary.teamUnacknowledgedCount }}
-        </span>
+  <div ref="triggerEl" class="user-notification-badge-wrapper" @mouseenter="showMenu">
+    <span
+      :class="['notification-badge-pill', userNotificationBadgeClass]">
+      {{ notificationSummary.userUnacknowledgedCount }}
+    </span>
+    <span
+      :class="['notification-badge-pill', teamNotificationBadgeClass]">
+      {{ notificationSummary.teamUnacknowledgedCount }}
+    </span>
 
-        <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
-          <FeatherIcon
-            :icon="noticeStatusDisplay?.iconComponent"
-            :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
-          />
-
-          <FeatherIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
-        </FeatherButton>
-      </div>
-    </template>
-
-    <FeatherDropdownItem
-      @click="onMenuItemClick(notificationConfigUrl)"
+    <Button
+      text
+      class="menubar-dropdown-button-dark"
+      aria-haspopup="true"
+      aria-label="User notifications menu"
+      @click="onTriggerClick"
     >
-      <div class="menubar-dropdown-item-content">
+      <FeatherIcon
+        :icon="noticeStatusDisplay?.iconComponent"
+        :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
+      />
+
+      <FeatherIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
+    </Button>
+
+    <Popover
+      ref="pop"
+      appendTo="self"
+      class="onms-user-dropdown-panel user-notification-dropdown-panel"
+      @hide="onPopoverHide"
+    >
+      <div class="menubar-dropdown-item-content" @click="onMenuItemClick(notificationConfigUrl)">
         <a :href="computeLink(notificationConfigUrl)" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <FeatherIcon
             :icon="noticeStatusDisplay?.iconComponent"
@@ -41,14 +42,13 @@
           </span>
         </a>
       </div>
-    </FeatherDropdownItem>
 
-    <FeatherDropdownItem
-      v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'userNotificationUser')"
-      :key="item.name || ''"
-      @click="onMenuItemClick(item.url || '')"
-    >
-      <div class="menubar-dropdown-item-content">
+      <div
+        v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'userNotificationUser')"
+        :key="item.name || ''"
+        class="menubar-dropdown-item-content"
+        @click="onMenuItemClick(item.url || '')"
+      >
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <FeatherIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
@@ -56,58 +56,52 @@
           </span>
         </a>
       </div>
-    </FeatherDropdownItem>
 
-    <!-- user notifications -->
-    <FeatherDropdownItem
-      v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0, maxNotifications)"
-      :key="item.id || ''"
-      class="notification-dropdown-item"
-      @click="onNotificationItemClick(item)"
-    >
-      <template #default>
-        <div class="menubar-dropdown-item-content">
-          <div class="notification-dropdown-item-content dropdown-menu-wrapper">
-            <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
-              <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
-              <div class="full-width-left">
-                <div>
-                  <span class="font-weight-bold">
-                    {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
-                    Date(item.pageTime).toLocaleTimeString()
-                    }}
-                  </span>
-                </div>
-                <div class="dropdown-info-bar">
-                  <span>{{ item.notificationName }}</span>
-                  <span>{{ item.nodeLabel }}</span>
-                  <span>{{ item.ipAddress }}</span>
-                  <span>{{ item.serviceType?.name }}</span>
-                </div>
+      <!-- user notifications -->
+      <div
+        v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0, maxNotifications)"
+        :key="item.id || ''"
+        class="menubar-dropdown-item-content notification-dropdown-item"
+        @click="onNotificationItemClick(item)"
+      >
+        <div class="notification-dropdown-item-content dropdown-menu-wrapper">
+          <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
+            <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
+            <div class="full-width-left">
+              <div>
+                <span class="font-weight-bold">
+                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
+                  Date(item.pageTime).toLocaleTimeString()
+                  }}
+                </span>
+              </div>
+              <div class="dropdown-info-bar">
+                <span>{{ item.notificationName }}</span>
+                <span>{{ item.nodeLabel }}</span>
+                <span>{{ item.ipAddress }}</span>
+                <span>{{ item.serviceType?.name }}</span>
               </div>
             </div>
           </div>
         </div>
-      </template>
-    </FeatherDropdownItem>
+      </div>
 
-    <FeatherDropdownItem
-      v-if="notificationSummary.userUnacknowledgedCount > maxNotifications"
-    >
-      <div class="menubar-dropdown-item-content">
+      <div
+        v-if="notificationSummary.userUnacknowledgedCount > maxNotifications"
+        class="menubar-dropdown-item-content"
+      >
         <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
           <a :href="notificationsShowMoreLink" @click="onMenuItemClick(notificationsShowMoreLink)">Show more...</a>
         </div>
       </div>
-    </FeatherDropdownItem>
 
-    <!-- Team and On-Call links -->
-    <FeatherDropdownItem
-      v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'userNotificationUser' && i.id !== 'userNotificationConfiguration')"
-      :key="item.name || ''"
-      @click="onMenuItemClick(item.url || '')"
-    >
-      <div class="menubar-dropdown-item-content">
+      <!-- Team and On-Call links -->
+      <div
+        v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'userNotificationUser' && i.id !== 'userNotificationConfiguration')"
+        :key="item.name || ''"
+        class="menubar-dropdown-item-content"
+        @click="onMenuItemClick(item.url || '')"
+      >
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.id === 'userNotificationTeam'">
@@ -129,14 +123,13 @@
           </span>
         </a>
       </div>
-    </FeatherDropdownItem>
-  </FeatherDropdown>
+    </Popover>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw } from 'vue'
+import { computed, markRaw, ref, watch } from 'vue'
 
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import IconArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
 import IconCalendar from '@featherds/icon/action/Calendar'
@@ -144,6 +137,8 @@ import IconGroup from '@featherds/icon/action/Group'
 import IconNotificationsOff from '@featherds/icon/notification/NotificationsOff'
 import IconNotificationSelected from '@featherds/icon/notification/NotificationSelected'
 import IconPerson from '@featherds/icon/action/Person'
+import Button from 'primevue/button'
+import Popover from 'primevue/popover'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
@@ -156,7 +151,7 @@ const menuStore = useMenuStore()
 const maxNotifications = 2
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
-defineProps({
+const props = defineProps({
   expanded: {
     required: true,
     type: Boolean
@@ -165,17 +160,38 @@ defineProps({
 
 const emit = defineEmits(['menu-show', 'menu-hide'])
 
-const updateDisplay = (val: any) => {
-  if (val === true) {
-    emit('menu-show')
-  } else {
-    emit('menu-hide')
-  }
-}
+const pop = ref()
+const triggerEl = ref<HTMLElement>()
 
 const showMenu = () => {
   emit('menu-show')
 }
+
+const onTriggerClick = () => {
+  if (props.expanded) {
+    emit('menu-hide')
+  } else {
+    emit('menu-show')
+  }
+}
+
+const onPopoverHide = () => {
+  emit('menu-hide')
+}
+
+// The parent (Menubar) owns the open/close state via the `expanded` prop
+// (hover to open, close on header mouseleave / other dropdown / outside click).
+// Drive the Popover imperatively from that single source of truth. A synthetic
+// event carrying `currentTarget` is required because Popover.show reads it.
+watch(() => props.expanded, (val) => {
+  if (val) {
+    if (triggerEl.value) {
+      pop.value?.show({ currentTarget: triggerEl.value }, triggerEl.value)
+    }
+  } else {
+    pop.value?.hide()
+  }
+})
 
 const notificationSummary = computed<NotificationSummary>(() => menuStore.notificationSummary)
 
@@ -259,59 +275,45 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/dropdown/scss/mixins";
-@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
 
+// Foreground uses PrimeVue tokens (not FeatherDS vars) so text tracks the same
+// dark-mode selector that drives the Popover background. On embedded JSP pages
+// the FeatherDS theme vars may not be toggled, which would leave dark-on-dark.
 .dropdown-menu-link {
-  color: var($primary-text-on-surface) !important;
+  color: var(--p-text-color) !important;
 
   &:hover {
     text-decoration: none;
   }
 }
 
-.user-notification-menubar-dropdown {
+.user-notification-badge-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
   margin-left: 2px;
-
-  :deep(.feather-dropdown) {
-    @include dropdown-menu-height(10);
-  }
 }
 
-.menubar-dropdown-dark {
-  margin-left: 2px;
-  &.help-menu {
-    margin-left:1px;
-  }
-  :deep(.feather-dropdown) {
-    @include dropdown-menu-height(10);
-  }
-}
-
+// Dark trigger button (replaces FeatherButton link). Matches the OG menu look.
 .menubar-dropdown-button-dark {
-  // make it look more like OG menu
   color: rgba(255, 255, 255, 0.78); // --feather-surface-light or --feather-state-text-color-on-surface-dark
-  background-color: #131736; // --feather-surface-dark
+  background-color: transparent;
+  border: none;
   text-transform: none;
   letter-spacing: normal;
-  font-weight: 600; // 400
+  font-weight: 600;
   font-size: 0.875rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
+  padding: 0 7px;
 
-.btn.menubar-dropdown-button-dark {
-  :deep(.btn-content) {
-    // make it look more like OG menu
-    color: rgba(255, 255, 255, 0.78); // --feather-surface-light or --feather-state-text-color-on-surface-dark
-    text-transform: none;
-    letter-spacing: normal;
-    font-weight: 600;
-    font-size: 0.875rem;
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    box-shadow: none;
+    outline: none;
   }
 }
 
@@ -334,6 +336,13 @@ div.user-notification-badge-wrapper {
   padding-left: 0.5rem;
   font-size: 0.875rem;
   font-weight: 400;
+  cursor: pointer;
+
+  // Shaded background on hover / keyboard focus of the item row.
+  &:hover,
+  &:focus-within {
+    background-color: var(--p-highlight-background);
+  }
 
   .user-notifications-icon {
     font-size: 1.25rem;
@@ -381,14 +390,11 @@ div.user-notification-badge-wrapper {
   padding-right: 6px;
   margin-left: 4px;
   margin-right: 2px;
-  line-height: 3rem;
+  line-height: 1.5rem;
+  font-weight: 800;
   background-color: #ffffff;
   color: #131736; // --feather-surface-dark
   border-radius: .8rem;
-}
-
-.notification-dropdown-item {
-  //  min-height: 200px;
 }
 
 .notification-dropdown-item-content {
@@ -406,6 +412,46 @@ div.user-notification-badge-wrapper {
     width: 15px;
     height: 15px;
     margin-right: 15px;
+  }
+}
+
+.dropdown-info-bar {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 10px;
+
+  span {
+    margin-right: 10px;
+  }
+}
+
+.full-width-left {
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-menu-wrapper {
+  padding: 0 1em;
+  min-width: 400px;
+  padding-top: 10px;
+
+  &.show-more-link {
+    padding-bottom: 10px;
+
+    a {
+      color: var(--p-text-color)
+    }
+  }
+}
+
+.final-menu-wrapper {
+  display: block;
+  padding-left: 20px;
+  padding-bottom: 10px;
+
+  svg {
+    margin-right: 10px;
   }
 }
 
@@ -443,70 +489,28 @@ div.user-notification-badge-wrapper {
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
+// The Popover is rendered inline (appendTo="self") so it stays inside the fixed
+// header's DOM subtree, preserving the header's close-on-mouseleave behavior
+// (moving the pointer into the panel does not "leave" the header). PrimeVue
+// positions the panel with inline absolute coords computed from viewport +
+// scroll offset, which is wrong inside a fixed header — pin it under the
+// trigger instead and drop the arrow (FeatherDropdown had none).
+.user-notification-dropdown-panel.p-popover {
+  top: 100% !important;
+  inset-inline-start: auto !important;
+  right: 0 !important;
+  margin-top: 0 !important;
 
-body .feather-menu .feather-menu-dropdown {
-  border-radius: 4px;
-
-  .feather-dropdown {
-    border: 1px solid rgba(0, 0, 0, .35);
-  }
-}
-
-.feather-dropdown {
-  .feather-list-item {
-    height: auto;
-    padding: 0;
-  }
-
-  .dropdown-menu-wrapper {
-    padding: 0 1em;
-    min-width: 400px;
-    padding-top: 10px;
-
-    &.show-more-link {
-      padding-bottom: 10px;
-
-      a {
-        color: var(--feather-primary-text-on-surface)
-      }
-    }
+  &::before,
+  &::after {
+    display: none !important;
   }
 
-  .final-menu-wrapper {
-    display: block;
-    padding-left: 20px;
-    padding-bottom: 10px;
-
-    svg {
-      margin-right: 10px;
-    }
-  }
-}
-
-.dropdown-info-bar {
-  display: flex;
-  align-items: center;
-  text-align: left;
-  margin-bottom: 10px;
-
-  span {
-    margin-right: 10px;
-  }
-}
-
-.full-width-left {
-  width: 100%;
-  text-align: left;
-}
-
-.feather-menu {
-  &.menubar-dropdown {
-    margin-left:0;
-  }
-  .menubar-dropdown-button-dark {
-    padding: 0 7px;
+  .p-popover-content {
+    padding: 0.25rem 0;
+    // Baseline PrimeVue-aware text color so all panel content stays legible
+    // in dark mode even where FeatherDS theme vars aren't active (JSP pages).
+    color: var(--p-text-color);
   }
 }
 </style>
