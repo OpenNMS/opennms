@@ -29,7 +29,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -169,6 +171,10 @@ public class PollableServiceConfigIT {
         when(pollerRequestBuilder.withService(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withTimeToLive(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withAdaptor(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withAttributes(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withPreInterpolatedAttributes(anyBoolean())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withPatternVariables(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.getInterpolatedAttributes()).thenReturn(Map.of());
         
         final LocationAwarePollerClient locationAwarePollerClient = mock(LocationAwarePollerClient.class);
         when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
@@ -203,6 +209,7 @@ public class PollableServiceConfigIT {
                     .withMonitorLocator(any())
                     .withTimeToLive(any())
                     .withAttributes(any())
+                    .withPreInterpolatedAttributes(anyBoolean())
                     .withAdaptor(any())
                     .withAdaptor(any())
                     .withAdaptor(any())
@@ -235,6 +242,54 @@ public class PollableServiceConfigIT {
 
         // Verify
         assertTrue(pollStatus.isUnknown());
+    }
+
+    /**
+     * Verifies that the service parameters are interpolated once and cached across
+     * polls, and that {@link PollableServiceConfig#refreshMetadata()} discards the
+     * cache so the next poll re-interpolates them.
+     */
+    @Test
+    public void cachesInterpolatedParametersUntilMetadataRefresh() throws Exception {
+        final Map<String, Object> interpolated = Map.of("username", "admin");
+
+        final PollerRequestBuilder builder = mock(PollerRequestBuilder.class, Mockito.RETURNS_SELF);
+        when(builder.getInterpolatedAttributes()).thenReturn(interpolated);
+
+        final PollerResponse response = mock(PollerResponse.class);
+        when(response.getPollStatus()).thenReturn(PollStatus.up());
+        when(builder.execute()).thenReturn(CompletableFuture.completedFuture(response));
+
+        final LocationAwarePollerClient client = mock(LocationAwarePollerClient.class);
+        when(client.poll()).thenReturn(builder);
+
+        final PollableService pollableSvc = mock(PollableService.class, Mockito.RETURNS_DEEP_STUBS);
+        when(pollableSvc.getSvcName()).thenReturn("SVC");
+
+        final Service configuredSvc = new Service();
+        configuredSvc.setName("SVC");
+        final Package pkg = mock(Package.class);
+        when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(pkg, configuredSvc)));
+
+        final PollerConfig pollerConfig = mock(PollerConfig.class);
+        when(pollerConfig.getServiceMonitorLocator(any())).thenReturn(Optional.of(mock(ServiceMonitorLocator.class)));
+
+        final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
+                pkg, mock(Timer.class), new MockPersisterFactory(), mock(ThresholdingService.class),
+                client, m_pollOutagesDao, m_serviceMonitorAdaptor);
+
+        psc.poll();
+        psc.poll();
+
+        // the parameters are interpolated once, cached, and passed as pre-interpolated
+        verify(builder, times(1)).getInterpolatedAttributes();
+        verify(builder, times(2)).withAttributes(interpolated);
+        verify(builder, times(2)).withPreInterpolatedAttributes(true);
+
+        // refreshing the metadata discards the cache, so the next poll re-interpolates
+        psc.refreshMetadata();
+        psc.poll();
+        verify(builder, times(2)).getInterpolatedAttributes();
     }
 
     @Test

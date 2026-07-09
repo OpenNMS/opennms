@@ -59,6 +59,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private final Map<String, String> patternVariables = new HashMap<>();
 
+    private boolean preInterpolated = false;
+
     private Long ttlInMs;
 
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
@@ -120,6 +122,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return this;
     }
 
+    @Override
+    public PollerRequestBuilder withPreInterpolatedAttributes(boolean preInterpolated) {
+        this.preInterpolated = preInterpolated;
+        return this;
+    }
+
     // memoized scope; invalidated by the mutators that feed it (withService, withPatternVariables)
     private Scope scope;
 
@@ -154,10 +162,16 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor not found: " + className);
         }
 
-        // The normal Poller path (PollableServiceConfig) will double-interpolate, but that's a no-op
-        // DCB related raw expressions will be interpolated here.
-        final Scope scope = getScope();
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(this.attributes, scope);
+        // The normal Poller path (PollableServiceConfig) passes attributes that are already
+        // interpolated, so we must not interpolate them a second time. Other callers (e.g. DCB)
+        // pass raw expressions which are interpolated here. The scope is only built when
+        // interpolation is needed since each build hits the database.
+        final Map<String, Object> interpolatedAttributes;
+        if (preInterpolated) {
+            interpolatedAttributes = new HashMap<>(this.attributes);
+        } else {
+            interpolatedAttributes = Interpolator.interpolateObjects(this.attributes, getScope());
+        }
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
@@ -191,7 +205,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final Map<String, Object> parameters = request.getMonitorParameters();
         final Map<String, Object> runtimeAttributes = serviceMonitor.getRuntimeAttributes(request, parameters);
         if (!runtimeAttributes.isEmpty()) {
-            request.addAttributes(Interpolator.interpolateAttributes(runtimeAttributes, scope));
+            request.addAttributes(Interpolator.interpolateAttributes(runtimeAttributes, getScope()));
         }
 
         // Execute the request

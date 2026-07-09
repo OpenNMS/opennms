@@ -49,7 +49,6 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
@@ -58,7 +57,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
@@ -294,7 +292,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.removeMetaData(context);
             getDao().update(service);
-            sendNodeMetadataUpdatedEvent(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -316,7 +314,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.removeMetaData(context, key);
             getDao().update(service);
-            sendNodeMetadataUpdatedEvent(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -338,7 +336,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(service);
-            sendNodeMetadataUpdatedEvent(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -360,18 +358,10 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
             }
             service.addMetaData(context, key, value);
             getDao().update(service);
-            sendNodeMetadataUpdatedEvent(service);
+            sendNodeMetadataUpdatedEvent(service.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
-    }
-
-    private void sendNodeMetadataUpdatedEvent(final OnmsMonitoredService service) {
-        final Event e = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "ReST")
-                .setNodeid(service.getNodeId())
-                .addParam(EventConstants.PARM_RESCAN_EXISTING, Boolean.FALSE.toString())
-                .getEvent();
-        sendEvent(e);
     }
 }

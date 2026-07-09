@@ -44,13 +44,11 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
@@ -238,7 +236,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.removeMetaData(context);
             getDao().update(intf);
-            sendNodeMetadataUpdatedEvent(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -260,7 +258,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.removeMetaData(context, key);
             getDao().update(intf);
-            sendNodeMetadataUpdatedEvent(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -282,7 +280,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(intf);
-            sendNodeMetadataUpdatedEvent(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -304,18 +302,10 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
             }
             intf.addMetaData(context, key, value);
             getDao().update(intf);
-            sendNodeMetadataUpdatedEvent(intf);
+            sendNodeMetadataUpdatedEvent(intf.getNodeId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
-    }
-
-    private void sendNodeMetadataUpdatedEvent(final OnmsIpInterface intf) {
-        final Event e = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "ReST")
-                .setNodeid(intf.getNodeId())
-                .addParam(EventConstants.PARM_RESCAN_EXISTING, Boolean.FALSE.toString())
-                .getEvent();
-        sendEvent(e);
     }
 }

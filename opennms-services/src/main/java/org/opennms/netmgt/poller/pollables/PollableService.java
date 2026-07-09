@@ -488,4 +488,12 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_pollConfig.refresh();
     }
 
+    /**
+     * Discards cached, metadata-interpolated service parameters so the next
+     * poll re-resolves them. See {@link PollConfig#refreshMetadata()}.
+     */
+    public void refreshMetadata() {
+        m_pollConfig.refreshMetadata();
+    }
+
 }

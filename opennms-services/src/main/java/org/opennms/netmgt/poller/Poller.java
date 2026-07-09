@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -120,9 +119,6 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired()
     @Qualifier("deviceConfigMonitorAdaptor")
     private ServiceMonitorAdaptor serviceMonitorAdaptor;
-
-    @Autowired
-    private EntityScopeProvider m_entityScopeProvider;
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
@@ -527,8 +523,7 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor,
-                                                                     m_entityScopeProvider);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

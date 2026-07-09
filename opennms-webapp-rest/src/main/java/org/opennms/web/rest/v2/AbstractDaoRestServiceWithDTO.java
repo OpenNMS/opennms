@@ -68,8 +68,10 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.rest.support.CriteriaBehavior;
@@ -566,6 +568,16 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
         } catch (final EventProxyException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
         }
+    }
+
+    /**
+     * Notifies interested daemons that the meta-data of the given node (or one of its
+     * interfaces or services) was changed, so they can discard cached, interpolated values.
+     */
+    protected void sendNodeMetadataUpdatedEvent(final Integer nodeId) {
+        sendEvent(new EventBuilder(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI, "ReST")
+                .setNodeid(nodeId)
+                .getEvent());
     }
 
     protected static WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {

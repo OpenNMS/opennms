@@ -164,6 +164,9 @@ final class PollerEventProcessor implements EventListener {
         // node updated
         ueiList.add(EventConstants.NODE_UPDATED_EVENT_UEI);
 
+        // node meta-data updated
+        ueiList.add(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI);
+
         // node scan completed
         ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
 
@@ -403,7 +406,11 @@ final class PollerEventProcessor implements EventListener {
         LOG.debug("nodeUpdatedHandler: clearing cached parameters for node {}", nodeId);
         for (final PollableInterface iface : pnode.getInterfaces()) {
             for (final PollableService svc : iface.getServices()) {
-                svc.refreshConfig();
+                try {
+                    svc.refreshMetadata();
+                } catch (final Exception e) {
+                    LOG.warn("nodeUpdatedHandler: failed to refresh metadata for {}, skipping.", svc, e);
+                }
             }
         }
     }
@@ -639,8 +646,9 @@ final class PollerEventProcessor implements EventListener {
                 nodeUpdatedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_UPDATED_EVENT_UEI) ||
+                   event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI) ||
                    event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI)) {
-            if (event.getNodeid() > 0) {
+            if (event.getNodeid() != null && event.getNodeid() > 0) {
                 nodeUpdatedHandler(event);
             }
         } // end single event process

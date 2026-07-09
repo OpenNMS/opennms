@@ -57,14 +57,12 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -570,7 +568,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.removeMetaData(context);
             getDao().update(node);
-            sendNodeMetadataUpdatedEvent(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -591,7 +589,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.removeMetaData(context, key);
             getDao().update(node);
-            sendNodeMetadataUpdatedEvent(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -612,7 +610,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
             getDao().update(node);
-            sendNodeMetadataUpdatedEvent(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -633,18 +631,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             }
             node.addMetaData(context, key, value);
             getDao().update(node);
-            sendNodeMetadataUpdatedEvent(node);
+            sendNodeMetadataUpdatedEvent(node.getId());
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
-    }
-
-    private void sendNodeMetadataUpdatedEvent(final OnmsNode node) {
-        final Event e = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "ReST")
-                .setNodeid(node.getId())
-                .addParam(EventConstants.PARM_RESCAN_EXISTING, Boolean.FALSE.toString())
-                .getEvent();
-        sendEvent(e);
     }
 }
