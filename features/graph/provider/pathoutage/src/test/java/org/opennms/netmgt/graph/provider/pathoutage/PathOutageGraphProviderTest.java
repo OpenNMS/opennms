@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,10 @@ public class PathOutageGraphProviderTest {
         node.setId(id);
         node.setLabel(label);
         node.setParent(parent);
+        // The provider reads the parent off the nodeParentID column, not the proxy.
+        if (parent != null) {
+            node.setNodeParentId(parent.getId());
+        }
         return node;
     }
 
@@ -86,6 +92,8 @@ public class PathOutageGraphProviderTest {
                 Arrays.asList(router, sw, server, standalone).stream()
                         .filter(n -> n.getParent() != null)
                         .collect(Collectors.toList()));
+        when(nodeDao.getAllLabelsById()).thenReturn(
+                Map.of(1, "router", 2, "switch", 3, "server", 4, "standalone"));
 
         final GenericGraph graph = provider.loadGraph().asGenericGraph();
 
@@ -109,6 +117,22 @@ public class PathOutageGraphProviderTest {
                 assertEquals("3", edge.getTarget().getId());
             }
         }
+    }
+
+    @Test
+    public void skipsDanglingParentReference() {
+        // NMS-19971: the child still carries a nodeParentID, but that parent row was
+        // deleted, so it is absent from the id->label map. The relationship (and thus
+        // the child, which has no other link) is dropped instead of blowing up.
+        final OnmsNode orphan = node(5, "orphan", null);
+        orphan.setNodeParentId(999);
+        when(nodeDao.findMatching(any(Criteria.class))).thenReturn(List.of(orphan));
+        when(nodeDao.getAllLabelsById()).thenReturn(Map.of(5, "orphan"));
+
+        final GenericGraph graph = provider.loadGraph().asGenericGraph();
+
+        assertTrue(graph.getVertices().isEmpty());
+        assertTrue(graph.getEdges().isEmpty());
     }
 
     @Test

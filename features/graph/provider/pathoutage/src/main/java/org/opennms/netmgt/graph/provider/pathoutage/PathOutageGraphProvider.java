@@ -41,8 +41,6 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.model.OnmsNode;
 
-import com.google.common.collect.Maps;
-
 /**
  * Builds a read-only graph from the node parent / critical-path relationships
  * ({@link OnmsNode#getParent()} -- the {@code nodeParentID} column), the same
@@ -76,8 +74,12 @@ public class PathOutageGraphProvider implements GraphProvider {
 
     @Override
     public ImmutableGraph<?, ?> loadGraph() {
-        // OnmsNode.getParent() is a LAZY @ManyToOne, so the whole build -- including
-        // reading each parent's id/label -- must run inside a read transaction.
+        // Two lightweight reads (every id->label, then the parented nodes) share one
+        // read-only transaction so they see a consistent snapshot. The parent id is
+        // read straight off the nodeParentID column via getNodeParentId() rather than
+        // by dereferencing the LAZY getParent() proxy: a node can retain a
+        // nodeParentID whose parent row was since deleted (NMS-19971), and touching
+        // the proxy for that dangling reference throws ObjectNotFoundException.
         return sessionUtils.withReadOnlyTransaction(() -> {
             final GenericGraph.GenericGraphBuilder builder = GenericGraph.builder()
                     .graphInfo(getGraphInfo())
@@ -87,28 +89,28 @@ public class PathOutageGraphProvider implements GraphProvider {
                     .property(GenericProperties.Enrichment.RESOLVE_NODES, true)
                     .property(GenericProperties.Enrichment.DEFAULT_STATUS, true);
 
+            final Map<Integer, String> labels = nodeDao.getAllLabelsById();
+
             // Only nodes that actually have a parent matter here; the top-level
-            // parents are reached through getParent() below. Filtering in the
+            // parents are pulled in as edge endpoints below. Filtering in the
             // query keeps parentless nodes out of memory and the loop.
             final List<OnmsNode> nodes = nodeDao.findMatching(
                     new CriteriaBuilder(OnmsNode.class).isNotNull("parent").toCriteria());
 
-            // First pass: collect the participating node ids (the children above
-            // plus their parents) and their labels, and remember the parent->child pairs.
-            final Map<Integer, String> labelById = Maps.newHashMap();
+            // Collect the participating node ids (each child plus its parent) and
+            // remember the parent->child pairs. child -> parent is value-based
+            // (unlike a Set of arrays), and a child has exactly one parent, so
+            // duplicates are structurally impossible.
             final Set<Integer> participating = new LinkedHashSet<>();
-            // child -> parent: value-based (unlike a Set of arrays), and a child
-            // has exactly one parent, so duplicates are structurally impossible.
             final Map<Integer, Integer> parentByChild = new LinkedHashMap<>();
             for (final OnmsNode node : nodes) {
-                final OnmsNode parent = node.getParent();
-                if (parent == null) {
+                final Integer parentId = node.getNodeParentId();
+                if (parentId == null || labels.get(parentId) == null) {
+                    // No parent id, or a dangling nodeParentID whose parent row was
+                    // deleted (NMS-19971) -- nothing to connect to, so skip it.
                     continue;
                 }
                 final int childId = node.getId();
-                final int parentId = parent.getId();
-                labelById.put(childId, node.getLabel());
-                labelById.put(parentId, parent.getLabel());
                 participating.add(childId);
                 participating.add(parentId);
                 parentByChild.put(childId, parentId);
@@ -119,14 +121,14 @@ public class PathOutageGraphProvider implements GraphProvider {
                 builder.addVertex(GenericVertex.builder()
                         .namespace(NAMESPACE)
                         .id(String.valueOf(nodeId))
-                        .property(GenericProperties.LABEL, labelById.get(nodeId))
+                        .property(GenericProperties.LABEL, labels.get(nodeId))
                         .property(GenericProperties.NODE_ID, String.valueOf(nodeId))
                         .build());
             }
 
             // No explicit edge id: GenericEdge derives a deterministic one from
             // source->target, stable across loads (a counter would depend on
-            // NodeDao.findAll() ordering).
+            // query ordering).
             for (final Map.Entry<Integer, Integer> pc : parentByChild.entrySet()) {
                 builder.addEdge(GenericEdge.builder()
                         .namespace(NAMESPACE)

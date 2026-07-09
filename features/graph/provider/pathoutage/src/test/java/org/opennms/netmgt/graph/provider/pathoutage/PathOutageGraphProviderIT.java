@@ -46,13 +46,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Exercises {@link PathOutageGraphProvider} against the real Hibernate
- * {@link NodeDao} on a temporary database. The mockito unit test can't cover
- * the one risky part: {@code OnmsNode.getParent()} is a LAZY many-to-one, so
- * the provider must traverse it inside its own read-only transaction. This
- * test therefore deliberately runs WITHOUT a test-managed transaction --
- * {@code loadGraph()} is called the way the Graph REST service calls it, and
- * would die with a LazyInitializationException if the provider's transaction
- * wrapping were missing.
+ * {@link NodeDao} on a temporary database, the way the Graph REST service calls
+ * it: WITHOUT a test-managed transaction. This covers what the mockito unit test
+ * can't -- that the provider's own read-only transaction, the {@code nodeParentID}
+ * column read ({@code getNodeParentId()}) and the {@code getAllLabelsById()} join
+ * actually reconstruct the parent forest under Hibernate.
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -121,7 +119,7 @@ public class PathOutageGraphProviderIT {
         assertEquals(3, graph.getVertices().size());
         assertTrue(!vertexIds.contains(String.valueOf(standaloneId)));
 
-        // The parent's label was read through the lazy proxy.
+        // The parent's label came from the id->label map (getAllLabelsById()).
         final GenericVertex switchVertex = graph.getVertex(String.valueOf(switchId));
         assertEquals("switch", switchVertex.getProperty(GenericProperties.LABEL));
         assertEquals(String.valueOf(switchId), switchVertex.getProperty(GenericProperties.NODE_ID));
