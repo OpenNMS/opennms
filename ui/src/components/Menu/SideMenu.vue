@@ -62,8 +62,9 @@ const props = defineProps({
 })
 
 // Rail widths — keep in sync with the CSS custom properties below.
-const RAIL_COLLAPSED = '3.75rem'
 const RAIL_EXPANDED = '20rem'
+// Small breathing room so pushed content isn't flush against the rail edge.
+const RAIL_GAP = '0.25rem'
 
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
@@ -114,9 +115,13 @@ const togglePinned = () => {
   menuStore.setSideMenuExpanded(isPinned.value)
 }
 
-// Push the main content aside by the rail width. We only push for the pinned
-// (persisted) state; hover-expansion overlays the content instead of pushing
-// it, to avoid reflowing the whole page on every hover.
+// Push the main content aside for the pinned (persisted) expanded rail only;
+// hover-expansion overlays the content instead of pushing it, to avoid
+// reflowing the whole page on every hover. The COLLAPSED/base left offset is
+// owned by each host's stylesheet (JSP #content, SPA .app-layout) so the two
+// contexts can differ; when not pinned we clear the inline padding-left so that
+// base applies. This keeps the collapsed gap "guaranteed" (JS never clobbers
+// it) while still widening the push when the rail is pinned open.
 const getPushedElement = (): HTMLElement | null => {
   try {
     return document.querySelector<HTMLElement>(props.pushedSelector)
@@ -133,7 +138,7 @@ const applyPush = () => {
   }
 
   el.style.transition = 'padding-left 0.1s linear'
-  el.style.paddingLeft = isPinned.value ? RAIL_EXPANDED : RAIL_COLLAPSED
+  el.style.paddingLeft = isPinned.value ? `calc(${RAIL_EXPANDED} + ${RAIL_GAP})` : ''
 }
 
 watch(isPinned, applyPush)
