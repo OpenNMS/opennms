@@ -21,15 +21,14 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.model.FilterManager;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 /**
  * <p>HibernateFilterManager class.</p>
@@ -64,7 +63,7 @@ public class HibernateFilterManager implements FilterManager {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 session.disableFilter(AUTH_FILTER_NAME);
                 return null;
             }
@@ -98,7 +97,7 @@ public class HibernateFilterManager implements FilterManager {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", m_authorizationGroups);
                 return null;
             }

@@ -107,6 +107,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testWire() {
         assertNotNull(m_ticketerServiceLayer);
         

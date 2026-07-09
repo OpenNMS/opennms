@@ -38,7 +38,7 @@ import javax.persistence.Table;
 @Entity
 public class Group {
     @Id
-    @SequenceGenerator(name = "ruleSequence", sequenceName = "ruleNxtId")
+    @SequenceGenerator(name = "ruleSequence", sequenceName = "ruleNxtId", allocationSize = 1)
     @GeneratedValue(generator = "ruleSequence")
     private Integer id;
 

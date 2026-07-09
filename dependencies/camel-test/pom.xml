@@ -35,7 +35,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.camel</groupId>
+      <groupId>org.apache.camel.karaf</groupId>
       <artifactId>camel-test-blueprint</artifactId>
       <version>${camelVersion}</version>
       <exclusions>

@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultExchange;
+import org.apache.camel.support.DefaultExchange;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Test;
 import org.opennms.core.rpc.api.RemoteExecutionException;

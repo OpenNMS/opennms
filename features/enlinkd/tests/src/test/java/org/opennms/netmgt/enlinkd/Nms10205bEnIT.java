@@ -76,6 +76,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Nms10205bEnIT extends EnLinkdBuilderITCase {
 
@@ -227,16 +228,19 @@ it has a link to Mysore that does not support LLDP
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bLldpLinks() {
-        m_nodeDao.save(builder.getMumbai());
-        m_nodeDao.save(builder.getDelhi());
-        m_nodeDao.save(builder.getBangalore());
-        m_nodeDao.save(builder.getBagmane());
-        m_nodeDao.save(builder.getMysore());
-        m_nodeDao.save(builder.getSpaceExSw1());
-        m_nodeDao.save(builder.getSpaceExSw2());
-        m_nodeDao.save(builder.getJ635042());
-        m_nodeDao.save(builder.getSRX100());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMumbai());
+            m_nodeDao.save(builder.getDelhi());
+            m_nodeDao.save(builder.getBangalore());
+            m_nodeDao.save(builder.getBagmane());
+            m_nodeDao.save(builder.getMysore());
+            m_nodeDao.save(builder.getSpaceExSw1());
+            m_nodeDao.save(builder.getSpaceExSw2());
+            m_nodeDao.save(builder.getJ635042());
+            m_nodeDao.save(builder.getSRX100());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -437,16 +441,19 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bOspfLinks() throws Exception {
-        m_nodeDao.save(builder.getMumbai());
-        m_nodeDao.save(builder.getDelhi());
-        m_nodeDao.save(builder.getBangalore());
-        m_nodeDao.save(builder.getBagmane());
-        m_nodeDao.save(builder.getMysore());
-        m_nodeDao.save(builder.getSpaceExSw1());
-        m_nodeDao.save(builder.getSpaceExSw2());
-        m_nodeDao.save(builder.getJ635042());
-        m_nodeDao.save(builder.getSRX100());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMumbai());
+            m_nodeDao.save(builder.getDelhi());
+            m_nodeDao.save(builder.getBangalore());
+            m_nodeDao.save(builder.getBagmane());
+            m_nodeDao.save(builder.getMysore());
+            m_nodeDao.save(builder.getSpaceExSw1());
+            m_nodeDao.save(builder.getSpaceExSw2());
+            m_nodeDao.save(builder.getJ635042());
+            m_nodeDao.save(builder.getSRX100());
+            m_nodeDao.flush();
+            return null;
+        });
 
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);

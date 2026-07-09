@@ -104,7 +104,7 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
+        return "OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
     @Test(timeout=60000)
