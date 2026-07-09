@@ -9,6 +9,16 @@
 
 == New features and important changes
 
+=== Spring, Hibernate, and Camel platform upgrade
+The core application frameworks have been upgraded to currently supported versions:
+Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
+The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
+and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
+
+Most installations require no action, but there are behavior and compatibility changes for installations with
+custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
+See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
@@ -72,6 +82,11 @@ After upgrade, manage event configurations through the *Administration -> Manage
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
 == Breaking changes
+
+=== SAML and OpenID SSO support removed
+Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
+If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
+See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.

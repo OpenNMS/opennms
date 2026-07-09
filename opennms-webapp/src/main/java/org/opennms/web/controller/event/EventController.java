@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.opennms.web.controller.OnmsMultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
@@ -65,7 +65,7 @@ import java.util.List;
  * @version $Id: $
  * @since 1.8.1
  */
-public class EventController extends MultiActionController implements InitializingBean {
+public class EventController extends OnmsMultiActionController implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventController.class);
 

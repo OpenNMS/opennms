@@ -34,6 +34,7 @@ import org.opennms.netmgt.nb.Nms13637NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_NAME;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_IP;
@@ -68,11 +69,13 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
     })
 
     public void testLldpLinks() {
-        m_nodeDao.save(builder.getCiscoHomeSw());
-        m_nodeDao.save(builder.getRouter1());
-        m_nodeDao.save(builder.getRouter2());
-
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getCiscoHomeSw());
+            m_nodeDao.save(builder.getRouter1());
+            m_nodeDao.save(builder.getRouter2());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);

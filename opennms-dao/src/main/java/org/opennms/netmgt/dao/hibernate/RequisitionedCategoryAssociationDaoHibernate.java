@@ -36,7 +36,7 @@ public class RequisitionedCategoryAssociationDaoHibernate extends AbstractDaoHib
     @Override
     public List<RequisitionedCategoryAssociation> findByNodeId(final Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from RequisitionedCategoryAssociation as r where r.node.id = ?", nodeId);
+        return find("from RequisitionedCategoryAssociation as r where r.node.id = ?1", nodeId);
     }
 
 }

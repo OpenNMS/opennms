@@ -22,15 +22,14 @@
 package org.opennms.core.test;
 
 import org.opennms.core.spring.BeanUtils;
-import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
  * This listener will inject the {@link ApplicationContext} from 
  * the {@link TestContext} into {@link BeanUtils} so that it can locate
- * beans inside the test context instead of using {@link DefaultLocatorFactory}.
- * If {@link BeanUtils} uses {@link DefaultLocatorFactory}, it will start
+ * beans inside the test context instead of using {@link org.opennms.core.spring.ContextRegistry}.
+ * If {@link BeanUtils} uses {@link org.opennms.core.spring.ContextRegistry}, it will start
  * up another Spring context hierarchy inside the tests causing duplicate
  * beans.
  */

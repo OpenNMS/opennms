@@ -60,7 +60,7 @@ public class ResourceReference implements Serializable {
      */
     @Id
     @Column(name="id")
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;

@@ -21,7 +21,7 @@
  */
 package org.opennms.core.camel;
 
-import org.apache.camel.component.properties.PropertiesFunction;
+import org.apache.camel.spi.PropertiesFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
