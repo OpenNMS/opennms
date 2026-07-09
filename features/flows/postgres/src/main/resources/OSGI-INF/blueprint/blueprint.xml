@@ -57,13 +57,14 @@
         <property name="maxPool" value="${connection.pool.maxPool}"/>
         <property name="maxSize" value="${connection.pool.maxSize}"/>
     </bean>
-    <bean id="postgresFlowDataSource" factory-ref="flowDataSourceProvider" factory-method="getDataSource"/>
 
     <bean id="postgresFlowRepository"
           class="org.opennms.netmgt.flows.postgres.PostgresFlowRepository"
           init-method="start" destroy-method="stop">
         <argument ref="postgresFlowMetricRegistry"/>
-        <property name="dataSource" ref="postgresFlowDataSource"/>
+        <!-- The provider (never null) supplies the DataSource in start(); it may be inert (no DataSource
+             configured), in which case the repository logs and does nothing rather than failing to load. -->
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
         <property name="batchSize" value="${batchSize}"/>
         <property name="flushIntervalMs" value="${flushIntervalMs}"/>
         <property name="queueCapacity" value="${queueCapacity}"/>
@@ -87,7 +88,7 @@
     <bean id="postgresFlowQueryService"
           class="org.opennms.netmgt.flows.postgres.PostgresFlowQueryService"
           init-method="start" destroy-method="stop">
-        <property name="dataSource" ref="postgresFlowDataSource"/>
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
         <property name="threads" value="${queryThreads}"/>
     </bean>
 

@@ -74,6 +74,7 @@ public class PostgresFlowRepository implements FlowRepository {
     private int queueCapacity = 100_000;
     private boolean runSchemaChangelog = true;
 
+    private FlowDataSourceProvider dataSourceProvider;
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
     private BatchingFlowWriter<FlowRow> writer;
@@ -83,8 +84,17 @@ public class PostgresFlowRepository implements FlowRepository {
     }
 
     public void start() throws Exception {
-        Objects.requireNonNull(this.dataSource, "A DataSource must be set before start(); the blueprint injects a "
-                + "pooled DataSource built from the org.opennms.features.flows.persistence.postgres pid.");
+        if (this.dataSource == null && this.dataSourceProvider != null) {
+            this.dataSource = this.dataSourceProvider.getDataSource();
+        }
+        if (this.dataSource == null) {
+            // No flow DataSource was configured (see FlowDataSourceProvider). Stay inert rather than
+            // failing the blueprint container: the feature loads, persist() becomes a no-op.
+            LOG.error("PostgresFlowRepository not started: no flow DataSource is configured. Flows will NOT be "
+                    + "persisted to PostgreSQL until datasource.url is set on the "
+                    + "org.opennms.features.flows.persistence.postgres pid.");
+            return;
+        }
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         if (runSchemaChangelog) {
             installSchema();
@@ -105,11 +115,13 @@ public class PostgresFlowRepository implements FlowRepository {
 
     @Override
     public void persist(final Collection<? extends Flow> flows) throws FlowException {
-        if (flows == null || flows.isEmpty()) {
+        final BatchingFlowWriter<FlowRow> w = this.writer;
+        if (w == null || flows == null || flows.isEmpty()) {
+            // Inert (no DataSource configured) or nothing to do.
             return;
         }
         for (final Flow flow : flows) {
-            writer.add(rowMapper.toRow(flow));
+            w.add(rowMapper.toRow(flow));
         }
     }
 
@@ -167,7 +179,9 @@ public class PostgresFlowRepository implements FlowRepository {
     }
 
     // --- config setters (blueprint) ---
-    /** The dedicated flow-database DataSource (a pooled DataSource injected by the blueprint, or a test DataSource). */
+    /** Blueprint wiring: supplies the flow DataSource in start() (may be inert, i.e. return null). */
+    public void setDataSourceProvider(final FlowDataSourceProvider dataSourceProvider) { this.dataSourceProvider = dataSourceProvider; }
+    /** Test/embedding hook: use this DataSource directly instead of resolving one from the provider. */
     public void setDataSource(final DataSource dataSource) { this.dataSource = dataSource; }
     public void setBatchSize(final int batchSize) { this.batchSize = batchSize; }
     public void setFlushIntervalMs(final long flushIntervalMs) { this.flushIntervalMs = flushIntervalMs; }

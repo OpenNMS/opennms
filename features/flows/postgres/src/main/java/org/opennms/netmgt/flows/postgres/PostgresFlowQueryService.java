@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -105,14 +104,24 @@ public class PostgresFlowQueryService implements FlowQueryService {
 
     private int threads = 4;
 
+    private FlowDataSourceProvider dataSourceProvider;
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
     private ExecutorService executor;
 
     public void start() {
-        final DataSource ds = Objects.requireNonNull(this.dataSource, "A DataSource must be set before start(); the "
-                + "blueprint injects a pooled DataSource built from the org.opennms.features.flows.persistence.postgres pid.");
-        this.jdbcTemplate = new JdbcTemplate(ds);
+        if (this.dataSource == null && this.dataSourceProvider != null) {
+            this.dataSource = this.dataSourceProvider.getDataSource();
+        }
+        if (this.dataSource == null) {
+            // No flow DataSource configured (see FlowDataSourceProvider). Stay inert rather than failing
+            // the blueprint container: the feature loads; query methods complete exceptionally if called.
+            LOG.error("PostgresFlowQueryService not started: no flow DataSource is configured. Flow queries "
+                    + "will NOT be served by PostgreSQL until datasource.url is set on the "
+                    + "org.opennms.features.flows.persistence.postgres pid.");
+            return;
+        }
+        this.jdbcTemplate = new JdbcTemplate(this.dataSource);
         this.executor = Executors.newFixedThreadPool(threads, r -> {
             final Thread t = new Thread(r, "postgres-flow-query");
             t.setDaemon(true);
@@ -128,6 +137,13 @@ public class PostgresFlowQueryService implements FlowQueryService {
     }
 
     private <T> CompletableFuture<T> async(final Supplier<T> supplier) {
+        if (executor == null) {
+            // Inert (no DataSource configured): fail the query cleanly instead of NPEing.
+            final CompletableFuture<T> failed = new CompletableFuture<>();
+            failed.completeExceptionally(new IllegalStateException("PostgresFlowQueryService is not configured: "
+                    + "no flow DataSource (set datasource.url on the org.opennms.features.flows.persistence.postgres pid)."));
+            return failed;
+        }
         return CompletableFuture.supplyAsync(supplier, executor);
     }
 
@@ -683,6 +699,8 @@ public class PostgresFlowQueryService implements FlowQueryService {
 
     // --- config setters (blueprint) ---
     public void setThreads(final int threads) { this.threads = threads; }
-    /** The dedicated flow-database DataSource (a pooled DataSource injected by the blueprint, or a test DataSource). */
+    /** Blueprint wiring: supplies the flow DataSource in start() (may be inert, i.e. return null). */
+    public void setDataSourceProvider(final FlowDataSourceProvider dataSourceProvider) { this.dataSourceProvider = dataSourceProvider; }
+    /** Test/embedding hook: use this DataSource directly instead of resolving one from the provider. */
     public void setDataSource(final DataSource dataSource) { this.dataSource = dataSource; }
 }

@@ -66,31 +66,47 @@ public class FlowDataSourceProvider {
     /** Non-null only in dedicated mode; the pool this provider created and must close. */
     private ClosableDataSource ownedPool;
 
-    public void init() throws Exception {
+    public void init() {
+        try {
+            this.dataSource = createDataSource();
+        } catch (final Exception e) {
+            // Never fail the blueprint container over a missing/invalid flow datasource: load cleanly,
+            // log, and stay inert (getDataSource() == null) so the repository and query service disable
+            // themselves. With datasource.url blank the internal OpenNMS datasource is used, which only
+            // exists on Horizon; on Sentinel or for an external database, datasource.url (+ credentials)
+            // must be set on the org.opennms.features.flows.persistence.postgres pid.
+            this.dataSource = null;
+            LOG.error("PostgreSQL flow persistence is DISABLED: could not obtain a flow DataSource ({}). "
+                    + "Set datasource.url/username/password on the org.opennms.features.flows.persistence.postgres "
+                    + "pid (required on Sentinel and for external databases); with it blank the internal OpenNMS "
+                    + "datasource is used, which is only available on Horizon.", e.toString());
+        }
+    }
+
+    private DataSource createDataSource() throws Exception {
         if (url == null || url.trim().isEmpty()) {
             DataSourceFactory.init(internalDataSourceName);
-            this.dataSource = DataSourceFactory.getInstance(internalDataSourceName);
-            LOG.info("PostgresFlow persistence using the internal '{}' datasource (no dedicated flow database "
+            LOG.info("PostgreSQL flow persistence using the internal '{}' datasource (no dedicated flow database "
                     + "configured; set datasource.url on org.opennms.features.flows.persistence.postgres to use one).",
                     internalDataSourceName);
-        } else {
-            final JdbcDataSource cfg = new JdbcDataSource();
-            cfg.setName("opennms-flows");
-            cfg.setDatabaseName(databaseName);
-            cfg.setClassName(driverClass);
-            cfg.setUrl(url);
-            cfg.setUserName(username);
-            cfg.setPassword(password);
-            final HikariCPConnectionFactory pool = new HikariCPConnectionFactory(cfg);
-            pool.setIdleTimeout(idleTimeout);
-            pool.setLoginTimeout(loginTimeout);
-            pool.setMinPool(minPool);
-            pool.setMaxPool(maxPool);
-            pool.setMaxSize(maxSize);
-            this.ownedPool = pool;
-            this.dataSource = pool;
-            LOG.info("PostgresFlow persistence using a dedicated connection pool for {}.", url);
+            return DataSourceFactory.getInstance(internalDataSourceName);
         }
+        final JdbcDataSource cfg = new JdbcDataSource();
+        cfg.setName("opennms-flows");
+        cfg.setDatabaseName(databaseName);
+        cfg.setClassName(driverClass);
+        cfg.setUrl(url);
+        cfg.setUserName(username);
+        cfg.setPassword(password);
+        final HikariCPConnectionFactory pool = new HikariCPConnectionFactory(cfg);
+        this.ownedPool = pool; // record early so close() can reclaim it even if a setter below fails
+        pool.setIdleTimeout(idleTimeout);
+        pool.setLoginTimeout(loginTimeout);
+        pool.setMinPool(minPool);
+        pool.setMaxPool(maxPool);
+        pool.setMaxSize(maxSize);
+        LOG.info("PostgreSQL flow persistence using a dedicated connection pool for {}.", url);
+        return pool;
     }
 
     public DataSource getDataSource() {
