@@ -160,6 +160,21 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-flows-postgres" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Sentinel :: Flows :: Postgres">
+        <details>Optional PostgreSQL-backed flow persistence for Sentinel (write path). When installed it registers a
+            higher-ranked FlowRepository that overrides Elasticsearch persistence on this Sentinel; flow reads are
+            served by Horizon against the same database. Configure the flow database via the
+            org.opennms.features.flows.persistence.postgres pid (datasource.url/username/password/databaseName).</details>
+        <feature>sentinel-flows</feature>
+        <feature version="[4.2,4.3)">spring-jdbc</feature>
+        <!-- HikariCPConnectionFactory + JdbcDataSource config model + PostgreSQL driver for the dedicated flow pool -->
+        <feature>opennms-core-db</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/1.31</bundle>
+        <bundle>mvn:org.liquibase/liquibase-core/${liquibaseVersion}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.postgres/${project.version}</bundle>
+    </feature>
+
     <feature name="sentinel-telemetry-nxos" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-nxos</feature>

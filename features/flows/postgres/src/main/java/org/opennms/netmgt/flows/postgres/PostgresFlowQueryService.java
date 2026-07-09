@@ -34,7 +34,6 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
@@ -104,7 +103,6 @@ public class PostgresFlowQueryService implements FlowQueryService {
             "OR f.sampling_interval = 'Infinity'::float8 OR f.sampling_interval = '-Infinity'::float8 " +
             "THEN 1 ELSE f.sampling_interval END)";
 
-    private String dataSourceName = "opennms";
     private int threads = 4;
 
     private DataSource dataSource;
@@ -112,20 +110,15 @@ public class PostgresFlowQueryService implements FlowQueryService {
     private ExecutorService executor;
 
     public void start() {
-        final DataSource ds;
-        if (this.dataSource != null) {
-            ds = this.dataSource;
-        } else {
-            DataSourceFactory.init(dataSourceName);
-            ds = DataSourceFactory.getInstance(dataSourceName);
-        }
+        final DataSource ds = Objects.requireNonNull(this.dataSource, "A DataSource must be set before start(); the "
+                + "blueprint injects a pooled DataSource built from the org.opennms.features.flows.persistence.postgres pid.");
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.executor = Executors.newFixedThreadPool(threads, r -> {
             final Thread t = new Thread(r, "postgres-flow-query");
             t.setDaemon(true);
             return t;
         });
-        LOG.info("PostgresFlowQueryService started (dataSource={}, threads={}).", dataSourceName, threads);
+        LOG.info("PostgresFlowQueryService started (threads={}).", threads);
     }
 
     public void stop() {
@@ -689,8 +682,7 @@ public class PostgresFlowQueryService implements FlowQueryService {
     }
 
     // --- config setters (blueprint) ---
-    public void setDataSourceName(final String dataSourceName) { this.dataSourceName = Objects.requireNonNull(dataSourceName); }
     public void setThreads(final int threads) { this.threads = threads; }
-    /** Test/embedding hook: use this DataSource directly instead of resolving one from DataSourceFactory. */
+    /** The dedicated flow-database DataSource (a pooled DataSource injected by the blueprint, or a test DataSource). */
     public void setDataSource(final DataSource dataSource) { this.dataSource = dataSource; }
 }

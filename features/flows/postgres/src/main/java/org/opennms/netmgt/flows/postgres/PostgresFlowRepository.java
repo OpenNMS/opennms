@@ -30,7 +30,6 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.integration.api.v1.flows.FlowRepository;
@@ -70,7 +69,6 @@ public class PostgresFlowRepository implements FlowRepository {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final FlowRowMapper rowMapper = new FlowRowMapper(objectMapper);
 
-    private String dataSourceName = "opennms";
     private int batchSize = 1000;
     private long flushIntervalMs = 500;
     private int queueCapacity = 100_000;
@@ -85,10 +83,8 @@ public class PostgresFlowRepository implements FlowRepository {
     }
 
     public void start() throws Exception {
-        if (this.dataSource == null) {
-            DataSourceFactory.init(dataSourceName);
-            this.dataSource = DataSourceFactory.getInstance(dataSourceName);
-        }
+        Objects.requireNonNull(this.dataSource, "A DataSource must be set before start(); the blueprint injects a "
+                + "pooled DataSource built from the org.opennms.features.flows.persistence.postgres pid.");
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         if (runSchemaChangelog) {
             installSchema();
@@ -96,8 +92,8 @@ public class PostgresFlowRepository implements FlowRepository {
         this.writer = new BatchingFlowWriter<>("postgresFlowRepository", queueCapacity, batchSize,
                 flushIntervalMs, this::flush, metrics);
         this.writer.start();
-        LOG.info("PostgresFlowRepository started (dataSource={}, batchSize={}, flushIntervalMs={}, queueCapacity={}).",
-                dataSourceName, batchSize, flushIntervalMs, queueCapacity);
+        LOG.info("PostgresFlowRepository started (batchSize={}, flushIntervalMs={}, queueCapacity={}).",
+                batchSize, flushIntervalMs, queueCapacity);
     }
 
     public void stop() {
@@ -159,7 +155,7 @@ public class PostgresFlowRepository implements FlowRepository {
                     new ClassLoaderResourceAccessor(getClass().getClassLoader()), db);
             liquibase.update("");
         }
-        LOG.info("PostgresFlowRepository schema ensured on datasource {}.", dataSourceName);
+        LOG.info("PostgresFlowRepository schema ensured.");
     }
 
     private static void setLong(final PreparedStatement ps, final int idx, final Long v) throws SQLException {
@@ -171,9 +167,8 @@ public class PostgresFlowRepository implements FlowRepository {
     }
 
     // --- config setters (blueprint) ---
-    /** Test/embedding hook: use this DataSource directly instead of resolving one from DataSourceFactory. */
+    /** The dedicated flow-database DataSource (a pooled DataSource injected by the blueprint, or a test DataSource). */
     public void setDataSource(final DataSource dataSource) { this.dataSource = dataSource; }
-    public void setDataSourceName(final String dataSourceName) { this.dataSourceName = dataSourceName; }
     public void setBatchSize(final int batchSize) { this.batchSize = batchSize; }
     public void setFlushIntervalMs(final long flushIntervalMs) { this.flushIntervalMs = flushIntervalMs; }
     public void setQueueCapacity(final int queueCapacity) { this.queueCapacity = queueCapacity; }

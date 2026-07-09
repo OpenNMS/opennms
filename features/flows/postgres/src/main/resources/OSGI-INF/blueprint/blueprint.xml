@@ -12,11 +12,27 @@
                              persistent-id="org.opennms.features.flows.persistence.postgres"
                              update-strategy="reload">
         <cm:default-properties>
-            <!-- "opennms" = internal DB; set to a named datasource from opennms-datasources.xml for external/scale -->
+            <!-- DataSource selection:
+                 - datasource.url BLANK (default): use the OpenNMS internal datasource named below. Zero
+                   config; flows go to the internal DB. Best for small-scale / PoC Horizon (no Sentinel).
+                 - datasource.url SET: build a dedicated, self-managed HikariCP pool against that database.
+                   Required on Sentinel and recommended for scale/external flow databases. Point every node
+                   that writes (Sentinel) or reads (Horizon) flows at the SAME database. -->
             <cm:property name="dataSourceName" value="opennms"/>
+            <cm:property name="datasource.url" value=""/>
+            <cm:property name="datasource.databaseName" value="opennms"/>
+            <cm:property name="datasource.username" value="postgres"/>
+            <cm:property name="datasource.password" value=""/>
+            <cm:property name="datasource.driverClass" value="org.postgresql.Driver"/>
+            <cm:property name="connection.pool.idleTimeout" value="600"/>
+            <cm:property name="connection.pool.loginTimeout" value="3"/>
+            <cm:property name="connection.pool.minPool" value="10"/>
+            <cm:property name="connection.pool.maxPool" value="25"/>
+            <cm:property name="connection.pool.maxSize" value="25"/>
             <cm:property name="batchSize" value="1000"/>
             <cm:property name="flushIntervalMs" value="500"/>
             <cm:property name="queueCapacity" value="100000"/>
+            <!-- One node should own schema creation; set false on additional writers (e.g. Sentinels) -->
             <cm:property name="runSchemaChangelog" value="true"/>
             <cm:property name="queryThreads" value="4"/>
         </cm:default-properties>
@@ -24,11 +40,30 @@
 
     <bean id="postgresFlowMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
+    <!-- Provides the flow DataSource: the internal OpenNMS datasource when datasource.url is blank
+         (PoC/small-scale), or a dedicated self-managed HikariCP pool when it is set (external/Sentinel).
+         Shared by the write and read beans; the provider closes the pool it owns on shutdown. -->
+    <bean id="flowDataSourceProvider" class="org.opennms.netmgt.flows.postgres.FlowDataSourceProvider"
+          init-method="init" destroy-method="close">
+        <property name="internalDataSourceName" value="${dataSourceName}"/>
+        <property name="url" value="${datasource.url}"/>
+        <property name="databaseName" value="${datasource.databaseName}"/>
+        <property name="username" value="${datasource.username}"/>
+        <property name="password" value="${datasource.password}"/>
+        <property name="driverClass" value="${datasource.driverClass}"/>
+        <property name="idleTimeout" value="${connection.pool.idleTimeout}"/>
+        <property name="loginTimeout" value="${connection.pool.loginTimeout}"/>
+        <property name="minPool" value="${connection.pool.minPool}"/>
+        <property name="maxPool" value="${connection.pool.maxPool}"/>
+        <property name="maxSize" value="${connection.pool.maxSize}"/>
+    </bean>
+    <bean id="postgresFlowDataSource" factory-ref="flowDataSourceProvider" factory-method="getDataSource"/>
+
     <bean id="postgresFlowRepository"
           class="org.opennms.netmgt.flows.postgres.PostgresFlowRepository"
           init-method="start" destroy-method="stop">
         <argument ref="postgresFlowMetricRegistry"/>
-        <property name="dataSourceName" value="${dataSourceName}"/>
+        <property name="dataSource" ref="postgresFlowDataSource"/>
         <property name="batchSize" value="${batchSize}"/>
         <property name="flushIntervalMs" value="${flushIntervalMs}"/>
         <property name="queueCapacity" value="${queueCapacity}"/>
@@ -52,7 +87,7 @@
     <bean id="postgresFlowQueryService"
           class="org.opennms.netmgt.flows.postgres.PostgresFlowQueryService"
           init-method="start" destroy-method="stop">
-        <property name="dataSourceName" value="${dataSourceName}"/>
+        <property name="dataSource" ref="postgresFlowDataSource"/>
         <property name="threads" value="${queryThreads}"/>
     </bean>
 

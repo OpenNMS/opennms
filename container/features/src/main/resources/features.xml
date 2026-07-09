@@ -1218,7 +1218,9 @@
         <details>Optional PostgreSQL-backed FlowRepository/FlowQueryService (jsonb). Install alongside or instead of the Elasticsearch flow persistence.</details>
         <feature>opennms-flows</feature>
         <feature version="[4.2,4.3)">spring-jdbc</feature>
-        <feature>postgresql</feature>
+        <!-- opennms-core-db provides HikariCPConnectionFactory + the JdbcDataSource config model + the
+             PostgreSQL driver, used to build the dedicated flow connection pool in the bundle blueprint. -->
+        <feature>opennms-core-db</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <!-- liquibase-core 3.6.3 is already an OSGi bundle whose manifest mandatorily imports
              org.yaml.snakeyaml [1.18,2.0); the rest of OpenNMS ships snakeyaml 2.x (out of range),

@@ -65,6 +65,9 @@ public class PostgresFlowRepositoryIT {
     private static final long WINDOW = 1000L;
     private static PostgreSQLContainer<?> POSTGRES;
     private static PGSimpleDataSource DATA_SOURCE;
+    private static String JDBC_URL;
+    private static String JDBC_USER;
+    private static String JDBC_PASSWORD;
     private static PostgresFlowRepository repository;
     private static PostgresFlowQueryService queryService;
     private static JdbcTemplate jdbc;
@@ -87,6 +90,9 @@ public class PostgresFlowRepositoryIT {
             user = POSTGRES.getUsername();
             password = POSTGRES.getPassword();
         }
+        JDBC_URL = url;
+        JDBC_USER = user;
+        JDBC_PASSWORD = password;
         DATA_SOURCE = new PGSimpleDataSource();
         DATA_SOURCE.setUrl(url);
         DATA_SOURCE.setUser(user);
@@ -271,6 +277,26 @@ public class PostgresFlowRepositoryIT {
         Assert.assertEquals("http", app);
         long total = jdbc.queryForObject("SELECT COALESCE(SUM(bytes),0) FROM flow", Long.class);
         Assert.assertEquals(6912L, total);
+    }
+
+    @Test
+    public void dedicatedPoolProviderConnectsAndQueries() throws Exception {
+        final FlowDataSourceProvider provider = new FlowDataSourceProvider();
+        provider.setUrl(JDBC_URL);
+        provider.setUsername(JDBC_USER);
+        provider.setPassword(JDBC_PASSWORD);
+        provider.setMinPool(1);
+        provider.setMaxPool(2);
+        provider.setMaxSize(2);
+        provider.init();
+        try {
+            final DataSource ds = provider.getDataSource();
+            Assert.assertNotNull("dedicated mode must build a pool when a url is set", ds);
+            final Integer one = new JdbcTemplate(ds).queryForObject("SELECT 1", Integer.class);
+            Assert.assertEquals(Integer.valueOf(1), one);
+        } finally {
+            provider.close();
+        }
     }
 
     private static Flow mockFlow(String application, Flow.Direction direction, long delta, long last, long bytes, String src, String dst) {
