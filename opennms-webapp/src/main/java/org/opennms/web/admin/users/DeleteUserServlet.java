@@ -52,9 +52,7 @@ public class DeleteUserServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userID = request.getParameter("userID");
 
-        // now save to the xml file
         try {
-            UserFactory.init();
             UserManager userFactory = UserFactory.getInstance();
             userFactory.deleteUser(userID);
         } catch (Throwable e) {

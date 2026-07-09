@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.DatabaseUserManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.web.api.Authentication;
@@ -42,7 +42,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
- * Implements the interface to allow the servlet container to check our users.xml file to authenticate users.
+ * Implements the interface to allow the servlet container to authenticate users against the OpenNMS database.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
@@ -56,10 +56,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     /** The user manager. */
     private UserManager m_userManager;
 
-    /** The users configuration file. */
+    /** @deprecated No longer used; user data is read from the database via {@link UserManager}. */
     private String m_usersConfigurationFile;
 
-    /** The set of valid users from users.xml, keyed by userId. */
+    /** In-memory user cache keyed by userId, populated from the database. */
     private Map<String, OnmsUser> m_users = null;
 
     /** The m users last modified. */
@@ -78,12 +78,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /**
-     * Parses the users.
-     * 
-     * <p>Convenience method for parsing the users.xml file.</p>
-     * <p>This method is synchronized so only one thread at a time
-     * can parse the users.xml file and create the <code>principal</code>
-     * instance variable.</p>
+     * Loads users from the database into the in-memory cache.
      *
      * @throws DataRetrievalFailureException the data retrieval failure exception
      */
@@ -111,7 +106,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             throw new DataRetrievalFailureException("Unable to get user list.", t);
         }
 
-        LOG.debug("Loaded the users.xml file with {} users", users.size());
+        LOG.debug("Loaded {} users from database", users.size());
 
         m_usersLastModified = m_userManager.getLastModified();
         m_users = users;
@@ -180,13 +175,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /**
-     * Sets the users configuration file.
-     *
-     * @param usersConfigurationFile the new users configuration file
+     * @deprecated No-op; the database-backed manager has no config file.
      */
+    @Deprecated
     public void setUsersConfigurationFile(String usersConfigurationFile) {
         m_usersConfigurationFile = usersConfigurationFile;
-        UserFactory.setInstance(null);
     }
 
     /**
@@ -251,12 +244,14 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         m_userManager = mgr;
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
+        // usersConfigurationFile is only required for the legacy XML-backed UserFactory.
+        // DatabaseUserManager is self-contained and does not need a config file path.
+        if (!(m_userManager instanceof DatabaseUserManager)) {
+            Assert.state(m_usersConfigurationFile != null,
+                    "usersConfigurationFile parameter must be set when not using DatabaseUserManager");
+        }
         Assert.notNull(m_userManager);
     }
 }

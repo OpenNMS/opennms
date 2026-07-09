@@ -57,7 +57,6 @@ public class RenameUserServlet extends HttpServlet {
             throw new ServletException("User ID must not contain any HTML markup.");
         }
 
-        // now save to the xml file
         try {
             UserManager userFactory = UserFactory.getInstance();
             userFactory.renameUser(userID, newID);

@@ -94,7 +94,7 @@
         <entry key="thresholds.xml" value="thresholdingDao"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
-        <entry key="users.xml" value="userFactory"/>
+        <!-- users.xml removed: user management migrated to database (DatabaseUserManager) -->
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
 
@@ -282,7 +282,6 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <property name="userManager" ref="userManager" />
   </bean>
   
@@ -486,11 +485,6 @@
 
   <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
 
-  <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-  </bean>
-
-  <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
 
   <bean id="vacuumdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.VacuumdConfigFactory.init</value></property>

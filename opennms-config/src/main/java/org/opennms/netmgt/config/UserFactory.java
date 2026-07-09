@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>UserFactory class.</p>
@@ -43,6 +45,7 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @version $Id: $
  */
 public class UserFactory extends UserManager {
+    private static final Logger LOG = LoggerFactory.getLogger(UserFactory.class);
     private static final long RELOAD_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
 
     /**
@@ -89,14 +92,22 @@ public class UserFactory extends UserManager {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException {
-        
-        if (instance == null || !initialized) {
-            GroupFactory.init();
-            instance = new UserFactory();
-            initialized = true;
+    public static synchronized void init() throws IOException {
+        if (instance != null && initialized) {
+            return;
         }
-
+        GroupFactory.init();
+        final java.io.File usersConfFile;
+        try {
+            usersConfFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
+        } catch (final FileNotFoundException e) {
+            // users.xml removed — DatabaseUserManager is authoritative.
+            initialized = true;
+            LOG.info("users.xml not found; skipping file-backed UserFactory init");
+            return;
+        }
+        instance = new UserFactory();
+        initialized = true;
     }
 
     /**

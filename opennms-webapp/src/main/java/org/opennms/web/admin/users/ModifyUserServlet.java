@@ -57,7 +57,6 @@ public class ModifyUserServlet extends HttpServlet {
         HttpSession userSession = request.getSession(true);
 
         try {
-            UserFactory.init();
             UserManager userFactory = UserFactory.getInstance();
             User user = userFactory.getUser(request.getParameter("userID"));
             userSession.setAttribute("user.modifyUser.jsp", user);

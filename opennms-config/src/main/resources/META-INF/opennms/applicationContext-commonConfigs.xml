@@ -67,10 +67,10 @@
   <onmsgi:service interface="org.opennms.netmgt.config.api.GroupConfig" ref="groupManager" />
 
   <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseUserManager.init</value></property>
   </bean>
 
-  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
+  <bean id="userManager" class="org.opennms.netmgt.config.DatabaseUserManager" depends-on="userManager-init" factory-method="getInstance"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
   

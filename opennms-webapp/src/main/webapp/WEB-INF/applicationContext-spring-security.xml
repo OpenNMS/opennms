@@ -444,7 +444,6 @@
 
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <beans:property name="userManager" ref="userManager" />
   </beans:bean>
   <onmsgi:service id="springSecurityUserDaoService" ref="userDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" />

@@ -62,12 +62,6 @@ public class UpdateUserServlet extends HttpServlet {
 
         if (userSession != null) {
             User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
-            try {
-                UserFactory.init();
-            } catch (Throwable e) {
-                throw new ServletException("UpdateUserServlet:init Error initialising UserFactory " + e);
-            }
-            
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
@@ -106,52 +100,15 @@ public class UpdateUserServlet extends HttpServlet {
 
             newUser.clearContacts();
 
-            Contact tmpContact = new Contact();
-            tmpContact.setInfo(email);
-            tmpContact.setType(ContactType.email.toString());
-            newUser.addContact(tmpContact);
-
-            tmpContact = new Contact();
-            tmpContact.setInfo(pagerEmail);
-            tmpContact.setType(ContactType.pagerEmail.toString());
-            newUser.addContact(tmpContact);
-
-            tmpContact = new Contact();
-            tmpContact.setInfo(xmppAddress);
-            tmpContact.setType(ContactType.xmppAddress.toString());
-            newUser.addContact(tmpContact);
-            
-            tmpContact = new Contact();
-            tmpContact.setInfo(microblog);
-            tmpContact.setType(ContactType.microblog.toString());
-            newUser.addContact(tmpContact);
-            
-            tmpContact = new Contact();
-            tmpContact.setInfo(numericPin);
-            tmpContact.setServiceProvider(numericPage);
-            tmpContact.setType(ContactType.numericPage.toString());
-            newUser.addContact(tmpContact);
-
-            tmpContact = new Contact();
-            tmpContact.setInfo(textPin);
-            tmpContact.setServiceProvider(textPage);
-            tmpContact.setType(ContactType.textPage.toString());
-            newUser.addContact(tmpContact);
-            
-            tmpContact = new Contact();
-            tmpContact.setInfo(workPhone);
-            tmpContact.setType(ContactType.workPhone.toString());
-            newUser.addContact(tmpContact);
-            
-            tmpContact = new Contact();
-            tmpContact.setInfo(mobilePhone);
-            tmpContact.setType(ContactType.mobilePhone.toString());
-            newUser.addContact(tmpContact);
-
-            tmpContact = new Contact();
-            tmpContact.setInfo(homePhone);
-            tmpContact.setType(ContactType.homePhone.toString());
-            newUser.addContact(tmpContact);
+            addContactIfNotBlank(newUser, ContactType.email.toString(),       null,        email);
+            addContactIfNotBlank(newUser, ContactType.pagerEmail.toString(),   null,        pagerEmail);
+            addContactIfNotBlank(newUser, ContactType.xmppAddress.toString(),  null,        xmppAddress);
+            addContactIfNotBlank(newUser, ContactType.microblog.toString(),    null,        microblog);
+            addContactIfNotBlank(newUser, ContactType.numericPage.toString(),  numericPage, numericPin);
+            addContactIfNotBlank(newUser, ContactType.textPage.toString(),     textPage,    textPin);
+            addContactIfNotBlank(newUser, ContactType.workPhone.toString(),    null,        workPhone);
+            addContactIfNotBlank(newUser, ContactType.mobilePhone.toString(),  null,        mobilePhone);
+            addContactIfNotBlank(newUser, ContactType.homePhone.toString(),    null,        homePhone);
 
             // build the duty schedule data structure
             List<Boolean> newSchedule = new ArrayList<Boolean>(7);
@@ -201,5 +158,16 @@ public class UpdateUserServlet extends HttpServlet {
     private List<String> getDutySchedulesForUser(User newUser) {
         return newUser.getDutySchedules();
     }
-    
+
+    private void addContactIfNotBlank(User user, String type, String serviceProvider, String info) {
+        if ((info != null && !info.trim().isEmpty()) || (serviceProvider != null && !serviceProvider.trim().isEmpty())) {
+            Contact c = new Contact();
+            c.setType(type);
+            c.setInfo(info);
+            if (serviceProvider != null && !serviceProvider.trim().isEmpty()) {
+                c.setServiceProvider(serviceProvider);
+            }
+            user.addContact(c);
+        }
+    }
 }

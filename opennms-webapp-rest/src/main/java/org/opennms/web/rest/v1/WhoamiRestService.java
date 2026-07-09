@@ -67,7 +67,7 @@ public class WhoamiRestService {
         userInfo.put("roles", userRoles);
         userInfo.put("internal", false);
 
-        // Check if the user exists in users.xml, if so it is an internal
+        // Check if the user exists in the database; if so it is an internal
         // user and email, full name, etc. can be populated
         try {
             final OnmsUser onmsUser = userManager.getOnmsUser(userName);
