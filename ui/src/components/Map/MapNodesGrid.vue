@@ -112,7 +112,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 
 import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
@@ -160,18 +160,6 @@ const onNodeIdClick = (nodeId: string) => {
 const onNodeLabelClick = (label: string) => {
   mapStore.setNodeSearchTerm(label)
 }
-
-onMounted(() => {
-  const wrap = document.getElementById('wrap')
-  const thead = document.querySelector('thead')
-
-  if (wrap && thead) {
-    wrap.addEventListener('scroll', function () {
-      const translate = `translate(0, ${this.scrollTop}px)`
-      thead.style.transform = translate
-    })
-  }
-})
 </script>
 
 <style lang="scss" scoped>
@@ -191,9 +179,13 @@ table {
   padding-top: 4px;
   margin-top: 15px;
 }
-thead {
+// CSS sticky header (replaces a JS scroll-transform hack that jittered and let
+// rows bleed above the header). Sticky lives on the cells (thead sticky has
+// spotty support) and needs an opaque background so body rows don't show through.
+thead th {
+  position: sticky;
+  top: 0;
   z-index: 2;
-  position: relative;
   background: var(--p-content-background);
 }
 .first-td {
