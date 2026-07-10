@@ -1,19 +1,22 @@
 <template>
-  <PAutoComplete
-    v-model="searchStr"
-    multiple
-    :suggestions="results"
-    optionLabel="label"
-    class="map-search"
-    aria-label="Search"
-    placeholder="Search"
-    @complete="(e) => resetLabelsAndSearch(e.query)"
-    @update:modelValue="selectItem"
-  >
-    <template #empty>
-      <div class="autocomplete-empty">{{ labels.noResults }}</div>
-    </template>
-  </PAutoComplete>
+  <div class="map-search">
+    <i class="pi pi-search map-search__icon" aria-hidden="true" />
+    <PAutoComplete
+      v-model="searchStr"
+      multiple
+      :suggestions="results"
+      optionLabel="label"
+      class="map-search__input"
+      aria-label="Search"
+      placeholder="Search"
+      @complete="(e) => resetLabelsAndSearch(e.query)"
+      @update:modelValue="selectItem"
+    >
+      <template #empty>
+        <div class="autocomplete-empty">{{ labels.noResults }}</div>
+      </template>
+    </PAutoComplete>
+  </div>
 </template>
 
 <script
@@ -123,11 +126,33 @@ watch(results, (newResults) => {
   scoped
 >
 .map-search {
-  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  /* Translucent light panel + padding, matching the Show Severity control. */
+  padding: 0.5em;
+  background-color: rgba(211, 211, 211, 0.8);
+  border-radius: 4px;
+}
+.map-search__icon {
+  flex: 0 0 auto;
+  color: #1b1b1f;
+  font-size: 1.1rem;
+}
+.map-search__input {
   width: 290px !important;
 
+  // Keep the input light with dark text in both themes — it sits over the
+  // always-light map (matches the Show Severity control).
   :deep(.p-autocomplete-input-multiple) {
-    background: var(--p-content-background);
+    background: #ffffff;
+  }
+  :deep(input) {
+    color: #1b1b1f;
+
+    &::placeholder {
+      color: #6b7280;
+    }
   }
 }
 .autocomplete-empty {

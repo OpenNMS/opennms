@@ -299,6 +299,15 @@ const onLeafletReady = async () => {
   if (leafletObject.value !== undefined && leafletObject.value !== null) {
     // set default map view port
     leafletObject.value.zoomControl.setPosition('topright')
+
+    // Leaflet makes the map container keyboard-focusable (adds a tabindex).
+    // On the first click the container gains focus and the browser scrolls it
+    // into view — because the map sits under the fixed top menu bar, that shifts
+    // the whole map (and its controls) upward. Disable keyboard focus + drop the
+    // tabindex so a click no longer triggers that scroll.
+    leafletObject.value.keyboard?.disable()
+    leafletObject.value.getContainer()?.removeAttribute('tabindex')
+
     leafletReady.value = true
 
     await nextTick()
@@ -361,8 +370,11 @@ defineExpose({ invalidateSizeFn })
 <style lang="scss" scoped>
 .search-bar {
   position: absolute;
-  margin-left: 10px;
-  margin-top: 10px;
+  // Top-left overlay, clearing the fixed top menu bar; mirrors the
+  // Show Severity control on the right (right: 80px; top: 80px).
+  top: 80px;
+  left: 80px;
+  z-index: 1020;
 }
 .geo-map {
   height: 100%;
@@ -374,6 +386,40 @@ defineExpose({ invalidateSizeFn })
 
 <style lang="scss">
 @import "@featherds/styles/themes/variables";
+
+// The map is full-bleed under the fixed top menu bar, so push Leaflet's top
+// controls (zoom + layers, both top-right) down to clear it. A stable CSS
+// offset also survives Leaflet's invalidateSize() re-layout on interaction
+// (which otherwise lets the controls settle back under the menu bar).
+.geo-map .leaflet-top {
+  top: 70px;
+}
+
+// Leaflet expands the layers control's list *in place* — the list's top sits at
+// the toggle icon's top and it grows leftward, sliding over the Show Severity
+// control. Keep the toggle icon and drop the expanded list below it instead, so
+// its top aligns with the bottom of the icon.
+.geo-map .leaflet-control-layers {
+  position: relative;
+}
+.geo-map .leaflet-control-layers-expanded {
+  padding: 0;
+}
+.geo-map .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+  display: block;
+}
+.geo-map .leaflet-control-layers-expanded .leaflet-control-layers-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  min-width: 20em;
+  padding: 6px 10px;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
 .leaflet-marker-pane {
   div {
     width: 30px !important;
