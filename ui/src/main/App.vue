@@ -63,7 +63,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/lib/grid";
 @import '@/styles/onms-typography';
 @import "@featherds/styles/themes/open-mixins";
 @import "@featherds/styles/themes/variables";

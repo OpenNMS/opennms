@@ -6,7 +6,7 @@
   </div>
   <div class="onms-row">
     <div class="onms-col-12">
-      <div class="wrapper feather-container center">
+      <div class="wrapper onms-container center">
         <Snackbar />
         <ConfigurationHeader
           title="Configuration"
