@@ -113,7 +113,7 @@ const onItemOut = () => {
     appearance: none;
     block-size: 24px;
     caret-color: rgb(10,12,27,0.7);
-    color: var(--feather-secondary-text-on-surface);
+    color: var(--p-text-muted-color);
     column-rule-color: rgba(10, 12, 27, 0.7);
     cursor: pointer;
     display: block;
@@ -139,7 +139,7 @@ const onItemOut = () => {
 .search-item-details {
   margin-left: 1em;
   z-index: 1100;
-  color: var(--feather-secondary-text-on-surface);
+  color: var(--p-text-muted-color);
   padding: 0.25em;
 }
 </style>
