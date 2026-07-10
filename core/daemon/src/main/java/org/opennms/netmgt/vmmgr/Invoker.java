@@ -25,6 +25,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
@@ -32,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -221,11 +223,13 @@ public class Invoker {
             // We can  use the original list
             invokerServicesOrdered = getServices();
         }
-        
+
+        long totalStartTime = System.currentTimeMillis();
+        Map<String, Long> serviceTiming = new LinkedHashMap<>();
+
         List<InvokerResult> resultInfo = new ArrayList<>(invokerServicesOrdered.size());
         for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
         	LOG.debug("starting pass {}", pass);
-            
 
             for (InvokerService invokerService : invokerServicesOrdered) {
                 Service service = invokerService.getService();
@@ -238,14 +242,14 @@ public class Invoker {
                         return resultInfo;
                     }
                 }
-                
+
+                long serviceStartTime = System.currentTimeMillis();
                 for (final Invoke invoke : invokerService.getService().getInvokes()) {
                     if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
                         continue;
                     }
 
-                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod()); 
-                    
+                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod());
 
                     try {
                         Object result = invoke(invoke, mbean);
@@ -257,10 +261,26 @@ public class Invoker {
                         }
                     }
                 }
+
+                long serviceDuration = System.currentTimeMillis() - serviceStartTime;
+                if (serviceDuration > 0) {
+                    serviceTiming.merge(name, serviceDuration, Long::sum);
+                }
             }
-            
+
             LOG.debug("completed pass {}", pass);
-           
+
+        }
+
+        long totalDuration = System.currentTimeMillis() - totalStartTime;
+
+        if (InvokeAtType.START.equals(getAtType())) {
+            LOG.info("Service startup times:");
+            for (Map.Entry<String, Long> entry : serviceTiming.entrySet()) {
+                LOG.info("  {} : {}ms", entry.getKey(), entry.getValue());
+            }
+            LOG.info("Total time for all services to start: {}ms", totalDuration);
+            LOG.info("Overall OpenNMS bootup time: {}ms (since JVM start)", ManagementFactory.getRuntimeMXBean().getUptime());
         }
 
         return resultInfo;
@@ -316,7 +336,7 @@ public class Invoker {
         } else {
             LOG.info("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
         }
-        
+
 
         Object object;
         try {
