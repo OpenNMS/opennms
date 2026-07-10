@@ -40,7 +40,7 @@ public class TextPrometheusMetricDataParser extends PrometheusMetricDataParser<M
 
     private String lastLineReadFromStream; // this is only set when we break from the while loop in parse()
     
-    private final SampleLineParser sampleLineParser = new SampleLineParser();
+    private final LineParser sampleLineParser = new LineParser();
     private final TextFormatStrategy strategy;
 
     /**

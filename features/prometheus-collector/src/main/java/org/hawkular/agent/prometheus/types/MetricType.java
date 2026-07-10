@@ -33,6 +33,10 @@ public enum MetricType {
             return MetricType.valueOf(value.toUpperCase());
         }
         catch (IllegalArgumentException e) {
+            // legacy Prometheus v0.0.4 keyword, renamed to "unknown" in OpenMetrics
+            if ("untyped".equalsIgnoreCase(value)) {
+                return MetricType.UNKNOWN;
+            }
             return null;
         }
     }

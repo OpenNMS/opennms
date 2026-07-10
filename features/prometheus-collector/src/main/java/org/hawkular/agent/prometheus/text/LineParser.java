@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.hawkular.agent.prometheus.Util;
 
-class SampleLineParser {
+class LineParser {
     
     private enum ParseState {
         NAME,
