@@ -1223,6 +1223,8 @@
         <!-- opennms-core-db provides HikariCPConnectionFactory + the JdbcDataSource config model + the
              PostgreSQL driver, used to build the dedicated flow connection pool in the bundle blueprint. -->
         <feature>opennms-core-db</feature>
+        <!-- opennms-health-api provides the HealthCheck SPI for the flow-database health check -->
+        <feature>opennms-health-api</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <!-- liquibase-core 3.6.3 is already an OSGi bundle whose manifest mandatorily imports
              org.yaml.snakeyaml [1.18,2.0); the rest of OpenNMS ships snakeyaml 2.x (out of range),

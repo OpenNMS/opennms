@@ -169,6 +169,8 @@
         <feature version="[4.2,4.3)">spring-jdbc</feature>
         <!-- HikariCPConnectionFactory + JdbcDataSource config model + PostgreSQL driver for the dedicated flow pool -->
         <feature>opennms-core-db</feature>
+        <!-- opennms-health-api provides the HealthCheck SPI for the flow-database health check -->
+        <feature>opennms-health-api</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:org.yaml/snakeyaml/1.31</bundle>
         <bundle>mvn:org.liquibase/liquibase-core/${liquibaseVersion}</bundle>

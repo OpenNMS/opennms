@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.flows.postgres;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -83,5 +86,15 @@ public class PostgresFlowDisabledTest {
         final CompletableFuture<Long> result = queryService.getFlowCount(filters);
         assertTrue("queries must fail cleanly, not NPE, when unconfigured", result.isCompletedExceptionally());
         queryService.stop();
+    }
+
+    @Test
+    public void healthCheckReportsNotConfiguredWhenNoDataSource() {
+        // Mirrors the Elasticsearch flow health check: an installed-but-unconfigured backend is
+        // reported as Success ("not configured"), not a Failure, so the check does not always fail.
+        final Response response = new PostgresFlowHealthCheck(inertProvider()).perform(null);
+        assertEquals(Status.Success, response.getStatus());
+        assertTrue("message should indicate it is not configured",
+                response.getMessage() != null && response.getMessage().toLowerCase().contains("not configured"));
     }
 }

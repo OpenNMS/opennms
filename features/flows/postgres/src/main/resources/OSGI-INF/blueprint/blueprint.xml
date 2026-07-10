@@ -98,4 +98,12 @@
         </service-properties>
     </service>
 
+    <!-- Health check: verify connectivity to the configured flow database. Counterpart to the
+         Elasticsearch "cluster health check for Flows". -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.netmgt.flows.postgres.PostgresFlowHealthCheck">
+            <argument ref="flowDataSourceProvider"/>
+        </bean>
+    </service>
+
 </blueprint>

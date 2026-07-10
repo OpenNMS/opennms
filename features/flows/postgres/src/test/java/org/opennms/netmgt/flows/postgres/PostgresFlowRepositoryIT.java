@@ -299,6 +299,25 @@ public class PostgresFlowRepositoryIT {
         }
     }
 
+    @Test
+    public void healthCheckSucceedsAgainstTheDatabase() throws Exception {
+        final FlowDataSourceProvider provider = new FlowDataSourceProvider();
+        provider.setUrl(JDBC_URL);
+        provider.setUsername(JDBC_USER);
+        provider.setPassword(JDBC_PASSWORD);
+        provider.setMinPool(1);
+        provider.setMaxPool(2);
+        provider.setMaxSize(2);
+        provider.init();
+        try {
+            final org.opennms.core.health.api.Response response =
+                    new PostgresFlowHealthCheck(provider).perform(null);
+            Assert.assertEquals(org.opennms.core.health.api.Status.Success, response.getStatus());
+        } finally {
+            provider.close();
+        }
+    }
+
     private static Flow mockFlow(String application, Flow.Direction direction, long delta, long last, long bytes, String src, String dst) {
         Flow flow = Mockito.mock(Flow.class);
         Mockito.lenient().when(flow.getTimestamp()).thenReturn(Instant.ofEpochMilli(last));

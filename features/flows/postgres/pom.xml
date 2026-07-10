@@ -71,6 +71,12 @@
       <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- HealthCheck SPI: report flow-database connectivity via opennms:health-check -->
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- NodeDao: resolve ExporterNodeFilter NodeCriteria -> node id -->
     <dependency>
       <groupId>org.opennms</groupId>
