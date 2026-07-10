@@ -116,7 +116,7 @@ import { computed, onMounted, reactive } from 'vue'
 
 import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import SortableTh from './SortableTh.vue'
 
 const mapStore = useMapStore()

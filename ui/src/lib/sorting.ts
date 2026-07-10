@@ -1,4 +1,4 @@
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import { FeatherSortObject } from '@/types'
 
 // Sort predicate function to use when both values are strings or can be cast to strings

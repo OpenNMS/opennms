@@ -244,7 +244,7 @@ import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'

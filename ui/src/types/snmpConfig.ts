@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 
 export enum SnmpSecurityLevel {
   None = 0,

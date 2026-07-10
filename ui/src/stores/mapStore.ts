@@ -21,7 +21,7 @@
 ///
 
 import { defineStore } from 'pinia'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import { latLng, LatLngBounds } from 'leaflet'
 import { orderBy } from 'lodash'
 import { numericSeverityLevel } from '@/components/Map/utils'

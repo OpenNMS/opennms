@@ -282,7 +282,7 @@
 import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { IAutocompleteItemType } from '@/types'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'

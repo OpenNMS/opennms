@@ -21,7 +21,7 @@
 ///
 
 import { TrapConfig, TrapdValidationError, TrapdValidationResult } from '@/types/trapConfig'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
 import { isConvertibleToInteger } from './utils'
 

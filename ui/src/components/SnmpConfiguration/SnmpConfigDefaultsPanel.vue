@@ -163,7 +163,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'

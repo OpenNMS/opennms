@@ -305,7 +305,7 @@ import { createResourceType, updateResourceType } from '@/services/snmpDataColle
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { IAutocompleteItemType } from '@/types'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
