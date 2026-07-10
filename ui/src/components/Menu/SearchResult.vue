@@ -11,7 +11,7 @@
                 </div>
             </div>
             <span :class="iconClass">
-                <FeatherIcon :icon="SubdirectoryArrowLeft"></FeatherIcon>
+                <OnmsIcon :icon="SubdirectoryArrowLeft"></OnmsIcon>
             </span>
         </div>
     </button>
@@ -26,8 +26,8 @@
 
 <script lang="ts" setup>
 import { PropType, computed, ref } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import SubdirectoryArrowLeft from '@featherds/icon/navigation/SubdirectoryArrowLeft'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import SubdirectoryArrowLeft from '@/components/icons/navigation/SubdirectoryArrowLeft.vue'
 import { SearchResultItem } from '@/types'
 
 const props = defineProps({

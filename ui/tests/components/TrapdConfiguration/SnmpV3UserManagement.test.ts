@@ -80,7 +80,7 @@ describe('SnmpV3UserManagement.vue', () => {
             template: '<div data-test="empty-list">{{ content.msg }}</div>'
           },
           DeleteUserConfirmationDialog: DeleteDialogStub,
-          FeatherIcon: true,
+          OnmsIcon: true,
           'feather-icon': true
         }
       }

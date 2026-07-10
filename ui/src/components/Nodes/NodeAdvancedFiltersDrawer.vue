@@ -12,7 +12,7 @@
       </section>
       <div class="info-section">
         <span>Choose one or more attributes to find matching nodes.</span>
-        <FeatherIcon
+        <OnmsIcon
           :icon="InfoIcon"
           class="info-icon"
           @click="isMessageDialogVisible = true"
@@ -45,7 +45,7 @@
           aria-label="Add category group"
           @click="showSecondCategories = true"
         >
-          <FeatherIcon :icon="AddIcon" />
+          <OnmsIcon :icon="AddIcon" />
         </Button>
       </div>
       <div v-if="showSecondCategories" class="category-row">
@@ -71,7 +71,7 @@
           aria-label="Remove category group"
           @click="removeSecondCategories"
         >
-          <FeatherIcon :icon="DeleteIcon" />
+          <OnmsIcon :icon="DeleteIcon" />
         </Button>
       </div>
       <hr />
@@ -283,10 +283,10 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import AddIcon from '@featherds/icon/action/Add'
-import DeleteIcon from '@featherds/icon/action/Delete'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import AddIcon from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import Drawer from 'primevue/drawer'
 import MultiSelect from 'primevue/multiselect'
 import InputText from 'primevue/inputtext'

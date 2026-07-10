@@ -36,7 +36,7 @@
       data-test="rm-attr-btn"
       @click="removeAttribute"
     >
-      <FeatherIcon :icon="Delete" />
+      <OnmsIcon :icon="Delete" />
     </PButton>
   </div>
 </template>
@@ -46,8 +46,8 @@ import { computed, onMounted, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Remove'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'

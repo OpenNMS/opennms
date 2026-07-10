@@ -11,7 +11,7 @@
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
           >
-            <FeatherIcon :icon="ArrowBack" />
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
           </Button>
         </div>
@@ -108,8 +108,8 @@ import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import Button from 'primevue/button'
 import { format } from 'date-fns-tz'
 

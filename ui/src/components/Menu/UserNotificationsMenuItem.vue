@@ -16,12 +16,12 @@
       aria-label="User notifications menu"
       @click="onTriggerClick"
     >
-      <FeatherIcon
+      <OnmsIcon
         :icon="noticeStatusDisplay?.iconComponent"
         :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
       />
 
-      <FeatherIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
+      <OnmsIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
     </Button>
 
     <Popover
@@ -32,7 +32,7 @@
     >
       <div class="menubar-dropdown-item-content" @click="onMenuItemClick(notificationConfigUrl)">
         <a :href="computeLink(notificationConfigUrl)" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <FeatherIcon
+          <OnmsIcon
             :icon="noticeStatusDisplay?.iconComponent"
             :class="[noticeStatusDisplay?.colorClass, 'user-notifications-icon']"
           />
@@ -50,7 +50,7 @@
         @click="onMenuItemClick(item.url || '')"
       >
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <FeatherIcon :icon="IconPerson" class="user-notifications-icon" />
+          <OnmsIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
             {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
           </span>
@@ -105,11 +105,11 @@
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.id === 'userNotificationTeam'">
-            <FeatherIcon :icon="IconGroup" class="user-notifications-icon" />
+            <OnmsIcon :icon="IconGroup" class="user-notifications-icon" />
           </template>
 
           <template v-if="item.id === 'userNotificationOnCall'">
-            <FeatherIcon :icon="IconCalendar" class="user-notifications-icon" />
+            <OnmsIcon :icon="IconCalendar" class="user-notifications-icon" />
           </template>
 
           <span class="left-margin-small">
@@ -130,13 +130,13 @@
 <script setup lang="ts">
 import { computed, markRaw, ref, watch } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import IconArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
-import IconCalendar from '@featherds/icon/action/Calendar'
-import IconGroup from '@featherds/icon/action/Group'
-import IconNotificationsOff from '@featherds/icon/notification/NotificationsOff'
-import IconNotificationSelected from '@featherds/icon/notification/NotificationSelected'
-import IconPerson from '@featherds/icon/action/Person'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import IconCalendar from '@/components/icons/action/Calendar.vue'
+import IconGroup from '@/components/icons/action/Group.vue'
+import IconNotificationsOff from '@/components/icons/notification/NotificationsOff.vue'
+import IconNotificationSelected from '@/components/icons/notification/NotificationSelected.vue'
+import IconPerson from '@/components/icons/action/Person.vue'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
 import { useMenuStore } from '@/stores/menuStore'
@@ -319,10 +319,10 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 div.user-notification-badge-wrapper {
   .menubar-dropdown-button-dark {
-    svg.notice-status-display.feather-icon {
+    svg.notice-status-display.onms-icon {
       vertical-align: -0.5rem;
     }
-    svg.user-notification-arrow-dropdown.feather-icon {
+    svg.user-notification-arrow-dropdown.onms-icon {
       vertical-align: 0;
     }
   }

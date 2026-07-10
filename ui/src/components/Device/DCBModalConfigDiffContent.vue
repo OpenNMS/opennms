@@ -8,7 +8,7 @@
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
   >
-    <FeatherIcon :icon="Compare" />
+    <OnmsIcon :icon="Compare" />
   </PButton>
 
   <PButton
@@ -19,7 +19,7 @@
     @click="onReturn"
     v-if="isCompareView"
   >
-    <FeatherIcon :icon="Restore" />
+    <OnmsIcon :icon="Restore" />
   </PButton>
 
   <PButton
@@ -30,7 +30,7 @@
     @click="onDownload"
     v-if="isCompareView"
   >
-    <FeatherIcon :icon="Download" />
+    <OnmsIcon :icon="Download" />
   </PButton>
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
@@ -91,9 +91,9 @@ import { orderBy } from 'lodash'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Chip from 'primevue/chip'
-import { FeatherIcon } from '@featherds/icon'
-import Restore from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Restore from '@/components/icons/action/Restore.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'

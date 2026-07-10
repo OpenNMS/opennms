@@ -100,7 +100,7 @@
                     data-test="edit-mib-object-button"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -108,7 +108,7 @@
                     data-test="delete-mib-object-button"
                     @click="deleteMibObject(mibObjects.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -241,9 +241,9 @@ import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionSer
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@featherds/select'
 import FormField from '@/components/Common/FormField.vue'
 import Button from 'primevue/button'

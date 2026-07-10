@@ -86,7 +86,7 @@ describe('CreateSnmpV3User.vue', () => {
           TableCard: {
             template: '<div><slot /></div>'
           },
-          FeatherIcon: true,
+          OnmsIcon: true,
           ScvInputIcon: {
             emits: ['click'],
             template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'

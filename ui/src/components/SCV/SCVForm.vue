@@ -55,7 +55,7 @@
 
     <div class="large-spacer"></div>
     <div class="add-btn" @click="addAttribute" data-test="add-attr-btn">
-      <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
+      <OnmsIcon :icon="Add" aria-hidden="true" focusable="false" />
       Add attribute
     </div>
 
@@ -99,8 +99,8 @@ import { computed, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'

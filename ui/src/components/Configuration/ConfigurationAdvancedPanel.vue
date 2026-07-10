@@ -36,10 +36,10 @@
           v-tooltip="'Delete'"
           @click="() => deleteAdvancedOption(index)"
         >
-          <FeatherIcon
+          <OnmsIcon
             class="delete-icon"
             :icon="Delete"
-          ></FeatherIcon>
+          ></OnmsIcon>
         </PButton>
       </div>
       <div class="button-wrapper">
@@ -60,8 +60,8 @@ import { PropType, computed, reactive, ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { orderBy } from 'lodash'

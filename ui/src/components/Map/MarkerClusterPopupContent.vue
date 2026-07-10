@@ -5,7 +5,7 @@
       <br />
       <div class="marker-cluster-header-info">
         <div class="col">
-          <span class="larger-icon"><FeatherIcon :icon="Location" /></span>
+          <span class="larger-icon"><OnmsIcon :icon="Location" /></span>
           <span>{{ latitude }}, {{ longitude }}</span>
         </div>
         <div class="col">
@@ -43,8 +43,8 @@
 import { PropType, computed } from 'vue'
 import { orderBy } from 'lodash'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
-import { FeatherIcon } from '@featherds/icon'
-import Location from '@featherds/icon/action/Location'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Location from '@/components/icons/action/Location.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'

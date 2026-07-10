@@ -10,7 +10,7 @@
         v-tooltip="'Click to show all files.'"
         @click="getFiles(false)"
       >
-        <FeatherIcon :icon="FilterAlt" />
+        <OnmsIcon :icon="FilterAlt" />
       </PButton>
 
       <PButton
@@ -21,7 +21,7 @@
         v-tooltip="'Click to show modified files only.'"
         @click="getFiles(true)"
       >
-        <FeatherIcon :icon="FilterAlt" />
+        <OnmsIcon :icon="FilterAlt" />
       </PButton>
 
       <PButton
@@ -32,7 +32,7 @@
         v-tooltip="'Scroll to selected file.'"
         @click="scrollToSelectedFile"
       >
-        <FeatherIcon :icon="SupportCenter" />
+        <OnmsIcon :icon="SupportCenter" />
       </PButton>
 
       <PButton
@@ -42,7 +42,7 @@
         v-tooltip="'Click for info.'"
         @click="showInfo"
       >
-        <FeatherIcon
+        <OnmsIcon
           :icon="InfoIcon"
           class="info-icon"
         />
@@ -82,10 +82,10 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import FilterAlt from '@featherds/icon/action/FilterAlt'
-import SupportCenter from '@featherds/icon/action/SupportCenter'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import FilterAlt from '@/components/icons/action/FilterAlt.vue'
+import SupportCenter from '@/components/icons/action/SupportCenter.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import Button from 'primevue/button'
 import MessageDialog from '../Common/MessageDialog.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'

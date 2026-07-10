@@ -13,7 +13,7 @@
           :severity="status.enabled ? 'success' : 'secondary'"
           aria-label="Usage statistics status"
         >
-          <FeatherIcon :icon="status.enabled ? CheckCircle : Remove" />
+          <OnmsIcon :icon="status.enabled ? CheckCircle : Remove" />
           <span>{{ status.enabled ? 'Enabled' : 'Disabled' }}</span>
         </PTag>
       </div>
@@ -55,9 +55,9 @@ import { computed } from 'vue'
 
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Remove from '@featherds/icon/action/Remove'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Remove from '@/components/icons/action/Remove.vue'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
 import useSnackbar from '@/composables/useSnackbar'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
@@ -119,7 +119,7 @@ const updateStatus = () => {
 }
 
 #status-chip-wrapper {
-  :deep(.feather-icon) {
+  :deep(.onms-icon) {
     font-size: 1rem;
   }
 }

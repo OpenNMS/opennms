@@ -37,7 +37,7 @@
               data-test="delete-source-button"
               @click="removeSource(data.name)"
             >
-              <FeatherIcon :icon="Delete" />
+              <OnmsIcon :icon="Delete" />
             </PButton>
           </template>
         </PColumn>
@@ -50,8 +50,8 @@
 import { computed, ref } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import AutoCompleteComponent from 'primevue/autocomplete'
 import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'

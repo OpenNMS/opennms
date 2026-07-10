@@ -14,7 +14,7 @@
                 :aria-label="'Search by Name'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -26,7 +26,7 @@
             data-test="refresh-button"
             @click="store.resetSystemDefinitionsFilters"
           >
-            <FeatherIcon :icon="Refresh" />
+            <OnmsIcon :icon="Refresh" />
           </Button>
         </div>
       </div>
@@ -105,7 +105,7 @@
               data-test="edit-button"
               @click="onSystemDefEditClicked(data)"
             >
-              <FeatherIcon :icon="Edit" />
+              <OnmsIcon :icon="Edit" />
             </Button>
             <Button
               text
@@ -114,7 +114,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -165,11 +165,11 @@ import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
-import Search from '@featherds/icon/action/Search'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import Search from '@/components/icons/action/Search.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import Button from 'primevue/button'
 import Column from 'primevue/column'

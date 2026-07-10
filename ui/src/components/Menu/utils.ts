@@ -20,10 +20,9 @@
 /// License.
 ///
 
-import { DefineComponent, markRaw } from 'vue'
+import { Component, markRaw } from 'vue'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
-import { FeatherIcon } from '@featherds/icon'
-import IconHome from '@featherds/icon/action/Home'
+import IconHome from '@/components/icons/action/Home.vue'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { Plugin } from '@/types'
 import { MenuItem } from '@/types/mainMenu'
@@ -85,16 +84,16 @@ const getMenuLink = (menuItem: MenuItem, baseHref?: string | null) => {
   return '#'
 }
 
-const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => DefineComponent | null) => {
-  const icon: (DefineComponent | null) = getIcon(menuItem.icon)
+const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => Component | null) => {
+  const icon: (Component | null) = getIcon(menuItem.icon)
 
-  return (icon ?? IconHome) as typeof FeatherIcon
+  return (icon ?? IconHome) as Component
 }
 
 const createMenuListEntry = (
   menuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ) => {
   let onClick = menuItem.onClick
@@ -105,7 +104,7 @@ const createMenuListEntry = (
 
   const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
 
-  let icon: typeof FeatherIcon | undefined = undefined
+  let icon: Component | undefined = undefined
 
   if (menuItem.icon) {
     icon = createMenuIcon(menuItem, getIcon)
@@ -119,7 +118,7 @@ const createMenuListEntry = (
     icon: icon,
     target,
     onClick
-  } as MenuListEntry
+  } as unknown as MenuListEntry
 }
 
 const createMenuListSeparator = () => {
@@ -162,7 +161,7 @@ const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
 const createTopMenuListEntry = (
   topMenuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ) => {
   if (topMenuItem.type === 'separator') {
@@ -184,7 +183,7 @@ const createTopMenuListEntry = (
     componentProps: {
       items: topMenuItem.items?.map(item => createMenuListEntry(item, baseHref, getIcon, onLogout)) ?? []
     }
-  } as MenuListEntry
+  } as unknown as MenuListEntry
 
   if (topMenuItem.action && topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
     const url = getMenuLink(topMenuItem, baseHref)
@@ -216,7 +215,7 @@ const createTopMenuListEntry = (
 const createPrimeChildItem = (
   menuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem => {
   const item: PrimeMenuItem = {
@@ -251,7 +250,7 @@ const createPrimeChildItem = (
 const createPrimeTopItem = (
   topMenuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem | null => {
   if (topMenuItem.type === 'separator') {
@@ -293,7 +292,7 @@ const createPrimeTopItem = (
 const createPrimeMenuModel = (
   menus: MenuItem[],
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem[] => {
   return menus

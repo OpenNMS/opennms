@@ -37,7 +37,7 @@
             @click="openFileDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="UploadFile" />
+            <OnmsIcon :icon="UploadFile" />
             Choose files to upload
           </Button>
           <Button
@@ -46,7 +46,7 @@
             @click="openFolderDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="FolderAdd" />
+            <OnmsIcon :icon="FolderAdd" />
             Choose folder to upload
           </Button>
         </div>
@@ -148,7 +148,7 @@
         >
           <template #body="{ data }">
             <div class="file">
-              <FeatherIcon :icon="Apps" />
+              <OnmsIcon :icon="Apps" />
               <span>{{ ellipsify(data.file.name, 39) }}</span>
               <Tag
                 v-if="data.kind === 'config'"
@@ -173,17 +173,17 @@
                 :value="`Will update existing source '${data.groupName}'`"
                 :data-test="`update-chip-${data.file.name}`"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="!data.isValid"
                 :icon="Error"
                 class="error-icon"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="data.isValid && data.isDuplicate"
                 :icon="Refresh"
                 class="update-icon"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="data.isValid && !data.isDuplicate"
                 :icon="CheckCircle"
                 class="success-icon"
@@ -199,7 +199,7 @@
               data-test="remove-files-button"
               @click="removeFile(data)"
             >
-              <FeatherIcon :icon="Delete" />
+              <OnmsIcon :icon="Delete" />
             </Button>
           </template>
         </Column>
@@ -220,14 +220,14 @@
         <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
         <li>
           Files that are valid and ready for upload will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="CheckCircle"
             class="success-icon-text"
           />.
         </li>
         <li>
           Files with duplicate names (excluding the .xml extension) will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Warning"
             class="warning-icon-text"
           />
@@ -235,7 +235,7 @@
         </li>
         <li>
           Invalid files will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Error"
             class="error-icon-text"
           />
@@ -269,15 +269,15 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
-import UploadFile from '@featherds/icon/action/UploadFile'
-import FolderAdd from '@featherds/icon/file/FolderAdd'
-import Apps from '@featherds/icon/navigation/Apps'
-import Refresh from '@featherds/icon/navigation/Refresh'
-import Error from '@featherds/icon/notification/Error'
-import Warning from '@featherds/icon/notification/Warning'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import UploadFile from '@/components/icons/action/UploadFile.vue'
+import FolderAdd from '@/components/icons/file/FolderAdd.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Error from '@/components/icons/notification/Error.vue'
+import Warning from '@/components/icons/notification/Warning.vue'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'

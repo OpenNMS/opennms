@@ -15,7 +15,7 @@
       :aria-expanded="isPinned"
       @click="togglePinned"
     >
-      <i class="pi" :class="isPinned ? 'pi-angle-double-left' : 'pi-angle-double-right'" aria-hidden="true" />
+      <OnmsIcon :icon="isPinned ? ChevronLeft : ChevronRight" />
     </button>
 
     <TieredMenu
@@ -35,7 +35,7 @@
             <component :is="item.iconComponent" v-if="item.iconComponent" aria-hidden="true" />
           </span>
           <span class="onms-side-menu__label">{{ item.label }}</span>
-          <i v-if="hasSubmenu" class="pi pi-angle-right onms-side-menu__chevron" aria-hidden="true" />
+          <OnmsIcon v-if="hasSubmenu" :icon="ChevronRight" class="onms-side-menu__chevron" />
         </a>
       </template>
     </TieredMenu>
@@ -47,6 +47,9 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import TieredMenu from 'primevue/tieredmenu'
 import type { MenuItem } from 'primevue/menuitem'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'

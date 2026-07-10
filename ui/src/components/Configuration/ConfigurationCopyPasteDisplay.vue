@@ -23,10 +23,10 @@
           v-tooltip="'Copy to clipboard'"
           @click="copyURLToClipboard"
         >
-          <FeatherIcon
+          <OnmsIcon
             :icon="ContentCopy"
             class="edit-icon"
-          ></FeatherIcon>
+          ></OnmsIcon>
         </PButton>
       </div>
     </div>
@@ -40,8 +40,8 @@
 import { computed, reactive, ref } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 

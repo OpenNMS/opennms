@@ -8,7 +8,7 @@
         @update:modelValue="(val) => searchFilterHandler(val as string)"
       />
       <InputIcon>
-        <FeatherIcon :icon="SearchIcon" />
+        <OnmsIcon :icon="SearchIcon" />
       </InputIcon>
     </IconField>
   </FormField>
@@ -20,8 +20,8 @@ import { ref } from 'vue'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import { FeatherIcon } from '@featherds/icon'
-import SearchIcon from '@featherds/icon/action/Search'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import SearchIcon from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useDeviceStore } from '@/stores/deviceStore'

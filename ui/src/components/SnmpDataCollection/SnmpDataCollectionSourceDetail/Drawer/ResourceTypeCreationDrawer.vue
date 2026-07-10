@@ -122,7 +122,7 @@
                     data-test="edit-storage-strategy-button"
                     @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -130,7 +130,7 @@
                     data-test="delete-storage-strategy-button"
                     @click="deleteStorageStrategy(storageStrategyParams.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -199,7 +199,7 @@
                     data-test="edit-persistence-selector-strategy-button"
                     @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -207,7 +207,7 @@
                     data-test="delete-persistence-selector-strategy-button"
                     @click="deletePersistenceSelectorStrategy(persistenceSelectorStrategyParams.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -306,9 +306,9 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Column from 'primevue/column'

@@ -10,7 +10,7 @@
         aria-label="Close help"
         @click="onClose"
       >
-        <FeatherIcon
+        <OnmsIcon
           class="buttonIcon"
           :icon="chevronRight"
         />
@@ -43,10 +43,10 @@
 >
 import { PropType, computed } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Button from 'primevue/button'
 
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { LocalConfiguration } from './configuration.types'
 

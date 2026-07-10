@@ -9,7 +9,7 @@
     data-test="download-button"
     @click="toggle"
   >
-    <FeatherIcon
+    <OnmsIcon
       :icon="downloadIcon"
       class="download-actions-icon"
       title="Download"
@@ -27,8 +27,8 @@
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import { markRaw, ref, PropType } from 'vue'
 
 const props = defineProps({

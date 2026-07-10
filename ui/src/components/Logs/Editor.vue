@@ -9,7 +9,7 @@
         aria-label="Display oldest first."
         @click="getLog(false)"
       >
-        <FeatherIcon :icon="KeyboardArrowDown" />
+        <OnmsIcon :icon="KeyboardArrowDown" />
       </PButton>
 
       <PButton
@@ -20,7 +20,7 @@
         aria-label="Display newest first."
         @click="getLog(true)"
       >
-        <FeatherIcon :icon="KeyboardArrowUp" />
+        <OnmsIcon :icon="KeyboardArrowUp" />
       </PButton>
     </div>
     <VAceEditor
@@ -38,11 +38,11 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Button from 'primevue/button'
 import { onKeyStroke } from '@vueuse/core'
-import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
-import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
+import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
+import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'

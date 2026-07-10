@@ -6,7 +6,7 @@
     v-tooltip="'Compare configs'"
     @click="emit('onCompare')"
   >
-    <FeatherIcon :icon="Compare" />
+    <OnmsIcon :icon="Compare" />
   </PButton>
 
   <PButton
@@ -16,7 +16,7 @@
     v-tooltip="'Download config'"
     @click="onDownload"
   >
-    <FeatherIcon :icon="Download" />
+    <OnmsIcon :icon="Download" />
   </PButton>
 
   <span class="title">
@@ -48,8 +48,8 @@ import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'

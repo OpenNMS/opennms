@@ -5,7 +5,7 @@
       <div v-if="displayTable" class="info-section">
         <div>
           <span>SNMP profiles provide sets of SNMP configuration that can be applied to devices matching specific filter criteria.</span>
-          <FeatherIcon
+          <OnmsIcon
             :icon="InfoIcon"
             class="info-icon"
             @click="isMessageDialogVisible = true"
@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'

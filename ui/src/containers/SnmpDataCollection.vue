@@ -21,7 +21,7 @@
           data-test="download-config-button"
           @click="toggleDownloadMenu"
         >
-          <FeatherIcon :icon="DownloadIcon" /> Download Data Collection Config
+          <OnmsIcon :icon="DownloadIcon" /> Download Data Collection Config
         </Button>
         <Menu
           id="download-config-menu"
@@ -70,8 +70,8 @@ import { downloadDatacollectionConfig } from '@/services/snmpDataCollectionServi
 import { useMenuStore } from '@/stores/menuStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
-import { FeatherIcon } from '@featherds/icon'
-import DownloadIcon from '@featherds/icon/action/DownloadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import Button from 'primevue/button'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'

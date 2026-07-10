@@ -27,7 +27,7 @@
               aria-label="Cancel"
               @click="props.closePanel"
             >
-              <FeatherIcon
+              <OnmsIcon
                 class="close-icon"
                 :icon="cancelIcon"
               />
@@ -83,9 +83,9 @@
 import { PropType, computed, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 
-import Cancel from '@featherds/icon/navigation/Cancel'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'

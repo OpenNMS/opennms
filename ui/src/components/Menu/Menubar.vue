@@ -28,7 +28,7 @@
       </div>
 
        <span title="Toggle Light/Dark Mode">
-        <FeatherIcon
+        <OnmsIcon
             :icon="LightDarkMode"
             title="Toggle Light/Dark Mode"
             class="light-dark"
@@ -59,8 +59,8 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
-import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
 import Button from 'primevue/button'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported

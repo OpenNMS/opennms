@@ -14,7 +14,7 @@
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
           data-test="add-varbind-row-button"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
         </Button>
       </div>
@@ -49,14 +49,14 @@
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeVarbindDecodeRow', null, index, -1)"
             >
-              <FeatherIcon :icon="Delete" />
+              <OnmsIcon :icon="Delete" />
             </Button>
             <Button
               outlined
               data-test="add-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'addDecodeRow', null, index, -1)"
             >
-              <FeatherIcon :icon="Add" />
+              <OnmsIcon :icon="Add" />
               Add Decode
             </Button>
           </div>
@@ -110,7 +110,7 @@
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeDecodeRow', null, index, decodeIndex)"
             >
-              <FeatherIcon :icon="Delete" />
+              <OnmsIcon :icon="Delete" />
             </Button>
           </div>
         </div>
@@ -123,9 +123,9 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'

@@ -9,7 +9,7 @@
     @click="toggleMenu"
   >
     Backup Status
-    <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+    <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
   </span>
   <PMenu ref="menu" :model="menuItems" :popup="true" class="dcb-table-status-dropdown">
     <template #item="{ item, props }">
@@ -24,8 +24,8 @@
 import { computed, ref } from 'vue'
 
 import Menu from 'primevue/menu'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 

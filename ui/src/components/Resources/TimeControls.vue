@@ -8,7 +8,7 @@
         @click="toggleMenu"
       >
         {{ selectedTime }} &nbsp;
-        <FeatherIcon :icon="ArrowDropDown" />
+        <OnmsIcon :icon="ArrowDropDown" />
       </PButton>
 
       <PPopover
@@ -67,8 +67,8 @@ import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 
 const PButton = Button
 const PPopover = Popover

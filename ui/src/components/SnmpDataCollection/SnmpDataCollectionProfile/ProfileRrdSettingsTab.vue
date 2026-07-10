@@ -32,7 +32,7 @@
           class="add-rra-button"
           @click="addRRA"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add RRA
         </PButton>
       </div>
@@ -114,7 +114,7 @@
               data-test="delete-rra-button"
               @click="deleteRRA(data._id)"
             >
-              <FeatherIcon :icon="Delete" />
+              <OnmsIcon :icon="Delete" />
             </PButton>
           </template>
         </PColumn>
@@ -142,9 +142,9 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'

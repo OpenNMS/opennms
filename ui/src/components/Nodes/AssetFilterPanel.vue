@@ -27,7 +27,7 @@
           class="add-asset-filter-button"
           @click="onAddAssetFilter"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
         </Button>
       </div>
@@ -55,7 +55,7 @@
             data-test="delete-asset-filter-button"
             @click="removeGridItem(data.column)"
           >
-            <FeatherIcon :icon="DeleteIcon" />
+            <OnmsIcon :icon="DeleteIcon" />
           </Button>
         </template>
       </PColumn>
@@ -71,9 +71,9 @@ import ColumnComponent from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import DeleteIcon from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'

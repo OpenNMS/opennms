@@ -14,7 +14,7 @@
                 :aria-label="'Search by Source, Vendor or Description'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -97,7 +97,7 @@
               data-test="view-button"
               @click="onSourceClick(data)"
             >
-              <FeatherIcon :icon="ViewDetails" />
+              <OnmsIcon :icon="ViewDetails" />
             </Button>
             <!-- Quick-download in XML (the round-trippable format the
                  /upload endpoint accepts). JSON is still reachable via
@@ -108,7 +108,7 @@
               data-test="download-xml-button"
               @click="downloadCollectionSource(data, 'xml')"
             >
-              <FeatherIcon :icon="DownloadIcon" />
+              <OnmsIcon :icon="DownloadIcon" />
             </Button>
             <Button
               text
@@ -118,7 +118,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -161,11 +161,11 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { FeatherIcon } from '@featherds/icon'
-import DownloadIcon from '@featherds/icon/action/DownloadFile'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Search from '@/components/icons/action/Search.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
@@ -495,7 +495,7 @@ onMounted(async () => {
     align-items: center;
     gap: 5px;
 
-    // enlarge the button icons (FeatherIcon scales with font-size)
+    // enlarge the button icons (OnmsIcon scales with font-size)
     :deep(.p-button) {
       font-size: 1.3rem;
     }

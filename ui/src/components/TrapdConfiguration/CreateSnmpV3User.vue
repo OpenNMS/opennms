@@ -13,7 +13,7 @@
             data-test="text-button"
             @click="store.closeCreateUserDrawer"
           >
-            <FeatherIcon :icon="ChevronLeft" />
+            <OnmsIcon :icon="ChevronLeft" />
           </PButton>
           <h3 v-if="store.createUserDrawerState.mode === CreateEditMode.Create">New SNMPv3 User</h3>
           <h3 v-else-if="store.createUserDrawerState.mode === CreateEditMode.Edit">Edit SNMPv3 User {{ securityName }}</h3>
@@ -193,8 +193,8 @@ import Button from 'primevue/button'
 import FormField from '../Common/FormField.vue'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { FeatherIcon } from '@featherds/icon'
-import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
@@ -451,7 +451,7 @@ onMounted(() => {
         align-items: center;
         gap: 10px;
 
-        // enlarge the back-button icon (FeatherIcon scales with font-size)
+        // enlarge the back-button icon (OnmsIcon scales with font-size)
         :deep(.p-button) {
           font-size: 1.3rem;
         }

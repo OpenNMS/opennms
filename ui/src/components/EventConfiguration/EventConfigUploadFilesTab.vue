@@ -16,26 +16,26 @@
               <template #item="{ element, index }">
                 <div class="file">
                   <div class="file-icon">
-                    <FeatherIcon :icon="Text" />
+                    <OnmsIcon :icon="Text" />
                     <span>
                       {{ ellipsify(element.file.name, 39) }}
                     </span>
                   </div>
                   <div class="actions">
-                    <FeatherIcon
+                    <OnmsIcon
                       v-if="element.isDuplicate"
                       :icon="Warning"
                       v-tooltip="'File is a duplicate of another file that has been already uploaded.'"
                       class="warning-icon"
                       @click="openFileRenameDialog(index)"
                     />
-                    <FeatherIcon
+                    <OnmsIcon
                       v-if="element.isValid && !element.isDuplicate"
                       :icon="CheckCircle"
                       v-tooltip="'File is valid'"
                       class="success-icon"
                     />
-                    <FeatherIcon
+                    <OnmsIcon
                       v-if="!element.isValid"
                       :icon="Error"
                       v-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
@@ -45,7 +45,7 @@
                       text
                       title="Reorder"
                     >
-                      <FeatherIcon
+                      <OnmsIcon
                         class="close-icon drag-handle"
                         :icon="Apps"
                       />
@@ -56,7 +56,7 @@
                       data-test="remove-files-button"
                       @click="removeFile(index)"
                     >
-                      <FeatherIcon :icon="Delete" />
+                      <OnmsIcon :icon="Delete" />
                     </Button>
                   </div>
                 </div>
@@ -115,14 +115,14 @@
           <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
           <li>
             Files that are valid and ready for upload will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="CheckCircle"
               class="success-icon-text"
             />.
           </li>
           <li>
             Files with duplicate names (excluding the .xml extension) will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="Warning"
               class="warning-icon-text"
             />
@@ -130,7 +130,7 @@
           </li>
           <li>
             Invalid files will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="Error"
               class="error-icon-text"
             />
@@ -160,13 +160,13 @@ import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
-import Text from '@featherds/icon/file/Text'
-import Apps from '@featherds/icon/navigation/Apps'
-import Error from '@featherds/icon/notification/Error'
-import Warning from '@featherds/icon/notification/Warning'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Text from '@/components/icons/file/Text.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Error from '@/components/icons/notification/Error.vue'
+import Warning from '@/components/icons/notification/Warning.vue'
 import Button from 'primevue/button'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'

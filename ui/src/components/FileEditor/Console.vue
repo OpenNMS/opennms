@@ -6,7 +6,7 @@
     >
       <div :class="{ 'icon-err': logErrors.length }">
         Console
-        <FeatherIcon :icon="Error" />
+        <OnmsIcon :icon="Error" />
       </div>
       <div
         class="btns"
@@ -43,8 +43,8 @@
 >
 import { computed } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import Error from '@featherds/icon/notification/Error'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Error from '@/components/icons/notification/Error.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { FileEditorResponseLog } from '@/types'
 
@@ -98,7 +98,7 @@ const clear = () => fileEditorStore.clearLogs()
     }
   }
   .icon-err {
-    .feather-icon {
+    .onms-icon {
       color: var(--p-red-500);
     }
   }
