@@ -174,7 +174,7 @@ const addAttribute = () => scvStore.addAttribute()
 
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .form-container {
   @include elevation(1);
@@ -186,7 +186,7 @@ const addAttribute = () => scvStore.addAttribute()
   overflow-y: auto;
 
   .title {
-    @include headline3;
+    @include onms-headline3;
     margin-top: 11px;
     margin-bottom: 9px;
   }
@@ -210,7 +210,7 @@ const addAttribute = () => scvStore.addAttribute()
 
   .add-btn {
     cursor: pointer;
-    @include body-small;
+    @include onms-body-small;
     margin-bottom: 10px;
   }
 

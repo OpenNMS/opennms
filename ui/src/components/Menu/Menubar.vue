@@ -176,7 +176,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 @import "@featherds/dropdown/scss/mixins";
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 // Fixed top menu bar. Replaces FeatherAppBar, which was used only as a fixed

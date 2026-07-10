@@ -507,7 +507,7 @@ defineExpose({ onSort, onPage, removeItem })
 
 <style lang="scss" scoped>
 @use "@featherds/styles/mixins/elevation" as elevation;
-@use "@featherds/styles/mixins/typography" as typography;
+@use '@/styles/onms-typography' as *;
 @use "@featherds/styles/themes/variables" as variables;
 
 .node-table {
@@ -521,7 +521,7 @@ defineExpose({ onSort, onPage, removeItem })
 }
 
 .title {
-  @include typography.headline1;
+  @include onms-headline1;
   display: block;
 }
 

@@ -275,7 +275,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 // Foreground uses PrimeVue tokens (not FeatherDS vars) so text tracks the same

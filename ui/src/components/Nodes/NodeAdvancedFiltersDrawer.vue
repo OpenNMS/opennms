@@ -446,7 +446,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 @use '@featherds/styles/mixins/elevation';
 @use '@featherds/table/scss/table';
 

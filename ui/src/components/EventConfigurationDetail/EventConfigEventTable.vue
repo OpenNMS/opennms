@@ -250,7 +250,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 @use '@/styles/_severities';
 
 .event-config-event-table {
@@ -267,7 +267,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
       align-items: center;
 
       .title {
-        @include typography.headline3;
+        @include onms-headline3;
       }
     }
 
@@ -291,7 +291,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
   }
 
   .severity {
-    @include typography.caption;
+    @include onms-caption;
   }
 
   .enabled-tag {

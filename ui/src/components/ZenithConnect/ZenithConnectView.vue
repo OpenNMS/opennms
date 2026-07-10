@@ -187,7 +187,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .zc-container {
   display: flex;
@@ -201,7 +201,7 @@ onMounted(async () => {
       justify-content: space-between;
 
       .title {
-        @include headline1;
+        @include onms-headline1;
         margin: 16px 0px 16px 19px;
         display: block;
       }

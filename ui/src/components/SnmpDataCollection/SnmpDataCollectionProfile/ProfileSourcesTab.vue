@@ -105,7 +105,7 @@ const removeSource = (name: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 .sources-box {
@@ -113,7 +113,7 @@ const removeSource = (name: string) => {
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 

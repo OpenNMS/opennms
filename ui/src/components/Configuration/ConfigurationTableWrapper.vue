@@ -301,11 +301,11 @@ const advanceActiveUpdate = (newVal: boolean) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/mixins/elevation";
 
 .title {
-  @include headline3();
+  @include onms-headline3();
 }
 .title-padding {
   margin: 20px;

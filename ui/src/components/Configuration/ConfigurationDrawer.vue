@@ -196,7 +196,7 @@ const toggleHelp = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/mixins/elevation";
 
 
@@ -264,7 +264,7 @@ const toggleHelp = () => {
   border-bottom: 1px solid #d7d7dc;
 }
 .title {
-  @include headline2();
+  @include onms-headline2();
   color: var(--p-primary-color);
   min-height: 40px;
   display: flex;

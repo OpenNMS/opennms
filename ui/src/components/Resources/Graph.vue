@@ -313,7 +313,7 @@ onMounted(() => render())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .container {
   position: relative;
 }
@@ -332,7 +332,7 @@ onMounted(() => render())
   z-index: 1;
 }
 .lc {
-  @include body-small;
+  @include onms-body-small;
 }
 .graph-data-tabs {
   :deep(.p-tablist-tab-list) {

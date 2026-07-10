@@ -358,7 +358,7 @@ onMounted(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .dcb-table {
   :deep(.last-backup-date) {
@@ -392,7 +392,7 @@ onMounted(() => {
   .config-header {
     display: flex;
     flex-direction: row;
-    @include subtitle2;
+    @include onms-subtitle2;
 
     .config-column {
       display: flex;

@@ -81,10 +81,10 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .title {
-  @include subtitle1;
+  @include onms-subtitle1;
 }
 .flex {
   display: flex;
@@ -103,7 +103,7 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
     margin-top: 12px;
 
     .history-date {
-      @include body-small;
+      @include onms-body-small;
       color: var(--p-primary-color);
       margin-top: 5px;
 

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-@use "@featherds/styles/mixins/_typography.scss" as typo;
+@use '@/styles/onms-typography' as *;
 @use "@featherds/styles/themes/variables";
 
 /**
@@ -36,7 +36,7 @@ span,
 td,
 text,
 th {
-  @include typo.body-small();
+  @include onms-body-small();
   color: inherit;
   // Feather has the following, which seem a little too much. Legacy OpenNMS fonts were a bit narrower,
   // so we adjust these a bit below.

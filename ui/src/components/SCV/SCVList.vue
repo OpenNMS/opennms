@@ -53,11 +53,11 @@ watch(isEditing, (editing) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .scv-list {
   .title {
-    @include headline3;
+    @include onms-headline3;
     margin: 0 0 0.5rem 0;
   }
 

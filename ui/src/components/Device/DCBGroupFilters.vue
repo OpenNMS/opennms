@@ -85,7 +85,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .group-filters-container {
   display: flex;
@@ -97,7 +97,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
   padding: 15px;
 
   .title {
-    @include headline4;
+    @include onms-headline4;
     margin-top: 0px;
   }
 

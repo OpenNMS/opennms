@@ -38,7 +38,7 @@ defineProps({
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .wrapper {
   background-color: var(--p-content-background);
@@ -52,12 +52,12 @@ defineProps({
   text-align: center;
 }
 .title {
-  @include headline3();
+  @include onms-headline3();
   margin-bottom: 16px;
   color: var(--p-primary-color);
 }
 .paragraph {
-  @include body-small();
+  @include onms-body-small();
   max-width: 400px;
 }
 .button {

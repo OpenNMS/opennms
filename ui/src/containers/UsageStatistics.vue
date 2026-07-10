@@ -54,7 +54,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .card {
   background: var(--p-content-background);
@@ -72,7 +72,7 @@ onMounted(async () => {
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }

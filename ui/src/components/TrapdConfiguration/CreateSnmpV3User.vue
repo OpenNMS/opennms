@@ -433,7 +433,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .snmpv3-user-management-container {
   margin-top: 10px;
@@ -457,7 +457,7 @@ onMounted(() => {
         }
 
         h3 {
-          @include typography.headline3;
+          @include onms-headline3;
           color: var(--p-text-color);
         }
       }
@@ -487,7 +487,7 @@ onMounted(() => {
       width: 50%;
 
       h1 {
-        @include typography.headline4;
+        @include onms-headline4;
         color: var(--p-text-color);
       }
 

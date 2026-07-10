@@ -179,7 +179,7 @@ const applyCustomTime = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .wrapper {
   height: 70px;
   .graph-controls {
@@ -190,7 +190,7 @@ const applyCustomTime = () => {
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .graph-controls-panel {
   .menu-content {
@@ -220,7 +220,7 @@ const applyCustomTime = () => {
     flex: 1;
 
     .date-input {
-      @include body-small;
+      @include onms-body-small;
     }
   }
 }

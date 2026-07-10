@@ -108,7 +108,7 @@ const onDeleteProfile = async (label: string) => {
 
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 @use '@featherds/table/scss/table';
 @use '@/styles/vars.scss';
 

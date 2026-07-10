@@ -151,7 +151,7 @@ const onMenuItemClick = async (item: MenuItem) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 .self-service-menubar-icon-wrapper {

@@ -471,7 +471,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 .snmp-data-collection-detail-container {
@@ -491,7 +491,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -537,7 +537,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
     .config-details-box {
       .header {
-        @include headline3;
+        @include onms-headline3;
         margin-bottom: 20px;
       }
 
@@ -551,14 +551,14 @@ watch(() => route.params.id, (id: string | string[]) => {
           margin-right: 40px;
 
           .field-label {
-            @include headline4;
+            @include onms-headline4;
             margin-right: 10px;
             color: var(--feather-secondary-text-on-surface);
             min-width: 80px;
           }
 
           .field-value {
-            @include body-large;
+            @include onms-body-large;
           }
 
           .profiles-chips {
@@ -578,7 +578,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .profiles-error {
-            @include body-small;
+            @include onms-body-small;
             color: var(--p-red-500);
           }
 
@@ -640,7 +640,7 @@ watch(() => route.params.id, (id: string | string[]) => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }

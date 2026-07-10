@@ -210,11 +210,11 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .advanced-panel {
   :deep(.p-panel-title) {
-    @include headline4();
+    @include onms-headline4();
     color: var(--p-primary-color);
   }
 }

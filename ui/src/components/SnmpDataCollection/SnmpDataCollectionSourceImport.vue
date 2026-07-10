@@ -623,7 +623,7 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .data-collection-source-import-container {
   margin-top: 10px;
@@ -635,7 +635,7 @@ defineExpose({
       .title {
         h2 {
           margin: 0;
-          @include typography.headline3;
+          @include onms-headline3;
         }
       }
 
@@ -701,7 +701,7 @@ defineExpose({
       }
 
       .profiles-label {
-        @include typography.subtitle2;
+        @include onms-subtitle2;
         color: var(--p-text-color);
 
         .required-marker {
@@ -711,7 +711,7 @@ defineExpose({
       }
 
       .profiles-count {
-        @include typography.caption;
+        @include onms-caption;
         color: var(--p-text-muted-color);
       }
 
@@ -729,7 +729,7 @@ defineExpose({
       }
 
       .profiles-hint {
-        @include typography.body-small;
+        @include onms-body-small;
         color: var(--p-text-muted-color);
       }
 

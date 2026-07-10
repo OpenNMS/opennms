@@ -64,7 +64,7 @@ onMounted(() => {
 
 <style lang="scss">
 @import "@featherds/styles/lib/grid";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/open-mixins";
 @import "@featherds/styles/themes/variables";
 
@@ -92,15 +92,15 @@ a {
 
 // global feather typography classes
 .headline3 {
-  @include headline3;
+  @include onms-headline3;
 }
 .headline4 {
-  @include headline4;
+  @include onms-headline4;
 }
 .subtitle1 {
-  @include subtitle1;
+  @include onms-subtitle1;
 }
 .subtitle2 {
-  @include subtitle2;
+  @include onms-subtitle2;
 }
 </style>

@@ -53,7 +53,7 @@ configurationStore.getProvisionDService()
   lang="scss"
   scoped
 >
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 @import '@featherds/styles/mixins/elevation';
 
 .wrapper {

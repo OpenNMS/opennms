@@ -329,7 +329,7 @@ watch(() => store.trapdConfig, () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .general-configuration {
   margin-top: 10px;
@@ -343,12 +343,12 @@ watch(() => store.trapdConfig, () => {
 
     .section-left {
       h3 {
-        @include typography.headline3;
+        @include onms-headline3;
         color: var(--p-text-color);
       }
 
       p {
-        @include typography.body-large;
+        @include onms-body-large;
         color: var(--p-text-muted-color);
       }
     }
@@ -383,7 +383,7 @@ watch(() => store.trapdConfig, () => {
     gap: 0.75rem;
 
     .switch-label {
-      @include typography.body-small;
+      @include onms-body-small;
     }
   }
 
@@ -416,7 +416,7 @@ watch(() => store.trapdConfig, () => {
         gap: 0.75rem;
 
         .switch-label {
-          @include typography.body-small;
+          @include onms-body-small;
         }
       }
     }

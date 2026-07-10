@@ -137,7 +137,7 @@ watch(() => props.visible, async (visible) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 .container {
@@ -148,7 +148,7 @@ watch(() => props.visible, async (visible) => {
 }
 
 .section-label {
-  @include headline4;
+  @include onms-headline4;
   color: var(--feather-secondary-text-on-surface);
 }
 
@@ -160,7 +160,7 @@ watch(() => props.visible, async (visible) => {
 }
 
 .empty-text {
-  @include body-large;
+  @include onms-body-large;
   color: var(--feather-secondary-text-on-surface);
   font-style: italic;
 }

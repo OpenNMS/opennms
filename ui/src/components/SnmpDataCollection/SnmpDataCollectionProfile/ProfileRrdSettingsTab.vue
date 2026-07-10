@@ -217,7 +217,7 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 
 .rrd-settings-box {
@@ -225,7 +225,7 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 
@@ -250,7 +250,7 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
     margin-bottom: 12px;
 
     .rra-title {
-      @include headline4;
+      @include onms-headline4;
       color: var(--feather-secondary-text-on-surface);
     }
   }

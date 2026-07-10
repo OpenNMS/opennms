@@ -184,7 +184,7 @@ const helpText = computed(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .config-help-close {
   display: flex;
@@ -223,12 +223,12 @@ const helpText = computed(() => {
   }
 }
 .config-help-title {
-  @include headline2();
+  @include onms-headline2();
   color: var(--p-primary-color);
   margin-top: 32px;
 }
 .config-help-body {
-  @include body-small();
+  @include onms-body-small();
   margin-top: 12px;
   p {
     margin-bottom: 24px;
@@ -246,7 +246,7 @@ const helpText = computed(() => {
     color: var(--p-primary-color);
   }
   .footer-subtitle {
-    @include headline4();
+    @include onms-headline4();
     font-weight: 700;
   }
   .footer-button {

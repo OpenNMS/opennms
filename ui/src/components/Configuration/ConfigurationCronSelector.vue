@@ -156,11 +156,11 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
   scoped
 >
 @import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .feather-input-hint-custom {
     flex: 1;
-    @include caption();
+    @include onms-caption();
     color: var(--p-text-muted-color);
     margin-top: -24px;
     display: flex;

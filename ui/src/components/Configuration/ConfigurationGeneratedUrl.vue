@@ -45,7 +45,7 @@ const convertedItem = computed(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/mixins/elevation";
 
 .white-bg {
@@ -57,13 +57,13 @@ const convertedItem = computed(() => {
   margin-top: 16px;
 }
 .title {
-  @include headline4();
+  @include onms-headline4();
   color: var(--p-primary-color);
 }
 .url {
   margin-top: 6px;
   margin-left: 3px;
-  @include subtitle2();
+  @include onms-subtitle2();
   color: #a0a1a4;
   overflow-wrap: anywhere;
 }

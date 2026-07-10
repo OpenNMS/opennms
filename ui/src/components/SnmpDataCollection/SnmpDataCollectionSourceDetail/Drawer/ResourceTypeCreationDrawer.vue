@@ -659,7 +659,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
@@ -694,7 +694,7 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
+            @include onms-headline3;
           }
         }
       }
@@ -717,7 +717,7 @@ watch(
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 

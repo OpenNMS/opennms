@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/mixins/elevation";
 
 .card {

@@ -25,22 +25,22 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 @import "@featherds/styles/mixins/elevation";
 
 .title {
-  @include overline();
+  @include onms-overline();
   color: #4b5ad6;
   margin-top: 28px;
   margin-bottom: 8px;
 }
 
 .headline {
-  @include headline1();
+  @include onms-headline1();
 }
 
 .body {
-  @include body-small();
+  @include onms-body-small();
   margin-top: 20px;
   max-width: 760px;
   margin-bottom: 32px;

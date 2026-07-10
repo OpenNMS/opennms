@@ -184,7 +184,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 @use '@featherds/styles/themes/variables';
 
 .extended-search-container {

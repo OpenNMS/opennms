@@ -276,7 +276,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .system-definition-drawer {
   .container {
@@ -286,7 +286,7 @@ watch(
 
     .drawer-content {
       .label {
-        @include headline4;
+        @include onms-headline4;
         margin-bottom: 0.5em;
       }
 
@@ -304,7 +304,7 @@ watch(
       .radio-group {
         .radio-group-label {
           display: block;
-          @include headline4;
+          @include onms-headline4;
           margin-bottom: 0.5em;
         }
 
