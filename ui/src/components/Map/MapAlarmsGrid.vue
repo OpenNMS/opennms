@@ -209,17 +209,21 @@ const sortChanged = (sortObj: FeatherSortObject) => {
 @import "@/styles/onms-table";
 @import "@featherds/styles/themes/variables";
 #wrap {
-  height: calc(100% - 29px);
+  // Height accounts for the 15px top gap below so the pane keeps its footprint.
+  height: calc(100% - 44px);
   overflow: auto;
   background: var(--p-content-background);
+  // Gap above the table lives on the scroll container (outside the scrolled
+  // content) so it doesn't make the sticky header travel before locking.
+  margin-top: 15px;
 }
 table {
   @include onms-table;
   @include onms-table-condensed;
   background: var(--p-content-background);
   color: var(--p-text-color);
-  padding-top: 4px;
-  margin-top: 15px;
+  // No top margin/padding: any space above thead inside the scroll container
+  // makes the sticky header travel that distance before it locks at top:0.
 }
 // CSS sticky header (replaces a JS scroll-transform hack that jittered and let
 // rows bleed above the header). Sticky lives on the cells (thead sticky has
