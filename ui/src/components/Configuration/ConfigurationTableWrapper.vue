@@ -302,7 +302,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
   scoped
 >
 @import '@/styles/onms-typography';
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 .title {
   @include onms-headline3();
@@ -318,7 +318,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;
-  @include elevation(2);
+  @include onms-elevation(2);
 }
 .flex {
   display: flex;

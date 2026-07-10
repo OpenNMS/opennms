@@ -173,11 +173,11 @@ const addAttribute = () => scvStore.addAttribute()
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 @import '@/styles/onms-typography';
 
 .form-container {
-  @include elevation(1);
+  @include onms-elevation(1);
   background: var(--p-content-background);
   height: calc(100vh - 149px);
   display: flex;

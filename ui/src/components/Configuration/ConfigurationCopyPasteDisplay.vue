@@ -121,7 +121,7 @@ const timeoutIn = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 .inner-short {
   cursor: pointer;
@@ -130,7 +130,7 @@ const timeoutIn = () => {
   position: absolute;
   background-color: var(--p-content-background);
   display: flex;
-  @include elevation(2);
+  @include onms-elevation(2);
   padding: 20px;
   opacity: 0;
   transition: opacity ease-in-out 0.1s;

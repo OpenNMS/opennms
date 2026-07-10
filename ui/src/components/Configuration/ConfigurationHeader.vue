@@ -26,7 +26,6 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/mixins/elevation";
 
 .title {
   @include onms-overline();

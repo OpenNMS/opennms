@@ -53,7 +53,6 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
 @import '@/styles/onms-typography';
 
 .card {

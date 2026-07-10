@@ -506,7 +506,7 @@ defineExpose({ onSort, onPage, removeItem })
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/mixins/elevation" as elevation;
+@use '@/styles/onms-elevation' as *;
 @use '@/styles/onms-typography' as *;
 @use "@featherds/styles/themes/variables" as variables;
 
@@ -515,7 +515,7 @@ defineExpose({ onSort, onPage, removeItem })
 }
 
 .card {
-  @include elevation.elevation(2);
+  @include onms-elevation(2);
   background: var(variables.$surface);
   padding: 30px;
 }

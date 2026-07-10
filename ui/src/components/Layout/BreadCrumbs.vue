@@ -23,7 +23,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/themes/variables";
 
 .breadcrumbs {

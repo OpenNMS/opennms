@@ -46,10 +46,10 @@ onMounted(() => logStore.getLogs())
 
 <style scoped lang="scss">
 @import '@/styles/onms-typography';
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 .card {
-  @include elevation(2);
+  @include onms-elevation(2);
   background: var(--p-content-background);
   padding: 15px;
   position: relative;

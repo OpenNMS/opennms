@@ -46,14 +46,14 @@ const convertedItem = computed(() => {
   scoped
 >
 @import '@/styles/onms-typography';
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 .white-bg {
   background-color: var(--p-content-background);
   display: flex;
   align-items: flex-start;
   padding: 16px 24px;
-  @include elevation(2);
+  @include onms-elevation(2);
   margin-top: 16px;
 }
 .title {

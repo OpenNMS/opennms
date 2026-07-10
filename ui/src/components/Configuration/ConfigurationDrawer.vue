@@ -197,7 +197,7 @@ const toggleHelp = () => {
   scoped
 >
 @import '@/styles/onms-typography';
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 
 .flex {
@@ -249,7 +249,7 @@ const toggleHelp = () => {
 .slide-inner-body {
   padding: 20px 20px 4px;
   background-color: var(--p-content-background);
-  @include elevation(1);
+  @include onms-elevation(1);
 }
 .side-inner-title {
   display: flex;

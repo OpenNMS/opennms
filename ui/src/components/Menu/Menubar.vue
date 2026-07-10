@@ -175,7 +175,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @import "@featherds/dropdown/scss/mixins";
-@import "@featherds/styles/mixins/elevation";
 @import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 

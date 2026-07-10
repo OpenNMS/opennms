@@ -54,7 +54,6 @@ configurationStore.getProvisionDService()
   scoped
 >
 @import '@/styles/onms-typography';
-@import '@featherds/styles/mixins/elevation';
 
 .wrapper {
   margin-top: 20px;
