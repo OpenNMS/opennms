@@ -234,12 +234,29 @@ thead th {
   z-index: 2;
   background: var(--p-content-background);
 }
-.select-ack {
+// "Alarm Action" control: lay the label and dropdown out on a single line
+// (overriding FormField's default stacked `column`) so the label and select sit
+// inline with the tab headers, anchored right with room for both. Uses
+// `.select-ack.form-field` + :deep() to outrank FormField's own scoped rules.
+.select-ack.form-field {
   z-index: var($zindex-dropdown);
-  width: 300px;
   position: absolute;
   right: 30px;
   top: 7px;
+  width: 360px;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+
+  :deep(.form-field__label) {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  :deep(.p-select) {
+    flex: 1 1 auto;
+    width: auto;
+  }
 }
 .first-th {
   padding-left: 20px;
