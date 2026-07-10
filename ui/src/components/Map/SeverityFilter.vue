@@ -40,25 +40,15 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
   top: 80px;
   /* below the app bar's z-index (1030) */
   z-index: 1020;
-  /* Translucent light panel so the control reads clearly over the map. */
+  /* Translucent panel so the control reads clearly over the map. Follows the
+     theme (light panel in light mode, dark in dark mode) like the rest of the
+     UI — the select itself just uses the default --p-* theme tokens. */
   padding: 0.5em;
   background-color: rgba(211, 211, 211, 0.8);
   border-radius: 4px;
+}
 
-  // The map tiles are always light regardless of the app's light/dark theme,
-  // so keep this overlay control readable: dark label + dark value on a light
-  // select background in both themes (not the theme-aware --p-* tokens).
-  .form-field__label {
-    color: #1b1b1f !important;
-  }
-
-  .p-select {
-    background: #ffffff;
-    border: 2px solid var(--p-primary-color);
-  }
-
-  .p-select-label {
-    color: #1b1b1f !important;
-  }
+.open-dark .severity-select {
+  background-color: rgba(30, 30, 40, 0.8);
 }
 </style>

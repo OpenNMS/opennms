@@ -129,33 +129,31 @@ watch(results, (newResults) => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  /* Translucent light panel + padding, matching the Show Severity control. */
+  /* Translucent panel + padding, matching the Show Severity control; follows
+     the theme (light in light mode, dark in dark mode). */
   padding: 0.5em;
   background-color: rgba(211, 211, 211, 0.8);
   border-radius: 4px;
 }
 .map-search__icon {
   flex: 0 0 auto;
-  color: #1b1b1f;
+  color: var(--p-text-color);
   font-size: 1.1rem;
 }
 .map-search__input {
   width: 290px !important;
-
-  // Keep the input light with dark text in both themes — it sits over the
-  // always-light map (matches the Show Severity control).
-  :deep(.p-autocomplete-input-multiple) {
-    background: #ffffff;
-  }
-  :deep(input) {
-    color: #1b1b1f;
-
-    &::placeholder {
-      color: #6b7280;
-    }
-  }
 }
 .autocomplete-empty {
   padding: 0.5rem 0.75rem;
+}
+</style>
+
+<style lang="scss">
+/* Dark-mode panel tint, matching the Show Severity control. Kept in a separate
+   unscoped block because .open-dark lives on <html>, outside this component's
+   scope; html.open-dark raises specificity above the scoped base .map-search
+   rule so it reliably wins. */
+html.open-dark .map-search {
+  background-color: rgba(30, 30, 40, 0.8);
 }
 </style>
