@@ -1,10 +1,11 @@
 <template>
   <nav
+    ref="navRef"
     id="opennms-sidemenu-vue-container"
     class="onms-side-menu"
     :class="{ 'onms-side-menu--open': isOpen }"
     @mouseenter="onRailEnter"
-    @mouseleave="isHovering = false"
+    @mouseleave="onRailLeave"
   >
     <button
       type="button"
@@ -95,6 +96,17 @@ const onRailEnter = () => {
   }
 }
 
+const onRailLeave = () => {
+  isHovering.value = false
+
+  // The flyout submenus are position:fixed (see positionFlyouts) so they are
+  // visually detached from the rail. When the pointer leaves the rail+flyout,
+  // close any open flyout via TieredMenu's hide() (clears activeItemPath) so it
+  // doesn't linger orphaned after the rail collapses. hide() also resets the
+  // internal `dirty` flag, which onRailEnter re-enables on the next hover.
+  tieredMenuRef.value?.hide?.()
+}
+
 const onPerformLogout = async () => {
   await performLogout()
 }
@@ -143,8 +155,89 @@ const applyPush = () => {
 
 watch(isPinned, applyPush)
 
+// The menu list scrolls vertically (see .p-tieredmenu overflow in the style
+// block). That overflow would clip the flyout submenus, which open to the side
+// (a scroll container clips absolutely-positioned descendants on BOTH axes,
+// regardless of whether a scrollbar is showing). So promote each open
+// FIRST-LEVEL flyout to position:fixed, anchored to its item's viewport rect —
+// fixed elements escape the scroll container's clip. Nested submenus live inside
+// the now-unclipped flyout and keep PrimeVue's own positioning.
+const navRef = ref<HTMLElement | null>(null)
+let flyoutRaf = 0
+let flyoutObserver: MutationObserver | null = null
+
+// Gap kept between a flyout and the viewport edges.
+const FLYOUT_VIEWPORT_MARGIN = 8
+
+const positionFlyouts = () => {
+  const nav = navRef.value
+
+  if (!nav) {
+    return
+  }
+
+  const items = nav.querySelectorAll<HTMLElement>('.p-tieredmenu-root-list > .p-tieredmenu-item')
+  // Keep flyouts within the rail's vertical band: never above the rail top (so
+  // they don't overlap the fixed header) and never past the viewport bottom.
+  const minTop = nav.getBoundingClientRect().top
+  const maxBottom = window.innerHeight - FLYOUT_VIEWPORT_MARGIN
+  const availableHeight = maxBottom - minTop
+
+  items.forEach((item) => {
+    const submenu = item.querySelector<HTMLElement>(':scope > .p-tieredmenu-submenu')
+
+    if (!submenu || getComputedStyle(submenu).display === 'none') {
+      return
+    }
+
+    const rect = item.getBoundingClientRect()
+
+    submenu.style.setProperty('position', 'fixed', 'important')
+    submenu.style.setProperty('inset-inline-start', 'auto', 'important')
+    submenu.style.setProperty('left', `${rect.right}px`, 'important')
+
+    // scrollHeight is the full content height regardless of any max-height
+    // already applied, so it's a stable measure of the natural flyout height.
+    if (submenu.scrollHeight <= availableHeight) {
+      // Fits: align with the item, but nudge up if it would run off the bottom.
+      let top = Math.max(minTop, rect.top)
+
+      if (top + submenu.scrollHeight > maxBottom) {
+        top = Math.max(minTop, maxBottom - submenu.scrollHeight)
+      }
+
+      submenu.style.setProperty('top', `${top}px`, 'important')
+      submenu.style.removeProperty('max-height')
+      submenu.style.removeProperty('overflow-y')
+    } else {
+      // Taller than the available band: pin to the top and scroll internally.
+      submenu.style.setProperty('top', `${minTop}px`, 'important')
+      submenu.style.setProperty('max-height', `${availableHeight}px`, 'important')
+      submenu.style.setProperty('overflow-y', 'auto', 'important')
+    }
+  })
+}
+
+const scheduleFlyoutPosition = () => {
+  cancelAnimationFrame(flyoutRaf)
+  flyoutRaf = requestAnimationFrame(positionFlyouts)
+}
+
 onMounted(() => {
   applyPush()
+
+  const nav = navRef.value
+
+  if (nav) {
+    // Watch class changes (PrimeVue toggles .p-tieredmenu-item-active when a
+    // submenu opens, and .onms-side-menu--open when the rail expands) rather
+    // than style, to avoid re-triggering on our own style writes.
+    flyoutObserver = new MutationObserver(scheduleFlyoutPosition)
+    flyoutObserver.observe(nav, { attributes: true, attributeFilter: ['class'], subtree: true })
+    // scroll does not bubble; capture catches the inner list scrolling.
+    nav.addEventListener('scroll', scheduleFlyoutPosition, true)
+    window.addEventListener('resize', scheduleFlyoutPosition)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -153,6 +246,17 @@ onBeforeUnmount(() => {
   if (el) {
     el.style.paddingLeft = ''
   }
+
+  flyoutObserver?.disconnect()
+  cancelAnimationFrame(flyoutRaf)
+
+  const nav = navRef.value
+
+  if (nav) {
+    nav.removeEventListener('scroll', scheduleFlyoutPosition, true)
+  }
+
+  window.removeEventListener('resize', scheduleFlyoutPosition)
 })
 </script>
 
@@ -174,8 +278,8 @@ onBeforeUnmount(() => {
   background-color: var(--feather-surface-dark);
   color: var(--feather-state-text-color-on-surface-dark);
   transition: width 0.1s linear;
-  // Flyout submenus are absolutely positioned descendants; keep overflow
-  // visible so they are not clipped by the (narrow) rail.
+  // The nav itself does not scroll (the inner .p-tieredmenu list does); keep it
+  // visible so the toggle button and rail chrome are never clipped.
   overflow: visible;
 
   // Force the TieredMenu (and its flyout submenus, which are descendants of
@@ -224,10 +328,19 @@ onBeforeUnmount(() => {
 // The TieredMenu component root does not receive this component's scope id, so
 // it must be reached with :deep(). Override PrimeVue's default 12.5rem min-width
 // so the menu fits the rail, and drop the panel chrome (border/padding/bg).
+// This is the scroll region (the toggle button above stays pinned): when the
+// item list is taller than the rail it scrolls vertically. min-height:0 lets
+// the flex item shrink below its content height so scrolling actually engages.
+// overflow-x is hidden (never a horizontal scrollbar); the side-opening flyout
+// submenus would be clipped by this overflow, so they are promoted to
+// position:fixed in script (positionFlyouts) to escape the clip.
 .onms-side-menu :deep(.p-tieredmenu) {
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: none;
   background: transparent;
   padding: 0;
