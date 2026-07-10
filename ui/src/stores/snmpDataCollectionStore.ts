@@ -29,12 +29,7 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     },
     profiles: [],
     selectedProfile: null,
-    profilesPagination: { ...defaultPagination },
-    profilesSearchTerm: '',
-    profilesSorting: {
-      sortOrder: 'desc',
-      sortKey: 'createdTime'
-    }
+    profilesSearchTerm: ''
   }),
   actions: {
     async fetchAllSourcesNames() {
@@ -68,11 +63,15 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     },
     async onChangeSourcesSearchTerm(searchTerm: string) {
       this.sourcesSearchTerm = searchTerm
+      // Reset to the first page so a narrowed result set can't leave the lazy
+      // table fetching an offset past the new total.
+      this.sourcesPagination.page = 1
       await this.fetchSnmpCollectionSources()
     },
     async onSourcesSortChange(sortKey: string, sortOrder: string) {
       this.sourcesSorting.sortKey = sortKey
       this.sourcesSorting.sortOrder = sortOrder
+      this.sourcesPagination.page = 1
       await this.fetchSnmpCollectionSources()
     },
     async onSourcePageChange(page: number) {
@@ -97,19 +96,6 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     },
     onChangeProfilesSearchTerm(searchTerm: string) {
       this.profilesSearchTerm = searchTerm
-      this.profilesPagination.page = 1
-    },
-    onProfilesSortChange(sortKey: string, sortOrder: string) {
-      this.profilesSorting.sortKey = sortKey
-      this.profilesSorting.sortOrder = sortOrder
-      this.profilesPagination.page = 1
-    },
-    onProfilePageChange(page: number) {
-      this.profilesPagination.page = page
-    },
-    onProfilePageSizeChange(pageSize: number) {
-      this.profilesPagination.page = 1
-      this.profilesPagination.pageSize = pageSize
     },
     async removeSnmpCollectionProfiles(ids: number[]): Promise<boolean> {
       return deleteSnmpDataCollectionProfiles(ids)

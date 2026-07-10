@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
@@ -97,6 +98,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -557,11 +559,155 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm));
 
         // Only the alarm explicitly sent should be consumed, there should not have been any alarms sync'd        
-        try {            
+        try {
             await().atMost(10, TimeUnit.SECONDS).until(() -> kafkaConsumer.getAlarms().size() > 1);
             fail("Same alarm was sync'd!");
         } catch (Exception e) {
         }
+    }
+
+    @Test
+    public void testAlarmSyncClearsOrphanInsteadOfTombstoning() {
+        kafkaProducer.setSuppressIncrementalAlarms(false);
+        // handleAlarmSnapshot reads this live, so setting it after init() is fine.
+        kafkaAlarmaDataStore.setAlarmSyncClear(true);
+
+        // Send an alarm and let it land on the topic
+        final OnmsAlarm alarm = nodeDownAlarm();
+        final String reductionKey = alarm.getReductionKey();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // The active (non-cleared) alarm should be consumed
+        await().atMost(1, TimeUnit.MINUTES)
+                .until(() -> kafkaConsumer.getAlarmByReductionKey(reductionKey), not(nullValue()));
+
+        // Wait until the store has materialized the alarm, or the diff won't see it as "on topic".
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().pollDelay(5, TimeUnit.SECONDS)
+                .until(() -> kafkaProducer.getDataSync().getAlarms().containsKey(reductionKey));
+
+        // Delete from the DB directly, simulating an orphan with no lifecycle callback (e.g. node cascade).
+        alarmDao.delete(alarm);
+
+        // Force a reconciliation against an empty database snapshot
+        kafkaProducer.handleAlarmSnapshot(Collections.emptyList());
+
+        // The orphan should be republished as a CLEARED record (not a null tombstone), carrying
+        // the auto-clear note appended to its log message.
+        await().atMost(1, TimeUnit.MINUTES).until(() -> {
+            final OpennmsModelProtos.Alarm consumed = kafkaConsumer.getAlarmByReductionKey(reductionKey);
+            return consumed != null && consumed.getSeverity() == OpennmsModelProtos.Severity.CLEARED;
+        });
+        assertThat("orphan must not be tombstoned",
+                kafkaConsumer.getAlarmsByReductionKey().get(reductionKey), not(nullValue()));
+        assertThat(kafkaConsumer.getAlarmByReductionKey(reductionKey).getLogMessage(),
+                containsString("Auto-cleared by Kafka alarm synchronization"));
+
+        // Idempotency: once the topic shows the key as CLEARED, a second reconciliation must not
+        // emit another record for it.
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions()
+                .until(() -> kafkaProducer.getDataSync().getAlarm(reductionKey).getSeverity()
+                        == OpennmsModelProtos.Severity.CLEARED);
+        final long clearsBefore = countClearedRecords(reductionKey);
+        kafkaProducer.handleAlarmSnapshot(Collections.emptyList());
+        try {
+            await().atMost(10, TimeUnit.SECONDS)
+                    .until(() -> countClearedRecords(reductionKey) > clearsBefore);
+            fail("A second reconciliation re-emitted a clear for an already-cleared orphan!");
+        } catch (ConditionTimeoutException e) {
+            // expected: no additional clear record was produced
+        }
+    }
+
+    @Test
+    public void testAlarmSyncClearAllowsSubsequentReraise() {
+        // suppressIncrementalAlarms defaults to true; that is the config that exposed the stale-map bug.
+        kafkaProducer.setSuppressIncrementalAlarms(true);
+        kafkaAlarmaDataStore.setAlarmSyncClear(true);
+
+        final OnmsAlarm alarm = nodeDownAlarm();
+        final String reductionKey = alarm.getReductionKey();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        kafkaConsumer = startConsumer();
+
+        await().atMost(1, TimeUnit.MINUTES)
+                .until(() -> kafkaConsumer.getAlarmByReductionKey(reductionKey), not(nullValue()));
+        await().atMost(1, TimeUnit.MINUTES).ignoreExceptions().pollDelay(5, TimeUnit.SECONDS)
+                .until(() -> kafkaProducer.getDataSync().getAlarms().containsKey(reductionKey));
+
+        // Orphan and reconcile: the key is cleared.
+        alarmDao.delete(alarm);
+        kafkaProducer.handleAlarmSnapshot(Collections.emptyList());
+        await().atMost(1, TimeUnit.MINUTES).until(() -> {
+            final OpennmsModelProtos.Alarm a = kafkaConsumer.getAlarmByReductionKey(reductionKey);
+            return a != null && a.getSeverity() == OpennmsModelProtos.Severity.CLEARED;
+        });
+
+        // Re-raise the identical alarm. It must be forwarded, not suppressed as incremental against
+        // the stale pre-clear value left in the outstanding-alarms map.
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+        await().atMost(1, TimeUnit.MINUTES).until(() -> {
+            final OpennmsModelProtos.Alarm a = kafkaConsumer.getAlarmByReductionKey(reductionKey);
+            return a != null && a.getSeverity() != OpennmsModelProtos.Severity.CLEARED;
+        });
+    }
+
+    private long countClearedRecords(String reductionKey) {
+        return kafkaConsumer.getAlarms().stream()
+                .filter(Objects::nonNull)
+                .filter(a -> reductionKey.equals(a.getReductionKey()))
+                .filter(a -> a.getSeverity() == OpennmsModelProtos.Severity.CLEARED)
+                .count();
+    }
+
+    @Test
+    public void testStreamModeSuppressesDeleteTombstone() throws Exception {
+        kafkaProducer.setSuppressIncrementalAlarms(false);
+        kafkaProducer.setStreamMode(true);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // Forward an alarm
+        final OnmsAlarm alarm = nodeDownAlarm();
+        final String reductionKey = alarm.getReductionKey();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        await().atMost(1, TimeUnit.MINUTES)
+                .until(() -> kafkaConsumer.getAlarmByReductionKey(reductionKey), not(nullValue()));
+
+        // Delete via the live callback path; in stream mode this must not emit a tombstone.
+        kafkaProducer.handleDeletedAlarm((int) alarm.getId(), reductionKey);
+
+        // Give a tombstone time to (not) arrive, then confirm none was produced.
+        Thread.sleep(10000);
+        assertThat("stream mode must not emit a tombstone",
+                kafkaConsumer.getAlarmsByReductionKey().get(reductionKey), not(nullValue()));
+        assertThat(kafkaConsumer.getAlarms(), not(hasItem(nullValue())));
+    }
+
+    @Test
+    public void testStreamModeWithoutClearDisablesReconciliation() throws Exception {
+        kafkaProducer.setStreamMode(true);
+
+        // A fresh datastore in stream mode without alarmSyncClear must refuse to initialize.
+        final KafkaAlarmDataSync guarded =
+                new KafkaAlarmDataSync(kafkaProducerManager, kafkaProducer, protobufMapper);
+        guarded.setAlarmTopic(ALARM_TOPIC_NAME);
+        guarded.setAlarmSync(true);
+        guarded.setAlarmSyncClear(false);
+        guarded.init();
+
+        // Reconciliation was disabled by the guard, so the store never becomes ready.
+        Thread.sleep(5000);
+        assertThat(guarded.isReady(), is(false));
+        guarded.destroy();
     }
 
 

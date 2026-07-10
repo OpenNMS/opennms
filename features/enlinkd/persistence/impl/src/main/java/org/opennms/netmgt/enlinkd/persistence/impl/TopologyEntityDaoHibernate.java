@@ -35,7 +35,7 @@ import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
 

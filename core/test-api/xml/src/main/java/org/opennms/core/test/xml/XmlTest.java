@@ -419,10 +419,14 @@ public abstract class XmlTest<T> {
 
         final Set<String> properties = new TreeSet<>();
         for (final PropertyDescriptor descriptor : expectedWrapper.getPropertyDescriptors()) {
-            properties.add(descriptor.getName());
+            if (isStandardJavaBeansProperty(descriptor)) {
+                properties.add(descriptor.getName());
+            }
         }
         for (final PropertyDescriptor descriptor : actualWrapper.getPropertyDescriptors()) {
-            properties.add(descriptor.getName());
+            if (isStandardJavaBeansProperty(descriptor)) {
+                properties.add(descriptor.getName());
+            }
         }
 
         properties.remove("class");
@@ -475,5 +479,17 @@ public abstract class XmlTest<T> {
             expected.getClass().isPrimitive();
             assertEquals(assertionMessage, expected, actual);
         }
+    }
+
+    private static boolean isStandardJavaBeansProperty(final PropertyDescriptor descriptor) {
+        // Spring 5.3 also exposes record-style accessors (e.g. the Castor-generated
+        // hasXxx() field-state trackers) as read-only properties; restrict the
+        // comparison to standard getters to keep the Spring 4.3 semantics
+        final java.lang.reflect.Method readMethod = descriptor.getReadMethod();
+        if (readMethod == null) {
+            return true;
+        }
+        final String name = readMethod.getName();
+        return name.startsWith("get") || name.startsWith("is");
     }
 }

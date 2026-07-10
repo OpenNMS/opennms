@@ -1,12 +1,12 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div class="zc-container">
           <div class="content-container">
             <div class="title-search">
@@ -15,58 +15,35 @@
             <div>
               <div>Connection response:</div>
               <div class="spacer-medium"></div>
-              <table>
-                <tbody>
-                  <tr>
-                    <td>NMS Username</td>
-                    <td>{{ nmsUsername }}</td>
-                  </tr>
-                  <tr>
-                    <td>NMS System ID</td>
-                    <td>{{ nmsSystemId }}</td>
-                  </tr>
-                  <tr>
-                    <td>NMS Display Name</td>
-                    <td>{{ nmsDisplayName }}</td>
-                  </tr>
-                  <tr>
-                    <td>Access Token</td>
-                    <td>{{ accessToken }}</td>
-                  </tr>
-                  <tr>
-                    <td>Refresh Token</td>
-                    <td>{{ refreshToken }}</td>
-                  </tr>
-                  <tr>
-                    <td>Saved?</td>
-                    <td>{{ savedDisplay }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <PDataTable
+                class="kv-table"
+                :value="responseRows"
+                stripedRows
+                size="small"
+              >
+                <PColumn field="label" />
+                <PColumn field="value" />
+              </PDataTable>
               <div class="spacer-medium"></div>
               <div>
                 <div>
                   Click to save values. You will then be redirected back to /zenith-connect to view your existing connections.
                 </div>
-                <FeatherButton
-                  primary
+                <PButton
                   :disabled="savedSuccess"
+                  label="Save Values"
                   @click="onSaveValues"
-                >
-                    Save Values
-                </FeatherButton>
+                />
               </div>
               <div v-if="savedSuccess">
                 <div>
                   Click to return to view connections. Eventually this will be automatic.
                 </div>
-                <FeatherButton
-                  primary
+                <PButton
                   :disabled="!savedSuccess"
+                  label="View Connections"
                   @click="onViewConnections"
-                >
-                    View Connections
-                </FeatherButton>
+                />
               </div>
              </div>
           </div>
@@ -83,8 +60,14 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { v2 } from '@/services/axiosInstances'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import { useRoute, useRouter } from 'vue-router'
+
+const PButton = Button
+const PDataTable = DataTable
+const PColumn = Column
 
 const menuStore = useMenuStore()
 const route = useRoute()
@@ -99,6 +82,15 @@ const savedDisplay = ref('--')
 const savedSuccess = ref(false)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+
+const responseRows = computed(() => [
+  { label: 'NMS Username', value: nmsUsername.value },
+  { label: 'NMS System ID', value: nmsSystemId.value },
+  { label: 'NMS Display Name', value: nmsDisplayName.value },
+  { label: 'Access Token', value: accessToken.value },
+  { label: 'Refresh Token', value: refreshToken.value },
+  { label: 'Saved?', value: savedDisplay.value }
+])
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -148,19 +140,10 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/typography";
 
-table {
-  margin-top: 0px !important;
-  font-size: 12px !important;
-  @include table;
-  @include table-condensed;
-  @include row-striped;
-}
-
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .zc-container {
@@ -189,6 +172,15 @@ table {
         margin-bottom: 0.25rem;
       }
     }
+  }
+}
+
+// Key/value table: hide the (empty) header row.
+.kv-table {
+  max-width: 40rem;
+
+  :deep(.p-datatable-thead) {
+    display: none;
   }
 }
 </style>

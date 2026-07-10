@@ -3,27 +3,31 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FeatherInput
-            label="Search"
-            type="search"
-            data-test="search-input"
-            v-model.trim="store.mibGroupsSearchTerm"
-            :hint="'Search by Name or Interface Type'"
-            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
-          >
-            <template #pre>
-              <FeatherIcon :icon="Search" />
-            </template>
-          </FeatherInput>
+          <FormField>
+            <IconField>
+              <InputText
+                :id="searchId"
+                :modelValue="store.mibGroupsSearchTerm"
+                @update:modelValue="onChangeSearchTerm"
+                data-test="search-input"
+                placeholder="Search by Name or Interface Type"
+                :aria-label="'Search by Name or Interface Type'"
+              />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
+            </IconField>
+          </FormField>
         </div>
         <div class="refresh">
-          <FeatherButton
-            icon="Refresh"
+          <Button
+            text
+            title="Refresh"
             data-test="refresh-button"
             @click="store.resetMibGroupsFilters"
           >
-            <FeatherIcon :icon="Refresh"> </FeatherIcon>
-          </FeatherButton>
+            <FeatherIcon :icon="Refresh" />
+          </Button>
         </div>
       </div>
       <div class="section-right">
@@ -31,157 +35,115 @@
           class="add"
           v-if="!isPluginSourced(store.selectedCollectionSource)"
         >
-          <FeatherButton
-            secondary
+          <Button
+            outlined
+            label="Add MIB Group"
             data-test="add-mib-group-button"
             @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
-          >
-            Add MIB Group
-          </FeatherButton>
+          />
         </div>
       </div>
     </div>
-    <div class="container">
-      <table
-        class="data-table"
-        aria-label="Events Table"
-        v-if="store.mibGroups.length"
+
+    <DataTable
+      v-if="store.mibGroups.length"
+      :value="store.mibGroups"
+      lazy
+      paginator
+      dataKey="id"
+      :rows="store.mibGroupsPagination.pageSize"
+      :totalRecords="store.mibGroupsPagination.total"
+      :first="(store.mibGroupsPagination.page - 1) * store.mibGroupsPagination.pageSize"
+      :rowsPerPageOptions="[10, 20, 30]"
+      :sortField="store.mibGroupsSorting.sortKey"
+      :sortOrder="store.mibGroupsSorting.sortOrder === 'asc' ? 1 : -1"
+      v-model:expandedRows="expandedRows"
+      @page="onPage"
+      @sort="onSort"
+      class="data-table"
+      data-test="mib-groups-table"
+    >
+      <Column
+        expander
+        style="width: 3rem"
+      />
+      <Column
+        field="name"
+        header="Name"
+        sortable
+      />
+      <Column
+        field="ifType"
+        header="Interface Type"
+        sortable
+      />
+      <Column
+        field="enabled"
+        header="Status"
+        sortable
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
+        <template #body="{ data }">
+          <Tag
+            :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="data.enabled ? 'Enabled' : 'Disabled'"
+            data-test="status-tag"
+          />
+        </template>
+      </Column>
+      <Column header="Actions">
+        <template #body="{ data }">
+          <div class="action-container">
+            <Button
+              v-if="!isPluginSourced(store.selectedCollectionSource)"
+              text
+              :title="`Edit ${data.name}`"
+              data-test="edit-button"
+              @click="onMibGroupEditClicked(data)"
             >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
-        >
-          <template
-            v-for="mibGroup in store.mibGroups"
-            :key="mibGroup.id"
-          >
-            <tr>
-              <td>{{ mibGroup.name }}</td>
-              <td>{{ mibGroup.ifType }}</td>
-              <td>
-                <div class="tag">
-                  <FeatherChip
-                    :class="mibGroup.enabled ? 'enabled-tag' : 'disabled-tag'"
-                    data-test="status-tag"
-                  >
-                    {{ mibGroup.enabled ? 'Enabled' : 'Disabled' }}
-                  </FeatherChip>
-                </div>
-              </td>
-              <td>
-                <div class="action-container">
-                  <FeatherButton
-                    v-if="!isPluginSourced(store.selectedCollectionSource)"
-                    icon="Edit"
-                    :title="`Edit ${mibGroup.name}`"
-                    data-test="edit-button"
-                    @click="onMibGroupEditClicked(mibGroup)"
-                  >
-                    <FeatherIcon :icon="Edit" />
-                  </FeatherButton>
-                  <FeatherDropdown>
-                    <template v-slot:trigger="{ attrs, on }">
-                      <FeatherButton
-                        link
-                        href="#"
-                        v-bind="attrs"
-                        v-on="on"
-                        :icon="`More Options`"
-                      >
-                        <FeatherIcon :icon="MenuIcon" />
-                      </FeatherButton>
-                    </template>
-                    <FeatherDropdownItem
-                      data-test="change-status-button"
-                      @click="openChangeStatusDialog(mibGroup)"
-                    >
-                      {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
-                    </FeatherDropdownItem>
-                    <FeatherDropdownItem
-                      v-if="!isPluginSourced(store.selectedCollectionSource)"
-                      data-test="delete-mib-group-button"
-                      @click="openDeleteMibGroupDialog(mibGroup)"
-                    >
-                      Delete MIB Group
-                    </FeatherDropdownItem>
-                  </FeatherDropdown>
-                  <FeatherButton
-                    primary
-                    :icon="`${expandedRows.includes(mibGroup.id)
-                    ? 'Expand Less'
-                    : 'Expand More'
-                    }`"
-                    @click="toggleExpand(mibGroup.id)"
-                  >
-                    <FeatherIcon
-                      :icon="ExpandLess"
-                      v-if="expandedRows.includes(mibGroup.id)"
-                    />
-                    <FeatherIcon
-                      :icon="ExpandMore"
-                      v-else
-                    />
-                  </FeatherButton>
-                </div>
-              </td>
-            </tr>
-            <tr
-              v-if="expandedRows.includes(mibGroup.id)"
-              class="expanded-content"
+              <FeatherIcon :icon="Edit" />
+            </Button>
+            <Button
+              text
+              aria-haspopup="true"
+              :aria-controls="`mib-group-row-menu`"
+              data-test="row-menu-button"
+              @click="toggleRowMenu($event, data)"
             >
-              <td :colspan="5">
-                <h5>MIB Group Names</h5>
-                <p class="description">{{ mibGroup.mibGroupNames?.join(', ') }}</p>
-                <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
-                  <h5>MIB Objects:</h5>
-                  <div
-                    v-for="(value, index) in JSON.parse(mibGroup.mibObjects)"
-                    :key="value.alias"
-                  >
-                    <h6>Object {{ Number(index) + 1 }}</h6>
-                    <div>
-                      <strong>Alias:</strong> {{ value.alias }} <br />
-                      <strong>OID:</strong> {{ value.oid }} <br />
-                      <strong>Instance:</strong> {{ value.instance }} <br />
-                      <strong>Data Type:</strong> {{ value.type }}
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </TransitionGroup>
-      </table>
-      <div
-        class="alerts-pagination"
-        v-if="store.mibGroups.length"
-      >
-        <FeatherPagination
-          :modelValue="store.mibGroupsPagination.page"
-          :pageSize="store.mibGroupsPagination.pageSize"
-          :total="store.mibGroupsPagination.total"
-          :pageSizes="[10, 20, 30]"
-          @update:modelValue="store.onMibGroupsPageChange"
-          @update:pageSize="store.onMibGroupsPageSizeChange"
-          data-test="FeatherPagination"
-        />
-      </div>
-    </div>
+              <FeatherIcon :icon="MenuIcon" />
+            </Button>
+          </div>
+        </template>
+      </Column>
+      <template #expansion="{ data }">
+        <div class="expanded-content">
+          <h5>MIB Group Names</h5>
+          <p class="description">{{ data.mibGroupNames?.join(', ') }}</p>
+          <div v-if="JSON.parse(data.mibObjects).length > 0">
+            <h5>MIB Objects:</h5>
+            <div
+              v-for="(value, index) in JSON.parse(data.mibObjects)"
+              :key="value.alias"
+            >
+              <h6>Object {{ Number(index) + 1 }}</h6>
+              <div>
+                <strong>Alias:</strong> {{ value.alias }} <br />
+                <strong>OID:</strong> {{ value.oid }} <br />
+                <strong>Instance:</strong> {{ value.instance }} <br />
+                <strong>Data Type:</strong> {{ value.type }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </DataTable>
+
+    <Menu
+      id="mib-group-row-menu"
+      ref="rowMenu"
+      :model="rowMenuItems"
+      popup
+    />
+
     <div v-if="!store.mibGroups.length">
       <EmptyList :content="{ msg: 'No MIB Groups found.' }" />
     </div>
@@ -205,82 +167,104 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
-import ExpandLess from '@featherds/icon/navigation/ExpandLess'
-import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import type { MenuItem } from 'primevue/menuitem'
+import Menu from 'primevue/menu'
+import Tag from 'primevue/tag'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import EmptyList from '../../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
 
+type SelectedMibGroup = { id: number; name: string, enabled: boolean }
+
 const store = useSnmpDataCollectionDetailStore()
-const expandedRows = ref<number[]>([])
+const searchId = useId()
+const expandedRows = ref<Record<string | number, boolean>>({})
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
-const selectedMibGroup = ref<{ id: number; name: string, enabled: boolean } | null>(null)
+const selectedMibGroup = ref<SelectedMibGroup | null>(null)
 const snackbar = useSnackbar()
-const columns = computed(() => [
-  { id: 'name', label: 'Name' },
-  { id: 'ifType', label: 'Interface Type' },
-  { id: 'enabled', label: 'Status' }
-])
 
-const sort = reactive({
-  name: SORT.NONE,
-  ifType: SORT.NONE,
-  enabled: SORT.NONE
-}) as any
+const rowMenu = ref()
+const rowMenuTarget = ref<SnmpCollectionMibGroup | null>(null)
+const rowMenuItems = computed<MenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  const items: MenuItem[] = [
+    {
+      label: target.enabled ? 'Disable MIB Group' : 'Enable MIB Group',
+      command: () => openChangeStatusDialog(target)
+    }
+  ]
+  if (!isPluginSourced(store.selectedCollectionSource)) {
+    items.push({
+      label: 'Delete MIB Group',
+      command: () => openDeleteMibGroupDialog(target)
+    })
+  }
+  return items
+})
+
+const toggleRowMenu = (event: Event, mibGroup: SnmpCollectionMibGroup) => {
+  rowMenuTarget.value = mibGroup
+  rowMenu.value?.toggle(event)
+}
 
 const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
   store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
 }
 
-const toggleExpand = (id: number) => {
-  const index = expandedRows.value.indexOf(id)
-  if (index === -1) {
-    expandedRows.value.push(id)
-  } else {
-    expandedRows.value.splice(index, 1)
-  }
-}
-
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onMibGroupsSortChange(sortObj.property, sortObj.value)
+const onSort = (event: DataTableSortEvent) => {
+  if (event.sortField) {
+    store.onMibGroupsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
     store.onMibGroupsSortChange('createdTime', 'desc')
   }
-
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
 }
 
-const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeMibGroupsSearchTerm(value)
+const onPage = (event: DataTablePageEvent) => {
+  if (event.rows !== store.mibGroupsPagination.pageSize) {
+    store.onMibGroupsPageSizeChange(event.rows)
+  } else {
+    store.onMibGroupsPageChange(event.page + 1)
+  }
+}
+
+const debouncedSearch = debounce((value: string) => {
+  store.onChangeMibGroupsSearchTerm(value)
 }, 500)
 
-const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
+const onChangeSearchTerm = (value: string | undefined) => {
+  const term = value ?? ''
+  store.mibGroupsSearchTerm = term
+  debouncedSearch(term.trim())
+}
+
+const openDeleteMibGroupDialog = (mibGroup: SelectedMibGroup | null) => {
   selectedMibGroup.value = mibGroup
   isDeleteDialogVisible.value = true
 }
@@ -290,7 +274,7 @@ const closeDeleteMibGroupDialog = () => {
   isDeleteDialogVisible.value = false
 }
 
-const openChangeStatusDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
+const openChangeStatusDialog = (mibGroup: SelectedMibGroup | null) => {
   selectedMibGroup.value = mibGroup
   isChangeStatusDialogVisible.value = true
 }
@@ -363,11 +347,6 @@ const changeMibGroupStatus = async (selected: { id: number; name: string } | nul
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
-
 .mib-groups-table-container {
   margin-top: 10px;
 
@@ -378,93 +357,47 @@ const changeMibGroupStatus = async (selected: { id: number; name: string } | nul
 
     .section-left {
       display: flex;
+      align-items: center;
       gap: 10px;
 
       .search-container {
         width: 400px;
-
-        :deep(.feather-input-sub-text) {
-          display: none !important;
-        }
       }
     }
   }
 
-  .container {
-    table {
-      width: 100%;
-      @include table.table;
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
+  .tag {
+    display: inline-block;
+  }
 
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
+  .enabled-tag {
+    border-radius: 4px;
+    background-color: #0B720C1F;
 
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-
-        .tag {
-          .enabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #0B720C1F;
-
-            :deep(span) {
-              color: #0B720C !important;
-            }
-          }
-
-          .disabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #7575751F;
-
-            :deep(span) {
-              color: #757575 !important;
-            }
-          }
-        }
-
-        .description {
-          margin: 0;
-          white-space: normal;
-        }
-      }
+    :deep(.p-tag-label) {
+      color: #0B720C !important;
     }
+  }
 
-    .alerts-pagination {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(variables.$spacing-xxs);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      border-left: 1px solid var(--feather-border-on-surface);
-      border-right: 1px solid var(--feather-border-on-surface);
+  .disabled-tag {
+    border-radius: 4px;
+    background-color: #7575751F;
+
+    :deep(.p-tag-label) {
+      color: #757575 !important;
     }
+  }
 
-    .feather-pagination {
-      border: none !important;
+  .expanded-content {
+    .description {
+      margin: 0;
+      white-space: normal;
     }
   }
 }

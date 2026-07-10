@@ -6,88 +6,90 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <FeatherBackButton
+          <PButton
+            text
+            class="back-button"
             data-test="back-button"
             @click="goBack"
           >
+            <FeatherIcon :icon="ArrowBack" />
             Go Back
-          </FeatherBackButton>
+          </PButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Profile' : `Profile details for: ${store.selectedProfile.name}` }}</h1>
         </div>
         <div class="tag">
-          <FeatherChip
+          <PTag
             v-if="store.selectedProfile.enabled"
             class="enabled-tag"
+            value="Enabled"
             data-test="status-tag"
-          >
-            Enabled
-          </FeatherChip>
-          <FeatherChip
+          />
+          <PTag
             v-if="!store.selectedProfile.enabled"
             class="disabled-tag"
+            value="Disabled"
             data-test="status-tag"
-          >
-            Disabled
-          </FeatherChip>
+          />
         </div>
       </div>
     </div>
     <TableCard class="content">
-      <FeatherTabContainer>
-        <template v-slot:tabs>
-          <FeatherTab>Profile Details</FeatherTab>
-          <FeatherTab>Sources</FeatherTab>
-          <FeatherTab>RRD Settings</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <ProfileDetailsTab
-            :configDetails="configDetailsModel"
-            @update:configDetails="onConfigDetailsUpdate"
-            :isCreateMode="isCreateMode"
-            :errors="errors"
-          />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <ProfileSourcesTab
-            :sources="localSourceNames"
-            @update:sources="localSourceNames = $event"
-          />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <ProfileRrdSettingsTab
-            :rrdSettings="rrdSettingsModel"
-            @update:rrdSettings="onRrdSettingsUpdate"
-            :errors="errors"
-          />
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <PTabs v-model:value="activeTab" class="tabs">
+        <PTabList>
+          <PTab :value="0">Profile Details</PTab>
+          <PTab :value="1">Sources</PTab>
+          <PTab :value="2">RRD Settings</PTab>
+        </PTabList>
+        <PTabPanels>
+          <PTabPanel :value="0">
+            <ProfileDetailsTab
+              :configDetails="configDetailsModel"
+              @update:configDetails="onConfigDetailsUpdate"
+              :isCreateMode="isCreateMode"
+              :errors="errors"
+            />
+          </PTabPanel>
+          <PTabPanel :value="1">
+            <ProfileSourcesTab
+              :sources="localSourceNames"
+              @update:sources="localSourceNames = $event"
+            />
+          </PTabPanel>
+          <PTabPanel :value="2">
+            <ProfileRrdSettingsTab
+              :rrdSettings="rrdSettingsModel"
+              @update:rrdSettings="onRrdSettingsUpdate"
+              :errors="errors"
+            />
+          </PTabPanel>
+        </PTabPanels>
+      </PTabs>
 
       <div class="action-row">
-        <FeatherButton
-          secondary
+        <PButton
+          outlined
           data-test="cancel-button"
           @click="goBack"
         >
           Cancel
-        </FeatherButton>
-        <FeatherButton
+        </PButton>
+        <PButton
           v-if="!isCreateMode"
-          secondary
+          outlined
           data-test="delete-button"
           @click="openDeleteCollectionProfileDialog"
         >
           Delete Profile
-        </FeatherButton>
-        <FeatherButton
-          primary
+        </PButton>
+        <PButton
           data-test="save-button"
           :disabled="isSaveDisabled"
           @click="saveProfile"
         >
           {{ isCreateMode ? 'Create Profile' : 'Save Profile' }}
-        </FeatherButton>
+        </PButton>
       </div>
     </TableCard>
   </div>
@@ -108,12 +110,9 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <FeatherButton
-      primary
-      @click="goBack"
-    >
+    <PButton @click="goBack">
       Go Back
-    </FeatherButton>
+    </PButton>
   </div>
 </template>
 
@@ -133,10 +132,23 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import { FeatherIcon } from '@featherds/icon'
+import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import ButtonComponent from 'primevue/button'
+import TabComponent from 'primevue/tab'
+import TabListComponent from 'primevue/tablist'
+import TabPanelComponent from 'primevue/tabpanel'
+import TabPanelsComponent from 'primevue/tabpanels'
+import TabsComponent from 'primevue/tabs'
+import TagComponent from 'primevue/tag'
+
+const PButton = ButtonComponent
+const PTabs = TabsComponent
+const PTabList = TabListComponent
+const PTab = TabComponent
+const PTabPanels = TabPanelsComponent
+const PTabPanel = TabPanelComponent
+const PTag = TagComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -145,6 +157,8 @@ const snackbar = useSnackbar()
 
 const mode = ref<CreateEditMode>(CreateEditMode.Edit)
 const isCreateMode = computed(() => mode.value === CreateEditMode.Create)
+
+const activeTab = ref(0)
 
 const localName = ref('')
 const localEnabled = ref(false)
@@ -378,10 +392,9 @@ onMounted(async () => {
       margin: 0 !important;
       border-radius: 1em;
       background-color: #0B720C1F;
-      border-color: #0B720C;
-      border-width: 2px;
+      border: 2px solid #0B720C;
 
-      :deep(span) {
+      :deep(.p-tag-label) {
         color: #0B720C !important;
       }
     }
@@ -390,10 +403,9 @@ onMounted(async () => {
       margin: 0 !important;
       border-radius: 1em;
       background-color: #7575751F;
-      border-color: #757575;
-      border-width: 2px;
+      border: 2px solid #757575;
 
-      :deep(span) {
+      :deep(.p-tag-label) {
         color: #757575 !important;
       }
     }
@@ -402,15 +414,21 @@ onMounted(async () => {
   .content {
     margin-top: 10px;
     padding: 25px;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var(--p-content-border-color);
 
     .action-row {
       display: flex;
       justify-content: flex-end;
-      gap: 0;
+      gap: 0.5rem;
       margin-top: 0;
       padding-top: 20px;
-      border-top: 1px solid var(--feather-border-on-surface);
+      border-top: 1px solid var(--p-content-border-color);
+    }
+
+    .tabs {
+      :deep(.p-tab) {
+        text-transform: uppercase;
+      }
     }
   }
 }

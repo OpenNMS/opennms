@@ -1,32 +1,33 @@
 <template>
-  <FeatherDropdown>
-    <template v-slot:trigger="{ attrs, on }">
-      <FeatherButton
-        icon="Node Actions"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <FeatherIcon :icon="menu" class="node-actions-icon" />
-      </FeatherButton>
-    </template>
-    <FeatherDropdownItem @click="triggerNodeInfo(node)">
-      <span class="node-menu-item">Info...</span>
-    </FeatherDropdownItem>
-    <FeatherDropdownItem
-      v-for="linkItem in linkItems"
-      :key="linkItem.name"
-      @click="onNodeLink(linkItem.name, node)">
-      <span class="node-menu-item">{{ linkItem.label }}</span>
-    </FeatherDropdownItem>
-  </FeatherDropdown>
+  <Button
+    text
+    title="Node Actions"
+    aria-label="Node Actions"
+    aria-haspopup="true"
+    :aria-controls="menuId"
+    data-test="node-actions-button"
+    @click="toggle"
+  >
+    <FeatherIcon
+      :icon="menuIcon"
+      class="node-actions-icon"
+    />
+  </Button>
+  <Menu
+    :id="menuId"
+    ref="menu"
+    :model="items"
+    popup
+  />
 </template>
 
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+import Button from 'primevue/button'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
-import { markRaw, PropType } from 'vue'
+import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -44,7 +45,9 @@ const props = defineProps({
   }
 })
 
-const menu = markRaw(MoreVert)
+const menuIcon = markRaw(MoreVert)
+const menu = ref()
+const menuId = computed(() => `node-actions-menu-${props.node.id}`)
 
 const linkItems = [
   { name: 'events', label: 'Events' },
@@ -61,6 +64,18 @@ const linkItems = [
   { name: 'schedule-outage', label: 'Schedule an Outage' },
   { name: 'topology', label: 'View Topology Map' }
 ]
+
+const items = computed<MenuItem[]>(() => [
+  { label: 'Info...', command: () => props.triggerNodeInfo(props.node) },
+  ...linkItems.map(li => ({
+    label: li.label,
+    command: () => onNodeLink(li.name, props.node)
+  }))
+])
+
+const toggle = (event: Event) => {
+  menu.value?.toggle(event)
+}
 
 const onNodeLink = (name: string, node: Node) => {
   const link = mapLink(name, node)
@@ -99,14 +114,12 @@ const mapLink = (name: string, node: Node) => {
     default: return ''
   }
 }
+
+defineExpose({ items })
 </script>
 
 <style lang="scss" scoped>
-.node-menu-item {
-  padding: 1em;
-}
-
-button.btn.btn-icon .node-actions-icon {
+.node-actions-icon {
   font-size: 1.1rem;
 }
 </style>

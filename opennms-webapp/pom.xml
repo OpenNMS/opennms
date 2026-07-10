@@ -172,17 +172,17 @@
               -->
               org.eclipse.jetty.servlet,
               org.opennms.core.soa.config,
-              org.springframework.beans.factory.config;version="[4.0,5)",
-              org.springframework.context.config;version="[4.0,5)",
-              org.springframework.context.support;version="[4.0,5)",
+              org.springframework.beans.factory.config;version="[5.3,6)",
+              org.springframework.context.config;version="[5.3,6)",
+              org.springframework.context.support;version="[5.3,6)",
               org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
-              org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              org.springframework.orm.hibernate5.support;version="[5.3,6)",
               <!-- Spring Security namespace handler -->
-              org.springframework.security.config;version="[3.2,4)",
-              org.springframework.security.web.authentication;version="[3.2,4)",
-              org.springframework.transaction.config;version="[4.0,5)",
-              org.springframework.web.context;version="[4.0,5)",
-              org.springframework.web.filter;version="[4.0,5)",
+              org.springframework.security.config;version="[5.8,6)",
+              org.springframework.security.web.authentication;version="[5.8,6)",
+              org.springframework.transaction.config;version="[5.3,6)",
+              org.springframework.web.context;version="[5.3,6)",
+              org.springframework.web.filter;version="[5.3,6)",
 
               <!-- Mark some packages that dependency JARs rely on as optional -->
               <!-- Optional dependencies of jdom -->
@@ -835,6 +835,41 @@
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
       <version>1.1_4</version>
+    </dependency>
+
+    <!-- Jinjava: renders the topology info-panel templates served by
+         opennms-webapp-rest's /api/v2/topology/infopanel. Listed here (compile)
+         so jinjava and its runtime closure (JUEL, etc.) land in WEB-INF/lib,
+         shared by the webapp classloader with the REST classes. -->
+    <dependency>
+      <groupId>com.hubspot.jinjava</groupId>
+      <artifactId>jinjava</artifactId>
+      <version>2.8.3</version>
+          <exclusions>
+        <!-- Already provided by $OPENNMS_HOME/lib (same versions): bundling
+             copies in WEB-INF/lib breaks webapp startup with a classloader
+             constraint violation (e.g. ObjectMapper loaded by both loaders). -->
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-yaml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jdk8</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-net</groupId>
+          <artifactId>commons-net</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.extremecomponents</groupId>

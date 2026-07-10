@@ -42,6 +42,43 @@
   text-transform: uppercase;
 }
 
+// Taller text inputs across the app (matches the roomier FeatherDS field feel
+// and gives IftaLabel's in-field label space above the value). Height is not a
+// PrimeVue theme token, so it lives here. Applies to InputText and the inner
+// input of InputNumber (both render .p-inputtext).
+.p-inputtext {
+  height: 3.75rem;
+}
+
+// Match Select height to the taller inputs so they line up in shared rows.
+// The root is inline-flex with the default `align-items: stretch`, so at the
+// taller height the label stretches full-height and its text pins to the top;
+// center it so the value/placeholder sits vertically centered (same fix as
+// .p-multiselect below).
+.p-select {
+  height: 3.75rem;
+  align-items: center;
+}
+
+// Exception: the rows-per-page dropdown inside a DataTable/Paginator is a
+// .p-select, so it inherits the roomy 3.75rem above and towers over the
+// paginator nav buttons. Pin it to the paginator's own nav-button height so the
+// pager row lines up. Applies to every PrimeVue Paginator app-wide.
+.p-paginator-rpp-dropdown {
+  height: var(--p-paginator-nav-button-height);
+}
+
+// Match MultiSelect to the taller inputs/selects when empty; min-height (not a
+// fixed height) so its chip display can still grow as items are selected.
+// The root is inline-flex with the default `align-items: stretch`, which lets
+// the label-container fill the taller control but leaves the label text pinned
+// to the top; center it so the value/placeholder sits vertically centered (the
+// same way .p-select renders).
+.p-multiselect {
+  min-height: 3.75rem;
+  align-items: center;
+}
+
 // FeatherDS buttons use uppercase, bold, slightly spaced label text. Match it
 // (these are FeatherDS button typography token values; text-transform and
 // letter-spacing are not expressible as PrimeVue theme tokens).
@@ -54,4 +91,25 @@
   .p-button-label {
     font-weight: 700;
   }
+}
+
+// Outlined buttons read better with a slightly heavier border given the button
+// border-radius (border color comes from the preset). Not a PrimeVue token, so
+// it lives here.
+.p-button-outlined {
+  border-width: 2px;
+}
+
+// Helper/hint text shown under a form field (the small sibling of an
+// IftaLabel/FloatLabel input). Global so every converted field is consistent:
+// indent to line up with the IftaLabel label/value text (the input's left
+// padding) and use a slightly larger, readable size.
+.field-hint {
+  // block so the left padding indents every line (an inline <small> would only
+  // offset the first line, leaving wrapped lines flush against the edge)
+  display: block;
+  margin-top: 0.25em;
+  padding-left: var(--p-iftalabel-position-x, 0.75rem);
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
 }

@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,6 +67,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.base.Strings;
+import com.vmware.vim25.DatastoreSummary;
+import com.vmware.vim25.mo.Datastore;
+import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.ManagedEntity;
 
 /**
@@ -84,6 +89,47 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             new SimpleEntry<>(VmwareImporter.VMWARE_COLLECTION_KEY, VmwareCollection.class),
             new SimpleEntry<>(VmwareImporter.VMWARE_SERVER_KEY, VmwareServer.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+
+    /** Resource type that triggers datastore-capacity dispatch instead of the PerformanceManager path. */
+    static final String DATASTORE_RESOURCE_TYPE = "vmwareDatastoreCapacity";
+
+    // Per-attribute extractors against Datastore.summary. Package-private for tests.
+    static final Map<String, ToLongFunction<DatastoreSummary>> DATASTORE_NUMERIC_EXTRACTORS;
+    static final Map<String, Function<DatastoreSummary, String>> DATASTORE_STRING_EXTRACTORS;
+
+    static {
+        final Map<String, ToLongFunction<DatastoreSummary>> numeric = new HashMap<>();
+        numeric.put("capacity", DatastoreSummary::getCapacity);
+        numeric.put("freeSpace", DatastoreSummary::getFreeSpace);
+        numeric.put("used", s -> s.getCapacity() - s.getFreeSpace());
+        numeric.put("usedPct", s -> {
+            final long cap = s.getCapacity();
+            return cap > 0L ? ((cap - s.getFreeSpace()) * 100L) / cap : 0L;
+        });
+        numeric.put("uncommitted", s -> {
+            final Long u = s.getUncommitted();
+            return u == null ? 0L : u.longValue();
+        });
+        numeric.put("overcommittedBytes", s -> {
+            final long cap = s.getCapacity();
+            final long used = cap - s.getFreeSpace();
+            final Long u = s.getUncommitted();
+            final long unc = u == null ? 0L : u.longValue();
+            return Math.max(0L, used + unc - cap);
+        });
+        numeric.put("accessible", s -> s.isAccessible() ? 1L : 0L);
+        numeric.put("multipleHostAccess", s -> {
+            final Boolean b = s.getMultipleHostAccess();
+            return b != null && b ? 1L : 0L;
+        });
+        DATASTORE_NUMERIC_EXTRACTORS = Collections.unmodifiableMap(numeric);
+
+        final Map<String, Function<DatastoreSummary, String>> string = new HashMap<>();
+        string.put("name", DatastoreSummary::getName);
+        string.put("type", DatastoreSummary::getType);
+        string.put("url", DatastoreSummary::getUrl);
+        DATASTORE_STRING_EXTRACTORS = Collections.unmodifiableMap(string);
+    }
 
     /**
      * the node dao object for retrieving assets
@@ -214,7 +260,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             return builder.build();
         }
 
-        try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer)) {
+        try (final VmwareViJavaAccess vmwareViJavaAccess = createVmwareViJavaAccess(vmwareServer)) {
             vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
             final ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
             VmwarePerformanceValues vmwarePerformanceValues = null;
@@ -226,6 +272,10 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             }
             for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
                 final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+                if (DATASTORE_RESOURCE_TYPE.equals(vmwareGroup.getResourceType())) {
+                    collectDatastoreCapacity(agent, builder, nodeResource, vmwareViJavaAccess, vmwareManagedObjectId, vmwareGroup);
+                    continue;
+                }
                 if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
                     // single instance value
                     for (final Attrib attrib : vmwareGroup.getAttrib()) {
@@ -290,6 +340,106 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
     }
 
     /**
+     * Walks the datastores this HostSystem mounts and emits a multi-instance resource
+     * per datastore keyed by managed object id. Attribute names recognized in the
+     * configured group map directly to fields on {@code Datastore.summary}:
+     *
+     * Numeric: {@code capacity}, {@code freeSpace}, {@code used}, {@code usedPct},
+     *          {@code uncommitted}, {@code overcommittedBytes}, {@code accessible},
+     *          {@code multipleHostAccess}.
+     *
+     * String:  {@code name}, {@code type}, {@code url}.
+     *
+     * Looks the HostSystem up explicitly by moid because
+     * VmwareViJavaAccess.getManagedEntityByManagedObjectId returns the abstract
+     * base class. If the moid does not refer to a HostSystem on the server,
+     * getDatastores() will fail and the per-datastore loop is skipped.
+     */
+    private void collectDatastoreCapacity(final CollectionAgent agent,
+                                          final CollectionSetBuilder builder,
+                                          final NodeLevelResource nodeResource,
+                                          final VmwareViJavaAccess vmwareViJavaAccess,
+                                          final String vmwareManagedObjectId,
+                                          final VmwareGroup vmwareGroup) {
+        final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
+        if (hostSystem == null) {
+            logger.warn("VmwareCollector: could not resolve HostSystem for managed object id '{}'; skipping datastore group '{}'.",
+                    vmwareManagedObjectId, vmwareGroup.getName());
+            return;
+        }
+
+        final Datastore[] datastores;
+        try {
+            datastores = hostSystem.getDatastores();
+        } catch (final Exception e) {
+            logger.warn("VmwareCollector: error enumerating datastores for host '{}'.", hostSystem.getName(), e);
+            return;
+        }
+        if (datastores == null || datastores.length == 0) {
+            logger.debug("VmwareCollector: host '{}' has no mounted datastores; skipping group '{}'.",
+                    hostSystem.getName(), vmwareGroup.getName());
+            return;
+        }
+
+        for (final Datastore ds : datastores) {
+            final String moid = ds.getMOR().getVal();
+
+            final DatastoreSummary summary;
+            try {
+                summary = ds.getSummary();
+            } catch (final Exception e) {
+                logger.warn("VmwareCollector: error reading summary for datastore '{}' ({}).", ds.getName(), moid, e);
+                continue;
+            }
+            if (summary == null) {
+                logger.debug("VmwareCollector: null summary for datastore '{}' ({}); skipping.",
+                        ds.getName(), moid);
+                continue;
+            }
+
+            final Resource resource = new DeferredGenericTypeResource(nodeResource,
+                    vmwareGroup.getResourceType(), moid);
+
+            // Resource label property — UI uses this via resourceLabel="${<resourceType>Name}".
+            final String label = summary.getName() == null ? moid : summary.getName();
+            builder.withStringAttribute(resource, vmwareGroup.getName(),
+                    vmwareGroup.getResourceType() + "Name", label);
+
+            for (final Attrib attrib : vmwareGroup.getAttrib()) {
+                final String name = attrib.getName();
+                if (DATASTORE_NUMERIC_EXTRACTORS.containsKey(name)) {
+                    try {
+                        final long value = DATASTORE_NUMERIC_EXTRACTORS.get(name).applyAsLong(summary);
+                        final AttributeType type = attrib.getType();
+                        if (type.isNumeric()) {
+                            builder.withNumericAttribute(resource, vmwareGroup.getName(),
+                                    attrib.getAlias(), value, type);
+                        } else {
+                            logger.warn("VmwareCollector: numeric attribute '{}' (alias '{}') in group '{}' is configured with non-numeric type '{}'; skipping. Configure type as Gauge or Counter.",
+                                    name, attrib.getAlias(), vmwareGroup.getName(), type);
+                        }
+                    } catch (final Exception e) {
+                        logger.debug("VmwareCollector: failed to extract '{}' from datastore '{}' ({}): {}",
+                                name, ds.getName(), moid, e.getMessage());
+                    }
+                } else if (DATASTORE_STRING_EXTRACTORS.containsKey(name)) {
+                    try {
+                        final String value = DATASTORE_STRING_EXTRACTORS.get(name).apply(summary);
+                        builder.withStringAttribute(resource, vmwareGroup.getName(),
+                                attrib.getAlias(), value == null ? "" : value);
+                    } catch (final Exception e) {
+                        logger.debug("VmwareCollector: failed to extract '{}' from datastore '{}' ({}): {}",
+                                name, ds.getName(), moid, e.getMessage());
+                    }
+                } else {
+                    logger.warn("VmwareCollector: unknown datastore attribute '{}' configured in group '{}'; ignoring.",
+                            name, vmwareGroup.getName());
+                }
+            }
+        }
+    }
+
+    /**
      * Returns the Rrd repository for this object.
      *
      * @param collectionName the collection's name
@@ -307,5 +457,11 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    // Factory seam to allow tests to substitute a mocked VmwareViJavaAccess
+    // without pulling in mockito-inline for constructor mocking.
+    protected VmwareViJavaAccess createVmwareViJavaAccess(final VmwareServer vmwareServer) {
+        return new VmwareViJavaAccess(vmwareServer);
     }
 }

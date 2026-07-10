@@ -167,6 +167,23 @@ globalElasticUser=elastic
 globalElasticPassword=changeme
 ----
 
+[[ga-elasticsearch-index-retention]]
+== Index retention
+
+{page-component-title} writes to time-based Elasticsearch indices (see `elasticIndexStrategy`) but never removes them.
+Without a retention process, these indices accumulate indefinitely.
+
+[WARNING]
+====
+{page-component-title} does not expire or delete the data it persists to Elasticsearch.
+Unless you configure an external retention process to remove old indices, the Elasticsearch disk can fill up and the cluster can stop accepting writes.
+This applies to all data {page-component-title} persists to Elasticsearch, including flows, alarm history, and forwarded events.
+====
+
+A time-based index strategy (for example, `elasticIndexStrategy=daily`) lets you drop whole indices once they age out.
+You can automate this with Elasticsearch's Index Lifecycle Management (ILM) or with an external script that removes indices older than your chosen retention period.
+Choose a retention period that fits your available storage and how far back you need to query.
+
 == Credentials
 
 It is possible to define credentials for each Elasticsearch node individually.

@@ -24,13 +24,19 @@ package org.opennms.features.config.service.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.opennms.features.config.exception.ConfigConversionException;
 
 public class ConfigConvertUtil {
+    // Ignore unknown properties so persisted config written by a newer version (with
+    // fields not yet known to the running code) can still be read. Without this, adding a
+    // field to a config class (e.g. Snmpv3User.id) breaks reading that config on any older
+    // version during a downgrade, rollback, or rolling upgrade. See NMS-19970 / NMS-19723.
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .setPropertyNamingStrategy(new PropertyNamingStrategies.KebabCaseStrategy());
 

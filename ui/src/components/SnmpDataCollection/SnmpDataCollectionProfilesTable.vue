@@ -3,136 +3,102 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FeatherInput
-            label="Search"
-            type="search"
-            data-test="search-input"
-            v-model.trim="store.profilesSearchTerm"
-            :hint="'Search by Profile Name'"
-            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
-          >
-            <template #pre>
-              <FeatherIcon :icon="Search" />
-            </template>
-          </FeatherInput>
+          <FormField>
+            <IconField>
+              <InputText
+                :id="searchId"
+                :modelValue="store.profilesSearchTerm"
+                @update:modelValue="onChangeSearchTerm"
+                data-test="search-input"
+                placeholder="Search by Profile Name"
+                :aria-label="'Search by Profile Name'"
+              />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
+            </IconField>
+          </FormField>
         </div>
       </div>
       <div class="section-right">
         <div class="add">
-          <FeatherButton
-            secondary
+          <Button
+            outlined
+            label="Create New Data Collection Profile"
+            data-test="create-profile-button"
             @click="goToCreateProfile"
-          >
-            Create New Data Collection Profile
-          </FeatherButton>
+          />
         </div>
       </div>
     </div>
-    <div class="container">
-      <table
-        class="data-table"
-        aria-label="Profiles Table"
-        v-if="filteredSortedProfiles.length"
+
+    <DataTable
+      v-if="searchedProfiles.length"
+      v-model:first="firstRow"
+      :value="searchedProfiles"
+      paginator
+      dataKey="id"
+      :rows="10"
+      :rowsPerPageOptions="[10, 20, 50, 100, 200]"
+      class="data-table"
+      data-test="profiles-table"
+    >
+      <Column
+        field="name"
+        header="Profile Name"
+        sortable
+      />
+      <Column
+        field="enabled"
+        header="Status"
+        sortable
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              scope="col"
-              property="name"
-              :sort="(sort as any).name"
-              v-on:sort-changed="sortChanged"
+        <template #body="{ data }">
+          <Tag
+            :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="data.enabled ? 'Enabled' : 'Disabled'"
+            data-test="status-tag"
+          />
+        </template>
+      </Column>
+      <Column header="Actions">
+        <template #body="{ data }">
+          <div class="action-container">
+            <Button
+              text
+              :title="`View ${data.name}`"
+              data-test="view-button"
+              @click="onProfileClick(data)"
             >
-              Profile Name
-            </FeatherSortHeader>
-            <FeatherSortHeader
-              scope="col"
-              property="enabled"
-              :sort="(sort as any).enabled"
-              v-on:sort-changed="sortChanged"
+              <FeatherIcon :icon="ViewDetails" />
+            </Button>
+            <Button
+              text
+              aria-haspopup="true"
+              aria-controls="profile-row-menu"
+              :title="`More actions for ${data.name}`"
+              data-test="row-menu-button"
+              @click="toggleRowMenu($event, data)"
             >
-              Status
-            </FeatherSortHeader>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
-        >
-          <tr
-            v-for="profile in sortedFilteredProfiles"
-            :key="profile.id"
-          >
-            <td>{{ profile.name }}</td>
-            <td>
-              <div class="tag">
-                <FeatherChip
-                  :class="profile.enabled ? 'enabled-tag' : 'disabled-tag'"
-                  data-test="status-tag"
-                >
-                  {{ profile.enabled ? 'Enabled' : 'Disabled' }}
-                </FeatherChip>
-              </div>
-            </td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
-                  @click="onProfileClick(profile)"
-                >
-                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherDropdown>
-                  <template v-slot:trigger="{ attrs, on }">
-                    <FeatherButton
-                      link
-                      href="#"
-                      v-bind="attrs"
-                      v-on="on"
-                      :icon="`More actions for ${profile.name}`"
-                    >
-                      <FeatherIcon :icon="MenuIcon" />
-                    </FeatherButton>
-                  </template>
-                  <FeatherDropdownItem
-                    data-test="change-status-profile-button"
-                    @click="onChangeProfileStatus(profile)"
-                  >
-                    {{ profile.enabled ? 'Disable' : 'Enable' }} Profile
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem
-                    data-test="delete-profile-button"
-                    @click="openDeleteCollectionProfileDialog(profile)"
-                  >
-                    Delete Profile
-                  </FeatherDropdownItem>
-                </FeatherDropdown>
-              </div>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div
-        class="alerts-pagination"
-        v-if="filteredSortedProfiles.length"
-      >
-        <FeatherPagination
-          :modelValue="store.profilesPagination.page"
-          :pageSize="store.profilesPagination.pageSize"
-          :total="filteredSortedProfiles.length"
-          :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="store.onProfilePageChange"
-          @update:pageSize="store.onProfilePageSizeChange"
-          data-test="FeatherPagination"
-        />
-      </div>
-      <div v-if="!filteredSortedProfiles.length">
-        <EmptyList
-          :content="emptyListContent"
-          data-test="empty-list"
-        />
-      </div>
+              <FeatherIcon :icon="MenuIcon" />
+            </Button>
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+
+    <Menu
+      id="profile-row-menu"
+      ref="rowMenu"
+      :model="rowMenuItems"
+      popup
+    />
+
+    <div v-if="!searchedProfiles.length">
+      <EmptyList
+        :content="emptyListContent"
+        data-test="empty-list"
+      />
     </div>
   </TableCard>
   <ConfirmationDialog
@@ -149,90 +115,84 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, ref, useId } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import type { MenuItem } from 'primevue/menuitem'
+import Menu from 'primevue/menu'
+import Tag from 'primevue/tag'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
-import { FeatherSortHeader, SORT } from '@featherds/table'
-
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
+import FormField from '@/components/Common/FormField.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
+const router = useRouter()
 const store = useSnmpDataCollectionStore()
 const snackbar = useSnackbar()
+const searchId = useId()
 
 const showDeleteConfirmation = ref(false)
 const profileToDelete = ref<SnmpCollectionProfile | null>(null)
+// First-row index of the client-side paginator; reset on search so a query
+// that shrinks the result set can't leave the user stranded on an empty page.
+const firstRow = ref(0)
 
 const emptyListContent = {
   msg: 'No results found.'
 }
 
-const sort = reactive({
-  name: SORT.NONE,
-  enabled: SORT.NONE
-}) as any
-
-const filteredSortedProfiles = computed(() => {
-  let list = [...store.profiles]
-
+// Profiles are fetched in full; DataTable handles sorting + pagination
+// client-side, so this component only filters by the search term.
+const searchedProfiles = computed(() => {
   const term = store.profilesSearchTerm.trim().toLowerCase()
-  if (term) {
-    list = list.filter(p => p.name.toLowerCase().includes(term))
+  if (!term) {
+    return store.profiles
   }
-
-  const { sortKey, sortOrder } = store.profilesSorting
-  if (sortKey === 'name') {
-    list.sort((a, b) => {
-      const cmp = a.name.localeCompare(b.name)
-      return sortOrder === 'asc' ? cmp : -cmp
-    })
-  } else if (sortKey === 'enabled') {
-    list.sort((a, b) => {
-      const cmp = (a.enabled ? 1 : 0) - (b.enabled ? 1 : 0)
-      return sortOrder === 'asc' ? cmp : -cmp
-    })
-  }
-
-  return list
+  return store.profiles.filter(p => p.name.toLowerCase().includes(term))
 })
 
-const sortedFilteredProfiles = computed(() => {
-  const { page, pageSize } = store.profilesPagination
-  const start = (page - 1) * pageSize
-  return filteredSortedProfiles.value.slice(start, start + pageSize)
+const rowMenu = ref()
+const rowMenuTarget = ref<SnmpCollectionProfile | null>(null)
+const rowMenuItems = computed<MenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  return [
+    {
+      label: target.enabled ? 'Disable Profile' : 'Enable Profile',
+      command: () => onChangeProfileStatus(target)
+    },
+    {
+      label: 'Delete Profile',
+      command: () => openDeleteCollectionProfileDialog(target)
+    }
+  ]
 })
 
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onProfilesSortChange(sortObj.property, sortObj.value)
-  } else {
-    store.onProfilesSortChange('createdTime', 'desc')
-  }
-
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
+const toggleRowMenu = (event: Event, profile: SnmpCollectionProfile) => {
+  rowMenuTarget.value = profile
+  rowMenu.value?.toggle(event)
 }
 
-const onChangeSearchTerm = (value: string) => {
-  store.onChangeProfilesSearchTerm(value)
+const onChangeSearchTerm = (value: string | undefined) => {
+  firstRow.value = 0
+  store.onChangeProfilesSearchTerm(value ?? '')
 }
 
 const goToCreateProfile = () => {
@@ -299,15 +259,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
-
 .snmp-data-collection-profiles-table {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -320,103 +275,32 @@ onMounted(() => {
 
       .search-container {
         width: 400px;
-
-        :deep(.feather-input-sub-text) {
-          display: none !important;
-        }
       }
     }
   }
 
-  .container {
-    table {
-      width: 100%;
-      @include table.table;
+  .enabled-tag {
+    border-radius: 4px;
+    background-color: #0B720C1F;
 
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        div {
-          border-radius: 5px;
-          padding: 0px 5px 0px 5px;
-        }
-
-        .profile-chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
-          align-items: center;
-
-          .profile-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-          }
-
-          .empty-profiles {
-            color: var(--feather-secondary-text-on-surface);
-          }
-        }
-
-        .tag {
-          .enabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #0B720C1F;
-
-            :deep(span) {
-              color: #0B720C !important;
-            }
-          }
-
-          .disabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #7575751F;
-
-            :deep(span) {
-              color: #757575 !important;
-            }
-          }
-        }
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-      }
+    :deep(.p-tag-label) {
+      color: #0B720C !important;
     }
+  }
 
-    .alerts-pagination {
-      display: flex;
-      justify-content: center;
-      padding: 30px 0px 0px 0px;
-    }
+  .disabled-tag {
+    border-radius: 4px;
+    background-color: #7575751F;
 
-    .feather-pagination {
-      border: none !important;
+    :deep(.p-tag-label) {
+      color: #757575 !important;
     }
+  }
+
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 }
 </style>

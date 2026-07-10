@@ -4,134 +4,124 @@
       <div class="title-container">
         <!-- <span class="title"> SNMP Interfaces </span> -->
       </div>
-      <div class="action-container">
+      <div class="header-content-container">
         <div class="search-container">
-          <FeatherInput
-            label="Search"
-            type="search"
-            data-test="search-input"
-            v-model.trim="store.sourcesSearchTerm"
-            :hint="'Search by Source, Vendor, UEI or Label'"
-            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
-          >
-            <template #pre>
-              <FeatherIcon :icon="Search" />
-            </template>
-          </FeatherInput>
+          <FormField class="search-field">
+            <IconField>
+              <InputText
+                :id="searchId"
+                :modelValue="store.sourcesSearchTerm"
+                @update:modelValue="onChangeSearchTerm"
+                data-test="search-input"
+                placeholder="Search by Source, Vendor, UEI or Label"
+                :aria-label="'Search by Source, Vendor, UEI or Label'"
+              />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
+            </IconField>
+          </FormField>
         </div>
         <div class="refresh">
-          <FeatherButton
-            primary
-            icon="Refresh"
+          <Button
+            text
+            title="Refresh"
             data-test="refresh-button"
             @click="store.refreshSourcesFilters()"
           >
-            <FeatherIcon :icon="Refresh"> </FeatherIcon>
-          </FeatherButton>
+            <FeatherIcon :icon="Refresh" />
+          </Button>
         </div>
       </div>
     </div>
-    <div class="container">
-      <table
-        class="data-table"
-        aria-label="Events Table"
-        v-if="store.sources.length"
-      >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
+
+    <DataTable
+      v-if="store.sources.length"
+      :value="store.sources"
+      lazy
+      paginator
+      dataKey="id"
+      :rows="store.sourcesPagination.pageSize"
+      :totalRecords="store.sourcesPagination.total"
+      :first="(store.sourcesPagination.page - 1) * store.sourcesPagination.pageSize"
+      :rowsPerPageOptions="[10, 20, 50, 100, 200]"
+      :sortField="store.sourcesSorting.sortKey"
+      :sortOrder="store.sourcesSorting.sortOrder === 'asc' ? 1 : -1"
+      @page="onPage"
+      @sort="onSort"
+      class="data-table"
+      data-test="event-config-source-table"
+    >
+      <Column
+        field="name"
+        header="Source"
+        sortable
+      />
+      <Column
+        field="vendor"
+        header="Vendor"
+        sortable
+      />
+      <Column
+        field="eventCount"
+        header="Event Count"
+        sortable
+      />
+      <Column header="Status">
+        <template #body="{ data }">
+          <Tag
+            :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="data.enabled ? 'Enabled' : 'Disabled'"
+            data-test="status-tag"
+          />
+        </template>
+      </Column>
+      <Column header="Actions">
+        <template #body="{ data }">
+          <div class="action-container">
+            <Button
+              text
+              :title="`View ${data.name}`"
+              data-test="view-button"
+              @click="onEventClick(data)"
             >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
-        >
-          <tr
-            v-for="config in store.sources"
-            :key="config.id"
-          >
-            <td>{{ config.name }}</td>
-            <td>{{ config.vendor }}</td>
-            <td>{{ config.eventCount }}</td>
-            <td>{{ config.enabled ? 'Enabled' : 'Disabled' }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
-                  @click="onEventClick(config)"
-                >
-                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherButton
-                  icon="Download XML"
-                  data-test="download-button"
-                  @click="downloadEventConfXmlBySourceId(config.id)"
-                >
-                  <FeatherIcon :icon="Download"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherDropdown>
-                  <template v-slot:trigger="{ attrs, on }">
-                    <FeatherButton
-                      link
-                      href="#"
-                      v-bind="attrs"
-                      v-on="on"
-                      :icon="`More actions for ${config.name}`"
-                    >
-                      <FeatherIcon :icon="MenuIcon" />
-                    </FeatherButton>
-                  </template>
-                  <FeatherDropdownItem
-                    @click="store.showChangeEventConfigSourceStatusDialog(config)"
-                    data-test="change-status-button"
-                  >
-                    {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem
-                    @click="store.showDeleteEventConfigSourceModal(config)"
-                    data-test="delete-source-button"
-                    v-if="config.vendor !== VENDOR_OPENNMS"
-                  >
-                    Delete Source
-                  </FeatherDropdownItem>
-                </FeatherDropdown>
-              </div>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div
-        class="alerts-pagination"
-        v-if="store.sources.length"
-      >
-        <FeatherPagination
-          :modelValue="store.sourcesPagination.page"
-          :pageSize="store.sourcesPagination.pageSize"
-          :total="store.sourcesPagination.total"
-          :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="store.onSourcePageChange"
-          @update:pageSize="store.onSourcePageSizeChange"
-          data-test="FeatherPagination"
-        />
-      </div>
-      <div v-if="!store.sources.length">
-        <EmptyList
-          :content="emptyListContent"
-          data-test="empty-list"
-        />
-      </div>
+              <FeatherIcon :icon="ViewDetails" />
+            </Button>
+            <Button
+              text
+              :title="`Download ${data.name} XML`"
+              data-test="download-button"
+              @click="downloadEventConfXmlBySourceId(data.id)"
+            >
+              <FeatherIcon :icon="Download" />
+            </Button>
+            <Button
+              text
+              aria-haspopup="true"
+              aria-controls="event-source-row-menu"
+              :title="`More actions for ${data.name}`"
+              data-test="row-menu-button"
+              @click="toggleRowMenu($event, data)"
+            >
+              <FeatherIcon :icon="MenuIcon" />
+            </Button>
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+
+    <Menu
+      id="event-source-row-menu"
+      ref="rowMenu"
+      :model="rowMenuItems"
+      popup
+    />
+
+    <div v-if="!store.sources.length">
+      <EmptyList
+        :content="emptyListContent"
+        data-test="empty-list"
+      />
     </div>
     <DeleteEventConfigSourceDialog />
     <ChangeEventConfigSourceStatusDialog />
@@ -139,48 +129,69 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, ref, useId } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Download from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import type { MenuItem } from 'primevue/menuitem'
+import Menu from 'primevue/menu'
+import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()
+const searchId = useId()
 const emptyListContent = {
   msg: 'No results found.'
 }
 
-const columns = computed(() => [
-  { id: 'name', label: 'Source' },
-  { id: 'vendor', label: 'Vendor' },
-  { id: 'eventCount', label: 'Event Count' }
-])
+const rowMenu = ref()
+const rowMenuTarget = ref<EventConfigSource | null>(null)
+const rowMenuItems = computed<MenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  const items: MenuItem[] = [
+    {
+      label: target.enabled ? 'Disable Source' : 'Enable Source',
+      command: () => store.showChangeEventConfigSourceStatusDialog(target)
+    }
+  ]
+  if (target.vendor !== VENDOR_OPENNMS) {
+    items.push({
+      label: 'Delete Source',
+      command: () => store.showDeleteEventConfigSourceModal(target)
+    })
+  }
+  return items
+})
 
-const sort = reactive({
-  name: SORT.NONE,
-  vendor: SORT.NONE,
-  description: SORT.NONE,
-  eventCount: SORT.NONE
-}) as any
+const toggleRowMenu = (event: Event, source: EventConfigSource) => {
+  rowMenuTarget.value = source
+  rowMenu.value?.toggle(event)
+}
 
 const onEventClick = (source: EventConfigSource) => {
   router.push({
@@ -189,22 +200,31 @@ const onEventClick = (source: EventConfigSource) => {
   })
 }
 
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onSourcesSortChange(sortObj.property, sortObj.value)
+const onSort = (event: DataTableSortEvent) => {
+  if (event.sortField) {
+    store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
     store.onSourcesSortChange('createdTime', 'desc')
   }
-
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
 }
 
-const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeSourcesSearchTerm(value)
+const onPage = (event: DataTablePageEvent) => {
+  if (event.rows !== store.sourcesPagination.pageSize) {
+    store.onSourcePageSizeChange(event.rows)
+  } else {
+    store.onSourcePageChange(event.page + 1)
+  }
+}
+
+const debouncedSearch = debounce((value: string) => {
+  store.onChangeSourcesSearchTerm(value)
 }, 500)
+
+const onChangeSearchTerm = (value: string | undefined) => {
+  const term = value ?? ''
+  store.sourcesSearchTerm = term
+  debouncedSearch(term.trim())
+}
 
 onMounted(async () => {
   await store.fetchEventConfigs()
@@ -212,95 +232,91 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
-
 .event-configuration-table {
   margin-top: 10px;
   padding: 25px;
 
   .header {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 20px;
 
     .title-container {
       display: flex;
       align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
     }
 
-    .action-container {
+    .header-content-container {
       display: flex;
-      align-items: flex-start;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: flex-start;
       gap: 5px;
       width: 30%;
 
       .search-container {
-        width: 80%;
+        // width: 80%;
+
+        flex: 0 0 auto;
+        min-width: 30em;
+
+        .search-field {
+          width: 100%;
+
+          // make the input (and its IconField wrapper) fill the field so the
+          // search icon sits at the input's right edge rather than floating far
+          // out in the container
+          :deep(.p-iconfield) {
+            display: block;
+            width: 100%;
+          }
+
+          :deep(.p-inputtext) {
+            width: 100%;
+            padding-right: 2.75rem;
+          }
+
+          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // keep it near the right edge, vertically centered
+          :deep(.p-inputicon) {
+            font-size: 1.75rem;
+            right: 0.625rem;
+            margin-top: -0.875rem;
+          }
+        }
+
+        .refresh {
+          display: flex;
+
+          :deep(.p-inputicon) {
+            font-size: 1.75rem;
+            right: 0.625rem;
+            margin-top: -0.875rem;
+          }
+        }
       }
     }
   }
 
-  .container {
-    table {
-      width: 100%;
-      @include table.table;
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
+  .enabled-tag {
+    border-radius: 4px;
+    background-color: #0B720C1F;
 
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        div {
-          border-radius: 5px;
-          padding: 0px 5px 0px 5px;
-        }
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-      }
+    :deep(.p-tag-label) {
+      color: #0B720C !important;
     }
+  }
 
-    .alerts-pagination {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(variables.$spacing-xxs);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      border-left: 1px solid var(--feather-border-on-surface);
-      border-right: 1px solid var(--feather-border-on-surface);
-    }
+  .disabled-tag {
+    border-radius: 4px;
+    background-color: #7575751F;
 
-    .feather-pagination {
-      border: none !important;
+    :deep(.p-tag-label) {
+      color: #757575 !important;
     }
   }
 }

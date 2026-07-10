@@ -50,7 +50,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;

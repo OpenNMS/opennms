@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="zc-container">
         <div class="content-container">
           <div class="title-container">
@@ -15,70 +15,72 @@
             Register your OpenNMS instance with Zenith in order to send data.
           </div>
           <div class="spacer"></div>
-          <FeatherExpansionPanel
+          <PPanel
+            toggleable
             class="zc-register-steps-expansion-panel"
           >
-            <template #title>
+            <template #header>
               <h4>Steps</h4>
             </template>
-            <template #default>
-              <div class="instructions">
-                <ul>
-                  <li>Confirm the Zenith Connect URL below. If desired, modify the display name for your OpenNMS instance.</li>
-                  <li>Click Connect to Zenith</li>
-                  <li>You will then be directed to Zenith to login with the Zenith user associated with your OpenNMS instance.</li>
-                  <li>Zenith will register your user. You may need to enter your Zenith password again.</li>
-                  <li>Zenith will display your Refresh Token which OpenNMS will need to connect with Zenith.</li>
-                  <li>You can copy the token to the clipboard and manually enter it into OpenNMS, or...</li>
-                  <li>
-                    You will be given a link to return to OpenNMS which will automatically save this token in OpenNMS for you. Note, you
-                    may need to open a separate tab, log into OpenNMS, then copy that link into that same browser tab for this to work.
-                  </li>
-                </ul>
-              </div>
-            </template>
-          </FeatherExpansionPanel>
-
-          <div class="spacer"></div>
-          <div>
-            <div>
-              <FeatherInput
-                label="Zenith Connect URL"
-                @update:modelValue="(val: any) => zenithUrl = String(val)"
-                :modelValue="zenithUrl"
-                class="input"
-              />
+            <div class="instructions">
+              <ul>
+                <li>Confirm the Zenith Connect URL below. If desired, modify the display name for your OpenNMS instance.</li>
+                <li>Click Connect to Zenith</li>
+                <li>You will then be directed to Zenith to login with the Zenith user associated with your OpenNMS instance.</li>
+                <li>Zenith will register your user. You may need to enter your Zenith password again.</li>
+                <li>Zenith will display your Refresh Token which OpenNMS will need to connect with Zenith.</li>
+                <li>You can copy the token to the clipboard and manually enter it into OpenNMS, or...</li>
+                <li>
+                  You will be given a link to return to OpenNMS which will automatically save this token in OpenNMS for you. Note, you
+                  may need to open a separate tab, log into OpenNMS, then copy that link into that same browser tab for this to work.
+                </li>
+              </ul>
             </div>
-            <div>
-              <FeatherInput
-                label="OpenNMS System ID"
-                :disabled="true"
+          </PPanel>
+
+          <div class="form-fields">
+            <FormField
+              class="input"
+              label="Zenith Connect URL"
+              for="zc-url"
+            >
+              <PInputText
+                id="zc-url"
+                v-model="zenithUrl"
+              />
+            </FormField>
+            <FormField
+              class="input"
+              label="OpenNMS System ID"
+              for="zc-system-id"
+            >
+              <PInputText
+                id="zc-system-id"
                 :modelValue="systemId"
-                class="input"
+                disabled
               />
-            </div>
-            <div>
-              <FeatherInput
-                label="OpenNMS System Display Name"
-                @update:modelValue="(val: any) => displayName = String(val)"
-                :modelValue="displayName"
-                class="input"
+            </FormField>
+            <FormField
+              class="input"
+              label="OpenNMS System Display Name"
+              for="zc-display-name"
+            >
+              <PInputText
+                id="zc-display-name"
+                v-model="displayName"
               />
-            </div>
+            </FormField>
             <div class="btns">
-              <FeatherButton
-                primary
+              <PButton
+                label="Register with Zenith"
                 @click="onRegisterWithZenith"
-              >
-                  Register with Zenith
-              </FeatherButton>
+              />
 
-              <FeatherButton
-                secondary
+              <PButton
+                outlined
+                label="View Registrations"
                 @click="onViewRegistrations"
-              >
-                  View Registrations
-              </FeatherButton>
+              />
             </div>
           </div>
         </div>
@@ -91,14 +93,19 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherExpansionPanel } from '@featherds/expansion'
-import { FeatherInput } from '@featherds/input'
+import Button from 'primevue/button'
+import Panel from 'primevue/panel'
+import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
+
+const PButton = Button
+const PPanel = Panel
+const PInputText = InputText
 
 const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
@@ -189,10 +196,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
 
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .zc-container {
@@ -221,6 +227,14 @@ onMounted(async () => {
         width: 95%;
       }
 
+      .form-fields {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3em;
+        margin-top: 3em;
+      }
+
       .input {
         width: 50%;
       }
@@ -232,6 +246,7 @@ onMounted(async () => {
       .btns {
         display: flex;
         flex-direction: row;
+        gap: 0.5rem;
       }
     }
   }

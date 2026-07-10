@@ -21,10 +21,12 @@
  */
 package org.opennms.netmgt.collectd.prometheus;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setSSLContextIfConfigured;
 import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.apache.http.Header;
@@ -102,7 +104,7 @@ public class PrometheusScraper {
     }
 
 
-    public static HttpClientWrapper createHttpClientFromParmMap(Map<String, Object> parameters) {
+    public static HttpClientWrapper createHttpClientFromParmMap(Map<String, Object> parameters) throws IOException {
         // Timeouts and retries
         HttpClientWrapper clientWrapper = HttpClientWrapper.create()
                 .setConnectionTimeout(ParameterMap.getKeyedInteger(parameters, ServiceParameters.ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT_MS))
@@ -110,6 +112,12 @@ public class PrometheusScraper {
                 .setRetries(ParameterMap.getKeyedInteger(parameters, ServiceParameters.ParameterName.RETRY.toString(), DEFAULT_RETRY_COUNT));
         // Proxy support
         setUseSystemProxyIfDefined(clientWrapper, parameters);
+        // Custom trust anchors and/or client certificate (mutual TLS)
+        try {
+            setSSLContextIfConfigured(clientWrapper, parameters);
+        } catch (GeneralSecurityException e) {
+            throw new IOException("Failed to configure TLS from the service parameters", e);
+        }
         return clientWrapper;
     }
 }
