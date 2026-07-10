@@ -86,7 +86,7 @@ public class EchoRpcThreadIT extends org.opennms.core.rpc.camel.EchoRpcThreadIT 
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
 }

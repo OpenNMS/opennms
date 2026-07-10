@@ -5,73 +5,92 @@
     </div>
     <div class="spacer"></div>
     <div class="alarm-check">
-      <FeatherCheckbox
-        :model-value="enableAlarmData"
+      <Checkbox
+        :modelValue="enableAlarmData"
+        binary
+        inputId="add-alarm-data-checkbox"
         @update:model-value="$emit('setAlarmData', 'addAlarmData', $event)"
-      >
-        Add Alarm Data
-      </FeatherCheckbox>
+      />
+      <label for="add-alarm-data-checkbox">Add Alarm Data</label>
     </div>
     <div class="spacer"></div>
     <div v-if="enableAlarmData">
       <div class="dropdown">
-        <label class="label">Alarm Type:</label>
-        <div class="spacer"></div>
-        <FeatherSelect
+        <FormField
           label="Alarm Type"
-          hint="Select the alarm type."
-          data-test="alarm-type"
+          :for="alarmTypeId"
           :error="errors.alarmType"
-          :options="AlarmTypeOptions"
-          :model-value="selectedEventAlarmType"
-          @update:model-value="$emit('setAlarmData', 'alarmType', $event)"
+          hint="Select the alarm type."
         >
-          <FeatherIcon :icon="MoreVert" />
-        </FeatherSelect>
+          <Select
+            :inputId="alarmTypeId"
+            :options="AlarmTypeOptions"
+            optionLabel="_text"
+            showClear
+            data-test="alarm-type"
+            :invalid="!!errors.alarmType"
+            :modelValue="selectedEventAlarmType?._value ? selectedEventAlarmType : null"
+            @update:model-value="$emit('setAlarmData', 'alarmType', $event)"
+            fluid
+          />
+        </FormField>
       </div>
       <div class="spacer"></div>
-      <FeatherCheckbox
-        :model-value="autoClean"
-        @update:model-value="$emit('setAlarmData', 'autoClean', $event)"
-      >
-        Auto Clean
-      </FeatherCheckbox>
+      <div class="alarm-check">
+        <Checkbox
+          :modelValue="autoClean"
+          binary
+          inputId="auto-clean-checkbox"
+          @update:model-value="$emit('setAlarmData', 'autoClean', $event)"
+        />
+        <label for="auto-clean-checkbox">Auto Clean</label>
+      </div>
       <div class="spacer"></div>
-      <div class="label">Alarm Reduction Key:</div>
-      <div class="spacer"></div>
-      <FeatherInput
-        label=""
-        hint="Provide the reduction key for the alarm."
-        :model-value="alarmReductionKey"
-        data-test="alarm-reduction-key"
-        @update:model-value="$emit('setAlarmData', 'reductionKey', $event)"
+      <FormField
+        label="Alarm Reduction Key"
+        :for="reductionKeyId"
         :error="errors?.reductionKey"
-      />
+        hint="Provide the reduction key for the alarm."
+      >
+        <InputText
+          :id="reductionKeyId"
+          :modelValue="alarmReductionKey"
+          data-test="alarm-reduction-key"
+          :invalid="!!errors?.reductionKey"
+          fluid
+          @update:model-value="$emit('setAlarmData', 'reductionKey', $event)"
+        />
+      </FormField>
       <div class="spacer"></div>
-      <div class="label">Alarm Clear Key:</div>
-      <div class="spacer"></div>
-      <FeatherInput
-        label=""
-        hint="Provide the clear key for the alarm."
-        :model-value="alarmClearKey"
-        data-test="alarm-clear-key"
-        @update:model-value="$emit('setAlarmData', 'clearKey', $event)"
+      <FormField
+        label="Alarm Clear Key"
+        :for="clearKeyId"
         :error="errors.clearKey"
-      />
+        hint="Provide the clear key for the alarm."
+      >
+        <InputText
+          :id="clearKeyId"
+          :modelValue="alarmClearKey"
+          data-test="alarm-clear-key"
+          :invalid="!!errors.clearKey"
+          fluid
+          @update:model-value="$emit('setAlarmData', 'clearKey', $event)"
+        />
+      </FormField>
       <div class="spacer"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherIcon } from '@featherds/icon'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@featherds/select'
+import Checkbox from 'primevue/checkbox'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'
 
 defineEmits<{ (e: 'setAlarmData', key: string, value: any): void }>()
@@ -83,8 +102,10 @@ const props = defineProps<{
   clearKey: string,
   errors: EventFormErrors
 }>()
+const alarmTypeId = useId()
+const reductionKeyId = useId()
+const clearKeyId = useId()
 const enableAlarmData = ref(false)
-const enableAutoClean = ref(false)
 const alarmReductionKey = ref('')
 const alarmClearKey = ref('')
 const selectedEventAlarmType = ref<ISelectItemType>({ _text: '', _value: '' })
@@ -92,7 +113,6 @@ const selectedEventAlarmType = ref<ISelectItemType>({ _text: '', _value: '' })
 watch(() => props, (newVal) => {
   enableAlarmData.value = newVal.addAlarmData
   alarmReductionKey.value = newVal.reductionKey
-  enableAutoClean.value = newVal.autoClean
   alarmClearKey.value = newVal.clearKey
   selectedEventAlarmType.value = {
     _text: newVal.alarmType._text,
@@ -113,6 +133,12 @@ watch(() => props, (newVal) => {
 
   .dropdown {
     width: 50%;
+  }
+
+  .alarm-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 }
 </style>

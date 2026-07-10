@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row doc-row">
-    <div class="feather-col-12">
+  <div class="onms-row doc-row">
+    <div class="onms-col-12">
       <rapi-doc
         id="thedoc"
         ref="doc"
@@ -18,8 +18,8 @@
       />
     </div>
   </div>
-   <div class="feather-row doc-row">
-      <div class="feather-col-12">
+   <div class="onms-row doc-row">
+      <div class="onms-col-12">
         <rapi-doc
           id="thedocV1"
           ref="docV1"

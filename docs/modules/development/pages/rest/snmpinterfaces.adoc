@@ -24,11 +24,11 @@ Examples:
 
 Example:
 
-Get SNMP interfaces whose node are in the foreign source `Servers` and are associated with IP address `127.0.0.1`:
+Get SNMP interfaces whose node is in the foreign source `Servers` with an `ifIndex` of `6`:
 
 [source, bash]
 ----
-curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node.foreignSource==Servers;ipInterfaces.ipAddress=127.0.0.1"
+curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node.foreignSource==Servers;ifIndex==6"
 ----
 
 == PUTs/POSTs (modifying data)

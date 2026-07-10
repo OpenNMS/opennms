@@ -9,14 +9,14 @@
             event description:
           </p>
         </div>
-        <FeatherButton
-          secondary
+        <Button
+          outlined
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
           data-test="add-varbind-row-button"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
       <div
         v-for="(row, index) in varbindsDecodeElements"
@@ -25,31 +25,40 @@
       >
         <div class="parm-field">
           <div class="input-field">
-            <FeatherInput
-              label="Parm ID"
-              :model-value="row.parmId"
-              @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
-              data-test="varbind-index-input"
+            <FormField
+              :for="`varbind-parmid-${index}`"
               :error="errors.varbindsDecode?.[index]?.parmId"
-            />
+            >
+              <InputText
+                :id="`varbind-parmid-${index}`"
+                :modelValue="row.parmId"
+                @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
+                data-test="varbind-index-input"
+                :invalid="!!errors.varbindsDecode?.[index]?.parmId"
+                fluid
+                placeholder="Parm ID"
+                :aria-label="'Parm ID'"
+              />
+            </FormField>
           </div>
           <div class="action-btns">
-            <FeatherButton
+            <Button
               class="remove"
-              secondary
+              outlined
+              severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeVarbindDecodeRow', null, index, -1)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
-            <FeatherButton
-              secondary
+            </Button>
+            <Button
+              outlined
               data-test="add-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'addDecodeRow', null, index, -1)"
             >
               <FeatherIcon :icon="Add" />
               Add Decode
-            </FeatherButton>
+            </Button>
           </div>
         </div>
         <div
@@ -58,34 +67,51 @@
           class="decode-field"
         >
           <div class="input-field">
-            <FeatherInput
-              label="Varbind Value"
-              type="number"
-              min="0"
-              :model-value="decodeRow.value"
-              @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
-              data-test="varbind-value-input"
+            <FormField
+              :for="`decode-value-${index}-${decodeIndex}`"
               :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
-            />
+            >
+              <InputText
+                :id="`decode-value-${index}-${decodeIndex}`"
+                type="number"
+                min="0"
+                :modelValue="decodeRow.value"
+                @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
+                data-test="varbind-value-input"
+                :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
+                fluid
+                placeholder="Varbind Value"
+                :aria-label="'Varbind Value'"
+              />
+            </FormField>
           </div>
           <div class="value-field">
             <div class="input-field">
-              <FeatherInput
-                label="Decoded String"
-                :model-value="decodeRow.key"
-                @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
-                data-test="varbind-value-input"
+              <FormField
+                :for="`decode-key-${index}-${decodeIndex}`"
                 :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
-              />
+              >
+                <InputText
+                  :id="`decode-key-${index}-${decodeIndex}`"
+                  :modelValue="decodeRow.key"
+                  @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
+                  data-test="decode-key-input"
+                  :invalid="!!errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
+                  fluid
+                  placeholder="Decoded String"
+                  :aria-label="'Decoded String'"
+                />
+              </FormField>
             </div>
-            <FeatherButton
+            <Button
               class="remove"
-              secondary
+              outlined
+              severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeDecodeRow', null, index, decodeIndex)"
             >
               <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            </Button>
           </div>
         </div>
       </div>
@@ -97,11 +123,12 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
@@ -154,26 +181,6 @@ watch(varbindsDecode, (newVarbindsDecode) => {
         display: flex;
         align-items: center;
         gap: 10px;
-
-        button {
-          margin: 0px;
-        }
-
-        .remove {
-          min-width: 40px !important;
-          height: 40px !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 0px;
-
-          span {
-            svg {
-              fill: #a5021f;
-              font-size: 22px;
-            }
-          }
-        }
       }
     }
 
@@ -196,24 +203,9 @@ watch(varbindsDecode, (newVarbindsDecode) => {
         .input-field {
           width: 100%;
         }
-
-        .remove {
-          min-width: 40px !important;
-          height: 40px !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 0px;
-
-          span {
-            svg {
-              fill: #a5021f;
-              font-size: 22px;
-            }
-          }
-        }
       }
     }
   }
+
 }
 </style>

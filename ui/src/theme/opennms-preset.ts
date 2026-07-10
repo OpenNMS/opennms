@@ -62,6 +62,16 @@ const OpenNMSPreset = definePreset(Aura, {
       800: '#131736',
       900: '#0a0c1b'
     },
+    // Semantic status colors. Components must reference these (var(--p-success-color)
+    // etc.) for anything with status meaning, rather than the raw palette primitives
+    // (--p-green-500 …), so a theme can remap status colors in one place. Names mirror
+    // PrimeVue's Toast/Message severities (success / info / warn / error) so the same
+    // vocabulary applies to component CSS and to severity props. These replace the old
+    // FeatherDS $success / $error / $warning vars.
+    success: { color: '{green.500}' },
+    info: { color: '{blue.500}' },
+    warn: { color: '{yellow.500}' },
+    error: { color: '{red.500}' },
     colorScheme: {
       light: {
         primary: {
@@ -160,6 +170,13 @@ const OpenNMSPreset = definePreset(Aura, {
     }
   },
   components: {
+    // IftaLabel (in-field top-aligned label). Aura's label font is 0.75rem which
+    // reads too small next to the input value; bump to 1rem and add a little more
+    // input top padding so the value clears the larger label.
+    iftalabel: {
+      root: { fontSize: '0.9rem' },
+      input: { paddingTop: '1.75rem' }
+    },
     // DataTable rows/body inherit the bridged `content.*` tokens. Headers in the
     // FeatherDS look use the (muted) background + secondary text, and the border
     // color is set explicitly because Aura's dark scheme hardcodes it to a
@@ -205,6 +222,25 @@ const OpenNMSPreset = definePreset(Aura, {
           secondary: { detailColor: 'rgba(255, 255, 255, 0.9)' },
           contrast: { detailColor: 'rgba(255, 255, 255, 0.9)' }
         }
+      }
+    },
+    // Tooltip. Aura's dark scheme sets the tooltip text color to {surface.0},
+    // expecting a light surface — but our preset maps surface.0 to the dark navy
+    // (#15182B), which is unreadable on the dark-gray tooltip background. Force a
+    // light color in dark mode.
+    tooltip: {
+      colorScheme: {
+        dark: { root: { color: 'rgba(255, 255, 255, 0.9)' }}
+      }
+    },
+    // Outlined buttons: Aura draws the border from a faint primary shade
+    // (primary.200 in light, primary.700 in dark) which is low-contrast against
+    // the surface. Use the button's own (primary) text color so the outline is as
+    // distinct as the label. Border width is bumped to 2px in primevue-overrides.scss.
+    button: {
+      colorScheme: {
+        light: { outlined: { primary: { borderColor: '{primary.color}' }}},
+        dark: { outlined: { primary: { borderColor: '{primary.color}' }}}
       }
     }
   }

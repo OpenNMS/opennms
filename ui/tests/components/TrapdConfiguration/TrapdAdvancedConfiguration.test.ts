@@ -5,6 +5,7 @@ import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { showSnackBarMock, downloadFileMock } = vi.hoisted(() => ({
@@ -45,6 +46,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
   const mountComponent = () =>
     mount(TrapdAdvancedConfiguration, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           ConfirmationDialog: {
             template: `<div class="confirmation-dialog" v-if="visible">
@@ -53,9 +55,6 @@ describe('TrapdAdvancedConfiguration.vue', () => {
               <button data-test="cancel-btn" @click="$emit('cancel')">Cancel</button>
             </div>`,
             props: ['visible', 'title', 'actionButtonText']
-          },
-          FeatherButton: {
-            template: '<button @click="$emit(\'click\')"><slot /><slot name="icon" /></button>'
           },
           FeatherIcon: true
         }

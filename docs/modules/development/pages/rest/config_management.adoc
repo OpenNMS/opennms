@@ -13,6 +13,15 @@ Changes take effect immediately.
 |===
 | Resource  | Description
 
+| /cm
+| Returns a list of all registered configuration names in JSON format (for example, `["provisiond", "org.opennms.features.datachoices"]`). +
+200: Return: String Array
+
+| /cm/schema
+| Returns the full OpenAPI schema (for Swagger UI) for all registered configurations, in JSON/YAML format depending on the `Accept` header. +
+200: Return: OpenAPI schema +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
+
 | /cm/\{configName}
 | Returns a list of `configIds` in JSON/YAML format, (for example, `["config1", "config2"]`). +
 200: Return: String Array +
@@ -70,7 +79,9 @@ Returns 400 when the path parameter has a wrong format, specifies a nonexistent 
 
 | /cm/\{configName}/\{configId}
 |  Update configuration.
-If configuration does not exist, it will return error. +
+If configuration does not exist, it will return error.
+Accepts an optional `replace` query parameter (`?replace=true` or `?replace=false`, default `false`).
+When `replace=false`, the supplied JSON is merged into the existing configuration; when `replace=true`, the existing configuration is fully replaced by the supplied JSON. +
 200: Return: nothing +
 400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 

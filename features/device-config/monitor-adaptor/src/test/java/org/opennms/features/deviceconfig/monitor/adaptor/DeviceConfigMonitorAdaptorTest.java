@@ -98,6 +98,14 @@ public class DeviceConfigMonitorAdaptorTest {
         Mockito.lenient()
                .when(deviceConfigDao.findStaleConfigs(any(), any(), any(), any()))
                .thenReturn(Collections.emptyList());
+
+        // The production adaptor now performs its DAO writes inside SessionUtils.withTransaction(...);
+        // make the mock actually execute the supplied work so those code paths run under test.
+        // (SessionUtils overloads withTransaction(Supplier) and withTransaction(Runnable) — match
+        // the Supplier overload the adaptor uses.)
+        Mockito.lenient()
+               .when(sessionUtils.withTransaction(any(java.util.function.Supplier.class)))
+               .thenAnswer(inv -> ((java.util.function.Supplier<?>) inv.getArgument(0)).get());
     }
 
     // -------------------------------------------------------------------------

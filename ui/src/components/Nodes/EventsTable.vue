@@ -1,111 +1,97 @@
 <template>
-  <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12 headline3">Recent Events</div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
-        <table
-          class="tl1 tl2 tl3 tl4"
-          summary="Recent Events"
-        >
-          <thead>
-            <tr>
-              <th scope="col">Id</th>
-              <th scope="col">Created</th>
-              <th scope="col">Severity</th>
-              <th scope="col">Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="event in events"
-              :key="event.id"
-              :class="getRowClass(event)"
-            >
-              <td>
-                <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
-              </td>
-              <td v-date>{{ event.createTime }}</td>
-              <td>{{ event.severity }}</td>
-              <td>
-                <span
-                  v-html="event.logMessage"
-                  class="log-message"
-                ></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <Pagination
-      :parameters="queryParameters"
-      @update-query-parameters="updateQueryParameters"
-      :query="getEvents"
-      :getTotalCount="getEventsTotalCount"
-    />
-  </div>
+  <DataTable
+    lazy
+    :value="eventStore.events"
+    paginator
+    :rows="pageSize"
+    :first="first"
+    :totalRecords="eventStore.totalCount"
+    :rowsPerPageOptions="[5, 10, 20, 50]"
+    data-test="events-table"
+    @page="onPage"
+  >
+    <Column field="id" header="Id">
+      <template #body="{ data }">
+        <router-link :to="`/event/${data.id}`">{{ data.id }}</router-link>
+      </template>
+    </Column>
+    <Column field="createTime" header="Created">
+      <template #body="{ data }">
+        <span v-date>{{ data.createTime }}</span>
+      </template>
+    </Column>
+    <Column field="severity" header="Severity">
+      <template #body="{ data }">
+        <Tag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
+      </template>
+    </Column>
+    <Column field="logMessage" header="Message">
+      <template #body="{ data }">
+        <span v-html="data.logMessage" class="log-message" />
+      </template>
+    </Column>
+    <template #empty>
+      <EmptyList :content="emptyListContent" data-test="empty-list" />
+    </template>
+  </DataTable>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import { computed } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
-import Pagination from '../Common/Pagination.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import { type DataTablePageEvent } from 'primevue/datatable'
+import Tag from 'primevue/tag'
+import EmptyList from '@/components/Common/EmptyList.vue'
 import { useEventStore } from '@/stores/eventStore'
-import useQueryParameters from '@/composables/useQueryParams'
-import { Event, QueryParameters } from '@/types'
 
 const eventStore = useEventStore()
 const route = useRoute()
 
-const getEvents = async (payload: QueryParameters) => {
-  eventStore.getEvents(payload)
+const pageSize = ref(5)
+const first = ref(0)
+const emptyListContent = { msg: 'No results found.' }
+
+const severityMap: Record<string, string> = {
+  critical: 'danger',
+  major: 'danger',
+  minor: 'warn',
+  warning: 'warn',
+  normal: 'success',
+  cleared: 'success',
+  indeterminate: 'secondary'
 }
 
-const getEventsTotalCount = () => {
-  return eventStore.totalCount
-}
-
-const { queryParameters, updateQueryParameters } = useQueryParameters({
+const queryParameters = ref({
   limit: 5,
   offset: 0,
   _s: `node.id==${route.params.id}`
-}, getEvents)
+})
 
-const events = computed(() => eventStore.events)
-const getRowClass = (data: Event) => data.severity.toLowerCase()
+const onPage = (event: DataTablePageEvent) => {
+  first.value = event.first
+  pageSize.value = event.rows
+  queryParameters.value = {
+    ...queryParameters.value,
+    offset: event.first,
+    limit: event.rows,
+    _s: `node.id==${route.params.id}`
+  }
+  eventStore.getEvents(queryParameters.value)
+}
+
+onMounted(() => {
+  eventStore.getEvents(queryParameters.value)
+})
+
+defineExpose({ onPage })
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/elevation";
-.card {
-  @include elevation(2);
-  padding: 15px;
-  margin-bottom: 15px;
-}
-table {
-  @include table;
-}
+<style lang="scss" scoped>
 .log-message {
   p {
-    margin: 0px;
+    margin: 0;
   }
-}
-.warning {
-  background: rgba(255, 175, 34, 0.5);
-  color: var($state-color-on-surface);
-}
-.normal {
-  background: rgba(133, 217, 165, 0.5);
-  color: var($state-color-on-surface);
 }
 </style>

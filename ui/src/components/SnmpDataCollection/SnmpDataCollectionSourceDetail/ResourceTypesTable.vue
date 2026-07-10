@@ -3,27 +3,31 @@
     <div class="header">
       <div class="section-left">
         <div class="search-container">
-          <FeatherInput
-            label="Search"
-            type="search"
-            data-test="search-input"
-            v-model.trim="store.resourceTypesSearchTerm"
-            :hint="'Search by Name or Label'"
-            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
-          >
-            <template #pre>
-              <FeatherIcon :icon="Search" />
-            </template>
-          </FeatherInput>
+          <FormField>
+            <IconField>
+              <InputText
+                :id="searchId"
+                :modelValue="store.resourceTypesSearchTerm"
+                @update:modelValue="onChangeSearchTerm"
+                data-test="search-input"
+                placeholder="Search by Name or Label"
+                :aria-label="'Search by Name or Label'"
+              />
+              <InputIcon>
+                <FeatherIcon :icon="Search" />
+              </InputIcon>
+            </IconField>
+          </FormField>
         </div>
         <div class="refresh">
-          <FeatherButton
-            icon="Refresh"
+          <Button
+            text
+            title="Refresh"
             data-test="refresh-button"
             @click="store.resetResourceTypesFilters"
           >
-            <FeatherIcon :icon="Refresh"> </FeatherIcon>
-          </FeatherButton>
+            <FeatherIcon :icon="Refresh" />
+          </Button>
         </div>
       </div>
       <div class="section-right">
@@ -31,145 +35,107 @@
           class="add"
           v-if="!isPluginSourced(store.selectedCollectionSource)"
         >
-          <FeatherButton
-            secondary
+          <Button
+            outlined
+            label="Add Resource Type"
             data-test="add-resource-type-button"
             @click="store.openResourceTypeCreationDrawer(null, CreateEditMode.Create)"
-          >
-            Add Resource Type
-          </FeatherButton>
+          />
         </div>
       </div>
     </div>
-    <div class="container">
-      <table
-        class="data-table"
-        aria-label="Events Table"
-        v-if="store.resourceTypes.length"
+
+    <DataTable
+      v-if="store.resourceTypes.length"
+      :value="store.resourceTypes"
+      lazy
+      paginator
+      dataKey="id"
+      :rows="store.resourceTypesPagination.pageSize"
+      :totalRecords="store.resourceTypesPagination.total"
+      :first="(store.resourceTypesPagination.page - 1) * store.resourceTypesPagination.pageSize"
+      :rowsPerPageOptions="[10, 20, 30]"
+      :sortField="store.resourceTypesSorting.sortKey"
+      :sortOrder="store.resourceTypesSorting.sortOrder === 'asc' ? 1 : -1"
+      v-model:expandedRows="expandedRows"
+      @page="onPage"
+      @sort="onSort"
+      class="data-table"
+      data-test="resource-types-table"
+    >
+      <Column
+        expander
+        style="width: 3rem"
+      />
+      <Column
+        field="name"
+        header="Name"
+        sortable
+      />
+      <Column
+        field="label"
+        header="Label"
+        sortable
+      />
+      <Column
+        field="resourceLabel"
+        header="Resource Label"
+        sortable
+      />
+      <Column
+        field="enabled"
+        header="Status"
+        sortable
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
+        <template #body="{ data }">
+          <Tag
+            :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="data.enabled ? 'Enabled' : 'Disabled'"
+            data-test="status-tag"
+          />
+        </template>
+      </Column>
+      <Column header="Actions">
+        <template #body="{ data }">
+          <div class="action-container">
+            <Button
+              v-if="!isPluginSourced(store.selectedCollectionSource)"
+              text
+              :title="`Edit ${data.name}`"
+              data-test="edit-button"
+              @click="onResourceTypeEditClicked(data)"
             >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
-        >
-          <template
-            v-for="resourceType in store.resourceTypes"
-            :key="resourceType.id"
-          >
-            <tr>
-              <td>{{ resourceType.name }}</td>
-              <td>{{ resourceType.label }}</td>
-              <td>{{ resourceType.resourceLabel }}</td>
-              <td>
-                <div class="tag">
-                  <FeatherChip
-                    :class="resourceType.enabled ? 'enabled-tag' : 'disabled-tag'"
-                    data-test="status-tag"
-                  >
-                    {{ resourceType.enabled ? 'Enabled' : 'Disabled' }}
-                  </FeatherChip>
-                </div>
-              </td>
-              <td>
-                <div class="action-container">
-                  <FeatherButton
-                    v-if="!isPluginSourced(store.selectedCollectionSource)"
-                    icon="Edit"
-                    :title="`Edit ${resourceType.name}`"
-                    data-test="edit-button"
-                    @click="onResourceTypeEditClicked(resourceType)"
-                  >
-                    <FeatherIcon :icon="Edit" />
-                  </FeatherButton>
-                  <FeatherDropdown>
-                    <template v-slot:trigger="{ attrs, on }">
-                      <FeatherButton
-                        link
-                        href="#"
-                        v-bind="attrs"
-                        v-on="on"
-                        :icon="`More Options`"
-                      >
-                        <FeatherIcon :icon="MenuIcon" />
-                      </FeatherButton>
-                    </template>
-                    <FeatherDropdownItem
-                      data-test="change-status-button"
-                      @click="openChangeStatusDialog(resourceType)"
-                    >
-                      {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
-                    </FeatherDropdownItem>
-                    <FeatherDropdownItem
-                      v-if="!isPluginSourced(store.selectedCollectionSource)"
-                      data-test="delete-resource-type-button"
-                      @click="openResourceTypeDeleteDialog(resourceType)"
-                    >
-                      Delete Resource Type
-                    </FeatherDropdownItem>
-                  </FeatherDropdown>
-                  <FeatherButton
-                    primary
-                    :icon="`${expandedRows.includes(resourceType.id)
-                    ? 'Expand Less'
-                    : 'Expand More'
-                    }`"
-                    @click="toggleExpand(resourceType.id)"
-                  >
-                    <FeatherIcon
-                      :icon="ExpandLess"
-                      v-if="expandedRows.includes(resourceType.id)"
-                    />
-                    <FeatherIcon
-                      :icon="ExpandMore"
-                      v-else
-                    />
-                  </FeatherButton>
-                </div>
-              </td>
-            </tr>
-            <tr
-              v-if="expandedRows.includes(resourceType.id)"
-              class="expanded-content"
+              <FeatherIcon :icon="Edit" />
+            </Button>
+            <Button
+              text
+              aria-haspopup="true"
+              aria-controls="resource-type-row-menu"
+              data-test="row-menu-button"
+              @click="toggleRowMenu($event, data)"
             >
-              <td :colspan="5">
-                <h6>Storage Strategy:</h6>
-                <p class="description">{{ resourceType.storageStrategy }}</p>
-                <h6>Persistence Selector Strategy:</h6>
-                <p class="description">{{ resourceType.persistenceSelectorStrategy }}</p>
-              </td>
-            </tr>
-          </template>
-        </TransitionGroup>
-      </table>
-      <div
-        class="alerts-pagination"
-        v-if="store.resourceTypes.length"
-      >
-        <FeatherPagination
-          :modelValue="store.resourceTypesPagination.page"
-          :pageSize="store.resourceTypesPagination.pageSize"
-          :total="store.resourceTypesPagination.total"
-          :pageSizes="[10, 20, 30]"
-          @update:modelValue="store.onResourceTypesPageChange"
-          @update:pageSize="store.onResourceTypesPageSizeChange"
-          data-test="FeatherPagination"
-        />
-      </div>
-    </div>
+              <FeatherIcon :icon="MenuIcon" />
+            </Button>
+          </div>
+        </template>
+      </Column>
+      <template #expansion="{ data }">
+        <div class="expanded-content">
+          <h6>Storage Strategy:</h6>
+          <p class="description">{{ data.storageStrategy }}</p>
+          <h6>Persistence Selector Strategy:</h6>
+          <p class="description">{{ data.persistenceSelectorStrategy }}</p>
+        </div>
+      </template>
+    </DataTable>
+
+    <Menu
+      id="resource-type-row-menu"
+      ref="rowMenu"
+      :model="rowMenuItems"
+      popup
+    />
+
     <div v-if="!store.resourceTypes.length">
       <EmptyList :content="{ msg: 'No Resource Types found.' }" />
     </div>
@@ -193,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
@@ -201,76 +167,96 @@ import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
-import ExpandLess from '@featherds/icon/navigation/ExpandLess'
-import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
+import Tag from 'primevue/tag'
 import EmptyList from '../../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import ResourceTypeCreationDrawer from './Drawer/ResourceTypeCreationDrawer.vue'
 import SnmpDataCollectionChangeStatusDialog from '../../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 
+type SelectedResourceType = { id: number; name: string, enabled: boolean }
+
 const store = useSnmpDataCollectionDetailStore()
-const expandedRows = ref<number[]>([])
+const searchId = useId()
+const expandedRows = ref<Record<string | number, boolean>>({})
 const isDeleteDialogVisible = ref(false)
 const isChangeStatusDialogVisible = ref(false)
-const selectedResourceType = ref<{ id: number; name: string, enabled: boolean } | null>(null)
+const selectedResourceType = ref<SelectedResourceType | null>(null)
 const snackbar = useSnackbar()
-const columns = computed(() => [
-  { id: 'name', label: 'Name' },
-  { id: 'label', label: 'Label' },
-  { id: 'resourceLabel', label: 'Resource Label' },
-  { id: 'enabled', label: 'Status' }
-])
 
-const sort = reactive({
-  name: SORT.NONE,
-  label: SORT.NONE,
-  resourceLabel: SORT.NONE,
-  enabled: SORT.NONE
-}) as any
+const rowMenu = ref()
+const rowMenuTarget = ref<SnmpCollectionResourceType | null>(null)
+const rowMenuItems = computed<MenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  const items: MenuItem[] = [
+    {
+      label: target.enabled ? 'Disable Resource Type' : 'Enable Resource Type',
+      command: () => openChangeStatusDialog(target)
+    }
+  ]
+  if (!isPluginSourced(store.selectedCollectionSource)) {
+    items.push({
+      label: 'Delete Resource Type',
+      command: () => openResourceTypeDeleteDialog(target)
+    })
+  }
+  return items
+})
+
+const toggleRowMenu = (event: Event, resourceType: SnmpCollectionResourceType) => {
+  rowMenuTarget.value = resourceType
+  rowMenu.value?.toggle(event)
+}
 
 const onResourceTypeEditClicked = (resourceType: SnmpCollectionResourceType) => {
   store.openResourceTypeCreationDrawer(resourceType, CreateEditMode.Edit)
 }
 
-const toggleExpand = (id: number) => {
-  const index = expandedRows.value.indexOf(id)
-  if (index === -1) {
-    expandedRows.value.push(id)
-  } else {
-    expandedRows.value.splice(index, 1)
-  }
-}
-
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    store.onResourceTypesSortChange(sortObj.property, sortObj.value)
+const onSort = (event: DataTableSortEvent) => {
+  if (event.sortField) {
+    store.onResourceTypesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
     store.onResourceTypesSortChange('createdTime', 'desc')
   }
-
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
 }
 
-const onChangeSearchTerm = debounce(async (value: string) => {
-  await store.onChangeResourceTypesSearchTerm(value)
+const onPage = (event: DataTablePageEvent) => {
+  if (event.rows !== store.resourceTypesPagination.pageSize) {
+    store.onResourceTypesPageSizeChange(event.rows)
+  } else {
+    store.onResourceTypesPageChange(event.page + 1)
+  }
+}
+
+const debouncedSearch = debounce((value: string) => {
+  store.onChangeResourceTypesSearchTerm(value)
 }, 500)
 
-const openResourceTypeDeleteDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+const onChangeSearchTerm = (value: string | undefined) => {
+  const term = value ?? ''
+  store.resourceTypesSearchTerm = term
+  debouncedSearch(term.trim())
+}
+
+const openResourceTypeDeleteDialog = (resourceType: SelectedResourceType | null) => {
   selectedResourceType.value = resourceType
   isDeleteDialogVisible.value = true
 }
@@ -280,7 +266,7 @@ const closeDeleteResourceTypeDialog = () => {
   isDeleteDialogVisible.value = false
 }
 
-const openChangeStatusDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+const openChangeStatusDialog = (resourceType: SelectedResourceType | null) => {
   selectedResourceType.value = resourceType
   isChangeStatusDialogVisible.value = true
 }
@@ -353,11 +339,6 @@ const changeResourceTypeStatus = async (selected: { id: number; name: string } |
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
-
 .resource-types-table-container {
   margin-top: 10px;
 
@@ -368,94 +349,47 @@ const changeResourceTypeStatus = async (selected: { id: number; name: string } |
 
     .section-left {
       display: flex;
+      align-items: center;
       gap: 10px;
 
       .search-container {
         width: 400px;
-
-        :deep(.feather-input-sub-text) {
-          display: none !important;
-        }
       }
     }
   }
 
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
-  .container {
-    table {
-      width: 100%;
-      @include table.table;
+  .tag {
+    display: inline-block;
+  }
 
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
+  .enabled-tag {
+    border-radius: 4px;
+    background-color: #0B720C1F;
 
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-
-        .tag {
-          .enabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #0B720C1F;
-
-            :deep(span) {
-              color: #0B720C !important;
-            }
-          }
-
-          .disabled-tag {
-            margin: 0 !important;
-            border-radius: 4px;
-            background-color: #7575751F;
-
-            :deep(span) {
-              color: #757575 !important;
-            }
-          }
-        }
-
-        .description {
-          margin: 0;
-          white-space: normal;
-        }
-      }
+    :deep(.p-tag-label) {
+      color: #0B720C !important;
     }
+  }
 
-    .alerts-pagination {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(variables.$spacing-xxs);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      border-left: 1px solid var(--feather-border-on-surface);
-      border-right: 1px solid var(--feather-border-on-surface);
+  .disabled-tag {
+    border-radius: 4px;
+    background-color: #7575751F;
+
+    :deep(.p-tag-label) {
+      color: #757575 !important;
     }
+  }
 
-    .feather-pagination {
-      border: none !important;
+  .expanded-content {
+    .description {
+      margin: 0;
+      white-space: normal;
     }
   }
 }

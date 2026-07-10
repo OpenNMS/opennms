@@ -565,18 +565,21 @@ public class BsmdIT {
                 .getMonitoredServices().iterator().next();
 
         onmsApplication.addMonitoredService(ipService);
-        int id = m_applicationDao.save(onmsApplication);
-        m_applicationDao.flush();
 
         final BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName(name);
         bs.setReductionFunction(new HighestSeverityEntity());
         bs.setAttribute("my-attr-key", "my-attr-value");
-        bs.addApplicationEdge(m_applicationDao.get(id), new IdentityEntity());
 
-        // Persist
-        m_businessServiceDao.save(bs);
-        m_businessServiceDao.flush();
+        // Persist in a committing transaction so the daemon (separate session) can read the fixture
+        template.execute(status -> {
+            int id = m_applicationDao.save(onmsApplication);
+            m_applicationDao.flush();
+            bs.addApplicationEdge(m_applicationDao.get(id), new IdentityEntity());
+            m_businessServiceDao.save(bs);
+            m_businessServiceDao.flush();
+            return null;
+        });
 
         return bs;
     }
@@ -593,9 +596,12 @@ public class BsmdIT {
                 .getMonitoredServices().iterator().next();
         bs.addIpServiceEdge(ipService, new IdentityEntity());
 
-        // Persist
-        m_businessServiceDao.save(bs);
-        m_businessServiceDao.flush();
+        // Persist in a committing transaction so the daemon (separate session) can read the fixture
+        template.execute(status -> {
+            m_businessServiceDao.save(bs);
+            m_businessServiceDao.flush();
+            return null;
+        });
 
         return bs;
     }
@@ -626,55 +632,59 @@ public class BsmdIT {
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
 
-        final OnmsApplication a1 = new OnmsApplication();
-        a1.setName("A1");
-        a1.addMonitoredService(i2);
-        int a1Id = m_applicationDao.save(a1);
-        m_applicationDao.flush();
+        // Persist in a committing transaction so the daemon (separate session) can read the fixture
+        template.execute(status -> {
+            final OnmsApplication a1 = new OnmsApplication();
+            a1.setName("A1");
+            a1.addMonitoredService(i2);
+            int a1Id = m_applicationDao.save(a1);
+            m_applicationDao.flush();
 
-        final OnmsApplication a2 = new OnmsApplication();
-        a2.setName("A2");
-        a2.addMonitoredService(i1);
-        int a2Id = m_applicationDao.save(a2);
-        m_applicationDao.flush();
+            final OnmsApplication a2 = new OnmsApplication();
+            a2.setName("A2");
+            a2.addMonitoredService(i1);
+            int a2Id = m_applicationDao.save(a2);
+            m_applicationDao.flush();
 
-        BusinessServiceEntity bs2 = new BusinessServiceEntity();
-        bs2.setName("BS2");
-        bs2.setReductionFunction(new HighestSeverityEntity());
-        bs2.setAttribute("my-attr-key", "my-attr-value");
-        bs2.addIpServiceEdge(i1, new IdentityEntity());
-        bs2.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
+            BusinessServiceEntity bs2 = new BusinessServiceEntity();
+            bs2.setName("BS2");
+            bs2.setReductionFunction(new HighestSeverityEntity());
+            bs2.setAttribute("my-attr-key", "my-attr-value");
+            bs2.addIpServiceEdge(i1, new IdentityEntity());
+            bs2.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
 
-        final BusinessServiceEntity bs3 = new BusinessServiceEntity();
-        bs3.setName("BS3");
-        bs3.setReductionFunction(new HighestSeverityEntity());
-        bs3.setAttribute("my-attr-key", "my-attr-value");
-        bs3.addIpServiceEdge(i2, new IdentityEntity());
-        bs3.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
-        bs3.addReductionKeyEdge(ReductionKeyHelper.getNodeDownReductionKey(i1), new IdentityEntity());
+            final BusinessServiceEntity bs3 = new BusinessServiceEntity();
+            bs3.setName("BS3");
+            bs3.setReductionFunction(new HighestSeverityEntity());
+            bs3.setAttribute("my-attr-key", "my-attr-value");
+            bs3.addIpServiceEdge(i2, new IdentityEntity());
+            bs3.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
+            bs3.addReductionKeyEdge(ReductionKeyHelper.getNodeDownReductionKey(i1), new IdentityEntity());
 
-        BusinessServiceEntity bs4 = new BusinessServiceEntity();
-        bs4.setName("BS4");
-        bs4.setReductionFunction(new HighestSeverityEntity());
-        bs4.setAttribute("my-attr-key", "my-attr-value");
-        bs4.addReductionKeyEdge(ReductionKeyHelper.getNodeLostServiceReductionKey(i1), new IdentityEntity());
-        bs4.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
+            BusinessServiceEntity bs4 = new BusinessServiceEntity();
+            bs4.setName("BS4");
+            bs4.setReductionFunction(new HighestSeverityEntity());
+            bs4.setAttribute("my-attr-key", "my-attr-value");
+            bs4.addReductionKeyEdge(ReductionKeyHelper.getNodeLostServiceReductionKey(i1), new IdentityEntity());
+            bs4.addApplicationEdge(m_applicationDao.get(a2Id), new IdentityEntity());
 
-        final BusinessServiceEntity bs1 = new BusinessServiceEntity();
-        bs1.setName("BS1");
-        bs1.setReductionFunction(new HighestSeverityEntity());
-        bs1.setAttribute("my-attr-key", "my-attr-value");
-        bs1.addChildServiceEdge(bs2, new IdentityEntity());
-        bs1.addChildServiceEdge(bs3, new IdentityEntity());
-        bs1.addChildServiceEdge(bs4, new IdentityEntity());
-        bs1.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
-        bs1.addReductionKeyEdge(ReductionKeyHelper.getInterfaceDownReductionKey(i1), new IdentityEntity());
+            final BusinessServiceEntity bs1 = new BusinessServiceEntity();
+            bs1.setName("BS1");
+            bs1.setReductionFunction(new HighestSeverityEntity());
+            bs1.setAttribute("my-attr-key", "my-attr-value");
+            bs1.addChildServiceEdge(bs2, new IdentityEntity());
+            bs1.addChildServiceEdge(bs3, new IdentityEntity());
+            bs1.addChildServiceEdge(bs4, new IdentityEntity());
+            bs1.addApplicationEdge(m_applicationDao.get(a1Id), new IdentityEntity());
+            bs1.addReductionKeyEdge(ReductionKeyHelper.getInterfaceDownReductionKey(i1), new IdentityEntity());
 
-        m_businessServiceDao.save(bs2);
-        m_businessServiceDao.save(bs3);
-        m_businessServiceDao.save(bs4);
-        m_businessServiceDao.save(bs1);
-        m_businessServiceDao.flush();
+            m_businessServiceDao.save(bs2);
+            m_businessServiceDao.save(bs3);
+            m_businessServiceDao.save(bs4);
+            m_businessServiceDao.save(bs1);
+            m_businessServiceDao.flush();
+            return null;
+        });
 
         return ReductionKeyHelper.getNodeLostServiceReductionKey(i1);
     }

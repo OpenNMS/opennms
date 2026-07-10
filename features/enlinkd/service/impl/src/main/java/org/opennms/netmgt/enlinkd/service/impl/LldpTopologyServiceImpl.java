@@ -62,6 +62,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     }
 
     @Override
+    @Transactional
     public void delete(int nodeid) {
         m_lldpElementDao.deleteByNodeId(nodeid);
         m_lldpLinkDao.deleteByNodeId(nodeid);
@@ -70,6 +71,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     }
 
     @Override
+    @Transactional
     public void reconcile(int nodeId, Date now) {
         LldpElement element = m_lldpElementDao.findByNodeId(nodeId);
         if (element != null
@@ -352,6 +354,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     }
 
     @Override
+    @Transactional
     public void deletePersistedData() {
         m_lldpElementDao.deleteAll();
         m_lldpElementDao.flush();

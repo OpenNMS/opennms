@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.2-SNAPSHOT</version>
+  <version>36.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1675,7 +1675,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.2.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>36.0.3.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1748,7 +1748,7 @@
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
-    <camelVersion>2.21.5</camelVersion>
+    <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1782,7 +1782,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.8</cxfVersion>
+    <cxfVersion>3.6.11</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1790,7 +1790,6 @@
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
@@ -1820,12 +1819,10 @@
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
-    <hibernateVersion>3.6.11.ONMS_RELEASE_1</hibernateVersion>
-    <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
-    <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
-    <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
-    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateVersion>5.6.15.Final</hibernateVersion>
+    <hibernateValidatorVersion>6.2.5.Final</hibernateValidatorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>6.2.5.Final</hibernateValidatorAnnotationProcessorVersion>
+    <javaxElVersion>3.0.0</javaxElVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -1937,7 +1934,6 @@
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
-    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>2.0.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
     <osgiVersion>8.0.0</osgiVersion>
@@ -1999,16 +1995,29 @@
     <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
-    <springVersion>4.2.9.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line
+         needed (Spring4Shell CVE-2022-22965, the SpEL array-allocation DoS CVE-2022-22950, a CGLIB/JDK
+         fast-class fix, and spring-web bug fixes) are all shipped in stock 5.3.x, so the patched-bundle
+         split is gone and every Spring bundle uses ${springVersion}. -->
+    <springVersion>5.3.39_2</springVersion>
+    <!-- OSGi-version form of springVersion: the ServiceMix Maven coordinate (5.3.39_2) is NOT a valid
+         OSGi version, so this suffix-free form is used in OSGi package/feature version fields
+         (custom.properties system-packages, feature version attrs/ranges). Keep in sync with springVersion. -->
+    <springOsgiVersion>5.3.39</springOsgiVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
+    <springSecurityVersion>5.8.16_1</springSecurityVersion>
+    <!-- OSGi-version form of springSecurityVersion (5.8.16_1 is not a valid OSGi version); keep in sync. -->
+    <springSecurityOsgiVersion>5.8.16</springSecurityOsgiVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
+    <!-- spring-security-kerberos has no upstream 5.x release; the 1.0.1 bundle only uses
+         spring-security-core auth interfaces, which are still present in 5.8. -->
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
-    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
+    <!-- SAML (spring-security-saml2-core 1.0.x extension) and OpenID dropped: both were unwired and are
+         incompatible with / removed in Spring Security 5.x. Reintroduce SAML via the built-in
+         spring-security-saml2-service-provider if needed (separate effort). -->
 
     <!-- moved here from topology features -->
     <jungVersion>2.1.1</jungVersion>
@@ -3911,6 +3920,26 @@
         <version>${camelVersion}</version>
       </dependency>
       <dependency>
+        <!-- the <camelContext> spring XML namespace handler lives here as of Camel 3 -->
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-spring-xml</artifactId>
+        <version>${camelVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.apache.curator</groupId>
         <artifactId>curator-client</artifactId>
         <version>${curatorVersion}</version>
@@ -4688,6 +4717,11 @@
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>${javaxElVersion}</version>
+      </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
         <groupId>com.sun.istack</groupId>
@@ -4752,11 +4786,11 @@
         <artifactId>jakarta.activation-api</artifactId>
         <version>1.2.2</version>
       </dependency>
-      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
+      <!-- Using JPA 2.2 API for Hibernate 5.6.15 compatibility -->
       <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>1.0.1.Final</version>
+        <groupId>javax.persistence</groupId>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -4766,12 +4800,12 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
@@ -5139,7 +5173,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5161,7 +5195,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5205,7 +5239,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5249,7 +5283,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5308,7 +5342,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5327,17 +5361,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-webmvc-portlet</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>

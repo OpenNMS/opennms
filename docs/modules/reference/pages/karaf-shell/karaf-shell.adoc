@@ -29,6 +29,32 @@ The Karaf shell accepts `ssh` connections on a known port which is unique per {p
 |8301
 |===
 
+[[karaf-shell-ssh-key]]
+=== Authenticating with an SSH public key
+By default, the shell authenticates with a username and password against the same back end as the web UI.
+As an alternative, a user can authenticate with an SSH public key.
+Password authentication remains available: a key is tried first, and a connection that presents no matching key falls back to a password prompt.
+
+To allow a user to authenticate with a key, add the public key to `etc/keys.properties`, one entry per line, in the form `username = <key>,<group>`:
+
+[source, properties]
+----
+myuser = AAAAB3NzaC1yc2EAAA...,_g_:admingroup
+----
+
+Include only the base64 key material, without the leading key-type prefix (for example, `ssh-rsa`) and without any trailing comment.
+The `_g_:admingroup` reference assigns the user to the `admingroup` group defined elsewhere in the same file; that group grants the roles associated with the key.
+Because shell access is limited to users with xref:operation:deep-dive/user-management/security-roles.adoc#built-in-security-roles[ROLE_ADMIN], the group must grant that role.
+
+Connect using the matching private key:
+
+[source, console]
+----
+ssh -i ~/.ssh/id_rsa -p 8101 myuser@localhost
+----
+
+`etc/keys.properties` is read on each login attempt, so changes apply to subsequent connections without restarting {page-component-title}.
+
 [[karaf-shell-commands]]
 == Karaf Shell Commands
 If you would like to learn more about an individual command, such as the parameters it accepts, run the command with the `--help` argument.

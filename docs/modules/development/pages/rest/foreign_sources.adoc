@@ -29,6 +29,9 @@ If a request says that it gets the "active" foreign source, that means it return
 | /foreignSources/deployed/count
 | Get the number of deployed foreign sources (returns plaintext, rather than XML or JSON).
 
+| /foreignSources/count
+| Get the total number of active foreign sources (returns plaintext, rather than XML or JSON).
+
 | /foreignSources/\{name}
 | Get the active foreign source named `\{name}`.
 
@@ -47,7 +50,7 @@ If a request says that it gets the "active" foreign source, that means it return
 
 == POSTs (adding data)
 
-POST requires XML using `application/xml` as its `Content-Type`.
+POST accepts XML, JSON, or Atom XML using `application/xml`, `application/json`, or `application/atom+xml` as its `Content-Type`.
 
 [caption=]
 .Foreign Sources API POST functions
@@ -89,6 +92,9 @@ PUT requires form data using `application/x-www-form-urlencoded` as a `Content-T
 
 | /foreignSources/\{name}
 | Delete the named foreign source.
+
+| /foreignSources/deployed/\{name}
+| Delete the named deployed (active) foreign source.
 
 | /foreignSources/\{name}/detectors/\{detector}
 | Delete the specified detector from the named foreign source.

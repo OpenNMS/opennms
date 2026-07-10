@@ -62,6 +62,7 @@ import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Nms7563EnIT extends EnLinkdBuilderITCase {
 
@@ -73,8 +74,11 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
     })
     public void testCisco01Links() {
         
-        m_nodeDao.save(builder.getCisco01());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getCisco01());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -140,8 +144,11 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
     })
     public void testHomeServerLinks() {
         
-        m_nodeDao.save(builder.getHomeServer());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getHomeServer());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -204,8 +211,11 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
     })
     public void testSwitch02Links() {
         
-        m_nodeDao.save(builder.getSwitch02());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getSwitch02());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);

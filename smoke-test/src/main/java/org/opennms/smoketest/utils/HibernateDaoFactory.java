@@ -25,8 +25,12 @@ import java.net.InetSocketAddress;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -48,7 +52,7 @@ public class HibernateDaoFactory {
         config.setPassword("opennms");
         HikariDataSource ds = new HikariDataSource(config);
 
-        AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
+        LocalSessionFactoryBean sfb = new LocalSessionFactoryBean();
         sfb.setDataSource(ds);
         sfb.setPackagesToScan("org.opennms.netmgt.model",
                               "org.opennms.features.deviceconfig.persistence.api");
@@ -58,7 +62,34 @@ public class HibernateDaoFactory {
             throw new RuntimeException(e);
         }
         m_sessionFactory = sfb.getObject();
-        m_hibernateTemplate = new HibernateTemplate(m_sessionFactory);
+
+        // Hibernate 5's HibernateTemplate forces a newly-opened, non-transactional session to
+        // FlushMode.MANUAL, so direct DAO writes through it are never flushed or committed
+        // (setCheckWriteOperations(false) only suppresses the resulting exception). Run every
+        // template operation inside a committed transaction so that writes are actually persisted
+        // and visible to the queries these smoke tests subsequently poll on.
+        final TransactionTemplate txTemplate =
+                new TransactionTemplate(new HibernateTransactionManager(m_sessionFactory));
+        m_hibernateTemplate = new HibernateTemplate(m_sessionFactory) {
+            @Override
+            public <T> T execute(final HibernateCallback<T> action) throws DataAccessException {
+                return txTemplate.execute(status -> superExecute(action));
+            }
+
+            @Override
+            public <T> T executeWithNativeSession(final HibernateCallback<T> action) {
+                return txTemplate.execute(status -> superExecuteWithNativeSession(action));
+            }
+
+            private <T> T superExecute(final HibernateCallback<T> action) {
+                return super.execute(action);
+            }
+
+            private <T> T superExecuteWithNativeSession(final HibernateCallback<T> action) {
+                return super.executeWithNativeSession(action);
+            }
+        };
+        m_hibernateTemplate.setCheckWriteOperations(false);
     }
 
     public <T extends AbstractDaoHibernate<?, ?>> T getDao(Class<T> clazz) {

@@ -1,31 +1,35 @@
 <template>
   <div class="extended-search-container">
-    <div class="feather-row add-row">
-      <div class="feather-col-5">
-        <FeatherSelect
-          label="Search Type"
-          :options="searchOptions"
-          :textProp="'title'"
-          v-model="currentSelection"
-        />
+    <div class="onms-row add-row">
+      <div class="onms-col-5">
+        <FormField label="Search Type">
+          <Select
+            v-model="currentSelection"
+            :options="searchOptions"
+            optionLabel="title"
+            placeholder="Select a type"
+            data-test="search-type-select"
+          />
+        </FormField>
       </div>
-      <div class="feather-col-5">
-        <FeatherInput
-          v-model="searchTerm"
-          label="Search Term"
-        />
+      <div class="onms-col-5">
+        <FormField label="Search Term">
+          <InputText
+            v-model="searchTerm"
+            data-test="search-term-input"
+          />
+        </FormField>
       </div>
-      <div class="feather-col-2 add-btn-col">
-        <FeatherButton
-          secondary
-          icon="Add"
+      <div class="onms-col-2 add-btn-col">
+        <Button
+          outlined
           data-test="add-search-term-button"
           class="add-search-term-button"
           @click="onAddSearchTerm"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
     </div>
 
@@ -46,13 +50,13 @@
       </PColumn>
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
-          <FeatherButton
-            icon="Delete"
+          <Button
+            text
             data-test="delete-search-term-button"
             @click="removeGridItem(data.key)"
           >
             <FeatherIcon :icon="DeleteIcon" />
-          </FeatherButton>
+          </Button>
         </template>
       </PColumn>
     </PDataTable>
@@ -64,20 +68,20 @@ import { onMounted, ref } from 'vue'
 
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import InputTextComponent from 'primevue/inputtext'
-import { FeatherButton } from '@featherds/button'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import DeleteIcon from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import FormField from '@/components/Common/FormField.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodeQueryExtendedSearchParams } from '@/types'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PInputText = InputTextComponent
+const PInputText = InputText
 
 const {
   getExtendedSearchValues,
@@ -92,7 +96,9 @@ interface GridItem {
   value: string
 }
 
-const searchOptions: ISelectItemType[] = [
+interface SearchOption { title: string; value: string }
+
+const searchOptions: SearchOption[] = [
   { title: 'Foreign Source', value: 'foreignSource' },
   { title: 'Foreign ID', value: 'foreignId' },
   { title: 'Foreign Source:Foreign ID', value: 'foreignSourceId' },
@@ -114,7 +120,7 @@ const sysKeys = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysO
 
 const nodeStructureStore = useNodeStructureStore()
 const searchTerm = ref('')
-const currentSelection = ref<ISelectItemType | undefined>(undefined)
+const currentSelection = ref<SearchOption | undefined>(undefined)
 const gridItems = ref<GridItem[]>([])
 
 const onAddSearchTerm = () => {
@@ -170,7 +176,7 @@ const resetFromStore = () => {
   currentSelection.value = undefined
 }
 
-defineExpose({ applyToStore, resetFromStore })
+defineExpose({ applyToStore, resetFromStore, currentSelection, searchTerm, gridItems })
 
 onMounted(() => {
   resetFromStore()
@@ -191,7 +197,8 @@ onMounted(() => {
 
   .add-btn-col {
     display: flex;
-    padding-bottom: 0.25rem;
+    align-items: flex-end;
+    padding-bottom: 0.5rem;
   }
 
   .extended-search-table {

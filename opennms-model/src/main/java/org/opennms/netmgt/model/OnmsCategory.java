@@ -103,7 +103,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     @Id
     @XmlAttribute(name="id")
     @Column(name="categoryid", nullable=false)
-    @SequenceGenerator(name="categorySequence", sequenceName="catNxtId")
+    @SequenceGenerator(name="categorySequence", sequenceName="catNxtId", allocationSize = 1)
     @GeneratedValue(generator="categorySequence")
     public Integer getId() {
         return m_id;

@@ -80,6 +80,8 @@ import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class EnLinkdIT extends EnLinkdBuilderITCase {
 
@@ -93,6 +95,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
 
     @Test
+    @Transactional
     public void testGetSnmpNodeList() {
         m_nodeDao.save(builder10205a.getMumbai());
         m_nodeDao.save(builder10205a.getDelhi());
@@ -146,6 +149,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
+    @Transactional
     public void testStoreBft() {
         OneBridgeCompleteTopology topology = new OneBridgeCompleteTopology();
         m_nodeDao.save(topology.nodeA);
@@ -168,7 +172,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
      *                    1364=
      *                          [2965, 5022]
      */
-    @Test 
+    @Test
+    @Transactional
     public void testLoadFourLevelTopology() {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         OnmsNode lnode1400= new OnmsNode();
@@ -327,7 +332,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
     }
     
-    @Test 
+    @Test
+    @Transactional
     public void testLoadTopology() {
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         ABCTopology topology = new ABCTopology();
@@ -591,6 +597,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }    
     
     @Test
+    @Transactional
     public void testDeleteBridgeC() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
@@ -696,6 +703,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
+    @Transactional
     public void testDeleteBridgeB() throws BridgeTopologyException  {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
@@ -797,6 +805,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
+    @Transactional
     public void testDeleteBridgeA() throws BridgeTopologyException {
         ABCTopology topology = new ABCTopology();
         NetworkBuilder nb = new NetworkBuilder();
@@ -898,6 +907,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
+    @Transactional
     public void checkBridgeTopologyService() {
         
         NetworkBuilder nb = new NetworkBuilder();
@@ -1183,7 +1193,11 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     public void testOspfTableTracker() throws Exception {
 
         Nms007NetworkBuilder builder = new Nms007NetworkBuilder();
-        m_nodeDao.save(builder.getFireFly170());
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getFireFly170());
+            m_nodeDao.flush();
+            return null;
+        });
         OnmsNode node = m_nodeDao.findByForeignId("linkd", Nms007NetworkBuilder.FireFly170_NAME);
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(FireFly170_IP));
         String trackerName = "ospfAreaTableTracker";

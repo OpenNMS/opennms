@@ -38,6 +38,31 @@ User-defined links (UDLs) for the enlinkd topology can be be queried, added, mod
 curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d '{"node-id-a": 1, "node-id-z": 2, "component-label-a": "tp1", "component-label-z": "tp2", "link-id": "n1:tp1->n2:tp2", "owner": "me"}' http://localhost:8980/opennms/api/v2/userdefinedlinks
 ----
 
+== PUT (modifying UDLs)
+
+PUT property updates use form data with `application/x-www-form-urlencoded` as the `Content-Type`.
+
+[caption=]
+.User-defined link API PUT functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| api/v2/userdefinedlinks
+| Bulk-update: set the supplied properties on every UDL matched by the query.
+
+| api/v2/userdefinedlinks/\{id}
+| Update the supplied properties on the UDL with the given database ID.
+|===
+
+=== Use examples with cURL
+
+.Update the owner of the UDL with ID 1.
+[source,bash]
+----
+curl -v -X PUT -u admin:admin -H "Content-Type: application/x-www-form-urlencoded" -d "owner=someoneelse" http://localhost:8980/opennms/api/v2/userdefinedlinks/1
+----
+
 == DELETE (removing UDLs)
 
 [caption=]
@@ -45,6 +70,9 @@ curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d '{"node-id
 [options="autowidth"]
 |===
 | Resource  | Description
+
+| api/v2/userdefinedlinks
+| Bulk-delete: remove every UDL matched by the query.
 
 | api/v2/userdefinedlinks/\{id}
 | Delete a UDL by database ID.

@@ -160,7 +160,15 @@ public class InstallerTest {
         final var lostFoundDir = Files.createDirectories(opennmsHome.resolve("share").resolve("lost+found"));
         Files.setPosixFilePermissions(lostFoundDir, Set.of());
 
-        installer.verifyFilesAndDirectories();
+        try {
+            installer.verifyFilesAndDirectories();
+        } finally {
+            // restore permissions so the directory can be cleaned up: Spring 5's
+            // FileSystemUtils.deleteRecursively is NIO-based and silently fails
+            // on unreadable directories, leaving them behind for later build steps
+            Files.setPosixFilePermissions(lostFoundDir, Set.of(PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
+        }
     }
 
     @Test

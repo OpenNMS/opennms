@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.2-SNAPSHOT</version>
+        <version>36.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -63,12 +63,11 @@
                         <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
-                        <feature>spring/4.2.9.RELEASE_1</feature>
                         <feature>spring/4.3.30.RELEASE_1</feature>
 
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
-                        <feature>spring/${springVersion}</feature>
-                        <feature>spring-jms/${springVersion}</feature>
+                        <feature>spring/${springOsgiVersion}</feature>
+                        <feature>spring-jms/${springOsgiVersion}</feature>
 
                         <feature>cassandra-driver/${cassandraVersion}</feature>
                         <feature>jetty/${jettyVersion}</feature>

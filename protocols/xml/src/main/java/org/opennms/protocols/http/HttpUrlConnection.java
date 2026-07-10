@@ -28,7 +28,9 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
@@ -44,9 +46,11 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Header;
+import org.opennms.protocols.xml.config.Parameter;
 import org.opennms.protocols.xml.config.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,11 +94,13 @@ public class HttpUrlConnection extends URLConnection {
         if (m_clientWrapper != null) {
             return;
         }
-        m_clientWrapper = HttpClientWrapper.create();
+        // Only assign the field once the wrapper is fully configured, so that a
+        // failed connect() cannot leave a half-configured client behind
+        final HttpClientWrapper clientWrapper = HttpClientWrapper.create();
         if (m_request != null) {
             int timeout = m_request.getParameterAsInt("timeout");
             if (timeout > 0) {
-                m_clientWrapper.setConnectionTimeout(timeout)
+                clientWrapper.setConnectionTimeout(timeout)
                     .setSocketTimeout(timeout);
             }
 
@@ -103,24 +109,36 @@ public class HttpUrlConnection extends URLConnection {
                 retries = m_request.getParameterAsInt("retry");
             }
             if (retries > 0) {
-                m_clientWrapper.setRetries(retries);
+                clientWrapper.setRetries(retries);
             }
 
             String disableSslVerification = m_request.getParameter("disable-ssl-verification");
             if (Boolean.parseBoolean(disableSslVerification)) {
                 try {
-                    m_clientWrapper.useRelaxedSSL("https");
+                    clientWrapper.useRelaxedSSL("https");
                 } catch (final GeneralSecurityException e) {
                     LOG.warn("Failed to set up relaxed SSL.", e);
                 }
             }
 
             if(m_request.getParameterAsBoolean("use-system-proxy")){
-                m_clientWrapper.useSystemProxySettings();
+                clientWrapper.useSystemProxySettings();
+            }
+
+            // Custom trust anchors and/or client certificate (mutual TLS);
+            // takes precedence over disable-ssl-verification when both are set
+            final Map<String, Object> parameters = new HashMap<>();
+            for (final Parameter parameter : m_request.getParameters()) {
+                parameters.put(parameter.getName(), parameter.getValue());
+            }
+            try {
+                HttpClientWrapperConfigHelper.setSSLContextIfConfigured(clientWrapper, parameters);
+            } catch (final GeneralSecurityException e) {
+                throw new IOException("Failed to configure TLS from the request parameters", e);
             }
         }
 
-        m_clientWrapper.addRequestInterceptor(new RequestAcceptEncoding())
+        clientWrapper.addRequestInterceptor(new RequestAcceptEncoding())
             .addResponseInterceptor(new ResponseContentEncoding());
 
         // Add User Authentication
@@ -129,9 +147,10 @@ public class HttpUrlConnection extends URLConnection {
             // If the URL contains a username/password, it might need to be decoded
             String uname = URLDecoder.decode(userInfo[0], StandardCharsets.UTF_8.name());
             String pwd = URLDecoder.decode(userInfo[1], StandardCharsets.UTF_8.name());
-            m_clientWrapper.addBasicCredentials(uname, pwd);
+            clientWrapper.addBasicCredentials(uname, pwd);
         }
 
+        m_clientWrapper = clientWrapper;
     }
 
     /* (non-Javadoc)
