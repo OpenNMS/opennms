@@ -1,36 +1,26 @@
 
 [[flows-basic]]
 = Basic Flows Setup
-:description: Get started with flows data collection in {page-component-title} including configuring Elasticsearch, Kafka, and protocol listeners.
+:description: Get started with flows in {page-component-title} using the built-in PostgreSQL flow repository, stored in the OpenNMS database or a dedicated external database.
 
-This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
+This section describes how to get started with flows: collect, enrich (classify), persist, and visualize network flows using the built-in PostgreSQL flow repository.
+With this option, {page-component-title} persists flows to a relational database -- by default the same PostgreSQL database {page-component-title} already uses -- so you can start collecting flows without deploying any additional storage.
+
+TIP: For high flow volumes, or to keep flow storage separate from the {page-component-title} database, persist flows to a dedicated external PostgreSQL database (see <<flows-postgres-external, Use an external PostgreSQL database>>), or scale out with xref:deep-dive/flows/elasticsearch.adoc[Elasticsearch] and xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel].
 
 == Requirements
 
-Make sure that you have the following before you set up flows:
+Make sure you have the following before you set up flows:
 
-* A configured {page-component-title} instance.
+* A configured {page-component-title} instance and its PostgreSQL database.
 * One or more devices that send flows visible to {page-component-title}, and that are monitored with SNMP.
-* Elasticsearch cluster set up with the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
-** The Drift plugin persists and queries flows that {page-component-title} collects.
-The Drift version must match the targeted Elasticsearch version.
-** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
-** A retention process to remove old flow indices so the disk does not fill up (for example, "keep _X_ days of flows").
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
-** {page-component-title} set up to monitor the Elasticsearch stack and generate an alarm if it goes down.
 * The OpenNMS plugin for Grafana configured to visualize flows.
 ** Configure the flow and performance data sources.
 
-[WARNING]
-====
-Flows are high volume, and {page-component-title} does not expire them.
-Configure an index retention process before you collect flows in production, or the Elasticsearch disk can fill up.
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
-====
+== Enable the PostgreSQL flow repository
 
-== Configure {page-component-title} to communicate with Elasticsearch
-
-{page-component-title} must be set up to communicate with Elasticsearch and persist the collected flows data in a defined directory:
+The PostgreSQL flow repository is provided by the optional `opennms-flows-postgres` feature.
+Installing it registers PostgreSQL as the flow store; when present, it takes precedence over the default Elasticsearch flow persistence, so flows are both written to and read from PostgreSQL.
 
 . Connect to your {page-component-title} xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 +
@@ -39,59 +29,108 @@ See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention
 ssh -p 8101 admin@localhost
 ----
 
-. Edit `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure flow persistence to use your Elasticsearch cluster:
+. Install the feature:
 +
 [source, karaf]
 ----
-config:edit org.opennms.features.flows.persistence.elastic
-config:property-set elasticUrl http://elastic:9200
-config:update
+feature:install opennms-flows-postgres
 ----
 
-. (Optional) Edit or create `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` and configure persistence settings:
+. To ensure the feature is installed on subsequent restarts, add it to a file in `featuresBoot.d`:
 +
-[source, xml]
+[source, console]
 ----
-elasticUrl = http://10.10.3.218:9200 <1>
-connTimeout = 30000
-readTimeout = 300000
-settings.index.number_of_replicas = 0
-settings.index.number_of_shards=1
-settings.index.refresh_interval=10s
-elasticIndexStrategy=daily
+echo "opennms-flows-postgres" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/flows-postgres.boot
 ----
-<1> Replace with comma-separated list of Elasticsearch nodes.
 
-** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
+By default, no further configuration is required: flows are persisted to the {page-component-title} PostgreSQL database.
+The flow table is partitioned by time and maintained automatically -- {page-component-title} pre-creates upcoming partitions and drops expired ones on a daily schedule.
 
-== Configuring NetFlow Composable Templates
+NOTE: Storing flows in the {page-component-title} database is convenient for getting started and for small-to-moderate flow volumes.
+Because flows are high volume, monitor database growth and move to a <<flows-postgres-external, dedicated external database>> or to xref:deep-dive/flows/elasticsearch.adoc[Elasticsearch] as your volume grows.
 
-OpenNMS supports (https://www.elastic.co/docs/manage-data/data-store/templates)[composable templates] for more flexible and modular management of Elasticsearch index settings.
-To enable composable templates for NetFlow data, update below configuration in Karaf:
+=== Tune persistence settings (optional)
+
+You can tune the flow repository through the `org.opennms.features.flows.persistence.postgres` configuration:
 
 [source, karaf]
 ----
-config:edit org.opennms.features.flows.persistence.elastic
-config:property-set useComposableTemplates true
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set batchSize 1000          <1>
+config:property-set flushIntervalMs 500     <2>
+config:property-set queueCapacity 100000    <3>
+config:property-set queryThreads 4          <4>
+config:update
+----
+<1> Maximum number of flows written per batch insert.
+<2> Maximum time, in milliseconds, before a partial batch is flushed.
+<3> Bounded write-queue capacity; when full, the newest flows are dropped (and counted) rather than blocking ingest.
+<4> Number of threads used to service flow queries.
+
+[[flows-postgres-external]]
+== Use an external PostgreSQL database
+
+For high flow volumes, or to isolate flow storage from the {page-component-title} database, persist flows to a dedicated external PostgreSQL database.
+This is also the model used when persisting flows from xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel] in a distributed deployment, where every Sentinel writer and the {page-component-title} core reader share the same flow database.
+
+. Set up the external database and its partition management (see <<flows-postgres-partman, Partition management on the external database>>) before pointing {page-component-title} at it.
+
+. Point {page-component-title} at the external database:
++
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set datasource.url jdbc:postgresql://db-host:5432/flowdb   <1>
+config:property-set datasource.username flow_user                          <2>
+config:property-set datasource.password flow_password                      <3>
+config:property-set datasource.databaseName flowdb                         <4>
+config:update
+----
+<1> JDBC URL of the external flow database. When set, {page-component-title} builds a dedicated connection pool instead of using the internal database.
+<2> Database user with read/write access to the flow database.
+<3> Password for the database user.
+<4> Name of the external flow database.
+
+NOTE: When `datasource.url` is left blank (the default), {page-component-title} uses its internal database.
+Setting it switches to the dedicated external database.
+
+[[flows-postgres-partman]]
+=== Partition management on the external database
+
+The automatic partition maintenance built into {page-component-title} applies only to the internal database.
+For an external flow database, manage partition creation and expiration with https://github.com/pgpartman/pg_partman[pg_partman] and https://github.com/citusdata/pg_cron[pg_cron].
+
+A ready-to-use setup script, `flow-partman-setup.sql`, is provided with the `org.opennms.features.flows.postgres` source (under `contrib/`).
+Run it once against the fresh external database to install the extensions, create the partitioned `flow` table, and schedule partition rotation, creation, and expiration:
+
+[source, console]
+----
+psql -h db-host -U flow_admin -d flowdb -f flow-partman-setup.sql
+----
+
+You can override the partition width, retention window, number of pre-created partitions, and maintenance schedule without editing the script:
+
+[source, console]
+----
+psql -h db-host -U flow_admin -d flowdb \
+  -v partition_interval="'1 hour'" \
+  -v retention="'7 days'" \
+  -v premake=6 \
+  -v maintenance_schedule="'*/15 * * * *'" \
+  -f flow-partman-setup.sql
+----
+
+Because the script owns the schema, set `runSchemaChangelog=false` on every {page-component-title} node that connects to this database so the built-in schema migration does not conflict with pg_partman:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set runSchemaChangelog false
 config:update
 ----
 
-=== Managing NetFlow Templates and Policies
-
-NetFlow component and index templates can be managed from the following directory:
-
-`$\{OPENNMS_HOME}/etc/netflow-templates`
-
-You can customize existing templates, add new ones, or define Index Lifecycle Management (ILM) policies within this folder. Any valid Elasticsearch template or ILM JSON placed here will be picked up and applied by the system.
-
-When placing files in the netflow-templates directory:
-
-* Files intended as ILM policies should have names that include keywords such as ilm, lifecycle, or policy.
-* Files with names containing setting(s), mapping(s), alias(es), or component will be treated as component templates.
-* Files with names containing index or composable will be recognized as index templates.
-
-
-
+IMPORTANT: The script requires the `pg_cron` and `pg_partman` (5.0 or later) extensions on the database server, and `pg_cron` must be configured to run in the flow database (`cron.database_name`).
+The script header documents these prerequisites and all configurable settings.
 
 == Multi-protocol listener
 
@@ -133,7 +172,7 @@ To enable one of these protocols, find the correct example `listener` and `adapt
 [source, console]
 ${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 
-This configuration opens a UDP socket bound to `0.0.0.0:8877` to listen and process NetFlow v5 messages that are are forwarded to this port.
+This configuration opens a UDP socket bound to `0.0.0.0:8877` to listen and process NetFlow v5 messages that are forwarded to this port.
 
 == Enable flows on your devices
 
@@ -164,40 +203,6 @@ It supports the `$nodeId`, `$ifIndex`, `$start`, and `$end` placeholders.
 After the plugin is configured, an icon is displayed at the top-right corner of an SNMP resource graph indicating that flow data is available for the interface.
 If you have trouble during or after configuration, refer to xref:deep-dive/flows/troubleshooting.adoc[].
 
-[[kafka-forwarder-config]]
-== Configure Kafka forwarder
-
-Flows enriched with {page-component-title} node data can be forwarded to Kafka and persisted.
-By default, enriched flows are stored in the `flowsDocument` topic and the payloads are encoded using https://developers.google.com/protocol-buffers/[Google Protocol Buffers].
-See `flowdocument.proto` in the corresponding source definition for the model definitions.
-
-To enable JSON support, set `useJson` to `true`.
-
-Follow these steps to configure forwarding flows to Kafka:
-
-. Enable Kafka forwarding:
-+
-[source, console]
-----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
-admin@opennms()> config:property-set enableForwarding true
-admin@opennms()> config:update
-----
-
-. Configure the Kafka server for flows:
-+
-[source, console]
-----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.features.flows.persistence.kafka
-admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
-admin@opennms()> config:property-set topic opennms-flows
-admin@opennms()> config:update
-----
-
 == Next steps
 
 After you set up basic flows monitoring, you may want to do some of the following tasks:
@@ -207,5 +212,6 @@ After you set up basic flows monitoring, you may want to do some of the followin
 You can create rules to override the default classifications (see xref:deep-dive/flows/classification-engine.adoc[]).
 
 * xref:deep-dive/flows/distributed.adoc[Enable remote flows data collection] with Minions.
-* xref:deep-dive/flows/sentinel/sentinel.adoc[Scale to manage large volumes of flows data] with Sentinels.
+* xref:deep-dive/flows/elasticsearch.adoc[Scale flow storage with Elasticsearch] for high volumes.
+* xref:deep-dive/flows/sentinel/sentinel.adoc[Scale flow processing with Sentinel] to distribute the processing load.
 * Add https://github.com/OpenNMS/nephron[OpenNMS Nephron] for aggregation and streaming analytics.
