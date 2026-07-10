@@ -447,7 +447,6 @@ defineExpose({
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/onms-typography' as *;
-@use '@featherds/table/scss/table';
 
 .feather-drawer-custom-padding {
   padding: 20px;

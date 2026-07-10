@@ -218,7 +218,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
+@import "@/styles/onms-table";
 @import "@featherds/styles/themes/variables";
 #wrap {
   height: calc(100% - 29px);
@@ -226,8 +226,8 @@ onMounted(() => {
   background: var(--p-content-background);
 }
 table {
-  @include table;
-  @include table-condensed;
+  @include onms-table;
+  @include onms-table-condensed;
   background: var(--p-content-background);
   color: var(--p-text-color);
   padding-top: 4px;

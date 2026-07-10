@@ -122,7 +122,7 @@ const getItems = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
+@import "@/styles/onms-table";
 @import "@featherds/styles/themes/variables";
 
 .marker-cluster-header-info {
@@ -147,7 +147,7 @@ const getItems = () => {
   table {
     margin-top: 0px !important;
     font-size: 12px !important;
-    @include table;
+    @include onms-table;
   }
 
   thead {

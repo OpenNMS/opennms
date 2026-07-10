@@ -105,7 +105,6 @@ const onSave = async (definition: SnmpDefinition) => {
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
 @use '@/styles/onms-typography' as *;
-@use '@featherds/table/scss/table';
 @use '@/styles/vars.scss';
 
 .snmp-config-definitions-tab {
