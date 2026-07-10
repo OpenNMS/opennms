@@ -39,6 +39,26 @@
     </cm:property-placeholder>
 
     <bean id="postgresFlowMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <!-- Expose the write-path metrics (batch size, flush interval, throughput, queue size, drops) as JMX
+         MBeans under the org.opennms.netmgt.flows.postgres domain. Works in any Karaf container running
+         this feature (Sentinel writers and the Horizon reader/writer). -->
+    <service ref="postgresFlowMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="org.opennms.netmgt.flows.postgres" />
+            <entry key="description" value="PostgreSQL Flow Repository" />
+        </service-properties>
+    </service>
+    <bean id="postgresFlowMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+        <argument ref="postgresFlowMetricRegistry"/>
+    </bean>
+    <bean id="postgresFlowMetricRegistryDomainedJmxReporterBuilder" factory-ref="postgresFlowMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows.postgres"/>
+    </bean>
+    <bean id="postgresFlowMetricRegistryJmxReporter"
+          factory-ref="postgresFlowMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
 
     <!-- Provides the flow DataSource: the internal OpenNMS datasource when datasource.url is blank
          (PoC/small-scale), or a dedicated self-managed HikariCP pool when it is set (external/Sentinel).

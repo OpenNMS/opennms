@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -59,6 +60,11 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
     private final Meter dropped;
     private final Meter flushed;
     private final Timer flushTimer;
+    private final Histogram batchSizeHistogram;
+    private final Histogram flushIntervalHistogram;
+
+    /** Wall-clock time of the previous flush, used to derive the inter-flush interval. */
+    private long lastFlushMs = 0L;
 
     private volatile boolean running = false;
     private Thread worker;
@@ -81,8 +87,14 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
         this.flush = flush;
         this.enqueued = metrics.meter(MetricRegistry.name(name, "enqueued"));
         this.dropped = metrics.meter(MetricRegistry.name(name, "dropped"));
+        // flushed: total rows persisted; its rate is the throughput to PostgreSQL (flows/second).
         this.flushed = metrics.meter(MetricRegistry.name(name, "flushed"));
+        // flush: duration of each flush (batch INSERT) operation.
         this.flushTimer = metrics.timer(MetricRegistry.name(name, "flush"));
+        // batchSize: distribution of the number of rows written per flush.
+        this.batchSizeHistogram = metrics.histogram(MetricRegistry.name(name, "batchSize"));
+        // flushIntervalMs: distribution of the wall-clock interval between consecutive flushes.
+        this.flushIntervalHistogram = metrics.histogram(MetricRegistry.name(name, "flushIntervalMs"));
         metrics.register(MetricRegistry.name(name, "queueSize"), (com.codahale.metrics.Gauge<Integer>) queue::size);
     }
 
@@ -138,14 +150,26 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
     }
 
     private void doFlush(final List<T> batch) {
+        final int size = batch.size();
+        recordFlushInterval();
         try (Timer.Context ignored = flushTimer.time()) {
             flush.accept(new ArrayList<>(batch));
-            flushed.mark(batch.size());
+            flushed.mark(size);
+            batchSizeHistogram.update(size);
         } catch (final Exception e) {
-            LOG.warn("Failed to flush a batch of {} flow rows; the batch is dropped.", batch.size(), e);
+            LOG.warn("Failed to flush a batch of {} flow rows; the batch is dropped.", size, e);
         } finally {
             batch.clear();
         }
+    }
+
+    /** Record the wall-clock interval since the previous flush. Called only from the single drain thread. */
+    private void recordFlushInterval() {
+        final long now = System.currentTimeMillis();
+        if (lastFlushMs != 0L) {
+            flushIntervalHistogram.update(now - lastFlushMs);
+        }
+        lastFlushMs = now;
     }
 
     @Override
