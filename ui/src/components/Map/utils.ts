@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { PopupOptions } from 'leaflet'
+
 const numericSeverityLevel = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
@@ -52,4 +54,19 @@ const stringToFixedFloat = (floatAsString: string, decimalPoints: number): strin
   return floatAsString
 }
 
-export { numericSeverityLevel, stringToFixedFloat }
+// Shared options for marker + cluster popups. The map is full-bleed under the
+// fixed top menu bar, so Leaflet's default autoPan (which only keeps a popup
+// inside the container — whose top edge is behind the menu) leaves the popup's
+// top hidden. autoPanPaddingTopLeft pushes the auto-pan target just below the
+// menu (matching the 70px control clearance) and clear of the left side-menu
+// rail, so the popup's top always lands in view. No maxHeight: the cluster
+// popup's node list is already a fixed-height inner scroll, so capping the
+// whole popup only adds a redundant second (outer) scrollbar.
+const mapPopupOptions: PopupOptions = {
+  autoPan: true,
+  autoPanPaddingTopLeft: [60, 72],
+  autoPanPaddingBottomRight: [60, 40],
+  keepInView: false
+}
+
+export { mapPopupOptions, numericSeverityLevel, stringToFixedFloat }

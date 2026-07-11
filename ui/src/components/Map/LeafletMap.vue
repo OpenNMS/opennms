@@ -99,7 +99,7 @@ import MapSearch from './MapSearch.vue'
 import MarkerPopup from './MarkerPopup.vue'
 import MarkerClusterPopupContents from './MarkerClusterPopupContent.vue'
 import SeverityFilter from './SeverityFilter.vue'
-import { numericSeverityLevel } from './utils'
+import { mapPopupOptions, numericSeverityLevel } from './utils'
 
 import { isNumber } from '@/lib/utils'
 import { useGeolocationStore } from '@/stores/geolocationStore'
@@ -235,7 +235,7 @@ const initializeClusterPopup = async (cluster: Cluster) => {
 // to inject into the Leaflet popup component and launch the popup
 const launchClusterPopup = (cluster: Cluster) => {
   const content = clusterPopupContent.value.$refs.clusterPopupContent.innerHTML
-  const options: PopupOptions = {}
+  const options: PopupOptions = { ...mapPopupOptions }
 
   const leafletObject = window['L']
 
