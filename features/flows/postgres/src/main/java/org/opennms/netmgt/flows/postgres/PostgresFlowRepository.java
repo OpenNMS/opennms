@@ -72,6 +72,7 @@ public class PostgresFlowRepository implements FlowRepository {
     private int batchSize = 1000;
     private long flushIntervalMs = 500;
     private int queueCapacity = 100_000;
+    private int writerThreads = 1;
     private boolean runSchemaChangelog = true;
 
     private FlowDataSourceProvider dataSourceProvider;
@@ -100,10 +101,10 @@ public class PostgresFlowRepository implements FlowRepository {
             installSchema();
         }
         this.writer = new BatchingFlowWriter<>("postgresFlowRepository", queueCapacity, batchSize,
-                flushIntervalMs, this::flush, metrics);
+                flushIntervalMs, writerThreads, this::flush, metrics);
         this.writer.start();
-        LOG.info("PostgresFlowRepository started (batchSize={}, flushIntervalMs={}, queueCapacity={}).",
-                batchSize, flushIntervalMs, queueCapacity);
+        LOG.info("PostgresFlowRepository started (writerThreads={}, batchSize={}, flushIntervalMs={}, queueCapacity={}).",
+                writerThreads, batchSize, flushIntervalMs, queueCapacity);
     }
 
     public void stop() {
@@ -184,6 +185,8 @@ public class PostgresFlowRepository implements FlowRepository {
     /** Test/embedding hook: use this DataSource directly instead of resolving one from the provider. */
     public void setDataSource(final DataSource dataSource) { this.dataSource = dataSource; }
     public void setBatchSize(final int batchSize) { this.batchSize = batchSize; }
+    /** Number of concurrent writer threads (each uses its own pooled connection while flushing). */
+    public void setWriterThreads(final int writerThreads) { this.writerThreads = writerThreads; }
     public void setFlushIntervalMs(final long flushIntervalMs) { this.flushIntervalMs = flushIntervalMs; }
     public void setQueueCapacity(final int queueCapacity) { this.queueCapacity = queueCapacity; }
     public void setRunSchemaChangelog(final boolean runSchemaChangelog) { this.runSchemaChangelog = runSchemaChangelog; }

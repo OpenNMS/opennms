@@ -59,13 +59,19 @@ config:edit org.opennms.features.flows.persistence.postgres
 config:property-set batchSize 1000          <1>
 config:property-set flushIntervalMs 500     <2>
 config:property-set queueCapacity 100000    <3>
-config:property-set queryThreads 4          <4>
+config:property-set writerThreads 1         <4>
+config:property-set queryThreads 4          <5>
 config:update
 ----
 <1> Maximum number of flows written per batch insert.
 <2> Maximum time, in milliseconds, before a partial batch is flushed.
 <3> Bounded write-queue capacity; when full, the newest flows are dropped (and counted) rather than blocking ingest.
-<4> Number of threads used to service flow queries.
+<4> Number of concurrent writer threads. Each writes on its own database connection, so raising this parallelizes inserts across CPU cores on the database (a single writer thread can bottleneck on one database core at high volume). Defaults to 1.
+<5> Number of threads used to service flow queries.
+
+NOTE: Each writer and query thread uses one connection from the flow database connection pool while active.
+For a dedicated external database, keep `writerThreads` + `queryThreads` at or below the pool size (`connection.pool.maxPool`, default 25) and raise the pool if you increase them.
+When using the internal database, connections come from the shared {page-component-title} datasource.
 
 [[flows-postgres-external]]
 == Use an external PostgreSQL database

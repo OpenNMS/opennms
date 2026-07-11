@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -62,17 +63,19 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
     private final Timer flushTimer;
     private final Histogram batchSizeHistogram;
     private final Histogram flushIntervalHistogram;
+    private final int threads;
 
-    /** Wall-clock time of the previous flush, used to derive the inter-flush interval. */
-    private long lastFlushMs = 0L;
+    /** Wall-clock time of the previous flush (across all writer threads), for the inter-flush interval. */
+    private final AtomicLong lastFlushMs = new AtomicLong(0L);
 
     private volatile boolean running = false;
-    private Thread worker;
+    private final List<Thread> workers = new ArrayList<>();
 
     public BatchingFlowWriter(final String name,
                               final int queueCapacity,
                               final int batchSize,
                               final long flushIntervalMs,
+                              final int threads,
                               final Consumer<List<T>> flush,
                               final MetricRegistry metrics) {
         if (queueCapacity < 1) {
@@ -81,6 +84,10 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
         if (batchSize < 1) {
             throw new IllegalArgumentException("batchSize must be >= 1");
         }
+        if (threads < 1) {
+            throw new IllegalArgumentException("threads must be >= 1");
+        }
+        this.threads = threads;
         this.queue = new ArrayBlockingQueue<>(queueCapacity);
         this.batchSize = batchSize;
         this.flushIntervalMs = flushIntervalMs > 0 ? flushIntervalMs : 500;
@@ -103,9 +110,14 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
             return;
         }
         running = true;
-        worker = new Thread(this::drainLoop, "postgres-flow-writer");
-        worker.setDaemon(true);
-        worker.start();
+        // Each worker independently drains the shared queue and flushes its own batch on its own pooled
+        // connection, so N threads write concurrently (N connections -> N PostgreSQL backends).
+        for (int i = 0; i < threads; i++) {
+            final Thread worker = new Thread(this::drainLoop, "postgres-flow-writer-" + i);
+            worker.setDaemon(true);
+            worker.start();
+            workers.add(worker);
+        }
     }
 
     /**
@@ -163,26 +175,28 @@ public class BatchingFlowWriter<T> implements AutoCloseable {
         }
     }
 
-    /** Record the wall-clock interval since the previous flush. Called only from the single drain thread. */
+    /** Record the wall-clock interval since the previous flush (across all writer threads). */
     private void recordFlushInterval() {
         final long now = System.currentTimeMillis();
-        if (lastFlushMs != 0L) {
-            flushIntervalHistogram.update(now - lastFlushMs);
+        final long prev = lastFlushMs.getAndSet(now);
+        if (prev != 0L) {
+            flushIntervalHistogram.update(now - prev);
         }
-        lastFlushMs = now;
     }
 
     @Override
     public synchronized void close() {
         running = false;
-        if (worker != null) {
+        for (final Thread worker : workers) {
             worker.interrupt();
+        }
+        for (final Thread worker : workers) {
             try {
                 worker.join(TimeUnit.SECONDS.toMillis(30));
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            worker = null;
         }
+        workers.clear();
     }
 }

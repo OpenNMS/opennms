@@ -32,6 +32,10 @@
             <cm:property name="batchSize" value="1000"/>
             <cm:property name="flushIntervalMs" value="500"/>
             <cm:property name="queueCapacity" value="100000"/>
+            <!-- Concurrent writer threads: each uses its own pooled connection (one PostgreSQL backend)
+                 while flushing, so raise this to parallelize writes across CPU cores on the database.
+                 Keep writerThreads + queryThreads <= the connection pool max (connection.pool.maxPool). -->
+            <cm:property name="writerThreads" value="1"/>
             <!-- One node should own schema creation; set false on additional writers (e.g. Sentinels) -->
             <cm:property name="runSchemaChangelog" value="true"/>
             <cm:property name="queryThreads" value="4"/>
@@ -88,6 +92,7 @@
         <property name="batchSize" value="${batchSize}"/>
         <property name="flushIntervalMs" value="${flushIntervalMs}"/>
         <property name="queueCapacity" value="${queueCapacity}"/>
+        <property name="writerThreads" value="${writerThreads}"/>
         <property name="runSchemaChangelog" value="${runSchemaChangelog}"/>
     </bean>
 
