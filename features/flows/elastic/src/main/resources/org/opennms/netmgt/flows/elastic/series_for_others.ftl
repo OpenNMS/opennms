@@ -38,19 +38,7 @@
         "size": 2
       },
       "aggs": {
-        "bytes": {
-          "proportional_sum": {
-            "fields": [
-              "netflow.delta_switched",
-              "netflow.last_switched",
-              "netflow.bytes",
-              "netflow.sampling_interval"
-            ],
-            "interval": "${step?long?c}ms",
-            "start": ${start?long?c},
-            "end": ${end?long?c}
-          }
-        },
+        "bytes": ${proportionalSum},
         <#-- netflow.ecn is a keyword -> max aggregation not possible; string comparison required-->
         "congestion_encountered": {
           "max": {

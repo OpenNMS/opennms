@@ -26,8 +26,10 @@ import static io.searchbox.core.search.aggregation.AggregationField.DOC_COUNT;
 import static io.searchbox.core.search.aggregation.AggregationField.KEY;
 import static io.searchbox.core.search.aggregation.AggregationField.KEY_AS_STRING;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.gson.JsonArray;
@@ -47,8 +49,28 @@ public class ProportionalSumAggregation extends Aggregation {
     public ProportionalSumAggregation(String name, JsonObject PartialSumAggregation) {
         super(name, PartialSumAggregation);
         if (PartialSumAggregation.has(String.valueOf(BUCKETS)) && PartialSumAggregation.get(String.valueOf(BUCKETS)).isJsonArray()) {
+            // Shape produced by the drift plugin's proportional_sum aggregation
             parseBuckets(PartialSumAggregation.get(String.valueOf(BUCKETS)).getAsJsonArray());
+        } else if (PartialSumAggregation.has(String.valueOf(AggregationField.VALUE))
+                && PartialSumAggregation.get(String.valueOf(AggregationField.VALUE)).isJsonObject()) {
+            // Shape produced by the scripted_metric replacement: a map of bucket start time -> sum
+            parseValueMap(PartialSumAggregation.get(String.valueOf(AggregationField.VALUE)).getAsJsonObject());
         }
+    }
+
+    private void parseValueMap(JsonObject valueMap) {
+        for (Map.Entry<String, JsonElement> entry : valueMap.entrySet()) {
+            final long time;
+            try {
+                time = Long.parseLong(entry.getKey());
+            } catch (NumberFormatException e) {
+                continue; // Skip entries without a parseable bucket key
+            }
+            final double value = entry.getValue().getAsDouble();
+            // Per-bucket document counts are not tracked by the scripted variant
+            dateHistograms.add(new DateHistogram(valueMap, time, entry.getKey(), value, 0L));
+        }
+        dateHistograms.sort(Comparator.comparing(DateHistogram::getTime));
     }
 
     private void parseBuckets(JsonArray bucketsSource) {

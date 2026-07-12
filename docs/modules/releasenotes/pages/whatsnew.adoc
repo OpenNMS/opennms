@@ -9,6 +9,15 @@
 
 == New features and important changes
 
+=== Elasticsearch Drift plugin no longer required for flows
+Flow series and total queries now compute proportional per-bucket sums with inline Painless scripts instead of the `proportional_sum` aggregation from the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin].
+This removes the need to install a plugin build that exactly matches the Elasticsearch version, and allows flow data to be stored on stock Elasticsearch or OpenSearch clusters.
+Inline Painless scripting must be enabled on the cluster; it is enabled by default on both products.
+
+Clusters that already run the Drift plugin can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+Note that flow totals and series values may increase after upgrading: the plugin undercounts traffic when a query window does not align with the graph resolution (which is the common case), and the script-based implementation corrects this.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).

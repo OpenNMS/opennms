@@ -11,9 +11,11 @@ Make sure that you have the following before you set up flows:
 
 * A configured {page-component-title} instance.
 * One or more devices that send flows visible to {page-component-title}, and that are monitored with SNMP.
-* Elasticsearch cluster set up with the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] installed on every Elasticsearch node.
-** The Drift plugin persists and queries flows that {page-component-title} collects.
-The Drift version must match the targeted Elasticsearch version.
+* An Elasticsearch or OpenSearch cluster to persist and query the flows that {page-component-title} collects.
+** Inline Painless scripting must be enabled on the cluster; it is enabled by default.
+{page-component-title} uses inline scripts to distribute flow traffic proportionally over the time buckets of a graph.
+** The https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] is no longer required.
+Clusters that still have the plugin installed can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`; note that the plugin version must match the Elasticsearch version exactly, and that the plugin computes lower totals than the script-based default when a query window does not align with the graph resolution.
 ** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
 ** (Optional) Create a job to clean the indices so that the disk does not fill up (for example, "keep _X_ days of flows").
 Filled disks are a challenging problem to address for those who are not Elasticsearch experts.
