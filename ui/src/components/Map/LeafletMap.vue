@@ -481,7 +481,7 @@ defineExpose({ invalidateSizeFn })
 
       &.NORMAL {
         background: var($success);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
       &.WARNING,
       &.MINOR,
@@ -490,7 +490,7 @@ defineExpose({ invalidateSizeFn })
       }
       &.CRITICAL {
         background: var($error);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
     }
   }

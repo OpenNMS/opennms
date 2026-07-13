@@ -321,12 +321,12 @@ export interface QueryParameters {
   [x: string]: any
 }
 
-export interface FeatherSortObject {
+export interface ISortObject {
   property: string
   value: SORT | any
 }
 
-export interface SortProps extends FeatherSortObject {
+export interface SortProps extends ISortObject {
   filters: Record<string, unknown>
   first: number
   multiSortMeta: Record<string, unknown>

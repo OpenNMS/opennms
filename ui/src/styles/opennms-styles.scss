@@ -23,9 +23,9 @@
 @use '@/styles/onms-typography' as *;
 
 /**
-* Add some additional base styles that weren't included in the base Feather typography.
+* Add some additional base styles that weren't included in the base onms typography.
 * These help override legacy OpenNMS Bootstrap styles so that all text on legacy pages
-* has a Feather font style.
+* uses the OpenNMS font style.
 */
 input,
 label,
@@ -37,8 +37,8 @@ text,
 th {
   @include onms-body-small();
   color: inherit;
-  // Feather has the following, which seem a little too much. Legacy OpenNMS fonts were a bit narrower,
-  // so we adjust these a bit below.
+  // The onms-body-small mixin sets the following, which seem a little too much.
+  // Legacy OpenNMS fonts were a bit narrower, so we adjust these a bit below.
   // letter-spacing: var(--onms-body-small-letter-spacing);  // .25004px
   // line-height: var(--onms-body-small-line-height);        // 1.5rem or 24px
   //
@@ -47,7 +47,7 @@ th {
   line-height: 1.3rem;
 }
 
-// Do not want the Feather behavior of changing the color of links when visited.
+// Do not want the default behavior of changing the color of links when visited.
 a:visited {
   color: var(--onms-clickable-normal);
 }

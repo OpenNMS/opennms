@@ -1,6 +1,6 @@
 <template>
   <div
-    class="feather-drawer-custom-padding"
+    class="event-config-drawer-custom-padding"
     v-if="store.eventModificationState.isEditMode !== CreateEditMode.None"
   >
     <BasicInformation />

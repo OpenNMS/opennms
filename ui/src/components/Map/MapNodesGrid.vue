@@ -115,7 +115,7 @@
 import { computed, reactive } from 'vue'
 
 import { useMapStore } from '@/stores/mapStore'
-import { Coordinates, Node, FeatherSortObject } from '@/types'
+import { Coordinates, Node, ISortObject } from '@/types'
 import { SORT } from '@/types'
 import SortableTh from './SortableTh.vue'
 
@@ -143,7 +143,7 @@ const sortStates: any = reactive({
   sysLocation: SORT.NONE
 })
 
-const sortChanged = (sortObj: FeatherSortObject) => {
+const sortChanged = (sortObj: ISortObject) => {
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }

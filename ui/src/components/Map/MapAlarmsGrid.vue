@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 
-import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
+import { Alarm, AlarmQueryParameters, ISortObject } from '@/types'
 import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
 import { SORT } from '@/types'
@@ -195,7 +195,7 @@ const sortStates: any = reactive({
   logMessage: SORT.NONE
 })
 
-const sortChanged = (sortObj: FeatherSortObject) => {
+const sortChanged = (sortObj: ISortObject) => {
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }

@@ -31,7 +31,7 @@ import {
   Alarm,
   AlarmModificationQueryVariable,
   Coordinates,
-  FeatherSortObject,
+  ISortObject,
   Node,
   QueryParameters
 } from '@/types'
@@ -45,8 +45,8 @@ export const useMapStore = defineStore('mapStore', () => {
   const mapBounds = ref<LatLngBounds | undefined>(undefined)
   const selectedSeverity = ref('NORMAL')
   const searchedNodeLabels = ref([] as string[])
-  const nodeSortObject = ref({ property: 'label', value: SORT.ASCENDING } as FeatherSortObject)
-  const alarmSortObject = ref({ property: 'id', value: SORT.DESCENDING } as FeatherSortObject)
+  const nodeSortObject = ref({ property: 'label', value: SORT.ASCENDING } as ISortObject)
+  const alarmSortObject = ref({ property: 'id', value: SORT.DESCENDING } as ISortObject)
   const nodeSearchTerm = ref('')
 
   const getNodeAlarmSeverityMap = () => {
@@ -189,11 +189,11 @@ export const useMapStore = defineStore('mapStore', () => {
     searchedNodeLabels.value = nodeLabels
   }
 
-  const setNodeSortObject = (sortObj: FeatherSortObject) => {
+  const setNodeSortObject = (sortObj: ISortObject) => {
     nodeSortObject.value = sortObj
   }
 
-  const setAlarmSortObject = (sortObj: FeatherSortObject) => {
+  const setAlarmSortObject = (sortObj: ISortObject) => {
     alarmSortObject.value = sortObj
   }
 

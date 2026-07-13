@@ -119,7 +119,7 @@ const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
 // data into that shape. Separators are preserved; the dummy top-level header
 // is dropped.
 //
-// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Feather
+// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Onms
 // icon *components*, so the icon component is stashed on a custom
 // `iconComponent` field (MenuItem allows arbitrary keys) and rendered via the
 // TieredMenu `#item` slot.

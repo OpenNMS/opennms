@@ -1,8 +1,8 @@
 import { SORT } from '@/types'
-import { FeatherSortObject } from '@/types'
+import { ISortObject } from '@/types'
 
 // Sort predicate function to use when both values are strings or can be cast to strings
-export const sortPredicate = (a: any, b: any, currentSort: FeatherSortObject) => {
+export const sortPredicate = (a: any, b: any, currentSort: ISortObject) => {
   const valueA = String(a[currentSort.property] ?? '')
   const valueB = String(b[currentSort.property] ?? '')
 

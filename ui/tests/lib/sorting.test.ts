@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { sortPredicate } from '@/lib/sorting'
 import { SORT } from '@/types'
-import { FeatherSortObject } from '@/types'
+import { ISortObject } from '@/types'
 
 describe('sorting', () => {
   describe('sortPredicate', () => {
-    const createSortObject = (property: string, value: string): FeatherSortObject => ({
+    const createSortObject = (property: string, value: string): ISortObject => ({
       property,
       value
     })

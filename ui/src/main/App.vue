@@ -69,10 +69,13 @@ onMounted(() => {
 html {
   overflow-x: hidden;
 }
-// Collapsed/base left offset for the SPA content, clearing the fixed side menu
-// rail. SideMenu's applyPush only overrides this (inline) while the rail is
-// pinned-expanded; otherwise this base applies.
+// Offsets for the SPA content, clearing the two fixed chrome elements:
+// - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).
+// - padding-left clears the fixed side-menu rail. SideMenu's applyPush only
+//   overrides padding-left (inline) while the rail is pinned-expanded; otherwise
+//   this base applies.
 .app-layout {
+  padding-top: var(--onms-header-height, 3.75rem);
   padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
 }
 .main-content {

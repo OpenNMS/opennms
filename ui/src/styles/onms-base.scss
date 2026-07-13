@@ -87,7 +87,7 @@ a:hover {
 }
 a:visited {
   // App convention: visited links keep the normal color (mirrors the override
-  // in opennms-feather-styles.scss), rather than a distinct visited color.
+  // in opennms-styles.scss), rather than a distinct visited color.
   color: var(--onms-clickable-normal);
 }
 

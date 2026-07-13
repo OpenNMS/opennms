@@ -104,9 +104,8 @@ Within the `menus` array, each item is a top-level menu item for the side menu.
   <tr>
     <td>icon</td>
     <td>An icon path ID for the icon to display.
-    These must be Feather icons, see https://feather.nanthealth.com/Components/Icon/ for a list. For example <code>"action/AccountCircle"</code>.
-    Note that currently only some of these icons are actually available to be used
-    in the menu templates.
+    These must be OpenNMS icons, see <code>src/components/icons</code> for a list. For example <code>"action/AccountCircle"</code>.
+    Note that currently only some of these icons are actually available to be used in the menu templates.
     You can use any icons that are currently used in the provided menu template files, and more will be added in the future.
     Currently icons are only available for the top-level menu items.
     </td>

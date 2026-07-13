@@ -6,7 +6,7 @@
     :style="{ width: '60em' }"
     data-test="left-drawer"
   >
-    <div class="feather-drawer-custom-padding">
+    <div class="node-filters-drawer-custom-padding">
       <section>
         <h3>Advanced Filters</h3>
       </section>
@@ -448,7 +448,7 @@ defineExpose({
 @use '@/styles/onms-tokens' as variables;
 @use '@/styles/onms-typography' as *;
 
-.feather-drawer-custom-padding {
+.node-filters-drawer-custom-padding {
   padding: 20px;
   height: 100%;
   overflow: auto;

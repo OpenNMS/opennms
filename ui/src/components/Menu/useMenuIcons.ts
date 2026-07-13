@@ -55,7 +55,7 @@ import IconNodes from '@/components/icons/network/Nodes.vue'
 const IconCategories = ['action', 'datavis', 'network']
 
 const useMenuIcons = () => {
-  // iconId should be a specifier from Feather, example:
+  // iconId should be a specifier from our Onms icons, example:
   // actions/accountCircle
   const getIcon = (iconId?: string | null) => {
     const arr = (iconId ?? '').split('/')

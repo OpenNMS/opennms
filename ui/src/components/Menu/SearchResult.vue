@@ -3,7 +3,7 @@
         <div class="label-wrapper">
             <div :style="{ paddingRight: '0.25em' }">
                 <div :style="{ display: 'flex', alignItems: 'center' }">
-                    <!-- We have removed font-awesome. Need to map any icons we get from the Search service to Feather icons. -->
+                    <!-- We have removed font-awesome. Need to map any icons we get from the Search service to Onms icons. -->
                     <!-- <font-awesome-icon v-if="item.icon" :icon="item.icon" :style="{ paddingRight: '6px' }" /> -->
                     <div>
                         {{ item.label }}

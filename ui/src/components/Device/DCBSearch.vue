@@ -35,7 +35,7 @@ const searchVal = ref<string | undefined>(undefined)
 const searchFilterHandler = (val = '') => {
   if (searchVal.value === undefined && val === '') {
     return
-  } // prevents dup mounted call from feather
+  } // prevents dup mounted call
   searchVal.value = val
 
   const newQueryParams: DeviceConfigQueryParams = {
