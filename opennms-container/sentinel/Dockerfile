@@ -82,6 +82,8 @@ RUN groupadd \
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
+RUN setcap -r $(readlink -f $(which java))
+
 RUN id sentinel
 RUN  getent group sentinel
 RUN  getent passwd sentinel
