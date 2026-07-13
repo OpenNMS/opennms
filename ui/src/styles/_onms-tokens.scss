@@ -23,7 +23,7 @@
 // SCSS-var -> CSS-custom-property-name indirection for the owned OpenNMS token
 // layer (replaces @featherds/styles/themes/variables). Usage sites keep
 // `var($token)`, which resolves to `var(--onms-token)`. The `--onms-*` values
-// are defined in _onms-theme.scss. Usable via both `@use ... as variables` and
+// are defined in onms-theme.scss. Usable via both `@use ... as variables` and
 // `@import`.
 @function prefix($name) {
   @return --onms-#{$name};

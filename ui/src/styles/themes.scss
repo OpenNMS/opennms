@@ -20,8 +20,12 @@
 /// License.
 ///
 
+// The Feather base reset (@featherds/styles) still consumes --feather-*, so keep
+// the Feather theme mixins applied until that base reset is vendored. Our own
+// code references only the owned --onms-* layer imported below.
 @import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-theme";
+@import "@/styles/onms-tokens";
 
 .open-light {
   @include open-light;

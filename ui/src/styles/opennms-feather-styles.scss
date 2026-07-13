@@ -21,7 +21,6 @@
 ///
 
 @use '@/styles/onms-typography' as *;
-@use "@featherds/styles/themes/variables";
 
 /**
 * Add some additional base styles that weren't included in the base Feather typography.
@@ -50,5 +49,5 @@ th {
 
 // Do not want the Feather behavior of changing the color of links when visited.
 a:visited {
-  color: var(--feather-clickable-normal);
+  color: var(--onms-clickable-normal);
 }

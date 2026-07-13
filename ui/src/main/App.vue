@@ -64,8 +64,7 @@ onMounted(() => {
 
 <style lang="scss">
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 html {
   overflow-x: hidden;
