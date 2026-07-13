@@ -26,9 +26,6 @@ importers:
 
   .:
     dependencies:
-      '@featherds/styles':
-        specifier: 0.12.43
-        version: 0.12.43
       '@fortawesome/fontawesome-svg-core':
         specifier: ^6.7.2
         version: 6.7.2
@@ -470,9 +467,6 @@ packages:
   '@eslint/plugin-kit@0.7.2':
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
-
-  '@featherds/styles@0.12.43':
-    resolution: {integrity: sha512-EBpgAFiKqWLAKrdiac+cGMpPQZ5oMXnhcKDEIto9YELNGjvEI96b+JLywnQZyEYfFm5H+Kx70Kq0WlJ3+ykxrg==}
 
   '@fortawesome/fontawesome-common-types@6.7.2':
     resolution: {integrity: sha512-Zs+YeHUC5fkt7Mg1l6XTniei3k4bwG/yo3iFUtZWd/pMx9g3fdvkSK9E0FOC+++phXOka78uJcYb8JaFkW52Xg==}
@@ -3021,8 +3015,6 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
-
-  '@featherds/styles@0.12.43': {}
 
   '@fortawesome/fontawesome-common-types@6.7.2': {}
 

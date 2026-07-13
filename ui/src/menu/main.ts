@@ -22,11 +22,9 @@
 
 import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
-import '@featherds/styles'
-import '@featherds/styles/themes/open-light.css'
+import '../styles/onms-base.scss'
 // Owned --onms-* token layer, so the shared components/styles (Menubar, SideMenu,
-// onms-typography) resolve their tokens in the standalone menu bundle too. The
-// Feather open-light.css above stays only until the base reset is vendored.
+// onms-typography) resolve their tokens in the standalone menu bundle too.
 import '../styles/onms-theme.scss'
 import '../styles/opennms-feather-styles.scss'
 import { setupPrimeVue } from '../theme/primevue-setup'

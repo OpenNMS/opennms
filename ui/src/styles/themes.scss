@@ -20,20 +20,11 @@
 /// License.
 ///
 
-// The Feather base reset (@featherds/styles) still consumes --feather-*, so keep
-// the Feather theme mixins applied until that base reset is vendored. Our own
-// code references only the owned --onms-* layer imported below.
-@import "@featherds/styles/themes/open-mixins";
+// Owned token layer (replaces the FeatherDS theme). Light/dark switching is
+// driven by the `.open-light` / `.open-dark` class (on <html>/<body>) that
+// onms-theme + PrimeVue's darkModeSelector key off.
 @import "@/styles/onms-theme";
 @import "@/styles/onms-tokens";
-
-.open-light {
-  @include open-light;
-}
-
-.open-dark {
-  @include open-dark;
-}
 
 body {
   background: var($background);
