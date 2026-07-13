@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { sortPredicate } from '@/lib/sorting'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import { FeatherSortObject } from '@/types'
 
 describe('sorting', () => {

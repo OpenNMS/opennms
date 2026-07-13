@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 
-import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
+import { useOutsideClick } from '@/composables/useOutsideClick'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
 import Button from 'primevue/button'
@@ -174,7 +174,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/dropdown/scss/mixins";
 @import '@/styles/onms-typography';
 @import "@featherds/styles/themes/variables";
 

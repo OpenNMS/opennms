@@ -1,5 +1,5 @@
 <template>
-  <FeatherAppLayout content-layout="full">
+  <OnmsAppLayout content-layout="full">
     <template v-slot:header>
       <Menubar />
       <SideMenu
@@ -19,7 +19,7 @@
     <template v-slot:footer>
       <Footer />
     </template>
-  </FeatherAppLayout>
+  </OnmsAppLayout>
 </template>
 
 <script
@@ -28,7 +28,7 @@
 >
 import { onMounted } from 'vue'
 
-import { FeatherAppLayout } from '@featherds/app-layout'
+import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
