@@ -39,8 +39,8 @@ th {
   color: inherit;
   // Feather has the following, which seem a little too much. Legacy OpenNMS fonts were a bit narrower,
   // so we adjust these a bit below.
-  // letter-spacing: var(--feather-body-small-letter-spacing);  // .25004px
-  // line-height: var(--feather-body-small-line-height);        // 1.5rem or 24px
+  // letter-spacing: var(--onms-body-small-letter-spacing);  // .25004px
+  // line-height: var(--onms-body-small-line-height);        // 1.5rem or 24px
   //
   // For p, we leave it alone as the slightly larger spacing is more readable for paragraphs of text.
   letter-spacing: normal;

@@ -190,7 +190,7 @@ onMounted(() => {
 .extended-search-container {
   .add-search-term-button {
     border-radius: 0;
-    border: 1px solid var(--feather-primary);
+    border: 1px solid var(--onms-primary);
     width: auto;
     padding: 0.5em 1em;
   }

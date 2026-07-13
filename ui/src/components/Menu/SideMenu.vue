@@ -277,8 +277,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   width: var(--onms-side-menu-collapsed, 3.75rem);
-  background-color: var(--feather-surface-dark);
-  color: var(--feather-state-text-color-on-surface-dark);
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   transition: width 0.1s linear;
   // The nav itself does not scroll (the inner .p-tieredmenu list does); keep it
   // visible so the toggle button and rail chrome are never clipped.
@@ -286,16 +286,16 @@ onBeforeUnmount(() => {
 
   // Force the TieredMenu (and its flyout submenus, which are descendants of
   // this nav) onto the dark surface via PrimeVue design tokens.
-  --p-tieredmenu-background: var(--feather-surface-dark);
-  --p-tieredmenu-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-background: var(--onms-surface-dark);
+  --p-tieredmenu-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-border-color: transparent;
   --p-tieredmenu-border-radius: 0;
-  --p-tieredmenu-item-color: var(--feather-state-text-color-on-surface-dark);
-  --p-tieredmenu-item-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-color: var(--onms-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-item-focus-color: #fff;
   --p-tieredmenu-item-icon-focus-color: #fff;
   --p-tieredmenu-item-focus-background: rgba(255, 255, 255, 0.12);
-  --p-tieredmenu-submenu-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-submenu-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-submenu-icon-focus-color: #fff;
   --p-tieredmenu-separator-border-color: rgba(255, 255, 255, 0.2);
 }
@@ -322,7 +322,7 @@ onBeforeUnmount(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: -2px;
   }
 }

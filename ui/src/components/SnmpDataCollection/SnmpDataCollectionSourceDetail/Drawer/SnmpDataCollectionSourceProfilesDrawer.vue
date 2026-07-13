@@ -149,7 +149,7 @@ watch(() => props.visible, async (visible) => {
 
 .section-label {
   @include onms-headline4;
-  color: var(--feather-secondary-text-on-surface);
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .chips-container {
@@ -161,7 +161,7 @@ watch(() => props.visible, async (visible) => {
 
 .empty-text {
   @include onms-body-large;
-  color: var(--feather-secondary-text-on-surface);
+  color: var(--onms-secondary-text-on-surface);
   font-style: italic;
 }
 

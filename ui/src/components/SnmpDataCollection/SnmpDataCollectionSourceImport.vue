@@ -780,21 +780,21 @@ defineExpose({
       }
 
       .success-icon {
-        color: var(--feather-success);
+        color: var(--onms-success);
         cursor: pointer;
         height: 2em;
         width: 2em;
       }
 
       .error-icon {
-        color: var(--feather-error);
+        color: var(--onms-error);
         cursor: pointer;
         height: 2em;
         width: 2em;
       }
 
       .warning-icon {
-        color: var(--feather-major);
+        color: var(--onms-major);
         cursor: pointer;
         height: 2em;
         width: 2em;
@@ -804,21 +804,21 @@ defineExpose({
 
   .info-section {
     .success-icon-text {
-      color: var(--feather-success);
+      color: var(--onms-success);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .error-icon-text {
-      color: var(--feather-error);
+      color: var(--onms-error);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .warning-icon-text {
-      color: var(--feather-major);
+      color: var(--onms-major);
       vertical-align: middle;
       height: 2em;
       width: 2em;

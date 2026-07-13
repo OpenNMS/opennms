@@ -251,7 +251,7 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 
     .rra-title {
       @include onms-headline4;
-      color: var(--feather-secondary-text-on-surface);
+      color: var(--onms-secondary-text-on-surface);
     }
   }
 }

@@ -1,7 +1,7 @@
 // Vendored typography mixins (NMS-19981, Phase 6) — local replacement for
 // @featherds/styles/mixins/typography. Values copied verbatim from FeatherDS
 // (open-light theme; typography metrics are theme-independent). Self-contained:
-// concrete literals instead of var(--feather-*) tokens. `color` uses the
+// concrete literals instead of var(--onms-*) tokens. `color` uses the
 // PrimeVue text token (theme-aware, replaces --feather-primary-text-on-surface).
 // Font families (Inter / OpenSans) match the app's existing @font-face delivery.
 

@@ -452,7 +452,7 @@ onMounted(async () => {
 @use '@/styles/onms-tokens' as variables;
 
 .p-select-overlay {
-  font-family: var(--feather-font-family);
+  font-family: var(--onms-font-family);
 }
 
 // The Select overlay is teleported to body, so :deep() can't reach it.

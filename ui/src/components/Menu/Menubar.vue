@@ -185,13 +185,13 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: var(--feather-zindex-fixed, 1030);
+  z-index: var(--onms-zindex-fixed, 1030);
   display: flex;
   align-items: center;
   height: var(--onms-header-height, 3.75rem);
   padding: 0 1rem;
-  background-color: var(--feather-surface-dark);
-  color: var(--feather-state-text-color-on-surface-dark);
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
 }
 
 .onms-menubar__left {
@@ -276,7 +276,7 @@ onUnmounted(() => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
-  font-family: var(--feather-header-font-family);
+  font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
   margin-right: 1em;
 
@@ -303,7 +303,7 @@ onUnmounted(() => {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 0.5rem;
-  color: var(--feather-state-text-color-on-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   cursor: pointer;
   outline: none;
 
@@ -312,7 +312,7 @@ onUnmounted(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: 2px;
     border-radius: 4px;
   }

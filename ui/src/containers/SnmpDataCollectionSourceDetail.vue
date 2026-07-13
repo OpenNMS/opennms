@@ -553,7 +553,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           .field-label {
             @include onms-headline4;
             margin-right: 10px;
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
             min-width: 80px;
           }
 
@@ -568,7 +568,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .no-profiles-text {
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
           }
 
           .profiles-field-content {

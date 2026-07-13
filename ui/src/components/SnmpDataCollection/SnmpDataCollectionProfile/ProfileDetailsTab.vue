@@ -218,8 +218,8 @@ const update = <K extends keyof ConfigDetailsModel>(key: K, value: ConfigDetails
 }
 
 .settings-select {
-  background-color: var(--feather-background);
-  color: var(--feather-secondary-text-on-surface);
+  background-color: var(--onms-background);
+  color: var(--onms-secondary-text-on-surface);
   max-width: 30em;
 }
 
