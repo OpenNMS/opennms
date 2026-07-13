@@ -44,7 +44,7 @@ cp ~/projects/opennms/ui/src/menu/dist-menu/index.html .
 All Vue components use Composition API with `<script setup>` and TypeScript:
 ```vue
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 
 const props = defineProps<{
   definition: SnmpDefinition
@@ -127,12 +127,15 @@ const useSnackbar = () => {
 }
 ```
 
-### UI Components: FeatherDS Design System
-All UI components come from `@featherds/*` packages (v0.12.43):
-- Buttons: `FeatherButton` with `primary`/`secondary` props
-- Forms: `FeatherInput`, `FeatherSelect`, `FeatherCheckbox`
-- Layout: `FeatherAppLayout`, `FeatherExpansionPanel`
-- Typography: Use CSS classes `.headline3`, `.headline4`, `.subtitle1`
+### UI Components: PrimeVue + owned `onms-` layer
+UI components come from PrimeVue (v4.x) plus a small owned layer that insulates
+the app from third-party UI churn (the "seam"). FeatherDS (`@featherds/*`) has
+been fully removed.
+- Buttons/Forms/Overlays: PrimeVue components (`Button`, `Select`, `InputText`, `Checkbox`, `AutoComplete`, `TieredMenu`, `Menubar`, ...) imported from `primevue/*`
+- Icons: `OnmsIcon` wrapper + vendored SVG components under `src/components/icons/`
+- Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
+- Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via the `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
+- Typography: owned mixins in `src/styles/_onms-typography.scss` (and CSS classes `.headline3`, `.headline4`, `.subtitle1`)
 
 Custom elements (e.g., `<rapi-doc>`) must be registered in `vite.config.ts` under `vue.template.compilerOptions.isCustomElement`.
 
