@@ -243,7 +243,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
                     final Integer nodeId = rset.getInt(1);
-                    final InetAddress ipaddr = addr(rset.getString(2));
+                    final InetAddress ipaddr = toInetAddressOrNull(rset.getString(2));
                     final String serviceName = rset.getString(3);
                     if (ipaddr == null || serviceName == null) {
                         continue;
@@ -352,7 +352,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
-                	resultList.add(addr(rset.getString(1)));
+                	final InetAddress inetAddress = toInetAddressOrNull(rset.getString(1));
+                	if (inetAddress != null) {
+                	    resultList.add(inetAddress);
+                	}
                 }
             }
 
@@ -371,6 +374,45 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         LOG.debug("Filter.getIPAddressList({}): resultList.size = {}", rule, resultList.size());
         return resultList;
+    }
+
+    /** dotted quad with each octet bounded to 0-255 */
+    private static final Pattern IPV4_LITERAL_PATTERN = Pattern.compile(
+            "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}");
+    /** the characters an IPv6 literal can contain; never a resolvable hostname */
+    private static final Pattern IPV6_LITERAL_PATTERN = Pattern.compile("[0-9a-fA-F:.]+");
+
+    /**
+     * Result-row conversion that must never resolve hostnames and must not
+     * fail the whole evaluation over one bad row: numeric IPv6 zones (the
+     * form OpenNMS stores) convert as-is, interface-name zones fall back to
+     * the zone-stripped address, anything else is logged and skipped.
+     */
+    static InetAddress toInetAddressOrNull(final String rawAddress) {
+        if (rawAddress == null) {
+            return null;
+        }
+        final String value = rawAddress.trim();
+        final int percent = value.indexOf('%');
+        final String addressPart = percent < 0 ? value : value.substring(0, percent);
+        final boolean literal = addressPart.indexOf(':') >= 0
+                ? IPV6_LITERAL_PATTERN.matcher(addressPart).matches()
+                : IPV4_LITERAL_PATTERN.matcher(addressPart).matches();
+        if (literal) {
+            try {
+                return addr(value);
+            } catch (final IllegalArgumentException e) {
+                if (percent >= 0) {
+                    try {
+                        return addr(addressPart);
+                    } catch (final IllegalArgumentException e2) {
+                        // fall through to the warning below
+                    }
+                }
+            }
+        }
+        LOG.warn("Skipping filter result row with an IP address value that cannot be represented: '{}'", rawAddress);
+        return null;
     }
 
 	/**
