@@ -3,11 +3,11 @@
     <div class="raw-checkbox">
       <PCheckbox
         binary
-        inputId="raw-values"
+        :inputId="`${id}-raw-values`"
         :modelValue="displayRawValues"
         @update:modelValue="valueDisplayHandler"
       />
-      <label for="raw-values">Raw values</label>
+      <label :for="`${id}-raw-values`">Raw values</label>
     </div>
     <table
       summary="Graph values"
