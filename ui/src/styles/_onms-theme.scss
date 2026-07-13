@@ -1,0 +1,76 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+// Owned OpenNMS token definitions (replaces the FeatherDS theme). Generic
+// tokens that exactly match a PrimeVue token are aliased so they inherit
+// PrimeVue light/dark switching; OpenNMS-domain and non-matching tokens are
+// copied literals (values verbatim from FeatherDS open-light/open-dark).
+:root {
+  // aliases (verified equal to the FeatherDS values in both themes)
+  --onms-primary: var(--p-primary-color);
+  --onms-secondary-text-on-surface: var(--p-text-muted-color);
+  --onms-surface: var(--p-content-background);
+
+  // theme-independent literals
+  --onms-surface-dark: #131736;
+  --onms-state-text-color-on-surface-dark: rgba(255, 255, 255, 0.78);
+  --onms-font-family: OpenSans, Helvetica, Arial, sans-serif;
+  --onms-header-font-family: Inter, Helvetica, Arial, sans-serif;
+  --onms-font-semibold: 600;
+  --onms-body-small-line-height: 1.5rem;
+  --onms-body-small-letter-spacing: 0.01786em;
+  --onms-spacing-xxs: 0.25rem;
+  --onms-spacing-m: 1rem;
+  --onms-spacing-xl: 1.5rem;
+  --onms-zindex-dropdown: 1000;
+  --onms-zindex-fixed: 1030;
+}
+
+.open-light {
+  --onms-primary-text-on-color: rgb(255, 255, 255);
+  --onms-background: #f4f7fc;
+  --onms-border-on-surface: rgba(10, 12, 27, 0.12);
+  --onms-clickable-normal: #0402a9;
+  --onms-shade-3: rgba(10, 12, 27, 0.24);
+  --onms-success: #0b720c;
+  --onms-error: #a5021f;
+  --onms-warning: #fbe947;
+  --onms-major: #e35302;
+  --onms-minor: #ffac26;
+  --onms-cleared: #757575;
+  --onms-indeterminate: #0092c7;
+}
+
+.open-dark {
+  --onms-primary-text-on-color: rgb(10, 12, 27);
+  --onms-background: #0a0c1b;
+  --onms-border-on-surface: rgba(255, 255, 255, 0.24);
+  --onms-clickable-normal: #b3e7ff;
+  --onms-shade-3: rgba(255, 255, 255, 0.24);
+  --onms-success: #83ee7d;
+  --onms-error: #ffa3b5;
+  --onms-warning: #fbe947;
+  --onms-major: #e35302;
+  --onms-minor: #ffac26;
+  --onms-cleared: #b7b7b7;
+  --onms-indeterminate: #20b9f0;
+}
