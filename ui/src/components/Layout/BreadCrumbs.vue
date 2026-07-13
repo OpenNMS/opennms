@@ -23,7 +23,7 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .breadcrumbs {
   width: 100%;

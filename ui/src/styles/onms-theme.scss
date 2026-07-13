@@ -27,6 +27,7 @@
 :root {
   // aliases (verified equal to the FeatherDS values in both themes)
   --onms-primary: var(--p-primary-color);
+  --onms-primary-text-on-surface: var(--p-text-color);
   --onms-secondary-text-on-surface: var(--p-text-muted-color);
   --onms-surface: var(--p-content-background);
 

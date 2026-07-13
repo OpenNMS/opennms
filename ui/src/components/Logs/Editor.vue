@@ -99,7 +99,7 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .editor {
   height: calc(100vh - 120px);
   display: flex;

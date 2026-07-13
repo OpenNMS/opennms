@@ -9,7 +9,7 @@ import Speed from './Speed.svg'
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .speed {
   color: var($primary);
 

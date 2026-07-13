@@ -472,7 +472,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
 <style scoped lang="scss">
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-detail-container {
   margin: 0 auto;

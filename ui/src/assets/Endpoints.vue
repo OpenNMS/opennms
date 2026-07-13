@@ -9,7 +9,7 @@ import Endpoints from './Endpoints.svg'
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .endpoints {
   color: var($secondary-text-on-surface);
 }

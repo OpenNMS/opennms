@@ -361,7 +361,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-profile-details {
   margin: 0 auto;
@@ -449,7 +449,7 @@ onMounted(async () => {
 </style>
 
 <style lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 
 .p-select-overlay {
   font-family: var(--feather-font-family);

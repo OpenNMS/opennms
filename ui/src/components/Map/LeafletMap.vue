@@ -385,7 +385,7 @@ defineExpose({ invalidateSizeFn })
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // The map is full-bleed under the fixed top menu bar, so push Leaflet's top
 // controls (zoom + layers, both top-right) down to clear it. A stable CSS

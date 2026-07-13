@@ -142,7 +142,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/onms-typography' as *;
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 
 .asset-filter-container {
   .add-asset-filter-button {

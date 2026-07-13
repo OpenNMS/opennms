@@ -138,7 +138,7 @@ watch(() => props.visible, async (visible) => {
 
 <style scoped lang="scss">
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .container {
   padding: 20px;

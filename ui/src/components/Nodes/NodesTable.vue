@@ -508,7 +508,7 @@ defineExpose({ onSort, onPage, removeItem })
 <style lang="scss" scoped>
 @use '@/styles/onms-elevation' as *;
 @use '@/styles/onms-typography' as *;
-@use "@featherds/styles/themes/variables" as variables;
+@use "@/styles/onms-tokens" as variables;
 
 .node-table {
   margin-top: 1rem;

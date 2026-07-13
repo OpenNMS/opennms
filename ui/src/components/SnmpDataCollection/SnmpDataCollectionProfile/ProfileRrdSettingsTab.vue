@@ -218,7 +218,7 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .rrd-settings-box {
   padding: 20px 0;

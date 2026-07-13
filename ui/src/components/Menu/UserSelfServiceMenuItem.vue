@@ -152,7 +152,7 @@ const onMenuItemClick = async (item: MenuItem) => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .self-service-menubar-icon-wrapper {
   position: relative;

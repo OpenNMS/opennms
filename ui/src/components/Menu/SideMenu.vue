@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // Fixed, collapsible side menu rail. Replaces FeatherSidenav/FeatherDock.
 // Pinned dark (independent of the active light/dark app theme) so it stays

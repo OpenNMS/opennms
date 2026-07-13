@@ -185,7 +185,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/onms-typography' as *;
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 
 .extended-search-container {
   .add-search-term-button {

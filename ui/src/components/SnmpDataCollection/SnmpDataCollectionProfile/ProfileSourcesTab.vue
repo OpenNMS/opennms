@@ -106,7 +106,7 @@ const removeSource = (name: string) => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .sources-box {
   padding: 20px 0;

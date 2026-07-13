@@ -103,7 +103,7 @@ const onSave = async (definition: SnmpDefinition) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 @use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 

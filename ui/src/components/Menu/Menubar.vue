@@ -175,7 +175,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // Fixed top menu bar. Replaces FeatherAppBar, which was used only as a fixed
 // 3-column flex bar (its skip-link, responsive hamburger, scroll-hide and

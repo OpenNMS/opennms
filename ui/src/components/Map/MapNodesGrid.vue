@@ -164,7 +164,7 @@ const onNodeLabelClick = (label: string) => {
 
 <style lang="scss" scoped>
 @import "@/styles/onms-table";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 #wrap {
   // Height accounts for the 15px top gap below so the pane keeps its footprint.

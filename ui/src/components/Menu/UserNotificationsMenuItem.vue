@@ -276,7 +276,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 <style lang="scss" scoped>
 @import '@/styles/onms-typography';
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // Foreground uses PrimeVue tokens (not FeatherDS vars) so text tracks the same
 // dark-mode selector that drives the Popover background. On embedded JSP pages
