@@ -1,80 +1,81 @@
 <template>
-  <FeatherSelect
-    class="select-ack"
-    name="alarmOptions"
-    id="alarmOptions"
-    v-model="alarmOption"
-    :disabled="disableAckSelect"
-    :options="alarmOptions"
-    text-prop="option"
-    @update:modelValue="selectAlarmAck"
-    label="Alarm Action"
-  />
+  <FormField label="Alarm Action" class="select-ack">
+    <PSelect
+      name="alarmOptions"
+      id="alarmOptions"
+      v-model="alarmOption"
+      :disabled="disableAckSelect"
+      :options="alarmOptions"
+      optionLabel="option"
+      @update:modelValue="selectAlarmAck"
+    />
+  </FormField>
   <div id="wrap">
     <table class="tl1 tl2 tl3" summary="Alarms">
       <thead>
         <tr>
           <th class="first-th">
-            <FeatherCheckbox v-model="all" label="All" />
+            <PCheckbox binary v-model="all" aria-label="All" />
           </th>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="id"
             :sort="sortStates.id"
             @sort-changed="sortChanged"
-          >ID</FeatherSortHeader>
+          >ID</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="severity"
             :sort="sortStates.severity"
             @sort-changed="sortChanged"
-          >SEVERITY</FeatherSortHeader>
+          >SEVERITY</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="nodeLabel"
             :sort="sortStates.nodeLabel"
             @sort-changed="sortChanged"
-          >NODE LABEL</FeatherSortHeader>
+          >NODE LABEL</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="uei"
             :sort="sortStates.uei"
             @sort-changed="sortChanged"
-          >UEI</FeatherSortHeader>
+          >UEI</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="count"
             :sort="sortStates.count"
             @sort-changed="sortChanged"
-          >COUNT</FeatherSortHeader>
+          >COUNT</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="lastEvent"
             :sort="sortStates.lastEventTime"
             @sort-changed="sortChanged"
-          >LAST EVENT</FeatherSortHeader>
+          >LAST EVENT</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="logMessage"
             :sort="sortStates.logMessage"
             @sort-changed="sortChanged"
-          >LOG MESSAGE</FeatherSortHeader>
+          >LOG MESSAGE</SortableTh>
         </tr>
       </thead>
       <tbody>
         <tr v-for="alarm in alarms" :key="alarm.id">
           <td :class="alarm.severity" class="first-td">
-            <FeatherCheckbox
+            <PCheckbox
+              binary
+              aria-label="Alarm"
               @update:modelValue="selectCheckbox(alarm)"
               :modelValue="all || alarmCheckboxes[alarm.id]"
-              label="Alarm"
             />
           </td>
           <td>{{ alarm.id }}</td>
@@ -93,10 +94,15 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
-import { FeatherSelect } from '@featherds/select'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import Select from 'primevue/select'
+import Checkbox from 'primevue/checkbox'
+import { SORT } from '@featherds/table'
+import FormField from '@/components/Common/FormField.vue'
+import SortableTh from './SortableTh.vue'
 import { useMapStore } from '@/stores/mapStore'
+
+const PSelect = Select
+const PCheckbox = Checkbox
 
 const mapStore = useMapStore()
 const alarms = computed<Alarm[]>(() => mapStore.getAlarms())
@@ -217,20 +223,20 @@ onMounted(() => {
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
-  background: var($surface);
+  background: var(--p-content-background);
 }
 table {
   @include table;
   @include table-condensed;
-  background: var($surface);
-  color: var($primary-text-on-surface);
+  background: var(--p-content-background);
+  color: var(--p-text-color);
   padding-top: 4px;
   margin-top: 15px;
 }
 thead {
   z-index: 2;
   position: relative;
-  background: var($surface);
+  background: var(--p-content-background);
 }
 .select-ack {
   z-index: var($zindex-dropdown);

@@ -61,15 +61,14 @@ const clear = () => fileEditorStore.clearLogs()
   scoped
   lang="scss"
 >
-@import "@featherds/styles/themes/variables";
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
 
 @mixin console {
   font-family: "Ubuntu Mono", monospace;
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
   border-radius: 1px;
-  background: var($shade-4);
-  color: var($primary-text-on-surface);
+  background: var(--p-datatable-header-cell-background);
+  color: var(--p-text-color);
   height: 250px;
   overflow-x: auto;
   transition: height 0.5s;
@@ -88,7 +87,7 @@ const clear = () => fileEditorStore.clearLogs()
   display: flex;
   justify-content: space-between;
   // height: 20px;
-  border-bottom: 1px solid var($secondary-variant);
+  border-bottom: 1px solid var(--p-content-border-color);
   padding: 7px;
   .btns {
     display: flex;
@@ -100,7 +99,7 @@ const clear = () => fileEditorStore.clearLogs()
   }
   .icon-err {
     .feather-icon {
-      color: var($error);
+      color: var(--p-red-500);
     }
   }
 }
@@ -108,7 +107,7 @@ const clear = () => fileEditorStore.clearLogs()
   margin-top: 5px;
   margin-left: 10px;
   .log-err {
-    color: var($error);
+    color: var(--p-red-500);
   }
 }
 </style>

@@ -407,8 +407,8 @@ defineExpose({ invalidateSizeFn })
 }
 
 .leaflet-popup-content-wrapper {
-  background: var($surface);
-  color: var(--feather-secondary-text-on-surface);
+  background: var(--p-content-background);
+  color: var(--p-text-muted-color);
 }
 
 .leaflet-popup-content {

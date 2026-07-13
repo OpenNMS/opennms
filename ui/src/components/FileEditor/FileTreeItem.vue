@@ -93,7 +93,6 @@ const openConfirmDeleteModal = (file: IFile) => fileEditorStore.setFileToDelete(
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
 ul,
 li {
   list-style-type: none;
@@ -112,9 +111,9 @@ li {
   margin-left: 0px;
 }
 .selected {
-  background: var($shade-3);
+  background: var(--p-highlight-background);
   span {
-    color: var($primary);
+    color: var(--p-highlight-color);
   }
 }
 .hidden {
@@ -123,6 +122,6 @@ li {
 .remove {
   float: right;
   margin-right: 10px;
-  color: var($primary-text-on-surface) !important;
+  color: var(--p-text-color) !important;
 }
 </style>

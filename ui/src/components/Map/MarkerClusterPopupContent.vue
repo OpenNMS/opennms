@@ -153,7 +153,7 @@ const getItems = () => {
   thead {
     z-index: 2;
     position: relative;
-    background: var($surface);
+    background: var(--p-content-background);
   }
 
   td {

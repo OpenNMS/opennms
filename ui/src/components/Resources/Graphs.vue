@@ -1,20 +1,24 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-11">
+  <div class="onms-row">
+    <div class="onms-col-11">
       <div class="controls">
         <TimeControls @updateTime="updateTime" />
-        <FeatherInput
+        <FormField
           v-if="!singleGraphDefinition"
           class="search-input"
-          label="Search"
-          v-model="searchVal"
-          @update:modelValue="searchHandler"
-        />
+        >
+          <PInputText
+            placeholder="Search"
+            aria-label="Search"
+            :modelValue="searchVal"
+            @update:modelValue="(val) => searchHandler(val as string)"
+          />
+        </FormField>
       </div>
       <GraphContainer
         v-for="resource in resources"
@@ -38,7 +42,8 @@ import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
-import { FeatherInput } from '@featherds/input'
+import InputText from 'primevue/inputtext'
+import FormField from '@/components/Common/FormField.vue'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -46,6 +51,8 @@ import { GraphDefinition, useGraphStore } from '@/stores/graphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
+
+const PInputText = InputText
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 }})

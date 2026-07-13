@@ -3,89 +3,89 @@
     <table class="tl1 tl2 tl3" summary="Nodes">
       <thead>
         <tr>
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="id"
             :sort="sortStates.id"
             @sort-changed="sortChanged"
-          >ID</FeatherSortHeader>
+          >ID</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="foreignSource"
             :sort="sortStates.foreignSource"
             @sort-changed="sortChanged"
-          >FOREIGN SOURCE</FeatherSortHeader>
+          >FOREIGN SOURCE</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="foreignId"
             :sort="sortStates.foreignId"
             @sort-changed="sortChanged"
-          >FOREIGN ID</FeatherSortHeader>
+          >FOREIGN ID</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="label"
             :sort="sortStates.label"
             @sort-changed="sortChanged"
-          >LABEL</FeatherSortHeader>
+          >LABEL</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="labelSource"
             :sort="sortStates.labelSource"
             @sort-changed="sortChanged"
-          >LABEL SOURCE</FeatherSortHeader>
+          >LABEL SOURCE</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="lastCapabilitiesScan"
             :sort="sortStates.lastCapabilitiesScan"
             @sort-changed="sortChanged"
-          >LAST CAP SCAN</FeatherSortHeader>
+          >LAST CAP SCAN</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="primaryInterface"
             :sort="sortStates.primaryInterface"
             @sort-changed="sortChanged"
-          >PRIMARY INTERFACE</FeatherSortHeader>
+          >PRIMARY INTERFACE</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="sysObjectId"
             :sort="sortStates.sysObjectId"
             @sort-changed="sortChanged"
-          >SYSOBJECTID</FeatherSortHeader>
+          >SYSOBJECTID</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="sysName"
             :sort="sortStates.sysName"
             @sort-changed="sortChanged"
-          >SYSNAME</FeatherSortHeader>
+          >SYSNAME</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="sysDescription"
             :sort="sortStates.sysDescription"
             @sort-changed="sortChanged"
-          >SYSDESCRIPTION</FeatherSortHeader>
+          >SYSDESCRIPTION</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="sysContact"
             :sort="sortStates.sysContact"
             @sort-changed="sortChanged"
-          >SYSCONTACT</FeatherSortHeader>
+          >SYSCONTACT</SortableTh>
 
-          <FeatherSortHeader
+          <SortableTh
             scope="col"
             property="sysLocation"
             :sort="sortStates.sysLocation"
             @sort-changed="sortChanged"
-          >SYSLOCATION</FeatherSortHeader>
+          >SYSLOCATION</SortableTh>
         </tr>
       </thead>
       <tbody>
@@ -116,7 +116,8 @@ import { computed, onMounted, reactive } from 'vue'
 
 import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import { SORT } from '@featherds/table'
+import SortableTh from './SortableTh.vue'
 
 const mapStore = useMapStore()
 const nodes = computed<Node[]>(() => mapStore.getNodes())
@@ -180,20 +181,20 @@ onMounted(() => {
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
-  background: var($surface);
+  background: var(--p-content-background);
 }
 table {
   @include table;
   @include table-condensed;
-  background: var($surface);
-  color: var($primary-text-on-surface);
+  background: var(--p-content-background);
+  color: var(--p-text-color);
   padding-top: 4px;
   margin-top: 15px;
 }
 thead {
   z-index: 2;
   position: relative;
-  background: var($surface);
+  background: var(--p-content-background);
 }
 .first-td {
   padding-left: 12px;
