@@ -395,14 +395,24 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         final String value = rawAddress.trim();
         final int percent = value.indexOf('%');
         final String addressPart = percent < 0 ? value : value.substring(0, percent);
-        final boolean literal = addressPart.indexOf(':') >= 0
+        final String zone = percent < 0 ? null : value.substring(percent + 1);
+        final boolean v6 = addressPart.indexOf(':') >= 0;
+        final boolean literal = v6
                 ? IPV6_LITERAL_PATTERN.matcher(addressPart).matches()
                 : IPV4_LITERAL_PATTERN.matcher(addressPart).matches();
+        // zone ids are IPv6-only, and only numeric ones are host-independent:
+        // a named zone would resolve against this host's interfaces
+        final boolean numericZone = zone != null && !zone.isEmpty() && zone.chars().allMatch(Character::isDigit);
         if (literal) {
             try {
-                return addr(value);
+                if (zone == null) {
+                    return addr(value);
+                }
+                if (v6) {
+                    return numericZone ? addr(value) : addr(addressPart);
+                }
             } catch (final IllegalArgumentException e) {
-                if (percent >= 0) {
+                if (v6 && numericZone) {
                     try {
                         return addr(addressPart);
                     } catch (final IllegalArgumentException e2) {

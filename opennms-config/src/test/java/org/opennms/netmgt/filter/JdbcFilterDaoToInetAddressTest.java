@@ -56,11 +56,23 @@ public class JdbcFilterDaoToInetAddressTest {
     }
 
     @Test
-    public void dropsUnresolvableInterfaceNameZones() {
-        // "no-such-if0" names an interface of the monitored node, not this
-        // host; the address is still usable without its zone
+    public void dropsInterfaceNameZonesWithoutLocalResolution() {
+        // named zones refer to the monitored node's interfaces; they must be
+        // stripped even when a same-named interface exists on this host
         assertEquals(InetAddressUtils.addr("fe80:0000:0000:0000:0000:0000:0000:0001"),
                 JdbcFilterDao.toInetAddressOrNull("fe80:0000:0000:0000:0000:0000:0000:0001%no-such-if0"));
+        assertEquals(InetAddressUtils.addr("fe80:0000:0000:0000:0000:0000:0000:0001"),
+                JdbcFilterDao.toInetAddressOrNull("fe80:0000:0000:0000:0000:0000:0000:0001%lo"));
+        assertEquals(InetAddressUtils.addr("fe80:0000:0000:0000:0000:0000:0000:0001"),
+                JdbcFilterDao.toInetAddressOrNull("fe80:0000:0000:0000:0000:0000:0000:0001%"));
+    }
+
+    @Test
+    public void skipsZoneSuffixOnIpv4() {
+        // zone ids are IPv6-only; a suffixed IPv4 literal must not reach
+        // hostname resolution
+        assertNull(JdbcFilterDao.toInetAddressOrNull("10.0.0.1%eth0"));
+        assertNull(JdbcFilterDao.toInetAddressOrNull("10.0.0.1%1"));
     }
 
     @Test
