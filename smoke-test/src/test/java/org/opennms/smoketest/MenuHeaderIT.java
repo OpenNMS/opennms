@@ -127,7 +127,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Metrics Menu
         clickMenuItem("metricsMenu", "Resource Graphs");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[@class='feather-list-header'][contains(text()[normalize-space()], 'Resources')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//li[contains(text()[normalize-space()], 'Resources')]")));
 
         // Distributed Monitoring
         clickMenuItem("distributedMonitoringMenu", "Manage Minions");
@@ -315,11 +315,14 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Logs']")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='logs-sidebar']")));
 
-        // Omitting for now - need to fix!
         // Geographical map page
         frontPage();
         clickTopMenuItem("mapsMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
+
+        // Alarms/Nodes table at bottom of map
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Alarms')]]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Nodes')]]")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
         // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");

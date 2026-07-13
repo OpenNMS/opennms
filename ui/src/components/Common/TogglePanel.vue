@@ -34,8 +34,19 @@ const emit = defineEmits<{
 // Toggle when clicking anywhere in the header, not just the chevron. The
 // built-in toggle button manages its own click, so ignore clicks that
 // originate from it to avoid double-toggling.
+//
+// Use composedPath() rather than event.target.closest(): the toggle button's
+// icon swaps (Plus <-> Minus) when it toggles, which can detach the clicked
+// node from the DOM before this bubbled handler runs. A detached node's
+// closest() returns null, so the guard would miss it and fire a second,
+// unwanted toggle (rapid expand-then-collapse). composedPath is captured at
+// dispatch time and stays stable through propagation.
 const onHeaderClick = (event: MouseEvent) => {
-  if ((event.target as HTMLElement).closest('button')) {
+  const fromToggleButton = event.composedPath().some(
+    el => el instanceof Element &&
+      (el.classList.contains('p-panel-header-actions') || el.classList.contains('p-panel-toggle-button'))
+  )
+  if (fromToggleButton) {
     return
   }
   emit('update:collapsed', !props.collapsed)

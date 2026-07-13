@@ -22,13 +22,14 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
+import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
 import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '../src/components/Configuration/copy/requisitionTypes'
 import { test, expect, describe, it } from 'vitest'
 import { LocalConfiguration, ProvisionDServerConfiguration } from '@/components/Configuration/configuration.types'
 import ConfigurationTable from '@/components/Configuration/ConfigurationTable.vue'
 import ProvisionDConfig from '@/containers/ProvisionDConfig.vue'
-import { findByText } from './utils'
 
 const mockRequisitionProvisionDServiceConfig = {
   [RequisitionData.ImportName]: 'test',
@@ -51,15 +52,17 @@ const mockProps = {
 
 const wrapper = mount(ConfigurationTable, {
   global: {
-    plugins: [createTestingPinia()],
-    stubs: ['router-link', 'FeatherRipple']
+    plugins: [createTestingPinia(), PrimeVue],
+    directives: { tooltip: Tooltip },
+    stubs: ['router-link']
   },
   propsData: mockProps
 })
 
 const provisionDConfig = mount(ProvisionDConfig, {
   global: {
-    plugins: [createTestingPinia()],
+    plugins: [createTestingPinia(), PrimeVue],
+    directives: { tooltip: Tooltip },
     stubs: ['router-link']
   }
 })
@@ -262,8 +265,8 @@ test('The File type config path keeps params', () => {
 test('The edit btn disables if the record starts with "requisition://"', async () => {
   const editBtn = wrapper.get('[data-test="edit-btn"]')
 
-  // expect edit btn to be enabled
-  expect(editBtn.attributes('aria-disabled')).toBeUndefined()
+  // expect edit btn to be enabled (PrimeVue Button renders native `disabled`)
+  expect((editBtn.element as HTMLButtonElement).disabled).toBe(false)
 
   // update props with requisition type url
   const newProps = { ...mockProps, itemList: [mockRequisitionProvisionDServiceConfig] }
@@ -271,7 +274,7 @@ test('The edit btn disables if the record starts with "requisition://"', async (
   await wrapper.setProps(newProps)
 
   // expect edit btn to be disabled
-  expect(editBtn.attributes('aria-disabled')).toBe('true')
+  expect((editBtn.element as HTMLButtonElement).disabled).toBe(true)
 })
 
 test('Display appropriate form errors for VMware requisition', async () => {
@@ -323,19 +326,15 @@ test('Display appropriate form errors for VMware requisition', async () => {
 })
 
 test('External sources is populated', async () => {
-  const btn = provisionDConfig.get('[data-test="external-req-btn"]')
-  await btn.trigger('click')
-  const select = provisionDConfig.get('[data-test="external-source-select"] .feather-select-input')
-  await select.trigger('click')
-  const DNS = findByText(provisionDConfig, 'span', 'DNS')
-  expect(DNS).toBeDefined()
+  // PrimeVue Select teleports its option list to <body>, so assert the options
+  // bound to the select include the expected external source.
+  const select: any = provisionDConfig.findComponent('[data-test="external-source-select"]')
+  const options = select.props('options') as Array<{ name: string }>
+  expect(options.some(o => o.name === 'DNS')).toBe(true)
 })
 
 test('Schedule Type is populated', async () => {
-  const btn = provisionDConfig.get('[data-test="external-req-btn"]')
-  await btn.trigger('click')
-  const select = provisionDConfig.get('[data-test="schedule-type-select"] .feather-select-input')
-  await select.trigger('click')
-  const Monthly = findByText(provisionDConfig, 'span', 'Monthly')
-  expect(Monthly).toBeDefined()
+  const select: any = provisionDConfig.findComponent('[data-test="schedule-type-select"]')
+  const options = select.props('options') as Array<{ name: string }>
+  expect(options.some(o => o.name === 'Monthly')).toBe(true)
 })

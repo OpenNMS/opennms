@@ -4,17 +4,17 @@
     :class="props?.active ? 'config-help-panel-open' : ''"
   >
     <div class="config-help-close">
-      <FeatherButton
+      <PButton
         class="button"
         text
-        icon=""
+        aria-label="Close help"
         @click="onClose"
       >
         <FeatherIcon
           class="buttonIcon"
           :icon="chevronRight"
         />
-      </FeatherButton>
+      </PButton>
     </div>
     <div class="config-help-header">
       <div class="config-help-title">
@@ -44,11 +44,13 @@
 import { PropType, computed } from 'vue'
 
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { LocalConfiguration } from './configuration.types'
+
+const PButton = Button
 
 /**
  * Props
@@ -172,11 +174,9 @@ const helpText = computed(() => {
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
-
 .config-help-header {
   a.config-help-link:visited {
-    color: var($secondary-variant);
+    color: var(--p-primary-color);
   }
 }
 </style>
@@ -185,7 +185,6 @@ const helpText = computed(() => {
   scoped
 >
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
 
 .config-help-close {
   display: flex;
@@ -194,7 +193,7 @@ const helpText = computed(() => {
   height: 50px;
   .button {
     font-size: 42px;
-    color: var($secondary-variant);
+    color: var(--p-primary-color);
     display: flex;
     align-items: center;
     margin: 0;
@@ -202,7 +201,7 @@ const helpText = computed(() => {
 }
 .config-help-panel {
   position: fixed;
-  background-color: var($background);
+  background-color: var(--p-content-background);
   z-index: 5;
   top: 60px;
   right: 0;
@@ -218,14 +217,14 @@ const helpText = computed(() => {
   padding: 20px 40px;
   a.config-help-link {
     font-weight: 700;
-    color: var($secondary-variant);
+    color: var(--p-primary-color);
     margin-top: 40px;
     margin-bottom: 0px;
   }
 }
 .config-help-title {
   @include headline2();
-  color: var($primary);
+  color: var(--p-primary-color);
   margin-top: 32px;
 }
 .config-help-body {
@@ -236,7 +235,7 @@ const helpText = computed(() => {
   }
 }
 .config-help-hr {
-  border-bottom: 1px solid var($primary);
+  border-bottom: 1px solid var(--p-primary-color);
   margin: 0 40px;
   margin-bottom: 80px;
 }
@@ -244,7 +243,7 @@ const helpText = computed(() => {
   margin: 0 40px;
   .footer-title {
     font-weight: 700;
-    color: var($primary);
+    color: var(--p-primary-color);
   }
   .footer-subtitle {
     @include headline4();
@@ -252,7 +251,7 @@ const helpText = computed(() => {
   }
   .footer-button {
     display: flex;
-    border: 1px solid var($secondary-variant);
+    border: 1px solid var(--p-primary-color);
     max-width: 200px;
     text-align: center;
     height: 50px;
@@ -267,24 +266,24 @@ const helpText = computed(() => {
       cursor: pointer;
     }
     .footer-yes {
-      color: var($primary);
+      color: var(--p-primary-color);
       transition: all ease-in-out 0.3s;
     }
     .footer-no {
-      color: var($primary);
+      color: var(--p-primary-color);
       width: 100px;
       transition: all ease-in-out 0.3s;
     }
     &.footer-wrap-yes {
       .footer-yes {
-        background-color: var($secondary-variant);
-        color: var($surface);
+        background-color: var(--p-primary-color);
+        color: var(--p-content-background);
       }
     }
     &.footer-wrap-no {
       .footer-no {
-        background-color: var($secondary-variant);
-        color: var($surface);
+        background-color: var(--p-primary-color);
+        color: var(--p-content-background);
       }
     }
   }
