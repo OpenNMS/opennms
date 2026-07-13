@@ -228,29 +228,29 @@ onUnmounted(() => {
   max-width: none;
 }
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 

@@ -298,7 +298,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 // Dark trigger button (replaces FeatherButton link). Matches the OG menu look.
 .menubar-dropdown-button-dark {
-  color: rgba(255, 255, 255, 0.78); // --feather-surface-light or --feather-state-text-color-on-surface-dark
+  color: rgba(255, 255, 255, 0.78); // --onms-surface-light or --onms-state-text-color-on-surface-dark
   background-color: transparent;
   border: none;
   text-transform: none;
@@ -353,29 +353,29 @@ div.user-notification-badge-wrapper {
   padding: 10px;
 }
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 
@@ -393,7 +393,7 @@ div.user-notification-badge-wrapper {
   line-height: 1.5rem;
   font-weight: 800;
   background-color: #ffffff;
-  color: #131736; // --feather-surface-dark
+  color: #131736; // --onms-surface-dark
   border-radius: .8rem;
 }
 
