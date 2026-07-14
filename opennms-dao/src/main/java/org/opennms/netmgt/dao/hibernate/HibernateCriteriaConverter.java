@@ -498,6 +498,16 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             if (Strings.isNullOrEmpty(attribute)) {
                 attribute = "ipAddr";
             }
+            if (restriction.getValue() instanceof String) {
+                // translatable match expressions become native-inet range
+                // predicates answered through an expression index
+                final String nativePredicate = org.opennms.core.utils.IplikeSqlTranslator
+                        .toSqlPredicate((String) restriction.getValue(), "{alias}." + attribute);
+                if (nativePredicate != null) {
+                    m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(nativePredicate));
+                    return;
+                }
+            }
             final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
             m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }

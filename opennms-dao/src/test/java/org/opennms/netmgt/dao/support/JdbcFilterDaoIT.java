@@ -346,12 +346,12 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Test
     public void testGetInterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*.*.*.*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
+        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (ipInterface.ipaddr IS NOT NULL)", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
     }
 
     @Test
     public void testGetIpv6InterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
+        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (ipInterface.ipaddr IS NOT NULL)", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
     }
 
     @Test
