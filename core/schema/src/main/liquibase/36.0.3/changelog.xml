@@ -69,4 +69,59 @@
         </rollback>
     </changeSet>
 
+    <!-- Native-inet IP filtering: a garbage-tolerant cast function plus
+         expression indexes over the text ipaddr columns. IplikeSqlTranslator
+         emits predicates over opennms_safe_inet(ipaddr) so PostgreSQL answers
+         iplike filter expressions through these indexes instead of evaluating
+         iplike() per row. The stored values stay text; IPv6 addresses carrying
+         a zone id (which the inet type cannot represent) index as the
+         zone-stripped address, and match expressions that constrain the zone
+         are not translated and call iplike() instead. -->
+
+    <changeSet runOnChange="true" author="mmassengill" id="opennms-safe-inet-function">
+        <createProcedure>
+CREATE OR REPLACE FUNCTION opennms_safe_inet(i_ipaddress text) RETURNS inet AS $safeinet$
+-- the zone id is stripped for IPv6 only: zone ids are IPv6-only, and
+-- iplike() rejects IPv4 values that carry one
+SELECT CASE
+  WHEN i_ipaddress ~ '^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$'
+  THEN i_ipaddress::inet
+  WHEN split_part(i_ipaddress, '%', 1) ~ '^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$'
+  THEN split_part(i_ipaddress, '%', 1)::inet
+  ELSE NULL
+END
+$safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
+        </createProcedure>
+        <rollback>
+            <sql>DROP FUNCTION IF EXISTS opennms_safe_inet(text);</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- CONCURRENTLY cannot run inside a transaction. The plain DROP first
+         clears any invalid index left behind by an interrupted concurrent
+         build, so a re-run of the changeset converges. -->
+    <changeSet runInTransaction="false" author="mmassengill" id="36.0.3-ipinterface-safe-inet-index">
+        <sql>DROP INDEX IF EXISTS ipinterface_safe_inet_idx;</sql>
+        <sql>CREATE INDEX CONCURRENTLY ipinterface_safe_inet_idx ON ipinterface (opennms_safe_inet(ipaddr));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS ipinterface_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Partial: most events carry no ipaddr, and skipping them keeps the
+         per-insert index-maintenance cost on this high-churn table low.
+         Translated predicates always include "ipaddr IS NOT NULL" so the
+         planner can prove this index applicable.
+         The existing events_ipaddr_idx btree deliberately stays: the v1
+         event-list exact-interface filter (IPADDR = ?), ORDER BY ipaddr
+         sorting, and the REST v2 ipinterface join still compare the text
+         column directly and would regress to sequential scans without it. -->
+    <changeSet runInTransaction="false" author="mmassengill" id="36.0.3-events-safe-inet-index">
+        <sql>DROP INDEX IF EXISTS events_safe_inet_idx;</sql>
+        <sql>CREATE INDEX CONCURRENTLY events_safe_inet_idx ON events (opennms_safe_inet(ipaddr)) WHERE ipaddr IS NOT NULL;</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS events_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
