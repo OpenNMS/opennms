@@ -20,6 +20,22 @@
 -- License.
 --
 
+-- PL/pgSQL implementation of iplike, revision 2 (see the COMMENT ON at the
+-- end; the Migrator uses it to upgrade older PL/pgSQL revisions in place).
+--
+-- Profiling-driven changes relative to revision 1, semantics unchanged
+-- (verified against the iplike reference corpus by IPLikeCoverageIT):
+--   * value classification via family(::inet) instead of regex matching
+--     (the zone id is stripped with split_part first: ::inet cannot parse
+--     it, and an 8-field LIKE guard keeps compressed IPv6 out of the
+--     field-parsing loop, which assumes exactly 8 groups)
+--   * to_number(x, '999') replaced by ::integer casts
+--   * regex operators in check_rule replaced by strpos()
+--   * parsing wrapped in a nested block whose EXCEPTION handler turns any
+--     cast/parse error into 'f' (this is what tolerates garbage input); the
+--     null check and the match-all fast paths stay OUTSIDE that block so the
+--     most common calls never pay the handler's subtransaction setup
+
 create or replace function iplike(i_ipaddress text, i_rule text) returns boolean as $$
   declare
     c_i integer;
@@ -28,14 +44,13 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
     c_addrwork text;
     c_addrtemp text;
     c_rulework text;
-    c_ruletemp text;
     c_scopeid text;
     c_rulescope text;
 
     i integer;
 
   begin
-    if i_ipaddress is NULL or i_ipaddress is null then
+    if i_ipaddress is null then
         return 'f';
     end if;
 
@@ -43,94 +58,91 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
         return 't';
     end if;
 
-    -- First, strip apart the IP address into octets, and
-    -- verify that they are legitimate (0-255)
-    --
-    -- IPv4
-    if i_ipaddress ~ E'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' and i_rule ~ E'^[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+$' then
-        c_addrwork := i_ipaddress;
-        c_rulework := i_rule;
+    begin
+        -- IPv4
+        if family(split_part(i_ipaddress, '%', 1)::inet) = 4 and i_rule ~ E'^[0-9*,-]+\\.[0-9*,-]+\\.[0-9*,-]+\\.[0-9*,-]+$' then
+            c_addrwork := i_ipaddress;
+            c_rulework := i_rule;
 
-        i := 0;
-        while i < 4 loop
-            if (strpos(c_addrwork, '.') > 0) then
-                c_i := to_number(substr(c_addrwork, 0, strpos(c_addrwork, '.')), '999');
-            else 
-                c_i := to_number(c_addrwork, '999');
-            end if;
+            i := 0;
+            while i < 4 loop
+                if (strpos(c_addrwork, '.') > 0) then
+                    c_i := (substr(c_addrwork, 0, strpos(c_addrwork, '.')))::integer;
+                else
+                    c_i := c_addrwork::integer;
+                end if;
 
-            if c_i > 255 then
-                return 'f';
-            end if;
-            c_addrwork := ltrim(ltrim(c_addrwork, '0123456789'), '.');
+                c_addrwork := ltrim(ltrim(c_addrwork, '0123456789'), '.');
 
-            if (strpos(c_rulework, '.') > 0) then
-                c_r := substr(c_rulework, 0, strpos(c_rulework, '.'));
-            else
-                c_r := c_rulework;
-            end if;
+                if (strpos(c_rulework, '.') > 0) then
+                    c_r := substr(c_rulework, 0, strpos(c_rulework, '.'));
+                else
+                    c_r := c_rulework;
+                end if;
 
-            if check_rule(c_i, c_r) is not true then
-                return 'f';
-            end if;
+                if check_rule(c_i, c_r) is not true then
+                    return 'f';
+                end if;
 
-            c_rulework := ltrim(ltrim(c_rulework, '0123456789,-*'), '.');
+                c_rulework := ltrim(ltrim(c_rulework, '0123456789,-*'), '.');
 
-            i := i + 1;
-        end loop;
-    -- IPv6
-    elsif i_ipaddress ~ E'^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+(%.+)?$' and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%.+)?$' then
-        c_addrwork := i_ipaddress;
-        c_rulework := i_rule;
-
-        i := 0;
-        while i < 8 loop
-            if (strpos(c_addrwork, ':') > 0) then
-                c_addrtemp = substr(c_addrwork, 0, strpos(c_addrwork, ':'));
-            else 
-                c_addrtemp = c_addrwork;
-            end if;
-            if (strpos(c_addrtemp, '%') > 0) then
-                -- Strip off the scope ID for now
-                c_scopeid = substr(c_addrtemp, strpos(c_addrtemp, '%') + 1);
-                c_addrtemp = substr(c_addrtemp, 0, strpos(c_addrtemp, '%'));
-            end if;
-            while length(c_addrtemp) < 4 loop
-                c_addrtemp := '0' || c_addrtemp;
+                i := i + 1;
             end loop;
-            c_i := cast(cast('x' || cast(c_addrtemp as text) as bit(16)) as integer);
+        -- IPv6 (the LIKE guard requires the 8 fully-expanded groups this
+        -- parsing loop assumes, as the previous regex did)
+        elsif i_ipaddress like '%:%:%:%:%:%:%:%'
+              and family(split_part(i_ipaddress, '%', 1)::inet) = 6
+              and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%.+)?$' then
+            c_addrwork := i_ipaddress;
+            c_rulework := i_rule;
 
-            -- Max 16-bit integer value
-            if c_i > 65535 then
-                return 'f';
-            end if;
-            c_addrwork := ltrim(ltrim(c_addrwork, '0123456789abcdef'), ':');
+            i := 0;
+            while i < 8 loop
+                if (strpos(c_addrwork, ':') > 0) then
+                    c_addrtemp = substr(c_addrwork, 0, strpos(c_addrwork, ':'));
+                else
+                    c_addrtemp = c_addrwork;
+                end if;
+                if (strpos(c_addrtemp, '%') > 0) then
+                    -- Strip off the scope ID for now
+                    c_scopeid = substr(c_addrtemp, strpos(c_addrtemp, '%') + 1);
+                    c_addrtemp = substr(c_addrtemp, 0, strpos(c_addrtemp, '%'));
+                end if;
+                while length(c_addrtemp) < 4 loop
+                    c_addrtemp := '0' || c_addrtemp;
+                end loop;
+                c_i := cast(cast('x' || cast(c_addrtemp as text) as bit(16)) as integer);
 
-            if (strpos(c_rulework, ':') > 0) then
-                c_r := substr(c_rulework, 0, strpos(c_rulework, ':'));
-            elsif (strpos(c_rulework, '%') > 0) then
-                c_rulescope := substr(c_rulework, strpos(c_rulework, '%') + 1);
-                c_r := substr(c_rulework, 0, strpos(c_rulework, '%'));
-            else
-                c_r := c_rulework;
-            end if;
+                c_addrwork := ltrim(ltrim(c_addrwork, '0123456789abcdef'), ':');
 
-            if check_hex_rule(c_i, c_r) is not true then
-                return 'f';
-            end if;
-            if (c_rulescope is not null) and ((c_scopeid = c_rulescope) is not true) then
-                return 'f';
-            end if;
+                if (strpos(c_rulework, ':') > 0) then
+                    c_r := substr(c_rulework, 0, strpos(c_rulework, ':'));
+                elsif (strpos(c_rulework, '%') > 0) then
+                    c_rulescope := substr(c_rulework, strpos(c_rulework, '%') + 1);
+                    c_r := substr(c_rulework, 0, strpos(c_rulework, '%'));
+                else
+                    c_r := c_rulework;
+                end if;
 
-            c_rulework := ltrim(ltrim(c_rulework, '0123456789abcdef,-*'), ':');
+                if check_hex_rule(c_i, c_r) is not true then
+                    return 'f';
+                end if;
+                if (c_rulescope is not null) and ((c_scopeid = c_rulescope) is not true) then
+                    return 'f';
+                end if;
 
-            i := i + 1;
-        end loop;
-    else
+                c_rulework := ltrim(ltrim(c_rulework, '0123456789abcdef,-*'), ':');
+
+                i := i + 1;
+            end loop;
+        else
+            return 'f';
+        end if;
+
+        return 't';
+    exception when others then
         return 'f';
-    end if;
-
-  return 't';
+    end;
 end;
 $$ language plpgsql;
 
@@ -139,9 +151,8 @@ declare
     c_r1 integer;
     c_r2 integer;
 begin
-
-    c_r1 := to_number(split_part(i_rule, '-', 1), '999');
-    c_r2 := to_number(split_part(i_rule, '-', 2), '999');
+    c_r1 := split_part(i_rule, '-', 1)::integer;
+    c_r2 := split_part(i_rule, '-', 2)::integer;
     if i_octet between c_r1 and c_r2 then
         return 't';
     end if;
@@ -184,8 +195,7 @@ begin
 
     c_work := i_rule;
     while c_work <> '' loop
-        -- raise notice 'c_work = %',c_work;
-        if c_work ~ ',' then
+        if (strpos(c_work, ',') > 0) then
             c_element := substr(c_work, 0, strpos(c_work, ','));
             c_work := substr(c_work, strpos(c_work, ',')+1);
         else
@@ -193,14 +203,14 @@ begin
             c_work := '';
         end if;
 
-        if c_element ~ '-' then
+        if (strpos(c_element, '-') > 0) then
             if check_range(i_octet, c_element) then
                 return 't';
             end if;
         else
             if c_element = '*' then
                 return 't';
-            elsif i_octet = to_number(c_element, '99999') then
+            elsif i_octet = c_element::integer then
                 return 't';
             end if;
         end if;
@@ -220,8 +230,7 @@ begin
 
     c_work := i_rule;
     while c_work <> '' loop
-        -- raise notice 'c_work = %',c_work;
-        if c_work ~ ',' then
+        if (strpos(c_work, ',') > 0) then
             c_element := substr(c_work, 0, strpos(c_work, ','));
             c_work := substr(c_work, strpos(c_work, ',')+1);
         else
@@ -229,7 +238,7 @@ begin
             c_work := '';
         end if;
 
-        if c_element ~ '-' then
+        if (strpos(c_element, '-') > 0) then
             if check_hex_range(i_octet, c_element) then
                 return 't';
             end if;
@@ -245,3 +254,5 @@ begin
     return 'f';
 end;
 $$ language plpgsql;
+
+comment on function iplike(text, text) is 'opennms-iplike-plpgsql-2';
