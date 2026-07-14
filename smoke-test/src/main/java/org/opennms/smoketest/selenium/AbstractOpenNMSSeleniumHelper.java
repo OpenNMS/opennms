@@ -47,7 +47,6 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -611,37 +610,62 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
 
+        // Right after navigation, the top link is in the DOM but the Vue menu app is still settling
+        // (re-rendering as getMainMenu/getPlugins resolve), so the first click on it is (usually) a no-op --
+        // PrimeVue never marks the item active and no flyout renders. Once settled, a click opens
+        // the flyout and it renders in ~25ms. So keep this wait SHORT: a registered click is found
+        // almost immediately, and a no-op click is re-issued by the next outer retry ~1s later
+        // (the guard below makes re-clicking toggle-safe), which catches the menu as soon as it is
+        // interactive instead of wasting a multi-second cap per attempt. Keep it comfortably above
+        // the flyout render time so a good click is never mistaken for a timeout.
+        final WebDriverWait popupWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+
         // Return values. Need to be final to be used in a closure
         final WebElement[] foundElement = new WebElement[] { null };
 
-        Unreliables.retryUntilTrue(timeout, TimeUnit.SECONDS, () -> {
-            final String topMenuXpath = TOP_MENU_XPATH.replace("$MENU_ITEM_TEXT", topMenuItemText);
-            final String topMenuLinkXpath = topMenuXpath + TOP_MENU_LINK_XPATH;
+        // A large implicit wait (LOAD_TIMEOUT) would make every explicit-wait poll below block for
+        // the full implicit timeout while the flyout is still absent, defeating popupWait. Drop it
+        // to zero for the duration of this method and restore it in the finally block.
+        setImplicitWait(0, TimeUnit.MILLISECONDS);
 
-            final WebElement topMenuLinkElement = findElementByXpath(topMenuLinkXpath);
-            shortWait.until(ExpectedConditions.visibilityOf(topMenuLinkElement));
+        try {
+            Unreliables.retryUntilTrue(timeout, TimeUnit.SECONDS, () -> {
+                final String topMenuXpath = TOP_MENU_XPATH.replace("$MENU_ITEM_TEXT", topMenuItemText);
+                final String topMenuLinkXpath = topMenuXpath + TOP_MENU_LINK_XPATH;
 
-            // if this is a top-level menu element, return it, caller will click it
-            if (isTopMenuItem) {
-                foundElement[0] = topMenuLinkElement;
-                return true;
-            }
+                final WebElement topMenuLinkElement = findElementByXpath(topMenuLinkXpath);
+                shortWait.until(ExpectedConditions.visibilityOf(topMenuLinkElement));
 
-            // click the top menu link element to display the popup/flyout menu item
-            topMenuLinkElement.click();
+                // if this is a top-level menu element, return it, caller will click it
+                if (isTopMenuItem) {
+                    foundElement[0] = topMenuLinkElement;
+                    return true;
+                }
 
-            // popup menu item link element
-            final String popupMenuItemXpath = topMenuXpath + POPUP_MENU_ITEM_XPATH.replace("$SUBMENU_TEXT", subMenuText);
+                final String popupMenuItemXpath = topMenuXpath + POPUP_MENU_ITEM_XPATH.replace("$SUBMENU_TEXT", subMenuText);
 
-            final WebElement popupMenuItemLink = findElementByXpath(popupMenuItemXpath);
+                // Only click to OPEN the flyout when it isn't already open. This keeps re-clicking on
+                // the next retry toggle-safe (PrimeVue closes the submenu on a second click of an open
+                // item) and lets us recover from a click that had no effect -- right after navigation
+                // the top link can be present but not yet interactive while the Vue menu app settles,
+                // so the first click is often a no-op and the retry ~1s later is what actually opens it.
+                if (findElementsByXpath(popupMenuItemXpath).isEmpty()) {
+                    topMenuLinkElement.click();
+                }
 
-            if (popupMenuItemLink != null) {
-                foundElement[0] = popupMenuItemLink;
-                return true;
-            }
-
-            return false;
-        });
+                // Wait (briefly) for the flyout to render rather than querying once immediately -- that
+                // immediate query was the original CI race, since the flyout renders asynchronously.
+                try {
+                    foundElement[0] = popupWait.until(
+                            ExpectedConditions.elementToBeClickable(By.xpath(popupMenuItemXpath)));
+                    return true;
+                } catch (final TimeoutException e) {
+                    return false;
+                }
+            });
+        } finally {
+            setImplicitWait();
+        }
 
         return foundElement[0];
     }
@@ -656,34 +680,33 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown-item-content')]//a[@name='self-service-logout']";
         final String CHANGE_PASSWORD_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown-item-content')]//a[@name='self-service-changePassword']";
 
-        final int timeout = 5;
+        final String itemXpath = (itemType == SelfServiceMenuType.CHANGE_PASSWORD) ? CHANGE_PASSWORD_XPATH : LOGOUT_XPATH;
+
+        final int timeout = 10;
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+        // The dropdown panel opens asynchronously on hover, so poll for the item with an explicit wait.
+        final WebDriverWait popupWait = new WebDriverWait(getDriver(), Duration.ofSeconds(4));
 
-        Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
-            String itemXpath = LOGOUT_XPATH;
+        // As in findMenuItemLink: drop the large implicit wait (LOAD_TIMEOUT) so the explicit waits
+        // below don't block for the full implicit timeout while the dropdown is still opening.
+        setImplicitWait(0, TimeUnit.MILLISECONDS);
+        try {
+            Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
+                final Actions action = new Actions(getDriver());
 
-            if (itemType == SelfServiceMenuType.LOGOUT) {
-                itemXpath = LOGOUT_XPATH;
-            } else if (itemType == SelfServiceMenuType.CHANGE_PASSWORD) {
-                itemXpath = CHANGE_PASSWORD_XPATH;
-            }
+                // Find the self service menu trigger and hover over it so the dropdown appears.
+                final WebElement selfServiceMenu = findElementByXpath(SELF_SERVICE_BUTTON_XPATH);
+                shortWait.until(ExpectedConditions.visibilityOf(selfServiceMenu));
+                action.moveToElement(selfServiceMenu).build().perform();
 
-            final Actions action = new Actions(getDriver());
+                // Wait for the dropdown item to render (hover-open is async), then click it.
+                popupWait.until(ExpectedConditions.elementToBeClickable(By.xpath(itemXpath))).click();
 
-            // Find the self service menu and hover over it so that the dropdown menu appears
-            final WebElement selfServiceMenu = findElementByXpath(SELF_SERVICE_BUTTON_XPATH);
-            shortWait.until(ExpectedConditions.visibilityOf(selfServiceMenu ));
-
-            action.moveToElement(selfServiceMenu).build().perform();
-
-            // Find and click the link item on the dropdown menu
-            WebElement linkToClick = findElementByXpath(itemXpath);
-
-            shortWait.until(ExpectedConditions.visibilityOf(linkToClick));
-            linkToClick.click();
-
-            return null;
-        });
+                return null;
+            });
+        } finally {
+            setImplicitWait();
+        }
     }
 
     protected void clickLogout() {
