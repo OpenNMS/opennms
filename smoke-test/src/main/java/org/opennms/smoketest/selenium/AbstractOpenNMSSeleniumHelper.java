@@ -549,67 +549,65 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected void clickTopMenuItem(final String menuItemId) {
-        LOG.debug("Clicking top menu item with id '{}'", menuItemId);
+    protected void clickTopMenuItem(final String topMenuItemText) {
+        LOG.debug("Clicking top menu item with text '{}'", topMenuItemText);
 
-        WebElement link = findTopMenuItemLink(menuItemId);
+        WebElement link = findMenuItemLink(topMenuItemText, "", true, MENU_ITEM_TIMEOUT);
 
         if (link != null) {
             link.click();
         }
     }
 
-    protected void clickMenuItem(final String menuItemId, final String subMenuText) {
-        clickMenuItem(menuItemId, subMenuText, MENU_ITEM_TIMEOUT);
+    protected void clickMenuItem(final String topMenuItemText, final String subMenuText) {
+        clickMenuItem(topMenuItemText, subMenuText, MENU_ITEM_TIMEOUT);
     }
 
     /**
      * Click on a side menu item to navigate to the linked page.
-     * See 'menu-template.json' for the menu and submenu IDs.
-     * Note that the UI adds a prefix to the IDs to make sure they are unique.
-     * @param menuItemId the 'id' of the top-level menu item (not including the prefix)
+     * See 'menu-template.json' for the menu and submenu text.
+     * @param topMenuItemText the text of the top-level menu item
      * @param subMenuText the text of the sub menu item under the menu item
      */
-    protected void clickMenuItem(final String menuItemId, final String subMenuText, int timeout) {
-        LOG.debug("Clicking menu item with id '{}' and text '{}'", menuItemId, subMenuText);
+    protected void clickMenuItem(final String topMenuItemText, final String subMenuText, int timeout) {
+        LOG.debug("Clicking menu item with top menu text '{}' and submenu text '{}'", topMenuItemText, subMenuText);
 
-        WebElement link = findMenuItemLink(menuItemId, subMenuText, false, timeout);
+        WebElement link = findMenuItemLink(topMenuItemText, subMenuText, false, timeout);
 
         if (link != null) {
             link.click();
         }
     }
 
-    protected WebElement findTopMenuItemLink(final String menuItemId) {
-        return findMenuItemLink(menuItemId, "", true, MENU_ITEM_TIMEOUT);
-    }
-
-    protected WebElement findMenuItemLink(final String menuItemId, final String subMenuText) {
-        return findMenuItemLink(menuItemId, subMenuText, false, MENU_ITEM_TIMEOUT);
+    protected WebElement findMenuItemLink(final String topMenuItemText, final String subMenuText) {
+        return findMenuItemLink(topMenuItemText, subMenuText, false, MENU_ITEM_TIMEOUT);
     }
 
     /**
-     * Find a side menu item.
-     * See 'menu-template.json' for the menu and submenu IDs.
-     * Note that the UI adds a prefix to the IDs to make sure they are unique.
-     * @param menuItemId the 'id' of the top-level menu item (not including the prefix)
-     * @param subMenuText the text of the sub menu item under the menu item
+     * Find a side menu item in the PrimeVue TieredMenu side rail.
+     * See 'menu-template.json' for the menu and submenu text.
+     * @param topMenuItemText the text (aria-label) of the top-level menu item
+     * @param subMenuText the text (aria-label) of the sub menu item under the top menu item
      * @param isTopMenuItem if true, the item to find is a top menu item, not a submenu item. In
-     *                      this case, only 'menuItemId' is needed and 'subMenuText' should be left empty.
+     *                      this case, only 'topMenuItemText' is needed and 'subMenuText' should be left empty.
      */
-    protected WebElement findMenuItemLink(final String menuItemId, final String subMenuText,
+    protected WebElement findMenuItemLink(final String topMenuItemText, final String subMenuText,
                                           boolean isTopMenuItem, int timeout) {
-        LOG.debug("Finding {} menu item with id '{}' and text '{}'",
-                isTopMenuItem ? "top" : "", menuItemId, subMenuText);
+        LOG.debug("Finding {} menu item with top menu text '{}' and submenu text '{}'",
+                isTopMenuItem ? "top" : "", topMenuItemText, subMenuText);
 
         if (timeout <= 0) {
             timeout = MENU_ITEM_TIMEOUT;
         }
 
-        final String TOP_MENU_PREFIX = "opennms-menu-id-";
-        final String TOP_MENU_XPATH = "//div[@id='opennms-sidebar-control-content']/ul[@id='opennms-sidebar-control-menu']/li[@id='$ID']";
-        final String TOP_MENU_ONLY_XPATH = "//div[@id='opennms-sidebar-control-content']/ul[@id='opennms-sidebar-control-menu']/li/a[@id='$ID']";
-        final String POPUP_MENU_ITEMS_XPATH = "//div[@id='opennms-sidebar-control-content']/ul/div[contains(@class, 'feather-popover-container')]/div[@class='popover']/ul[@id='opennms-sidebar-control-menu-opennms-menu-id-$ID-menu']/li/a[contains(@class, 'feather-list-item')]";
+        // Top-level <li> wrapper, anchored to the TieredMenu root list so it can only match a
+        // top-level item (never a same-named submenu item). 'aria-label' is the top menu text.
+        final String TOP_MENU_XPATH = "//nav[@id='opennms-sidemenu-vue-container']//ul[contains(@class, 'p-tieredmenu-root-list')]/li[@role='menuitem' and @aria-label='$MENU_ITEM_TEXT']";
+        // The top item's own link, scoped to its item-content so it can't match a submenu link.
+        final String TOP_MENU_LINK_XPATH = "/div[contains(@class, 'p-tieredmenu-item-content')]//a[contains(@class, 'onms-side-menu__link')]";
+
+        // relative path of the popup menu item link, after TOP_MENU_XPATH
+        final String POPUP_MENU_ITEM_XPATH = "/ul[contains(@class, 'p-tieredmenu-submenu')]/li[@aria-label='$SUBMENU_TEXT']//a[contains(@class, 'onms-side-menu__link')]";
 
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
 
@@ -617,30 +615,29 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         final WebElement[] foundElement = new WebElement[] { null };
 
         Unreliables.retryUntilTrue(timeout, TimeUnit.SECONDS, () -> {
-            final Actions action = new Actions(getDriver());
+            final String topMenuXpath = TOP_MENU_XPATH.replace("$MENU_ITEM_TEXT", topMenuItemText);
+            final String topMenuLinkXpath = topMenuXpath + TOP_MENU_LINK_XPATH;
 
-            final String topMenuXpath = isTopMenuItem ?
-                TOP_MENU_ONLY_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId) :
-                TOP_MENU_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId);
+            final WebElement topMenuLinkElement = findElementByXpath(topMenuLinkXpath);
+            shortWait.until(ExpectedConditions.visibilityOf(topMenuLinkElement));
 
-            final WebElement topMenuElement = findElementByXpath(topMenuXpath);
-            shortWait.until(ExpectedConditions.visibilityOf(topMenuElement));
-
+            // if this is a top-level menu element, return it, caller will click it
             if (isTopMenuItem) {
-                foundElement[0] = topMenuElement;
+                foundElement[0] = topMenuLinkElement;
                 return true;
             }
 
-            topMenuElement.click();
+            // click the top menu link element to display the popup/flyout menu item
+            topMenuLinkElement.click();
 
-            final String popupMenuItemsXpath = POPUP_MENU_ITEMS_XPATH.replace("$ID", menuItemId);
-            final List<WebElement> popupMenuItems = findElementsByXpath(popupMenuItemsXpath);
+            // popup menu item link element
+            final String popupMenuItemXpath = topMenuXpath + POPUP_MENU_ITEM_XPATH.replace("$SUBMENU_TEXT", subMenuText);
 
-            for (WebElement link : popupMenuItems) {
-                if (link.getText().trim().equals(subMenuText)) {
-                    foundElement[0] = link;
-                    return true;
-                }
+            final WebElement popupMenuItemLink = findElementByXpath(popupMenuItemXpath);
+
+            if (popupMenuItemLink != null) {
+                foundElement[0] = popupMenuItemLink;
+                return true;
             }
 
             return false;
@@ -652,9 +649,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     private void clickSelfServiceItem(final SelfServiceMenuType itemType) {
         LOG.debug("Clicking self service item: {}", itemType);
 
-        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
-        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
-        final String CHANGE_PASSWORD_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-changePassword']";
+        // The self-service dropdown lives in the top Menubar (UserSelfServiceMenuItem.vue), which is
+        // mounted inside the same #opennms-sidemenu-container app root as the side rail. The trigger is
+        // a PrimeVue <Button> (renders a <button> with additional p-button classes), not a <featherbutton>.
+        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-icon-wrapper')]//button[contains(@class, 'self-service-menubar-dropdown-button-dark')]";
+        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown-item-content')]//a[@name='self-service-logout']";
+        final String CHANGE_PASSWORD_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown-item-content')]//a[@name='self-service-changePassword']";
 
         final int timeout = 5;
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
