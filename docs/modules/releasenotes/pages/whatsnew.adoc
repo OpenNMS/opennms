@@ -19,6 +19,16 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Faster IP address filtering (IPLIKE)
+
+Filter expressions that use IPLIKE are now translated to native PostgreSQL `inet` comparisons where possible, and new expression indexes on the `ipinterface` and `events` tables let the database answer them without scanning every row.
+This primarily benefits large environments: filter evaluation and event searches by IP address that previously took seconds to minutes generally complete in milliseconds.
+
+Expressions that cannot be translated (for example, patterns that contain an IPv6 zone identifier) continue to use the `iplike` stored procedure.
+The bundled PL/pgSQL implementation of `iplike` has been reworked for speed and is installed automatically during the upgrade; installs that use the optional compiled iplike extension keep it, but it is no longer needed.
+On installs that use the compiled extension, translated expressions follow the PL/pgSQL implementation's semantics; the one visible difference is the match-all patterns (`*.*.*.*` and `*:*:*:*:*:*:*:*`), which now match every non-null address regardless of address family, as they always have under the PL/pgSQL implementation.
+If necessary, set the system property `org.opennms.iplike.native=false` to restore the previous query behavior.
+
 === Trap audit log
 Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
 It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).
