@@ -65,6 +65,24 @@ AND (snmpInterface.snmpifdescr = 'something else')
 LIMIT 1
 ----
 
-The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges.
+The IPLIKE operator compares IP addresses using `*`, lists, and ranges.
+Where possible, the expression is translated to native PostgreSQL `inet` comparisons that can be answered through an index; expressions that cannot be translated (for example, patterns that contain an IPv6 zone identifier) call the `iplike` stored procedure instead.
 isService is shorthand to build a complicated join to match on a service name.
 notisService is also available.
+
+[NOTE]
+====
+The same translation applies to IP address searches on the event and alarm list pages and the corresponding REST endpoints.
+Selective searches are answered through an index and should not need tuning.
+On databases with very large `events` tables, broad patterns that match a large share of all events (for example, an entire /8) may still fall back to scanning.
+If such searches matter in your environment, the following can help PostgreSQL choose a better plan; measure before and after, since the effect depends on storage and data distribution:
+
+[source, sql]
+----
+CREATE STATISTICS events_ipaddr_inet_stats ON (opennms_safe_inet(ipaddr)) FROM events;
+ANALYZE events;
+----
+
+together with an SSD-appropriate `random_page_cost` setting (commonly `1.1`) in `postgresql.conf`.
+Both are standard PostgreSQL tuning mechanisms and work on all supported PostgreSQL versions.
+====
