@@ -118,13 +118,19 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return this;
     }
 
+    private Scope scope;
+
     private Scope getScope() {
-        return new FallbackScope(
-                this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
-                this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
-                this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
-                MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
-        );
+        // memoized: execute() needs the scope twice and each build hits the database
+        if (this.scope == null) {
+            this.scope = new FallbackScope(
+                    this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
+                    this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
+                    this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
+                    MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
+            );
+        }
+        return this.scope;
     }
 
     @Override
