@@ -80,7 +80,6 @@ const isPinned = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
 const isHovering = ref<boolean>(false)
 const isOpen = computed<boolean>(() => isPinned.value || isHovering.value)
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tieredMenuRef = ref<any>(null)
 
 const onRailEnter = () => {
