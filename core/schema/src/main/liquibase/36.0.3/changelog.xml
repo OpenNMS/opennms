@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- NMS-19971: node.nodeparentid (the path-outage / critical-path parent,
+         OnmsNode.getParent()) had no foreign key, so deleting a parent node left
+         its children pointing at a nonexistent row. Dereferencing the lazy parent
+         proxy for such a dangling reference throws Hibernate ObjectNotFoundException.
+
+         Fix it at the database level so every deletion path is covered (provisiond's
+         deleteNode, vacuumd's raw "DELETE FROM node ... nodeType='D'", and any direct
+         DB operation): null out the existing danglers, index the column, then add a
+         self-referential FK with ON DELETE SET NULL, the same pattern ipInterface
+         uses for snmpinterfaceid (constraint snmpinterface_fkey2). -->
+
+    <!-- 1) Clean up references that are already dangling, otherwise the constraint
+            below cannot be added. nodeid is a NOT NULL primary key, so NOT IN is
+            safe here (no NULL in the subquery). -->
+    <changeSet author="mmassengill" id="36.0.3-node-parentid-cleanup">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="node"/>
+            <columnExists tableName="node" columnName="nodeparentid"/>
+        </preConditions>
+        <sql>
+            UPDATE node SET nodeparentid = NULL
+            WHERE nodeparentid IS NOT NULL
+              AND nodeparentid NOT IN (SELECT nodeid FROM node);
+        </sql>
+        <!-- Data cleanup; nothing meaningful to roll back. -->
+        <rollback/>
+    </changeSet>
+
+    <!-- 2) Index the FK column so ON DELETE SET NULL (and parent lookups) don't
+            trigger a sequential scan of node on every node deletion. -->
+    <changeSet author="mmassengill" id="36.0.3-node-parentid-idx">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="node"/>
+            <columnExists tableName="node" columnName="nodeparentid"/>
+            <not>
+                <indexExists tableName="node" indexName="node_nodeparentid_idx"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="node" indexName="node_nodeparentid_idx">
+            <column name="nodeparentid"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="node" indexName="node_nodeparentid_idx"/>
+        </rollback>
+    </changeSet>
+
+    <!-- 3) The constraint itself: a deleted parent now nulls its children's
+            nodeparentid instead of leaving a dangling reference. -->
+    <changeSet author="mmassengill" id="36.0.3-node-parentid-fkey">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="node"/>
+            <columnExists tableName="node" columnName="nodeparentid"/>
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="node_nodeparentid_fkey"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="node_nodeparentid_fkey" onDelete="SET NULL"
+            baseTableName="node" baseColumnNames="nodeparentid"
+            referencedTableName="node" referencedColumnNames="nodeid"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="node" constraintName="node_nodeparentid_fkey"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
