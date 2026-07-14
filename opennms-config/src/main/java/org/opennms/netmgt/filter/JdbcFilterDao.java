@@ -46,6 +46,7 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
+import org.opennms.core.utils.IplikeSqlTranslator;
 import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Table;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -701,13 +702,30 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             sqlRule = sqlRule.replaceAll("\\s*!(?!=)\\s*", " NOT ");
             sqlRule = sqlRule.replaceAll("==", "=");
 
-            // Translate IPLIKE operators to IPLIKE() functions
+            // Translate IPLIKE operators to native-inet predicates where the
+            // match expression allows it, or to IPLIKE() functions otherwise
             // If IPLIKE is already used as a function in the filter, this regex should not match it
             regex = SQL_IPLIKE_PATTERN.matcher(sqlRule);
             tempStringBuff = new StringBuffer();
             while (regex.find()) {
-                // Is the second argument already a quoted string?
-                if (regex.group().charAt(0) == '#') {
+                // Resolve the raw match expression: group 2 is either a bare
+                // pattern or a placeholder for an extracted quoted string
+                String pattern = regex.group(2);
+                if (pattern.startsWith("###@")) {
+                    final String extracted = extractedStrings.get(Integer.parseInt(pattern.substring(4, pattern.length() - 4)));
+                    pattern = extracted.substring(1, extracted.length() - 1).replaceAll("''", "'");
+                }
+                if (IplikeSqlTranslator.toSqlPredicate(pattern, "ipaddr") != null) {
+                    // Translatable: emit an indexable native predicate. It is
+                    // stashed as an extracted string so the keyword/column
+                    // passes below leave its contents untouched; the column
+                    // reference therefore gets schema-qualified here.
+                    final String column = m_databaseSchemaConfigFactory.addColumn(tables, regex.group(1));
+                    extractedStrings.add(IplikeSqlTranslator.toSqlPredicate(pattern, column));
+                    regex.appendReplacement(tempStringBuff, "###@" + (extractedStrings.size() - 1) + "@###");
+                } else if (regex.group(2).startsWith("###@")) {
+                    // an extracted-string placeholder merges back with its own
+                    // quotes; wrapping it in quotes here would double them
                     regex.appendReplacement(tempStringBuff, "IPLIKE($1, $2)");
                 } else {
                     regex.appendReplacement(tempStringBuff, "IPLIKE($1, '$2')");

@@ -52,6 +52,15 @@ public abstract class NegativeIPLikeFilter extends OneArgFilter<String> {
     /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
+        // translatable match expressions become native-inet range predicates
+        // answered through an expression index; the rest call iplike().
+        // Under NOT, rows with a NULL address are included either way, same
+        // as the PL/pgSQL iplike (which returns false, not NULL, for them).
+        final String nativePredicate = org.opennms.core.utils.IplikeSqlTranslator
+                .toSqlPredicate(getValue(), "{alias}." + getPropertyName());
+        if (nativePredicate != null) {
+            return Restrictions.not(Restrictions.sqlRestriction(nativePredicate));
+        }
         return Restrictions.not(Restrictions.sqlRestriction("iplike( {alias}." + getPropertyName() + ", ?)", getValue(), StringType.INSTANCE));
     }
 }

@@ -24,9 +24,12 @@ package org.opennms.web.event.filter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +54,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +90,9 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     ApplicationContext m_appContext;
+
+    @Autowired
+    DataSource m_dataSource;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -244,6 +251,28 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         filter = new IPAddrLikeFilter("193.168");
         events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase // commits a raw row, so it needs a throwaway database
+    public void testNegativeIpAddrLikeFilterKeepsUnparseableAddresses() {
+        // A compressed-IPv6 ipaddr: hydrates fine Java-side but neither
+        // iplike() nor opennms_safe_inet() parses it (both require the
+        // 8-group stored form). Inserted with raw SQL because the entity
+        // path always normalizes to the 8-group form. A negated IP filter
+        // must keep such rows, exactly like NOT iplike() does.
+        new JdbcTemplate(m_dataSource).update(
+                "INSERT INTO events (eventid, eventuei, eventtime, eventsource, eventcreatetime, eventseverity, eventlog, eventdisplay, ipaddr, systemid) "
+                + "VALUES (nextval('eventsNxtId'), 'uei.opennms.org/test/unparseable', now(), 'test', now(), ?, 'Y', 'Y', 'fe80::1', ?)",
+                OnmsSeverity.NORMAL.getId(), m_dbPopulator.getDistPollerDao().whoami().getId());
+
+        final Event[] negated = getMatchingDaoEvents(new NegativeIPAddrLikeFilter("192.168.*.*"));
+        assertTrue("negated iplike filters must keep rows whose ipaddr no engine can parse",
+                Arrays.stream(negated).anyMatch(e -> "uei.opennms.org/test/unparseable".equals(e.getUei())));
+
+        final Event[] matched = getMatchingDaoEvents(new IPAddrLikeFilter("192.168.*.*"));
+        assertTrue(Arrays.stream(matched).noneMatch(e -> "uei.opennms.org/test/unparseable".equals(e.getUei())));
+        assertEquals(2, matched.length);
     }
     
     @Test
