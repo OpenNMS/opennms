@@ -60,6 +60,7 @@ import org.springframework.util.Assert;
 import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.net.InetAddresses;
 
 /**
  * <p>JdbcFilterDao class.</p>
@@ -376,12 +377,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return resultList;
     }
 
-    /** dotted quad with each octet bounded to 0-255 */
-    private static final Pattern IPV4_LITERAL_PATTERN = Pattern.compile(
-            "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}");
-    /** the characters an IPv6 literal can contain; never a resolvable hostname */
-    private static final Pattern IPV6_LITERAL_PATTERN = Pattern.compile("[0-9a-fA-F:.]+");
-
     /**
      * Result-row conversion that must never resolve hostnames and must not
      * fail the whole evaluation over one bad row: numeric IPv6 zones (the
@@ -397,9 +392,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         final String addressPart = percent < 0 ? value : value.substring(0, percent);
         final String zone = percent < 0 ? null : value.substring(percent + 1);
         final boolean v6 = addressPart.indexOf(':') >= 0;
-        final boolean literal = v6
-                ? IPV6_LITERAL_PATTERN.matcher(addressPart).matches()
-                : IPV4_LITERAL_PATTERN.matcher(addressPart).matches();
+        // literal-only check that never resolves hostnames; the zone must be
+        // stripped first because Guava 31.1 rejects scoped addresses
+        final boolean literal = InetAddresses.isInetAddress(addressPart);
         // zone ids are IPv6-only, and only numeric ones are host-independent:
         // a named zone would resolve against this host's interfaces
         final boolean numericZone = zone != null && !zone.isEmpty() && zone.chars().allMatch(Character::isDigit);
