@@ -365,10 +365,27 @@ iframe.vaadin-fullscreen {
   width:100%;
 }
 
+// Offset for legacy JSP/Vaadin content that renders beneath the fixed Vue top
+// menu bar and side menu rail. Both the bar height and the collapsed rail width
+// are 3.75rem (--onms-header-height); we add 0.25rem of breathing room so
+// content isn't cramped right against them, giving 4rem. Derived via calc from
+// --onms-header-height (which must remain the true bar height) rather than a
+// hard-coded 4rem, so it tracks the bar height and still works before the Vue
+// bundle defines the variable (fallback 3.75rem + 0.25rem).
+:root {
+  --onms-legacy-content-offset: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
+}
+
 // Main content container for all pages, used in bootstrap.jsp
 #content {
-  // Note, the Vue side menu will add top and left padding to push this content over
-  // both when the menu is expanded and collapsed
+  // The Vue top menu bar and side menu rail are both position:fixed, so page
+  // content would otherwise render underneath them. Offset it:
+  //  - top: the fixed top menu bar height (+ breathing room), set here.
+  //  - left: the collapsed rail width (+ breathing room), set here as a base.
+  //    The Vue side menu's script overrides padding-left dynamically for the
+  //    pinned-expanded rail width (see SideMenu.vue applyPush).
+  padding-top: var(--onms-legacy-content-offset);
+  padding-left: var(--onms-legacy-content-offset);
 
   // Revert padding as growl added this, which was required in bootstrap 3 but is
   // no longer required, so without this the padding to the right is too much

@@ -58,6 +58,11 @@ describe('SnmpDataCollection.vue (container)', () => {
   })
 
   afterEach(() => {
+    // Unmount so PrimeVue TabList's template refs are cleared before its
+    // orphaned mounted() setTimeout(updateInkBar, 150) fires. Without this the
+    // timer outlives the test file and runs against the torn-down happy-dom
+    // environment, throwing "HTMLElement is not defined" (flaky on CI).
+    wrapper.unmount()
     vi.restoreAllMocks()
   })
 

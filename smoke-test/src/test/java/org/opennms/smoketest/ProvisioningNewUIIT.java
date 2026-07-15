@@ -271,7 +271,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
 
         // Open the legacy nodes list page
         driver.get(getBaseUrlInternal() + "opennms/");
-        clickMenuItem("inventoryMenu", "Nodes (Legacy)");
+        clickMenuItem("Inventory", "Nodes (Legacy)");
 
         try {
             // Don't wait as long as usual for just the node page, it should be pretty quick

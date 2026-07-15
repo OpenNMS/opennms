@@ -24,6 +24,7 @@ import { DefineComponent, markRaw } from 'vue'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
 import IconHome from '@featherds/icon/action/Home'
+import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { Plugin } from '@/types'
 import { MenuItem } from '@/types/mainMenu'
 
@@ -198,6 +199,108 @@ const createTopMenuListEntry = (
   return entry
 }
 
+// ---------------------------------------------------------------------------
+// PrimeVue menu model
+//
+// The side menu now renders with a PrimeVue TieredMenu instead of Feather's
+// FeatherMenuList/Sidenav. TieredMenu consumes PrimeVue `MenuItem[]`, so the
+// functions below transform our raw `MenuItem` data into that shape. We keep
+// the Feather transform (createTopMenuListEntry above) untouched for now.
+//
+// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Feather
+// icon *components*, so the icon component is stashed on a custom
+// `iconComponent` field (MenuItem allows arbitrary keys) and rendered via the
+// TieredMenu `#item` slot.
+// ---------------------------------------------------------------------------
+
+const createPrimeChildItem = (
+  menuItem: MenuItem,
+  baseHref: string | null | undefined,
+  getIcon: (iconId?: string | null) => DefineComponent | null,
+  onLogout: () => void
+): PrimeMenuItem => {
+  const item: PrimeMenuItem = {
+    key: menuItem.id ?? menuItem.name ?? undefined,
+    label: menuItem.name ?? undefined
+  }
+
+  if (menuItem.icon) {
+    item.iconComponent = createMenuIcon(menuItem, getIcon)
+  }
+
+  if (menuItem.action === 'logout') {
+    item.command = () => onLogout()
+    return item
+  }
+
+  if (menuItem.onClick) {
+    const onClick = menuItem.onClick
+    item.command = () => onClick()
+  }
+
+  const href = getMenuLink(menuItem, baseHref)
+
+  if (href && href !== '#') {
+    item.url = href
+    item.target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
+  }
+
+  return item
+}
+
+const createPrimeTopItem = (
+  topMenuItem: MenuItem,
+  baseHref: string | null | undefined,
+  getIcon: (iconId?: string | null) => DefineComponent | null,
+  onLogout: () => void
+): PrimeMenuItem | null => {
+  if (topMenuItem.type === 'separator') {
+    return { separator: true }
+  }
+
+  // Drop 'header' entries: Feather emitted a hard-coded "Menu" header that the
+  // template suppressed with a dummy first header item; PrimeVue has no such
+  // header, so these entries are simply not rendered.
+  if (topMenuItem.type === 'header') {
+    return null
+  }
+
+  const item: PrimeMenuItem = {
+    key: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
+    label: topMenuItem.name ?? undefined,
+    iconComponent: createMenuIcon(topMenuItem, getIcon)
+  }
+
+  const children = topMenuItem.items ?? []
+
+  if (children.length > 0) {
+    item.items = children.map(child => createPrimeChildItem(child, baseHref, getIcon, onLogout))
+  }
+
+  // Top-level entries that are direct links (no submenu), e.g. the maps.
+  if (topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
+    item.url = getMenuLink(topMenuItem, baseHref)
+  }
+
+  return item
+}
+
+/**
+ * Transforms the raw main-menu items into the PrimeVue `MenuItem[]` model
+ * consumed by the side menu's TieredMenu. Separators are preserved; the dummy
+ * top-level header is dropped.
+ */
+const createPrimeMenuModel = (
+  menus: MenuItem[],
+  baseHref: string | null | undefined,
+  getIcon: (iconId?: string | null) => DefineComponent | null,
+  onLogout: () => void
+): PrimeMenuItem[] => {
+  return menus
+    .map(menu => createPrimeTopItem(menu, baseHref, getIcon, onLogout))
+    .filter((item): item is PrimeMenuItem => item !== null)
+}
+
 /**
  * Applies plugin menu logic to the given menu items:
  * - If plugins are installed and a 'plugins' menu entry exists, each such entry is replaced with a
@@ -239,6 +342,7 @@ export {
   createFakePlugin,
   createMenuItem,
   createPluginsMenu,
+  createPrimeMenuModel,
   createTopMenuItem,
   createTopMenuListEntry,
   getMenuLink,
