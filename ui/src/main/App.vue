@@ -71,6 +71,12 @@ onMounted(() => {
 html {
   overflow-x: hidden;
 }
+// Collapsed/base left offset for the SPA content, clearing the fixed side menu
+// rail. SideMenu's applyPush only overrides this (inline) while the rail is
+// pinned-expanded; otherwise this base applies.
+.app-layout {
+  padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
+}
 .main-content {
   table {
     width: 100%;
