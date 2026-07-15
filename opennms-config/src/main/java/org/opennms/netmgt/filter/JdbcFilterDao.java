@@ -60,6 +60,7 @@ import org.springframework.util.Assert;
 import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.net.InetAddresses;
 
 /**
  * <p>JdbcFilterDao class.</p>
@@ -243,7 +244,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
                     final Integer nodeId = rset.getInt(1);
-                    final InetAddress ipaddr = addr(rset.getString(2));
+                    final InetAddress ipaddr = toInetAddressOrNull(rset.getString(2));
                     final String serviceName = rset.getString(3);
                     if (ipaddr == null || serviceName == null) {
                         continue;
@@ -352,7 +353,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
-                	resultList.add(addr(rset.getString(1)));
+                	final InetAddress inetAddress = toInetAddressOrNull(rset.getString(1));
+                	if (inetAddress != null) {
+                	    resultList.add(inetAddress);
+                	}
                 }
             }
 
@@ -371,6 +375,49 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         LOG.debug("Filter.getIPAddressList({}): resultList.size = {}", rule, resultList.size());
         return resultList;
+    }
+
+    /**
+     * Result-row conversion that must never resolve hostnames and must not
+     * fail the whole evaluation over one bad row: numeric IPv6 zones (the
+     * form OpenNMS stores) convert as-is, interface-name zones fall back to
+     * the zone-stripped address, anything else is logged and skipped.
+     */
+    static InetAddress toInetAddressOrNull(final String rawAddress) {
+        if (rawAddress == null) {
+            return null;
+        }
+        final String value = rawAddress.trim();
+        final int percent = value.indexOf('%');
+        final String addressPart = percent < 0 ? value : value.substring(0, percent);
+        final String zone = percent < 0 ? null : value.substring(percent + 1);
+        final boolean v6 = addressPart.indexOf(':') >= 0;
+        // literal-only check that never resolves hostnames; the zone must be
+        // stripped first because Guava 31.1 rejects scoped addresses
+        final boolean literal = InetAddresses.isInetAddress(addressPart);
+        // zone ids are IPv6-only, and only numeric ones are host-independent:
+        // a named zone would resolve against this host's interfaces
+        final boolean numericZone = zone != null && !zone.isEmpty() && zone.chars().allMatch(Character::isDigit);
+        if (literal) {
+            try {
+                if (zone == null) {
+                    return addr(value);
+                }
+                if (v6) {
+                    return numericZone ? addr(value) : addr(addressPart);
+                }
+            } catch (final IllegalArgumentException e) {
+                if (v6 && numericZone) {
+                    try {
+                        return addr(addressPart);
+                    } catch (final IllegalArgumentException e2) {
+                        // fall through to the warning below
+                    }
+                }
+            }
+        }
+        LOG.warn("Skipping filter result row with an IP address value that cannot be represented: '{}'", rawAddress);
+        return null;
     }
 
 	/**
