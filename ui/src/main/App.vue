@@ -75,7 +75,7 @@ html {
 // rail. SideMenu's applyPush only overrides this (inline) while the rail is
 // pinned-expanded; otherwise this base applies.
 .app-layout {
-  padding-left: 3rem;
+  padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
 }
 .main-content {
   table {

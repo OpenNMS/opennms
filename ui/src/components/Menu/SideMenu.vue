@@ -27,9 +27,9 @@
       <template #item="{ item, props, hasSubmenu }">
         <a
           class="onms-side-menu__link"
+          v-bind="props.action"
           :href="item.url || undefined"
           :target="item.target || undefined"
-          v-bind="props.action"
         >
           <span class="onms-side-menu__icon">
             <component :is="item.iconComponent" v-if="item.iconComponent" aria-hidden="true" />

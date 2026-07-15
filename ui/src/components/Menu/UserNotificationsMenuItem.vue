@@ -65,7 +65,7 @@
         @click="onNotificationItemClick(item)"
       >
         <div class="notification-dropdown-item-content dropdown-menu-wrapper">
-          <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
+          <div class="notification-dropdown-item-content-button">
             <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
             <div class="full-width-left">
               <div>

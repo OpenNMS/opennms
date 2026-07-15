@@ -32,7 +32,7 @@
         class="self-service-menubar-dropdown-item-content"
         @click="onMenuItemClick(item)"
       >
-        <a :href="computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
+        <a :href="item.action === 'logout' ? '#' : computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
           <FeatherIcon :icon="createIcon(item)" class="self-service-icon" />
           <span class="left-margin-small">
             {{ item?.name || '' }}
