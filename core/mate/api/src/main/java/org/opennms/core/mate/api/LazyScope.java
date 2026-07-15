@@ -38,7 +38,8 @@ public class LazyScope implements Scope {
     private final Supplier<Scope> delegate;
 
     public LazyScope(final Supplier<Scope> delegate) {
-        this.delegate = Suppliers.memoize(Objects.requireNonNull(delegate)::get);
+        Objects.requireNonNull(delegate);
+        this.delegate = Suppliers.memoize(() -> Objects.requireNonNull(delegate.get(), "scope supplier returned null"));
     }
 
     @Override
