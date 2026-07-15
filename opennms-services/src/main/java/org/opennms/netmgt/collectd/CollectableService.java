@@ -127,7 +127,7 @@ public class CollectableService implements ReadyRunnable {
 
     private ThresholdingSession m_thresholdingSession;
 
-    // same parameter the poller honors in LatencyStoringServiceMonitorAdaptor; defaults to enabled
+    // also honored by the poller (LatencyStoringServiceMonitorAdaptor, default false there); collectd defaults to enabled
     private static final String THRESHOLDING_ENABLED_PARAM = "thresholding-enabled";
 
     private boolean m_thresholdingEnabled = true;
