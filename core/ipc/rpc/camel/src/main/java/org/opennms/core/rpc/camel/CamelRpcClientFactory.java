@@ -114,9 +114,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
             public CompletableFuture<T> execute(S request) {
 
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
-                    // Invoke directly, but bound it to the TTL (or default RPC timeout) so a never-completing future can't hang the caller. NMS-19951.
-                    final long execTimeoutMs = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs() : rpcExecTimeoutMs;
-                    return module.execute(request).orTimeout(execTimeoutMs, TimeUnit.MILLISECONDS);
+                    // The request is for the current location, invoke it directly
+                    return module.execute(request);
                 }
                 Span span = buildAndStartSpan(request);
                 TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);
