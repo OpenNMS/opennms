@@ -1,4 +1,5 @@
 <template>
+  <div class="onms-col-12 title headline3">Recent Outages</div>
   <OnmsTable
     lazy
     :value="nodeStore.outages"
@@ -10,9 +11,36 @@
     data-test="outages-table"
     @page="onPage"
   >
-    <OnmsColumn field="ipAddress" header="IP Address" />
-    <OnmsColumn field="hostname" header="Host Name" />
-    <OnmsColumn field="serviceName" header="Service Name" />
+    <OnmsColumn field="outageId" header="ID">
+      <template #body="{ data }">
+        {{ data.id }}
+      </template>
+    </OnmsColumn>
+    <OnmsColumn field="ipAddress" header="IP Address">
+      <template #body="{ data }">
+        {{ data.ipAddress || 'N/A' }}
+      </template>
+    </OnmsColumn>
+    <OnmsColumn field="serviceName" header="Service Name">
+      <template #body="{ data }">
+        {{ data.serviceName || 'N/A' }}
+      </template>
+    </OnmsColumn>
+    <OnmsColumn field="ifLostService" header="Lost">
+      <template #body="{ data }">
+        {{ data.ifLostService || 'N/A' }}
+      </template>
+    </OnmsColumn>
+    <OnmsColumn field="ifRegainedService" header="Regained">
+      <template #body="{ data }">
+        {{ data.ifRegainedService || 'N/A' }}
+      </template>
+    </OnmsColumn>
+    <OnmsColumn field="hostname" header="Host Name">
+      <template #body="{ data }">
+        {{ data.hostname || 'N/A' }}
+      </template>
+    </OnmsColumn>
     <template #empty>
       <EmptyList :content="emptyListContent" data-test="empty-list" />
     </template>

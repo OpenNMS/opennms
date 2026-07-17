@@ -124,7 +124,7 @@ const nodes = computed<Node[]>(() => mapStore.getNodes())
 const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 
 const doubleClickHandler = (node: Node) => {
-  const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
+  const coordinate: Coordinates = { latitude: node.assetRecord.latitude ?? 0, longitude: node.assetRecord.longitude ?? 0 }
   mapStore.setMapCenter(coordinate)
 }
 

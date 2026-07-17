@@ -68,3 +68,22 @@ export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'sysDescription', label: 'Sys Description', selected: false, order: 8 },
   { id: 'flows', label: 'Flows', selected: false, order: 9 }
 ]
+
+export const getNodeStatusString = (node: Node) => {
+  const status = (node?.type ?? ' ').toUpperCase()
+
+  if (status.length === 0) {
+    return 'Unknown'
+  }
+
+  const firstChar = status.charAt(0)
+
+  switch (firstChar) {
+    case 'A':
+      return 'Active'
+    case 'D':
+      return 'Deleted'
+    default:
+      return 'Unknown'
+  }
+}

@@ -1,4 +1,5 @@
 <template>
+  <div class="onms-col-12 title headline3">Recent Events</div>
   <OnmsTable
     lazy
     :value="eventStore.events"

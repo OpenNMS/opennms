@@ -137,18 +137,74 @@ export interface MonitoringSystemMainResponse {
   type: string
 }
 
+export interface NodeAssetRecord {
+  address1?: string | null
+  address2?: string | null
+  additionalhardware?: string | null
+  admin?: string | null
+  assetNumber?: string | null
+  autoenable?: string | null
+  building?: string | null
+  category?: string | null
+  circuitId?: string | null
+  city?: string | null
+  comment?: string | null
+  connection?: string | null
+  cpu?: string | null
+  dateInstalled?: string | null
+  department?: string | null
+  description?: string | null
+  displayCategory?: string | null
+  division?: string | null
+  enable?: string | null
+  floor?: string | null
+  hdd1?: string | null
+  hdd2?: string | null
+  hdd3?: string | null
+  hdd4?: string | null
+  hdd5?: string | null
+  hdd6?: string | null
+  inputpower?: string | null
+  latitude?: number | null
+  lease?: string | null
+  leaseExpires?: string | null
+  longitude?: number | null
+  maintcontract?: string | null
+  maintContractExpires?: string | null
+  manufacturer?: string | null
+  modelNumber?: string | null
+  notifyCategory?: string | null
+  numpowersupplies?: string | null
+  operatingSystem?: string | null
+  password?: string | null
+  pollerCategory?: string | null
+  port?: string | null
+  rack?: string | null
+  rackunitheight?: string | null
+  ram?: string | null
+  region?: string | null
+  room?: string | null
+  serialNumber?: string | null
+  slot?: string | null
+  snmpcommunity?: string | null
+  state?: string | null
+  storagectrl?: string | null
+  supportPhone?: string | null
+  thresholdCategory?: string | null
+  username?: string | null
+  vendor?: string | null
+  vendorAssetNumber?: string | null
+  vendorFax?: string | null
+  vendorPhone?: string | null
+  zip?: string | null
+}
+
 export interface Node {
   location: string
   type: string
   label: string
   id: string
-  assetRecord: {
-    longitude: string
-    latitude: string
-    category: string
-    description: string
-    maintcontract: string
-  }
+  assetRecord: NodeAssetRecord
   categories: Category[]
   createTime: number
   foreignId: string
@@ -280,16 +336,33 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+export interface MonitoredService {
+  id: number
+  lastGood?: Date | null
+  lastFail?: Date | null
+  qualifier?: string
+  status?: string
+  source?: string
+  notify?: string
+  serviceType?: ServiceType
+  ipInterface?: IpInterface
+}
 
 export interface Outage {
-  nodeId: number
-  ipAddress: string
-  serviceIs: number
-  nodeLabel: string
-  location: string
   hostname: string
+  id: number
+  ifLostService: Date | null
+  ifRegainedService: Date | null
+  ipAddress: string
+  locationName: string
+  monitoredService?: MonitoredService
+  nodeId: number
+  nodeLabel: string
+  perspective?: MonitoringLocation
+  serviceId: number
   serviceName: string
-  outageId: number
+  suppressTime?: Date | null
+  suppressedBy?: string | null
 }
 
 export interface IfService {

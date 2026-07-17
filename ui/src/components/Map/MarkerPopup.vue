@@ -45,20 +45,27 @@ import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@opennms/onms-ui/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
 import { Node } from '@/types'
-import { mapPopupOptions, stringToFixedFloat } from './utils'
+import { mapPopupOptions } from './utils'
 
 const props = defineProps({
-  baseHref: { type: Object as PropType<string> },
-  baseNodeUrl: { type: Object as PropType<string> },
+  baseHref: { type: String, required: true },
+  baseNodeUrl: { type: String, required: true },
   node: { type: Object as PropType<Node>, default: () => {
     return
   } },
-  ipAddress: { type: Object as PropType<string> },
+  ipAddress: { type: String },
   nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true }
 })
 
-const latitude = computed(() => stringToFixedFloat(props.node.assetRecord.latitude, 6))
-const longitude = computed(() => stringToFixedFloat(props.node.assetRecord.longitude, 6))
+const numToFixedFloat = (num: number | null, decimalPlaces: number): string => {
+  if (num === null || num === undefined) {
+    return 'N/A'
+  }
+  return num.toFixed(decimalPlaces)
+}
+
+const latitude = computed(() => numToFixedFloat(props.node.assetRecord.latitude ?? null, 6))
+const longitude = computed(() => numToFixedFloat(props.node.assetRecord.longitude ?? null, 6))
 
 const getTopologyLink = (node: Node) => {
   return `${props.baseHref}topology?provider=Enhanced Linkd&focus-vertices=${node.id}`

@@ -25,7 +25,7 @@ describe('NodeDetails.vue', () => {
     nodeStore.getNodeById = vi.fn().mockResolvedValue(undefined)
 
     const menuStore = useMenuStore()
-    menuStore.mainMenu = { homeUrl: '/home' } as any
+    menuStore.mainMenu = { homeUrl: '/home', baseHref: '/base' } as any
 
     const wrapper = mount(NodeDetails, {
       props: { id },
@@ -34,9 +34,13 @@ describe('NodeDetails.vue', () => {
         stubs: {
           BreadCrumbs: true,
           NodeAvailabilityGraph: true,
-          InterfacesTabs: true,
+          NodeCategoriesPanel: true,
+          NodeDetailsHeader: true,
+          NodeNotificationsPanel: true,
+          NodeSnmpAttributes: true,
           EventsTable: true,
-          OutagesTable: true
+          OutagesTable: true,
+          InterfacesTabs: true
         }
       }
     })
@@ -52,9 +56,14 @@ describe('NodeDetails.vue', () => {
     const { wrapper } = mountComponent()
     await flushPromises()
 
+    expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeCategoriesPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeSnmpAttributes' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
   })
 
