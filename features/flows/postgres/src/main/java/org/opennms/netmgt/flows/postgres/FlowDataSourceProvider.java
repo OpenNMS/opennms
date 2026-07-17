@@ -95,7 +95,7 @@ public class FlowDataSourceProvider {
         cfg.setName("opennms-flows");
         cfg.setDatabaseName(databaseName);
         cfg.setClassName(driverClass);
-        cfg.setUrl(url);
+        cfg.setUrl(withBatchInsertRewrite(url));
         cfg.setUserName(username);
         cfg.setPassword(password);
         final HikariCPConnectionFactory pool = new HikariCPConnectionFactory(cfg);
@@ -107,6 +107,18 @@ public class FlowDataSourceProvider {
         pool.setMaxSize(maxSize);
         LOG.info("PostgreSQL flow persistence using a dedicated connection pool for {}.", url);
         return pool;
+    }
+
+    /**
+     * Turn on the PostgreSQL driver's {@code reWriteBatchedInserts}, which collapses a batched INSERT into a
+     * single multi-row statement and substantially improves flow write throughput. Left untouched if the
+     * operator already set the parameter in datasource.url.
+     */
+    private static String withBatchInsertRewrite(final String jdbcUrl) {
+        if (jdbcUrl.contains("reWriteBatchedInserts")) {
+            return jdbcUrl;
+        }
+        return jdbcUrl + (jdbcUrl.contains("?") ? '&' : '?') + "reWriteBatchedInserts=true";
     }
 
     public DataSource getDataSource() {

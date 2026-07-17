@@ -100,6 +100,19 @@ config:update
 NOTE: When `datasource.url` is left blank (the default), {page-component-title} uses its internal database.
 Setting it switches to the dedicated external database.
 
+=== Tune the external database for write throughput (optional)
+
+At high flow rates, two low-cost settings substantially raise write throughput on a dedicated flow database:
+
+* *Relax synchronous commit.* Flow ingest is high volume and loss-tolerant (the writer already drops flows under backpressure), so turning off synchronous commit removes the per-commit `fsync` wait for a large throughput gain. A crash may lose the last few hundred milliseconds of committed flows, but never risks corruption. Set it on the flow database (no restart required):
++
+[source, sql]
+----
+ALTER DATABASE flowdb SET synchronous_commit = off;
+----
+
+* *Batched inserts are already optimized.* {page-component-title} appends `reWriteBatchedInserts=true` to the dedicated-pool JDBC URL, so batched flow inserts are sent to PostgreSQL as single multi-row statements. No action is required; do not remove the parameter if you set `datasource.url` with your own query string.
+
 [[flows-postgres-partman]]
 === Partition management on the external database
 

@@ -97,6 +97,9 @@ public class PostgresFlowRepositoryIT {
         DATA_SOURCE.setUrl(url);
         DATA_SOURCE.setUser(user);
         DATA_SOURCE.setPassword(password);
+        // Exercise the production write path: batched INSERTs are rewritten into a single multi-row
+        // statement, which requires the cast-free (plain-placeholder) INSERT + Types.OTHER binding.
+        DATA_SOURCE.setReWriteBatchedInserts(true);
         jdbc = new JdbcTemplate(DATA_SOURCE);
         repository = new PostgresFlowRepository(new MetricRegistry());
         repository.setDataSource(DATA_SOURCE);

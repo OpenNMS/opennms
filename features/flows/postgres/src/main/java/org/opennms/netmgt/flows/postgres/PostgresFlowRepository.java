@@ -59,11 +59,14 @@ public class PostgresFlowRepository implements FlowRepository {
 
     private static final String CHANGELOG = "org/opennms/netmgt/flows/postgres/changelog.xml";
 
+    // Plain placeholders (no ::inet/::jsonb casts) so the PostgreSQL driver's reWriteBatchedInserts can
+    // collapse the batch into a single multi-row INSERT. inet/jsonb values are bound with Types.OTHER in
+    // flush(), letting the server infer the column type.
     private static final String INSERT_SQL =
             "INSERT INTO flow (flow_ts, delta_switched, last_switched, first_switched, bytes, packets, " +
             "sampling_interval, direction, application, convo_key, src_addr, dst_addr, protocol, dscp, " +
             "exporter_node_id, input_snmp, output_snmp, location, document) VALUES " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::inet, ?::inet, ?, ?, ?, ?, ?, ?, ?::jsonb)";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private final MetricRegistry metrics;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -142,15 +145,18 @@ public class PostgresFlowRepository implements FlowRepository {
                 ps.setString(c++, r.direction);
                 ps.setString(c++, r.application);
                 ps.setString(c++, r.convoKey);
-                ps.setString(c++, r.srcAddr);
-                ps.setString(c++, r.dstAddr);
+                // inet columns: bind as OTHER (no ::inet cast) so the server infers the type and the batch
+                // stays rewritable; a null address becomes a SQL NULL.
+                ps.setObject(c++, r.srcAddr, Types.OTHER);
+                ps.setObject(c++, r.dstAddr, Types.OTHER);
                 setInt(ps, c++, r.protocol);
                 setInt(ps, c++, r.dscp);
                 setInt(ps, c++, r.exporterNodeId);
                 setInt(ps, c++, r.inputSnmp);
                 setInt(ps, c++, r.outputSnmp);
                 ps.setString(c++, r.location);
-                ps.setString(c, r.documentJson);
+                // jsonb column: bind as OTHER (no ::jsonb cast); the server casts the JSON text to jsonb.
+                ps.setObject(c, r.documentJson, Types.OTHER);
             }
 
             @Override
