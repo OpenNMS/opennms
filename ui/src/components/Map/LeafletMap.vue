@@ -284,7 +284,7 @@ const getNodeCoordinateMap = computed(() => {
   const map = new Map<string, Coordinates>()
 
   allNodes.value.forEach((node: Node) => {
-    const coord = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
+    const coord = { latitude: node.assetRecord.latitude ?? 0, longitude: node.assetRecord.longitude ?? 0 }
     map.set(node.id, coord)
     map.set(node.label, coord)
   })

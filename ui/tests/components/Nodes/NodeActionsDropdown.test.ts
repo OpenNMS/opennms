@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import PrimeVue from 'primevue/config'
 import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
 
-const node = { id: 42, label: 'srv-42' } as any
+const node = { id: 42, label: 'srv-42', assetRecord: {}} as any
 
 const mountIt = (overrides: any = {}) =>
   mount(NodeActionsDropdown, {
