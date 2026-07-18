@@ -36,19 +36,10 @@
         /WEB-INF/spring-security.d/*.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
 
-        <!-- From org.opennms.features.reporting.core -->
-        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
-        <!-- From org.opennms.features.reporting.dao -->
-        classpath:/META-INF/opennms/applicationContext-reportingDao.xml
-        <!-- From org.opennms.features.reporting.repository -->
-        classpath:/META-INF/opennms/applicationContext-reportingRepository.xml
         <!-- From org.opennms.features.system-report -->
         classpath:/META-INF/opennms/applicationContext-systemReport.xml
 
-        classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
-        classpath*:/META-INF/opennms/component-reporting.xml
-        classpath*:/META-INF/opennms/component-timeformat.xml
 
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>

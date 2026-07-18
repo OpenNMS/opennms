@@ -16,95 +16,34 @@
  */
 package org.opennms.container.web;
 
-import java.io.File;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.karaf.main.Main;
-import org.opennms.core.soa.support.OnmsOSGiBridgeActivator;
+import org.opennms.container.daemon.KarafContext;
 import org.osgi.framework.BundleContext;
 
 /**
- * Listener which starts Apache Karaf as part of starting up the OpenNMS Webapp.
+ * Publishes the context of the OpenNMS-managed Karaf service to the servlet
+ * bridge. Karaf lifecycle ownership remains outside the web application.
  */
 public class WebAppListener implements ServletContextListener {
-
-    private Main main;
-    private ServletContext m_servletContext;
-    private BundleContext m_framework;
-    private OnmsOSGiBridgeActivator m_bridge = new OnmsOSGiBridgeActivator();
-    
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-
-        try {
-            
-            m_servletContext = sce.getServletContext();
-
-            File karafRoot = new File(m_servletContext.getRealPath("/") + "/WEB-INF/karaf");
-
-            final String opennmsHome = System.getProperty("opennms.home");
-            if (opennmsHome != null) {
-                karafRoot = new File(opennmsHome);
-            }
-
-            /*
-            String karafHome = System.getProperty("karaf.home");
-            if (karafHome != null) {
-                karafRoot = new File(karafHome);
-            }
-            */
-
-            m_servletContext.log("contextInitialized");
-
-            final String root = karafRoot.getAbsolutePath();
-            m_servletContext.log("Root: " + root);
-            System.setProperty("karaf.home", root);
-            System.setProperty("karaf.base", root);
-            System.setProperty("karaf.data", root + File.separator + "data");
-            System.setProperty("karaf.log", root + File.separator + "logs");
-            System.setProperty("karaf.etc", root + File.separator + "etc");
-            System.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
-            System.setProperty("karaf.instances", root + File.separator + "instances");
-            System.setProperty("karaf.startLocalConsole", "false");
-            System.setProperty("karaf.startRemoteShell", "true");
-            System.setProperty("karaf.lock", "false");
-            main = new Main(new String[0]);
-            main.launch();
-            
-            // get bundle context for registering service
-            m_framework = main.getFramework().getBundleContext();
-            
-            // add bundle context to servlet context for Proxy Servlet
-            m_servletContext.setAttribute(BundleContext.class.getName(), m_framework);
-
-            
-            m_bridge.start(m_framework);
-
-        } catch (final Throwable e) {
-            m_servletContext.log("Unexpected exception while starting Karaf", e);
-            main = null;
-            e.printStackTrace();
+    public void contextInitialized(final ServletContextEvent event) {
+        final BundleContext bundleContext = getBundleContext();
+        if (bundleContext != null) {
+            event.getServletContext().setAttribute(BundleContext.class.getName(), bundleContext);
+        } else {
+            event.getServletContext().log(
+                    "Karaf is not running; OSGi servlet and resource proxying is disabled.");
         }
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        try {
-            
-            m_bridge.stop(m_framework);
-            // TODO unregister services form both registries with the osgi container stops
-            
-            m_servletContext.log("contextDestroyed");
-            if (main != null) {
-                main.destroy();
-            }
-        } catch (final Throwable e) {
-            e.printStackTrace();
-        }
+    public void contextDestroyed(final ServletContextEvent event) {
+        event.getServletContext().removeAttribute(BundleContext.class.getName());
     }
 
-
+    protected BundleContext getBundleContext() {
+        return KarafContext.getBundleContextIfAvailable().orElse(null);
+    }
 }

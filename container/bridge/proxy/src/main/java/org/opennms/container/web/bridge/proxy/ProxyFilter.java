@@ -74,6 +74,11 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         bundleContext = getBundleContext(filterConfig.getServletContext());
+        if (bundleContext == null) {
+            filterConfig.getServletContext().log(
+                    "No Karaf BundleContext is available; the OSGi HTTP proxy filter is disabled.");
+            return;
+        }
         try {
             dispatcherTracker = createDispatcherTracker(filterConfig);
             servletTracker = new ServletTracker(bundleContext, filterConfig.getServletContext(), this);
@@ -94,7 +99,8 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // We try to see if any OSGi servlet's are able to handle the request
         // If so, we forward the request accordingly, otherwise we don't
-        if (dispatcherTracker.getDispatcher() != null
+        if (dispatcherTracker != null
+                && dispatcherTracker.getDispatcher() != null
                 && request instanceof HttpServletRequest
                 && response instanceof HttpServletResponse
                 && canHandle((HttpServletRequest) request)) {
@@ -122,8 +128,15 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
 
     @Override
     public void destroy() {
-        servletTracker.close();
-        resourceTracker.close();
+        if (servletTracker != null) {
+            servletTracker.close();
+        }
+        if (resourceTracker != null) {
+            resourceTracker.close();
+        }
+        if (dispatcherTracker != null) {
+            dispatcherTracker.close();
+        }
         handlerRwLock.writeLock().lock();
         try {
             handlers.clear();
@@ -167,11 +180,11 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         }
     }
 
-    private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
+    private static BundleContext getBundleContext(final ServletContext servletContext) {
         final Object context = servletContext.getAttribute(BundleContext.class.getName());
         if (context instanceof BundleContext) {
             return (BundleContext)context;
         }
-        throw new ServletException("Bundle context attribute [" + BundleContext.class.getName() + "] not set in servlet context");
+        return null;
     }
 }

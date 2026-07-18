@@ -30,6 +30,7 @@
   <service enabled="{{getv (print $servicesPath "/statsd/enabled") "true"}}"><name>OpenNMS:Name=Statsd</name></service>
   <service enabled="{{getv (print $servicesPath "/provisiond/enabled") "true"}}"><name>OpenNMS:Name=Provisiond</name></service>
   <service enabled="{{getv (print $servicesPath "/ackd/enabled") "true"}}"><name>OpenNMS:Name=Ackd</name></service>
+  <service enabled="{{getv (print $servicesPath "/karaf/enabled") "true"}}"><name>OpenNMS:Name=Karaf</name></service>
   <service enabled="{{getv (print $servicesPath "/jettyserver/enabled") "true"}}"><name>OpenNMS:Name=JettyServer</name></service>
   <service enabled="{{getv (print $servicesPath "/karafstartupmonitor/enabled") "true"}}"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
   <service enabled="{{getv (print $servicesPath "/syslogd/enabled") "false"}}"><name>OpenNMS:Name=Syslogd</name></service>

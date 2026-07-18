@@ -6,16 +6,17 @@
    <bean id="jasperReportContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/component-reporting.xml</value>
+         <!-- Jasper reporting is initialized by the shared reporting context. -->
        </list>
      </constructor-arg>
+     <constructor-arg ref="reportingCoreContext" />
    </bean>
    <bean id="measurementDataSourceContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <value>classpath*:/META-INF/opennms/component-measurement.xml</value>
+         <!-- Measurement services are initialized by the shared measurements context. -->
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+     <constructor-arg ref="measurementsContext" />
    </bean>
 </beans>

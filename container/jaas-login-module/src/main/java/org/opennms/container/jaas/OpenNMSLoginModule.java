@@ -21,100 +21,120 @@
  */
 package org.opennms.container.jaas;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
 import org.opennms.netmgt.config.api.UserConfig;
-import org.opennms.web.springframework.security.LoginModuleUtils;
-import org.opennms.web.springframework.security.OpenNMSLoginHandler;
-import org.opennms.web.springframework.security.SpringSecurityUserDao;
+import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
 
-public class OpenNMSLoginModule extends AbstractKarafLoginModule implements OpenNMSLoginHandler {
+public class OpenNMSLoginModule extends AbstractKarafLoginModule {
     private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
-    private Map<String, ?> m_sharedState;
 
     @Override
     public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map<String, ?> sharedState, final Map<String, ?> options) {
         LOG.info("OpenNMS Login Module initializing: subject={}, callbackHandler={}, sharedState={}, options={}", subject, callbackHandler, sharedState, options);
-        m_sharedState = sharedState;
         super.initialize(subject, callbackHandler, options);
     }
 
     @Override
     public boolean login() throws LoginException {
-        succeeded = LoginModuleUtils.doLogin(this, subject, m_sharedState, options);
-        return succeeded;
+        final NameCallback nameCallback = new NameCallback("Username: ");
+        final PasswordCallback passwordCallback = new PasswordCallback("Password: ", false);
+        try {
+            callbackHandler.handle(new Callback[] { nameCallback, passwordCallback });
+        } catch (final IOException e) {
+            LOG.debug("I/O exception while prompting for a username and password.", e);
+            throw new LoginException(e.getMessage());
+        } catch (final UnsupportedCallbackException e) {
+            LOG.debug("Username or password prompt is not supported.", e);
+            throw new LoginException(e.getMessage() + " not available to obtain login information.");
+        }
+
+        user = nameCallback.getName();
+        if (user == null) {
+            throw new LoginException("Username cannot be null.");
+        }
+
+        final char[] passwordChars = passwordCallback.getPassword();
+        if (passwordChars == null) {
+            throw new LoginException("Password cannot be null.");
+        }
+
+        final UserConfig userConfig = userConfig();
+        if (userConfig == null) {
+            throw new LoginException("The OpenNMS UserConfig service is unavailable.");
+        }
+
+        final User configUser;
+        final String password = new String(passwordChars);
+        passwordCallback.clearPassword();
+        try {
+            configUser = userConfig.getUser(user);
+            if (configUser == null) {
+                throw new FailedLoginException("User " + user + " does not exist.");
+            }
+            if (!userConfig.comparePasswords(user, password)) {
+                throw new FailedLoginException("Login failed: passwords did not match.");
+            }
+        } catch (final LoginException e) {
+            throw e;
+        } catch (final Exception e) {
+            final LoginException loginException = new LoginException(
+                    "Failed to retrieve user " + user + " from OpenNMS UserConfig.");
+            loginException.initCause(e);
+            throw loginException;
+        }
+
+        principals = createPrincipals(configUser);
+        if (!hasAdminRole(configUser)) {
+            throw new LoginException("User " + user + " is not an administrator! OSGi console access is forbidden.");
+        }
+
+        succeeded = true;
+        LOG.debug("Successfully logged in {}.", user);
+        return true;
     }
 
-    @Override
-    public boolean abort() throws LoginException {
-        return super.abort();
-    }
-
-    @Override
-    public boolean logout() throws LoginException {
-        return super.logout();
-    }
-
-    public CallbackHandler callbackHandler() {
-        return this.callbackHandler;
-    }
-
-    @Override
-    public UserConfig userConfig() {
+    protected UserConfig userConfig() {
         return JaasSupport.getUserConfig();
     }
 
-    @Override
-    public SpringSecurityUserDao springSecurityUserDao() {
-        return JaasSupport.getSpringSecurityUserDao();
-    }
-
-    @Override
-    public String user() {
-        return this.user;
-    }
-
-    @Override
-    public void setUser(final String user) {
-        this.user = user;
-    }
-
-    @Override
-    public Set<Principal> createPrincipals(final GrantedAuthority authority) {
-        final String role = authority.getAuthority().replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
+    private Set<Principal> createPrincipals(final User configUser) {
         final Set<Principal> principals = new HashSet<>();
-        principals.add(new RolePrincipal(role));
-        principals.add(new RolePrincipal(role.toLowerCase()));
-        principals.add(new RolePrincipal(authority.getAuthority()));
-        LOG.debug("created principals from authority {}: {}", authority, principals);
+        for (String configuredRole : configUser.getRoles()) {
+            final String role = normalizeRole(configuredRole);
+            principals.add(new RolePrincipal(role));
+            principals.add(new RolePrincipal(role.toLowerCase(Locale.ROOT)));
+            principals.add(new RolePrincipal(configuredRole));
+        }
+        LOG.debug("Created principals from user roles {}: {}", configUser.getRoles(), principals);
         return principals;
     }
 
-    @Override
-    public Set<Principal> principals() {
-        return this.principals;
+    private boolean hasAdminRole(final User configUser) {
+        return configUser.getRoles().stream()
+                .map(OpenNMSLoginModule::normalizeRole)
+                .anyMatch("admin"::equalsIgnoreCase);
     }
 
-    @Override
-    public void setPrincipals(final Set<Principal> principals) {
-        this.principals = principals;
-    }
-
-    @Override
-    public boolean requiresAdminRole() {
-        // this LoginHandler is used for Karaf access, allow admin login only
-        return true;
+    private static String normalizeRole(final String role) {
+        return role.replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
     }
 }

@@ -26,6 +26,7 @@
   <service enabled="\${env:CORE_SERVICE_STATSD_ENABLED|true}"><name>OpenNMS:Name=Statsd</name></service>
   <service enabled="\${env:CORE_SERVICE_PROVISIOND_ENABLED|true}"><name>OpenNMS:Name=Provisiond</name></service>
   <service enabled="\${env:CORE_SERVICE_ACKD_ENABLED|true}"><name>OpenNMS:Name=Ackd</name></service>
+  <service enabled="\${env:CORE_SERVICE_KARAF_ENABLED|true}"><name>OpenNMS:Name=Karaf</name></service>
   <service enabled="\${env:CORE_SERVICE_JETTYSERVER_ENABLED|true}"><name>OpenNMS:Name=JettyServer</name></service>
   <service enabled="\${env:CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED|true}"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
   <service enabled="\${env:CORE_SERVICE_SYSLOGD_ENABLED|false}"><name>OpenNMS:Name=Syslogd</name></service>

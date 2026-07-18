@@ -62,8 +62,8 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | `CORE_SERVICE_JETTYSERVER_ENABLED=true`
 
 | Karaf
-| The Karaf runtime is the framework that maintains all the other daemons running within the {page-component-title} system.
-| -
+| The Karaf runtime hosts the OSGi services and features used by the {page-component-title} system.
+| `CORE_SERVICE_KARAF_ENABLED=true`
 
 | KarafStartupMonitor
 | Used in startup script to detect if Karaf started properly.

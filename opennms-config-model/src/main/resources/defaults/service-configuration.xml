@@ -205,6 +205,14 @@ can override these defaults and support environment variable interpolation using
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="true">
+    <name>OpenNMS:Name=Karaf</name>
+    <class-name>org.opennms.container.daemon.jmx.KarafDaemon</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service enabled="true">
     <name>OpenNMS:Name=JettyServer</name>
     <class-name>org.opennms.netmgt.jetty.jmx.JettyServer</class-name>
     <invoke at="start" pass="0" method="init"/>

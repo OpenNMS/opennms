@@ -606,6 +606,11 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- webapp dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
