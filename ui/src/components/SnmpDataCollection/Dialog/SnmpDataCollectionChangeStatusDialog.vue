@@ -1,11 +1,13 @@
 <template>
-  <div class="change-status-dialog-modal">
-    <FeatherDialog
-      v-model="isVisible"
-      :labels="label"
-      hide-close
-      @hidden="close"
-    >
+  <ConfirmationDialog
+    class="change-status-dialog-modal"
+    :visible="props.visible"
+    :title="label.title"
+    action-button-text="Save"
+    @cancel="close"
+    @ok="changeStatus"
+  >
+    <template #content>
       <div
         class="modal-body"
         v-if="props.selected?.id && props.selected?.name"
@@ -41,22 +43,14 @@
         <p>This action can not be undone.</p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
-      <template v-slot:footer>
-        <FeatherButton @click="close"> Cancel </FeatherButton>
-        <FeatherButton
-          primary
-          @click="changeStatus"
-        >
-          Save
-        </FeatherButton>
-      </template>
-    </FeatherDialog>
-  </div>
+    </template>
+  </ConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
+import { computed } from 'vue'
+
+import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 
 const props = defineProps<{
   status: 'Enable' | 'Disable'
@@ -70,7 +64,6 @@ const emit = defineEmits<{
   (e: 'confirm', selected: { id: number; name: string } | null, type: string): void
 }>()
 
-const isVisible = ref(false)
 const label = computed(() => {
   let title = 'Change Status'
   switch (props.type) {
@@ -91,20 +84,12 @@ const label = computed(() => {
 })
 
 const close = () => {
-  isVisible.value = false
   emit('close')
 }
 
 const changeStatus = () => {
-  isVisible.value = false
   emit('confirm', props.selected, props.type)
 }
-
-watch(() => props.visible, (visible) => {
-  if (visible) {
-    isVisible.value = props.visible
-  }
-}, { immediate: true })
 </script>
 
 <style lang="scss" scoped>
@@ -112,4 +97,3 @@ watch(() => props.visible, (visible) => {
   min-width: 40rem;
 }
 </style>
-

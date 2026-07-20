@@ -1,17 +1,22 @@
 <template>
-  <FeatherSelect
-    class="severity-select"
-    v-model="selectedSeverity"
-    :options="options"
-    text-prop="option"
-    @update:modelValue="onSeveritySelect"
-    label="Show Severity >="
-  />
+  <FormField label="Show Severity >=" class="severity-select">
+    <PSelect
+      v-model="selectedSeverity"
+      :options="options"
+      optionLabel="option"
+      @update:modelValue="onSeveritySelect"
+    />
+  </FormField>
 </template>
 
 <script setup lang="ts">
-import { FeatherSelect } from '@featherds/select'
+import { ref } from 'vue'
+
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { useMapStore } from '@/stores/mapStore'
+
+const PSelect = Select
 
 const mapStore = useMapStore()
 
@@ -28,29 +33,17 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
-
 .severity-select {
   position: absolute;
   width: 250px;
   right: 60px;
   top: 80px;
-  /* z-index needs to be below $zindex-fixed (1030) which is the z-index of the FeatherAppBar component */
-  z-index: var($zindex-sticky);
+  /* below the app bar's z-index (1030) */
+  z-index: 1020;
 
-  .feather-input-wrapper {
-    background: var($primary-text-on-color);
-    border: 2px solid var($secondary);
-  }
-
-  .feather-input-label {
-    border: 2px solid var($secondary);
-    border-bottom: none;
-
-    // fix placement of severity dropdown label
-    // so it is aligned over top left of select dropdown
-    left: -0.025rem !important;
-    top: -1.25rem !important;
+  .p-select {
+    background: var(--p-content-background);
+    border: 2px solid var(--p-primary-color);
   }
 }
 </style>

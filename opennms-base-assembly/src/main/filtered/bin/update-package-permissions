@@ -13,7 +13,7 @@ fi
 
 if [ -z "${OPENNMS_HOME}" ]; then
   # shellcheck disable=SC2016,SC2154
-  OPENNMS_HOME='${install.dir}'
+  OPENNMS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fi
 
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then

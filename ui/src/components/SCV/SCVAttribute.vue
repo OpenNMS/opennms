@@ -1,36 +1,60 @@
 <template>
   <div class="attribute-container" id="scv-attribute">
-    <FeatherInput
-      data-test="attr-key"
-      ref="keyRef"
-      label="key"
-      @update:modelValue="updateAttributeKey"
-      :modelValue="attributeKey"
-      :error="keyError"
+    <FormField
       class="input"
-    />
-    <FeatherInput
+      data-test="attr-key"
+      label="key"
+      :for="keyId"
+      :error="keyError"
+      v-slot="{ errorId, invalid }"
+    >
+      <PInputText
+        ref="keyRef"
+        :id="keyId"
+        :modelValue="attributeKey"
+        @update:modelValue="updateAttributeKey"
+        :invalid="invalid"
+        :aria-describedby="errorId"
+      />
+    </FormField>
+    <FormField
+      class="input"
       data-test="attr-value"
       label="value"
-      @update:modelValue="updateAttributeValue"
-      :modelValue="attributeValue"
-      class="input"
-    />
+      :for="valueId"
+    >
+      <PInputText
+        :id="valueId"
+        :modelValue="attributeValue"
+        @update:modelValue="updateAttributeValue"
+      />
+    </FormField>
 
-    <FeatherButton icon="Remove attribute" @click="removeAttribute" data-test="rm-attr-btn">
+    <PButton
+      text
+      aria-label="Remove attribute"
+      data-test="rm-attr-btn"
+      @click="removeAttribute"
+    >
       <FeatherIcon :icon="Delete" />
-    </FeatherButton>
+    </PButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FeatherInput } from '@featherds/input'
-import { FeatherButton } from '@featherds/button'
+import { computed, onMounted, ref } from 'vue'
+
+import InputText from 'primevue/inputtext'
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Remove'
+import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
+
+const PInputText = InputText
+const PButton = Button
 
 const scvStore = useScvStore()
 const emit = defineEmits(['set-key-error'])
@@ -54,6 +78,11 @@ const keyRef = ref()
 const keyError = ref()
 const credentials = computed<SCVCredentials>(() => scvStore.credentials)
 
+// Unique ids per attribute row so labels, inputs and error messages stay
+// associated when multiple SCVAttribute rows render together.
+const keyId = computed(() => `scv-attr-key-${props.attributeIndex}`)
+const valueId = computed(() => `scv-attr-value-${props.attributeIndex}`)
+
 const isDuplicateKey = (key: string) => {
   // check to see if the key already exists in another prop
   const entries = Object.entries(credentials.value.attributes)
@@ -74,7 +103,7 @@ const isDuplicateKey = (key: string) => {
 
 const updateAttributeKey: UpdateModelFunction = (key: string) => {
   if (!isDuplicateKey(key)) {
-    scvStore.updateAttribute({ key: props.attributeKey, keyVal: { key, value: props.attributeValue} })
+    scvStore.updateAttribute({ key: props.attributeKey, keyVal: { key, value: props.attributeValue }})
   }
 }
 
@@ -83,13 +112,17 @@ const updateAttributeValue: UpdateModelFunction = (value: string) =>
 
 const removeAttribute = () => scvStore.removeAttribute(props.attributeKey)
 
-onMounted(() => keyRef.value.focus())
+onMounted(() => (keyRef.value?.$el as HTMLInputElement)?.focus())
 </script>
 
 <style lang="scss" scoped>
 .attribute-container {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
+  // vertical spacing above the attribute row
+  margin-top: 2rem;
+
   .input {
     width: 50%;
   }

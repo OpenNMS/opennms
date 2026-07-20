@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/token-auth"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/token-auth"
+        elementFormDefault="qualified">
+  <annotation>
+    <documentation>
+      XML Schema for token-auth-configuration.xml. Defines named token-auth blocks that
+      can be referenced from any consumer supporting the OpenNMS metadata DSL,
+      using the placeholder syntax ${token:name}.
+    </documentation>
+  </annotation>
+
+  <element name="token-auth-configuration">
+    <annotation>
+      <documentation>Top-level element for the token-auth-configuration.xml file.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:token-auth" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="token-auth">
+    <annotation>
+      <documentation>
+        A single auth definition. Each definition has a unique name used as
+        the key in ${token:name} placeholders.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="url" type="string">
+          <annotation>
+            <documentation>The authentication endpoint URL.</documentation>
+          </annotation>
+        </element>
+
+        <element name="method" type="string" minOccurs="0">
+          <annotation>
+            <documentation>HTTP method for the auth call. Defaults to POST.</documentation>
+          </annotation>
+        </element>
+
+        <element ref="this:basic-auth" minOccurs="0"/>
+
+        <element ref="this:header" minOccurs="0" maxOccurs="unbounded"/>
+
+        <element ref="this:content" minOccurs="0"/>
+
+        <element ref="this:token-from"/>
+
+        <element name="ttl-seconds" type="long" minOccurs="0">
+          <annotation>
+            <documentation>
+              Optional proactive refresh interval in seconds. When set, the
+              cache fetches a new token before this interval elapses. When
+              unset, the token is held until something invalidates it.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element name="disable-ssl-verification" type="boolean" minOccurs="0">
+          <annotation>
+            <documentation>
+              When true, the auth call does not verify the server's SSL
+              certificate. Useful for self-signed certs in lab
+              environments. Default false.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element name="use-system-proxy" type="boolean" minOccurs="0">
+          <annotation>
+            <documentation>
+              When true, the auth call uses the JVM-configured proxy.
+              Default false.
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="basic-auth">
+    <annotation>
+      <documentation>
+        HTTP Basic authentication shortcut for the auth request. Equivalent
+        to sending an Authorization header with a base64-encoded user:password.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="username" type="string" use="required"/>
+      <attribute name="password" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="header">
+    <annotation>
+      <documentation>An HTTP header to send on the auth request.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="content">
+    <annotation>
+      <documentation>
+        Optional request body for the auth call. The type attribute carries
+        the Content-Type used for the body.
+      </documentation>
+    </annotation>
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="type" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="token-from">
+    <annotation>
+      <documentation>
+        Where the token can be found in the auth response. Exactly one of
+        jsonpath, header, or body-as-token must be set; this is enforced at
+        load time rather than in the schema.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="jsonpath" type="string"/>
+      <attribute name="header" type="string"/>
+      <attribute name="body-as-token" type="boolean"/>
+    </complexType>
+  </element>
+</schema>

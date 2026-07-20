@@ -1,23 +1,44 @@
 <template>
   <div class="search-bar">
     <div class="search">
-      <FeatherInput label="Search etc" :modelValue="searchValue" @update:modelValue="search" />
+      <FormField class="search-field">
+        <IconField>
+          <PInputText
+            placeholder="Search"
+            aria-label="Search"
+            :modelValue="searchValue"
+            @update:modelValue="(val) => search(val as string)"
+          />
+          <InputIcon>
+            <FeatherIcon :icon="IconSearch" />
+          </InputIcon>
+        </IconField>
+      </FormField>
     </div>
     <div class="save">
-      <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>
+      <PButton :disabled="disableBtn" @click="save">Save</PButton>
     </div>
     <div class="reset">
-      <FeatherButton :disabled="disableBtn" primary @click="reset">Reset</FeatherButton>
+      <PButton :disabled="disableBtn" @click="reset">Reset</PButton>
     </div>
   </div>
   <hr />
 </template>
 
 <script setup lang="ts">
-import { FeatherInput } from '@featherds/input'
-import { FeatherButton } from '@featherds/button'
+import { computed } from 'vue'
+
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import { FeatherIcon } from '@featherds/icon'
+import IconSearch from '@featherds/icon/action/Search'
+import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-import { UpdateModelFunction } from '@/types'
+
+const PButton = Button
+const PInputText = InputText
 
 const fileEditorStore = useFileEditorStore()
 
@@ -26,7 +47,7 @@ const hasSelectedFile = computed(() => fileEditorStore.selectedFileName !== '')
 const searchValue = computed(() => fileEditorStore.searchValue)
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
 
-const search: UpdateModelFunction = (val: string) => fileEditorStore.setSearchValue(val || '')
+const search = (val: string) => fileEditorStore.setSearchValue(val || '')
 const reset = () => fileEditorStore.triggerFileReset()
 const save = () => fileEditorStore.saveModifiedFile()
 </script>
@@ -34,20 +55,37 @@ const save = () => fileEditorStore.saveModifiedFile()
 <style scoped lang="scss">
 .search-bar {
   display: flex;
+
   .search {
     width: 100%;
-    .feather-input-container {
-      padding: 0px;
-      margin-bottom: -26px;
+
+    .search-field {
+      width: 100%;
+
+      // make the input (and its IconField wrapper) fill the field so the
+      // search icon sits at the input's right edge
+      :deep(.p-iconfield) {
+        display: block;
+        width: 100%;
+      }
+
+      :deep(.p-inputtext) {
+        width: 100%;
+        padding-right: 2.75rem;
+      }
+
+      // enlarge the search glyph and keep it near the right edge
+      :deep(.p-inputicon) {
+        font-size: 1.75rem;
+        right: 0.625rem;
+        margin-top: -0.875rem;
+      }
     }
   }
   .save,
   .reset {
+    align-content: center;
     margin-left: 10px;
-    button {
-      margin-top: 5px;
-      margin-bottom: 0px;
-    }
   }
 }
 </style>

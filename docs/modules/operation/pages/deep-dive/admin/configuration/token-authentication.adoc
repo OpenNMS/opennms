@@ -1,0 +1,254 @@
+
+= Collector Token Authentication
+:description: Define HTTP-based login flows whose resulting tokens can be referenced from collector configurations using ${token:<name>}.
+
+Collector token authentication is used to obtain an authentication token from an HTTP-based API.
+It works in combination with the HTTP collector and the XML/JSON collector: those collectors reference the resulting token through the `${token:<name>}` placeholder when building their data-collection requests.
+
+Examples may reference vendor APIs that have since changed.
+Check current vendor documentation before adapting any specific block.
+
+The feature is opt-in.
+If `token-auth-configuration.xml` defines no `<token-auth>` blocks, no runtime behavior changes.
+Collector configurations that do not reference `${token:...}` are unaffected.
+
+== File location
+
+The configuration lives at `$\{OPENNMS_HOME}/etc/token-auth-configuration.xml`.
+A default install includes a minimal stub with commented examples.
+
+The schema is at `$\{OPENNMS_HOME}/share/xsds/token-auth-configuration.xsd`.
+Validation runs through the standard `bin/config-tester` flow.
+
+== Define a token-auth block
+
+Each authentication endpoint is one `<token-auth>` block.
+The `name` attribute is the key used in the `${token:<name>}` placeholder.
+
+[source, xml]
+----
+<token-auth-configuration xmlns="http://xmlns.opennms.org/xsd/config/token-auth">
+  <token-auth name="catalyst-prod">
+    <url>https://catalyst.example.com/dna/system/api/v1/auth/token</url>
+    <method>POST</method>
+    <basic-auth username="${scv:catalyst:username}" password="${scv:catalyst:password}"/>
+    <token-from jsonpath="Token"/>
+    <ttl-seconds>3300</ttl-seconds>
+  </token-auth>
+</token-auth-configuration>
+----
+
+A collector configuration that supports request headers can then reference the resulting token:
+
+[source, xml]
+----
+<request>
+  <header name="X-Auth-Token" value="${token:catalyst-prod}"/>
+</request>
+----
+
+At request build time, {page-component-title} resolves the placeholder by performing the auth call described in the `<token-auth>` block.
+The resulting token is cached and substituted into the header before the data request is sent.
+
+== Element reference
+
+[caption=]
+.`<token-auth>` element
+[options="autowidth"]
+|===
+| Element / Attribute | Required | Description
+
+| `name`
+| yes
+| Identifier used in `${token:<name>}`. Names must be unique across the file.
+
+| `<url>`
+| yes
+| HTTP or HTTPS URL of the token-auth endpoint. Per-node placeholders are permitted (see <<dynamic-auth-metadata,Metadata DSL inside token-auth blocks>>).
+
+| `<method>`
+| no
+| One of `GET`, `POST`, or `PUT`. Defaults to `POST`.
+
+| `<basic-auth>`
+| no
+| Sends an HTTP Basic `Authorization` header. Both `username` and `password` are required when this element is present.
+
+| `<header>`
+| no, repeatable
+| Adds a request header to the auth call. Common uses include `Content-Type` and vendor-specific authentication headers.
+
+| `<content>`
+| no
+| Body of the auth request. The `type` attribute sets the `Content-Type`.
+
+| `<token-from>`
+| yes
+| Locates the token in the auth response. See <<dynamic-auth-token-extraction,Token extraction modes>>.
+
+| `<ttl-seconds>`
+| no
+| Optional proactive refresh interval. The cache fetches a new token before this elapses. When unset, the token is held until something invalidates it.
+
+| `<disable-ssl-verification>`
+| no
+| Set to `true` to skip TLS certificate validation on the auth call. Defaults to `false`.
+
+| `<use-system-proxy>`
+| no
+| When `true`, the auth call uses the JVM-configured proxy. Defaults to `false`.
+|===
+
+[#dynamic-auth-token-extraction]
+== Token extraction modes
+
+The `<token-from>` element supports three mutually exclusive modes.
+Match the mode to the response shape of the auth API in question.
+
+[caption=]
+.`<token-from>` modes
+[options="autowidth"]
+|===
+| Attribute | Description
+
+| `jsonpath`
+| The token is in the JSON response body at the given slash-separated path. `jsonpath="Token"` reads `{"Token":"..."}`. `jsonpath="auth/client_token"` reads `{"auth":{"client_token":"..."}}`.
+
+| `header`
+| The token is returned in an HTTP response header. The attribute value is the header name, for example `header="X-Auth-Token"`. Some endpoints respond with `204 No Content` and the token in a header.
+
+| `body-as-token`
+| Set to `true` if the entire response body is the token. Surrounding double quotes are stripped, so a response body of `"abc123"` yields `abc123`.
+|===
+
+[#dynamic-auth-metadata]
+== Metadata DSL inside token-auth blocks
+
+Field values inside an `<token-auth>` block are resolved through the metadata DSL before the auth call goes out.
+Three scopes are available:
+
+* `${scv:<alias>:<key>}`: This scope reads the value from the secure credentials vault. See xref:deep-dive/admin/configuration/scv-configuration.adoc[].
+* `${env:<NAME>}`: This scope reads a process environment variable.
+* `${node:<key>}`, `${requisition:<key>}`, etc.: These scopes carry the metadata of the node that triggered the auth lookup. The same logical auth can therefore fan out to per-region or per-tenant endpoints, for example `https://${node:label}.api.example.com/auth`.
+
+The cache key includes a hash of the resolved fields.
+Requests that resolve to the same URL, credentials, and body share one cached token.
+
+NOTE: `${token:...}` placeholders inside a token-auth block aren't resolved here.
+The block's own URL, credentials, body, and header values pass through the standard metadata DSL (so `${scv:...}`, `${node:...}`, etc. work), but a `${token:other}` reference is unknown to the DSL and resolves to an empty string.
+Chain definitions through other mechanisms (e.g., shared SCV entries) rather than through token references.
+
+== Caching and refresh
+
+Tokens are held in memory only.
+A restart drops the cache.
+A configuration reload flushes it explicitly.
+
+The cache refreshes a token when one of the following holds:
+
+* No entry exists yet for the resolved auth shape.
+* The configured `<ttl-seconds>` has elapsed, or the cache's internal early-refresh window has been reached.
+  The early-refresh window is `max(600 seconds, 5% of TTL)` before the configured TTL expires, so the cache never hands back a token that's within ten minutes of upstream expiry.
+* A downstream collector reports a `FAILED` collection status _and_ the underlying cause is an HTTP 401 or 403 from the data endpoint.
+  The adaptor invalidates the affected entry; the next collection cycle re-acquires.
+
+Invalidation is passive: the failing request itself isn't retried.
+The next scheduled cycle picks up a fresh token.
+For a Minion-served collection, the FAILED status flows back to the core, where the same adaptor invalidates locally, so the next cycle through the same Minion goes out with a fresh token.
+
+NOTE: A FAILED status that surfaces for non-auth reasons -- RPC timeout, broker outage, generic 5xx, transport error -- does _not_ invalidate the cached token.
+The adaptor only acts when the exception cause chain carries an `auth failure:` marker emitted by the collector on a 401/403 from the data endpoint.
+
+NOTE: A short `<ttl-seconds>` is still useful as defense-in-depth for environments where tokens can be revoked out of band, since it bounds the window during which the cache may hold a token the auth server has already invalidated.
+
+== Reload without restart
+
+A standard daemon-reload event re-reads `token-auth-configuration.xml` and flushes the cache:
+
+[source, console]
+----
+opennms:send-event -p daemonName=TokenAuth uei.opennms.org/internal/reloadDaemonConfig
+----
+
+A successful reload publishes `uei.opennms.org/internal/reloadDaemonConfigSuccessful` with `daemonName=TokenAuth`.
+Validation errors (duplicate names, malformed URLs, missing `<token-from>`) cause the reload to fail and publish `reloadDaemonConfigFailed` with a truncated reason.
+The previously-loaded configuration remains in effect until the next successful reload.
+
+== Reference from collector configurations
+
+Both the XML and HTTP collectors accept `${token:<name>}` in any header value.
+
+* In `xml-datacollection-config.xml`: This collector supports the placeholder inside a `<request>/<header>` element of an `<xml-source>`.
+* In `http-datacollection-config.xml`: The `<url>` element supports a `<headers>` block for the same purpose.
+
+The header value is resolved at request build time, alongside any other metadata DSL placeholders.
+A header such as `X-Tenant: ${node:foreign-source}` and `Authorization: Bearer ${token:my-auth}` can appear on the same request.
+
+== HTTPS
+
+Auth URLs may use either `http://` or `https://`.
+HTTPS uses the JVM truststore for certificate validation.
+The Certificate Authority needs to be added to `$\{JAVA_HOME}/lib/security/cacerts`, or pointed to via `javax.net.ssl.trustStore`.
+
+Client certificate (mTLS) authentication on the auth call is not currently supported.
+Auth definitions can only carry credentials through HTTP Basic, the request body, or request headers.
+
+NOTE: `<disable-ssl-verification>true</disable-ssl-verification>` is intended for lab use only. This flag bypasses the certificate trust check entirely.
+
+== Worked example: Catalyst Center
+
+[source, xml]
+----
+<token-auth-configuration xmlns="http://xmlns.opennms.org/xsd/config/token-auth">
+  <token-auth name="catalyst">
+    <url>https://${node:label}.example.com/dna/system/api/v1/auth/token</url>
+    <method>POST</method>
+    <basic-auth username="${scv:catalyst:username}" password="${scv:catalyst:password}"/>
+    <token-from jsonpath="Token"/>
+    <ttl-seconds>3300</ttl-seconds>
+  </token-auth>
+</token-auth-configuration>
+----
+
+The XML collector then references the resolved token:
+
+[source, xml]
+----
+<xml-source url="https://{ipaddr}/dna/intent/api/v1/network-device">
+  <request>
+    <header name="X-Auth-Token" value="${token:catalyst}"/>
+  </request>
+  ...
+</xml-source>
+----
+
+== Worked example: response header
+
+When the auth API returns the token in a response header rather than the body:
+
+[source, xml]
+----
+<token-auth name="header-style">
+  <url>https://api.example.com/login</url>
+  <method>POST</method>
+  <content type="application/json">{"identity":"${scv:api:user}","password":"${scv:api:password}"}</content>
+  <token-from header="X-Auth-Token"/>
+  <ttl-seconds>1800</ttl-seconds>
+</token-auth>
+----
+
+== Worked example: body-as-token
+
+When the entire response body is the token (some APIs return a JSON-encoded bare string):
+
+[source, xml]
+----
+<token-auth name="vsphere-session">
+  <url>https://vcenter.example.com/api/session</url>
+  <method>POST</method>
+  <basic-auth username="${scv:vsphere:username}" password="${scv:vsphere:password}"/>
+  <token-from body-as-token="true"/>
+  <ttl-seconds>1800</ttl-seconds>
+</token-auth>
+----
+

@@ -35,8 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
@@ -92,11 +92,13 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     private TimeLimiter timeLimiter;
 
-    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
+    // bound to direct:executeRpc on the rpcClient context in start(); Camel 3
+    // dropped the @EndpointInject context attribute
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private Endpoint endpoint;
+
+    private CamelContext camelContext;
 
     @Autowired
     private TracerRegistry tracerRegistry;
@@ -263,6 +265,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     }
 
     public void start() {
+        endpoint = camelContext.getEndpoint("direct:executeRpc");
+        template = camelContext.createProducerTemplate();
         executor = Executors.newCachedThreadPool(threadFactory);
         timeLimiter = SimpleTimeLimiter.create(executor);
 
@@ -274,7 +278,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         metricsReporter.start();
     }
 
+    public void setCamelContext(CamelContext camelContext) {
+        this.camelContext = camelContext;
+    }
+
     public void stop() {
+        if (template != null) {
+            template.stop();
+        }
         if (executor != null) {
             executor.shutdownNow();
         }

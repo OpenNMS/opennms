@@ -14,7 +14,7 @@
   lang="ts"
   setup
 >
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import { RequisitionData } from './copy/requisitionTypes'
@@ -47,10 +47,9 @@ const convertedItem = computed(() => {
 >
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
 
 .white-bg {
-  background-color: var($surface);
+  background-color: var(--p-content-background);
   display: flex;
   align-items: flex-start;
   padding: 16px 24px;
@@ -59,7 +58,7 @@ const convertedItem = computed(() => {
 }
 .title {
   @include headline4();
-  color: var($primary);
+  color: var(--p-primary-color);
 }
 .url {
   margin-top: 6px;
@@ -69,4 +68,3 @@ const convertedItem = computed(() => {
   overflow-wrap: anywhere;
 }
 </style>
-

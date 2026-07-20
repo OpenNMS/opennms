@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<token-auth-configuration xmlns="http://xmlns.opennms.org/xsd/config/token-auth">
+  <!--
+    Define one <token-auth> block per authentication endpoint. The name attribute
+    is used as the key in the ${token:<name>} metadata DSL placeholder.
+
+    Example:
+
+    <token-auth name="catalyst-prod">
+      <url>https://catalyst.example.com/dna/system/api/v1/auth/token</url>
+      <method>POST</method>
+      <header name="Content-Type" value="application/json"/>
+      <basic-auth username="${scv:cc:user}" password="${scv:cc:pass}"/>
+      <token-from jsonpath="Token"/>
+      <ttl-seconds>3300</ttl-seconds>
+    </token-auth>
+
+    See operation/deep-dive/admin/configuration/token-authentication.adoc for
+    the full reference.
+  -->
+</token-auth-configuration>

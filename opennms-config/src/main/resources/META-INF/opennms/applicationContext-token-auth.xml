@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <bean id="tokenAuthConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.TokenAuthConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="tokenAuthConfigFactory"
+          class="org.opennms.netmgt.config.TokenAuthConfigFactory"
+          depends-on="tokenAuthConfigFactory-init"
+          factory-method="getInstance"/>
+
+    <bean id="tokenAuthAcquirer"
+          class="org.opennms.netmgt.config.tokenauth.TokenAcquirer"/>
+
+    <bean id="tokenAuthCache"
+          class="org.opennms.netmgt.config.tokenauth.TokenCache">
+        <constructor-arg ref="tokenAuthAcquirer"/>
+    </bean>
+
+    <bean id="tokenAuthProvider"
+          class="org.opennms.netmgt.config.tokenauth.TokenProviderImpl">
+        <constructor-arg ref="tokenAuthConfigFactory"/>
+        <constructor-arg ref="tokenAuthCache"/>
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.config.tokenauth.TokenProvider"
+                    ref="tokenAuthProvider"/>
+
+    <bean id="tokenAuthCollectorAdaptor"
+          class="org.opennms.netmgt.config.tokenauth.TokenAuthCollectorAdaptor">
+        <constructor-arg ref="tokenAuthProvider"/>
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectorAdaptor"
+                    ref="tokenAuthCollectorAdaptor"/>
+
+    <bean id="tokenAuthConfigReloadListener"
+          class="org.opennms.netmgt.config.tokenauth.TokenAuthConfigReloadListener">
+        <constructor-arg ref="tokenAuthCache"/>
+    </bean>
+
+</beans>

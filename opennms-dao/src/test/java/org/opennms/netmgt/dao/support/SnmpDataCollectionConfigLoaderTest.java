@@ -88,7 +88,7 @@ public class SnmpDataCollectionConfigLoaderTest {
         // Override buildDataCollectionGroupFromDb so we don't need to mock the
         // three child DAOs (resourceType/mibGroup/systemDef) — the dedup logic
         // we're testing is in the merge step, not the materialization step.
-        final SnmpDataCollectionConfigLoader loader = new SnmpDataCollectionConfigLoader() {
+        final SnmpDataCollectionConfigLoaderImpl loader = new SnmpDataCollectionConfigLoaderImpl() {
             @Override
             public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource s) {
                 return s.getId() == 1 ? dcA : dcB;

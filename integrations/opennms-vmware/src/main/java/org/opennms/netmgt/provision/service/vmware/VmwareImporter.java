@@ -515,13 +515,19 @@ public class VmwareImporter {
         if (!vmwareViJavaAccess.setTimeout(request.getCimTimeout())) {
             logger.warn("Error setting CIM connection timeout");
         }
+        vmwareViJavaAccess.setCimTimeout(request.getCimTimeout());
 
         logger.debug("Probing address {} for Host System '{}'", ipAddress, hostSystem.getName());
 
         List<CIMObject> cimObjects = null;
         try {
             cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", ipAddress);
-        } catch (ConnectException | RemoteException | CIMException e) {
+        } catch (ConnectException e) {
+            logger.warn("CIM service for Host System '{}' is not reachable at {} (within {} ms); "
+                    + "the VMwareCim-HostSystem service will not be assigned for this address. Reason: {}",
+                    hostSystem.getName(), ipAddress, request.getCimTimeout(), e.getMessage());
+            return false;
+        } catch (RemoteException | CIMException e) {
             logger.debug("Error while probing for address {} for Host System '{}'", ipAddress, hostSystem.getName());
             logger.debug("Exception thrown while probing IP address: {}", e);
             return false;

@@ -54,6 +54,19 @@ License.
     </section>
 
     <section>
+      <h3>PrimeVue DataTable &amp; Chips (theme token check)</h3>
+      <div class="component-row">
+        <PChip label="Chip One" />
+        <PChip label="Removable" removable />
+      </div>
+      <PDataTable :value="tableRows">
+        <PColumn field="name" header="Name" />
+        <PColumn field="type" header="Type" />
+        <PColumn field="status" header="Status" />
+      </PDataTable>
+    </section>
+
+    <section>
       <h3>FeatherDS Components (coexistence check)</h3>
       <div class="component-row">
         <FeatherButton primary>FeatherDS Button</FeatherButton>
@@ -86,6 +99,9 @@ import InputText from 'primevue/inputtext'
 import Checkbox from 'primevue/checkbox'
 import Select from 'primevue/select'
 import Dialog from 'primevue/dialog'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Chip from 'primevue/chip'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 
@@ -94,6 +110,9 @@ const PInputText = InputText
 const PCheckbox = Checkbox
 const PSelect = Select
 const PDialog = Dialog
+const PDataTable = DataTable
+const PColumn = Column
+const PChip = Chip
 
 const inputValue = ref('')
 const featherInputValue = ref('')
@@ -104,6 +123,11 @@ const selectOptions = ref([
   { label: 'Option A', value: 'a' },
   { label: 'Option B', value: 'b' },
   { label: 'Option C', value: 'c' }
+])
+const tableRows = ref([
+  { name: 'router-01', type: 'Cisco', status: 'Up' },
+  { name: 'switch-02', type: 'Juniper', status: 'Down' },
+  { name: 'server-03', type: 'Linux', status: 'Up' }
 ])
 </script>
 

@@ -35,6 +35,7 @@
         <entry key="categories.xml" value="categoryFactory"/>
         <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
+        <entry key="token-auth-configuration.xml" value="tokenAuthConfigFactory"/>
         <entry key="database-reports.xml" value="databaseReportConfigDao"/>
         <entry key="database-schema.xml" value="databaseSchemaConfigFactory"/>
         <entry key="datacollection-config.xml" value="dataCollectionConfigDao"/>
@@ -154,6 +155,12 @@
   <bean id="chartConfigFactory" class="org.opennms.netmgt.config.ChartConfigFactory" depends-on="chartConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
+
+  <bean id="tokenAuthConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TokenAuthConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="tokenAuthConfigFactory" class="org.opennms.netmgt.config.TokenAuthConfigFactory" depends-on="tokenAuthConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultDatabaseReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/database-reports.xml"/>

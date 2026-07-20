@@ -440,6 +440,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
 
         try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareServer)) {
             vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
+            vmwareViJavaAccess.setCimTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
             final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
             String powerState = null;
             if (hostSystem == null) {

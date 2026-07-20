@@ -14,7 +14,7 @@
   "displayAddNodeButton": false,
   "sideMenuInitialExpand": false,
   "copyrightDates": "2002-2026",
-  "version": "36.0.1-SNAPSHOT",
+  "version": "36.0.3-SNAPSHOT",
   "menus": [
     {
       "id": "testHeader",
@@ -32,17 +32,17 @@
         {
           "id": "nodes",
           "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
         },
+        {
+          "id": "legacyNodes",
+          "name": "Nodes (Legacy)",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
+          "roles": null
+        },        
         {
           "id": "deviceConfigs",
           "name": "Device Configs",

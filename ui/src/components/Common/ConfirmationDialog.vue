@@ -1,30 +1,38 @@
 <template>
   <div class="confirmation-dialog">
-    <FeatherDialog
-      v-model="isVisible"
-      :labels="labels"
-      hide-close
-      @hidden="onCancel"
+    <PDialog
+      v-model:visible="isVisible"
+      :header="props.title"
+      :modal="true"
+      :draggable="false"
+      :closable="false"
+      @hide="onHide"
     >
       <div class="modal-body" :style="{ maxWidth: props.maxWidth, maxHeight: props.maxHeight }">
         <slot name="content"></slot>
       </div>
-      <template v-slot:footer>
-        <FeatherButton
-          primary
+      <template #footer>
+        <PButton
+          :label="props.actionButtonText || 'OK'"
           @click="onAction"
-        >
-          {{ props.actionButtonText || 'OK' }}
-        </FeatherButton>
-        <FeatherButton @click="onCancel">{{ props.cancelButtonText || 'Cancel' }}</FeatherButton>
+        />
+        <PButton
+          text
+          :label="props.cancelButtonText || 'Cancel'"
+          @click="onCancel"
+        />
       </template>
-    </FeatherDialog>
+    </PDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
+import { ref, watch } from 'vue'
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
+
+const PDialog = Dialog
+const PButton = Button
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },
@@ -39,24 +47,36 @@ const emit = defineEmits(['cancel', 'ok'])
 
 const isVisible = ref(props.visible)
 
-const labels = computed(() => {
-  return {
-    title: props.title
-  }
-})
-
-const onCancel = () => {
-  isVisible.value = false
-  emit('cancel')
-}
+// Tracks whether a footer button already resolved the dialog, so the Dialog's
+// `hide` event (which also fires on programmatic close) does not emit a second,
+// spurious `cancel`. `hide` with no prior resolution means the user dismissed
+// the dialog (Esc), which maps to `cancel`.
+let resolved = false
 
 const onAction = () => {
+  resolved = true
   isVisible.value = false
   emit('ok')
 }
 
-watch ([() => props.visible], ([newVal]) => {
+const onCancel = () => {
+  resolved = true
+  isVisible.value = false
+  emit('cancel')
+}
+
+const onHide = () => {
+  if (!resolved) {
+    emit('cancel')
+  }
+  resolved = false
+}
+
+watch(() => props.visible, (newVal) => {
   isVisible.value = newVal
+  if (newVal) {
+    resolved = false
+  }
 })
 </script>
 

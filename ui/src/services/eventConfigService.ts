@@ -79,7 +79,7 @@ export const updateEventConfigEventById = async (
   const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
   const payload = mapEventConfEventEditRequest(eventXml, status)
   try {
-    const response = await v2.put(endpoint, payload, { headers: { 'Content-Type': 'application/xml' } })
+    const response = await v2.put(endpoint, payload, { headers: { 'Content-Type': 'application/xml' }})
     return response.status === 200
   } catch (error) {
     console.error('Error Updating event config source:', error)
@@ -97,7 +97,7 @@ export const updateEventConfigEventById = async (
 export const createEventConfigEvent = async (eventXml: string, sourceId: number): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events`
   try {
-    const response = await v2.post(endpoint, eventXml, { headers: { 'Content-Type': 'application/xml' } })
+    const response = await v2.post(endpoint, eventXml, { headers: { 'Content-Type': 'application/xml' }})
     return response.status === 200 || response.status === 201
   } catch (error) {
     console.error('Error Creating event config source:', error)
@@ -293,7 +293,9 @@ export const downloadEventConfXmlBySourceId = async (sourceId: number): Promise<
   const endpoint = `/eventconf/sources/${sourceId}/events/download`
   try {
     const response = await v2.get(endpoint, { responseType: 'blob' })
-    if (response.status !== 200) return false
+    if (response.status !== 200) {
+      return false
+    }
 
     const filename = extractFilenameFromContentDisposition(response.headers, `eventconf-source-${sourceId}.xml`)
     const blob = response.data as Blob
@@ -390,7 +392,9 @@ const extractFilenameFromContentDisposition = (
 ): string => {
   const contentDisposition =
     headers && ((headers['content-disposition'] || headers['Content-Disposition']) as string | undefined)
-  if (!contentDisposition) return defaultName
+  if (!contentDisposition) {
+    return defaultName
+  }
 
   const match = /filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/.exec(contentDisposition)
   if (match && match[1]) {
@@ -413,4 +417,3 @@ const saveBlobAsFile = (blob: Blob, filename: string): void => {
   a.remove()
   URL.revokeObjectURL(url)
 }
-

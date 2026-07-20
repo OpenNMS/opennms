@@ -389,6 +389,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsSnmpInterface.class, "ifOperStatus", "Operational Status", INTEGER),
 		new SearchProperty(OnmsSnmpInterface.class, "ifSpeed", "Interface Speed (Bits per second)", LONG),
 		new SearchProperty(OnmsSnmpInterface.class, "ifType", "Interface Type", INTEGER),
+		new SearchProperty(OnmsSnmpInterface.class, "physAddr", "Physical Address (MAC)", STRING),
 		new SearchProperty(OnmsSnmpInterface.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsSnmpInterface.class, "lastEgressFlow", "Last Egress Flow", TIMESTAMP),
 		new SearchProperty(OnmsSnmpInterface.class, "lastIngressFlow", "Last Ingress Flow", TIMESTAMP),
@@ -546,6 +547,15 @@ public abstract class SearchProperties {
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES, false));
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES, false));
 		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES, false));
+		// serviceType.name uses a raw SQL subquery in NodeRestService (no direct Hibernate association),
+		// so ordering by this field is not supported.
+		SearchProperty serviceNameProp = new SearchProperty(OnmsServiceType.class, Aliases.serviceType.prop("name"), "Service Name", STRING);
+		serviceNameProp.orderBy = false;
+		NODE_SERVICE_PROPERTIES.add(serviceNameProp);
+		// topology uses a raw SQL subquery across CDP/LLDP tables; ordering is not supported.
+		SearchProperty topologyProp = new SearchProperty(null, "topology", "Topology (CDP/LLDP)", STRING);
+		topologyProp.orderBy = false;
+		NODE_SERVICE_PROPERTIES.add(topologyProp);
 
 		// Root prefix
 		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);

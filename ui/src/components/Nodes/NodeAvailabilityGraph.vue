@@ -35,8 +35,11 @@
     </template>
   </div>
 </template>
-  
+
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
 import { debounce } from 'lodash'
 import { sub, getUnixTime } from 'date-fns'
 import { useNodeStore } from '@/stores/nodeStore'
@@ -51,6 +54,9 @@ const endTime = ref(getUnixTime(now))
 const width = ref(200)
 const timeline = ref<any>(null)
 const recalculateWidth = debounce(() => {
+  if (!timeline.value) {
+    return
+  }
   width.value = timeline.value.clientWidth - 60
 }, 100)
 
@@ -62,13 +68,18 @@ onMounted(async () => {
 
 const availability = computed(() => nodeStore.availability)
 
-onUnmounted(() => window.removeEventListener('resize', recalculateWidth))
+onUnmounted(() => {
+  recalculateWidth.cancel()
+  window.removeEventListener('resize', recalculateWidth)
+})
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
 .card {
-  @include elevation(2);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
   padding: 15px;
   margin-bottom: 15px;
   .title {

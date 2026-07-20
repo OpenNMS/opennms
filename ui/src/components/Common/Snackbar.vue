@@ -1,31 +1,17 @@
 <template>
-  <FeatherSnackbar
-    v-model="isDisplayed"
-    :center="isCentered"
-    :error="hasError"
-    :timeout="setTimeout"
-  >
-    {{ message }}
-    <template v-slot:button>
-      <FeatherButton
-        @click="hideSnackbar"
-        text
-        >Dismiss</FeatherButton
-      >
-    </template>
-  </FeatherSnackbar>
+  <PToast
+    :group="SNACKBAR_GROUP_CENTER"
+    position="bottom-center"
+  />
+  <PToast
+    :group="SNACKBAR_GROUP_START"
+    position="bottom-left"
+  />
 </template>
 
-<script
-  setup
-  lang="ts"
->
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { FeatherSnackbar } from '@featherds/snackbar'
-import { FeatherButton } from '@featherds/button'
-import useSnackbar from '@/composables/useSnackbar'
+<script setup lang="ts">
+import Toast from 'primevue/toast'
+import { SNACKBAR_GROUP_CENTER, SNACKBAR_GROUP_START } from '@/composables/useSnackbar'
 
-const { hideSnackbar, isDisplayed, isCentered, hasError, message, setTimeout } = useSnackbar()
+const PToast = Toast
 </script>
-

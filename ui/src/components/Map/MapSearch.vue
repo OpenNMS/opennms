@@ -1,27 +1,33 @@
 <template>
-  <FeatherAutocomplete
+  <PAutoComplete
     v-model="searchStr"
-    type="multi"
-    :results="results"
-    label="Search"
+    multiple
+    :suggestions="results"
+    optionLabel="label"
     class="map-search"
-    @search="resetLabelsAndSearch"
-    :loading="loading"
-    :hideLabel="true"
-    text-prop="label"
+    aria-label="Search"
+    placeholder="Search"
+    @complete="(e) => resetLabelsAndSearch(e.query)"
     @update:modelValue="selectItem"
-    :labels="labels"
-  ></FeatherAutocomplete>
+  >
+    <template #empty>
+      <div class="autocomplete-empty">{{ labels.noResults }}</div>
+    </template>
+  </PAutoComplete>
 </template>
 
 <script
   setup
   lang="ts"
 >
+import { computed, ref, watch, watchEffect } from 'vue'
+
 import { debounce } from 'lodash'
-import { FeatherAutocomplete } from '@featherds/autocomplete'
+import AutoComplete from 'primevue/autocomplete'
 import { useMapStore } from '@/stores/mapStore'
 import { useSearchStore } from '@/stores/searchStore'
+
+const PAutoComplete = AutoComplete
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
@@ -34,7 +40,7 @@ const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
-  const nodeLabels = items.map((item) => item.label)
+  const nodeLabels = items.map(item => item.label)
   mapStore.setSearchedNodeLabels(nodeLabels)
 
   if (nodeLabels.length) {
@@ -116,13 +122,15 @@ watch(results, (newResults) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
-
 .map-search {
   z-index: 1000;
   width: 290px !important;
-  :deep(.feather-input-border) {
-    background: var($surface);
+
+  :deep(.p-autocomplete-input-multiple) {
+    background: var(--p-content-background);
   }
+}
+.autocomplete-empty {
+  padding: 0.5rem 0.75rem;
 }
 </style>

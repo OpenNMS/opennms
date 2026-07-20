@@ -1,0 +1,38 @@
+
+= Web Assets API
+
+The `/web-assets` endpoint exposes the front-end web asset bundles registered with OpenNMS. It is read-only.
+
+== GETs (reading data)
+
+[caption=]
+.Web Assets API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/web-assets`                      | Lists the available web asset names. Produces `application/json`.
+| `/web-assets/\{assetName}`         | Lists the resources that make up the named asset. Produces `application/json`; returns `404` if the asset does not exist.
+| `/web-assets/\{assetName}.\{type}` | Fetches a single asset resource. The response `Content-Type` is derived from the `type` extension (for example `js` → `application/javascript`, `css` → `text/css`, `png` → `image/png`). Returns `404` if the resource does not exist.
+
+|===
+
+== Examples using cURL
+
+.List the available web assets
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/web-assets"
+----
+
+.List the resources for an asset
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/web-assets/onms-theme"
+----
+
+.Fetch a single asset resource
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/web-assets/onms-theme.css"
+----

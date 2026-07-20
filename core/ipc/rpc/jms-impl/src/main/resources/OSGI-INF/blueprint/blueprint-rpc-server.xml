@@ -29,15 +29,15 @@
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
 
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.engine.DefaultShutdownStrategy">
         <property name="timeout" value="15"/>
     </bean>
 
     <camelContext id="rpcServer" xmlns="http://camel.apache.org/schema/blueprint">
         <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
-        <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
-        </properties>
+        <globalOptions>
+            <globalOption key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
+        </globalOptions>
 
         <!-- The routes are managed by the CamelRpcServerRouteManager  -->
     </camelContext>

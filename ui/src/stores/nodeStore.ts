@@ -24,6 +24,7 @@ import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
+import { ref } from 'vue'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])

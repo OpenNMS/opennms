@@ -3,14 +3,14 @@
     <div class="section-content">
       <div class="mask-elements-header">
         <h3>Mask Elements</h3>
-        <FeatherButton
-          secondary
+        <Button
+          outlined
           @click="$emit('setMaskElements', 'addMaskRow', null, -1)"
           data-test="add-mask-row-button"
         >
           <FeatherIcon :icon="Add" />
           Add
-        </FeatherButton>
+        </Button>
       </div>
       <div
         v-for="(row, index) in maskElements"
@@ -18,32 +18,53 @@
         class="form-row"
       >
         <div class="dropdown">
-          <FeatherSelect
-            label="Element Name"
-            :options="availableMaskOptions(index)"
+          <FormField
+            :for="`mask-element-name-${index}`"
             :error="errors.maskElements?.[index]?.name"
-            :modelValue="MaskElementNameOptions.find(
-              (o: ISelectItemType) => o._value === row.name._value
-            )"
-            @update:modelValue="$emit('setMaskElements', 'setName', $event, index)"
-            data-test="mask-element-name"
-          />
+          >
+            <Select
+              :inputId="`mask-element-name-${index}`"
+              :options="availableMaskOptions(index)"
+              optionLabel="_text"
+              showClear
+              :invalid="!!errors.maskElements?.[index]?.name"
+              :modelValue="MaskElementNameOptions.find(
+                (o: ISelectItemType) => o._value === row.name._value
+              )"
+              @update:modelValue="$emit('setMaskElements', 'setName', $event, index)"
+              data-test="mask-element-name"
+              fluid
+              placeholder="Name"
+              :aria-label="'Name'"
+            />
+          </FormField>
         </div>
         <div class="input-field">
-          <FeatherInput
-            label="Element Value"
-            :model-value="row.value"
-            :error="errors.maskElements?.[index]?.value"
-            @update:model-value="$emit('setMaskElements', 'setValue', $event, index)"
-            data-test="mask-element-value"
-          />
-          <FeatherButton
-            secondary
+          <div class="value-input">
+            <FormField
+              :for="`mask-element-value-${index}`"
+              :error="errors.maskElements?.[index]?.value"
+            >
+              <InputText
+                :id="`mask-element-value-${index}`"
+                :modelValue="row.value"
+                :invalid="!!errors.maskElements?.[index]?.value"
+                @update:model-value="$emit('setMaskElements', 'setValue', $event, index)"
+                data-test="mask-element-value"
+                fluid
+                placeholder="Value"
+                :aria-label="'Value'"
+              />
+            </FormField>
+          </div>
+          <Button
+            outlined
+            severity="danger"
             data-test="remove-mask-row-button"
             @click="$emit('setMaskElements', 'removeMaskRow', null, index)"
           >
             <FeatherIcon :icon="Delete" />
-          </FeatherButton>
+          </Button>
         </div>
       </div>
     </div>
@@ -51,13 +72,17 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@featherds/select'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { MaskElementNameOptions } from './constants'
 
 defineEmits<{
@@ -75,7 +100,7 @@ const elements = ref<Array<{ name: ISelectItemType; value: string }>>([
 
 const availableMaskOptions = (index: number): ISelectItemType[] => {
   const selectedNames = elements.value.map(r => r.name._value)
-  return MaskElementNameOptions.filter(option => {
+  return MaskElementNameOptions.filter((option) => {
     const value = option._value as string
     return (
       !selectedNames.includes(value) ||
@@ -90,9 +115,6 @@ watch(() => props, () => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-
 .mask-elements {
   .mask-elements-header {
     display: flex;
@@ -118,28 +140,10 @@ watch(() => props, () => {
       align-items: flex-start;
       gap: 10px;
 
-      >div {
+      .value-input {
         flex: 1;
-      }
-
-      >button {
-        min-width: 40px !important;
-        height: 40px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 0px;
-
-        span {
-          svg {
-            fill: #a5021f;
-            font-size: 22px;
-          }
-        }
       }
     }
   }
-
 }
 </style>
-

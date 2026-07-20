@@ -142,20 +142,28 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *             Thrown if an error occurs adding the element to the queue.
      */
     public synchronized void schedule(ReadyRunnable runnable, long interval) {
-        LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
+        }
 
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
-            LOG.debug("schedule: interval queue did not exist, a new one has been created");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("schedule: interval queue did not exist, a new one has been created");
+            }
             m_queues.put(key, new LinkedBlockingQueue<ReadyRunnable>());
         }
 
         m_queues.get(key).add(runnable);
         if (m_scheduled++ == 0) {
-            LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
+            }
             notifyAll();
         } else {
-            LOG.debug("schedule: queue element added, notification not performed");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("schedule: queue element added, notification not performed");
+            }
         }
     }
 
@@ -413,7 +421,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                         try {
                             readyRun = in.peek();
                             if (readyRun != null && readyRun.isReady()) {
-                                LOG.debug("run: found ready runnable {}", readyRun);
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("run: found ready runnable {}", readyRun);
+                                }
 
                                 /*
                                  * Pop the interface/readyRunnable from the
@@ -429,9 +439,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 ++m_numTasksExecuted;
 
                                 // Thread Pool Statistics
-                                if (m_runner instanceof ThreadPoolExecutor) {
+                                if (LOG.isDebugEnabled() && m_runner instanceof ThreadPoolExecutor) {
                                     ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
-                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? (double) e.getCompletedTaskCount() / e.getTaskCount() : 0);
                                     LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
                                         e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
                                 }

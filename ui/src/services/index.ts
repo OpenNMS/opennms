@@ -30,6 +30,7 @@ import {
 } from './nodeService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
+import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
   getGraphNodesNodes,
@@ -116,6 +117,7 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getPlugins,
+  getServiceTypes,
   getDeviceConfigBackups,
   backupDeviceConfig,
   downloadDeviceConfigs,

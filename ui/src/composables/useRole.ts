@@ -21,6 +21,7 @@
 ///
 
 import { useAuthStore } from '@/stores/authStore'
+import { computed } from 'vue'
 
 const enum Roles {
   ROLE_ADMIN = 'ROLE_ADMIN',

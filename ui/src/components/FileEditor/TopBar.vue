@@ -4,10 +4,10 @@
       Files<FeatherIcon :icon="ChevronRight" />
     </div>
     <div class="save">
-      <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>
+      <PButton :disabled="disableBtn" @click="save">Save</PButton>
     </div>
     <div class="reset">
-      <FeatherButton :disabled="disableBtn" primary @click="reset">Reset</FeatherButton>
+      <PButton :disabled="disableBtn" @click="reset">Reset</PButton>
     </div>
     <div class="filename headline3">{{ filename }}</div>
   </div>
@@ -15,10 +15,14 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
+import { computed } from 'vue'
+
+import Button from 'primevue/button'
 import { FeatherIcon } from '@featherds/icon'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
+
+const PButton = Button
 
 const fileEditorStore = useFileEditorStore()
 

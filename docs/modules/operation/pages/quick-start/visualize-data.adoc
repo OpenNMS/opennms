@@ -11,7 +11,7 @@ The {page-component-title} home page presents an overview of important network s
 By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map showing real-time regional status data.
 
 By default, the visualizations on the home page are not filtered.
-You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
+You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, Graph Collections, and Quick Search).
 For more information, see xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] in the Deep Dive section.
 
 [[qs-visualize-dashboard]]
@@ -96,7 +96,4 @@ For more information, see xref:deep-dive/visualizations/trends.adoc[] in the Dee
 
 == Beyond Quick Start
 
-Refer to Visualizations in the Deep Dive section for more information on visualizations, including the following:
-
-* xref:deep-dive/visualizations/opsboard/introduction.adoc[Operator boards and configuration settings].
-* xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
+Refer to Visualizations in the Deep Dive section for more information on the available visualizations.

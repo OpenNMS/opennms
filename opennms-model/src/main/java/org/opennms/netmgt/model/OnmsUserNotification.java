@@ -107,7 +107,7 @@ public class OnmsUserNotification implements Serializable {
      */
     @Id
     @Column(nullable=false)
-    @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId")
+    @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId", allocationSize = 1)
     @GeneratedValue(generator="userNotificationSequence")
     @XmlAttribute(name="id")
     public Integer getId() {

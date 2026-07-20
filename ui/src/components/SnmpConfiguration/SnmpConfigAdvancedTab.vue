@@ -1,55 +1,64 @@
 <template>
   <div class="snmp-config-advanced-tab">
-    <FeatherTabContainer
+    <PTabs
       class="nested-tabs"
-      v-model="activeAdvancedSubtab"
+      v-model:value="activeAdvancedSubtab"
     >
-      <template v-slot:tabs>
-        <FeatherTab>Default Overrides</FeatherTab>
-        <FeatherTab>Profiles</FeatherTab>
-        <FeatherTab>Upload/Download</FeatherTab>
-      </template>
-      <FeatherTabPanel>
-        <SnmpConfigDefaultsPanel />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigProfilesTab />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigUploadDownloadTab />
-      </FeatherTabPanel>
-    </FeatherTabContainer>
+      <PTabList>
+        <PTab :value="0">Default Overrides</PTab>
+        <PTab :value="1">Profiles</PTab>
+        <PTab :value="2">Upload/Download</PTab>
+      </PTabList>
+      <PTabPanels>
+        <PTabPanel :value="0">
+          <SnmpConfigDefaultsPanel />
+        </PTabPanel>
+        <PTabPanel :value="1">
+          <SnmpConfigProfilesTab />
+        </PTabPanel>
+        <PTabPanel :value="2">
+          <SnmpConfigUploadDownloadTab />
+        </PTabPanel>
+      </PTabPanels>
+    </PTabs>
    </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
 import SnmpConfigDefaultsPanel from './SnmpConfigDefaultsPanel.vue'
 import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
 import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
+
+const PTabs = Tabs
+const PTabList = TabList
+const PTab = Tab
+const PTabPanels = TabPanels
+const PTabPanel = TabPanel
 
 const store = useSnmpConfigStore()
 
 const activeAdvancedSubtab = computed({
   get: () => store.activeAdvancedSubtab,
-  set: (val) => store.setActiveAdvancedSubtab(val)
+  set: val => store.setActiveAdvancedSubtab(val)
 })
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/vars.scss';
-
 .snmp-config-advanced-tab {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 100%;
   padding: 0;
   border-radius: 5px;
   margin-top: 0;
-  border: 1px solid var(variables.$border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .main-section {
     padding: 1.5em;
@@ -58,8 +67,8 @@ const activeAdvancedSubtab = computed({
   .nested-tabs {
     margin-top: 1em;
 
-    :deep(li .tab) {
-      height: 2.25rem;
+    :deep(.p-tab) {
+      text-transform: uppercase;
     }
   }
 }

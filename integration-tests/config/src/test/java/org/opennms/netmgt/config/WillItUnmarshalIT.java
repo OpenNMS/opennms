@@ -65,6 +65,7 @@ import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.tokenauth.TokenAuthConfiguration;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -211,6 +212,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, false, null);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, true, null);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "token-auth-configuration.xml", TokenAuthConfiguration.class, true, null);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, false, null);
         addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);

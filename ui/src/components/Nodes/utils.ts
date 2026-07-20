@@ -27,7 +27,7 @@ import {
 import { isNumber } from '@/lib/utils'
 
 /**
- * Construct an array of Feather Table CSS classes for the given configured node table columns. 
+ * Construct an array of Feather Table CSS classes for the given configured node table columns.
  * These start with 't', then ('l', 'r', 'c') for (left, right, center), then the 1 based column index.
  * e.g. 'tl1': left-align 1st column
  * 'tr7': right-align 7th colunn
@@ -60,7 +60,7 @@ export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
   { id: 'label', label: 'Node Label', selected: true, order: 1 },
   { id: 'ipaddress', label: 'IP Address', selected: true, order: 2 },
-  { id: 'location', label: 'Location', selected: true, order: 3 },
+  { id: 'location', label: 'Monitoring Location', selected: true, order: 3 },
   { id: 'foreignSource', label: 'Foreign Source', selected: true, order: 4 },
   { id: 'foreignId', label: 'Foreign ID', selected: true, order: 5 },
   { id: 'sysContact', label: 'Sys Contact', selected: true, order: 6 },

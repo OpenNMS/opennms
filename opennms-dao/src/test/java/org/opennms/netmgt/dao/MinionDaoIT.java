@@ -63,15 +63,17 @@ public class MinionDaoIT {
     private JdbcTemplate m_jdbcTemplate;
 
     @Before
+    @Transactional
     public void setUp() throws Exception {
         final Collection<OnmsMinion> minions = m_minionDao.findAll();
         for (final OnmsMinion minion : minions) {
             m_minionDao.delete(minion);
         }
-        m_minionDao.flush();
+        //m_minionDao.flush();
     }
 
     @Test
+    @Transactional
     public void testQueryByLocation() throws Exception {
         final Date now = new Date();
         m_minionDao.save(new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now));

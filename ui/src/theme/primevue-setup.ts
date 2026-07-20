@@ -21,8 +21,11 @@
 ///
 
 import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip'
 import OpenNMSPreset from './opennms-preset'
 import 'primeicons/primeicons.css'
+import '@/styles/primevue-overrides.scss'
+import '@/styles/onms-grid.scss'
 
 import type { App } from 'vue'
 
@@ -38,6 +41,14 @@ export const setupPrimeVue = (app: App) => {
           order: 'primevue'
         }
       }
+    },
+    zIndex: {
+      overlay: 1060,
+      menu: 1060,
+      modal: 1100,
+      tooltip: 1110
     }
   })
+
+  app.directive('tooltip', Tooltip)
 }

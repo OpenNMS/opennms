@@ -1,31 +1,18 @@
 <template>
-  <FeatherExpansionPanel
+  <TogglePanel
     id="thread-pool-expansion"
     class="expansion-panel"
-    v-model="threadPoolsActive"
+    :collapsed="!threadPoolsActive"
+    @update:collapsed="(v) => threadPoolsActive = !v"
   >
-    <template v-slot:title>
+    <template #header>
       <div class="title-flex">
         <div class="title">Thread Pools</div>
-        <div v-if="!threadPoolsActive">
-          <FeatherChipList label="">
-            <FeatherChip v-if="unTouchedThreadPoolData.importThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.importThreads }}</template
-              >Import Threads
-            </FeatherChip>
-            <FeatherChip v-if="unTouchedThreadPoolData.scanThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.scanThreads }}</template
-              >Scan Threads
-            </FeatherChip>
-            <FeatherChip v-if="unTouchedThreadPoolData.rescanThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.rescanThreads }}</template
-              >Rescan Threads
-            </FeatherChip>
-            <FeatherChip v-if="unTouchedThreadPoolData.writeThreads">
-              <template v-slot:icon>{{ unTouchedThreadPoolData.writeThreads }}</template
-              >Write Threads
-            </FeatherChip>
-          </FeatherChipList>
+        <div v-if="!threadPoolsActive" class="chip-list">
+          <PChip v-if="unTouchedThreadPoolData.importThreads" :label="`${unTouchedThreadPoolData.importThreads} Import Threads`" />
+          <PChip v-if="unTouchedThreadPoolData.scanThreads" :label="`${unTouchedThreadPoolData.scanThreads} Scan Threads`" />
+          <PChip v-if="unTouchedThreadPoolData.rescanThreads" :label="`${unTouchedThreadPoolData.rescanThreads} Rescan Threads`" />
+          <PChip v-if="unTouchedThreadPoolData.writeThreads" :label="`${unTouchedThreadPoolData.writeThreads} Write Threads`" />
         </div>
       </div>
     </template>
@@ -34,71 +21,71 @@
         Thread pool sizes impact the performance of the provisioning subsystem. Larger systems may require larger
         values. To adjust them, type a new number in the field or use the up/down arrows to select a value.
       </p>
-      <FeatherInput
-        :error="getError('importThreads')"
-        type="number"
-        label="Import"
-        hint="Number of threads to allocate for requisition import tasks."
-        v-model="threadPoolData.importThreads"
-        @keypress="enterCheck"
-      />
-      <FeatherInput
-        :error="getError('scanThreads')"
-        type="number"
-        label="Scan"
-        hint="Number of threads to allocate for manual scanning tasks."
-        v-model="threadPoolData.scanThreads"
-        @keypress="enterCheck"
-      />
-      <FeatherInput
-        :error="getError('rescanThreads')"
-        type="number"
-        label="Rescan"
-        hint="Number of threads to allocate for scheduled rescanning tasks."
-        v-model="threadPoolData.rescanThreads"
-        @keypress="enterCheck"
-      />
-      <FeatherInput
-        class="last-input"
-        :error="getError('writeThreads')"
-        type="number"
-        label="Write"
-        hint="Number of threads to allocate for writing to the database."
-        v-model="threadPoolData.writeThreads"
-        @keypress="enterCheck"
-      />
-      <FeatherButton
-        primary
-        @click="updateThreadpools"
-        :disabled="loading"
-      >
-        <FeatherSpinner
-          v-if="loading"
-          class="spinner-button"
+      <FormField label="Import" :error="getError('importThreads')" hint="Number of threads to allocate for requisition import tasks.">
+        <PInputText
+          type="number"
+          :invalid="Boolean(getError('importThreads'))"
+          v-model="threadPoolData.importThreads"
+          @keypress="enterCheck"
         />
-        <span v-if="!loading">Update Thread Pools</span>
-      </FeatherButton>
+      </FormField>
+      <FormField label="Scan" :error="getError('scanThreads')" hint="Number of threads to allocate for manual scanning tasks.">
+        <PInputText
+          type="number"
+          :invalid="Boolean(getError('scanThreads'))"
+          v-model="threadPoolData.scanThreads"
+          @keypress="enterCheck"
+        />
+      </FormField>
+      <FormField label="Rescan" :error="getError('rescanThreads')" hint="Number of threads to allocate for scheduled rescanning tasks.">
+        <PInputText
+          type="number"
+          :invalid="Boolean(getError('rescanThreads'))"
+          v-model="threadPoolData.rescanThreads"
+          @keypress="enterCheck"
+        />
+      </FormField>
+      <FormField class="last-input" label="Write" :error="getError('writeThreads')" hint="Number of threads to allocate for writing to the database.">
+        <PInputText
+          type="number"
+          :invalid="Boolean(getError('writeThreads'))"
+          v-model="threadPoolData.writeThreads"
+          @keypress="enterCheck"
+        />
+      </FormField>
+      <PButton
+        label="Update Thread Pools"
+        :loading="loading"
+        :disabled="loading"
+        @click="updateThreadpools"
+      />
     </div>
-  </FeatherExpansionPanel>
+  </TogglePanel>
 </template>
 
 <script
   setup
   lang="ts"
 >
+import { computed, reactive, ref } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import { FeatherInput } from '@featherds/input'
-import { FeatherButton } from '@featherds/button'
-import { FeatherExpansionPanel } from '@featherds/expansion'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import { FeatherSpinner } from '@featherds/progress'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Chip from 'primevue/chip'
+import TogglePanel from '@/components/Common/TogglePanel.vue'
+import FormField from '@/components/Common/FormField.vue'
 import { isEqual as _isEqual } from 'lodash'
 
 import { putProvisionDService } from '@/services/configurationService'
 import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
+
+const PButton = Button
+const PInputText = InputText
+const PChip = Chip
 
 const configurationStore = useConfigurationStore()
 const { showSnackBar } = useSnackbar()
@@ -113,14 +100,14 @@ const snackbarErrorMessage = 'Thread pool values are outside of supported range.
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
+  threadPoolKeys.forEach(key => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
 
 const unTouchedThreadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
+  threadPoolKeys.forEach(key => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
@@ -150,15 +137,15 @@ const updateThreadpools = async () => {
       const reducedUpdatedProvisionDData = threadPoolKeys.reduce((acc, key) => {
         const obj: Record<string, string> = {}
 
-        for(let elem in updatedProvisionDData) {
-          if(elem === key){
+        for (let elem in updatedProvisionDData) {
+          if (elem === key) {
             obj[elem] = updatedProvisionDData[elem]
             break
           }
         }
 
-        return {...acc, ...obj}
-      },{})
+        return { ...acc, ...obj }
+      }, {})
       const haveThreadPoolValuesChanged = !_isEqual(currentThreadpoolState, reducedUpdatedProvisionDData)
 
       // Set Update State
@@ -177,7 +164,7 @@ const updateThreadpools = async () => {
 
       let messageUpdateSuccess = 'Thread pool data saved.'
 
-      if(!haveThreadPoolValuesChanged) {
+      if (!haveThreadPoolValuesChanged) {
         showSnackBar({
           msg: messageUpdateSuccess
         })
@@ -229,11 +216,6 @@ const getError = (key: string) => {
 >
 @import "@featherds/styles/mixins/typography";
 
-.expansion-panel{
-  :deep(.feather-expansion-header-button) {
-    height: 72px;
-  }
-}
 .title {
   @include headline3();
   margin-right: 16px;
@@ -241,6 +223,14 @@ const getError = (key: string) => {
 .title-flex {
   display: flex;
   align-items: center;
+}
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+:deep(.form-field) {
+  margin-bottom: 1.25rem;
 }
 .last-input {
   margin-bottom: 10px;

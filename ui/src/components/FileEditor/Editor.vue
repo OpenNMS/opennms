@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch, watchEffect } from 'vue'
+
 import { getExtensionFromFilenameSafely } from './utils'
 import { useAppStore } from '@/stores/appStore'
 import { VAceEditor } from 'vue3-ace-editor'
@@ -57,8 +59,12 @@ const lang = computed(() => {
 
   if (selectedFileName.value) {
     const extension = getExtensionFromFilenameSafely(selectedFileName.value)
-    if (extension === xml) return xml
-    if (extension === drl) return java
+    if (extension === xml) {
+      return xml
+    }
+    if (extension === drl) {
+      return java
+    }
   }
   return properties
 })
@@ -113,12 +119,11 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
 .editor-with-console {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 }
 .help-open {
   height: calc(100vh - 180px);

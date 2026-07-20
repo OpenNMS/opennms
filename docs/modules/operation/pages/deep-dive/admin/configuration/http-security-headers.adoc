@@ -1,0 +1,45 @@
+
+= HTTP Security Headers
+:description: Learn how {page-component-title} configures HTTP response headers to protect the web UI against clickjacking and related attacks, and how to adjust them for cross-origin embedding.
+
+{page-component-title} sets several HTTP response headers on web UI responses to mitigate common web-application attacks.
+This page describes the framing-protection headers used to prevent clickjacking and Cross-Frame Scripting (XFS), and how to adjust them when a deployment needs to embed {page-component-title} pages from a different origin.
+
+== Clickjacking and Cross-Frame Scripting protection
+
+Clickjacking attacks load a target web application inside a hidden `iframe` on a malicious page and trick an authenticated user into clicking UI elements without their knowledge.
+To prevent this, {page-component-title} restricts which origins are allowed to frame its pages using two complementary headers:
+
+* `X-Frame-Options: SAMEORIGIN` -- legacy header recognized by all browsers, configured in `$OPENNMS_HOME/etc/jetty.xml`.
+* `Content-Security-Policy: frame-ancestors 'self'` -- modern equivalent defined by CSP Level 2, configured in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`.
+
+By default both headers restrict framing to the same origin as {page-component-title}.
+The CSP `frame-ancestors` directive takes precedence on browsers that support CSP Level 2; `X-Frame-Options` remains in place to cover older browsers.
+
+== Allow {page-component-title} pages to be embedded from a different origin
+
+If you need to embed {page-component-title} pages in an iframe served from a different origin (for example, a corporate dashboard portal), you must adjust both headers.
+
+=== Update the Content-Security-Policy header
+
+Edit `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml` and locate the `Content-Security-Policy-Filter` filter.
+Add the allowed origin (or origins) to the `frame-ancestors` directive in the `param-value`:
++
+[source, xml]
+----
+<param-value>... ; frame-ancestors 'self' https://dashboard.example.com ; ...</param-value> <1>
+----
+<1> Append each additional origin space-separated after `'self'`. Use `'none'` to deny all framing, or remove the directive only if you intend to fall back to `X-Frame-Options` alone.
+
+=== Update the X-Frame-Options header
+
+The `X-Frame-Options` header cannot express multiple allowed origins.
+Edit `$OPENNMS_HOME/etc/jetty.xml` and locate the `X-Frame-Options` rule inside the `RewriteHandler` block.
+Choose one of the following:
+
+* Remove or comment out the `X-Frame-Options` rule to rely on the CSP `frame-ancestors` directive alone.
+This is safe for modern browsers but offers no clickjacking protection for legacy browsers that do not support CSP Level 2.
+* Leave the value as `SAMEORIGIN`.
+Browsers that honor `X-Frame-Options` and do not support CSP `frame-ancestors` will continue to block the cross-origin frame.
+
+After modifying either file, restart {page-component-title} for the changes to take effect.

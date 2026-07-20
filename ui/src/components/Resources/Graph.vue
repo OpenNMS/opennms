@@ -1,38 +1,40 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 container">
+  <div class="onms-row">
+    <div class="onms-col-12 container">
       <router-link
         v-if="!isSingleGraph"
         :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
         target="_blank"
       >
-        <FeatherButton secondary class="single-graph-btn">Open</FeatherButton>
+        <PButton outlined class="single-graph-btn">Open</PButton>
       </router-link>
-      <FeatherTabContainer class="graph-data-tabs">
-        <template v-slot:tabs>
-          <FeatherTab>Graph</FeatherTab>
-          <FeatherTab>Data</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper">
-            <canvas :id="`${label}-${definition}`"></canvas>
-            <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
-          </div>
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper" v-if="graphData">
-            <GraphDataTable
-              :id="`${label}-${definition}`"
-              :convertedGraphData="convertedGraphDataRef"
-              :graphData="graphData"
-            />
-          </div>
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <PTabs value="0" class="graph-data-tabs">
+        <PTabList>
+          <PTab value="0">Graph</PTab>
+          <PTab value="1">Data</PTab>
+        </PTabList>
+        <PTabPanels>
+          <PTabPanel value="0">
+            <div class="canvas-wrapper">
+              <canvas :id="`${label}-${definition}`"></canvas>
+              <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
+            </div>
+          </PTabPanel>
+          <PTabPanel value="1">
+            <div class="canvas-wrapper" v-if="graphData">
+              <GraphDataTable
+                :id="`${label}-${definition}`"
+                :convertedGraphData="convertedGraphDataRef"
+                :graphData="graphData"
+              />
+            </div>
+          </PTabPanel>
+        </PTabPanels>
+      </PTabs>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
@@ -45,13 +47,20 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { FeatherButton } from '@featherds/button'
-import {
-  FeatherTab,
-  FeatherTabContainer,
-  FeatherTabPanel
-} from '@featherds/tabs'
-import { PropType } from 'vue'
+import Button from 'primevue/button'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
+import { PropType, computed, onMounted, ref, watch } from 'vue'
+
+const PButton = Button
+const PTabs = Tabs
+const PTabList = TabList
+const PTab = Tab
+const PTabPanels = TabPanels
+const PTabPanel = TabPanel
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -133,7 +142,7 @@ const options = computed<ChartOptions>(() => ({
         text: convertedGraphDataRef.value.verticalLabel
       } as TitleOptions,
       ticks: {
-        callback: (value) => yAxisFormatter(value as number),
+        callback: value => yAxisFormatter(value as number),
         maxTicksLimit: 8
       },
       stacked: false
@@ -148,7 +157,7 @@ const options = computed<ChartOptions>(() => ({
 
 const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabels: { name: string, statement: string }[]) => {
   const label = graphData.value?.labels[index] || ''
-  const datasetLabelObj = datasetLabels.filter((datasetLabel) => datasetLabel.name === label)[0]
+  const datasetLabelObj = datasetLabels.filter(datasetLabel => datasetLabel.name === label)[0]
   const seriesObjs = []
   const datasets = []
 
@@ -175,7 +184,7 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
 
   for (const obj of seriesObjs) {
     if (obj.name !== undefined) {
-      const index = convertedGraphDataRef.value.series.findIndex((series) => series.name === obj.name)
+      const index = convertedGraphDataRef.value.series.findIndex(series => series.name === obj.name)
       datasets.push({
         hidden: Boolean(obj.type === 'hidden'),
         fill: areaOrStack ? {
@@ -221,8 +230,8 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
   const step = Math.floor((end - start) / 1000)
   const expression = []
 
-  const metricsWithExpressions = source.filter((metric) => Boolean(metric.expression))
-  const metricsWithoutExpressions = source.filter((metric) => Boolean(!metric.expression))
+  const metricsWithExpressions = source.filter(metric => Boolean(metric.expression))
+  const metricsWithoutExpressions = source.filter(metric => Boolean(!metric.expression))
 
   for (const metric of metricsWithExpressions) {
     expression.push({
@@ -302,7 +311,7 @@ watch(props.time, () => render(true))
 
 onMounted(() => render())
 </script>
-  
+
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 .container {
@@ -325,12 +334,9 @@ onMounted(() => render())
 .lc {
   @include body-small;
 }
-</style>
-
-<style lang="scss">
 .graph-data-tabs {
-  ul {
-    margin-left: 37px !important;
+  :deep(.p-tablist-tab-list) {
+    margin-left: 37px;
   }
 }
 </style>

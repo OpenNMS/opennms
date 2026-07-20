@@ -128,7 +128,7 @@ const setSearchResultRef = (el: any, contextKey: string | number, subContextKey:
 const updateFlatResults = () => {
   const results: any[] = []
   searchResultRefs.value.clear()
-  
+
   Object.entries(filteredResults.value).forEach(([contextKey, searchResultByContext]: any) => {
     if (searchResultByContext?.results) {
       Object.entries(searchResultByContext.results).forEach(([subContextKey, contextSearchResults]: any) => {
@@ -148,7 +148,7 @@ const updateFlatResults = () => {
       })
     }
   })
-  
+
   flatResults.value = results
 }
 
@@ -192,9 +192,9 @@ const handleItemClick = (item: any) => {
 }
 
 const setSelectedIndex = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
-  const foundIndex = flatResults.value.findIndex(result => 
-    result.contextKey === String(contextKey) && 
-    result.subContextKey === String(subContextKey) && 
+  const foundIndex = flatResults.value.findIndex(result =>
+    result.contextKey === String(contextKey) &&
+    result.subContextKey === String(subContextKey) &&
     result.itemIndex === itemIndex
   )
 
@@ -207,12 +207,12 @@ const isSelected = (contextKey: string | number, subContextKey: string | number,
   if (selectedIndex.value === -1) {
     return false
   }
-  
+
   const currentResult = flatResults.value[selectedIndex.value]
 
-  return currentResult && 
-         currentResult.contextKey === String(contextKey) && 
-         currentResult.subContextKey === String(subContextKey) && 
+  return currentResult &&
+         currentResult.contextKey === String(contextKey) &&
+         currentResult.subContextKey === String(subContextKey) &&
          currentResult.itemIndex === itemIndex
 }
 
@@ -238,13 +238,13 @@ const onKeyDown = async (event: KeyboardEvent) => {
   if (!showResults.value || !hasResults.value) {
     return
   }
-  
+
   if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
     event.preventDefault()
     // prevent Escape from closing side menu
     event.stopPropagation()
     event.stopImmediatePropagation()
-    
+
     switch (event.key) {
       case 'ArrowDown':
         if (selectedIndex.value < flatResults.value.length - 1) {
@@ -254,7 +254,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'ArrowUp':
         if (selectedIndex.value > 0) {
           selectedIndex.value--
@@ -263,11 +263,11 @@ const onKeyDown = async (event: KeyboardEvent) => {
         }
         await focusSelectedResult()
         break
-        
+
       case 'Enter':
         selectCurrentItem()
         break
-        
+
       case 'Escape':
         closeResults()
         break
@@ -277,10 +277,6 @@ const onKeyDown = async (event: KeyboardEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
-
 .onms-search-control-wrapper {
   position: relative;
   min-width: 30em;
@@ -291,9 +287,9 @@ const onKeyDown = async (event: KeyboardEvent) => {
   top: 100%;
   left: 0;
   width: 100%;
-  background: var($background);
-  color: var(--feather-secondary-text-on-surface);
-  border: 1px solid var($secondary);
+  background: var(--p-content-background);
+  color: var(--p-text-muted-color);
+  border: 1px solid var(--p-content-border-color);
   border-radius: 4px;
   max-height: 400px;
   overflow-y: auto;
@@ -305,19 +301,19 @@ const onKeyDown = async (event: KeyboardEvent) => {
     display: flex;
     justify-content: flex-end;
     padding: 0.25em 0.5em;
-    border-bottom: 1px solid var($border-on-surface);
+    border-bottom: 1px solid var(--p-content-border-color);
 
     .search-results-close {
       cursor: pointer;
-      color: var($secondary-text-on-surface);
+      color: var(--p-text-muted-color);
       font-size: 1.25rem;
 
       &:hover {
-        color: var($primary-text-on-surface);
+        color: var(--p-text-color);
       }
 
       &:focus-visible {
-        outline: 2px solid var($primary);
+        outline: 2px solid var(--p-primary-color);
         outline-offset: 2px;
         border-radius: 2px;
       }
@@ -325,24 +321,24 @@ const onKeyDown = async (event: KeyboardEvent) => {
   }
 
   .search-category {
-    background-color: var(--feather-background);
+    background-color: var(--p-content-background);
     padding: 0.5em 0.75em;
-    border-bottom: 1px solid var(--feather-surface);
+    border-bottom: 1px solid var(--p-content-border-color);
     font-weight: 800;
   }
 
   .search-result-item {
-    border-bottom: 1px solid var(--feather-surface);
+    border-bottom: 1px solid var(--p-content-border-color);
     transition: background-color 0.15s ease;
     padding-left: 0.5em;
-    color: var(--feather-secondary-text-on-surface);
+    color: var(--p-text-muted-color);
 
     &:hover {
-      background-color: var(--feather-surface);
+      background-color: var(--p-highlight-background);
     }
 
     &.keyboard-selected {
-      background-color: var(--feather-surface);
+      background-color: var(--p-highlight-background);
     }
 
     &:last-child {
@@ -356,15 +352,15 @@ const onKeyDown = async (event: KeyboardEvent) => {
   position: relative;
   align-items: center;
   width: 100%;
-  background-color: var($surface);
-  border: 1px solid var($border-on-surface);
+  background-color: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
   border-radius: 4px;
 
   .search-icon {
     position: absolute;
     left: 8px;
     z-index: 1;
-    color: var($secondary-text-on-surface);
+    color: var(--p-text-muted-color);
     pointer-events: none;
   }
 
@@ -375,35 +371,15 @@ const onKeyDown = async (event: KeyboardEvent) => {
     background: transparent;
     outline: none;
     font-size: 14px;
-    color: var($primary-text-on-surface);
+    color: var(--p-text-color);
 
     &::placeholder {
-      color: var($secondary-text-on-surface);
+      color: var(--p-text-muted-color);
     }
-    
+
     &:focus {
       box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
     }
   }
-}
-
-:deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
-  border-radius: 0 !important;
-}
-
-:deep(.feather-input-wrapper-container .feather-input-border .post-border) {
-  border-radius: 0 !important;
-}
-
-:deep(.feather-input-border) {
-  background: var(--surface);
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
-}
-
-:deep(.feather-input-wrapper-container.raised .feather-input-label) {
-  display: none !important;
 }
 </style>

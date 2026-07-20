@@ -32,8 +32,8 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?li
 
 | /acks
 | Creates or modifies an acknowledgement for the given alarm ID or notification ID.
-To affect an alarm, set an `alarmId<` parameter in the URL-encoded POST body.
-To affect a notification, set `notifyId` instead.
+To affect an alarm, set an `alarmId` parameter in the URL-encoded POST body.
+To affect a notification, set `notifId` instead.
 An `action` parameter is also required, and may be one of `ack`, `unack`, `clear`, or `esc` (escalate).
 |===
 

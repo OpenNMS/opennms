@@ -1,69 +1,117 @@
 <template>
   <div class="snmp-config-paired-fields" v-for="fieldPair in pairedFields" :key="fieldPair.field1.key">
-    <div class="feather-row">
-      <div class="feather-col-6">
-        <label class="label">{{ fieldPair.field1.label }}:</label>
-      </div>
-      <div class="feather-col-6">
-        <label v-if="fieldPair.field2" class="label">{{ fieldPair.field2.label }}:</label>
-      </div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-6" v-for="field in [fieldPair.field1, fieldPair.field2]" :key="field.key">
+    <div class="onms-row">
+      <div class="onms-col-6" v-for="field in [fieldPair.field1, fieldPair.field2]" :key="field.key">
 
-        <div class="feather-row" v-if="!field.isSelect && field.scvEnabled">
-          <div class="feather-col-9">
-            <FeatherInput
-              label=""
-              class="scv-enabled-input"
+        <!-- select -->
+        <FormField
+          v-if="field.isSelect"
+          :label="field.label"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
+          :hint="field.hint"
+        >
+          <PSelect
+            :inputId="fieldId(field.key)"
+            class="paired-input"
+            :data-test="field.dataTest"
+            optionLabel="_text"
+            :disabled="field.disabled"
+            :options="field.selectOptions"
+            :modelValue="(selectModel as any)[field.key]"
+            @update:modelValue="(val: any) => handleFormSelectUpdate(String(field.key), val, field.isNumeric)"
+          />
+        </FormField>
+
+        <!-- SCV-enabled text input with vault search icon -->
+        <div class="scv-input-row" v-else-if="field.scvEnabled">
+          <FormField
+            class="scv-input-grow"
+            :label="field.label"
+            :for="fieldId(field.key)"
+            :error="(props.validationErrors as any)[field.key]"
+            :hint="field.hint"
+          >
+            <PInputText
+              :id="fieldId(field.key)"
+              class="paired-input scv-enabled-input"
               :data-test="field.dataTest"
+              :disabled="field.disabled"
               v-model.trim="(props.config as any)[field.key]"
-              :hint="field.hint"
-              :error="(props.validationErrors as any)[field.key]"
-              :type="field.isNumeric ? 'number' : 'text'"
+              :invalid="!!(props.validationErrors as any)[field.key]"
               @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
-            >
-            </FeatherInput>
-          </div>
-          <div class="feather-col-3">
-            <div class="scv-icon-container">
-              <ScvInputIcon @click="() => scvButtonClick(String(field.key))"></ScvInputIcon>
-            </div>
+            />
+          </FormField>
+          <div class="scv-icon-container">
+            <ScvInputIcon
+              :disabled="field.disabled"
+              @click="() => scvButtonClick(String(field.key))"
+            ></ScvInputIcon>
           </div>
         </div>
 
-        <FeatherInput
-          v-if="!field.scvEnabled && !field.isSelect"
-          label=""
-          :data-test="field.dataTest"
-          v-model.trim="(props.config as any)[field.key]"
-          :hint="field.hint"
-          :error="(props.validationErrors as any)[field.key]"
-          :type="field.isNumeric ? 'number' : 'text'"
-          @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
-        >
-        </FeatherInput>
-
-        <FeatherSelect
-          v-if="field.isSelect"
+        <!-- numeric input -->
+        <FormField
+          v-else-if="field.isNumeric"
           :label="field.label"
-          :data-test="field.dataTest"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
-          :options="field.selectOptions"
-          :modelValue="(selectModel as any)[field.key]"
-          @update:modelValue="(val: any) => handleFormSelectUpdate(String(field.key), val, field.isNumeric)"
         >
-        </FeatherSelect>
+          <PInputNumber
+            :inputId="fieldId(field.key)"
+            class="paired-input"
+            :inputProps="{ 'data-test': field.dataTest }"
+            :disabled="field.disabled"
+            :modelValue="(props.config as any)[field.key]"
+            :useGrouping="false"
+            :invalid="!!(props.validationErrors as any)[field.key]"
+            @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), true)"
+          />
+        </FormField>
+
+        <!-- plain text input -->
+        <FormField
+          v-else
+          :label="field.label"
+          :for="fieldId(field.key)"
+          :error="(props.validationErrors as any)[field.key]"
+          :hint="field.hint"
+        >
+          <PInputText
+            :id="fieldId(field.key)"
+            class="paired-input"
+            :data-test="field.dataTest"
+            :disabled="field.disabled"
+            v-model.trim="(props.config as any)[field.key]"
+            :invalid="!!(props.validationErrors as any)[field.key]"
+            @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
+          />
+        </FormField>
      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, useId, watch } from 'vue'
+
 import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect } from '@featherds/select'
+import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
+
+const PInputText = InputText
+const PInputNumber = InputNumber
+const PSelect = Select
+
+// Unique per-instance prefix so label `for`/input `id` pairs don't collide
+// across the several PairedFieldInputs instances (and tab panels) that PrimeVue
+// keeps mounted in the DOM at once.
+const uid = useId()
+const fieldId = (key: string | number) => `${uid}-${key}`
 
 const props = defineProps<{
   fieldInfo: SnmpFieldInfo[]
@@ -134,7 +182,7 @@ const handleFormSelectUpdate = (key: string, val?: any, isNumeric?: boolean) => 
 const updateSelectValues = () => {
   let newModel = {}
 
-  props.fieldInfo?.filter(field => field.isSelect).forEach(field => {
+  props.fieldInfo?.filter(field => field.isSelect).forEach((field) => {
     // Get the string value from the current config for the current field
     const value = String((props.config as any)[field.key])
 
@@ -165,22 +213,33 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-
 .snmp-config-paired-fields {
-  .label {
-    font-weight: 600;
+  .onms-row {
+    margin-bottom: 0.75rem;
   }
 
-  .feather-row {
-    margin-bottom: 0.5rem;
+  .paired-input {
+    width: 100%;
+
+    :deep(.p-inputtext) {
+      width: 100%;
+    }
+  }
+
+  // SCV-enabled field: input grows, vault icon sits beside it, centered against
+  // the taller FormField input
+  .scv-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .scv-input-grow {
+      flex: 1;
+    }
   }
 
   .scv-icon-container {
     padding: 0.2em;
-    margin-left: -1em;
   }
 }
 </style>

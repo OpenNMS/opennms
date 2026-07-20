@@ -24,10 +24,20 @@ import { SORT } from '@featherds/table'
 
 export type UpdateModelFunction = (_value: any) => any
 
+// String values match PrimeVue's Toast/Message severities exactly, so a value
+// can be emitted straight to the toast event bus (see useSnackbar).
+export enum MessageSeverity {
+  Error = 'error',
+  Info = 'info',
+  Success = 'success',
+  Warn = 'warn'
+}
+
 export interface SnackbarProps {
   msg: string
   center?: boolean
   error?: boolean
+  severity?: MessageSeverity
   timeout?: number
 }
 
@@ -230,6 +240,11 @@ export interface SnmpInterface {
   lastSnmpPoll: number
   physAddr: any
   poll: boolean
+}
+
+export interface ServiceType {
+  id: number
+  name: string
 }
 
 export interface IpInterface {
@@ -554,6 +569,7 @@ export interface NodeQuerySnmpParams {
   snmpIfName: string
   snmpIfType: string
   snmpMatchType: MatchType
+  physAddr?: string
 }
 
 export interface NodeQuerySysParams {
@@ -562,13 +578,26 @@ export interface NodeQuerySysParams {
   sysLocation: string
   sysName: string
   sysObjectId: string
+  sysMatchType?: MatchType
 }
 
 export interface NodeQueryExtendedSearchParams {
-  ipAddress?: string
   foreignSourceParams?: NodeQueryForeignSourceParams
   snmpParams?: NodeQuerySnmpParams
   sysParams?: NodeQuerySysParams
+}
+
+export interface ExtendedSearchValue {
+  name: string
+  value: string
+  group: keyof NodeQueryExtendedSearchParams
+  key: string
+}
+
+/** A single asset-record field filter (column + exact-match value). */
+export interface AssetFilter {
+  column: string
+  value: string
 }
 
 /** All components of a node structure query */
@@ -576,8 +605,16 @@ export interface NodeQueryFilter {
   searchTerm: string
   categoryMode: SetOperator
   selectedCategories: Category[]
+  selectedCategories2?: Category[]
+  selectedServices?: string[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
+  ipAddress?: string
+  macAddress?: string
+  topology?: string
+  nodesWithDownAggregateStatus?: boolean
+  nodesWithAssets?: boolean
+  assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }
 
@@ -600,8 +637,10 @@ export interface IpInterfaceInfo {
 
 export enum FilterTypeEnum {
   Category = 'category',
+  Category2 = 'category2',
   Flow = 'flow',
-  MonitoringLocation = 'location'
+  MonitoringLocation = 'location',
+  MonitoredService = 'monitoredService'
 }
 
 export enum Direction {

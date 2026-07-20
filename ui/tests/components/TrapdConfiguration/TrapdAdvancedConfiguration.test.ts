@@ -5,6 +5,7 @@ import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { showSnackBarMock, downloadFileMock } = vi.hoisted(() => ({
@@ -45,6 +46,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
   const mountComponent = () =>
     mount(TrapdAdvancedConfiguration, {
       global: {
+        plugins: [PrimeVue],
         stubs: {
           ConfirmationDialog: {
             template: `<div class="confirmation-dialog" v-if="visible">
@@ -53,9 +55,6 @@ describe('TrapdAdvancedConfiguration.vue', () => {
               <button data-test="cancel-btn" @click="$emit('cancel')">Cancel</button>
             </div>`,
             props: ['visible', 'title', 'actionButtonText']
-          },
-          FeatherButton: {
-            template: '<button @click="$emit(\'click\')"><slot /><slot name="icon" /></button>'
           },
           FeatherIcon: true
         }
@@ -136,7 +135,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
     validateTrapdXmlMock.mockReturnValue({ valid: true, errors: [] })
     validateTrapdJsonMock.mockReturnValue({ valid: true, errors: [] })
     uploadTrapdConfigurationMock.mockResolvedValue(undefined)
-    downloadTrapdConfigMock.mockResolvedValue({ data: 'content', headers: {} } as any)
+    downloadTrapdConfigMock.mockResolvedValue({ data: 'content', headers: {}} as any)
   })
 
   it('renders all upload and download buttons', () => {
@@ -378,7 +377,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
 
   it('calls downloadTrapdConfig(true) and downloadFile when Download XML is clicked', async () => {
     const wrapper = mountComponent()
-    const mockResponse = { data: 'xml-content', headers: {} }
+    const mockResponse = { data: 'xml-content', headers: {}}
     downloadTrapdConfigMock.mockResolvedValue(mockResponse as any)
 
     await wrapper.find('[data-test="download-xml-button"]').trigger('click')
@@ -390,7 +389,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
 
   it('calls downloadTrapdConfig(false) and downloadFile when Download JSON is clicked', async () => {
     const wrapper = mountComponent()
-    const mockResponse = { data: 'json-content', headers: {} }
+    const mockResponse = { data: 'json-content', headers: {}}
     downloadTrapdConfigMock.mockResolvedValue(mockResponse as any)
 
     await wrapper.find('[data-test="download-json-button"]').trigger('click')

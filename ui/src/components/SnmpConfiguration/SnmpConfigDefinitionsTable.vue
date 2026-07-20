@@ -1,113 +1,98 @@
 <template>
   <TableCard class="snmp-config-definitions-table">
     <div class="header">
-      <div class="action-container">
+      <div class="header-content-container">
         <div class="search-container">
-          <FeatherInput
-            v-model="searchTerm"
-            @update:modelValue="onSearchChange"
-            label="Search IP addresses or location"
-          >
-            <template #pre>
-              <FeatherIcon :icon="IconSearch" />
-            </template>
-          </FeatherInput>
+          <FormField class="search-field">
+            <IconField>
+              <PInputText
+                id="snmp-definitions-search"
+                placeholder="Search IP addresses or location"
+                aria-label="Search IP addresses or location"
+                v-model="searchTerm"
+                @update:modelValue="(val) => onSearchChange(val as string)"
+              />
+              <InputIcon>
+                <FeatherIcon :icon="IconSearch" />
+              </InputIcon>
+            </IconField>
+          </FormField>
         </div>
         <div class="refresh">
-          <FeatherButton
-            primary
+          <PButton
+            data-test="new-definition-button"
             @click="onCreateDefinition"
           >
-            <template v-slot:icon>
-              <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
-              New Definition
-            </template>
-          </FeatherButton>
+            <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
+            New Definition
+          </PButton>
         </div>
-       </div>
+      </div>
     </div>
-    <div class="container">
-      <table
-        class="data-table"
+    <div class="table-container">
+      <PDataTable
+        :value="definitionRows"
+        paginator
+        :rows="50"
+        :rowsPerPageOptions="[20, 50, 100, 200]"
+        v-model:first="firstRow"
         aria-label="SNMP Config Definition Table"
-        v-if="definitionsView.length"
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
-            >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
+        <PColumn
+          field="location"
+          header="Location"
+          sortable
+        />
+        <PColumn
+          field="ipSortKey"
+          header="IP Addresses"
+          sortable
         >
-          <tr
-            v-for="definition of definitionsView"
-            :key="`${definition.id ?? 0}-${definition.location ?? ''}`"
-          >
-            <td>{{ definition.location ?? DEFAULT_MONITORING_LOCATION }}</td>
-            <td v-if="createIpAddressLabel(definition).length > 0">
-              <div class="ip-address-badge-wrapper">
-                <FeatherTextBadge
-                  v-for="ipAddr of createIpAddressLabel(definition)" :key="ipAddr"
-                  :type="BadgeTypes.info">
-                  {{ ipAddr }}
-                </FeatherTextBadge>
-              </div>
-            </td>
-            <td v-else>--</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit"
-                  data-test="edit-button"
-                  @click="onDefinitionEdit(definition)"
-                >
-                  <FeatherIcon :icon="IconEdit"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherButton
-                  v-if="definition.id !== 0"
-                  icon="Delete"
-                  data-test="delete-button"
-                  @click="onDefinitionDelete(definition)"
-                >
-                  <FeatherIcon :icon="IconDelete"> </FeatherIcon>
-                </FeatherButton>
-              </div>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div
-        class="snmp-definitions-pagination"
-        v-if="definitionsView.length"
-      >
-        <FeatherPagination
-          :modelValue="currentPage"
-          :pageSize="pageSize"
-          :total="pageTotal"
-          :pageSizes="[20, 50, 100, 200]"
-          @update:modelValue="(val: any) => currentPage = Number(val)"
-          @update:pageSize="(val: any) => pageSize = Number(val)"
-          data-test="FeatherPagination"
-        />
-      </div>
-       <div v-if="!definitionsView.length">
-        <EmptyList
-          :content="emptyListContent"
-          data-test="empty-list"
-        />
-      </div>
+          <template #body="{ data }">
+            <div
+              v-if="data.ipLabels.length"
+              class="ip-address-badge-wrapper"
+            >
+              <PTag
+                v-for="ipAddr of data.ipLabels"
+                :key="ipAddr"
+                :value="ipAddr"
+                severity="info"
+              />
+            </div>
+            <span v-else>--</span>
+          </template>
+        </PColumn>
+        <PColumn header="Actions">
+          <template #body="{ data }">
+            <div class="action-container">
+              <PButton
+                text
+                aria-label="Edit"
+                data-test="edit-button"
+                @click="onDefinitionEdit(data.original)"
+              >
+                <FeatherIcon :icon="IconEdit" />
+              </PButton>
+              <PButton
+                v-if="data.original.id !== 0"
+                text
+                aria-label="Delete"
+                data-test="delete-button"
+                @click="onDefinitionDelete(data.original)"
+              >
+                <FeatherIcon :icon="IconDelete" />
+              </PButton>
+            </div>
+          </template>
+        </PColumn>
+        <template #empty>
+          <EmptyList
+            :content="emptyListContent"
+            data-test="empty-list"
+          />
+        </template>
+      </PDataTable>
     </div>
   </TableCard>
   <ConfirmationDialog
@@ -153,30 +138,40 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue'
+
 import { cloneDeep, debounce } from 'lodash'
-import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import Tag from 'primevue/tag'
 import { FeatherIcon } from '@featherds/icon'
 import IconAdd from '@featherds/icon/action/Add'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import IconSearch from '@featherds/icon/action/Search'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-import { ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { ActiveTabs, SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpDefinition } from '@/types/snmpConfig'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
+
+const PButton = Button
+const PColumn = Column
+const PDataTable = DataTable
+const PInputText = InputText
+const PTag = Tag
 
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()
-const currentPage = ref(1)
-const pageSize = ref(50)
+const firstRow = ref(0)
 const showDeleteConfirmation = ref(false)
 const definitionToDelete = ref<SnmpDefinition | null>(null)
 const searchTerm = ref('')
@@ -185,17 +180,6 @@ const debouncedSearchTerm = ref('')
 const emptyListContent = {
   msg: 'No results found.'
 }
-
-const columns = computed(() => [
-  { id: 'location', label: 'Location' },
-  { id: 'ipAddresses', label: 'IP Addresses' }
-])
-
-const sort = reactive({
-  label: SORT.NONE,
-  ipAddresses: SORT.NONE,
-  location: SORT.NONE
-}) as any
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
   const items: string[] = []
@@ -229,8 +213,8 @@ const matchesSearchTerm = (def: SnmpDefinition, search: string) => {
   }
 
   // Check range (begin and end)
-  if (def.range?.some(r => 
-    r.begin.toLowerCase().includes(lowerSearch) || 
+  if (def.range?.some(r =>
+    r.begin.toLowerCase().includes(lowerSearch) ||
     r.end.toLowerCase().includes(lowerSearch)
   )) {
     return true
@@ -261,54 +245,15 @@ const filteredDefinitions = computed<SnmpDefinition[]>(() => {
   return store.config.definition.filter(def => matchesSearchTerm(def, debouncedSearchTerm.value))
 })
 
-const pageTotal = computed(() => filteredDefinitions.value.length)
-
-const definitionsView = computed<SnmpDefinition[]>(() => {
-  // Copy the filtered definitions array
-  let items: SnmpDefinition[] = [...filteredDefinitions.value]
-
-  // Sort by the active sort property
-  const sortProperty = Object.keys(sort).find(key => sort[key] !== SORT.NONE)
-
-  if (sortProperty) {
-    const sortDirection = sort[sortProperty]
-
-    items.sort((a, b) => {
-      let aVal: string
-      let bVal: string
-
-      if (sortProperty === 'ipAddresses') {
-        aVal = createIpAddressLabel(a).join(', ')
-        bVal = createIpAddressLabel(b).join(', ')
-      } else if (sortProperty === 'location') {
-        aVal = a.location ?? ''
-        bVal = b.location ?? ''
-      } else {
-        aVal = ''
-        bVal = ''
-      }
-
-      const cmp = aVal.localeCompare(bVal)
-      return sortDirection === SORT.ASCENDING ? cmp : -cmp
-    })
-  }
-
-  // Paginate
-  if (pageSize.value > 0) {
-    const start = (currentPage.value - 1) * pageSize.value
-    items = items.slice(start, start + pageSize.value)
-  }
-
-  return items
-})
-
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  for (const key of Object.keys(sort)) {
-    sort[key] = SORT.NONE
-  }
-
-  sort[sortObj.property] = sortObj.value
-}
+// Rows for the DataTable: includes display labels plus a sortable IP string
+// and a reference back to the original definition for edit/delete actions.
+// DataTable handles sorting (location / ipSortKey) and pagination client-side.
+const definitionRows = computed(() => filteredDefinitions.value.map(definition => ({
+  original: definition,
+  location: definition.location ?? DEFAULT_MONITORING_LOCATION,
+  ipLabels: createIpAddressLabel(definition),
+  ipSortKey: createIpAddressLabel(definition).join(', ')
+})))
 
 const onCreateDefinition = () => {
   store.setDefinitionCreateEditMode(SnmpConfigEditMode.Create)
@@ -370,7 +315,7 @@ const cancelDelete = () => {
 
 const updateDebouncedSearchTerm = debounce((value: string) => {
   debouncedSearchTerm.value = value
-  currentPage.value = 1 // Reset to first page when searching
+  firstRow.value = 0 // Reset to first page when searching
 }, 200)
 
 const onSearchChange = (value: string | number | undefined) => {
@@ -379,11 +324,6 @@ const onSearchChange = (value: string | number | undefined) => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table' as table;
-@use '@/styles/_transitionDataTable';
-
 .snmp-config-definitions-table {
   margin-top: 0;
   padding: 0;
@@ -391,9 +331,9 @@ const onSearchChange = (value: string | number | undefined) => {
   .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0;
+    margin-bottom: 1rem;
 
-    .action-container {
+    .header-content-container {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -403,74 +343,57 @@ const onSearchChange = (value: string | number | undefined) => {
       .search-container {
         flex: 0 0 auto;
         min-width: 30em;
+
+        .search-field {
+          width: 100%;
+
+          // make the input (and its IconField wrapper) fill the field so the
+          // search icon sits at the input's right edge rather than floating far
+          // out in the container
+          :deep(.p-iconfield) {
+            display: block;
+            width: 100%;
+          }
+
+          :deep(.p-inputtext) {
+            width: 100%;
+            padding-right: 2.75rem;
+          }
+
+          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // keep it near the right edge, vertically centered
+          :deep(.p-inputicon) {
+            font-size: 1.75rem;
+            right: 0.625rem;
+            margin-top: -0.875rem;
+          }
+        }
       }
     }
   }
 
-  .container {
-    table {
-      width: 100%;
-      @include table.table;
-      @include table.table-condensed;
-
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        div {
-          border-radius: 5px;
-          padding: 0px 5px 0px 5px;
-        }
-
-        .ip-address-badge-wrapper {
-          text-wrap: auto;
-          padding: 2px;
-        }
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .snmp-config-definitions-pagination {
+  .table-container {
+    .ip-address-badge-wrapper {
       display: flex;
-      justify-content: flex-end;
-      padding: var(variables.$spacing-xxs);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      border-left: 1px solid var(--feather-border-on-surface);
-      border-right: 1px solid var(--feather-border-on-surface);
+      flex-wrap: wrap;
+      gap: 4px;
     }
 
-    .feather-pagination {
-      border: none !important;
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      // enlarge the edit/delete icons (FeatherIcon scales with font-size)
+      :deep(.p-button) {
+        font-size: 1.3rem;
+      }
     }
   }
 
-  button.btn.btn-icon .add-definition-icon {
+  .add-definition-icon {
     font-size: 1.1rem;
+    margin-right: 0.4em;
   }
 }
 
@@ -478,7 +401,7 @@ const onSearchChange = (value: string | number | undefined) => {
   .definition-details {
     margin-top: 15px;
     padding: 10px;
-    background-color: var(variables.$surface);
+    background-color: var(--p-content-background);
     border-radius: 4px;
 
     p {

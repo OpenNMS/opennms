@@ -137,4 +137,21 @@ public class WebappIT {
             .header("Pragma", not("no-cache"));
   }
 
+  /**
+   * The Vue UI's static assets may be cached but must be revalidated on each use,
+   * because their file names are not content-hashed and change between releases.
+   */
+  @Test
+  public void verifyRevalidationCachingOnVueUiStaticAssets() {
+    for (String asset : Arrays.asList("ui/assets/index.js", "ui-components/assets/index.js")) {
+      given()
+              .auth().preemptive().basic(AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME, AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD)
+              .get(asset)
+              .then().assertThat()
+              .statusCode(200)
+              .header("Cache-Control", is("no-cache"))
+              .header("Pragma", not("no-cache"));
+    }
+  }
+
 }

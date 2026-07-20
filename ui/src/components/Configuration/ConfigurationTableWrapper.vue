@@ -9,12 +9,11 @@
         class="flex button-wrapper"
         v-if="provisionDList?.length > 0"
       >
-        <FeatherButton
+        <PButton
           class="button"
           text
           @click="addNew"
-          >Add External Requisition</FeatherButton
-        >
+        >Add External Requisition</PButton>
       </div>
     </div>
     <ConfigurationTable
@@ -60,9 +59,11 @@
   lang="ts"
   setup
 >
+import { computed, reactive } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 
 import { putProvisionDService } from '@/services/configurationService'
 import { useProvisionD } from './hooks'
@@ -74,6 +75,8 @@ import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
 import ConfigurationDrawer from './ConfigurationDrawer.vue'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import { RequisitionData } from './copy/requisitionTypes'
+
+const PButton = Button
 
 const configurationStore = useConfigurationStore()
 
@@ -185,7 +188,7 @@ const saveCurrentState = async () => {
   selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
 
   // Validate the local state.
-  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value,activeIndex.index)
+  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value, activeIndex.index)
 
   // If we're valid.
   if (!validatedItem.hasErrors) {
@@ -298,7 +301,6 @@ const advanceActiveUpdate = (newVal: boolean) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 
@@ -312,7 +314,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
   margin-bottom: 20px;
 }
 .white-bg {
-  background-color: var($background);
+  background-color: var(--p-content-background);
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;
@@ -327,4 +329,3 @@ const advanceActiveUpdate = (newVal: boolean) => {
   font-size: 24px;
 }
 </style>
-

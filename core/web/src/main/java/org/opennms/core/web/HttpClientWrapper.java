@@ -24,6 +24,8 @@ package org.opennms.core.web;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.Header;
@@ -38,8 +41,10 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
+import org.apache.http.ProtocolException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
@@ -64,6 +69,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
@@ -81,6 +87,7 @@ public class HttpClientWrapper implements Closeable {
     private CookieStore m_cookieStore;
 
     private boolean m_useLaxRedirect = false;
+    private boolean m_useSameHostRedirects = false;
     private boolean m_reuseConnections = true;
     private boolean m_usePreemptiveAuth = false;
     private boolean m_useSystemProxySettings;
@@ -91,6 +98,7 @@ public class HttpClientWrapper implements Closeable {
     private Integer m_connectionTimeout;
     private Integer m_retries;
     private Map<String,SSLContext> m_sslContext = new HashMap<>();
+    private Set<String> m_sslContextsWithHostnameVerification = new LinkedHashSet<>();
 
     private Set<HttpRequestInterceptor> m_requestInterceptors = new LinkedHashSet<>();
     private Set<HttpResponseInterceptor> m_responseInterceptors = new LinkedHashSet<>();
@@ -197,6 +205,32 @@ public class HttpClientWrapper implements Closeable {
         LOG.debug("useRelaxedSSL: scheme={}", scheme);
         assertNotInitialized();
         m_sslContext.put(scheme, SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+        m_sslContextsWithHostnameVerification.remove(scheme);
+        return this;
+    }
+
+    /**
+     * Use the given SSLContext for connections with the given scheme, with standard
+     * hostname verification. Use this to supply custom trust anchors and/or client
+     * key material (mutual TLS), e.g. built by {@link SslContextFactory}.
+     */
+    public HttpClientWrapper setSSLContext(final String scheme, final SSLContext sslContext) {
+        return setSSLContext(scheme, sslContext, true);
+    }
+
+    /**
+     * Use the given SSLContext for connections with the given scheme, optionally
+     * disabling hostname verification.
+     */
+    public HttpClientWrapper setSSLContext(final String scheme, final SSLContext sslContext, final boolean verifyHostname) {
+        LOG.debug("setSSLContext: scheme={}, verifyHostname={}", scheme, verifyHostname);
+        assertNotInitialized();
+        m_sslContext.put(scheme, sslContext);
+        if (verifyHostname) {
+            m_sslContextsWithHostnameVerification.add(scheme);
+        } else {
+            m_sslContextsWithHostnameVerification.remove(scheme);
+        }
         return this;
     }
 
@@ -211,6 +245,20 @@ public class HttpClientWrapper implements Closeable {
                          .loadTrustMaterial(null, new TrustSelfSignedStrategy())
                          .useTLS()
                          .build());
+        m_sslContextsWithHostnameVerification.remove(scheme);
+        return this;
+    }
+
+    /**
+     * Only follow HTTP redirects whose target has the same scheme, host, and
+     * effective port as the original request. Use this when the client
+     * authenticates with credentials or a client certificate that should not be
+     * presented to other redirect targets.
+     */
+    public HttpClientWrapper restrictRedirectsToSameHost() {
+        LOG.debug("restrictRedirectsToSameHost()");
+        assertNotInitialized();
+        m_useSameHostRedirects = true;
         return this;
     }
 
@@ -366,9 +414,12 @@ public class HttpClientWrapper implements Closeable {
         ret.m_socketTimeout = m_socketTimeout;
         ret.m_connectionTimeout = m_connectionTimeout;
         ret.m_retries = m_retries;
-        for (final Map.Entry<String,SSLContext> entry : ret.m_sslContext.entrySet()) {
+        for (final Map.Entry<String,SSLContext> entry : m_sslContext.entrySet()) {
             ret.m_sslContext.put(entry.getKey(), entry.getValue());
         }
+        ret.m_sslContextsWithHostnameVerification.addAll(m_sslContextsWithHostnameVerification);
+        ret.m_useLaxRedirect = m_useLaxRedirect;
+        ret.m_useSameHostRedirects = m_useSameHostRedirects;
         for (final HttpRequestInterceptor interceptor : m_requestInterceptors) {
             ret.m_requestInterceptors.add(interceptor);
         }
@@ -422,7 +473,9 @@ public class HttpClientWrapper implements Closeable {
             for (final HttpResponseInterceptor interceptor : m_responseInterceptors) {
                 httpClientBuilder.addInterceptorLast(interceptor);
             }
-            if (m_useLaxRedirect) {
+            if (m_useSameHostRedirects) {
+                httpClientBuilder.setRedirectStrategy(new SameHostRedirectStrategy());
+            } else if (m_useLaxRedirect) {
                 httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
             }
             httpClientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
@@ -480,7 +533,10 @@ public class HttpClientWrapper implements Closeable {
     protected void configureSSLContext(final HttpClientBuilder builder) {
         final RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory>create();
         for (final Map.Entry<String,SSLContext> entry : m_sslContext.entrySet()) {
-            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(entry.getValue(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            final HostnameVerifier hostnameVerifier = m_sslContextsWithHostnameVerification.contains(entry.getKey())
+                    ? SSLConnectionSocketFactory.getDefaultHostnameVerifier()
+                    : SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(entry.getValue(), hostnameVerifier);
             registryBuilder.register(entry.getKey(), sslConnectionFactory);
         }
         if (!m_sslContext.containsKey("http")) {
@@ -507,6 +563,8 @@ public class HttpClientWrapper implements Closeable {
                 + ", connectionTimeout=" + m_connectionTimeout
                 + ", retries=" + m_retries
                 + ", sslContext=" + m_sslContext
+                + ", sslContextsWithHostnameVerification=" + m_sslContextsWithHostnameVerification
+                + ", useSameHostRedirects=" + m_useSameHostRedirects
                 + ", requestInterceptors=" + m_requestInterceptors
                 + ", responseInterceptors=" + m_responseInterceptors
                 + ", userAgent=" + m_userAgent
@@ -517,5 +575,67 @@ public class HttpClientWrapper implements Closeable {
 
     private static boolean isEmpty(final String value) {
         return (value == null || value.trim().isEmpty());
+    }
+
+    /**
+     * A redirect strategy that only follows redirects whose target has the same
+     * scheme, host, and effective port as the original request, so that credentials
+     * or a client certificate are not presented to other services — including a
+     * different service on the same host, or the same host over plain HTTP.
+     * Redirects with an unparseable location are not followed.
+     */
+    static class SameHostRedirectStrategy extends DefaultRedirectStrategy {
+        @Override
+        public boolean isRedirected(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
+            if (!super.isRedirected(request, response, context)) {
+                return false;
+            }
+            final Header locationHeader = response.getFirstHeader("location");
+            if (locationHeader == null) {
+                return false;
+            }
+            final URI location;
+            try {
+                location = new URI(locationHeader.getValue());
+            } catch (final URISyntaxException e) {
+                LOG.warn("Not following redirect with unparseable location '{}'", locationHeader.getValue());
+                return false;
+            }
+            if (location.getHost() == null) {
+                // A relative redirect stays on the same scheme, host, and port
+                return true;
+            }
+            final HttpHost target = HttpClientContext.adapt(context).getTargetHost();
+            if (target == null || !target.getHostName().equalsIgnoreCase(location.getHost())) {
+                LOG.warn("Not following redirect from host {} to other host {}", target == null ? null : target.getHostName(), location.getHost());
+                return false;
+            }
+            // A scheme-relative location (//host/path) inherits the request scheme
+            final String locationScheme = location.getScheme() != null ? location.getScheme() : target.getSchemeName();
+            if (!target.getSchemeName().equalsIgnoreCase(locationScheme)) {
+                LOG.warn("Not following redirect from scheme {} to other scheme {} on host {}", target.getSchemeName(), locationScheme, target.getHostName());
+                return false;
+            }
+            final int targetPort = effectivePort(target.getSchemeName(), target.getPort());
+            final int locationPort = effectivePort(locationScheme, location.getPort());
+            if (targetPort != locationPort) {
+                LOG.warn("Not following redirect from port {} to other port {} on host {}", targetPort, locationPort, target.getHostName());
+                return false;
+            }
+            return true;
+        }
+
+        private static int effectivePort(final String scheme, final int port) {
+            if (port >= 0) {
+                return port;
+            }
+            if ("https".equalsIgnoreCase(scheme)) {
+                return 443;
+            }
+            if ("http".equalsIgnoreCase(scheme)) {
+                return 80;
+            }
+            return port;
+        }
     }
 }

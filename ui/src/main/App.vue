@@ -26,6 +26,8 @@
   setup
   lang="ts"
 >
+import { onMounted } from 'vue'
+
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
@@ -55,6 +57,7 @@ onMounted(() => {
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
+  nodeStructureStore.getServiceTypes()
   pluginStore.getPlugins()
 })
 </script>
@@ -67,6 +70,12 @@ onMounted(() => {
 
 html {
   overflow-x: hidden;
+}
+// Collapsed/base left offset for the SPA content, clearing the fixed side menu
+// rail. SideMenu's applyPush only overrides this (inline) while the rail is
+// pinned-expanded; otherwise this base applies.
+.app-layout {
+  padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
 }
 .main-content {
   table {

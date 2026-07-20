@@ -94,7 +94,7 @@ describe('eventModificationStore', () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching source by ID:', '999', error)
       expect(store.selectedSource).toBeNull()
-      
+
       consoleErrorSpy.mockRestore()
     })
 
@@ -354,7 +354,7 @@ describe('eventModificationStore', () => {
 
       expect(getEventConfSourceById).toHaveBeenCalledWith('')
       expect(consoleErrorSpy).toHaveBeenCalled()
-      
+
       consoleErrorSpy.mockRestore()
     })
 

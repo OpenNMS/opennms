@@ -21,7 +21,7 @@
  */
 package org.opennms.core.camel;
 
-import org.apache.camel.component.netty4.DefaultChannelHandlerFactory;
+import org.apache.camel.component.netty.DefaultChannelHandlerFactory;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.xml.XmlFrameDecoder;
