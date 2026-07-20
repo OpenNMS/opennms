@@ -4,9 +4,9 @@
 :description: Get started with flows in {page-component-title} using the built-in PostgreSQL flow repository, stored in the OpenNMS database or a dedicated external database.
 
 This section describes how to get started with flows: collect, enrich (classify), persist, and visualize network flows using the built-in PostgreSQL flow repository.
-With this option, {page-component-title} persists flows to a relational database -- by default the same PostgreSQL database {page-component-title} already uses -- so you can start collecting flows without deploying any additional storage.
+With this option, {page-component-title} persists flows to a relational database -- by default the same PostgreSQL database {page-component-title} already uses -- so you can start collecting flows without deploying any additional components.
 
-TIP: For high flow volumes, or to keep flow storage separate from the {page-component-title} database, persist flows to a dedicated external PostgreSQL database (see <<flows-postgres-external, Use an external PostgreSQL database>>), or scale out with xref:deep-dive/flows/elasticsearch.adoc[Elasticsearch] and xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel].
+TIP: Colocating flow storage in the `opennms` database is intended for low-volume or test configurations. For higher flow volumes, or to keep flow storage separate from the {page-component-title} database, persist flows to a dedicated external PostgreSQL database (see <<flows-postgres-external, Use an external PostgreSQL database>>), or scale out with xref:deep-dive/flows/elasticsearch.adoc[Elasticsearch] and xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel].
 
 == Requirements
 
@@ -61,6 +61,7 @@ config:property-set flushIntervalMs 500     <2>
 config:property-set queueCapacity 100000    <3>
 config:property-set writerThreads 1         <4>
 config:property-set queryThreads 4          <5>
+config:property-set runSchemaChangelog true <6>
 config:update
 ----
 <1> Maximum number of flows written per batch insert.
@@ -68,10 +69,48 @@ config:update
 <3> Bounded write-queue capacity; when full, the newest flows are dropped (and counted) rather than blocking ingest.
 <4> Number of concurrent writer threads. Each writes on its own database connection, so raising this parallelizes inserts across CPU cores on the database (a single writer thread can bottleneck on one database core at high volume). Defaults to 1.
 <5> Number of threads used to service flow queries.
+<6> Execute the built-in schema changelog to create or update the `flow` table schema when `opennms-flows-postgres` is started.
 
 NOTE: Each writer and query thread uses one connection from the flow database connection pool while active.
 For a dedicated external database, keep `writerThreads` + `queryThreads` at or below the pool size (`connection.pool.maxPool`, default 25) and raise the pool if you increase them.
 When using the internal database, connections come from the shared {page-component-title} datasource.
+
+=== Flow retention (optional)
+
+By default, {page-component-title} keeps *14 days* of flows in the internal database.
+The `flow` table is range-partitioned by day, and a maintenance function pre-creates upcoming daily partitions and drops partitions older than the retention window.
+Expiring old flows is therefore a fast partition drop rather than a row-by-row delete.
+
+The maintenance function takes the retention window and the number of days of partitions to pre-create, both in days:
+
+[source, sql]
+----
+flow_maintain_partitions(retention_days, premake_days)
+----
+
+On the internal database it runs from the Vacuumd daemon with the defaults `flow_maintain_partitions(14, 3)`: keep 14 days of flows, and pre-create partitions 3 days ahead of ingest.
+
+To change the retention window, edit the flow-partition statement in `$\{OPENNMS_HOME}/etc/vacuumd-configuration.xml`:
+
+[source, xml]
+----
+<statement transactional="false">
+  DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions')
+    THEN PERFORM flow_maintain_partitions(30, 3); END IF; END $$;   <1>
+</statement>
+----
+<1> Keep 30 days of flows instead of 14. Raise the second argument as well if flows arrive with timestamps more than a few days in the future.
+
+How often maintenance runs is set by the `period` attribute (in milliseconds) on the root `<VacuumdConfiguration>` element; the default of `86400000` runs it once every 24 hours.
+
+Then reload the Vacuumd configuration, or restart {page-component-title}:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Vacuumd'
+----
+
+WARNING: Reducing the retention window drops the newly expired partitions on the next maintenance run, permanently deleting the flows they contain.
 
 [[flows-postgres-external]]
 == Use an external PostgreSQL database
@@ -90,12 +129,14 @@ config:property-set datasource.url jdbc:postgresql://db-host:5432/flowdb   <1>
 config:property-set datasource.username flow_user                          <2>
 config:property-set datasource.password flow_password                      <3>
 config:property-set datasource.databaseName flowdb                         <4>
+config:property-set runSchemaChangelog false                               <5>
 config:update
 ----
 <1> JDBC URL of the external flow database. When set, {page-component-title} builds a dedicated connection pool instead of using the internal database.
 <2> Database user with read/write access to the flow database.
 <3> Password for the database user.
 <4> Name of the external flow database.
+<5> Do not execute the built-in schema changelog to create or update the `flow` table schema when `opennms-flows-postgres` is started.
 
 NOTE: When `datasource.url` is left blank (the default), {page-component-title} uses its internal database.
 Setting it switches to the dedicated external database.
@@ -112,44 +153,6 @@ ALTER DATABASE flowdb SET synchronous_commit = off;
 ----
 
 * *Batched inserts are already optimized.* {page-component-title} appends `reWriteBatchedInserts=true` to the dedicated-pool JDBC URL, so batched flow inserts are sent to PostgreSQL as single multi-row statements. No action is required; do not remove the parameter if you set `datasource.url` with your own query string.
-
-[[flows-postgres-partman]]
-=== Partition management on the external database
-
-The automatic partition maintenance built into {page-component-title} applies only to the internal database.
-For an external flow database, manage partition creation and expiration with https://github.com/pgpartman/pg_partman[pg_partman] and https://github.com/citusdata/pg_cron[pg_cron].
-
-A ready-to-use setup script, `flow-partman-setup.sql`, is provided with the `org.opennms.features.flows.postgres` source (under `contrib/`).
-Run it once against the fresh external database to install the extensions, create the partitioned `flow` table, and schedule partition rotation, creation, and expiration:
-
-[source, console]
-----
-psql -h db-host -U flow_admin -d flowdb -f flow-partman-setup.sql
-----
-
-You can override the partition width, retention window, number of pre-created partitions, and maintenance schedule without editing the script:
-
-[source, console]
-----
-psql -h db-host -U flow_admin -d flowdb \
-  -v partition_interval="'1 hour'" \
-  -v retention="'7 days'" \
-  -v premake=6 \
-  -v maintenance_schedule="'*/15 * * * *'" \
-  -f flow-partman-setup.sql
-----
-
-Because the script owns the schema, set `runSchemaChangelog=false` on every {page-component-title} node that connects to this database so the built-in schema migration does not conflict with pg_partman:
-
-[source, karaf]
-----
-config:edit org.opennms.features.flows.persistence.postgres
-config:property-set runSchemaChangelog false
-config:update
-----
-
-IMPORTANT: The script requires the `pg_cron` and `pg_partman` (5.0 or later) extensions on the database server, and `pg_cron` must be configured to run in the flow database (`cron.database_name`).
-The script header documents these prerequisites and all configurable settings.
 
 == Multi-protocol listener
 
