@@ -51,8 +51,6 @@ import org.opennms.netmgt.surveillance.views.SurveillanceViewDao;
 import org.opennms.netmgt.surveillance.views.SurveillanceViewDataService;
 import org.opennms.netmgt.surveillance.views.SurveillanceViewDef;
 import org.opennms.web.api.Authentication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -79,8 +77,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SurveillanceViewRestService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewRestService.class);
 
     /** Serializes the name-uniqueness check-then-write; see {@link #create}. */
     private static final Object WRITE_LOCK = new Object();

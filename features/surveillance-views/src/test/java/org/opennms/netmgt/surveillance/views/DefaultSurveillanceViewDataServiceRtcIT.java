@@ -97,7 +97,9 @@ public class DefaultSurveillanceViewDataServiceRtcIT implements InitializingBean
         final OutageDao outageDao = databasePopulator.getOutageDao();
 
         long now = new Date().getTime();
-        outageDao.save(createOutage(databasePopulator.getNode1(), new Date(now - 60 * 60 * 1000), new Date(now - -60 * 60 * 1000 + 300_000)));
+        // lost 1h ago, regained 1h5m in the future: the outage extends past the
+        // end of the 24h RTC period and must be clamped to it
+        outageDao.save(createOutage(databasePopulator.getNode1(), new Date(now - 60 * 60 * 1000), new Date(now + 60 * 60 * 1000 + 300_000)));
         outageDao.save(createOutage(databasePopulator.getNode1(), new Date(now - 24 * 60 * 60 * 1000 - 60 * 60 * 1000), new Date(now - 24 * 60 * 60 * 1000 - 60 * 60 * 1000 + 300_000)));
 
         final DefaultSurveillanceViewDataService service = new DefaultSurveillanceViewDataService();

@@ -13,8 +13,8 @@
          PostgresJsonStore wired into the DAO context) rather than declaring
          our own, for the same reason as the topology-views DAO: a second
          JsonStore bean makes type-based @Autowired ambiguous elsewhere.
-         init() imports a legacy etc/surveillance-views.xml once, if the
-         store holds no views yet. -->
+         init() seeds the stock default view when the store holds no views
+         at all; the legacy etc/surveillance-views.xml is never read. -->
     <bean id="surveillanceViewDao" class="org.opennms.netmgt.surveillance.views.impl.SurveillanceViewJsonStore" init-method="init">
         <constructor-arg ref="jsonStore" />
     </bean>

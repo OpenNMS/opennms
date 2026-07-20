@@ -245,7 +245,7 @@ public class DefaultSurveillanceViewDataService implements SurveillanceViewDataS
         Arrays.fill(questionMarks, "?");
         stringBuffer.append(String.join(",", questionMarks));
 
-        stringBuffer.append("))");
+        stringBuffer.append(")) ");
 
         stringBuffer.append("and " + nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
