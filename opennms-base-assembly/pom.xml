@@ -1211,6 +1211,13 @@
       <artifactId>org.opennms.features.topology-views</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Surveillance view definitions (kv-store persistence) + the
+         status/drill-down data services behind /api/v2/surveillance/views. -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Postgres BlobStore for topology-asset image bytes (only the no-op
          blob store ships in lib otherwise). -->
     <dependency>

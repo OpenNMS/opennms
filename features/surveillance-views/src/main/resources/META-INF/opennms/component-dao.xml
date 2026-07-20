@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <!-- Surveillance view definitions are persisted in the generic JSON
+         key-value store. Reuse the existing 'jsonStore' bean (the shared
+         PostgresJsonStore wired into the DAO context) rather than declaring
+         our own, for the same reason as the topology-views DAO: a second
+         JsonStore bean makes type-based @Autowired ambiguous elsewhere.
+         init() imports a legacy etc/surveillance-views.xml once, if the
+         store holds no views yet. -->
+    <bean id="surveillanceViewDao" class="org.opennms.netmgt.surveillance.views.impl.SurveillanceViewJsonStore" init-method="init">
+        <constructor-arg ref="jsonStore" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.surveillance.views.SurveillanceViewDao" ref="surveillanceViewDao" />
+
+    <!-- The status/drill-down computations behind the surveillance view REST
+         resource. All collaborators are beans of the shared DAO context. -->
+    <bean id="surveillanceViewDataService" class="org.opennms.netmgt.surveillance.views.impl.DefaultSurveillanceViewDataService">
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="categoryDao" ref="categoryDao" />
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="notificationDao" ref="notificationDao" />
+        <property name="outageDao" ref="outageDao" />
+        <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+        <property name="transactionOperations" ref="transactionTemplate" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.surveillance.views.SurveillanceViewDataService" ref="surveillanceViewDataService" />
+
+</beans>

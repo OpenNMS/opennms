@@ -23,6 +23,9 @@
     <!-- Custom topology views + the image assets they reference -->
     <module>topology-views</module>
 
+    <!-- Surveillance view definitions + status/drill-down data services -->
+    <module>surveillance-views</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
