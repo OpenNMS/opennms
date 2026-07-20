@@ -51,7 +51,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_RPMS="hostname uuid gettext"
 
 # Collect generic steps in a layer for caching
 
@@ -88,10 +88,8 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
-# Install confd.io configuration files and scripts and ensure they are executable
-COPY ./container-fs/confd/ /opt/minion/confd/
-RUN chmod +x /opt/minion/confd/scripts/*
-COPY ./minion-config-schema.yml /opt/minion/confd/
+# Overlay container-specific etc files (config files and featuresBoot templates)
+COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
 
 # Create the directory for server certificates
 RUN install -d -m 750 /opt/minion/server-certs

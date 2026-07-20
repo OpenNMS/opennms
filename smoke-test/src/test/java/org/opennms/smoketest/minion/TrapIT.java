@@ -51,6 +51,7 @@ import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
@@ -72,7 +73,9 @@ public class TrapIT {
 
     @Rule
     public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinion()
+            .withMinions(MinionProfile.newBuilder()
+                    .withEnv("MINION_TRAPD_USE_ADDRESS_FROM_VARBIND", "true")
+                    .build())
             .withIpcStrategy(getIpcStrategy())
             .build());
 
