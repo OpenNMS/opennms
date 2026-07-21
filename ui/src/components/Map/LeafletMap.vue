@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang ="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import 'leaflet/dist/leaflet.css'
@@ -291,6 +291,23 @@ const getNodeCoordinateMap = computed(() => {
   return map
 })
 
+// Close the open map popup on Esc. Leaflet's own Esc-to-close only fires while
+// the map *container* is focused (its Keyboard handler binds/unbinds the Esc
+// listener on the container's focus/blur), so tabbing into the popup's links
+// blurs the container and Esc stops working. This document listener is attached
+// only while a popup is open (see popupopen/popupclose below) and runs in the
+// bubble phase, so the menu search's Esc handler — which stopImmediatePropagation()s
+// before the event reaches document — always takes precedence and is unaffected.
+const onPopupEscapeKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    leafletObject.value.closePopup()
+  }
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onPopupEscapeKeydown)
+})
+
 const onLeafletReady = async () => {
   await nextTick()
 
@@ -306,6 +323,36 @@ const onLeafletReady = async () => {
     // scrolls it into view; because the map sits under the fixed top menu bar
     // that could shift it upward. `scroll-margin-top` on the container (see the
     // style block below) keeps that scroll clear of the menu bar instead.
+
+    // Open popups below the marker. Leaflet has no popup "direction", so once a
+    // popup is in the DOM (popupopen fires synchronously, before paint) push it
+    // down by its own height plus 40px — the popup anchors at the marker's
+    // vertical centre, so the extra clears the marker icon's lower half and
+    // leaves a small gap below it. See mapPopupOptions (autoPan off,
+    // .onms-popup-below hides the tip).
+    leafletObject.value.on('popupopen', (e) => {
+      const el = e.popup.getElement()
+      if (!el) {
+        return
+      }
+      e.popup.options.offset = [0, el.offsetHeight + 40]
+      e.popup.update()
+
+      // autoPan is off (a popup opening below never needs the map shifted for
+      // top markers), but a below-popup on a bottom-edge marker can run past
+      // the map's lower edge. In that one case, pan up just enough to reveal it.
+      const overflowBottom = el.getBoundingClientRect().bottom -
+        leafletObject.value.getContainer().getBoundingClientRect().bottom
+      if (overflowBottom > 0) {
+        leafletObject.value.panBy([0, overflowBottom + 16], { animate: true })
+      }
+
+      document.addEventListener('keydown', onPopupEscapeKeydown)
+    })
+
+    leafletObject.value.on('popupclose', () => {
+      document.removeEventListener('keydown', onPopupEscapeKeydown)
+    })
 
     leafletReady.value = true
 
@@ -400,6 +447,13 @@ defineExpose({ invalidateSizeFn })
 // controls) under it. Keeps keyboard nav enabled without the focus-scroll jump.
 .geo-map .leaflet-container {
   scroll-margin-top: var(--onms-header-height, 3.75rem);
+}
+
+// Popups open below the marker (offset applied in the popupopen handler), so
+// hide Leaflet's tip — it points down from the popup's top edge, away from the
+// marker below it, once the popup is flipped underneath.
+.geo-map .leaflet-popup.onms-popup-below .leaflet-popup-tip-container {
+  display: none;
 }
 
 // Leaflet expands the layers control's list *in place* — the list's top sits at

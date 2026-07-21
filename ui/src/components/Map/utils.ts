@@ -54,18 +54,18 @@ const stringToFixedFloat = (floatAsString: string, decimalPoints: number): strin
   return floatAsString
 }
 
-// Shared options for marker + cluster popups. The map is full-bleed under the
-// fixed top menu bar, so Leaflet's default autoPan (which only keeps a popup
-// inside the container — whose top edge is behind the menu) leaves the popup's
-// top hidden. autoPanPaddingTopLeft pushes the auto-pan target just below the
-// menu (matching the 70px control clearance) and clear of the left side-menu
-// rail, so the popup's top always lands in view. No maxHeight: the cluster
-// popup's node list is already a fixed-height inner scroll, so capping the
-// whole popup only adds a redundant second (outer) scrollbar.
+// Shared options for marker + cluster popups. Popups open BELOW the marker
+// (the downward offset is applied per-popup in LeafletMap's popupopen handler,
+// and the .onms-popup-below CSS hides the now-pointless tip) instead of
+// Leaflet's default above-the-marker. Most markers sit in the upper half of the
+// map under the fixed top menu bar; an upward popup there forced autoPan to
+// shift the whole map down to fit it. Opening downward drops the popup into
+// open map, so autoPan is turned off and the map no longer jumps on open.
+// No maxHeight: the cluster popup's node list is already a fixed-height inner
+// scroll, so capping the whole popup only adds a redundant second scrollbar.
 const mapPopupOptions: PopupOptions = {
-  autoPan: true,
-  autoPanPaddingTopLeft: [60, 72],
-  autoPanPaddingBottomRight: [60, 40],
+  autoPan: false,
+  className: 'onms-popup-below',
   keepInView: false
 }
 
