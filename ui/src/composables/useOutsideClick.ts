@@ -20,10 +20,17 @@
 /// License.
 ///
 
-// Vendored from @featherds/composables (events/OutsideClick) as part of the
-// Phase 6 de-Feather work. Behaviour is preserved verbatim: returns an `active`
-// ref; while active, invokes `listener` on click/focus outside the element(s)
-// and on window blur. Depends only on Vue.
+// Vendored from @featherds/composables (events/OutsideClick), v0.12.x, as part
+// of the Phase 6 de-Feather work. Behaviour is preserved verbatim: returns an
+// `active` ref; while active, invokes `listener` on click/focus outside the
+// element(s) and on window blur. Depends only on Vue.
+//
+// The upstream source is Copyright (C) NantHealth and licensed under the
+// Apache License, Version 2.0. This file was modified when vendored (re-typed
+// for standalone use). Per Apache-2.0 §4, the original attribution and the full
+// license text are retained in ui/THIRD-PARTY-LICENSE.md. The AGPLv3 header
+// above applies to the combined OpenNMS work into which this code is
+// incorporated; it does not supersede the upstream Apache-2.0 grant.
 import { watch, onBeforeUnmount, ref, onMounted, Ref } from 'vue'
 
 const useOutsideClick = (

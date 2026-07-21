@@ -92,3 +92,7 @@ Formatting uses `eslint v10` and `stylistic`. See `eslint.config.js` for the rul
 The SPA assets are currently hosted on Jetty via the /opennms application.
 
 The [SpaRoutingFilter](opennms-web-api/src/main/java/org/opennms/web/servlet/SpaRoutingFilter.java) serve up the `index.html` page for URLs that do not refer to project assets.
+
+# Licenses
+
+The OpenNMS UI is licensed under the AGPLv3 (see the repository root `LICENSE.md`). Some code vendored from FeatherDS (`@featherds/*`, Apache-2.0) is redistributed here; see [THIRD-PARTY-LICENSE.md](THIRD-PARTY-LICENSE.md) for attribution and the full license text.
