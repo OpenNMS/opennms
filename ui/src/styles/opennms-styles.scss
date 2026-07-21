@@ -47,7 +47,38 @@ th {
   line-height: 1.3rem;
 }
 
-// Do not want the default behavior of changing the color of links when visited.
+// Legacy JSP pages are not dark-theme aware — their background stays light in
+// both modes — yet the standalone menu bundle (which injects this stylesheet)
+// applies the .open-light/.open-dark class to <html>/<body> globally (needed for
+// the SPA + PrimeVue). In dark mode the themed color tokens flip to their on-dark
+// values, so legacy content that resolves them becomes unreadable: links
+// (--onms-clickable-normal, light blue) and all text — headings, paragraphs,
+// footer, table cells — via the typography mixins' --p-text-color (white).
+//
+// Pin both tokens to their light-theme values on the legacy content containers so
+// that content stays readable regardless of the active theme. Elements keep using
+// the shared tokens (e.g. `a { color: var(--onms-clickable-normal) }` in
+// onms-base.scss), so links, h1-h6, footer text etc. are all covered. Values
+// mirror .open-light in onms-theme.scss / colorScheme.light in opennms-preset.ts.
+//
+// The Vue menu mounts inside #content and IS a themed surface — its inline
+// Popovers use --p-text-color (appendTo="self") and must track the theme — so it
+// is included in the light default below and then re-asserted to the dark values
+// under .open-dark, leaving the menu rendering exactly as it does today.
+#content,
+nav[aria-label='breadcrumb'],
+footer#footer,
+#opennms-sidemenu-container {
+  --onms-clickable-normal: #0402a9;
+  --p-text-color: rgba(10, 12, 27, 0.9);
+}
+.open-dark #opennms-sidemenu-container {
+  --onms-clickable-normal: #b3e7ff;
+  --p-text-color: rgb(255, 255, 255);
+}
+
+// Visited links keep the normal color (no distinct visited color), matching the
+// app convention in onms-base.scss.
 a:visited {
   color: var(--onms-clickable-normal);
 }
