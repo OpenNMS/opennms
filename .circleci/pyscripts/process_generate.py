@@ -182,6 +182,7 @@ else:
         "rpms": False,
         "debs": False,
         "oci": False,
+        "publish-docker": False,
         "build-publish": False,
         "trivy-scan": False,
         "trivy-analyze": False,
