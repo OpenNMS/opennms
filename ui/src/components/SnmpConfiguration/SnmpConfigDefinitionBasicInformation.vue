@@ -8,7 +8,7 @@
           data-test="back-button"
           @click="onDetailsCancel"
         >
-          <FeatherIcon :icon="ArrowBack" />
+          <OnmsIcon :icon="ArrowBack" />
           Go Back
         </PButton>
       </div>
@@ -17,7 +17,7 @@
           {{ isCreate ? 'Create New SNMP Definition' : 'Edit SNMP Definition Details' }}
         </h3>
       </div>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         @click="isMessageDialogVisible = true"
@@ -105,9 +105,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'

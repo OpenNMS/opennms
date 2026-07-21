@@ -56,7 +56,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
             </div>`,
             props: ['visible', 'title', 'actionButtonText']
           },
-          FeatherIcon: true
+          OnmsIcon: true
         }
       }
     })

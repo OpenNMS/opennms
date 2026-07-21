@@ -21,7 +21,7 @@
             @click="onViewHistory"
             :disabled="!singleConfigSelected"
           >
-            <FeatherIcon :icon="History" class="btn-icon" />
+            <OnmsIcon :icon="History" class="btn-icon" />
             View History
           </PButton>
 
@@ -32,7 +32,7 @@
             @click="onDownload"
             :disabled="noConfigsSelected"
           >
-            <FeatherIcon :icon="Download" class="btn-icon" />
+            <OnmsIcon :icon="Download" class="btn-icon" />
             Download
           </PButton>
 
@@ -43,7 +43,7 @@
             @click="onBackupNow"
             :disabled="noConfigsSelected || singleConfigSelectedHasNoServiceName"
           >
-            <FeatherIcon :icon="Backup" class="btn-icon" />
+            <OnmsIcon :icon="Backup" class="btn-icon" />
             Backup
           </PButton>
 
@@ -54,7 +54,7 @@
             @click="onCompare"
             :disabled="!singleConfigSelected"
           >
-            <FeatherIcon :icon="Compare" class="btn-icon" />
+            <OnmsIcon :icon="Compare" class="btn-icon" />
             Compare
           </PButton>
         </div>
@@ -107,7 +107,7 @@
             @click="onNodeLinkClick(data.nodeId)"
           >
             {{ data.deviceName }}
-            <FeatherIcon
+            <OnmsIcon
               v-if="data.configType !== 'default'"
               :icon="Speed"
               v-tooltip="data.configName"
@@ -192,10 +192,10 @@ import DataTable, { DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
-import { SORT } from '@featherds/table'
-import { FeatherIcon } from '@featherds/icon'
-import History from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
+import { SORT } from '@/types'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import History from '@/components/icons/action/Restore.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import Backup from '@/assets/Backup.vue'
 import Compare from '@/assets/Compare.vue'
 import Speed from '@/assets/Speed.vue'
@@ -358,7 +358,7 @@ onMounted(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .dcb-table {
   :deep(.last-backup-date) {
@@ -392,7 +392,7 @@ onMounted(() => {
   .config-header {
     display: flex;
     flex-direction: row;
-    @include subtitle2;
+    @include onms-subtitle2;
 
     .config-column {
       display: flex;

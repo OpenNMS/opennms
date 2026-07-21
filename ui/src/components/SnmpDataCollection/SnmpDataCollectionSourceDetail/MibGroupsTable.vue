@@ -14,7 +14,7 @@
                 :aria-label="'Search by Name or Interface Type'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -26,7 +26,7 @@
             data-test="refresh-button"
             @click="store.resetMibGroupsFilters"
           >
-            <FeatherIcon :icon="Refresh" />
+            <OnmsIcon :icon="Refresh" />
           </Button>
         </div>
       </div>
@@ -100,7 +100,7 @@
               data-test="edit-button"
               @click="onMibGroupEditClicked(data)"
             >
-              <FeatherIcon :icon="Edit" />
+              <OnmsIcon :icon="Edit" />
             </Button>
             <Button
               text
@@ -109,7 +109,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -171,11 +171,11 @@ import { computed, ref, useId } from 'vue'
 
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
-import Search from '@featherds/icon/action/Search'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import Search from '@/components/icons/action/Search.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

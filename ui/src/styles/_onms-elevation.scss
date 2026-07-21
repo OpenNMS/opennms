@@ -1,0 +1,26 @@
+// Vendored elevation mixin (NMS-19981, Phase 6) — local replacement for
+// @featherds/styles/mixins/elevation. Self-contained: Material box-shadow ramp
+// copied verbatim from FeatherDS (open-light theme) as literals, and the
+// elevated surface uses the PrimeVue content-background token (theme-aware,
+// replaces --feather-elevation-background-*). Levels 0-4 are provided (the app
+// uses 1 and 2); add higher levels here if needed.
+//
+// Usage:  .my-card { @include onms-elevation(2); }
+
+@mixin onms-elevation($level: 1) {
+  background-color: var(--p-content-background);
+
+  @if $level == 0 {
+    box-shadow: none;
+  } @else if $level == 1 {
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  } @else if $level == 2 {
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  } @else if $level == 3 {
+    box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12);
+  } @else if $level == 4 {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  } @else {
+    @error "onms-elevation: unsupported level #{$level} (supported: 0-4)";
+  }
+}

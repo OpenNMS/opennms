@@ -12,7 +12,7 @@
             data-test="back-button"
             @click="router.push({ name: 'SNMP Data Collection' })"
           >
-            <FeatherIcon :icon="ArrowBack" />
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
           </PButton>
         </div>
@@ -234,8 +234,8 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 import ButtonComponent from 'primevue/button'
 import ChipComponent from 'primevue/chip'
@@ -471,8 +471,8 @@ watch(() => route.params.id, (id: string | string[]) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-detail-container {
   margin: 0 auto;
@@ -491,7 +491,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -537,7 +537,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
     .config-details-box {
       .header {
-        @include headline3;
+        @include onms-headline3;
         margin-bottom: 20px;
       }
 
@@ -551,14 +551,14 @@ watch(() => route.params.id, (id: string | string[]) => {
           margin-right: 40px;
 
           .field-label {
-            @include headline4;
+            @include onms-headline4;
             margin-right: 10px;
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
             min-width: 80px;
           }
 
           .field-value {
-            @include body-large;
+            @include onms-body-large;
           }
 
           .profiles-chips {
@@ -568,7 +568,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .no-profiles-text {
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
           }
 
           .profiles-field-content {
@@ -578,7 +578,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .profiles-error {
-            @include body-small;
+            @include onms-body-small;
             color: var(--p-red-500);
           }
 
@@ -640,7 +640,7 @@ watch(() => route.params.id, (id: string | string[]) => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }

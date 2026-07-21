@@ -7,8 +7,8 @@
       aria-label="User self-service menu"
       @click="onTriggerClick"
     >
-      <FeatherIcon :icon="IconAccountCircle" class="self-service-top-icon" />
-      <FeatherIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
+      <OnmsIcon :icon="IconAccountCircle" class="self-service-top-icon" />
+      <OnmsIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
     </Button>
 
     <Popover
@@ -19,7 +19,7 @@
     >
       <div class="self-service-menubar-dropdown-item-content" @click="onUserProfileMenuClick">
         <a :href="computeLink('')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" name="self-service-user">
-          <FeatherIcon :icon="IconAccountCircle" class="self-service-icon" />
+          <OnmsIcon :icon="IconAccountCircle" class="self-service-icon" />
           <span class="left-margin-small">
             {{ ellipsify(mainMenu.username || '', 40) }}
           </span>
@@ -33,7 +33,7 @@
         @click="onMenuItemClick(item)"
       >
         <a :href="item.action === 'logout' ? '#' : computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
-          <FeatherIcon :icon="createIcon(item)" class="self-service-icon" />
+          <OnmsIcon :icon="createIcon(item)" class="self-service-icon" />
           <span class="left-margin-small">
             {{ item?.name || '' }}
           </span>
@@ -44,13 +44,13 @@
 </template>
 
 <script setup lang="ts">
-import { DefineComponent, computed, ref, watch } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
-import IconAccountCircle from '@featherds/icon/action/AccountCircle'
-import IconHelp from '@featherds/icon/action/Help'
-import IconLogout from '@featherds/icon/action/LogOut'
-import IconSecurity from '@featherds/icon/network/Security'
+import { Component, computed, ref, watch } from 'vue'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import IconAccountCircle from '@/components/icons/action/AccountCircle.vue'
+import IconHelp from '@/components/icons/action/Help.vue'
+import IconLogout from '@/components/icons/action/LogOut.vue'
+import IconSecurity from '@/components/icons/network/Security.vue'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
 import { ellipsify } from '@/lib/utils'
@@ -115,7 +115,7 @@ const menuItems = computed<MenuItem[]>(() => {
 })
 
 const createIcon = (menuItem: MenuItem) => {
-  let icon: DefineComponent | null = null
+  let icon: Component | null = null
 
   switch (menuItem.id) {
     case 'helpMenu':
@@ -126,7 +126,7 @@ const createIcon = (menuItem: MenuItem) => {
       icon = IconSecurity; break
   }
 
-  return (icon ?? IconHelp) as typeof FeatherIcon
+  return (icon ?? IconHelp) as Component
 }
 
 const computeLink = (url: string) => {
@@ -151,8 +151,8 @@ const onMenuItemClick = async (item: MenuItem) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .self-service-menubar-icon-wrapper {
   position: relative;
@@ -195,10 +195,10 @@ const onMenuItemClick = async (item: MenuItem) => {
 
 div.self-service-menubar-icon-wrapper {
   .self-service-menubar-dropdown-button-dark {
-    svg.self-service-top-icon.feather-icon {
+    svg.self-service-top-icon.onms-icon {
       vertical-align: -0.5rem;
     }
-    svg.self-service-arrow-dropdown.feather-icon {
+    svg.self-service-arrow-dropdown.onms-icon {
       vertical-align: 0;
     }
   }
@@ -221,12 +221,12 @@ div.self-service-menubar-icon-wrapper {
   }
 }
 
-.feather-icon.self-service-top-icon {
+.onms-icon.self-service-top-icon {
   font-size: 2em;
   margin-right: 0.25rem;
 }
 
-.feather-icon.self-service-icon {
+.onms-icon.self-service-icon {
   font-size: 1.25em;
 }
 

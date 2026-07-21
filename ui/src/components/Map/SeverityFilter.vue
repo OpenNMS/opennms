@@ -1,5 +1,5 @@
 <template>
-  <FormField label="Show Severity >=" class="severity-select">
+  <FormField label="Show Severity" class="severity-select">
     <PSelect
       v-model="selectedSeverity"
       :options="options"
@@ -36,14 +36,19 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
 .severity-select {
   position: absolute;
   width: 250px;
-  right: 60px;
+  right: 80px;
   top: 80px;
   /* below the app bar's z-index (1030) */
   z-index: 1020;
+  /* Translucent panel so the control reads clearly over the map. Follows the
+     theme (light panel in light mode, dark in dark mode) like the rest of the
+     UI — the select itself just uses the default --p-* theme tokens. */
+  padding: 0.5em;
+  background-color: rgba(211, 211, 211, 0.8);
+  border-radius: 4px;
+}
 
-  .p-select {
-    background: var(--p-content-background);
-    border: 2px solid var(--p-primary-color);
-  }
+.open-dark .severity-select {
+  background-color: rgba(30, 30, 40, 0.8);
 }
 </style>

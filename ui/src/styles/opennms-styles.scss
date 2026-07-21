@@ -1,0 +1,96 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+@use '@/styles/onms-typography' as *;
+
+/**
+* Add some additional base styles that weren't included in the base onms typography.
+* These help override legacy OpenNMS Bootstrap styles so that all text on legacy pages
+* uses the OpenNMS font style.
+*/
+input,
+label,
+li,
+select,
+span,
+td,
+text,
+th {
+  @include onms-body-small();
+  color: inherit;
+  // The onms-body-small mixin sets the following, which seem a little too much.
+  // Legacy OpenNMS fonts were a bit narrower, so we adjust these a bit below.
+  // letter-spacing: var(--onms-body-small-letter-spacing);  // .25004px
+  // line-height: var(--onms-body-small-line-height);        // 1.5rem or 24px
+  //
+  // For p, we leave it alone as the slightly larger spacing is more readable for paragraphs of text.
+  letter-spacing: normal;
+  line-height: 1.3rem;
+}
+
+// Legacy JSP pages are not dark-theme aware — their background stays light in
+// both modes — yet the standalone menu bundle (which injects this stylesheet)
+// applies the .open-light/.open-dark class to <html>/<body> globally (needed for
+// the SPA + PrimeVue). In dark mode the themed color tokens flip to their on-dark
+// values, so legacy content that resolves them becomes unreadable: links
+// (--onms-clickable-normal, light blue) and all text — headings, paragraphs,
+// footer, table cells — via the typography mixins' --p-text-color (white).
+//
+// Pin both tokens to their light-theme values on the legacy content containers so
+// that content stays readable regardless of the active theme. Elements keep using
+// the shared tokens (e.g. `a { color: var(--onms-clickable-normal) }` in
+// onms-base.scss), so links, h1-h6, footer text etc. are all covered. Values
+// mirror .open-light in onms-theme.scss / colorScheme.light in opennms-preset.ts.
+//
+// The Vue menu mounts inside #content and IS a themed surface — its inline
+// Popovers use --p-text-color (appendTo="self") and must track the theme — so it
+// is included in the light default below and then re-asserted to the dark values
+// under .open-dark, leaving the menu rendering exactly as it does today.
+#content,
+nav[aria-label='breadcrumb'],
+footer#footer,
+#opennms-sidemenu-container {
+  --onms-clickable-normal: #0402a9;
+  --p-text-color: rgba(10, 12, 27, 0.9);
+}
+.open-dark #opennms-sidemenu-container {
+  --onms-clickable-normal: #b3e7ff;
+  --p-text-color: rgb(255, 255, 255);
+}
+
+// Visited links keep the normal color (no distinct visited color), matching the
+// app convention in onms-base.scss.
+a:visited {
+  color: var(--onms-clickable-normal);
+}
+
+// Native <select> on legacy pages (e.g. the Alarm/Event/Outage list filters,
+// `select.form-control.custom-select`). In dark mode PrimeVue sets
+// `color-scheme: dark` on the document, so the browser paints native form
+// controls with a dark background — but their text is pinned to the (dark)
+// light-theme --p-text-color above, leaving dark-on-dark. Legacy pages are
+// light-only, so force native controls to render light (readable in both modes,
+// and the option popup renders light too). The Vue menu uses PrimeVue components
+// rather than native <select>, so it is unaffected.
+select {
+  color-scheme: light;
+}

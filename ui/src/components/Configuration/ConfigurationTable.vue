@@ -44,7 +44,7 @@
               :disabled="Boolean(data[RequisitionData.ImportURL].startsWith('requisition://'))"
               data-test="edit-btn"
             >
-              <FeatherIcon :icon="Edit" />
+              <OnmsIcon :icon="Edit" />
             </PButton>
             <PButton
               text
@@ -52,7 +52,7 @@
               v-tooltip="'Delete'"
               @click="() => props.deleteClicked(data.originalIndex)"
             >
-              <FeatherIcon
+              <OnmsIcon
                 class="delete-icon"
                 :icon="Delete"
               />
@@ -72,10 +72,10 @@ import { computed, PropType } from 'vue'
 import DataTable, { DataTablePageEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 
-import Edit from '@featherds/icon/action/Edit'
-import Delete from '@featherds/icon/action/Delete'
+import Edit from '@/components/icons/action/Edit.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 
 import { RequisitionData } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
@@ -138,7 +138,7 @@ const rescanToEnglish = (rescanVal: string) => {
 .flex {
   display: flex;
 
-  // Enlarge the edit/delete glyphs (FeatherIcon scales with font-size)
+  // Enlarge the edit/delete glyphs (OnmsIcon scales with font-size)
   :deep(svg) {
     font-size: 1.25em;
   }

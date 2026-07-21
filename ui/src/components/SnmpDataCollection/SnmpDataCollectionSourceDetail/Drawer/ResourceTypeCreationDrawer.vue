@@ -122,7 +122,7 @@
                     data-test="edit-storage-strategy-button"
                     @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -130,7 +130,7 @@
                     data-test="delete-storage-strategy-button"
                     @click="deleteStorageStrategy(storageStrategyParams.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -199,7 +199,7 @@
                     data-test="edit-persistence-selector-strategy-button"
                     @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -207,7 +207,7 @@
                     data-test="delete-persistence-selector-strategy-button"
                     @click="deletePersistenceSelectorStrategy(persistenceSelectorStrategyParams.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -305,10 +305,10 @@ import { createResourceType, updateResourceType } from '@/services/snmpDataColle
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
+import { IAutocompleteItemType } from '@/types'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -659,7 +659,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
@@ -694,7 +694,7 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
+            @include onms-headline3;
           }
         }
       }
@@ -717,7 +717,7 @@ watch(
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 

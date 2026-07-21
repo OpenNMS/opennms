@@ -27,7 +27,7 @@
               aria-label="Cancel"
               @click="props.closePanel"
             >
-              <FeatherIcon
+              <OnmsIcon
                 class="close-icon"
                 :icon="cancelIcon"
               />
@@ -83,9 +83,9 @@
 import { PropType, computed, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 
-import Cancel from '@featherds/icon/navigation/Cancel'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
@@ -196,8 +196,8 @@ const toggleHelp = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 
 .flex {
@@ -249,7 +249,7 @@ const toggleHelp = () => {
 .slide-inner-body {
   padding: 20px 20px 4px;
   background-color: var(--p-content-background);
-  @include elevation(1);
+  @include onms-elevation(1);
 }
 .side-inner-title {
   display: flex;
@@ -264,7 +264,7 @@ const toggleHelp = () => {
   border-bottom: 1px solid #d7d7dc;
 }
 .title {
-  @include headline2();
+  @include onms-headline2();
   color: var(--p-primary-color);
   min-height: 40px;
   display: flex;

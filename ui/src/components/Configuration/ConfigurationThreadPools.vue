@@ -214,10 +214,10 @@ const getError = (key: string) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .title {
-  @include headline3();
+  @include onms-headline3();
   margin-right: 16px;
 }
 .title-flex {

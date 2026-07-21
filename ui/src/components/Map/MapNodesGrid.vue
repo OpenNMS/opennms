@@ -112,11 +112,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 
 import { useMapStore } from '@/stores/mapStore'
-import { Coordinates, Node, FeatherSortObject } from '@/types'
-import { SORT } from '@featherds/table'
+import { Coordinates, Node, ISortObject } from '@/types'
+import { SORT } from '@/types'
 import SortableTh from './SortableTh.vue'
 
 const mapStore = useMapStore()
@@ -143,7 +143,7 @@ const sortStates: any = reactive({
   sysLocation: SORT.NONE
 })
 
-const sortChanged = (sortObj: FeatherSortObject) => {
+const sortChanged = (sortObj: ISortObject) => {
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }
@@ -160,40 +160,36 @@ const onNodeIdClick = (nodeId: string) => {
 const onNodeLabelClick = (label: string) => {
   mapStore.setNodeSearchTerm(label)
 }
-
-onMounted(() => {
-  const wrap = document.getElementById('wrap')
-  const thead = document.querySelector('thead')
-
-  if (wrap && thead) {
-    wrap.addEventListener('scroll', function () {
-      const translate = `translate(0, ${this.scrollTop}px)`
-      thead.style.transform = translate
-    })
-  }
-})
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-table";
+@import "@/styles/onms-tokens";
 
 #wrap {
-  height: calc(100% - 29px);
+  // Height accounts for the 15px top gap below so the pane keeps its footprint.
+  height: calc(100% - 44px);
   overflow: auto;
   background: var(--p-content-background);
-}
-table {
-  @include table;
-  @include table-condensed;
-  background: var(--p-content-background);
-  color: var(--p-text-color);
-  padding-top: 4px;
+  // Gap above the table lives on the scroll container (outside the scrolled
+  // content) so it doesn't make the sticky header travel before locking.
   margin-top: 15px;
 }
-thead {
+table {
+  @include onms-table;
+  @include onms-table-condensed;
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  // No top margin/padding: any space above thead inside the scroll container
+  // makes the sticky header travel that distance before it locks at top:0.
+}
+// CSS sticky header (replaces a JS scroll-transform hack that jittered and let
+// rows bleed above the header). Sticky lives on the cells (thead sticky has
+// spotty support) and needs an opaque background so body rows don't show through.
+thead th {
+  position: sticky;
+  top: 0;
   z-index: 2;
-  position: relative;
   background: var(--p-content-background);
 }
 .first-td {

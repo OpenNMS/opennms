@@ -1,8 +1,8 @@
 <template>
-  <LPopup>
+  <LPopup :options="mapPopupOptions">
     <h3>Node: <a :href="`${baseNodeUrl}${node.id}`" target="_blank">{{ node.label }}</a></h3>
 
-    <span class="larger-icon"><FeatherIcon :icon="Location" /></span>
+    <span class="larger-icon"><OnmsIcon :icon="Location" /></span>
     {{ latitude }}, {{ longitude }}
     <br />
     <a :href="getTopologyLink(node)">View in Topology Map</a>
@@ -41,11 +41,11 @@
 
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import Location from '@featherds/icon/action/Location'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Location from '@/components/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
 import { Node } from '@/types'
-import { stringToFixedFloat } from './utils'
+import { mapPopupOptions, stringToFixedFloat } from './utils'
 
 const props = defineProps({
   baseHref: { type: Object as PropType<string> },

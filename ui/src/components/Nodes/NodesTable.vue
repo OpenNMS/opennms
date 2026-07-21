@@ -37,13 +37,13 @@
                     data-test="search-input"
                   />
                   <InputIcon>
-                    <FeatherIcon :icon="Search" />
+                    <OnmsIcon :icon="Search" />
                   </InputIcon>
                 </IconField>
               </FormField>
             </div>
             <div>
-              <FeatherIcon
+              <OnmsIcon
                 :icon="InfoIcon"
                 class="info-icon"
                 title="Node Search Help"
@@ -58,7 +58,7 @@
                 data-test="advanced-filters-button"
                 @click="nodeStructureStore.openInstancesDrawerModal()"
               >
-                <FeatherIcon
+                <OnmsIcon
                   :icon="FilterAlt"
                   class="advanced-filters-icon"
                 />
@@ -217,7 +217,7 @@
                   data-test="view-details-button"
                   @click="onNodeLinkClick(data.id)"
                 >
-                  <FeatherIcon
+                  <OnmsIcon
                     :icon="ViewDetails"
                     title="View Details"
                   />
@@ -285,13 +285,13 @@ import {
   UpdateModelFunction
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import FilterAlt from '@featherds/icon/action/FilterAlt'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import InfoIcon from '@featherds/icon/action/Info'
-import { SORT } from '@featherds/table'
+import { IAutocompleteItemType } from '@/types'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import FilterAlt from '@/components/icons/action/FilterAlt.vue'
+import Search from '@/components/icons/action/Search.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { SORT } from '@/types'
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
@@ -506,22 +506,22 @@ defineExpose({ onSort, onPage, removeItem })
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/mixins/elevation" as elevation;
-@use "@featherds/styles/mixins/typography" as typography;
-@use "@featherds/styles/themes/variables" as variables;
+@use '@/styles/onms-elevation' as *;
+@use '@/styles/onms-typography' as *;
+@use "@/styles/onms-tokens" as variables;
 
 .node-table {
   margin-top: 1rem;
 }
 
 .card {
-  @include elevation.elevation(2);
+  @include onms-elevation(2);
   background: var(variables.$surface);
   padding: 30px;
 }
 
 .title {
-  @include typography.headline1;
+  @include onms-headline1;
   display: block;
 }
 
@@ -559,7 +559,7 @@ defineExpose({ onSort, onPage, removeItem })
   }
 
   // The Advanced Filters trigger icon read too small; bump it to ~1.5rem
-  // (FeatherIcon scales with font-size).
+  // (OnmsIcon scales with font-size).
   .advanced-filters-icon {
     font-size: 1.5rem;
   }

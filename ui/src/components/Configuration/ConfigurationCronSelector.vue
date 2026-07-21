@@ -64,7 +64,7 @@
       </FormField>
     </div>
     <div
-      :class="`feather-input-hint-custom
+      :class="`input-hint-custom
       ${advancedCronTabHasErrorInHint}`"
     >
       {{ !hasCronValidationError ? scheduledTime : '' }}
@@ -155,12 +155,12 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import "@/styles/onms-tokens";
+@import '@/styles/onms-typography';
 
-.feather-input-hint-custom {
+.input-hint-custom {
     flex: 1;
-    @include caption();
+    @include onms-caption();
     color: var(--p-text-muted-color);
     margin-top: -24px;
     display: flex;

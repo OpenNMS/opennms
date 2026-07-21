@@ -18,7 +18,7 @@
     </div>
     <div class="info-section">
       <span>Configure SNMPv3 user settings.</span>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         role="button"
@@ -66,7 +66,7 @@
                 data-test="edit-user-button"
                 @click="store.openCreateUserDrawer(CreateEditMode.Edit, userIndex(data))"
               >
-                <FeatherIcon :icon="Edit" />
+                <OnmsIcon :icon="Edit" />
               </PButton>
               <PButton
                 text
@@ -74,7 +74,7 @@
                 data-test="delete-user-button"
                 @click="openDeleteUserDialog(userIndex(data))"
               >
-                <FeatherIcon :icon="Delete" />
+                <OnmsIcon :icon="Delete" />
               </PButton>
             </div>
           </template>
@@ -113,10 +113,10 @@ import { ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
@@ -200,7 +200,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .snmp-v3-user-management {
   margin-top: 10px;
@@ -214,12 +214,12 @@ watch(
 
     .section-left {
       h3 {
-        @include typography.headline3;
+        @include onms-headline3;
         color: var(--p-text-color);
       }
 
       p {
-        @include typography.body-large;
+        @include onms-body-large;
         color: var(--p-text-muted-color);
       }
     }
@@ -254,7 +254,7 @@ watch(
       align-items: center;
       gap: 5px;
 
-      // enlarge the edit/delete icons (FeatherIcon scales with font-size)
+      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
       :deep(.p-button) {
         font-size: 1.3rem;
       }

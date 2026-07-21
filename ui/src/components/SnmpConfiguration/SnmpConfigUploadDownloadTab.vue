@@ -18,7 +18,7 @@
               class="upload-download-button"
               @click="onDownload(true)"
             >
-              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download XML
             </PButton>
            </div>
@@ -33,7 +33,7 @@
               class="upload-download-button"
               @click="onDownload(false)"
             >
-              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download JSON
             </PButton>
            </div>
@@ -48,7 +48,7 @@
               class="upload-download-button"
               @click="initiateUpload(true)"
             >
-              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload XML
             </PButton>
            </div>
@@ -63,7 +63,7 @@
               class="upload-download-button"
               @click="initiateUpload(false)"
             >
-              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload JSON
             </PButton>
            </div>
@@ -87,9 +87,9 @@
 import { ref } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import IconDownload from '@featherds/icon/action/DownloadFile'
-import IconUpload from '@featherds/icon/action/UploadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconDownload from '@/components/icons/action/DownloadFile.vue'
+import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'

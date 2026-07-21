@@ -23,10 +23,10 @@
           v-tooltip="'Copy to clipboard'"
           @click="copyURLToClipboard"
         >
-          <FeatherIcon
+          <OnmsIcon
             :icon="ContentCopy"
             class="edit-icon"
-          ></FeatherIcon>
+          ></OnmsIcon>
         </PButton>
       </div>
     </div>
@@ -40,8 +40,8 @@
 import { computed, reactive, ref } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
@@ -121,7 +121,7 @@ const timeoutIn = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-elevation';
 
 .inner-short {
   cursor: pointer;
@@ -130,7 +130,7 @@ const timeoutIn = () => {
   position: absolute;
   background-color: var(--p-content-background);
   display: flex;
-  @include elevation(2);
+  @include onms-elevation(2);
   padding: 20px;
   opacity: 0;
   transition: opacity ease-in-out 0.1s;

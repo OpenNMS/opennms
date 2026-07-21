@@ -7,7 +7,7 @@
     v-tooltip="title ?? tooltipTitle"
     @click="$emit('click')"
   >
-    <FeatherIcon
+    <OnmsIcon
       :icon="IconSecurity"
       class="scv-icon"
     />
@@ -16,8 +16,8 @@
 
 <script setup lang="ts">
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import IconSecurity from '@featherds/icon/network/Security'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconSecurity from '@/components/icons/network/Security.vue'
 
 const PButton = Button
 

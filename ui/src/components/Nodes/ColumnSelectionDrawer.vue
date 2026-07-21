@@ -20,7 +20,7 @@
         <template #item="{ element, index }">
           <div class="column-row">
             <Button text class="drag-btn">
-              <FeatherIcon class="close-icon drag-handle" :icon="Apps" />
+              <OnmsIcon class="close-icon drag-handle" :icon="Apps" />
             </Button>
             <Select
               v-model="element.value"
@@ -35,7 +35,7 @@
               :data-test="`remove-column-${index}`"
               @click="removeColumn(index)"
             >
-              <FeatherIcon class="close-icon" :icon="Cancel" />
+              <OnmsIcon class="close-icon" :icon="Cancel" />
             </Button>
           </div>
         </template>
@@ -58,9 +58,9 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import Apps from '@featherds/icon/navigation/Apps'
-import Cancel from '@featherds/icon/navigation/Cancel'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'

@@ -8,7 +8,7 @@
           data-test="back-button"
           @click="onDetailsCancel"
         >
-          <FeatherIcon :icon="ArrowBack" />
+          <OnmsIcon :icon="ArrowBack" />
           Go Back
         </PButton>
       </div>
@@ -78,8 +78,8 @@ import { onMounted, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'

@@ -8,7 +8,7 @@
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
   >
-    <FeatherIcon :icon="Compare" />
+    <OnmsIcon :icon="Compare" />
   </PButton>
 
   <PButton
@@ -19,7 +19,7 @@
     @click="onReturn"
     v-if="isCompareView"
   >
-    <FeatherIcon :icon="Restore" />
+    <OnmsIcon :icon="Restore" />
   </PButton>
 
   <PButton
@@ -30,7 +30,7 @@
     @click="onDownload"
     v-if="isCompareView"
   >
-    <FeatherIcon :icon="Download" />
+    <OnmsIcon :icon="Download" />
   </PButton>
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
@@ -91,9 +91,9 @@ import { orderBy } from 'lodash'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Chip from 'primevue/chip'
-import { FeatherIcon } from '@featherds/icon'
-import Restore from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Restore from '@/components/icons/action/Restore.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
@@ -218,7 +218,7 @@ onMounted(() => getHistoryBackups())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .flex-container {
   display: flex;
   max-width: 1000px;
@@ -228,7 +228,7 @@ onMounted(() => getHistoryBackups())
 
   .checkbox-group {
     .group-label {
-      @include subtitle2;
+      @include onms-subtitle2;
     }
   }
 
@@ -238,7 +238,7 @@ onMounted(() => getHistoryBackups())
     white-space: nowrap;
 
     .history-date {
-      @include body-small;
+      @include onms-body-small;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -257,7 +257,7 @@ onMounted(() => getHistoryBackups())
   overflow: auto;
 }
 .select-msg {
-  @include subtitle1;
+  @include onms-subtitle1;
   color: var(--p-primary-color);
   padding-left: 15px;
   margin-bottom: 33px;
@@ -269,7 +269,7 @@ onMounted(() => getHistoryBackups())
   margin-bottom: 23px;
 }
 .changes {
-  @include button;
+  @include onms-button;
 
   .deletions {
     color: var(--p-red-500);

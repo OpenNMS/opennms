@@ -12,7 +12,7 @@
             data-test="back-button"
             @click="goBack"
           >
-            <FeatherIcon :icon="ArrowBack" />
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
           </PButton>
         </div>
@@ -132,8 +132,8 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import ButtonComponent from 'primevue/button'
 import TabComponent from 'primevue/tab'
 import TabListComponent from 'primevue/tablist'
@@ -360,8 +360,8 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-profile-details {
   margin: 0 auto;
@@ -380,7 +380,7 @@ onMounted(async () => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -442,17 +442,17 @@ onMounted(async () => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }
 </style>
 
 <style lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 
 .p-select-overlay {
-  font-family: var(--feather-font-family);
+  font-family: var(--onms-font-family);
 }
 
 // The Select overlay is teleported to body, so :deep() can't reach it.
