@@ -26,7 +26,6 @@
     <!-- This executor pool is implicitly limited by the size of the collectd's scheduler pool.
          When a collector is triggered, collectd will use a thread and block while
          the collector is executed in this pool. -->
-    <bean id="collectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"
-          destroy-method="shutdownNow"/>
+    <bean id="collectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
 
 </beans>
