@@ -300,13 +300,12 @@ const onLeafletReady = async () => {
     // set default map view port
     leafletObject.value.zoomControl.setPosition('topright')
 
-    // Leaflet makes the map container keyboard-focusable (adds a tabindex).
-    // On the first click the container gains focus and the browser scrolls it
-    // into view — because the map sits under the fixed top menu bar, that shifts
-    // the whole map (and its controls) upward. Disable keyboard focus + drop the
-    // tabindex so a click no longer triggers that scroll.
-    leafletObject.value.keyboard?.disable()
-    leafletObject.value.getContainer()?.removeAttribute('tabindex')
+    // Keyboard is left enabled (Leaflet keeps the container focusable via a
+    // tabindex) so keyboard-only users retain arrow-key pan / +- zoom — removing
+    // it fails WCAG 2.1.1. Leaflet focuses the container on click and the browser
+    // scrolls it into view; because the map sits under the fixed top menu bar
+    // that could shift it upward. `scroll-margin-top` on the container (see the
+    // style block below) keeps that scroll clear of the menu bar instead.
 
     leafletReady.value = true
 
@@ -393,6 +392,14 @@ defineExpose({ invalidateSizeFn })
 // (which otherwise lets the controls settle back under the menu bar).
 .geo-map .leaflet-top {
   top: 70px;
+}
+
+// Leaflet focuses the container on click; the browser then scrolls it into
+// view. Since the map sits under the fixed top menu bar, reserve the menu-bar
+// height so that scroll stops below the bar instead of sliding the map (and its
+// controls) under it. Keeps keyboard nav enabled without the focus-scroll jump.
+.geo-map .leaflet-container {
+  scroll-margin-top: var(--onms-header-height, 3.75rem);
 }
 
 // Leaflet expands the layers control's list *in place* — the list's top sits at
