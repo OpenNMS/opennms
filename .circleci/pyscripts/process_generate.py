@@ -336,6 +336,8 @@ for keyword in git_keywords:
             build_mappings["debs"] = True
         if "oci" in keyword or "oci" in What_to_build:
             build_mappings["oci"] = True
+        if "publish-docker" in keyword:
+            build_mappings["publish-docker"] = True
         if "build-publish" in keyword:
             build_mappings["build-publish"] = True
         if "trivy-scan" in keyword:

@@ -530,6 +530,23 @@
                 "user_overridable": false
             }
         },
+        "publish-docker": {
+            "context": [
+                "CircleCI",
+                "cosign-signing",
+                "docker-content-trust",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
         "publish": {
             "context": [
                 "CircleCI",

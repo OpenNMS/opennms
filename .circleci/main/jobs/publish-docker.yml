@@ -1,0 +1,48 @@
+jobs:
+  publish-docker:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: small
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - shallow-clone
+      - setup_remote_docker
+      - cached-download:
+          url: https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
+          file: /usr/local/bin/notary
+      - download-download-artifacts
+      - run:
+          name: download resources from parent jobs
+          command: |
+            for TYPE in oci yml; do
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --ci \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+               "${TYPE}" \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --ci \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+                --match="sbom" \
+               xml \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+            done
+      - run:
+          name: Import OCI Files
+          command: |
+            find /tmp/artifacts/oci -name \*.oci | while read -r OCI; do
+              docker image load --quiet -i "${OCI}"
+            done
+      - run:
+          name: Publish to Docker Hub
+          command: .circleci/scripts/publish-dockerhub.sh
+
+            
+            

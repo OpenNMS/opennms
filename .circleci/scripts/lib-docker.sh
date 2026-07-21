@@ -59,18 +59,31 @@ get_sha256() {
   docker inspect --format='{{.RepoDigests}}' "$1" | sed -e 's,^\[,,' -e 's,\]$,,' | awk '{ print $1 }' | cut -d'@' -f2
 }
 
-# usage: create_and_push_manifest <registry> <source-tag> <target-tag>
-# ex: create_and_push_manifest docker.io "develop" "31-dev"
+# usage: create_and_push_manifest <registry> <source-tag> <target-tag> <arch-tag> [<arch-tag> ...]
+# ex: create_and_push_manifest docker.io "develop" "31-dev" "linux-amd64" "linux-arm64"
 create_and_push_manifest() {
   local _repo="$1"
   local _source_tag="$2"
   local _target_tag="$3"
+  shift 3
+  local _arch_tags=("$@")
+
+  if [ "${#_arch_tags[@]}" -eq 0 ]; then
+    echo "you must specify at least one arch tag to build a manifest from!"
+    exit 1
+  fi
 
   local IMAGE_REF="${_repo}:${_source_tag}"
   local TARGET_REF="${_repo}:${_target_tag}"
+
+  local _manifest_refs=()
+  local _arch_tag
+  for _arch_tag in "${_arch_tags[@]}"; do
+    _manifest_refs+=("${IMAGE_REF}-${_arch_tag}")
+  done
+
   docker manifest create "${TARGET_REF}" \
-    "${IMAGE_REF}-linux-amd64" \
-    "${IMAGE_REF}-linux-arm64" \
+    "${_manifest_refs[@]}" \
     --amend
 
   DOCKER_IMAGE_SHA_256="$(docker manifest push "${TARGET_REF}" --purge | cut -d ':' -f 2)"
