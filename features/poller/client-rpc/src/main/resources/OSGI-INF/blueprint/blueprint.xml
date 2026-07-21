@@ -13,7 +13,8 @@
 
     <reference id="serviceMonitorRegistry" interface="org.opennms.netmgt.poller.ServiceMonitorRegistry" availability="mandatory"/>
 
-    <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+    <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"
+          destroy-method="shutdownNow"/>
     
     <bean id="pollerRpcModule" class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule" >
        <property name="serviceMonitorRegistry" ref="serviceMonitorRegistry"/>
