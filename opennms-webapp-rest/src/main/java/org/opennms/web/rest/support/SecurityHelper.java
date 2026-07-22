@@ -23,24 +23,16 @@ package org.opennms.web.rest.support;
 
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.opennms.features.scv.utils.ScvUtils;
 import org.opennms.web.api.Authentication;
 
 public class SecurityHelper {
     public static final String MASKED_PASSWORD = "******";
-    // Mirrors the SCV_REGEX / SCV_SUBKEY rules in ui/src/lib/scvValidator.ts:
-    //   alias  = [a-zA-Z0-9_] optionally followed by [a-zA-Z0-9_.-]* and a trailing [a-zA-Z0-9_]
-    //   :key   = same format, optional
-    //   |default = any chars except | and }, optional
-    private static final Pattern SCV_PATTERN = Pattern.compile(
-            "^\\$\\{scv:[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?" +
-            "(?::[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?)?" +
-            "(?:\\|[^|}]+)?\\}$");
 
     public static void assertUserReadCredentials(SecurityContext securityContext) {
         final String currentUser = securityContext.getUserPrincipal().getName();
@@ -87,7 +79,7 @@ public class SecurityHelper {
     }
 
     public static boolean isScvExpression(final String value) {
-        return value != null && SCV_PATTERN.matcher(value).matches();
+        return ScvUtils.isScvExpression(value);
     }
 
     /**
