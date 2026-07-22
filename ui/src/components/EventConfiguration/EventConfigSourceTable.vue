@@ -23,14 +23,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <Button
+          <OnmsIconButton
             text
             title="Refresh"
             data-test="refresh-button"
+            :icon="Refresh"
             @click="store.refreshSourcesFilters()"
-          >
-            <OnmsIcon :icon="Refresh" />
-          </Button>
+          />
         </div>
       </div>
     </div>
@@ -79,32 +78,29 @@
       <Column header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
+            <OnmsIconButton
               text
               :title="`View ${data.name}`"
               data-test="view-button"
+              :icon="ViewDetails"
               @click="onEventClick(data)"
-            >
-              <OnmsIcon :icon="ViewDetails" />
-            </Button>
-            <Button
+            />
+            <OnmsIconButton
               text
               :title="`Download ${data.name} XML`"
               data-test="download-button"
+              :icon="Download"
               @click="downloadEventConfXmlBySourceId(data.id)"
-            >
-              <OnmsIcon :icon="Download" />
-            </Button>
-            <Button
+            />
+            <OnmsIconButton
               text
               aria-haspopup="true"
               aria-controls="event-source-row-menu"
               :title="`More actions for ${data.name}`"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <OnmsIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
       </Column>
@@ -142,7 +138,6 @@ import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
@@ -155,6 +150,7 @@ import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'

@@ -44,23 +44,21 @@
                 <PColumn header="Access Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.accessToken ?? '', 30) }}
-                    <PButton
+                    <OnmsIconButton
                       aria-label="Copy Access Token"
+                      :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(true)"
-                    >
-                      <OnmsIcon :icon="icons.ContentCopy" />
-                    </PButton>
+                    />
                   </template>
                 </PColumn>
                 <PColumn header="Refresh Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.refreshToken ?? '', 30) }}
-                    <PButton
+                    <OnmsIconButton
                       aria-label="Copy Refresh Token"
+                      :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(false)"
-                    >
-                      <OnmsIcon :icon="icons.ContentCopy" />
-                    </PButton>
+                    />
                   </template>
                 </PColumn>
               </PDataTable>
@@ -85,7 +83,7 @@ import { computed, markRaw, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'

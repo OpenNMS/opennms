@@ -30,14 +30,13 @@
       />
     </FormField>
 
-    <PButton
+    <OnmsIconButton
       text
       aria-label="Remove attribute"
       data-test="rm-attr-btn"
+      :icon="Delete"
       @click="removeAttribute"
-    >
-      <OnmsIcon :icon="Delete" />
-    </PButton>
+    />
   </div>
 </template>
 
@@ -45,8 +44,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
@@ -54,7 +52,6 @@ import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 
 const PInputText = InputText
-const PButton = Button
 
 const scvStore = useScvStore()
 const emit = defineEmits(['set-key-error'])

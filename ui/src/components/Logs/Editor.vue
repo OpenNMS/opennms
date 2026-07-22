@@ -1,27 +1,25 @@
 <template>
   <div class="editor">
     <div class="toolbar">
-      <PButton
+      <OnmsIconButton
         v-if="reverseLog"
         text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display oldest first."
+        :icon="KeyboardArrowDown"
         @click="getLog(false)"
-      >
-        <OnmsIcon :icon="KeyboardArrowDown" />
-      </PButton>
+      />
 
-      <PButton
+      <OnmsIconButton
         v-if="!reverseLog"
         text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display newest first."
+        :icon="KeyboardArrowUp"
         @click="getLog(true)"
-      >
-        <OnmsIcon :icon="KeyboardArrowUp" />
-      </PButton>
+      />
     </div>
     <VAceEditor
       v-model:value="content"
@@ -38,8 +36,7 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { onKeyStroke } from '@vueuse/core'
 import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
 import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
@@ -50,8 +47,6 @@ import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import { useAppStore } from '@/stores/appStore'
 import { useLogStore } from '@/stores/logStore'
-
-const PButton = Button
 
 const appStore = useAppStore()
 const logStore = useLogStore()
@@ -120,9 +115,6 @@ const init = (editor: any) => {
       min-width: 25px !important;
       margin-right: 5px;
       margin-top: 2px;
-      :deep(svg) {
-        font-size: 20px !important;
-      }
     }
   }
 }

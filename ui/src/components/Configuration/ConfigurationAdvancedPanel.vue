@@ -30,17 +30,14 @@
         <FormField label="Value" class="value-field" :hint="item.hint || ' '">
           <PInputText v-model="item.value" />
         </FormField>
-        <PButton
+        <OnmsIconButton
           text
+          class="delete-icon"
           aria-label="Delete"
           v-tooltip="'Delete'"
+          :icon="Delete"
           @click="() => deleteAdvancedOption(index)"
-        >
-          <OnmsIcon
-            class="delete-icon"
-            :icon="Delete"
-          ></OnmsIcon>
-        </PButton>
+        />
       </div>
       <div class="button-wrapper">
         <PButton
@@ -60,7 +57,7 @@ import { PropType, computed, reactive, ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -247,6 +244,5 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 }
 .delete-icon {
   color: var(--p-red-500);
-  font-size: 1.5rem;
 }
 </style>

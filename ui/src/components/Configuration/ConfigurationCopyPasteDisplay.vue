@@ -17,17 +17,14 @@
         class="button"
         v-if="showCopyBtn"
       >
-        <PButton
+        <OnmsIconButton
           text
+          class="edit-icon"
           aria-label="Copy to clipboard"
           v-tooltip="'Copy to clipboard'"
+          :icon="ContentCopy"
           @click="copyURLToClipboard"
-        >
-          <OnmsIcon
-            :icon="ContentCopy"
-            class="edit-icon"
-          ></OnmsIcon>
-        </PButton>
+        />
       </div>
     </div>
   </div>
@@ -39,13 +36,10 @@
 >
 import { computed, reactive, ref } from 'vue'
 
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
-
-const PButton = Button
 
 /**
  * Props

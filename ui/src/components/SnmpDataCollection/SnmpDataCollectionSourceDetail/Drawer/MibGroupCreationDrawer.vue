@@ -94,22 +94,20 @@
             <Column header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
+                  <OnmsIconButton
                     text
                     title="Edit MIB Object"
                     data-test="edit-mib-object-button"
+                    :icon="Edit"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
-                  >
-                    <OnmsIcon :icon="Edit" />
-                  </Button>
-                  <Button
+                  />
+                  <OnmsIconButton
                     text
                     title="Delete MIB Object"
                     data-test="delete-mib-object-button"
+                    :icon="Delete"
                     @click="deleteMibObject(mibObjects.indexOf(data))"
-                  >
-                    <OnmsIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
             </Column>
@@ -241,11 +239,11 @@ import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionSer
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

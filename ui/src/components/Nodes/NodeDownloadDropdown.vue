@@ -1,5 +1,5 @@
 <template>
-  <Button
+  <OnmsIconButton
     text
     title="Download"
     aria-label="Download"
@@ -7,14 +7,9 @@
     aria-controls="node-download-menu"
     class="node-download-dropdown"
     data-test="download-button"
+    :icon="downloadIcon"
     @click="toggle"
-  >
-    <OnmsIcon
-      :icon="downloadIcon"
-      class="download-actions-icon"
-      title="Download"
-    />
-  </Button>
+  />
   <Menu
     id="node-download-menu"
     ref="menu"
@@ -24,11 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { markRaw, ref, PropType } from 'vue'
 
 const props = defineProps({
@@ -56,9 +50,3 @@ const toggle = (event: Event) => {
 
 defineExpose({ items })
 </script>
-
-<style lang="scss" scoped>
-.download-actions-icon {
-  font-size: 1.1rem;
-}
-</style>

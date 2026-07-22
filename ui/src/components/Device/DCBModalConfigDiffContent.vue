@@ -1,37 +1,34 @@
 <template>
-  <PButton
+  <OnmsIconButton
     text
     class="compare-btn"
     aria-label="Compare configs"
     v-tooltip="'Compare configs'"
-    @click="onCompare"
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
-  >
-    <OnmsIcon :icon="Compare" />
-  </PButton>
+    :icon="Compare"
+    @click="onCompare"
+  />
 
-  <PButton
+  <OnmsIconButton
     text
     class="return-btn"
     aria-label="Return"
     v-tooltip="'Return'"
-    @click="onReturn"
     v-if="isCompareView"
-  >
-    <OnmsIcon :icon="Restore" />
-  </PButton>
+    :icon="Restore"
+    @click="onReturn"
+  />
 
-  <PButton
+  <OnmsIconButton
     text
     class="dwnld-btn"
     aria-label="Download configs"
     v-tooltip="'Download configs'"
-    @click="onDownload"
     v-if="isCompareView"
-  >
-    <OnmsIcon :icon="Download" />
-  </PButton>
+    :icon="Download"
+    @click="onDownload"
+  />
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
   <p
@@ -88,10 +85,9 @@ import { computed, onMounted, ref } from 'vue'
 
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
-import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Chip from 'primevue/chip'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Restore from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
@@ -99,7 +95,6 @@ import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 
-const PButton = Button
 const PCheckbox = Checkbox
 const PChip = Chip
 

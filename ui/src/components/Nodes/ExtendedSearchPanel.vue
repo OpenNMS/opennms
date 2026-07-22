@@ -50,13 +50,13 @@
       </PColumn>
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
-          <Button
+          <OnmsIconButton
             text
+            :icon="DeleteIcon"
+            title="Remove search term"
             data-test="delete-search-term-button"
             @click="removeGridItem(data.key)"
-          >
-            <OnmsIcon :icon="DeleteIcon" />
-          </Button>
+          />
         </template>
       </PColumn>
     </PDataTable>
@@ -71,6 +71,7 @@ import ColumnComponent from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'

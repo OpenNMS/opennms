@@ -116,22 +116,20 @@
             <Column header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
+                  <OnmsIconButton
                     text
                     title="Edit Storage Strategy Parameter"
                     data-test="edit-storage-strategy-button"
+                    :icon="Edit"
                     @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
-                  >
-                    <OnmsIcon :icon="Edit" />
-                  </Button>
-                  <Button
+                  />
+                  <OnmsIconButton
                     text
                     title="Delete Storage Strategy Parameter"
                     data-test="delete-storage-strategy-button"
+                    :icon="Delete"
                     @click="deleteStorageStrategy(storageStrategyParams.indexOf(data))"
-                  >
-                    <OnmsIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
             </Column>
@@ -193,22 +191,20 @@
             <Column header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
+                  <OnmsIconButton
                     text
                     title="Edit Persistence Selector Strategy Parameter"
                     data-test="edit-persistence-selector-strategy-button"
+                    :icon="Edit"
                     @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
-                  >
-                    <OnmsIcon :icon="Edit" />
-                  </Button>
-                  <Button
+                  />
+                  <OnmsIconButton
                     text
                     title="Delete Persistence Selector Strategy Parameter"
                     data-test="delete-persistence-selector-strategy-button"
+                    :icon="Delete"
                     @click="deletePersistenceSelectorStrategy(persistenceSelectorStrategyParams.indexOf(data))"
-                  >
-                    <OnmsIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
             </Column>
@@ -306,9 +302,9 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Column from 'primevue/column'

@@ -7,14 +7,13 @@
     <div class="header">
       <div class="section-left">
         <div class="title">
-          <PButton
+          <OnmsIconButton
             text
             aria-label="Back"
             data-test="text-button"
+            :icon="ChevronLeft"
             @click="store.closeCreateUserDrawer"
-          >
-            <OnmsIcon :icon="ChevronLeft" />
-          </PButton>
+          />
           <h3 v-if="store.createUserDrawerState.mode === CreateEditMode.Create">New SNMPv3 User</h3>
           <h3 v-else-if="store.createUserDrawerState.mode === CreateEditMode.Edit">Edit SNMPv3 User {{ securityName }}</h3>
         </div>
@@ -208,7 +207,7 @@ import FormField from '../Common/FormField.vue'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@/types'
 import TableCard from '../Common/TableCard.vue'
@@ -424,11 +423,6 @@ onMounted(() => {
         display: flex;
         align-items: center;
         gap: 10px;
-
-        // enlarge the back-button icon (OnmsIcon scales with font-size)
-        :deep(.p-button) {
-          font-size: 1.3rem;
-        }
 
         h3 {
           @include onms-headline3;

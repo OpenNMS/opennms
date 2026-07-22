@@ -23,14 +23,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <Button
+          <OnmsIconButton
             text
             title="Refresh"
             data-test="refresh-button"
+            :icon="Refresh"
             @click="store.refreshEventConfigEvents()"
-          >
-            <OnmsIcon :icon="Refresh" />
-          </Button>
+          />
         </div>
       </div>
     </div>
@@ -95,24 +94,22 @@
       <Column header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
+            <OnmsIconButton
               text
               :title="`Edit ${data.eventLabel}`"
               data-test="edit-button"
+              :icon="Edit"
               @click="onEditEvent(data)"
-            >
-              <OnmsIcon :icon="Edit" />
-            </Button>
-            <Button
+            />
+            <OnmsIconButton
               text
               aria-haspopup="true"
               aria-controls="event-row-menu"
               title="More Options"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <OnmsIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
       </Column>
@@ -159,7 +156,6 @@ import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
@@ -172,6 +168,7 @@ import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
