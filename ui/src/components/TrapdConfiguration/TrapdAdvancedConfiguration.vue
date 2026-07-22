@@ -8,6 +8,11 @@
               <strong>Use caution</strong> when uploading Trap configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
+        <div class="onms-row" v-if="!adminRole">
+          <div class="onms-col-12">
+            <span class="label">You need Admin access to upload/download Trap configuration files.</span>
+          </div>
+        </div>
         <div class="onms-row">
           <div class="onms-col-6">
             <label class="label">Download file in XML format:</label>
@@ -16,6 +21,7 @@
             <PButton
               data-test="download-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(true)"
             >
               <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
@@ -31,6 +37,7 @@
             <PButton
               data-test="download-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(false)"
             >
               <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
@@ -46,6 +53,7 @@
             <PButton
               data-test="upload-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(true)"
             >
               <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
@@ -61,6 +69,7 @@
             <PButton
               data-test="upload-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(false)"
             >
               <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
@@ -93,6 +102,7 @@ import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
+import useRole from '@/composables/useRole'
 import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
@@ -101,6 +111,7 @@ import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 const PButton = Button
 
 const { downloadFile } = useDownload()
+const { adminRole } = useRole()
 const snackbar = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const trapdConfigStore = useTrapdConfigStore()
@@ -109,6 +120,10 @@ const uploadType = ref<'xml' | 'json' | null>(null)
 const uploadFile = ref<File | null>(null)
 
 const onDownload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   try {
     startSpinner()
     const response = await downloadTrapdConfig(isXml)
@@ -127,9 +142,14 @@ const onDownload = async (isXml: boolean) => {
 }
 
 const initiateUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   uploadType.value = isXml ? 'xml' : 'json'
 
   const file = await new Promise<File | null>((resolve) => {
+
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = isXml ? '.xml' : '.json'
@@ -179,6 +199,10 @@ const onUploadConfirm = async () => {
 }
 
 const performUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   if (!uploadFile.value) {
     return
   }

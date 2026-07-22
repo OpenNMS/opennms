@@ -37,82 +37,88 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Snmpv3User implements java.io.Serializable {
 	private static final long serialVersionUID = 61220221955256341L;
 
-      //--------------------------/
-     //- Class/Member Variables -/
     //--------------------------/
-	
+    //- Class/Member Variables -/
+    //--------------------------/
+
+	/**
+     * Server-assigned, stable, opaque identifier for this SNMPv3 user. Used to
+     * correlate a user across config read/write cycles (e.g. when resolving masked
+     * credentials), since securityName is not guaranteed to be unique.
+     */
+	@XmlAttribute(name="id", required=false)
+    private String id;
 
 	/**
      * SNMPv3 Application Engine ID
      */
-	@XmlAttribute(name="engine-id",required=false)
-    private java.lang.String engineId;
+	@XmlAttribute(name="engine-id", required=false)
+    private String engineId;
 
     /**
      * SNMPv3 Security Name (User Name)
      */
-	@XmlAttribute(name="security-name",required=false)
-    private java.lang.String securityName;
+	@XmlAttribute(name="security-name", required=false)
+    private String securityName;
 
     /**
      * SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)
      */
-	@XmlAttribute(name="security-level",required=false)
+	@XmlAttribute(name="security-level", required=false)
     private Integer securityLevel;
 
     /**
      * SNMPv3 Authentication Protocol
      */
-	@XmlAttribute(name="auth-protocol",required=false)
-    private java.lang.String authProtocol;
+	@XmlAttribute(name="auth-protocol", required=false)
+    private String authProtocol;
 
     /**
      * SNMPv3 Authentication Password Phrase
      */
-	@XmlAttribute(name="auth-passphrase",required=false)
-    private java.lang.String authPassphrase;
+	@XmlAttribute(name="auth-passphrase", required=false)
+    private String authPassphrase;
 
     /**
      * SNMPv3 Privacy Protocol
      */
-	@XmlAttribute(name="privacy-protocol",required=false)
-    private java.lang.String privacyProtocol;
+	@XmlAttribute(name="privacy-protocol", required=false)
+    private String privacyProtocol;
 
     /**
      * SNMPv3 Privacy Password Phrase
      */
-	@XmlAttribute(name="privacy-passphrase",required=false)
-    private java.lang.String privacyPassphrase;
+	@XmlAttribute(name="privacy-passphrase", required=false)
+    private String privacyPassphrase;
 
 
-      //----------------/
-     //- Constructors -/
+    //----------------/
+    //- Constructors -/
     //----------------/
 
     public Snmpv3User() {
         super();
     }
 
-
-      //-----------/
-     //- Methods -/
+    //-----------/
+    //- Methods -/
     //-----------/
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
+        }
         
         if (obj instanceof Snmpv3User) {
-        
-            Snmpv3User temp = (Snmpv3User)obj;
+            Snmpv3User temp = (Snmpv3User) obj;
+
             if (this.engineId != null) {
                 if (temp.engineId == null) return false;
                 else if (!(this.engineId.equals(temp.engineId)))
@@ -120,6 +126,7 @@ public class Snmpv3User implements java.io.Serializable {
             }
             else if (temp.engineId != null)
                 return false;
+
             if (this.securityName != null) {
                 if (temp.securityName == null) return false;
                 else if (!(this.securityName.equals(temp.securityName)))
@@ -127,8 +134,10 @@ public class Snmpv3User implements java.io.Serializable {
             }
             else if (temp.securityName != null)
                 return false;
+
             if (this.securityLevel != temp.securityLevel)
                 return false;
+
             if (this.authProtocol != null) {
                 if (temp.authProtocol == null) return false;
                 else if (!(this.authProtocol.equals(temp.authProtocol)))
@@ -169,8 +178,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'AuthPassphrase'.
      */
-    public java.lang.String getAuthPassphrase(
-    ) {
+    public String getAuthPassphrase() {
         return this.authPassphrase;
     }
 
@@ -181,19 +189,27 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'AuthProtocol'.
      */
-    public java.lang.String getAuthProtocol(
-    ) {
+    public String getAuthProtocol() {
         return this.authProtocol;
+    }
+
+    /**
+     * Returns the value of field 'id'. The field 'id' is a
+     * server-assigned, stable, opaque identifier for this SNMPv3 user.
+     *
+     * @return the value of field 'Id'.
+     */
+    public String getId() {
+        return this.id;
     }
 
     /**
      * Returns the value of field 'engineId'. The field 'engineId'
      * has the following description: SNMPv3 Application Engine ID
-     * 
+     *
      * @return the value of field 'EngineId'.
      */
-    public java.lang.String getEngineId(
-    ) {
+    public String getEngineId() {
         return this.engineId;
     }
 
@@ -204,8 +220,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'PrivacyPassphrase'.
      */
-    public java.lang.String getPrivacyPassphrase(
-    ) {
+    public String getPrivacyPassphrase() {
         return this.privacyPassphrase;
     }
 
@@ -216,8 +231,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'PrivacyProtocol'.
      */
-    public java.lang.String getPrivacyProtocol(
-    ) {
+    public String getPrivacyProtocol() {
         return this.privacyProtocol;
     }
 
@@ -228,8 +242,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'SecurityLevel'.
      */
-    public Integer getSecurityLevel(
-    ) {
+    public Integer getSecurityLevel() {
         return this.securityLevel;
 
         //return this._securityLevel == null ? 0 : this._securityLevel;
@@ -242,24 +255,22 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'SecurityName'.
      */
-    public java.lang.String getSecurityName(
-    ) {
+    public String getSecurityName() {
         return this.securityName;
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
+    public int hashCode() {
         int result = 17;
-        
         long tmp;
+
         if (engineId != null) {
            result = 37 * result + engineId.hashCode();
         }
@@ -290,8 +301,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @param authPassphrase the value of field 'authPassphrase'.
      */
-    public void setAuthPassphrase(
-            final java.lang.String authPassphrase) {
+    public void setAuthPassphrase(final String authPassphrase) {
         this.authPassphrase = authPassphrase;
     }
 
@@ -302,19 +312,27 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @param authProtocol the value of field 'authProtocol'.
      */
-    public void setAuthProtocol(
-            final java.lang.String authProtocol) {
+    public void setAuthProtocol(final String authProtocol) {
         this.authProtocol = authProtocol;
+    }
+
+    /**
+     * Sets the value of field 'id'. The field 'id' is a server-assigned,
+     * stable, opaque identifier for this SNMPv3 user.
+     *
+     * @param id the value of field 'id'.
+     */
+    public void setId(final String id) {
+        this.id = id;
     }
 
     /**
      * Sets the value of field 'engineId'. The field 'engineId' has
      * the following description: SNMPv3 Application Engine ID
-     * 
+     *
      * @param engineId the value of field 'engineId'.
      */
-    public void setEngineId(
-            final java.lang.String engineId) {
+    public void setEngineId(final String engineId) {
         this.engineId = engineId;
     }
 
@@ -326,8 +344,7 @@ public class Snmpv3User implements java.io.Serializable {
      * @param privacyPassphrase the value of field
      * 'privacyPassphrase'.
      */
-    public void setPrivacyPassphrase(
-            final java.lang.String privacyPassphrase) {
+    public void setPrivacyPassphrase(final String privacyPassphrase) {
         this.privacyPassphrase = privacyPassphrase;
     }
 
@@ -338,8 +355,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @param privacyProtocol the value of field 'privacyProtocol'.
      */
-    public void setPrivacyProtocol(
-            final java.lang.String privacyProtocol) {
+    public void setPrivacyProtocol(final String privacyProtocol) {
         this.privacyProtocol = privacyProtocol;
     }
 
@@ -361,9 +377,7 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @param securityName the value of field 'securityName'.
      */
-    public void setSecurityName(
-            final java.lang.String securityName) {
+    public void setSecurityName(final String securityName) {
         this.securityName = securityName;
     }
-
 }
