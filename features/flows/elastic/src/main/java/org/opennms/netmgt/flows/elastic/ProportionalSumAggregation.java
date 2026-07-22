@@ -67,8 +67,15 @@ public class ProportionalSumAggregation extends Aggregation {
                 continue; // Skip entries without a parseable bucket key
             }
             final double value = entry.getValue().getAsDouble();
-            // Per-bucket document counts are not tracked by the scripted variant
-            dateHistograms.add(new DateHistogram(valueMap, time, entry.getKey(), value, 0L));
+            // Per-bucket document counts are not tracked by the scripted variant.
+            // Build a per-bucket JsonObject mirroring the drift plugin's bucket shape so each
+            // DateHistogram carries its own backing JSON rather than the whole value map.
+            final JsonObject bucketObj = new JsonObject();
+            bucketObj.addProperty(String.valueOf(KEY), time);
+            bucketObj.addProperty(String.valueOf(KEY_AS_STRING), entry.getKey());
+            bucketObj.addProperty(String.valueOf(DOC_COUNT), 0L);
+            bucketObj.addProperty(String.valueOf(AggregationField.VALUE), value);
+            dateHistograms.add(new DateHistogram(bucketObj, time, entry.getKey(), value, 0L));
         }
         dateHistograms.sort(Comparator.comparing(DateHistogram::getTime));
     }

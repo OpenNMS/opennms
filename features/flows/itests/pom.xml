@@ -354,4 +354,66 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <!--
+            Opt-in profile for ProportionalSumStrategyComparisonIT, which compares the drift plugin's
+            proportional_sum aggregation against the Painless scripted_metric replacement. It is not
+            part of the default build because it re-introduces the drift plugin build dependency that
+            NMS-20027 removed. Activate with -Pflow-drift-comparison to download the plugin and enable
+            the test.
+        -->
+        <profile>
+            <id>flow-drift-comparison</id>
+            <properties>
+                <elasticsearchDriftPluginVersion>2.0.7</elasticsearchDriftPluginVersion>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <org.opennms.flows.drift.comparison>true</org.opennms.flows.drift.comparison>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                    <!-- Download the drift plugin so ElasticTestContainerWithPlugins can install it -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-elasticsearch-plugins</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.opennms.elasticsearch</groupId>
+                                            <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+                                            <version>${elasticsearchDriftPluginVersion}</version>
+                                            <type>zip</type>
+                                            <outputDirectory>${project.build.directory}/elasticsearch-plugins</outputDirectory>
+                                            <destFileName>drift-plugin.zip</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.opennms.elasticsearch</groupId>
+                    <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+                    <version>${elasticsearchDriftPluginVersion}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
