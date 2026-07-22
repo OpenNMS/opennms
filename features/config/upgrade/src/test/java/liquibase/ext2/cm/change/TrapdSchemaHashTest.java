@@ -38,7 +38,7 @@ public class TrapdSchemaHashTest {
     private static final String TRAPD_V1_0_HASH =
             "ad97a001cd7ebb8a8b1a45574ba4e681e204ecf8592bf264764d4d7f52efc7a1";
     private static final String TRAPD_V1_1_HASH =
-            "ac286bc4218126caec9417a20fb71bf957ce78810379a4fe29654dc31a68807f";
+            "d5fdc5b97d8ae35c9ff47f54f4975d3d6ae0e455a8da1ff0e7436bf699dae232";
 
     @Test
     public void trapdV10SchemaHashMatchesChangelog() throws IOException {

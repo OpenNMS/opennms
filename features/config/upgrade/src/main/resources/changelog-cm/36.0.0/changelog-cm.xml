@@ -24,7 +24,7 @@
              shipped; this new changeSet is the only place the id-bearing schema is introduced.
              Fresh installs run register (v1.0) then this upgrade (v1.1); existing 36.0.x installs
              run only this changeSet. -->
-        <cm:importSchemaFromXsd id="trapd-config" xsdFileName="trapd-configuration-1.1.xsd" xsdFileHash="ac286bc4218126caec9417a20fb71bf957ce78810379a4fe29654dc31a68807f" rootElement="trapd-configuration"/>
+        <cm:importSchemaFromXsd id="trapd-config" xsdFileName="trapd-configuration-1.1.xsd" xsdFileHash="d5fdc5b97d8ae35c9ff47f54f4975d3d6ae0e455a8da1ff0e7436bf699dae232" rootElement="trapd-configuration"/>
     </changeSet>
 
 </databaseChangeLog>
