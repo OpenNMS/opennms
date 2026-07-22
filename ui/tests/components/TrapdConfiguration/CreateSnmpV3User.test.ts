@@ -18,7 +18,7 @@ import type { SnmpV3User } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
@@ -86,7 +86,7 @@ describe('CreateSnmpV3User.vue', () => {
           TableCard: {
             template: '<div><slot /></div>'
           },
-          FeatherIcon: true,
+          OnmsIcon: true,
           ScvInputIcon: {
             emits: ['click'],
             template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'

@@ -26,10 +26,10 @@
           v-tooltip="'Help'"
           @click="() => props.toggleHelp()"
         >
-          <FeatherIcon
+          <OnmsIcon
             class="help-icon"
             :icon="Help"
-          ></FeatherIcon>
+          ></OnmsIcon>
         </PButton>
       </div>
     </div>
@@ -143,9 +143,9 @@ import RadioButton from 'primevue/radiobutton'
 import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import { PropType, computed, ref, watch } from 'vue'
-import Help from '@featherds/icon/action/Help'
+import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'

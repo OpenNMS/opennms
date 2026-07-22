@@ -8,7 +8,7 @@
     data-test="node-actions-button"
     @click="toggle"
   >
-    <FeatherIcon
+    <OnmsIcon
       :icon="menuIcon"
       class="node-actions-icon"
     />
@@ -25,8 +25,8 @@
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import { FeatherIcon } from '@featherds/icon'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import MoreVert from '@/components/icons/navigation/MoreVert.vue'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 

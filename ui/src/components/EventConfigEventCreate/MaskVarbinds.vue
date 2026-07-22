@@ -9,7 +9,7 @@
           data-test="add-varbind-row-button"
           :disabled="!hasMaskElements"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
         </Button>
       </div>
@@ -105,7 +105,7 @@
             data-test="remove-varbind-row-button"
             @click="$emit('setVarbinds', 'removeVarbindRow', null, index)"
           >
-            <FeatherIcon :icon="Delete" />
+            <OnmsIcon :icon="Delete" />
           </Button>
         </div>
       </div>
@@ -117,10 +117,10 @@
 import { computed, ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
-import { ISelectItemType } from '@featherds/select'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import { ISelectItemType } from '@/types'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'

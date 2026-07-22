@@ -127,15 +127,15 @@ const highlightTableText = () => {
   scoped
   lang="scss"
 >
-@import "@featherds/table/scss/table";
+@import "@/styles/onms-table";
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
 
   table {
-    @include table();
+    @include onms-table();
     &.condensed {
-      @include table-condensed();
+      @include onms-table-condensed();
     }
     margin-top: 0px;
 

@@ -100,7 +100,7 @@
                     data-test="edit-mib-object-button"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
                   >
-                    <FeatherIcon :icon="Edit" />
+                    <OnmsIcon :icon="Edit" />
                   </Button>
                   <Button
                     text
@@ -108,7 +108,7 @@
                     data-test="delete-mib-object-button"
                     @click="deleteMibObject(mibObjects.indexOf(data))"
                   >
-                    <FeatherIcon :icon="Delete" />
+                    <OnmsIcon :icon="Delete" />
                   </Button>
                 </div>
               </template>
@@ -241,10 +241,10 @@ import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionSer
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import { ISelectItemType } from '@featherds/select'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -531,7 +531,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
@@ -553,7 +553,7 @@ watch(
     }
 
     .label {
-      @include headline4;
+      @include onms-headline4;
       margin-bottom: 0.5em;
     }
 
@@ -566,7 +566,7 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
+            @include onms-headline3;
           }
         }
       }
@@ -589,7 +589,7 @@ watch(
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 

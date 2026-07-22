@@ -8,7 +8,7 @@
             data-test="back-button"
             @click="handleCancel(store.selectedSource?.id)"
           >
-            <FeatherIcon :icon="ArrowBack" />
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
           </Button>
         </div>
@@ -306,10 +306,10 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
-import { ISelectItemType } from '@featherds/select'
+import { IAutocompleteItemType } from '@/types'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
+import { ISelectItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'

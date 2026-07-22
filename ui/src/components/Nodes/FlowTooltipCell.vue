@@ -4,16 +4,16 @@
     v-tooltip.top="flowTooltipTitle(node)"
     class="pointer"
   >
-    <FeatherIcon v-if="hasIngressFlow(node)" :icon="ArrowBack" class="flow-icon" />
+    <OnmsIcon v-if="hasIngressFlow(node)" :icon="ArrowBack" class="flow-icon" />
     <br v-if="hasIngressFlow(node) && hasEgressFlow(node)" style="height: 40px" />
-    <FeatherIcon v-if="hasEgressFlow(node)" :icon="ArrowBack" class="flow-icon egress" />
+    <OnmsIcon v-if="hasEgressFlow(node)" :icon="ArrowBack" class="flow-icon egress" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { hasIngressFlow, hasEgressFlow } from './utils'
 import { Node } from '@/types'
 

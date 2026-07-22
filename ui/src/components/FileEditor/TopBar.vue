@@ -1,7 +1,7 @@
 <template>
   <div class="top-bar">
     <div class="icon subtitle2 pointer" @click="triggerHelp">
-      Files<FeatherIcon :icon="ChevronRight" />
+      Files<OnmsIcon :icon="ChevronRight" />
     </div>
     <div class="save">
       <PButton :disabled="disableBtn" @click="save">Save</PButton>
@@ -18,8 +18,8 @@
 import { computed } from 'vue'
 
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 
 const PButton = Button

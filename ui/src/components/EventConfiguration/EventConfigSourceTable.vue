@@ -17,7 +17,7 @@
                 :aria-label="'Search by Source, Vendor, UEI or Label'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -29,7 +29,7 @@
             data-test="refresh-button"
             @click="store.refreshSourcesFilters()"
           >
-            <FeatherIcon :icon="Refresh" />
+            <OnmsIcon :icon="Refresh" />
           </Button>
         </div>
       </div>
@@ -85,7 +85,7 @@
               data-test="view-button"
               @click="onEventClick(data)"
             >
-              <FeatherIcon :icon="ViewDetails" />
+              <OnmsIcon :icon="ViewDetails" />
             </Button>
             <Button
               text
@@ -93,7 +93,7 @@
               data-test="download-button"
               @click="downloadEventConfXmlBySourceId(data.id)"
             >
-              <FeatherIcon :icon="Download" />
+              <OnmsIcon :icon="Download" />
             </Button>
             <Button
               text
@@ -103,7 +103,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -136,12 +136,12 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
+import Search from '@/components/icons/action/Search.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -274,7 +274,7 @@ onMounted(async () => {
             padding-right: 2.75rem;
           }
 
-          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // enlarge the search glyph (OnmsIcon scales with font-size) and
           // keep it near the right edge, vertically centered
           :deep(.p-inputicon) {
             font-size: 1.75rem;

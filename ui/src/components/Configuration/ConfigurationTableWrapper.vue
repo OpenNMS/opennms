@@ -301,11 +301,11 @@ const advanceActiveUpdate = (newVal: boolean) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 .title {
-  @include headline3();
+  @include onms-headline3();
 }
 .title-padding {
   margin: 20px;
@@ -318,7 +318,7 @@ const advanceActiveUpdate = (newVal: boolean) => {
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;
-  @include elevation(2);
+  @include onms-elevation(2);
 }
 .flex {
   display: flex;

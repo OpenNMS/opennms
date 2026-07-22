@@ -58,7 +58,7 @@
                     aria-label="Copy Access Token"
                     @click.prevent="() => onCopyToken(data.accessToken ?? '')"
                   >
-                    <FeatherIcon :icon="icons.ContentCopy" />
+                    <OnmsIcon :icon="icons.ContentCopy" />
                   </PButton>
                 </template>
               </PColumn>
@@ -69,7 +69,7 @@
                     aria-label="Copy Refresh Token"
                     @click.prevent="() => onCopyToken(data.refreshToken ?? '')"
                   >
-                    <FeatherIcon :icon="icons.ContentCopy" />
+                    <OnmsIcon :icon="icons.ContentCopy" />
                   </PButton>
                 </template>
               </PColumn>
@@ -108,7 +108,7 @@ import { format as fnsFormat } from 'date-fns'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import { FeatherIcon } from '@featherds/icon'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
@@ -116,7 +116,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration } from '@/types/zenithConnect'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 
 const PButton = Button
 const PDataTable = DataTable
@@ -187,7 +187,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .zc-container {
   display: flex;
@@ -201,7 +201,7 @@ onMounted(async () => {
       justify-content: space-between;
 
       .title {
-        @include headline1;
+        @include onms-headline1;
         margin: 16px 0px 16px 19px;
         display: block;
       }

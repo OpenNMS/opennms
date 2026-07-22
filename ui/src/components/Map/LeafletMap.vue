@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang ="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import 'leaflet/dist/leaflet.css'
@@ -99,7 +99,7 @@ import MapSearch from './MapSearch.vue'
 import MarkerPopup from './MarkerPopup.vue'
 import MarkerClusterPopupContents from './MarkerClusterPopupContent.vue'
 import SeverityFilter from './SeverityFilter.vue'
-import { numericSeverityLevel } from './utils'
+import { mapPopupOptions, numericSeverityLevel } from './utils'
 
 import { isNumber } from '@/lib/utils'
 import { useGeolocationStore } from '@/stores/geolocationStore'
@@ -235,7 +235,7 @@ const initializeClusterPopup = async (cluster: Cluster) => {
 // to inject into the Leaflet popup component and launch the popup
 const launchClusterPopup = (cluster: Cluster) => {
   const content = clusterPopupContent.value.$refs.clusterPopupContent.innerHTML
-  const options: PopupOptions = {}
+  const options: PopupOptions = { ...mapPopupOptions }
 
   const leafletObject = window['L']
 
@@ -291,6 +291,23 @@ const getNodeCoordinateMap = computed(() => {
   return map
 })
 
+// Close the open map popup on Esc. Leaflet's own Esc-to-close only fires while
+// the map *container* is focused (its Keyboard handler binds/unbinds the Esc
+// listener on the container's focus/blur), so tabbing into the popup's links
+// blurs the container and Esc stops working. This document listener is attached
+// only while a popup is open (see popupopen/popupclose below) and runs in the
+// bubble phase, so the menu search's Esc handler — which stopImmediatePropagation()s
+// before the event reaches document — always takes precedence and is unaffected.
+const onPopupEscapeKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    leafletObject.value.closePopup()
+  }
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onPopupEscapeKeydown)
+})
+
 const onLeafletReady = async () => {
   await nextTick()
 
@@ -299,6 +316,44 @@ const onLeafletReady = async () => {
   if (leafletObject.value !== undefined && leafletObject.value !== null) {
     // set default map view port
     leafletObject.value.zoomControl.setPosition('topright')
+
+    // Keyboard is left enabled (Leaflet keeps the container focusable via a
+    // tabindex) so keyboard-only users retain arrow-key pan / +- zoom — removing
+    // it fails WCAG 2.1.1. Leaflet focuses the container on click and the browser
+    // scrolls it into view; because the map sits under the fixed top menu bar
+    // that could shift it upward. `scroll-margin-top` on the container (see the
+    // style block below) keeps that scroll clear of the menu bar instead.
+
+    // Open popups below the marker. Leaflet has no popup "direction", so once a
+    // popup is in the DOM (popupopen fires synchronously, before paint) push it
+    // down by its own height plus 40px — the popup anchors at the marker's
+    // vertical centre, so the extra clears the marker icon's lower half and
+    // leaves a small gap below it. See mapPopupOptions (autoPan off,
+    // .onms-popup-below hides the tip).
+    leafletObject.value.on('popupopen', (e) => {
+      const el = e.popup.getElement()
+      if (!el) {
+        return
+      }
+      e.popup.options.offset = [0, el.offsetHeight + 40]
+      e.popup.update()
+
+      // autoPan is off (a popup opening below never needs the map shifted for
+      // top markers), but a below-popup on a bottom-edge marker can run past
+      // the map's lower edge. In that one case, pan up just enough to reveal it.
+      const overflowBottom = el.getBoundingClientRect().bottom -
+        leafletObject.value.getContainer().getBoundingClientRect().bottom
+      if (overflowBottom > 0) {
+        leafletObject.value.panBy([0, overflowBottom + 16], { animate: true })
+      }
+
+      document.addEventListener('keydown', onPopupEscapeKeydown)
+    })
+
+    leafletObject.value.on('popupclose', () => {
+      document.removeEventListener('keydown', onPopupEscapeKeydown)
+    })
+
     leafletReady.value = true
 
     await nextTick()
@@ -361,8 +416,11 @@ defineExpose({ invalidateSizeFn })
 <style lang="scss" scoped>
 .search-bar {
   position: absolute;
-  margin-left: 10px;
-  margin-top: 10px;
+  // Top-left overlay, clearing the fixed top menu bar; mirrors the
+  // Show Severity control on the right (right: 80px; top: 80px).
+  top: 80px;
+  left: 80px;
+  z-index: 1020;
 }
 .geo-map {
   height: 100%;
@@ -373,7 +431,56 @@ defineExpose({ invalidateSizeFn })
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
+
+// The map is full-bleed under the fixed top menu bar, so push Leaflet's top
+// controls (zoom + layers, both top-right) down to clear it. A stable CSS
+// offset also survives Leaflet's invalidateSize() re-layout on interaction
+// (which otherwise lets the controls settle back under the menu bar).
+.geo-map .leaflet-top {
+  top: 70px;
+}
+
+// Leaflet focuses the container on click; the browser then scrolls it into
+// view. Since the map sits under the fixed top menu bar, reserve the menu-bar
+// height so that scroll stops below the bar instead of sliding the map (and its
+// controls) under it. Keeps keyboard nav enabled without the focus-scroll jump.
+.geo-map .leaflet-container {
+  scroll-margin-top: var(--onms-header-height, 3.75rem);
+}
+
+// Popups open below the marker (offset applied in the popupopen handler), so
+// hide Leaflet's tip — it points down from the popup's top edge, away from the
+// marker below it, once the popup is flipped underneath.
+.geo-map .leaflet-popup.onms-popup-below .leaflet-popup-tip-container {
+  display: none;
+}
+
+// Leaflet expands the layers control's list *in place* — the list's top sits at
+// the toggle icon's top and it grows leftward, sliding over the Show Severity
+// control. Keep the toggle icon and drop the expanded list below it instead, so
+// its top aligns with the bottom of the icon.
+.geo-map .leaflet-control-layers {
+  position: relative;
+}
+.geo-map .leaflet-control-layers-expanded {
+  padding: 0;
+}
+.geo-map .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+  display: block;
+}
+.geo-map .leaflet-control-layers-expanded .leaflet-control-layers-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  min-width: 20em;
+  padding: 6px 10px;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
 .leaflet-marker-pane {
   div {
     width: 30px !important;
@@ -435,7 +542,7 @@ defineExpose({ invalidateSizeFn })
 
       &.NORMAL {
         background: var($success);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
       &.WARNING,
       &.MINOR,
@@ -444,7 +551,7 @@ defineExpose({ invalidateSizeFn })
       }
       &.CRITICAL {
         background: var($error);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
     }
   }

@@ -6,7 +6,7 @@
   </div>
   <div class="onms-row">
     <div class="onms-col-12">
-      <div class="wrapper feather-container center">
+      <div class="wrapper onms-container center">
         <Snackbar />
         <ConfigurationHeader
           title="Configuration"
@@ -53,8 +53,7 @@ configurationStore.getProvisionDService()
   lang="scss"
   scoped
 >
-@import '@featherds/styles/mixins/typography';
-@import '@featherds/styles/mixins/elevation';
+@import '@/styles/onms-typography';
 
 .wrapper {
   margin-top: 20px;

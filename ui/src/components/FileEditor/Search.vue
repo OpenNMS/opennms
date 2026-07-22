@@ -10,7 +10,7 @@
             @update:modelValue="(val) => search(val as string)"
           />
           <InputIcon>
-            <FeatherIcon :icon="IconSearch" />
+            <OnmsIcon :icon="IconSearch" />
           </InputIcon>
         </IconField>
       </FormField>
@@ -32,8 +32,8 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import { FeatherIcon } from '@featherds/icon'
-import IconSearch from '@featherds/icon/action/Search'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconSearch from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 

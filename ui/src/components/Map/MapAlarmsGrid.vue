@@ -91,12 +91,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
-import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
+import { Alarm, AlarmQueryParameters, ISortObject } from '@/types'
 import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SortableTh from './SortableTh.vue'
 import { useMapStore } from '@/stores/mapStore'
@@ -195,7 +195,7 @@ const sortStates: any = reactive({
   logMessage: SORT.NONE
 })
 
-const sortChanged = (sortObj: FeatherSortObject) => {
+const sortChanged = (sortObj: ISortObject) => {
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }
@@ -203,47 +203,60 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   sortStates[`${sortObj.property}`] = sortObj.value
   mapStore.setAlarmSortObject(sortObj)
 }
-
-onMounted(() => {
-  const wrap = document.getElementById('wrap')
-  const thead = document.querySelector('thead')
-
-  if (wrap && thead) {
-    wrap.addEventListener('scroll', function () {
-      let translate = 'translate(0,' + this.scrollTop + 'px)'
-      thead.style.transform = translate
-    })
-  }
-})
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-table";
+@import "@/styles/onms-tokens";
 #wrap {
-  height: calc(100% - 29px);
+  // Height accounts for the 15px top gap below so the pane keeps its footprint.
+  height: calc(100% - 44px);
   overflow: auto;
   background: var(--p-content-background);
-}
-table {
-  @include table;
-  @include table-condensed;
-  background: var(--p-content-background);
-  color: var(--p-text-color);
-  padding-top: 4px;
+  // Gap above the table lives on the scroll container (outside the scrolled
+  // content) so it doesn't make the sticky header travel before locking.
   margin-top: 15px;
 }
-thead {
+table {
+  @include onms-table;
+  @include onms-table-condensed;
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  // No top margin/padding: any space above thead inside the scroll container
+  // makes the sticky header travel that distance before it locks at top:0.
+}
+// CSS sticky header (replaces a JS scroll-transform hack that jittered and let
+// rows bleed above the header). Sticky lives on the cells (thead sticky has
+// spotty support) and needs an opaque background so body rows don't show through.
+thead th {
+  position: sticky;
+  top: 0;
   z-index: 2;
-  position: relative;
   background: var(--p-content-background);
 }
-.select-ack {
+// "Alarm Action" control: lay the label and dropdown out on a single line
+// (overriding FormField's default stacked `column`) so the label and select sit
+// inline with the tab headers, anchored right with room for both. Uses
+// `.select-ack.form-field` + :deep() to outrank FormField's own scoped rules.
+.select-ack.form-field {
   z-index: var($zindex-dropdown);
-  width: 300px;
   position: absolute;
   right: 30px;
   top: 7px;
+  width: 360px;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+
+  :deep(.form-field__label) {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  :deep(.p-select) {
+    flex: 1 1 auto;
+    width: auto;
+  }
 }
 .first-th {
   padding-left: 20px;

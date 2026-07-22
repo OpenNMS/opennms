@@ -119,7 +119,7 @@ const props = defineProps<{
   validationErrors: SnmpConfigFormErrors
 }>()
 
-// key: ISelectItemType for FeatherSelect component models
+// key: ISelectItemType for Select component models
 const selectModel = ref<Record<string, any>>({})
 
 const emit = defineEmits<{
@@ -163,7 +163,7 @@ const handleFormSelectUpdate = (key: string, val?: any, isNumeric?: boolean) => 
   const selectedOption = field?.selectOptions?.find(option => option._value === value)
 
   if (value?.length > 0) {
-    // update the FeatherSelect model value
+    // update the Select model value
     selectModel.value = {
       ...selectModel.value,
       [key]: selectedOption
@@ -189,7 +189,7 @@ const updateSelectValues = () => {
     // from the field's selectOptions, find the option that matches the current value
     const selectedOption = field.selectOptions?.find(option => option._value === value)
 
-    // update the model for the corresponding FeatherSelect
+    // update the model for the corresponding Select
     newModel = {
       ...newModel,
       [field.key]: {

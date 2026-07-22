@@ -137,8 +137,8 @@ watch(() => props.visible, async (visible) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .container {
   padding: 20px;
@@ -148,8 +148,8 @@ watch(() => props.visible, async (visible) => {
 }
 
 .section-label {
-  @include headline4;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-headline4;
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .chips-container {
@@ -160,8 +160,8 @@ watch(() => props.visible, async (visible) => {
 }
 
 .empty-text {
-  @include body-large;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-body-large;
+  color: var(--onms-secondary-text-on-surface);
   font-style: italic;
 }
 

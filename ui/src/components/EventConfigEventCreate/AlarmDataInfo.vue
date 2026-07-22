@@ -86,7 +86,7 @@
 import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'

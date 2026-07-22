@@ -383,7 +383,7 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const assetQuery = buildAssetQuery(filter.assetFilters)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
-  // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
+  // TODO: May need more search term sanitizing and/or restrict characters in the input control above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
   const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, withAssetsQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 

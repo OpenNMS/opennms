@@ -14,7 +14,7 @@
                 :aria-label="'Search by Profile Name'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -70,7 +70,7 @@
               data-test="view-button"
               @click="onProfileClick(data)"
             >
-              <FeatherIcon :icon="ViewDetails" />
+              <OnmsIcon :icon="ViewDetails" />
             </Button>
             <Button
               text
@@ -80,7 +80,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -117,10 +117,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Search from '@/components/icons/action/Search.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

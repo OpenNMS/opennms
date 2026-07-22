@@ -13,7 +13,7 @@
                 @update:modelValue="(val) => onSearchChange(val as string)"
               />
               <InputIcon>
-                <FeatherIcon :icon="IconSearch" />
+                <OnmsIcon :icon="IconSearch" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -23,7 +23,7 @@
             data-test="new-definition-button"
             @click="onCreateDefinition"
           >
-            <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
+            <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
             New Definition
           </PButton>
         </div>
@@ -72,7 +72,7 @@
                 data-test="edit-button"
                 @click="onDefinitionEdit(data.original)"
               >
-                <FeatherIcon :icon="IconEdit" />
+                <OnmsIcon :icon="IconEdit" />
               </PButton>
               <PButton
                 v-if="data.original.id !== 0"
@@ -81,7 +81,7 @@
                 data-test="delete-button"
                 @click="onDefinitionDelete(data.original)"
               >
-                <FeatherIcon :icon="IconDelete" />
+                <OnmsIcon :icon="IconDelete" />
               </PButton>
             </div>
           </template>
@@ -148,11 +148,11 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Tag from 'primevue/tag'
-import { FeatherIcon } from '@featherds/icon'
-import IconAdd from '@featherds/icon/action/Add'
-import IconDelete from '@featherds/icon/action/Delete'
-import IconEdit from '@featherds/icon/action/Edit'
-import IconSearch from '@featherds/icon/action/Search'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconAdd from '@/components/icons/action/Add.vue'
+import IconDelete from '@/components/icons/action/Delete.vue'
+import IconEdit from '@/components/icons/action/Edit.vue'
+import IconSearch from '@/components/icons/action/Search.vue'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
@@ -360,7 +360,7 @@ const onSearchChange = (value: string | number | undefined) => {
             padding-right: 2.75rem;
           }
 
-          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // enlarge the search glyph (OnmsIcon scales with font-size) and
           // keep it near the right edge, vertically centered
           :deep(.p-inputicon) {
             font-size: 1.75rem;
@@ -384,7 +384,7 @@ const onSearchChange = (value: string | number | undefined) => {
       align-items: center;
       gap: 5px;
 
-      // enlarge the edit/delete icons (FeatherIcon scales with font-size)
+      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
       :deep(.p-button) {
         font-size: 1.3rem;
       }

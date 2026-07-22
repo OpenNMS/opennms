@@ -5,7 +5,7 @@
     <div class="dropdown">
       <PButton text class="btn" menu-trigger @click="toggleMenu($event, vendorMenu)">
         Vendor
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </PButton>
       <PMenu ref="vendorMenu" :model="vendorItems" :popup="true" />
     </div>
@@ -13,7 +13,7 @@
     <div class="dropdown">
       <PButton text class="btn" menu-trigger @click="toggleMenu($event, statusMenu)">
         Backup Status
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </PButton>
       <PMenu ref="statusMenu" :model="statusItems" :popup="true">
         <template #item="{ item, props }">
@@ -27,7 +27,7 @@
     <div class="dropdown">
       <PButton text class="btn" menu-trigger @click="toggleMenu($event, osImageMenu)">
         OS Image
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </PButton>
       <PMenu ref="osImageMenu" :model="osImageItems" :popup="true" />
     </div>
@@ -39,8 +39,8 @@ import { computed, ref } from 'vue'
 
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
@@ -85,7 +85,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .group-filters-container {
   display: flex;
@@ -97,7 +97,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
   padding: 15px;
 
   .title {
-    @include headline4;
+    @include onms-headline4;
     margin-top: 0px;
   }
 

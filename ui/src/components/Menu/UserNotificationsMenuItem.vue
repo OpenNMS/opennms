@@ -16,12 +16,12 @@
       aria-label="User notifications menu"
       @click="onTriggerClick"
     >
-      <FeatherIcon
+      <OnmsIcon
         :icon="noticeStatusDisplay?.iconComponent"
         :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
       />
 
-      <FeatherIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
+      <OnmsIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
     </Button>
 
     <Popover
@@ -32,7 +32,7 @@
     >
       <div class="menubar-dropdown-item-content" @click="onMenuItemClick(notificationConfigUrl)">
         <a :href="computeLink(notificationConfigUrl)" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <FeatherIcon
+          <OnmsIcon
             :icon="noticeStatusDisplay?.iconComponent"
             :class="[noticeStatusDisplay?.colorClass, 'user-notifications-icon']"
           />
@@ -50,7 +50,7 @@
         @click="onMenuItemClick(item.url || '')"
       >
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <FeatherIcon :icon="IconPerson" class="user-notifications-icon" />
+          <OnmsIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
             {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
           </span>
@@ -105,11 +105,11 @@
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.id === 'userNotificationTeam'">
-            <FeatherIcon :icon="IconGroup" class="user-notifications-icon" />
+            <OnmsIcon :icon="IconGroup" class="user-notifications-icon" />
           </template>
 
           <template v-if="item.id === 'userNotificationOnCall'">
-            <FeatherIcon :icon="IconCalendar" class="user-notifications-icon" />
+            <OnmsIcon :icon="IconCalendar" class="user-notifications-icon" />
           </template>
 
           <span class="left-margin-small">
@@ -130,13 +130,13 @@
 <script setup lang="ts">
 import { computed, markRaw, ref, watch } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import IconArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
-import IconCalendar from '@featherds/icon/action/Calendar'
-import IconGroup from '@featherds/icon/action/Group'
-import IconNotificationsOff from '@featherds/icon/notification/NotificationsOff'
-import IconNotificationSelected from '@featherds/icon/notification/NotificationSelected'
-import IconPerson from '@featherds/icon/action/Person'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import IconCalendar from '@/components/icons/action/Calendar.vue'
+import IconGroup from '@/components/icons/action/Group.vue'
+import IconNotificationsOff from '@/components/icons/notification/NotificationsOff.vue'
+import IconNotificationSelected from '@/components/icons/notification/NotificationSelected.vue'
+import IconPerson from '@/components/icons/action/Person.vue'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
 import { useMenuStore } from '@/stores/menuStore'
@@ -275,8 +275,8 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 // Foreground uses PrimeVue tokens (not FeatherDS vars) so text tracks the same
 // dark-mode selector that drives the Popover background. On embedded JSP pages
@@ -298,7 +298,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 // Dark trigger button (replaces FeatherButton link). Matches the OG menu look.
 .menubar-dropdown-button-dark {
-  color: rgba(255, 255, 255, 0.78); // --feather-surface-light or --feather-state-text-color-on-surface-dark
+  color: rgba(255, 255, 255, 0.78); // --onms-surface-light or --onms-state-text-color-on-surface-dark
   background-color: transparent;
   border: none;
   text-transform: none;
@@ -319,10 +319,10 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 div.user-notification-badge-wrapper {
   .menubar-dropdown-button-dark {
-    svg.notice-status-display.feather-icon {
+    svg.notice-status-display.onms-icon {
       vertical-align: -0.5rem;
     }
-    svg.user-notification-arrow-dropdown.feather-icon {
+    svg.user-notification-arrow-dropdown.onms-icon {
       vertical-align: 0;
     }
   }
@@ -353,29 +353,29 @@ div.user-notification-badge-wrapper {
   padding: 10px;
 }
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 
@@ -393,7 +393,7 @@ div.user-notification-badge-wrapper {
   line-height: 1.5rem;
   font-weight: 800;
   background-color: #ffffff;
-  color: #131736; // --feather-surface-dark
+  color: #131736; // --onms-surface-dark
   border-radius: .8rem;
 }
 

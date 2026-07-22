@@ -1,6 +1,6 @@
 <template>
   <div
-    class="feather-drawer-custom-padding"
+    class="event-config-drawer-custom-padding"
     v-if="store.eventModificationState.isEditMode !== CreateEditMode.None"
   >
     <BasicInformation />
@@ -38,7 +38,7 @@ const goBack = () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .not-found-container {
   display: flex;
@@ -49,7 +49,7 @@ const goBack = () => {
   padding: 25px;
 
   p {
-    @include typography.headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }
