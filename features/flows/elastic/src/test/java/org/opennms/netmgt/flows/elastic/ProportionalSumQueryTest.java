@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
 import com.google.gson.JsonArray;
@@ -141,6 +143,29 @@ public class ProportionalSumQueryTest {
                         query.contains("\"" + expectedAggType + "\""), equalTo(true));
                 assertThat(json.has("aggs"), equalTo(true));
             }
+        }
+    }
+
+    @Test
+    public void interfaceScopedDirectionScriptShouldPassInterfaceIdAsParam() {
+        // The unknown-direction handling inlines the field name but passes the SNMP interface
+        // id via params, so the script source is identical for every interface and Elasticsearch
+        // compiles it once rather than per interface.
+        final int snmpInterfaceId = 4242;
+        final SearchQueryProvider provider = new SearchQueryProvider(ProportionalSumQuery.Strategy.PAINLESS);
+        final List<Filter> filters = Arrays.asList(new TimeRangeFilter(1_500_000L, 3_000_000L),
+                new SnmpInterfaceIdFilter(snmpInterfaceId));
+        for (String query : Arrays.asList(
+                provider.getSeriesFromQuery(10, 300_000L, 1_500_000L, 3_000_000L, "netflow.application", filters),
+                provider.getSeriesFromMissingQuery(300_000L, 1_500_000L, 3_000_000L, "netflow.application", "Unknown", filters),
+                provider.getSeriesFromOthersQuery(Arrays.asList("http", "https"), 300_000L, 1_500_000L, 3_000_000L,
+                        "netflow.application", false, filters))) {
+            // Must be well-formed JSON with the id supplied as a parameter, not inlined into the source.
+            JsonParser.parseString(query).getAsJsonObject();
+            assertThat(query, Matchers.containsString("\"snmpInterfaceId\": " + snmpInterfaceId));
+            assertThat(query, Matchers.containsString("params.snmpInterfaceId"));
+            assertThat("interface id must not be inlined into the script source: " + query,
+                    query.contains("== " + snmpInterfaceId), equalTo(false));
         }
     }
 

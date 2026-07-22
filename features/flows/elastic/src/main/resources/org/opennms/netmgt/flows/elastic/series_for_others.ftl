@@ -31,7 +31,7 @@
     "direction": {
       "terms": {
         <#if snmpInterfaceId??>
-          "script": "${onms.unknownDirectionScript(snmpInterfaceId)?json_string}",
+          ${onms.unknownDirectionScript(snmpInterfaceId)},
         <#else>
           "field": "netflow.direction",
         </#if>
