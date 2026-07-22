@@ -101,6 +101,18 @@
         <div>
           <p>Configure SNMPv3 user settings.</p>
           <p><strong>Note</strong> that the settings here apply to the OpenNMS core system as well as to any Minions or other distributed components.</p>
+          <br />
+          <p><strong>Credentials</strong></p>
+          <br />
+          <p>Credentials for SNMPv3 users have the following requirements:</p>
+          <ul>
+            <li>Authentication Passphrase: at least 8 characters</li>
+            <li>Privacy Passphrase: at least 8 characters</li>
+          </ul>
+          <br />
+          <p>Note that credentials are <em>masked</em>, displayed as a series of '*' characters, and cannot be viewed in the UI once set.</p>
+          <p>If you want to change a credential, you may enter a new one. Note that new credentials must not begin with a '*' character.</p>
+          <p>We strongly suggest that you use an SCV (Secure Credentials Vault) expression for storing credentials securely, rather than entering them directly.</p>
         </div>
       </template>
     </MessageDialog>
