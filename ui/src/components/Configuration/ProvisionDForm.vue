@@ -189,6 +189,14 @@ const updateCronValue = (type: string, val: string) => {
 .side-input {
     padding-bottom: 0;
 }
+// Local replacements for the removed FeatherDS global spacing utilities
+// (--onms-spacing-* mirror the original FeatherDS values).
+.mb-m {
+    margin-bottom: var(--onms-spacing-m);
+}
+.mr-m {
+    margin-right: var(--onms-spacing-m);
+}
 .occurance {
     width: 100%;
 }
