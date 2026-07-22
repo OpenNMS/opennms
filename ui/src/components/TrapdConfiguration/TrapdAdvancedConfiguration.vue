@@ -120,7 +120,7 @@ const uploadType = ref<'xml' | 'json' | null>(null)
 const uploadFile = ref<File | null>(null)
 
 const onDownload = async (isXml: boolean) => {
-  if (!adminRole) {
+  if (!adminRole.value) {
     return
   }
 
@@ -142,7 +142,7 @@ const onDownload = async (isXml: boolean) => {
 }
 
 const initiateUpload = async (isXml: boolean) => {
-  if (!adminRole) {
+  if (!adminRole.value) {
     return
   }
 
@@ -199,7 +199,7 @@ const onUploadConfirm = async () => {
 }
 
 const performUpload = async (isXml: boolean) => {
-  if (!adminRole) {
+  if (!adminRole.value) {
     return
   }
 
