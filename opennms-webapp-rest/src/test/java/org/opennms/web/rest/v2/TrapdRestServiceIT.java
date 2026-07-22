@@ -1519,6 +1519,74 @@ public class TrapdRestServiceIT {
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
+    /**
+     * Two incoming users sharing the same non-blank id would break id-based credential
+     * correlation and persist an unreachable duplicate, so the request must be rejected.
+     */
+    @Test
+    public void updateWithDuplicateUserIdsReturnsBadRequest() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto userA = new Snmpv3UserDto();
+        userA.setId("dup-id");
+        userA.setSecurityName("userA");
+        Snmpv3UserDto userB = new Snmpv3UserDto();
+        userB.setId("dup-id");
+        userB.setSecurityName("userB");
+        payload.setSnmpv3User(java.util.List.of(userA, userB));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("Duplicate SNMPv3 user id"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    /**
+     * Multiple new users with blank ids are legitimate (ids are assigned at persist time) and
+     * must not be mistaken for duplicates.
+     */
+    @Test
+    public void updateWithMultipleBlankUserIdsIsAllowed() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto userA = new Snmpv3UserDto();
+        userA.setSecurityName("newUserA");
+        Snmpv3UserDto userB = new Snmpv3UserDto();
+        userB.setSecurityName("newUserB");
+        payload.setSnmpv3User(java.util.List.of(userA, userB));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void uploadJsonWithDuplicateUserIdsReturnsBadRequest() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        String json = """
+                {"snmpTrapAddress":"*","snmpTrapPort":162,"newSuspectOnTrap":false,\
+                "snmpv3User":[{"id":"dup-id","securityName":"userA"},\
+                {"id":"dup-id","securityName":"userB"}]}""";
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, adminSecurityContext())) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("Duplicate SNMPv3 user id"));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
     // --- SCV expression tests ---
 
     @Test

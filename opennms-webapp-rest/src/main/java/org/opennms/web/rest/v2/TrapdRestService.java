@@ -283,11 +283,21 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         if (configDto.getSnmpv3User() != null) {
+            final Set<String> seenUserIds = new HashSet<>();
             int index = 0;
             for (Snmpv3UserDto user : configDto.getSnmpv3User()) {
                 String userValidation = validateSnmpv3UserPayload(user);
                 if (userValidation != null) {
                     return "Invalid SNMPv3 user at index " + index + ": " + userValidation;
+                }
+                // Ids correlate users across read/write cycles; masked-credential resolution relies on
+                // getSnmpv3UserById() returning a unique match, so duplicate ids would silently corrupt
+                // credentials on the next round-trip. Blank ids are new users (assigned an id at persist
+                // time), so only guard non-blank ids here.
+                final String userId = user.getId();
+                if (StringUtils.isNotBlank(userId) && !seenUserIds.add(userId)) {
+                    return "Duplicate SNMPv3 user id '" + userId + "' at index " + index
+                            + "; each SNMPv3 user id must be unique.";
                 }
                 index++;
             }
