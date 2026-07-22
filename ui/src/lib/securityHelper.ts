@@ -20,16 +20,8 @@
 /// License.
 ///
 
-const SCV_SUBKEY = /[a-zA-Z0-9_]([a-zA-Z0-9_.-]*[a-zA-Z0-9_])?/
-const SCV_DEFAULT = /[^|}]+/
-const SCV_REGEX = new RegExp(`^\\$\\{scv:${SCV_SUBKEY.source}(:${SCV_SUBKEY.source})?(\\|${SCV_DEFAULT.source})?\\}$`)
+export const MASKED_PASSWORD = '******'
 
-export const SCV_PREFIX_REGEX = /^\$\{/
-
-export const validateScvPattern = (scv: string): boolean => {
-  return SCV_REGEX.test(scv)
-}
-
-export const hasScvPrefix = (value: string): boolean => {
-  return SCV_PREFIX_REGEX.test(value)
+export const isMaskedPassword = (value: string): boolean => {
+  return value === MASKED_PASSWORD
 }
