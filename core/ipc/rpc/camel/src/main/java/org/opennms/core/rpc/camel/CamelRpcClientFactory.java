@@ -82,6 +82,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
      */
     private static final long rpcExecTimeoutMs = SystemProperties.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
 
+    public static final String LOCAL_EXEC_TIMEOUT_PROPERTY = "org.opennms.core.ipc.rpc.local.timeout";
+
+    public static final long LOCAL_EXEC_TIMEOUT_MS_DEFAULT = TimeUnit.MINUTES.toMillis(30);
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("CamelRpcClientFactory-Pool-%d")
             .build();
@@ -116,8 +120,15 @@ public class CamelRpcClientFactory implements RpcClientFactory {
             public CompletableFuture<T> execute(S request) {
 
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
-                    // The request is for the current location, invoke it directly
-                    return module.execute(request);
+                    // The request is for the current location, invoke it directly.
+                    // Bound it to a fixed timeout — deliberately not the request TTL — so a module future that
+                    // never completes cannot wedge the caller (NMS-19951) while slow-but-completing operations
+                    // are unaffected by TTL configuration intended for the Minion path (NMS-20006).
+                    final long localExecTimeoutMs = SystemProperties.getLong(LOCAL_EXEC_TIMEOUT_PROPERTY, LOCAL_EXEC_TIMEOUT_MS_DEFAULT);
+                    if (localExecTimeoutMs <= 0) {
+                        return module.execute(request);
+                    }
+                    return module.execute(request).orTimeout(localExecTimeoutMs, TimeUnit.MILLISECONDS);
                 }
                 Span span = buildAndStartSpan(request);
                 TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);
