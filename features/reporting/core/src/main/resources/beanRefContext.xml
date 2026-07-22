@@ -6,13 +6,10 @@
     <bean id="reportingCoreContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
         <constructor-arg>
             <list>
-                <value>META-INF/opennms/applicationContext-reportingDao.xml</value>
-                <value>META-INF/opennms/applicationContext-reportingRepository.xml</value>
-                <value>META-INF/opennms/applicationContext-reportingCore.xml</value>
-                <value>classpath*:/META-INF/opennms/component-reporting.xml</value>
+                <!-- Reporting services are initialized by daoContext. -->
             </list>
         </constructor-arg>
-        <constructor-arg ref="measurementsContext" />
+        <constructor-arg ref="daoContext" />
     </bean>
 
 </beans>

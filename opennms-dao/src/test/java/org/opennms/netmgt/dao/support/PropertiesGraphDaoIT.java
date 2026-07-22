@@ -31,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -196,6 +197,23 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
     public void testLoadResponseTimeAdhocGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
+    }
+
+    @Test
+    public void testMissingConfiguredGraphResourcesDoNotPreventInitialization() throws Exception {
+        m_testSpecificLoggingTest = true;
+        final File missingConfigDirectory = m_fileAnticipator.tempDir("missing-graph-configs");
+
+        final Map<String, Resource> prefabConfigs = new HashMap<>();
+        prefabConfigs.put("performance", new FileSystemResource(new File(missingConfigDirectory, "snmp-graph.properties")));
+
+        final Map<String, Resource> adhocConfigs = new HashMap<>();
+        adhocConfigs.put("performance", new FileSystemResource(new File(missingConfigDirectory, "snmp-adhoc-graph.properties")));
+
+        final PropertiesGraphDao dao = createPropertiesGraphDao(prefabConfigs, adhocConfigs);
+
+        assertTrue(dao.getAllPrefabGraphs().isEmpty());
+        MockLogAppender.assertLogAtLevel(Level.WARN);
     }
     
     @Test

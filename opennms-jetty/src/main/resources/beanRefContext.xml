@@ -17,8 +17,7 @@
                 <!-- Empty configuration list - context serves as a bridge to parent context -->
             </list>
         </constructor-arg>
-        <!-- Reporting is shared by the web application and the Karaf daemon. -->
-        <constructor-arg ref="reportingCoreContext" />
+        <constructor-arg ref="daoContext" />
     </bean>
 
 </beans>

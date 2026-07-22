@@ -10,6 +10,6 @@
         <value>META-INF/opennms/applicationContext-karafDaemon.xml</value>
       </list>
     </constructor-arg>
-    <constructor-arg ref="reportingCoreContext" />
+    <constructor-arg ref="daoContext" />
   </bean>
 </beans>

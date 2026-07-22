@@ -19,6 +19,8 @@
  */
 package org.opennms.netmgt.config.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -107,6 +109,16 @@ public class KarafWebServiceWiringTest {
             fail("Mandatory Blueprint services must not be supplied only by the web application:\n"
                     + String.join("\n", violations));
         }
+    }
+
+    @Test
+    public void webAndKarafUseTheSharedDaoContextDirectly() throws IOException {
+        final Map<String, ContextDefinition> contexts = contextDefinitions(sourceXmlFiles());
+
+        assertEquals("daoContext", contexts.get("karafDaemonContext").parent);
+        assertEquals("daoContext", contexts.get("webContext").parent);
+        assertFalse(contexts.containsKey("timeformatContext"));
+        assertFalse(contexts.containsKey("measurementsContext"));
     }
 
     private static void collectBlueprintReferences(final Path file, final String xml,

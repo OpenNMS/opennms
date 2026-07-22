@@ -6,17 +6,17 @@
    <bean id="jasperReportContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <!-- Jasper reporting is initialized by the shared reporting context. -->
+         <!-- Jasper reporting is initialized by daoContext. -->
        </list>
      </constructor-arg>
-     <constructor-arg ref="reportingCoreContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
    <bean id="measurementDataSourceContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <!-- Measurement services are initialized by the shared measurements context. -->
+         <!-- Measurement services are initialized by daoContext. -->
        </list>
      </constructor-arg>
-     <constructor-arg ref="measurementsContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 </beans>

@@ -92,12 +92,20 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     private void initPrefab() throws IOException {
         for (Map.Entry<String, Resource> configEntry : getPrefabConfigs().entrySet()) {
+            if (!configEntry.getValue().exists()) {
+                LOG.warn("Skipping missing prefab graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
+                continue;
+            }
             loadProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
 
     private void initAdhoc() throws IOException {
         for (Map.Entry<String, Resource> configEntry : getAdhocConfigs().entrySet()) {
+            if (!configEntry.getValue().exists()) {
+                LOG.warn("Skipping missing ad hoc graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
+                continue;
+            }
             loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
@@ -296,7 +304,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return
      */
     private PrefabGraphTypeDao createPrefabGraphType(String type,
-            Resource sourceResource) {
+            Resource sourceResource) throws IOException {
         // Default to adding a callback
         return this.createPrefabGraphType(type, sourceResource, true);
     }
@@ -317,7 +325,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return
      */
     private PrefabGraphTypeDao createPrefabGraphType(String type,
-            Resource sourceResource, boolean reloadable) {
+            Resource sourceResource, boolean reloadable) throws IOException {
         InputStream in = null;
         try {
             in = sourceResource.getInputStream();
@@ -394,10 +402,6 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             //This *must* come after loading the main graph file, to ensure overrides are correct
             this.scanIncludeDirectory(t);
             return t;
-
-        } catch (IOException e) {
-            LOG.error("Failed to load prefab graph configuration of type {} from {}", type, sourceResource, e);
-            return null;
         } finally {
             IOUtils.closeQuietly(in);
         }
