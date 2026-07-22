@@ -28,12 +28,29 @@
 
 package org.opennms.core.mate.model;
 
+import com.google.common.collect.Lists;
+import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Optional;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.opennms.core.mate.api.EmptyScope.EMPTY;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -54,4 +71,37 @@ public class CachedEntityScopeProviderIT extends EntityScopeProviderIT {
         this.populator.populateDatabase();
         this.provider = new CachedEntityScopeProviderImpl(provider, 0, -1, -1, -1);
     }
-}
+
+    @Test
+    public void checkForNullPointerException() {
+        assertEquals(EMPTY, this.provider.getScopeForNode(null));
+    }
+
+    @Test
+    public void testCache() {
+        this.provider = new CachedEntityScopeProviderImpl(provider, 5, -1, -1, -1);
+
+        // set meta-data of node
+        final OnmsNode node = this.populator.getNode1();
+        OnmsMetaData metaData = new OnmsMetaData("context", "key", "value1");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // get a scope provider
+        final ScopeProvider scope = this.provider.getScopeProviderForNode(this.populator.getNode1().getId());
+
+        // this will retrieve the meta-data set before
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value1"))));
+
+        // now update the meta-data
+        node.getMetaData().removeAll(Lists.newArrayList(metaData));
+        metaData = new OnmsMetaData("context", "key", "value2");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // this should still return the old value
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value1"))));
+
+        await().atMost(10, SECONDS).pollInterval(250, MILLISECONDS)
+                .until(() -> scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value2"))));
+    }}

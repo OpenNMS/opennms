@@ -22,7 +22,7 @@
                              persistent-id="org.opennms.netmgt.threshd.metadata.cache"
                              update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="expireAfterWrite" value="600"/>
+            <cm:property name="expireAfterWrite" value="900"/>
             <cm:property name="expireAfterAccess" value="-1"/>
             <cm:property name="refreshAfterWrite" value="-1"/>
             <cm:property name="maximumSize" value="-1"/>
