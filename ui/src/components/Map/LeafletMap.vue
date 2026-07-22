@@ -75,8 +75,9 @@
 </template>
 
 <script setup lang ="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { debounce } from 'lodash'
 
 import 'leaflet/dist/leaflet.css'
 import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
@@ -299,13 +300,48 @@ const getNodeCoordinateMap = computed(() => {
 // bubble phase, so the menu search's Esc handler — which stopImmediatePropagation()s
 // before the event reaches document — always takes precedence and is unaffected.
 const onPopupEscapeKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    leafletObject.value.closePopup()
+  if (e.key !== 'Escape') {
+    return
   }
+  // The map search (PrimeVue AutoComplete) also uses Esc to dismiss its own
+  // suggestions but doesn't stopPropagation, so its Esc bubbles to this
+  // document listener. Don't let dismissing search suggestions also close the
+  // open marker popup.
+  if ((e.target as HTMLElement | null)?.closest('.map-search')) {
+    return
+  }
+  leafletObject.value.closePopup()
 }
+
+// Leaflet caches its pixel size and only re-reads it on invalidateSize(). The
+// map container reflows when the side menu is pinned (it sets padding-left on
+// .app-layout) or on any other layout change, but Leaflet won't repaint to the
+// new size on its own, so observe the container and revalidate on resize.
+const debouncedInvalidateSize = debounce(() => {
+  if (typeof leafletObject.value?.invalidateSize === 'function') {
+    leafletObject.value.invalidateSize()
+  }
+}, 150)
+let containerResizeObserver: ResizeObserver | null = null
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onPopupEscapeKeydown)
+  containerResizeObserver?.disconnect()
+  debouncedInvalidateSize.cancel()
+})
+
+// Map.vue is <keep-alive>'d (name: MapKeepAlive), so navigating away deactivates
+// rather than unmounts and onBeforeUnmount never fires. Remove the document Esc
+// listener here too — otherwise, leaving with a popup open keeps it installed
+// app-wide and a stray Esc later closes the popup on the cached map.
+onDeactivated(() => {
+  document.removeEventListener('keydown', onPopupEscapeKeydown)
+})
+
+// Returning to the cached map: its container may have resized while away (e.g.
+// the side menu was pinned on another page), so revalidate Leaflet's size.
+onActivated(() => {
+  debouncedInvalidateSize()
 })
 
 const onLeafletReady = async () => {
@@ -338,13 +374,33 @@ const onLeafletReady = async () => {
       e.popup.options.offset = [0, el.offsetHeight + 40]
       e.popup.update()
 
-      // autoPan is off (a popup opening below never needs the map shifted for
-      // top markers), but a below-popup on a bottom-edge marker can run past
-      // the map's lower edge. In that one case, pan up just enough to reveal it.
-      const overflowBottom = el.getBoundingClientRect().bottom -
-        leafletObject.value.getContainer().getBoundingClientRect().bottom
-      if (overflowBottom > 0) {
-        leafletObject.value.panBy([0, overflowBottom + 16], { animate: true })
+      // autoPan is off, so a below-popup can spill past any edge of the map
+      // pane: bottom for low markers, left/right for the east/west-most markers,
+      // top for a popup taller than the pane. Pan just enough on each axis to
+      // bring it into view, biasing toward keeping the popup's top (its header
+      // and close button) visible when it is taller than the pane.
+      const pad = 16
+      const popupRect = el.getBoundingClientRect()
+      const mapRect = leafletObject.value.getContainer().getBoundingClientRect()
+
+      let dx = 0
+      if (popupRect.right > mapRect.right) {
+        dx = popupRect.right - mapRect.right + pad
+      } else if (popupRect.left < mapRect.left) {
+        dx = popupRect.left - mapRect.left - pad
+      }
+
+      let dy = 0
+      if (popupRect.bottom > mapRect.bottom) {
+        // Don't pan so far down that the popup's top scrolls off the pane.
+        const maxPanKeepingTopVisible = Math.max(0, popupRect.top - mapRect.top - pad)
+        dy = Math.min(popupRect.bottom - mapRect.bottom + pad, maxPanKeepingTopVisible)
+      } else if (popupRect.top < mapRect.top) {
+        dy = popupRect.top - mapRect.top - pad
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        leafletObject.value.panBy([dx, dy], { animate: true })
       }
 
       document.addEventListener('keydown', onPopupEscapeKeydown)
@@ -355,6 +411,15 @@ const onLeafletReady = async () => {
     })
 
     leafletReady.value = true
+
+    // Revalidate Leaflet's cached size whenever its container resizes (side-menu
+    // pin, window resize, splitter drag). See debouncedInvalidateSize above.
+    const container = leafletObject.value.getContainer()
+    if (container && typeof ResizeObserver !== 'undefined') {
+      containerResizeObserver?.disconnect()
+      containerResizeObserver = new ResizeObserver(() => debouncedInvalidateSize())
+      containerResizeObserver.observe(container)
+    }
 
     await nextTick()
 
@@ -423,6 +488,10 @@ defineExpose({ invalidateSizeFn })
   z-index: 1020;
 }
 .geo-map {
+  // Positioning context for the absolutely-positioned overlays (search bar,
+  // Show Severity) so they anchor to the map area, not the viewport — otherwise
+  // they slide under the pinned side-menu rail.
+  position: relative;
   height: 100%;
 }
 .marker-cluster-popup-hide {
@@ -475,10 +544,24 @@ defineExpose({ invalidateSizeFn })
   right: 0;
   min-width: 20em;
   padding: 6px 10px;
-  background: #fff;
-  color: #333;
+  // Theme-aware, matching the sibling controls and the popup wrapper — was
+  // hardcoded #fff/#333, the one white element left in dark mode.
+  background: var(--p-content-background);
+  color: var(--p-text-color);
   border-radius: 5px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+// Bridge the 5px gap between the toggle and the dropped-down list. Leaflet
+// collapses the control on mouseleave of its DOM subtree; a bare gap lets the
+// pointer sample outside the control mid-traverse and collapse the list before
+// it's reached. A transparent strip filling the gap keeps the pointer inside.
+.geo-map .leaflet-control-layers-expanded .leaflet-control-layers-list::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 0;
+  right: 0;
+  height: 5px;
 }
 
 .leaflet-marker-pane {
