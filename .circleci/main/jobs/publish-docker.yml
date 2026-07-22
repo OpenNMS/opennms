@@ -43,6 +43,3 @@ jobs:
       - run:
           name: Publish to Docker Hub
           command: .circleci/scripts/publish-dockerhub.sh
-
-            
-            
