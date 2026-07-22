@@ -61,7 +61,7 @@ import org.springframework.test.context.TestExecutionListeners;
 @JUnitTemporaryDatabase
 public class TrapdSnmpv3UserIdBackfillIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    private static final String CONFIG_NAME = "trapd-config";
+    private static final String CONFIG_NAME = TrapdConfiguration.CM_CONFIG_NAME;
 
     @Autowired
     private ConfigurationManagerService cm;

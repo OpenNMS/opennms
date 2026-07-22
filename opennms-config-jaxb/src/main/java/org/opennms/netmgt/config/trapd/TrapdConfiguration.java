@@ -48,6 +48,13 @@ import org.opennms.core.xml.ValidateUsing;
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = 2;
 
+	/**
+	 * Canonical name under which the trapd configuration is registered in the
+	 * Configuration Manager (kvstore_jsonb / CM REST). Shared by every component
+	 * that addresses trapd config through CM.
+	 */
+	public static final String CM_CONFIG_NAME = "trapd-config";
+
 	public static final boolean DEFAULT_USE_ADDRESS_FROM_VARBIND = false;
 
 	/**

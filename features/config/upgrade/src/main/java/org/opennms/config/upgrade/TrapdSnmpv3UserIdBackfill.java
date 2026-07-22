@@ -45,8 +45,6 @@ public class TrapdSnmpv3UserIdBackfill {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrapdSnmpv3UserIdBackfill.class);
 
-    static final String CONFIG_NAME = "trapd-config";
-
     private final ConfigurationManagerService cm;
 
     public TrapdSnmpv3UserIdBackfill(final ConfigurationManagerService cm) {
@@ -58,7 +56,7 @@ public class TrapdSnmpv3UserIdBackfill {
      *         persisted; {@code false} if there was nothing to do.
      */
     public boolean execute() {
-        final Optional<String> json = cm.getJSONStrConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID);
+        final Optional<String> json = cm.getJSONStrConfiguration(TrapdConfiguration.CM_CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID);
         if (json.isEmpty()) {
             LOG.debug("No trapd configuration registered in CM; skipping SNMPv3 user id backfill.");
             return false;
@@ -69,7 +67,7 @@ public class TrapdSnmpv3UserIdBackfill {
             return false;
         }
 
-        cm.updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
+        cm.updateConfiguration(TrapdConfiguration.CM_CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
                 new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
         LOG.info("Backfilled ids onto trapd SNMPv3 user(s) lacking one.");
         return true;
