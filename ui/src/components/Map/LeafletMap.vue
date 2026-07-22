@@ -481,10 +481,10 @@ defineExpose({ invalidateSizeFn })
 <style lang="scss" scoped>
 .search-bar {
   position: absolute;
-  // Top-left overlay, clearing the fixed top menu bar; mirrors the
-  // Show Severity control on the right (right: 80px; top: 80px).
-  top: 80px;
-  left: 80px;
+  // Top-left overlay inset from the map corner; mirrors the Show Severity
+  // control on the right (right: 80px; top: 2em).
+  top: 2em;
+  left: 2em;
   z-index: 1020;
 }
 .geo-map {
@@ -502,12 +502,12 @@ defineExpose({ invalidateSizeFn })
 <style lang="scss">
 @import "@/styles/onms-tokens";
 
-// The map is full-bleed under the fixed top menu bar, so push Leaflet's top
-// controls (zoom + layers, both top-right) down to clear it. A stable CSS
-// offset also survives Leaflet's invalidateSize() re-layout on interaction
-// (which otherwise lets the controls settle back under the menu bar).
+// Inset Leaflet's top controls (zoom + layers, both top-right) to line up with
+// the Search / Show Severity overlays. A stable CSS offset also survives
+// Leaflet's invalidateSize() re-layout on interaction (which otherwise lets the
+// controls settle back to the container's top edge).
 .geo-map .leaflet-top {
-  top: 70px;
+  top: 2em;
 }
 
 // Leaflet focuses the container on click; the browser then scrolls it into
