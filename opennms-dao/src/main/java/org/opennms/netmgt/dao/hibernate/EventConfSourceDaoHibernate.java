@@ -51,7 +51,7 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public EventConfSource findByName(String name) {
-        List<EventConfSource> list = find("from EventConfSource s where s.name = ?", name);
+        List<EventConfSource> list = find("from EventConfSource s where s.name = ?1", name);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -62,7 +62,7 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public List<EventConfSource> findByVendor(String vendor) {
-        return find("from EventConfSource s where s.vendor = ?", vendor);
+        return find("from EventConfSource s where s.vendor = ?1", vendor);
     }
 
     @Override
@@ -118,23 +118,24 @@ public class EventConfSourceDaoHibernate
         try {
             List<Object> queryParams = new ArrayList<>();
             List<String> conditions = new ArrayList<>();
+            int paramIndex = 0;
 
             // Add filter conditions dynamically
             if (filter != null && !filter.trim().isEmpty()) {
                 String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
-                conditions.add("lower(s.name) like ? escape '\\'");
+                conditions.add("lower(s.name) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("lower(s.vendor) like ? escape '\\'");
+                conditions.add("lower(s.vendor) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("lower(s.description) like ? escape '\\'");
+                conditions.add("lower(s.description) like ?" + (++paramIndex) + " escape '\\'");
                 queryParams.add(escapedFilter);
 
-                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.uei) like ? escape '\\')");
+                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.uei) like ?" + (++paramIndex) + " escape '\\')");
                 queryParams.add(escapedFilter);
 
-                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.eventLabel) like ? escape '\\')");
+                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.eventLabel) like ?" + (++paramIndex) + " escape '\\')");
                 queryParams.add(escapedFilter);
 
             }

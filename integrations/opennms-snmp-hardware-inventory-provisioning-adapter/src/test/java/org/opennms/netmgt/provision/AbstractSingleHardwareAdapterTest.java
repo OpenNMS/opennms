@@ -44,6 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * The Abstract Class AbstractSingleHardwareAdapterTest
@@ -79,6 +81,10 @@ public abstract class AbstractSingleHardwareAdapterTest implements InitializingB
     @Autowired
     private HwEntityDao m_entityDao;
 
+    /** The transaction manager. */
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     /** The Node id. */
     private Integer m_nodeId;
 
@@ -100,19 +106,26 @@ public abstract class AbstractSingleHardwareAdapterTest implements InitializingB
      */
     @BeforeTransaction
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true);
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            MockLogAppender.setupLogging(true);
 
-        NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("Test").setForeignSource("Test").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.1196");
-        nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
-        m_nodeDao.save(nb.getCurrentNode());
-        m_nodeDao.flush();
+            NetworkBuilder nb = new NetworkBuilder();
+            nb.addNode("Test").setForeignSource("Test").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.1196");
+            nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
+            m_nodeDao.save(nb.getCurrentNode());
+            m_nodeDao.flush();
 
-        m_adapter.afterPropertiesSet();
+            try {
+                m_adapter.afterPropertiesSet();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-        m_nodeId = m_nodeDao.findByForeignId("Test", "1").getId();
-        AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);
-        m_operation = m_adapter.new AdapterOperation(m_nodeId, AdapterOperationType.ADD, ops);
+            m_nodeId = m_nodeDao.findByForeignId("Test", "1").getId();
+            AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);
+            m_operation = m_adapter.new AdapterOperation(m_nodeId, AdapterOperationType.ADD, ops);
+            return null;
+        });
     }
 
     /**

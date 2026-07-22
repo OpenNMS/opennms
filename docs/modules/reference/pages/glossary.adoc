@@ -89,6 +89,9 @@ Nodes can be manually assigned a location, or the location can be automatically 
 https://grafana.com/[Grafana]:: An open-source analysis and visualization web application.
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
 
+Graph collections:: Formerly known as KSC (Key SNMP Customized) reports, graph collections provide a way to generate prefabricated graphical views of collected data.
+They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page (see xref:operation:deep-dive/visualizations/ksc-reports.adoc[]).
+
 https://www.opennms.com/horizon/[Horizon]:: An open-source solution from The OpenNMS Group that lets you visualize and monitor everything on your local and remote networks.
 The free, community-driven project includes the latest technology and features and is delivered through a rapid release cycle.
 
@@ -122,8 +125,7 @@ Originally developed at LinkedIn, it is now supported by the Apache community (s
 https://www.elastic.co/kibana/[Kibana]:: A component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
 It enables visualizations for data indexed in an Elasticsearch cluster.
 
-KSC reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data.
-They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page (see xref:operation:deep-dive/visualizations/ksc-reports.adoc[]).
+KSC reports:: See *Graph collections*.
 
 https://kubernetes.io/[Kubernetes]:: An open-source container orchestration system for automating software deployments, scaling, and management.
 Originally designed by Google, the Cloud Native Computing Foundation now maintains it.

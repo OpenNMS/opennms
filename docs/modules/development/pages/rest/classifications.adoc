@@ -207,7 +207,7 @@ If multiple rules are imported (to user-defined group) from a CSV file all exist
 .Create a single rule
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"name": "http", "port":"80,8080", "protocols":["tcp", "udp"]}' http://localhost:8980/opennms/rest/classifications
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"name": "http", "dstPort":"80,8080", "protocols":["tcp", "udp"], "group": {"id": 2}}' http://localhost:8980/opennms/rest/classifications
 ----
 
 .Response
@@ -221,7 +221,7 @@ Location: http://localhost:8980/opennms/rest/classifications/6616
 .Verify classification engine (rule exists)
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"80"}' http://localhost:8980/opennms/rest/classifications/classify
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "srcAddress": "10.0.0.1", "srcPort": "55555", "dstAddress": "192.168.0.1", "dstPort": "80", "exporterAddress": "10.0.0.1"}' http://localhost:8980/opennms/rest/classifications/classify
 ----
 
 .Response
@@ -235,7 +235,7 @@ curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol":
 .Verify classification engine (no rule exists)
 [source,bash]
 ----
-curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "ipAddress": "192.168.0.1", "port" :"8980"}' http://localhost:8980/opennms/rest/classifications/classify
+curl -X POST -H "Content-Type: application/json" -u admin:admin -d '{"protocol": "tcp", "srcAddress": "10.0.0.1", "srcPort": "55555", "dstAddress": "192.168.0.1", "dstPort": "8980", "exporterAddress": "10.0.0.1"}' http://localhost:8980/opennms/rest/classifications/classify
 ----
 
 .Response
@@ -295,11 +295,8 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 | Update a rule identified by `\{id}`.
 The ID of the rule cannot be changed.
 
-| /groups/\{id}
-| Retrieve the rule identified by `\{id}`.
-
-| /classifications/groups
-| Update a group.
+| /classifications/groups/\{id}
+| Update the group identified by `\{id}`.
 Currently, only the enabled property can be changed.
 |===
 
@@ -314,6 +311,6 @@ Currently, only the enabled property can be changed.
 | /classifications?groupId=\{groupid}
 | Deletes all rules of a given group.
 
-| /groups/\{id}
+| /classifications/groups/\{id}
 | Delete the given group and all its containing rules.
 |===

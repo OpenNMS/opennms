@@ -1,31 +1,46 @@
 <template>
-  <FeatherDropdown class="pointer dcb-table-status-dropdown">
-    <template v-slot:trigger>
-      <span secondary link href="#" menu-trigger>
-        Backup Status
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </span>
+  <span
+    class="pointer dcb-table-status-trigger"
+    menu-trigger
+    aria-haspopup="true"
+    tabindex="0"
+    @keydown.enter.prevent="toggleMenu"
+    @keydown.space.prevent="toggleMenu"
+    @click="toggleMenu"
+  >
+    Backup Status
+    <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+  </span>
+  <PMenu ref="menu" :model="menuItems" :popup="true" class="dcb-table-status-dropdown">
+    <template #item="{ item, props }">
+      <a v-bind="props.action">
+        <div class="option" :class="item.statusClass">{{ item.label }}</div>
+      </a>
     </template>
-    <FeatherDropdownItem
-      v-for="option of deviceStore.backupStatusOptions"
-      :key="option"
-      @click="filterByStatus(option)"
-    >
-      <div class="option" :class="option.toLowerCase()">
-      {{ option === 'NONE' ? 'No Backup' : option.toLowerCase() }}
-      </div>
-    </FeatherDropdownItem>
-  </FeatherDropdown>
+  </PMenu>
 </template>
 
 <script setup lang="ts">
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
+import { computed, ref } from 'vue'
+
+import Menu from 'primevue/menu'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 
+const PMenu = Menu
+
 const deviceStore = useDeviceStore()
+const menu = ref()
+
+const menuItems = computed(() => deviceStore.backupStatusOptions.map((option: status) => ({
+  label: option === 'NONE' ? 'No Backup' : option.toLowerCase(),
+  statusClass: option.toLowerCase(),
+  command: () => filterByStatus(option)
+})))
+
+const toggleMenu = (event: Event) => menu.value.toggle(event)
 
 const filterByStatus = (value: status) => {
   const newQueryParams: DeviceConfigQueryParams = {
@@ -40,23 +55,34 @@ const filterByStatus = (value: status) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
-
-.option {
-  height: 36px;
-  line-height: 2.5;
-  padding-left: 15px;
-  text-transform: capitalize;
+.dcb-table-status-trigger {
+  display: inline-flex;
+  align-items: center;
 }
 </style>
 
+<!-- Menu teleports to body, so the option status-bar styling must be global -->
 <style lang="scss">
+@mixin status-bar($color) {
+  background: $color;
+  background: linear-gradient(90deg, $color 1%, rgba(255, 255, 255, 0) 9%);
+}
+
 .dcb-table-status-dropdown {
-  .feather-dropdown {
-    li {
-      a {
-        padding-left: 5px;
-      }
+  .option {
+    height: 36px;
+    line-height: 2.5;
+    padding-left: 15px;
+    text-transform: capitalize;
+
+    &.success {
+      @include status-bar(var(--p-green-500));
+    }
+    &.failed {
+      @include status-bar(var(--p-red-500));
+    }
+    &.none {
+      @include status-bar(var(--p-datatable-header-cell-background));
     }
   }
 }

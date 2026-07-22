@@ -44,7 +44,7 @@ public class SnmpCollectionProfileDaoHibernate extends AbstractDaoHibernate<Snmp
 
     @Override
     public SnmpCollectionProfile findByName(String name) {
-        List<SnmpCollectionProfile> list = find("from SnmpCollectionProfile p where p.name = ?", name);
+        List<SnmpCollectionProfile> list = find("from SnmpCollectionProfile p where p.name = ?1", name);
         return list.isEmpty() ? null : list.get(0);
     }
 

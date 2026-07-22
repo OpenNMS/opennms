@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.opennms.web.controller.OnmsMultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +60,7 @@ import java.util.List;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <a href="http://www.opennms.org/">OpenNMS </A>
  */
-public class AlarmFilterController extends MultiActionController implements InitializingBean {
+public class AlarmFilterController extends OnmsMultiActionController implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmFilterController.class);
 

@@ -31,35 +31,33 @@
             data-test="snmp-data-collection-folder-input"
             ref="sourceFolderInput"
           />
-          <FeatherButton
-            secondary
+          <Button
+            outlined
             data-test="choose-file-button"
             @click="openFileDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="UploadFile" />
+            <OnmsIcon :icon="UploadFile" />
             Choose files to upload
-          </FeatherButton>
-          <FeatherButton
-            secondary
+          </Button>
+          <Button
+            outlined
             data-test="choose-folder-button"
             @click="openFolderDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="FolderAdd" />
+            <OnmsIcon :icon="FolderAdd" />
             Choose folder to upload
-          </FeatherButton>
+          </Button>
         </div>
         <div class="section-right">
-          <FeatherButton
-            primary
+          <Button
+            label="Upload Files"
             :disabled="shouldUploadDisabled"
+            :loading="isLoading"
             @click="uploadFiles"
             data-test="upload-button"
-          >
-            <FeatherSpinner v-if="isLoading" />
-            <span v-else>Upload Files</span>
-          </FeatherButton>
+          />
         </div>
       </div>
       <div
@@ -86,16 +84,21 @@
           </span>
         </div>
         <div class="profiles-list">
-          <FeatherCheckbox
+          <div
             v-for="profile in availableProfiles"
             :key="profile.id"
-            :modelValue="selectedProfileNames.includes(profile.name)"
-            :disabled="hasConfigFile"
-            :data-test="`profile-checkbox-${profile.name}`"
-            @update:modelValue="(checked: boolean | undefined) => toggleProfile(profile.name, checked === true)"
+            class="profile-checkbox"
           >
-            {{ profile.name }}
-          </FeatherCheckbox>
+            <Checkbox
+              :inputId="`profile-checkbox-${profile.id}`"
+              binary
+              :modelValue="selectedProfileNames.includes(profile.name)"
+              :disabled="hasConfigFile"
+              :data-test="`profile-checkbox-${profile.name}`"
+              @update:modelValue="(checked: boolean) => toggleProfile(profile.name, checked === true)"
+            />
+            <label :for="`profile-checkbox-${profile.id}`">{{ profile.name }}</label>
+          </div>
         </div>
         <span
           v-if="hasConfigFile"
@@ -129,101 +132,79 @@
       </div>
     </div>
     <div class="container">
-      <table
-        v-if="tableRecord.length"
+      <DataTable
+        v-if="orderedSourceFiles.length"
+        v-model:first="firstRow"
+        v-model:rows="rowsPerPage"
+        :value="orderedSourceFiles"
+        paginator
+        :rowsPerPageOptions="[10, 20, 50, 100, 200]"
         class="data-table"
-        aria-label="SNMP Data Collection Sources Table"
+        data-test="import-files-table"
       >
-        <thead>
-          <tr>
-            <th>Source</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
-          v-if="tableRecord.length"
+        <Column
+          header="Source"
+          style="width: 85%"
         >
-          <tr
-            v-for="(file, index) in tableRecord"
-            :key="index"
-          >
-            <td>
-              <div class="file">
-                <FeatherIcon :icon="Apps" />
-                <span>{{ ellipsify(file.file.name, 39) }}</span>
-                <FeatherChip
-                  v-if="file.kind === 'config'"
-                  class="kind-chip kind-config"
-                  :data-test="`kind-chip-${file.file.name}`"
-                >
-                  Profiles config{{ file.profileNames?.length ? ` (${file.profileNames.length})` : '' }}
-                </FeatherChip>
-                <FeatherChip
-                  v-else-if="file.kind === 'group'"
-                  class="kind-chip kind-source"
-                  :data-test="`kind-chip-${file.file.name}`"
-                >
-                  Source
-                </FeatherChip>
-                <FeatherChip
-                  v-if="!file.isValid"
-                  class="error-chip"
-                >
-                  {{ file.errors.join('. ') }}
-                </FeatherChip>
-                <FeatherChip
-                  v-if="file.isDuplicate"
-                  class="update-chip"
-                  :data-test="`update-chip-${file.file.name}`"
-                >
-                  Will update existing source '{{ file.groupName }}'
-                </FeatherChip>
-                <FeatherIcon
-                  v-if="!file.isValid"
-                  :icon="Error"
-                  class="error-icon"
-                />
-                <FeatherIcon
-                  v-if="file.isValid && file.isDuplicate"
-                  :icon="Refresh"
-                  class="update-icon"
-                />
-                <FeatherIcon
-                  v-if="file.isValid && !file.isDuplicate"
-                  :icon="CheckCircle"
-                  class="success-icon"
-                />
-              </div>
-            </td>
-            <td>
-              <FeatherButton
-                icon="Trash"
-                data-test="remove-files-button"
-                @click="removeFile(index)"
-              >
-                <FeatherIcon :icon="Delete" />
-              </FeatherButton>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div
-        class="alerts-pagination"
-        v-if="tableRecord.length"
-      >
-        <FeatherPagination
-          :modelValue="page"
-          :pageSize="pageSize"
-          :total="total"
-          :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="onPageChange"
-          @update:pageSize="onPageSizeChange"
-          data-test="FeatherPagination"
-        />
-      </div>
-      <div v-if="!tableRecord.length">
+          <template #body="{ data }">
+            <div class="file">
+              <OnmsIcon :icon="Apps" />
+              <span>{{ ellipsify(data.file.name, 39) }}</span>
+              <Tag
+                v-if="data.kind === 'config'"
+                class="kind-chip kind-config"
+                :value="`Profiles config${data.profileNames?.length ? ` (${data.profileNames.length})` : ''}`"
+                :data-test="`kind-chip-${data.file.name}`"
+              />
+              <Tag
+                v-else-if="data.kind === 'group'"
+                class="kind-chip kind-source"
+                value="Source"
+                :data-test="`kind-chip-${data.file.name}`"
+              />
+              <Tag
+                v-if="!data.isValid"
+                class="error-chip"
+                :value="data.errors.join('. ')"
+              />
+              <Tag
+                v-if="data.isDuplicate"
+                class="update-chip"
+                :value="`Will update existing source '${data.groupName}'`"
+                :data-test="`update-chip-${data.file.name}`"
+              />
+              <OnmsIcon
+                v-if="!data.isValid"
+                :icon="Error"
+                class="error-icon"
+              />
+              <OnmsIcon
+                v-if="data.isValid && data.isDuplicate"
+                :icon="Refresh"
+                class="update-icon"
+              />
+              <OnmsIcon
+                v-if="data.isValid && !data.isDuplicate"
+                :icon="CheckCircle"
+                class="success-icon"
+              />
+            </div>
+          </template>
+        </Column>
+        <Column header="Action">
+          <template #body="{ data }">
+            <Button
+              text
+              title="Remove"
+              data-test="remove-files-button"
+              @click="removeFile(data)"
+            >
+              <OnmsIcon :icon="Delete" />
+            </Button>
+          </template>
+        </Column>
+      </DataTable>
+      <div v-if="!orderedSourceFiles.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -239,14 +220,14 @@
         <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
         <li>
           Files that are valid and ready for upload will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="CheckCircle"
             class="success-icon-text"
           />.
         </li>
         <li>
           Files with duplicate names (excluding the .xml extension) will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Warning"
             class="warning-icon-text"
           />
@@ -254,7 +235,7 @@
         </li>
         <li>
           Invalid files will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Error"
             class="error-icon-text"
           />
@@ -288,20 +269,20 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
-import UploadFile from '@featherds/icon/action/UploadFile'
-import FolderAdd from '@featherds/icon/file/FolderAdd'
-import Apps from '@featherds/icon/navigation/Apps'
-import Refresh from '@featherds/icon/navigation/Refresh'
-import Error from '@featherds/icon/notification/Error'
-import Warning from '@featherds/icon/notification/Warning'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSpinner } from '@featherds/progress'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import UploadFile from '@/components/icons/action/UploadFile.vue'
+import FolderAdd from '@/components/icons/file/FolderAdd.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Error from '@/components/icons/notification/Error.vue'
+import Warning from '@/components/icons/notification/Warning.vue'
+import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Tag from 'primevue/tag'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
@@ -314,14 +295,13 @@ const sourceFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as SnmpDataCollectionSourceUploadResponse)
 const sourceFiles = ref<UploadSnmpDataCollectionFileType[]>([])
 const isLoading = ref(false)
+// Client-side paginator state, kept in sync so removeFile() can clamp the page.
+const firstRow = ref(0)
+const rowsPerPage = ref(10)
 const snackbar = useSnackbar()
 const displayRenameDialog = ref(false)
 const selectedIndex = ref<number | null>(null)
 const uploadedDataCollectionFilesReportDialogState = ref(false)
-const tableRecord = ref<UploadSnmpDataCollectionFileType[]>([])
-const page = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
 const availableProfiles = ref<SnmpCollectionProfile[]>([])
 const selectedProfileNames = ref<string[]>([])
 const emptyListContent = {
@@ -329,9 +309,10 @@ const emptyListContent = {
 }
 
 // Display order: new sources at the top so they're easy to scan, then update
-// rows below. Within each group preserve insertion order. The Source-of-truth
-// array stays in insertion order so the rest of the code (pagination math,
-// removeFile by index) keeps working off the same indices it always did.
+// rows below. Within each group preserve insertion order. The source-of-truth
+// array stays in insertion order so the rest of the code (removeFile by file
+// reference) keeps working off the same indices it always did. DataTable
+// handles pagination client-side off this list.
 const orderedSourceFiles = computed<UploadSnmpDataCollectionFileType[]>(() => {
   const newOnes: UploadSnmpDataCollectionFileType[] = []
   const updates: UploadSnmpDataCollectionFileType[] = []
@@ -394,21 +375,17 @@ const shouldUploadDisabled = computed(() => {
   )
 })
 
-const removeFile = (index: number) => {
-  // tableRecord is sliced from orderedSourceFiles (sorted: new before
-  // updates), so its row index doesn't line up with sourceFiles. Resolve
-  // back through the File reference to find the actual array position.
-  const target = tableRecord.value[index]?.file
-  if (!target) {
-    return
-  }
-  const sourceIndex = sourceFiles.value.findIndex(f => f.file === target)
+const removeFile = (file: UploadSnmpDataCollectionFileType) => {
+  const sourceIndex = sourceFiles.value.findIndex(f => f.file === file.file)
   if (sourceIndex < 0) {
     return
   }
   sourceFiles.value.splice(sourceIndex, 1)
-  total.value = sourceFiles.value.length
-  tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+  // Keep the paginator on a valid page once the row count shrinks.
+  const remaining = sourceFiles.value.length
+  if (remaining > 0 && firstRow.value >= remaining) {
+    firstRow.value = (Math.ceil(remaining / rowsPerPage.value) - 1) * rowsPerPage.value
+  }
 }
 
 const openFileDialog = () => {
@@ -417,17 +394,6 @@ const openFileDialog = () => {
 
 const openFolderDialog = () => {
   sourceFolderInput.value?.click()
-}
-
-const onPageChange = (newPage: number) => {
-  page.value = newPage
-  tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
-}
-
-const onPageSizeChange = (newPageSize: number) => {
-  pageSize.value = newPageSize
-  page.value = 1
-  tableRecord.value = orderedSourceFiles.value.slice(0, pageSize.value)
 }
 
 const isExistingSourceName = (groupName: string | undefined): boolean => {
@@ -473,8 +439,6 @@ const handleSourceFileUpload = async (event: Event) => {
         })
       }
     }
-    total.value = sourceFiles.value.length
-    tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
     input.files = null
@@ -527,8 +491,6 @@ const handleSourceFolderUpload = async (event: Event) => {
         })
       }
     }
-    total.value = sourceFiles.value.length
-    tableRecord.value = orderedSourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
@@ -559,8 +521,6 @@ const uploadFiles = async () => {
       success: [...response.success]
     }
     sourceFiles.value = []
-    tableRecord.value = []
-    total.value = 0
     sourceFileInput.value!.value = ''
     store.fetchAllSourcesNames()
     store.fetchSnmpCollectionSources()
@@ -663,23 +623,19 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
-
+@use '@/styles/onms-typography' as *;
 
 .data-collection-source-import-container {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     .title-container {
       .title {
         h2 {
           margin: 0;
-          @include typography.headline3;
+          @include onms-headline3;
         }
       }
 
@@ -708,13 +664,6 @@ defineExpose({
       .section-right {
         display: flex;
         align-items: center;
-
-        button {
-          :deep(.spinner) {
-            height: 1.5rem !important;
-            width: 1.5rem !important;
-          }
-        }
       }
     }
 
@@ -731,7 +680,7 @@ defineExpose({
       margin: 12px 0 16px;
       padding: 12px 14px;
       background-color: rgba(0, 0, 0, 0.03);
-      border: 1px solid var(--feather-border-on-surface);
+      border: 1px solid var(--p-content-border-color);
       border-left: 3px solid transparent;
       border-radius: 4px;
       transition: background-color 0.15s ease, border-color 0.15s ease;
@@ -752,8 +701,8 @@ defineExpose({
       }
 
       .profiles-label {
-        @include typography.subtitle2;
-        color: var(--feather-primary-text-on-surface);
+        @include onms-subtitle2;
+        color: var(--p-text-color);
 
         .required-marker {
           color: #C62828;
@@ -762,20 +711,26 @@ defineExpose({
       }
 
       .profiles-count {
-        @include typography.caption;
-        color: var(--feather-secondary-text-on-surface);
+        @include onms-caption;
+        color: var(--p-text-muted-color);
       }
 
       .profiles-list {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0 16px;
+        gap: 8px 16px;
+
+        .profile-checkbox {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
       }
 
       .profiles-hint {
-        @include typography.body-small;
-        color: var(--feather-secondary-text-on-surface);
+        @include onms-body-small;
+        color: var(--p-text-muted-color);
       }
 
       .profiles-hint.required-hint {
@@ -785,141 +740,85 @@ defineExpose({
   }
 
   .container {
-    table {
-      width: 100%;
-      border: 1px solid var(--feather-border-on-surface);
-      @include table.table;
-
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-
-        th:first-child {
-          width: 85%;
-        }
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        div {
-          border-radius: 5px;
-          padding: 0px 5px 0px 5px;
-        }
-
-        .file {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-
-          .kind-chip {
-            min-width: none;
-            max-width: none;
-            border-radius: 4px;
-
-            &.kind-source {
-              background-color: #0B720C1F;
-              :deep(span) { color: #0B720C !important; }
-            }
-
-            &.kind-config {
-              background-color: #1976D21F;
-              :deep(span) { color: #1976D2 !important; }
-            }
-          }
-
-          .error-chip {
-            background-color: #A5021F33;
-            color: #A5021F;
-            min-width: none;
-            max-width: none;
-          }
-
-          .warning-chip {
-            background-color: #FBE94733;
-            color: #FBE947;
-            min-width: none;
-            max-width: none;
-
-          }
-
-          // Re-uploaded source files are upserts, not errors. Use a calm
-          // info-blue treatment so it reads as "this will update an existing
-          // record" rather than "you have a problem".
-          .update-chip {
-            background-color: #1976D21F;
-            min-width: none;
-            max-width: none;
-            border-radius: 4px;
-            :deep(span) { color: #1976D2 !important; }
-          }
-
-          .update-icon {
-            color: #1976D2;
-            height: 2em;
-            width: 2em;
-          }
-
-          .success-icon {
-            color: var(variables.$success);
-            cursor: pointer;
-            height: 2em;
-            width: 2em;
-          }
-
-          .error-icon {
-            color: var(variables.$error);
-            cursor: pointer;
-            height: 2em;
-            width: 2em;
-          }
-
-          .warning-icon {
-            color: var(variables.$major);
-            cursor: pointer;
-            height: 2em;
-            width: 2em;
-          }
-        }
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-      }
-    }
-
-    .alerts-pagination {
+    .file {
       display: flex;
-      justify-content: center;
-      padding: 30px 0px 0px 0px;
-    }
+      align-items: center;
+      gap: 10px;
 
-    .feather-pagination {
-      border: none !important;
+      .kind-chip {
+        border-radius: 4px;
+
+        &.kind-source {
+          background-color: #0B720C1F;
+          :deep(.p-tag-label) { color: #0B720C !important; }
+        }
+
+        &.kind-config {
+          background-color: #1976D21F;
+          :deep(.p-tag-label) { color: #1976D2 !important; }
+        }
+      }
+
+      .error-chip {
+        background-color: #A5021F33;
+        :deep(.p-tag-label) { color: #A5021F !important; }
+      }
+
+      // Re-uploaded source files are upserts, not errors. Use a calm
+      // info-blue treatment so it reads as "this will update an existing
+      // record" rather than "you have a problem".
+      .update-chip {
+        background-color: #1976D21F;
+        border-radius: 4px;
+        :deep(.p-tag-label) { color: #1976D2 !important; }
+      }
+
+      .update-icon {
+        color: #1976D2;
+        height: 2em;
+        width: 2em;
+      }
+
+      .success-icon {
+        color: var(--onms-success);
+        cursor: pointer;
+        height: 2em;
+        width: 2em;
+      }
+
+      .error-icon {
+        color: var(--onms-error);
+        cursor: pointer;
+        height: 2em;
+        width: 2em;
+      }
+
+      .warning-icon {
+        color: var(--onms-major);
+        cursor: pointer;
+        height: 2em;
+        width: 2em;
+      }
     }
   }
 
   .info-section {
     .success-icon-text {
-      color: var(variables.$success);
+      color: var(--onms-success);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .error-icon-text {
-      color: var(variables.$error);
+      color: var(--onms-error);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .warning-icon-text {
-      color: var(variables.$major);
+      color: var(--onms-major);
       vertical-align: middle;
       height: 2em;
       width: 2em;

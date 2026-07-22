@@ -4,13 +4,11 @@
       <div class="title">No external requisition configured.</div>
       <div class="paragraph">Add an external requisition to synchronize inventory.</div>
       <div class="flex button-wrapper">
-        <FeatherButton
+        <PButton
           data-test="external-req-btn"
           class="button"
-          primary
           @click="newDefinition"
-          >Add External Requisition</FeatherButton
-        >
+        >Add External Requisition</PButton>
       </div>
     </div>
   </div>
@@ -21,7 +19,9 @@
   setup
 >
 import { PropType } from 'vue'
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
+
+const PButton = Button
 
 /**
  * Props
@@ -38,11 +38,10 @@ defineProps({
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
 
 .wrapper {
-  background-color: var($background);
+  background-color: var(--p-content-background);
 }
 .wrapper-inner {
   display: flex;
@@ -53,12 +52,12 @@ defineProps({
   text-align: center;
 }
 .title {
-  @include headline3();
+  @include onms-headline3();
   margin-bottom: 16px;
-  color: var($primary);
+  color: var(--p-primary-color);
 }
 .paragraph {
-  @include body-small();
+  @include onms-body-small();
   max-width: 400px;
 }
 .button {

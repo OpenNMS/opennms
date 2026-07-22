@@ -37,11 +37,8 @@ import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.criterion.Subqueries;
-import org.hibernate.type.FloatType;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StringType;
-import org.hibernate.type.TimestampType;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.type.StandardBasicTypes;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -134,7 +131,17 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         private Integer m_offset;
 
         public org.hibernate.Criteria getCriteria(final Session session) {
-            final org.hibernate.Criteria hibernateCriteria = getCriteria().getExecutableCriteria(session);
+            // In Hibernate 5, DetachedCriteria.getExecutableCriteria() requires SessionImplementor
+            // If we have a Spring proxy, we need to unwrap it to get the actual SessionImplementor
+            org.hibernate.engine.spi.SessionImplementor sessionImpl;
+            if (session instanceof org.hibernate.engine.spi.SessionImplementor) {
+                sessionImpl = (org.hibernate.engine.spi.SessionImplementor) session;
+            } else {
+                // Unwrap Spring proxy to get the actual SessionImplementor
+                sessionImpl = session.unwrap(org.hibernate.engine.spi.SessionImplementor.class);
+            }
+            
+            final org.hibernate.Criteria hibernateCriteria = getCriteria().getExecutableCriteria(sessionImpl);
             if (m_limit != null)
                 hibernateCriteria.setMaxResults(m_limit);
             if (m_offset != null)
@@ -336,7 +343,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             }
         }
 
-        private static final StringType STRING_TYPE = new StringType();
+        private static final org.hibernate.type.Type STRING_TYPE = StandardBasicTypes.STRING;
 
         private List<Criterion> m_criterions = new ArrayList<>();
 
@@ -466,15 +473,15 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 org.hibernate.type.Type[] types = Arrays.stream(restriction.getTypes()).map(t -> { 
                     switch(t) {
                     case FLOAT:
-                        return new FloatType();
+                        return StandardBasicTypes.FLOAT;
                     case INTEGER:
-                        return new IntegerType();
+                        return StandardBasicTypes.INTEGER;
                     case LONG:
-                        return new LongType();
+                        return StandardBasicTypes.LONG;
                     case STRING:
-                        return new StringType();
+                        return StandardBasicTypes.STRING;
                     case TIMESTAMP:
-                        return new TimestampType();
+                        return StandardBasicTypes.TIMESTAMP;
                     default: 
                         throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
                     }

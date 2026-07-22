@@ -359,10 +359,17 @@ describe('Nodes useNodeQuery test', () => {
       expect(filter.extendedSearch.snmpParams?.snmpIfName).toBe('')
     })
 
-    test('maclike maps to snmpParams.physAddr (stripped, lowercase)', () => {
+    test('maclike maps to macAddress (stripped, lowercase)', () => {
       const filter = buildNodeQueryFilterFromQueryString({ maclike: 'AA:BB:CC:DD:EE:FF' }, categories, monitoringLocations)
       const expected = getDefaultNodeQueryFilter()
-      expected.extendedSearch.snmpParams = { ...getDefaultNodeQuerySnmpParams(), physAddr: 'aabbccddeeff' }
+      expected.macAddress = 'aabbccddeeff'
+      expect(filter).toEqual(expected)
+    })
+
+    test('maclike maps to macAddress (stripped, remove FIQL characters, lowercase)', () => {
+      const filter = buildNodeQueryFilterFromQueryString({ maclike: 'AA:B,B:CC:DD:E;E:FF' }, categories, monitoringLocations)
+      const expected = getDefaultNodeQueryFilter()
+      expected.macAddress = 'aabbccddeeff'
       expect(filter).toEqual(expected)
     })
 
@@ -372,7 +379,7 @@ describe('Nodes useNodeQuery test', () => {
         categories, monitoringLocations
       )
       expect(filter.extendedSearch.snmpParams?.snmpIfAlias).toBe('Uplink')
-      expect(filter.extendedSearch.snmpParams?.physAddr).toBe('aabbcc')
+      expect(filter.macAddress).toBe('aabbcc')
     })
 
     test('monitoredService maps to selectedServices (by name)', () => {
@@ -549,6 +556,160 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeStructureQueryParameters: macAddress / maclike', () => {
+    test('emits maclike== for a MAC with colons (stripped, lowercase)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC:DD:EE:FF' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbccddeeff')
+    })
+
+    test('emits maclike== for a MAC with dashes', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA-BB-CC-DD-EE-FF' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbccddeeff')
+    })
+
+    test('emits maclike== for a partial MAC (manufacturer prefix)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('maclike==aabbcc')
+    })
+
+    test('omits maclike query when macAddress is empty', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: '' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('maclike==')
+    })
+
+    test('omits maclike query when macAddress is only separators', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), macAddress: '::--' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('maclike==')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: nodesWithDownAggregateStatus', () => {
+    test('emits nodesWithDownAggregateStatus==true when set', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithDownAggregateStatus==true')
+    })
+
+    test('omits the down filter when false', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: false }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('nodesWithDownAggregateStatus')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: nodesWithAssets', () => {
+    test('emits nodesWithAssets==true when set', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithAssets==true')
+    })
+
+    test('omits the filter when false', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: false }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('nodesWithAssets')
+    })
+
+    test('parses nodesWithAssets from the query string', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { nodesWithAssets: 'true' }, categories, monitoringLocations
+      )
+      expect(filter.nodesWithAssets).toBe(true)
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: asset filters', () => {
+    test('emits assetRecord.<col>== for a single allowed column', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: 'HQ' }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('assetRecord.building==HQ')
+    })
+
+    test('intersects multiple asset filters', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        assetFilters: [{ column: 'building', value: 'HQ' }, { column: 'region', value: 'East' }]
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('assetRecord.building==HQ;assetRecord.region==East')
+    })
+
+    test('omits disallowed columns', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'city', value: 'Pittsburgh' }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('assetRecord')
+    })
+
+    test('omits entries with an empty value', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: '' }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('assetRecord')
+    })
+
+    test('combines categories, asset and down filter with intersection', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        assetFilters: [{ column: 'building', value: 'HQ' }],
+        nodesWithDownAggregateStatus: true
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toContain('assetRecord.building==HQ')
+      expect(params._s).toContain('nodesWithDownAggregateStatus==true')
+      expect(params._s).toContain(';')
+    })
+
+    // Asset values are free text; FIQL/URL-structural characters are double-encoded so they survive
+    // the two URL-decodes (servlet container + CXF search.decode.values) and reach the backend as the
+    // exact literal, without corrupting the FIQL expression. See encodeFiqlValue.
+    test.each([
+      ['comma', 'A,B', 'assetRecord.building==A%252CB'],
+      ['semicolon', 'A;B', 'assetRecord.building==A%253BB'],
+      ['parentheses', '(A)', 'assetRecord.building==%2528A%2529'],
+      ['ampersand', 'A&B', 'assetRecord.building==A%2526B'],
+      ['percent', '50%', 'assetRecord.building==50%2525'],
+      ['asterisk (literal, not wildcard)', 'A*', 'assetRecord.building==A%252A'],
+      ['space', 'Data Center', 'assetRecord.building==Data%2520Center'],
+      ['mixed', 'Bldg 1, Floor (2)', 'assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529']
+    ])('double-encodes a value with %s', (title, value, expected) => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe(expected)
+    })
+
+    test('round-trips back to the original value after two URL-decodes', () => {
+      const value = 'Bldg 1, Floor (2) & A;B 50%'
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      const encoded = (params._s as string).replace('assetRecord.building==', '')
+      // container decode, then CXF search.decode.values decode
+      expect(decodeURIComponent(decodeURIComponent(encoded))).toBe(value)
+    })
+  })
+
+  describe('buildNodeQueryFilterFromQueryString: down + asset params', () => {
+    test('parses nodesWithDownAggregateStatus and asset filters', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { nodesWithDownAggregateStatus: 'true', assetColumn: 'building', assetValue: 'HQ' },
+        categories, monitoringLocations
+      )
+      expect(filter.nodesWithDownAggregateStatus).toBe(true)
+      expect(filter.assetFilters).toEqual([{ column: 'building', value: 'HQ' }])
+    })
+
+    test('ignores a disallowed asset column', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { assetColumn: 'city', assetValue: 'Pittsburgh' },
+        categories, monitoringLocations
+      )
+      expect(filter.assetFilters).toEqual([])
+    })
+  })
+
   describe('buildUpdatedNodeStructureQueryParameters: selectedServices', () => {
     test('single selectedService generates serviceType.name FIQL query', () => {
       const filter = getDefaultNodeQueryFilter()
@@ -569,6 +730,70 @@ describe('Nodes useNodeQuery test', () => {
       filter.selectedServices = []
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s).toBeUndefined()
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: ipAddress / iplike', () => {
+    test('emits ipInterface.ipAddress== for an exact IP', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1.100' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('ipInterface.ipAddress==192.168.1.100')
+      expect(params._s).not.toContain('iplike==')
+    })
+
+    test('emits iplike== for a wildcard pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1.*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('omits IP query when ipAddress is empty', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s ?? '').not.toContain('ipInterface.ipAddress==')
+      expect(params._s ?? '').not.toContain('iplike==')
+    })
+
+    test('emits iplike== for a range-only pattern (no wildcard)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '10.0.0.1-255' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==10.0.0.1-255')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('emits iplike== with double-encoded commas for a comma-list pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1,2.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1%252C2.*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('normalizes spaces around commas before encoding', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '192.168.1, 2, 3-255.*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==192.168.1%252C2%252C3-255.*')
+    })
+
+    test('omits IP query when ipAddress is not a valid IP or iplike pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: 'notanip' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s ?? '').not.toContain('ipInterface.ipAddress==')
+      expect(params._s ?? '').not.toContain('iplike==')
+    })
+
+    test('emits iplike== for an IPv6 wildcard pattern', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: '2001:db8:*:*:*:*:*:*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('iplike==2001:db8:*:*:*:*:*:*')
+      expect(params._s).not.toContain('ipInterface.ipAddress==')
+    })
+
+    test('emits ipInterface.ipAddress== for an exact IPv6 address', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 25, offset: 0 }, filter)
+      expect(params._s).toContain('ipInterface.ipAddress==FE80:0000:0000:0000:0202:B3FF:FE1E:8329')
+      expect(params._s).not.toContain('iplike==')
     })
   })
 

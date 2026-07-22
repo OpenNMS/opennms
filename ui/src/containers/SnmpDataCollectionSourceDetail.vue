@@ -6,12 +6,15 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <FeatherBackButton
+          <PButton
+            text
+            class="back-button"
             data-test="back-button"
             @click="router.push({ name: 'SNMP Data Collection' })"
           >
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </FeatherBackButton>
+          </PButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Source' : `Source Details for ${store.selectedCollectionSource.name}` }}</h1>
@@ -20,50 +23,45 @@
           v-if="!isCreateMode"
           class="tag"
         >
-          <FeatherChip
+          <PTag
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
+            value="Enabled"
             data-test="status-tag"
-          >
-            Enabled
-          </FeatherChip>
-          <FeatherChip
+          />
+          <PTag
             v-if="!store.selectedCollectionSource.enabled"
             class="disabled-tag"
+            value="Disabled"
             data-test="status-tag"
-          >
-            Disabled
-          </FeatherChip>
+          />
         </div>
       </div>
       <div
         v-if="!isCreateMode"
         class="action-container"
       >
-        <FeatherButton
+        <PButton
           v-if="!store.selectedCollectionSource.enabled"
-          secondary
+          outlined
+          label="Enable Source"
           data-test="enable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
-        >
-          Enable Source
-        </FeatherButton>
-        <FeatherButton
+        />
+        <PButton
           v-if="store.selectedCollectionSource.enabled"
-          secondary
+          outlined
+          label="Disable Source"
           data-test="disable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
-        >
-          Disable Source
-        </FeatherButton>
-        <FeatherButton
+        />
+        <PButton
           v-if="!isPluginSourced(store.selectedCollectionSource)"
-          secondary
+          outlined
+          label="Delete Source"
           data-test="delete-source"
           @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
-        >
-          Delete Source
-        </FeatherButton>
+        />
       </div>
     </div>
     <TableCard class="content">
@@ -75,14 +73,22 @@
         <div class="config-row">
           <div class="config-field">
             <span class="field-label">Source:</span>
-            <FeatherInput
+            <div
               v-if="isCreateMode"
-              label="Source Name"
-              v-model="localSourceName"
-              :error="sourceNameError"
-              data-test="source-name-input"
               class="source-name-input"
-            />
+            >
+              <InputText
+                v-model="localSourceName"
+                :invalid="!!sourceNameError"
+                placeholder="Source Name"
+                data-test="source-name-input"
+                fluid
+              />
+              <small
+                v-if="sourceNameError"
+                class="field-error"
+              >{{ sourceNameError }}</small>
+            </div>
             <span
               v-else
               class="field-value"
@@ -143,34 +149,36 @@
         v-if="!isCreateMode"
         class="tab-container"
       >
-        <FeatherTabContainer v-model="store.activeTab">
-          <template v-slot:tabs>
-            <FeatherTab>System Definitions</FeatherTab>
-            <FeatherTab>MIB Groups</FeatherTab>
-            <FeatherTab>Resource Types</FeatherTab>
-          </template>
-          <FeatherTabPanel>
-            <SystemDefinitionsTable />
-          </FeatherTabPanel>
-          <FeatherTabPanel>
-            <MibGroupsTable />
-          </FeatherTabPanel>
-          <FeatherTabPanel>
-            <ResourceTypesTable />
-          </FeatherTabPanel>
-        </FeatherTabContainer>
+        <PTabs
+          class="tabs"
+          v-model:value="store.activeTab">
+          <PTabList>
+            <PTab :value="0">System Definitions</PTab>
+            <PTab :value="1">MIB Groups</PTab>
+            <PTab :value="2">Resource Types</PTab>
+          </PTabList>
+          <PTabPanels>
+            <PTabPanel :value="0">
+              <SystemDefinitionsTable />
+            </PTabPanel>
+            <PTabPanel :value="1">
+              <MibGroupsTable />
+            </PTabPanel>
+            <PTabPanel :value="2">
+              <ResourceTypesTable />
+            </PTabPanel>
+          </PTabPanels>
+        </PTabs>
       </div>
       <div
         v-if="isCreateMode"
         class="create-action-row"
       >
-        <FeatherButton
-          primary
+        <PButton
           data-test="create-source-button"
+          label="Create Source"
           @click="onSaveSource"
-        >
-          Create Source
-        </FeatherButton>
+        />
       </div>
     </TableCard>
   </div>
@@ -179,12 +187,10 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <FeatherButton
-      primary
+    <PButton
+      label="Go Back"
       @click="router.push({ name: 'SNMP Data Collection' })"
-    >
-      Go Back
-    </FeatherButton>
+    />
   </div>
   <DeleteConfirmationDialog
     :visible="isDeleteDialogVisible"
@@ -228,17 +234,27 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherInput } from '@featherds/input'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
-import ChipComponent from 'primevue/chip'
 import ButtonComponent from 'primevue/button'
+import ChipComponent from 'primevue/chip'
+import InputText from 'primevue/inputtext'
+import TabComponent from 'primevue/tab'
+import TabListComponent from 'primevue/tablist'
+import TabPanelComponent from 'primevue/tabpanel'
+import TabPanelsComponent from 'primevue/tabpanels'
+import TabsComponent from 'primevue/tabs'
+import TagComponent from 'primevue/tag'
 
 const PChip = ChipComponent
 const PButton = ButtonComponent
+const PTag = TagComponent
+const PTabs = TabsComponent
+const PTabList = TabListComponent
+const PTab = TabComponent
+const PTabPanels = TabPanelsComponent
+const PTabPanel = TabPanelComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -455,8 +471,8 @@ watch(() => route.params.id, (id: string | string[]) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-detail-container {
   margin: 0 auto;
@@ -475,7 +491,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -486,7 +502,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           border-radius: 4px;
           background-color: #0B720C1F;
 
-          :deep(span) {
+          :deep(.p-tag-label) {
             color: #0B720C !important;
           }
         }
@@ -496,7 +512,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           border-radius: 4px;
           background-color: #7575751F;
 
-          :deep(span) {
+          :deep(.p-tag-label) {
             color: #757575 !important;
           }
         }
@@ -517,11 +533,11 @@ watch(() => route.params.id, (id: string | string[]) => {
   .content {
     margin-top: 10px;
     padding: 25px;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var(--p-content-border-color);
 
     .config-details-box {
       .header {
-        @include headline3;
+        @include onms-headline3;
         margin-bottom: 20px;
       }
 
@@ -535,28 +551,24 @@ watch(() => route.params.id, (id: string | string[]) => {
           margin-right: 40px;
 
           .field-label {
-            @include headline4;
+            @include onms-headline4;
             margin-right: 10px;
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
             min-width: 80px;
           }
 
           .field-value {
-            @include body-large;
+            @include onms-body-large;
           }
 
           .profiles-chips {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-
-            :deep(.p-chip-label) {
-              color: var(--feather-primary-text-on-surface);
-            }
           }
 
           .no-profiles-text {
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
           }
 
           .profiles-field-content {
@@ -566,8 +578,15 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .profiles-error {
-            @include body-small;
-            color: var(--feather-error);
+            @include onms-body-small;
+            color: var(--p-red-500);
+          }
+
+          .field-error {
+            display: block;
+            color: var(--p-red-500);
+            font-size: 0.8em;
+            margin-top: 0.25em;
           }
         }
 
@@ -588,6 +607,12 @@ watch(() => route.params.id, (id: string | string[]) => {
     .tab-container {
       margin-top: 25px;
       padding: 10px;
+
+      .tabs {
+        :deep(.p-tab) {
+          text-transform: uppercase;
+        }
+      }
     }
 
     .create-action-row {
@@ -595,7 +620,7 @@ watch(() => route.params.id, (id: string | string[]) => {
       justify-content: flex-end;
       margin-top: 20px;
       padding-top: 20px;
-      border-top: 1px solid var(--feather-border-on-surface);
+      border-top: 1px solid var(--p-content-border-color);
     }
   }
 
@@ -615,22 +640,14 @@ watch(() => route.params.id, (id: string | string[]) => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }
 
 .edit-profiles-btn {
   text-transform: uppercase;
-  letter-spacing: var(--feather-button-letter-spacing);
-  border-color: var(--feather-border-on-surface) !important;
-  color: var(--feather-primary) !important;
-  font-size: var(--feather-button-font-size);
-  font-weight: var(--feather-button-font-weight);
-
-  :deep(.p-button-label) {
-    font-weight: var(--feather-button-font-weight);
-    font-size: var(--feather-button-font-size);
-  }
+  border-color: var(--p-content-border-color) !important;
+  color: var(--p-primary-color) !important;
 }
 </style>

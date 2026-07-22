@@ -1,25 +1,27 @@
 <template>
   <div class="editor">
     <div class="toolbar">
-      <FeatherButton
+      <PButton
         v-if="reverseLog"
+        text
         :disabled="!selectedLog"
         class="btn"
-        icon="Display oldest first."
+        aria-label="Display oldest first."
         @click="getLog(false)"
       >
-        <FeatherIcon :icon="KeyboardArrowDown" />
-      </FeatherButton>
+        <OnmsIcon :icon="KeyboardArrowDown" />
+      </PButton>
 
-      <FeatherButton
+      <PButton
         v-if="!reverseLog"
+        text
         :disabled="!selectedLog"
         class="btn"
-        icon="Display newest first."
+        aria-label="Display newest first."
         @click="getLog(true)"
       >
-        <FeatherIcon :icon="KeyboardArrowUp" />
-      </FeatherButton>
+        <OnmsIcon :icon="KeyboardArrowUp" />
+      </PButton>
     </div>
     <VAceEditor
       v-model:value="content"
@@ -36,11 +38,11 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Button from 'primevue/button'
 import { onKeyStroke } from '@vueuse/core'
-import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
-import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
+import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
+import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'
@@ -48,6 +50,8 @@ import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import { useAppStore } from '@/stores/appStore'
 import { useLogStore } from '@/stores/logStore'
+
+const PButton = Button
 
 const appStore = useAppStore()
 const logStore = useLogStore()
@@ -95,12 +99,12 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .editor {
   height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .toolbar {
     display: block;
@@ -116,7 +120,7 @@ const init = (editor: any) => {
       min-width: 25px !important;
       margin-right: 5px;
       margin-top: 2px;
-      svg {
+      :deep(svg) {
         font-size: 20px !important;
       }
     }

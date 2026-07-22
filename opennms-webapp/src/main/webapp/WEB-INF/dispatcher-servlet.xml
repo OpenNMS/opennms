@@ -37,10 +37,6 @@
         <property name="order" value="0"/>
     </bean>
 
-    <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
-
     <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="order" value="1"/>
@@ -339,14 +335,9 @@
                     <property name="entries">
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Nodes (Legacy)"/>
-                                <property name="url" value="element/nodeList.htm"/>
-                                <property name="locationMatch" value="nodelist"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Node List"/>
+                                <property name="name" value="Nodes"/>
                                 <property name="url" value="ui/index.html#/nodes"/>
-                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="locationMatch" value="nodeList"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Assets"/>

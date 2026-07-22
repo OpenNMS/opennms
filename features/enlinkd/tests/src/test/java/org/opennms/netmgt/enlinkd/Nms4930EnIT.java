@@ -334,28 +334,27 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         //builder.addMacNodeWithSnmpInterface("001e58a6aed7","10.100.1.7",101 );
         // Adding a "node" with mac address 000ffeb10e26 found on dlink1 port 6
         //builder.addMacNode("000ffeb10e26","10.100.2.6" );
-        m_nodeDao.save(builder.getDlink1());
-        m_nodeDao.save(builder.getDlink2());
-        m_nodeDao.save(builder.getHost1());
-        m_nodeDao.save(builder.getHost2());
+        saveNodes(builder.getDlink1(), builder.getDlink2(), builder.getHost1(), builder.getHost2());
 
         assertEquals(4, m_nodeDao.countAll());
 
-        IpNetToMedia atsave2 = builder.getMac2();
-        OnmsNode sourcehost2 = m_nodeDao.findByForeignId(atsave2.getSourceNode().getForeignSource(),atsave2.getSourceNode().getForeignId());
-        OnmsNode host2 = m_nodeDao.findByForeignId(atsave2.getNode().getForeignSource(),atsave2.getNode().getForeignId());
-        atsave2.setSourceNode(sourcehost2);
-        atsave2.setNode(host2);
-        m_ipNetToMediaDao.save(atsave2);
+        persist(() -> {
+            IpNetToMedia atsave2 = builder.getMac2();
+            OnmsNode sourcehost2 = m_nodeDao.findByForeignId(atsave2.getSourceNode().getForeignSource(),atsave2.getSourceNode().getForeignId());
+            OnmsNode host2 = m_nodeDao.findByForeignId(atsave2.getNode().getForeignSource(),atsave2.getNode().getForeignId());
+            atsave2.setSourceNode(sourcehost2);
+            atsave2.setNode(host2);
+            m_ipNetToMediaDao.save(atsave2);
 
-        IpNetToMedia atsave1 = builder.getMac1();
-        OnmsNode sourcehost1 = m_nodeDao.findByForeignId(atsave1.getSourceNode().getForeignSource(),atsave1.getSourceNode().getForeignId());
-        OnmsNode host1 = m_nodeDao.findByForeignId(atsave1.getNode().getForeignSource(),atsave1.getNode().getForeignId());
-        atsave1.setSourceNode(sourcehost1);
-        atsave1.setNode(host1);
-        m_ipNetToMediaDao.save(atsave1);
+            IpNetToMedia atsave1 = builder.getMac1();
+            OnmsNode sourcehost1 = m_nodeDao.findByForeignId(atsave1.getSourceNode().getForeignSource(),atsave1.getSourceNode().getForeignId());
+            OnmsNode host1 = m_nodeDao.findByForeignId(atsave1.getNode().getForeignSource(),atsave1.getNode().getForeignId());
+            atsave1.setSourceNode(sourcehost1);
+            atsave1.setNode(host1);
+            m_ipNetToMediaDao.save(atsave1);
 
-        m_ipNetToMediaDao.flush();
+            m_ipNetToMediaDao.flush();
+        });
 
         assertEquals(2, m_ipNetToMediaDao.countAll());
 
@@ -411,6 +410,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(dlink1.getId());
 
         assertEquals(59,links.size());
+        persist(() -> {
         for (BridgeForwardingTableEntry link: links) {
             System.err.println(link.printTopology());
             if (BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF ==  link.getBridgeDot1qTpFdbStatus()) {
@@ -430,6 +430,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             maclink.setBridgeMacLinkLastPollTime(maclink.getBridgeMacLinkCreateTime());
             m_bridgeMacLinkDao.save(maclink);
         }
+        });
 
         assertEquals(58,m_bridgeMacLinkDao.countAll());
 

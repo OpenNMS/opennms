@@ -1,46 +1,59 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 wrapper">
-      <ShimFeatherMegaMenu ref="mega" name="Management" close-text="Close" class="graph-controls">
-        <template v-slot:button>
-          {{ selectedTime }} &nbsp;
-          <FeatherIcon :icon="ArrowDropDown" />
-        </template>
+  <div class="onms-row">
+    <div class="onms-col-12 wrapper">
+      <PButton
+        text
+        class="graph-controls"
+        aria-haspopup="true"
+        @click="toggleMenu"
+      >
+        {{ selectedTime }} &nbsp;
+        <OnmsIcon :icon="ArrowDropDown" />
+      </PButton>
 
-        <div class="feather-row">
-          <div class="feather-col-5">
-            <FeatherList>
-              <FeatherListItem
-                v-for="option in options"
-                :key="option.label"
-                @click="selectOption($event, option)"
-              >{{ option.label }}</FeatherListItem>
-            </FeatherList>
-          </div>
+      <PPopover
+        ref="menu"
+        class="graph-controls-panel"
+      >
+        <div class="menu-content">
+          <ul class="onms-list options-col">
+            <li
+              class="list-item"
+              v-for="option in options"
+              :key="option.label"
+              @click="selectOption(option)"
+            >{{ option.label }}</li>
+          </ul>
 
-          <div class="feather-col-5">
-            <FeatherDateInput v-model="startDateRef" label="Start Date" class="date-input" />
-            <FeatherSelect
-              :options="times"
-              v-model="startTimeRef"
-              label="Start Time"
-              text-prop="label"
-            />
-            <FeatherDateInput v-model="endDateRef" label="End Date" class="date-input" />
-            <FeatherSelect
-              :options="times"
-              v-model="endTimeRef"
-              label="End Time"
-              text-prop="label"
-            />
-            <FeatherButton
+          <div class="custom-col">
+            <FormField label="Start Date" class="date-input">
+              <PDatePicker v-model="startDateRef" />
+            </FormField>
+            <FormField label="Start Time">
+              <PSelect
+                :options="times"
+                v-model="startTimeRef"
+                optionLabel="label"
+              />
+            </FormField>
+            <FormField label="End Date" class="date-input">
+              <PDatePicker v-model="endDateRef" />
+            </FormField>
+            <FormField label="End Time">
+              <PSelect
+                :options="times"
+                v-model="endTimeRef"
+                optionLabel="label"
+              />
+            </FormField>
+            <PButton
               :disabled="disableCustomTimeBtn"
               text
               @click="applyCustomTime"
-            >Apply custom time</FeatherButton>
+            >Apply custom time</PButton>
           </div>
         </div>
-      </ShimFeatherMegaMenu>
+      </PPopover>
     </div>
   </div>
 </template>
@@ -48,16 +61,19 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherList, FeatherListItem } from '@featherds/list'
-import { ShimFeatherMegaMenu } from '../Common/ShimFeatherMegaMenu'
-// add this back when exports are fixed
-//import { FeatherMegaMenu } from '@featherds/megamenu'
+import Button from 'primevue/button'
+import Popover from 'primevue/popover'
+import DatePicker from 'primevue/datepicker'
+import Select from 'primevue/select'
+import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
-import { FeatherDateInput } from '@featherds/date-input'
-import { FeatherButton } from '@featherds/button'
-import { FeatherSelect } from '@featherds/select'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+
+const PButton = Button
+const PPopover = Popover
+const PDatePicker = DatePicker
+const PSelect = Select
 
 interface TimeOption {
   label: string
@@ -66,7 +82,7 @@ interface TimeOption {
 
 const emit = defineEmits(['updateTime'])
 
-const mega = ref()
+const menu = ref()
 const startDateRef = ref()
 const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' }})
 const endDateRef = ref()
@@ -117,8 +133,9 @@ const times = [
 
 const disableCustomTimeBtn = computed(() => Boolean(!startDateRef.value || !startTimeRef.value || !endDateRef.value || !endTimeRef.value))
 
-const selectOption = (event: Event, option: TimeOption) => {
-  event.stopImmediatePropagation() // prevent @featherds issue
+const toggleMenu = (event: Event) => menu.value.toggle(event)
+
+const selectOption = (option: TimeOption) => {
   selectedTime.value = option.label
   const now = new Date()
   const startTime = getUnixTime(sub(now, option.time))
@@ -131,7 +148,7 @@ const selectOption = (event: Event, option: TimeOption) => {
     format
   })
 
-  mega.value.closeMenu()
+  menu.value.hide()
 }
 
 const applyCustomTime = () => {
@@ -157,35 +174,54 @@ const applyCustomTime = () => {
   })
 
   selectedTime.value = 'Custom Time'
-  mega.value.closeMenu()
+  menu.value.hide()
 }
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .wrapper {
   height: 70px;
   .graph-controls {
     padding: 8px;
     max-height: 35px;
   }
-
-  .date-input {
-    @include body-small;
-  }
 }
 </style>
 
 <style lang="scss">
-.graph-controls {
-  .menu {
-    max-width: 550px;
-    position: relative;
+@import '@/styles/onms-typography';
+
+.graph-controls-panel {
+  .menu-content {
+    display: flex;
+    gap: 2rem;
     min-width: 40em;
+    max-width: 550px;
   }
-  .menu-name {
-    display: none !important;
+
+  .options-col {
+    flex: 0 0 40%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .list-item {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--p-highlight-background);
+      }
+    }
+  }
+
+  .custom-col {
+    flex: 1;
+
+    .date-input {
+      @include onms-body-small;
+    }
   }
 }
 </style>
-../Common/ProxyFeatherMegaMenu

@@ -26,6 +26,7 @@
                         <Bundle-Activator>org.opennms.container.jaas.Activator</Bundle-Activator>
                         <Import-Package>
                             org.apache.karaf.jaas.config;version="${karafVersion}",
+                            org.apache.karaf.jaas.modules.publickey;version="${karafVersion}",
                             *
                         </Import-Package>
                         <Export-Package>org.opennms.container.jaas.*</Export-Package>

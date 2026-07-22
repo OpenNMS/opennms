@@ -1,3 +1,4 @@
 .Release Notes
 * xref:whatsnew.adoc[]
+* xref:spring-hibernate-upgrade.adoc[]
 * xref:changelog.adoc[]

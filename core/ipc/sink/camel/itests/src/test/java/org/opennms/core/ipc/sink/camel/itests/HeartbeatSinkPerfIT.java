@@ -139,7 +139,7 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
+        return "OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
     @Before

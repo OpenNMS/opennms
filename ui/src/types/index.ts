@@ -20,14 +20,41 @@
 /// License.
 ///
 
-import { SORT } from '@featherds/table'
+// Vendored from FeatherDS (Phase 6 de-Feather): SORT enum (was @featherds/table)
+// and the loose Select/Autocomplete item shapes (were @featherds/select /
+// @featherds/autocomplete). SORT's string values are preserved exactly — they
+// are compared and stored at runtime. The item interfaces are kept as an index
+// signature (matching FeatherDS) so existing {_text,_value} casts still hold.
+export enum SORT {
+  ASCENDING = 'asc',
+  DESCENDING = 'desc',
+  NONE = 'none'
+}
+
+export interface ISelectItemType {
+  [k: string]: unknown
+}
+
+export interface IAutocompleteItemType {
+  [k: string]: unknown
+}
 
 export type UpdateModelFunction = (_value: any) => any
+
+// String values match PrimeVue's Toast/Message severities exactly, so a value
+// can be emitted straight to the toast event bus (see useSnackbar).
+export enum MessageSeverity {
+  Error = 'error',
+  Info = 'info',
+  Success = 'success',
+  Warn = 'warn'
+}
 
 export interface SnackbarProps {
   msg: string
   center?: boolean
   error?: boolean
+  severity?: MessageSeverity
   timeout?: number
 }
 
@@ -294,12 +321,12 @@ export interface QueryParameters {
   [x: string]: any
 }
 
-export interface FeatherSortObject {
+export interface ISortObject {
   property: string
   value: SORT | any
 }
 
-export interface SortProps extends FeatherSortObject {
+export interface SortProps extends ISortObject {
   filters: Record<string, unknown>
   first: number
   multiSortMeta: Record<string, unknown>
@@ -584,6 +611,12 @@ export interface ExtendedSearchValue {
   key: string
 }
 
+/** A single asset-record field filter (column + exact-match value). */
+export interface AssetFilter {
+  column: string
+  value: string
+}
+
 /** All components of a node structure query */
 export interface NodeQueryFilter {
   searchTerm: string
@@ -594,7 +627,11 @@ export interface NodeQueryFilter {
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
   ipAddress?: string
+  macAddress?: string
   topology?: string
+  nodesWithDownAggregateStatus?: boolean
+  nodesWithAssets?: boolean
+  assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }
 

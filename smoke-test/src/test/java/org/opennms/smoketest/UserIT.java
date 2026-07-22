@@ -286,8 +286,10 @@ public class UserIT extends OpenNMSSeleniumIT {
                 "<input type='hidden' name='timeZoneId' value=' ' />" +
                 "<input type='hidden' name='dutySchedules' value='0' />" +
                 "<input type='hidden' name='numSchedules' value='1' />" +
-                "<input type='submit' id='submitIt' />" +
+                // force input button to be clear of the side menu
+                "<input type='submit' id='submitIt' style='margin-left: 4rem' />" +
                 "</form>";
+
         String script = "var foo = document.createElement('div'); " +
                 "foo.innerHTML=\"" + html + "\"; " +
                 "document.body.appendChild(foo)";

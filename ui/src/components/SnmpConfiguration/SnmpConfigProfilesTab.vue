@@ -5,7 +5,7 @@
       <div v-if="displayTable" class="info-section">
         <div>
           <span>SNMP profiles provide sets of SNMP configuration that can be applied to devices matching specific filter criteria.</span>
-          <FeatherIcon
+          <OnmsIcon
             :icon="InfoIcon"
             class="info-icon"
             @click="isMessageDialogVisible = true"
@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
@@ -107,9 +107,8 @@ const onDeleteProfile = async (label: string) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-profiles-tab {

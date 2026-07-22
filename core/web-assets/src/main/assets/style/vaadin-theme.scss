@@ -106,18 +106,24 @@ body.v-generated-body {
     :: Vue Menu UI
     -------------------------------------------------- */
 /**
-* Move topology UI over past the Vue top and side menus.
+* Move topology UI over past the Vue top and side menus, which are both
+* position:fixed. Clear the top menu bar height (top) and the collapsed side
+* menu rail (left). --onms-legacy-content-offset (defined in opennms-theme.scss,
+* imported above) is the bar/rail height plus a little breathing room.
 * Note this only moves it past the collapsed side menu.
 */
 .v-app.topo_default.topologyui {
-  margin-top: 0.5em;
-  margin-left: 4em;
+  margin-top: var(--onms-legacy-content-offset);
+  margin-left: var(--onms-legacy-content-offset);
 }
 
-/* Safari 10+/20+ specific, needs extra top margin */
+/* Safari 10+/20+ specific: uses padding-top instead of margin-top (Vaadin's
+   top margin collapses oddly on Safari). Zero the margin so it does not stack
+   on top of the padding. */
 body[class*="v-sa1"] .v-app.topo_default.topologyui,
 body[class*="v-sa2"] .v-app.topo_default.topologyui {
-  padding-top: 4em !important;
+  margin-top: 0;
+  padding-top: var(--onms-legacy-content-offset) !important;
 }
 
 /*  --------------------------------------------------

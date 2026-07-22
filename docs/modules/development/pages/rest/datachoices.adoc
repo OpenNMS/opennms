@@ -1,0 +1,86 @@
+
+= Data Choices API
+
+The `/datachoices` endpoint manages the usage-statistics ("Data Choices") opt-in and the product-update enrollment. It is mounted under `/opennms/rest/datachoices` and uses `application/json`.
+
+== GETs (reading data)
+
+[caption=]
+.Data Choices API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/datachoices`                         | Returns the generated usage-statistics report for the current system.
+| `/datachoices/status`                  | Reports whether usage-statistics collection is enabled and whether the initial notice has been acknowledged.
+| `/datachoices/meta`                    | Returns descriptive metadata about the usage-statistics fields.
+| `/datachoices/productupdate/status`    | Reports whether the user has opted in to product-update enrollment and acknowledged its notice.
+
+|===
+
+== POSTs (Creating Data)
+
+`POST` consumes `application/json` and returns `202 Accepted`.
+
+[caption=]
+.Data Choices API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/datachoices/status`               a|
+Enables/disables usage-statistics collection and/or marks the initial notice acknowledged.
+
+Body (`UsageStatisticsStatusDTO`, only non-null fields are applied):
+
+* `enabled` (Boolean): enable or disable usage-statistics collection.
+* `initialNoticeAcknowledged` (Boolean): mark the initial notice as acknowledged.
+
+| `/datachoices/productupdate/status` a|
+Sets the product-update enrollment opt-in and/or notice-acknowledged flags.
+
+Body (`ProductUpdateEnrollmentStatusDTO`, only non-null fields are applied):
+
+* `optedIn` (Boolean)
+* `noticeAcknowledged` (Boolean)
+
+| `/datachoices/productupdate/submit` a|
+Submits the user's product-update enrollment form. Returns `500` if enrollment is disabled (system property `opennms.productUpdateEnrollment.show=false`).
+
+Body (`ProductUpdateEnrollmentFormData`):
+
+* `consent` (Boolean)
+* `firstName` (String)
+* `lastName` (String)
+* `email` (String)
+* `company` (String)
+
+|===
+
+== Examples using cURL
+
+.Fetch the usage-statistics report
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/datachoices"
+----
+
+.Check the opt-in status
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/datachoices/status"
+----
+
+.Response
+[source,json]
+----
+{"enabled":true,"initialNoticeAcknowledged":true}
+----
+
+.Enable usage-statistics collection
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/json' \
+  -d '{"enabled":true,"initialNoticeAcknowledged":true}' \
+  "http://127.0.0.1:8980/opennms/rest/datachoices/status"
+----

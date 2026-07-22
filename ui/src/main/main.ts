@@ -34,7 +34,7 @@ import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
 import * as VueRouter from 'vue-router'
 
-import '@featherds/styles'
+import '@/styles/onms-base.scss'
 import '@/styles/themes.scss'
 
 import 'vue-diff/dist/index.css'

@@ -44,7 +44,7 @@ public class BmpStatsByPeer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpStatsByPeerSequence")
-    @SequenceGenerator(name = "bmpStatsByPeerSequence", sequenceName = "bmpstatsbypeernxtid")
+    @SequenceGenerator(name = "bmpStatsByPeerSequence", sequenceName = "bmpstatsbypeernxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

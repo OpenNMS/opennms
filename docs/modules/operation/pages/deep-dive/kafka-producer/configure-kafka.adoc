@@ -84,6 +84,17 @@ Set this to `false` to prevent suppressing these alarms.
 | Set this to `false` to disable synchronization of the alarms topics.
 This is automatically disabled when alarm forwarding is not enabled.
 | true
+
+| alarmSyncClear
+| Changes how alarm synchronization reconciles reduction keys that are on the topic but no longer in the database (see <<alarm-synchronization>>).
+When `true`, such keys are published as a record with severity `CLEARED` instead of a `null` tombstone.
+Only takes effect when `alarmSync` is also enabled.
+| false
+
+| alarmStream
+| Set this to `true` to make the alarms topic append-only: deletes are silent instead of emitting a `null` tombstone (see <<alarm-stream-mode>>).
+Intended for consumers that treat the topic as an event stream rather than a compacted KTable.
+| false
 |===
 
 == Configure filtering
@@ -211,6 +222,55 @@ admin@opennms()> config:update
 ----
 
 In the example above, we set the vertex and edge topics to be different by default.
+
+[[alarm-synchronization]]
+== Alarm synchronization
+
+When alarm forwarding is enabled, the producer runs a periodic reconciliation loop (`alarmSync`, on by default).
+It compares a materialized view of the alarm topic against a database snapshot and emits corrections so the topic converges on the database over time.
+This is eventually consistent: corrections are applied on the next snapshot cycle, not the moment a discrepancy appears.
+It mainly recovers from cases the live path can miss, such as a dropped send or an alarm removed without a lifecycle callback (for example, a node-deletion cascade).
+
+For a reduction key that is on the topic but no longer in the database, there are two strategies:
+
+* Tombstone (default): the key is removed with a `null`-value record. This is standard KTable semantics.
+* Clear (`alarmSyncClear = true`): the key's last-known value is republished with severity `CLEARED`, so no `null` records are written. A note is appended to the alarm's log message recording that it was auto-cleared by synchronization because the source alarm no longer exists in the database. This can help consumers that do not model the topic as a compacted KTable and mishandle `null` values, such as some Kafka Connect sinks. The clear is idempotent, so an already-cleared key is not re-emitted.
+
+Because the clear strategy never tombstones, keys are not dropped from the materialized store, so it can grow larger over a long-running session.
+
+[[alarm-stream-mode]]
+== Alarm stream mode
+
+By default the alarms topic behaves like a changelog: each reduction key holds the alarm's current state, and a delete is a `null`-value tombstone.
+This suits consumers that read the topic as a compacted KTable, but the tombstones confuse consumers that just want a record for every alarm change.
+
+Set `alarmStream` to `true` to treat the topic as an append-only event stream instead.
+Updates are still keyed by reduction key, but deletes are silent: no tombstone is emitted.
+Consumers see the rising edge (an alarm is raised or escalates) and the falling edge (the alarm's `CLEARED` update) as ordinary records, and simply stop seeing a key once it is resolved.
+
+Silent deletes rely on an alarm being cleared before it is removed, which is the normal lifecycle.
+An alarm that leaves the database without being cleared first (for example, a node-deletion cascade) would otherwise stay active downstream.
+Reconciliation (`alarmSync`) covers this case, but only if it clears orphaned alarms rather than tombstoning them, so stream mode cannot be used with the default tombstone reconciliation.
+
+To enable stream mode, set `alarmStream = true`, then use one of these two combinations:
+
+* `alarmStream = true`, `alarmSync = true`, `alarmSyncClear = true` (recommended): reconciliation runs and clears orphaned alarms instead of tombstoning them.
+* `alarmStream = true`, `alarmSync = false`: reconciliation is turned off entirely. Uncleared cascade deletes are not reconciled, so they stay active downstream.
+
+Setting `alarmStream = true` and `alarmSync = true` while leaving `alarmSyncClear = false` is not permitted, because reconciliation would write tombstones onto the stream.
+In that case {page-component-title} logs a warning and disables synchronization at startup.
+
+The recommended configuration sets both `alarmStream` and `alarmSyncClear` to `true` (`alarmSync` is already `true` by default):
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set alarmStream true
+admin@opennms()> config:property-set alarmSyncClear true
+admin@opennms()> config:update
+----
 
 == Configure the alarm sync streams client
 

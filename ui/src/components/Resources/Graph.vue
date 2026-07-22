@@ -1,34 +1,36 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 container">
+  <div class="onms-row">
+    <div class="onms-col-12 container">
       <router-link
         v-if="!isSingleGraph"
         :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
         target="_blank"
       >
-        <FeatherButton secondary class="single-graph-btn">Open</FeatherButton>
+        <PButton outlined class="single-graph-btn">Open</PButton>
       </router-link>
-      <FeatherTabContainer class="graph-data-tabs">
-        <template v-slot:tabs>
-          <FeatherTab>Graph</FeatherTab>
-          <FeatherTab>Data</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper">
-            <canvas :id="`${label}-${definition}`"></canvas>
-            <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
-          </div>
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper" v-if="graphData">
-            <GraphDataTable
-              :id="`${label}-${definition}`"
-              :convertedGraphData="convertedGraphDataRef"
-              :graphData="graphData"
-            />
-          </div>
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <PTabs value="0" class="graph-data-tabs">
+        <PTabList>
+          <PTab value="0">Graph</PTab>
+          <PTab value="1">Data</PTab>
+        </PTabList>
+        <PTabPanels>
+          <PTabPanel value="0">
+            <div class="canvas-wrapper">
+              <canvas :id="`${label}-${definition}`"></canvas>
+              <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
+            </div>
+          </PTabPanel>
+          <PTabPanel value="1">
+            <div class="canvas-wrapper" v-if="graphData">
+              <GraphDataTable
+                :id="`${label}-${definition}`"
+                :convertedGraphData="convertedGraphDataRef"
+                :graphData="graphData"
+              />
+            </div>
+          </PTabPanel>
+        </PTabPanels>
+      </PTabs>
     </div>
   </div>
 </template>
@@ -45,13 +47,20 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { FeatherButton } from '@featherds/button'
-import {
-  FeatherTab,
-  FeatherTabContainer,
-  FeatherTabPanel
-} from '@featherds/tabs'
+import Button from 'primevue/button'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
 import { PropType, computed, onMounted, ref, watch } from 'vue'
+
+const PButton = Button
+const PTabs = Tabs
+const PTabList = TabList
+const PTab = Tab
+const PTabPanels = TabPanels
+const PTabPanel = TabPanel
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -304,7 +313,7 @@ onMounted(() => render())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .container {
   position: relative;
 }
@@ -323,14 +332,11 @@ onMounted(() => render())
   z-index: 1;
 }
 .lc {
-  @include body-small;
+  @include onms-body-small;
 }
-</style>
-
-<style lang="scss">
 .graph-data-tabs {
-  ul {
-    margin-left: 37px !important;
+  :deep(.p-tablist-tab-list) {
+    margin-left: 37px;
   }
 }
 </style>

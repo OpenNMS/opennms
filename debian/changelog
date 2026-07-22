@@ -1,3 +1,12 @@
+opennms (36.0.2-1) stable; urgency=low
+
+  * Release 36.0.2 contains a couple of bug fixes and enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/36.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jul 2026 10:30:20 -0400
+
 opennms (36.0.1-1) stable; urgency=low
 
   * Release 36.0.1 contains a couple of bug fixes and enhancements.

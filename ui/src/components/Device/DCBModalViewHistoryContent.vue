@@ -1,11 +1,23 @@
 <template>
-  <FeatherButton class="compare-btn" icon="Compare configs" @click="emit('onCompare')">
-    <FeatherIcon :icon="Compare" />
-  </FeatherButton>
+  <PButton
+    text
+    class="compare-btn"
+    aria-label="Compare configs"
+    v-tooltip="'Compare configs'"
+    @click="emit('onCompare')"
+  >
+    <OnmsIcon :icon="Compare" />
+  </PButton>
 
-  <FeatherButton class="dwnld-btn" icon="Download config" @click="onDownload">
-    <FeatherIcon :icon="Download" />
-  </FeatherButton>
+  <PButton
+    text
+    class="dwnld-btn"
+    aria-label="Download config"
+    v-tooltip="'Download config'"
+    @click="onDownload"
+  >
+    <OnmsIcon :icon="Download" />
+  </PButton>
 
   <span class="title">
     {{ selectedConfig?.configName }}
@@ -35,13 +47,15 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import Button from 'primevue/button'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useDeviceStore } from '@/stores/deviceStore'
+
+const PButton = Button
 
 const emit = defineEmits(['onCompare'])
 
@@ -67,11 +81,10 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .title {
-  @include subtitle1;
+  @include onms-subtitle1;
 }
 .flex {
   display: flex;
@@ -90,8 +103,8 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
     margin-top: 12px;
 
     .history-date {
-      @include body-small;
-      color: var($primary);
+      @include onms-body-small;
+      color: var(--p-primary-color);
       margin-top: 5px;
 
       &.selected {

@@ -21,44 +21,42 @@
  */
 package org.opennms.netmgt.shared.bootstrap;
 
-import org.eclipse.gemini.blueprint.extender.internal.activator.ContextLoaderListener;
-import org.eclipse.gemini.blueprint.extender.internal.activator.NamespaceHandlerActivator;
-import org.eclipse.gemini.blueprint.extender.internal.support.ExtenderConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-
-// Original the Activator simply loaded the ApplicationContext from the bundle.
-// However it lacked the functionality to load the spring.handlers and other spring internals.
-// Therefore we re-use the functionality from eclipse-blueprint to do so.
-// See https://github.com/eclipse/gemini.blueprint/blob/6976b50e76a17aaf800a60f836c6b7af46fbf483/extender/src/main/java/org/eclipse/gemini/blueprint/extender/internal/boot/ChainActivator.java
+/**
+ * Loads Spring application contexts for bundles carrying a {@code Spring-Context}
+ * manifest header (distributed dao-impl, service-registry, ...).
+ *
+ * This used to delegate to the Eclipse Gemini Blueprint extender, which is not
+ * runtime-compatible with Spring 5.x. It is now a minimal extender of our own:
+ * a bundle tracker creates a plain Spring application context per bundle, namespace
+ * handlers and schemas are resolved across all installed bundles, and the few
+ * {@code osgi:reference} imports used by our contexts are honored by waiting for
+ * the referenced OSGi service.
+ */
 public class Activator implements BundleActivator {
 
-    private final BundleActivator[] activators;
+    private NamespaceProviderRegistry namespaceProviderRegistry;
+    private SpringContextTracker springContextTracker;
 
-    public Activator() {
-        final NamespaceHandlerActivator activateCustomNamespaceHandling = new NamespaceHandlerActivator();
-        final ExtenderConfiguration initializeExtenderConfiguration = new ExtenderConfiguration();
-        final ContextLoaderListener listenForSpringDmBundles = new ContextLoaderListener(initializeExtenderConfiguration);
-
-        activators = new BundleActivator[] {
-                activateCustomNamespaceHandling,
-                initializeExtenderConfiguration,
-                listenForSpringDmBundles
-        };
+    @Override
+    public void start(BundleContext context) {
+        namespaceProviderRegistry = new NamespaceProviderRegistry(context);
+        namespaceProviderRegistry.open();
+        springContextTracker = new SpringContextTracker(context, namespaceProviderRegistry);
+        springContextTracker.open();
     }
 
     @Override
-    public void start(BundleContext context) throws Exception {
-        for (int i = 0; i < activators.length; i++) {
-            activators[i].start(context);
+    public void stop(BundleContext context) {
+        if (springContextTracker != null) {
+            springContextTracker.close();
+            springContextTracker = null;
         }
-    }
-
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        for (int i = activators.length - 1; i >= 0; i--) {
-            activators[i].stop(context);
+        if (namespaceProviderRegistry != null) {
+            namespaceProviderRegistry.close();
+            namespaceProviderRegistry = null;
         }
     }
 }

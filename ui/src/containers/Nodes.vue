@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="card">
         <NodesTable />
       </div>
@@ -36,7 +36,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Node List', to: '#', position: 'last' }
+    { label: 'Nodes', to: '#', position: 'last' }
   ]
 })
 
@@ -117,6 +117,6 @@ watch(() => route.query, () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 </style>

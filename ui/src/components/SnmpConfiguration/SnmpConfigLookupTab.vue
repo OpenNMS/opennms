@@ -140,9 +140,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-lookup-tab {

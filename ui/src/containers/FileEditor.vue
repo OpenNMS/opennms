@@ -1,38 +1,38 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="card">
         <TopBar v-if="isHelpOpen" />
 
-        <div class="feather-row">
+        <div class="onms-row">
           <transition name="fade">
-            <div class="feather-col-3" v-if="!isHelpOpen">
+            <div class="onms-col-3" v-if="!isHelpOpen">
               <FileSidebar />
             </div>
           </transition>
 
-          <div :class="`feather-col-${isHelpOpen ? 8 : 9}`">
+          <div :class="`onms-col-${isHelpOpen ? 8 : 9}`">
             <Editor />
           </div>
 
           <transition name="fade">
-            <div class="feather-col-4" v-if="isHelpOpen">
+            <div class="onms-col-4" v-if="isHelpOpen">
               <Help />
             </div>
           </transition>
 
-          <FeatherButton
+          <PButton
             v-if="!isHelpOpen && snippets"
             class="help-btn"
             text
             @click="triggerHelp">
             Help
-          </FeatherButton>
+          </PButton>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
+import Button from 'primevue/button'
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
@@ -63,6 +63,8 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
+
+const PButton = Button
 
 const fileEditorStore = useFileEditorStore()
 const menuStore = useMenuStore()
@@ -87,18 +89,14 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 .card {
-  @include elevation(2);
-  background: var($surface);
+  @include onms-elevation(2);
+  background: var(--p-content-background);
   padding: 15px;
   position: relative;
-}
-.feather-row {
-  flex-wrap: nowrap;
 }
 .help-btn {
   position: absolute;
