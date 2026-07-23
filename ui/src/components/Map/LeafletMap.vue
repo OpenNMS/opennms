@@ -313,6 +313,11 @@ const onPopupEscapeKeydown = (e: KeyboardEvent) => {
   leafletObject.value.closePopup()
 }
 
+// Whether a marker popup is currently open (set by popupopen/popupclose).
+// Needed on keep-alive reactivation to know if the Esc listener — removed on
+// deactivate — must be reattached for a popup left open while away.
+let popupOpen = false
+
 // Leaflet caches its pixel size and only re-reads it on invalidateSize(). The
 // map container reflows when the side menu is pinned (it sets padding-left on
 // .app-layout) or on any other layout change, but Leaflet won't repaint to the
@@ -339,9 +344,14 @@ onDeactivated(() => {
 })
 
 // Returning to the cached map: its container may have resized while away (e.g.
-// the side menu was pinned on another page), so revalidate Leaflet's size.
+// the side menu was pinned on another page), so revalidate Leaflet's size. And
+// if the map was left with a popup open, reattach the Esc listener that
+// onDeactivated removed (popupopen won't re-fire for an already-open popup).
 onActivated(() => {
   debouncedInvalidateSize()
+  if (popupOpen) {
+    document.addEventListener('keydown', onPopupEscapeKeydown)
+  }
 })
 
 const onLeafletReady = async () => {
@@ -403,10 +413,12 @@ const onLeafletReady = async () => {
         leafletObject.value.panBy([dx, dy], { animate: true })
       }
 
+      popupOpen = true
       document.addEventListener('keydown', onPopupEscapeKeydown)
     })
 
     leafletObject.value.on('popupclose', () => {
+      popupOpen = false
       document.removeEventListener('keydown', onPopupEscapeKeydown)
     })
 
