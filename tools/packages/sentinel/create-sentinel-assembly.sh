@@ -59,6 +59,11 @@ if [ "${OPENNMS_REUSE_ASSEMBLY:-0}" = "1" ]; then
 	echo "OPENNMS_REUSE_ASSEMBLY=1 but no pre-built sentinel tarball found under opennms-assemblies/sentinel/target; building it now."
 fi
 
+# shellcheck disable=SC1091
+source "${TOPDIR}/bin/pkg-common.sh"
+OPA_VERSION="$(opa_version)"
+sed -i "s/OPA_VERSION/${OPA_VERSION}/g" "${TOPDIR}/opennms-assemblies/sentinel/src/main/filtered/debian/control"
+
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
 echo "=== Building root POM ==="
 "${TOPDIR}/compile.pl" \
