@@ -53,6 +53,11 @@ esac
 if [ "${OPENNMS_REUSE_ASSEMBLY:-0}" = "1" ]; then
 	EXISTING_TARBALL="$(ls -1 "${TOPDIR}"/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz 2>/dev/null | head -n 1 || :)"
 	if [ -n "$EXISTING_TARBALL" ]; then
+		CONTROL_PATH="$(tar -tzf "$EXISTING_TARBALL" | grep -m1 'debian/control$' || :)"
+		if [ -n "$CONTROL_PATH" ] && tar -xzf "$EXISTING_TARBALL" -O "$CONTROL_PATH" | grep -q 'OPA_VERSION'; then
+			echo "ERROR: reused sentinel assembly $EXISTING_TARBALL still has an unstamped OPA_VERSION placeholder in debian/control; rebuild it via build-package-assemblies before reusing" >&2
+			exit 1
+		fi
 		echo "=== Reusing pre-built sentinel assembly: $EXISTING_TARBALL ==="
 		exit 0
 	fi
