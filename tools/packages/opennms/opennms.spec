@@ -32,6 +32,9 @@
 %{!?extrainfo2:%define extrainfo2 }
 %{!?skip_compile:%define skip_compile 0}
 %{!?enable_snapshots:%define enable_snapshots 1}
+# fast_package=1 hardlinks the pre-staged %{staged_src} tree into the build dir instead of unpacking a tarball
+%{!?fast_package:%define fast_package 0}
+%{!?staged_src:%define staged_src %{nil}}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -427,11 +430,17 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 %{extrainfo2}
 
 %prep
+%if %{fast_package} == 0
 TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
 if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
   TAR="$TAR --uid=0 --gid=0"
 fi
 $TAR -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+%else
+# Fast mode: hardlink the pre-staged tree into rpm's build dir (metadata-only, no tarball round-trip).
+rm -rf "%{_builddir}/%{packagedir}"
+cp -al "%{staged_src}" "%{_builddir}/%{packagedir}"
+%endif
 
 %define setupdir %{packagedir}
 

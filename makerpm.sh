@@ -49,6 +49,7 @@ function usage()
     tell "makerpm [-h] [-a] [-s <password>] [-g <gpg-id>] [-M <major>] [-m <minor>] [-u <micro>]"
     tell "\t-h : print this help"
     tell "\t-a : assembly-only (skip the compile step)"
+    tell "\t-F : fast package (build in-place from the staged tree; skip the source tarball round-trip)"
     tell "\t-d : disable downloading snapshots when doing an assembly-only build"
     tell "\t-s <password> : sign the rpm using this password for the gpg key"
     tell "\t-g <gpg_id> : signing using this gpg_id (default: opennms@opennms.org)"
@@ -148,11 +149,17 @@ function enableSnapshots()
     if $ENABLE_SNAPSHOTS; then echo 1; else echo 0; fi
 }
 
+function fastPackage()
+{
+    if $FAST_PACKAGE; then echo 1; else echo 0; fi
+}
+
 
 function main()
 {
 
     ASSEMBLY_ONLY=false
+    FAST_PACKAGE=false
     ENABLE_SNAPSHOTS=true
     SIGN=false
     SIGN_PASSWORD=
@@ -167,9 +174,11 @@ function main()
     local RELEASE_MICRO=1
 
 
-    while getopts adhrs:g:n:x:M:m:u:b:c:S: OPT; do
+    while getopts aFdhrs:g:n:x:M:m:u:b:c:S: OPT; do
         case $OPT in
             a)  ASSEMBLY_ONLY=true
+                ;;
+            F)  FAST_PACKAGE=true
                 ;;
             d)  ENABLE_SNAPSHOTS=false
                 ;;
@@ -243,8 +252,19 @@ function main()
             run rsync -aqr --delete --delete-excluded "$TOPDIR/core/web-assets/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/core/web-assets/"
         fi
 
-        echo "=== Creating a tar.gz Archive of the Source in $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
-        run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
+        # Extra rpmbuild defines that depend on the packaging mode.
+        RPM_EXTRA_DEFINES=(--define "fast_package $(fastPackage)")
+        if $FAST_PACKAGE; then
+            echo "=== FAST PACKAGE: skipping source tarball; %prep will hardlink from $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
+            # rpmbuild still verifies the Source file exists even though %prep won't unpack it in fast
+            # mode. Write an empty (but valid) placeholder instead of gzipping the entire ~2GB tree.
+            run tar czf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -T /dev/null
+            # Tell %prep where the already-staged tree lives so it can hardlink it into rpm's build dir.
+            RPM_EXTRA_DEFINES+=(--define "staged_src $WORKDIR/tmp/${PACKAGE_NAME}-$VERSION-$RELEASE")
+        else
+            echo "=== Creating a tar.gz Archive of the Source in $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
+            run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
+        fi
 
         echo "=== Building RPMs ==="
         for spec in $SPECS
@@ -261,6 +281,7 @@ function main()
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
                 --define "opa_version $OPA_VERSION" \
+                "${RPM_EXTRA_DEFINES[@]}" \
                 $spec || die "failed to build $spec"
         done
     fi
