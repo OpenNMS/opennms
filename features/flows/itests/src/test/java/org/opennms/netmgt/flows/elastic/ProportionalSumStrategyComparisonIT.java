@@ -82,29 +82,23 @@ import com.google.common.collect.Table;
  * Runs the two proportional-sum strategies side by side against the same Elasticsearch instance and
  * the same flow data, and asserts they return the same series and totals.
  *
- * <p>The drift plugin's {@code proportional_sum} aggregation is the reference implementation; this
- * test is the equivalence check requested in review of NMS-20027. It compares the {@code plugin}
- * strategy against the {@code painless} ({@code scripted_metric}) strategy on the newest supported
- * Elasticsearch version, for query windows whose start is aligned to the step. The two
- * implementations intentionally diverge on unaligned windows (NMS-20001, where the plugin
- * undercounts), so the comparison uses an aligned window (start {@code 0}, step {@code 10}).</p>
- *
- * <p>Disabled by default: it requires the {@code elasticsearch-drift-plugin} build, which the
- * default flow itests no longer download. Run it with the {@code flow-drift-comparison} Maven
- * profile, which downloads the plugin and sets {@code org.opennms.flows.drift.comparison=true}.</p>
+ * <p>Aligned-window assertions run by default (the flows itests pom downloads the plugin and sets
+ * the {@code org.opennms.flows.drift.*} properties). Unaligned-window agreement only holds against a
+ * drift build that fixes NMS-20001, so it is gated behind {@code driftUnalignedFixed}.</p>
  */
 public class ProportionalSumStrategyComparisonIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProportionalSumStrategyComparisonIT.class);
 
-    // Match the version the default itests target, and the plugin build for it.
     private static final String ES_VERSION = "8.18.2";
-    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
+    // Supplied by the pom so it can be bumped to the NMS-20001 fix without editing this test.
+    private static final String DRIFT_PLUGIN_VERSION = System.getProperty("org.opennms.flows.drift.version", "2.0.7");
 
     private static final String ENABLE_PROPERTY = "org.opennms.flows.drift.comparison";
+    private static final String UNALIGNED_FIXED_PROPERTY = "org.opennms.flows.drift.unalignedFixed";
 
-    // Aligned window: start is a multiple of the step, the case where both strategies must agree.
     private static final long STEP = 10L;
+    private static final long UNALIGNED_START = 5L; // not a multiple of STEP
 
     // Cells are floating-point; the plugin and the script accumulate in different orders.
     private static final double ERROR = 1e-8;
@@ -116,7 +110,7 @@ public class ProportionalSumStrategyComparisonIT {
 
     @BeforeClass
     public static void setUpClass() throws IOException {
-        assumeTrue("disabled by default; run with -Pflow-drift-comparison (sets -D" + ENABLE_PROPERTY + "=true)",
+        assumeTrue("requires the drift plugin; enabled by the itests pom (-D" + ENABLE_PROPERTY + "=true)",
                 Boolean.getBoolean(ENABLE_PROPERTY));
         elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION)
                 // Only the drift plugin needs installing; Painless is built into the image.
@@ -198,6 +192,24 @@ public class ProportionalSumStrategyComparisonIT {
                 painless.getApplicationSummaries(apps, true, getFilters()).get());
     }
 
+    // Unaligned windows only agree on a drift build that fixes NMS-20001; skipped otherwise.
+    @Test
+    public void unalignedWindowSeriesMatchOnFixedPlugin() throws Exception {
+        assumeTrue("requires a drift build that fixes NMS-20001 (set -DdriftUnalignedFixed=true)",
+                Boolean.getBoolean(UNALIGNED_FIXED_PROPERTY));
+        final List<Filter> filters = unalignedFilters();
+        final Set<String> apps = ImmutableSet.of("http", "https");
+        assertSeriesEqual(
+                plugin.getApplicationSeries(apps, STEP, true, filters).get(),
+                painless.getApplicationSeries(apps, STEP, true, filters).get());
+        assertSeriesEqual(
+                plugin.getTopNApplicationSeries(10, STEP, true, filters).get(),
+                painless.getTopNApplicationSeries(10, STEP, true, filters).get());
+        assertSummariesEqual(
+                plugin.getTopNApplicationSummaries(10, true, filters).get(),
+                painless.getTopNApplicationSummaries(10, true, filters).get());
+    }
+
     private static <R> void assertSeriesEqual(Table<Directional<R>, Long, Double> expected,
                                               Table<Directional<R>, Long, Double> actual) {
         assertThat("row keys", actual.rowKeySet(), containsInAnyOrder(expected.rowKeySet().toArray()));
@@ -254,6 +266,10 @@ public class ProportionalSumStrategyComparisonIT {
 
     private static List<Filter> getFilters() {
         return Lists.newArrayList(new TimeRangeFilter(0, System.currentTimeMillis()), new SnmpInterfaceIdFilter(98));
+    }
+
+    private static List<Filter> unalignedFilters() {
+        return Lists.newArrayList(new TimeRangeFilter(UNALIGNED_START, System.currentTimeMillis()), new SnmpInterfaceIdFilter(98));
     }
 
     // The default flow set from FlowQueryIT: overlapping intervals across several buckets, so the

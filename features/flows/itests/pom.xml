@@ -16,6 +16,10 @@
         <nephronVersion>0.3.1</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
         <elasticsearchTargetVersion>8.18.2</elasticsearchTargetVersion>
+        <!-- Drift plugin for ProportionalSumStrategyComparisonIT; bump to the NMS-20001 fix and
+             set driftUnalignedFixed=true to enable the unaligned agreement assertions. -->
+        <elasticsearchDriftPluginVersion>2.0.7</elasticsearchDriftPluginVersion>
+        <driftUnalignedFixed>false</driftUnalignedFixed>
     </properties>
     <build>
         <plugins>
@@ -40,10 +44,41 @@
                         <javax.net.ssl.keyStorePassword>${test.storepass}</javax.net.ssl.keyStorePassword>
                         <javax.net.ssl.trustStore>${test.keystore}</javax.net.ssl.trustStore>
                         <javax.net.ssl.trustStorePassword>${test.storepass}</javax.net.ssl.trustStorePassword>
+                        <!-- Drift-vs-Painless comparison IT (drift plugin downloaded below). -->
+                        <org.opennms.flows.drift.comparison>true</org.opennms.flows.drift.comparison>
+                        <org.opennms.flows.drift.version>${elasticsearchDriftPluginVersion}</org.opennms.flows.drift.version>
+                        <org.opennms.flows.drift.unalignedFixed>${driftUnalignedFixed}</org.opennms.flows.drift.unalignedFixed>
                     </systemPropertyVariables>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                 </configuration>
+            </plugin>
+            <!-- Download the drift plugin for ProportionalSumStrategyComparisonIT; the other flow
+                 ITs run plugin-free on purpose. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-elasticsearch-plugins</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.elasticsearch</groupId>
+                                    <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+                                    <version>${elasticsearchDriftPluginVersion}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/elasticsearch-plugins</outputDirectory>
+                                    <destFileName>drift-plugin.zip</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- We create a key for 'localhost' for test purposes -->
             <plugin>
@@ -353,67 +388,12 @@
             <artifactId>snappy-java</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Drift plugin build for ProportionalSumStrategyComparisonIT. -->
+        <dependency>
+            <groupId>org.opennms.elasticsearch</groupId>
+            <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+            <version>${elasticsearchDriftPluginVersion}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-    <profiles>
-        <!--
-            Opt-in profile for ProportionalSumStrategyComparisonIT, which compares the drift plugin's
-            proportional_sum aggregation against the Painless scripted_metric replacement. It is not
-            part of the default build because it re-introduces the drift plugin build dependency that
-            NMS-20027 removed. Activate with -Pflow-drift-comparison to download the plugin and enable
-            the test.
-        -->
-        <profile>
-            <id>flow-drift-comparison</id>
-            <properties>
-                <elasticsearchDriftPluginVersion>2.0.7</elasticsearchDriftPluginVersion>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <org.opennms.flows.drift.comparison>true</org.opennms.flows.drift.comparison>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                    <!-- Download the drift plugin so ElasticTestContainerWithPlugins can install it -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-elasticsearch-plugins</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.opennms.elasticsearch</groupId>
-                                            <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
-                                            <version>${elasticsearchDriftPluginVersion}</version>
-                                            <type>zip</type>
-                                            <outputDirectory>${project.build.directory}/elasticsearch-plugins</outputDirectory>
-                                            <destFileName>drift-plugin.zip</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>org.opennms.elasticsearch</groupId>
-                    <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
-                    <version>${elasticsearchDriftPluginVersion}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>
