@@ -22,10 +22,6 @@
     <bean name="cachedEntityScopeProvider" class="org.opennms.core.mate.model.CachedEntityScopeProviderImpl">
         <qualifier value="cachedEntityScopeProvider"/>
         <constructor-arg ref="entityScopeProvider"/>
-        <constructor-arg value="900"/>
-        <constructor-arg value="-1"/>
-        <constructor-arg value="-1"/>
-        <constructor-arg value="-1"/>
     </bean>
 
     <onmsgi:service ref="cachedEntityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>

@@ -28,6 +28,7 @@
 
 package org.opennms.core.mate.model;
 
+import com.google.common.base.Ticker;
 import com.google.common.collect.Lists;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -44,10 +45,9 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.mate.api.EmptyScope.EMPTY;
@@ -79,7 +79,15 @@ public class CachedEntityScopeProviderIT extends EntityScopeProviderIT {
 
     @Test
     public void testCache() {
-        this.provider = new CachedEntityScopeProviderImpl(provider, 5, -1, -1, -1);
+        // use a manually advanced ticker so cache expiration is deterministic instead of wall-clock based
+        final AtomicLong nanos = new AtomicLong(0);
+        final Ticker ticker = new Ticker() {
+            @Override
+            public long read() {
+                return nanos.get();
+            }
+        };
+        this.provider = new CachedEntityScopeProviderImpl(provider, 5, -1, -1, -1, ticker);
 
         // set meta-data of node
         final OnmsNode node = this.populator.getNode1();
@@ -99,9 +107,11 @@ public class CachedEntityScopeProviderIT extends EntityScopeProviderIT {
         node.getMetaData().add(metaData);
         this.populator.getNodeDao().saveOrUpdate(node);
 
-        // this should still return the old value
+        // advance time, but not past the 5s expiry - this should still return the old value
+        nanos.addAndGet(TimeUnit.SECONDS.toNanos(4));
         assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value1"))));
 
-        await().atMost(10, SECONDS).pollInterval(250, MILLISECONDS)
-                .until(() -> scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value2"))));
+        // advance past the 5s expiry - the entry is now evicted and the new value is loaded
+        nanos.addAndGet(TimeUnit.SECONDS.toNanos(2));
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value2"))));
     }}
