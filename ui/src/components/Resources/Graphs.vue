@@ -131,27 +131,25 @@ const addGraphDefinition = () => {
   }
 }
 
+// A single shared debounced function: creating it per keystroke (inside the
+// handler) would give every keystroke its own independent 1s timer, so the
+// search would run once per keystroke instead of once per pause.
+const debouncedSearch = useDebounceFn((val: string) => {
+  if (val) {
+    definitionsListCopy = definitionsList.value.filter(definition =>
+      definition.toLowerCase().includes(val.toLowerCase()))
+  } else {
+    definitionsListCopy = [...definitionsList.value]
+  }
+
+  definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
+  stopSpinner()
+}, 1000)
+
 const searchHandler: UpdateModelFunction = (searchInputVal: string) => {
   startSpinner()
   searchVal.value = searchInputVal
-
-  const search = useDebounceFn((val: string) => {
-    if (val) {
-      definitionsListCopy = definitionsList.value.filter(definition =>
-        definition.toLowerCase().includes(val.toLowerCase()))
-
-      definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
-    }
-
-    if (!val) {
-      definitionsListCopy = JSON.parse(JSON.stringify(definitionsList.value))
-      definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
-    }
-
-    stopSpinner()
-  }, 1000)
-
-  search(searchInputVal)
+  debouncedSearch(searchInputVal)
 }
 
 watch(arrivedState, () => {
