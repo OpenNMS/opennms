@@ -216,7 +216,14 @@ public class ProportionalSumStrategyComparisonIT {
         assertThat("column (bucket) keys", actual.columnKeySet(), containsInAnyOrder(expected.columnKeySet().toArray()));
         for (Table.Cell<Directional<R>, Long, Double> cell : expected.cellSet()) {
             final Double actualValue = actual.get(cell.getRowKey(), cell.getColumnKey());
-            assertThat("cell " + cell.getRowKey() + "@" + cell.getColumnKey(), actualValue, closeTo(cell.getValue(), ERROR));
+            final Double expectedValue = cell.getValue();
+            final String where = "cell " + cell.getRowKey() + "@" + cell.getColumnKey();
+            // Empty buckets are filled with NaN; treat NaN as equal to NaN (closeTo never matches NaN).
+            if (expectedValue == null || expectedValue.isNaN()) {
+                assertThat(where, actualValue == null || actualValue.isNaN(), equalTo(true));
+            } else {
+                assertThat(where, actualValue, closeTo(expectedValue, ERROR));
+            }
         }
     }
 
