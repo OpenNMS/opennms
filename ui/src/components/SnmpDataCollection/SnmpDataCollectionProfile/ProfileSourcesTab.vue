@@ -6,19 +6,21 @@
     <div class="section-header">Sources</div>
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="sourceSearchResults"
-        optionLabel="name"
-        @complete="onSourceSearch"
-        @option-select="onSourceSelected($event.value)"
-        placeholder="Add Source"
-        :forceSelection="true"
-        data-test="add-source-autocomplete"
-        dropdown
-        completeOnFocus
-        fluid
-      />
+      <FormField label="Add Source">
+        <PAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="sourceSearchResults"
+          optionLabel="name"
+          @complete="onSourceSearch"
+          @option-select="onSourceSelected($event.value)"
+          placeholder="Search sources..."
+          :forceSelection="true"
+          data-test="add-source-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
     </div>
     <div class="sources-card">
       <PDataTable
@@ -51,6 +53,7 @@ import { computed, ref } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import AutoCompleteComponent from 'primevue/autocomplete'
 import DataTableComponent from 'primevue/datatable'

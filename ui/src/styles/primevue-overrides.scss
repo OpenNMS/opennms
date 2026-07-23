@@ -42,21 +42,20 @@
   text-transform: uppercase;
 }
 
-// Taller text inputs across the app (matches the roomier FeatherDS field feel
-// and gives IftaLabel's in-field label space above the value). Height is not a
-// PrimeVue theme token, so it lives here. Applies to InputText and the inner
-// input of InputNumber (both render .p-inputtext).
+// Standard field height across the app. Height is not a PrimeVue theme token,
+// so it lives here. Applies to InputText and the inner input of InputNumber
+// (both render .p-inputtext). Formerly 3.75rem with FormField overriding to
+// 3rem; promoted to 3rem here so controls in and out of FormField match.
 .p-inputtext {
-  height: 3.75rem;
+  height: 3rem;
 }
 
-// Match Select height to the taller inputs so they line up in shared rows.
-// The root is inline-flex with the default `align-items: stretch`, so at the
-// taller height the label stretches full-height and its text pins to the top;
-// center it so the value/placeholder sits vertically centered (same fix as
-// .p-multiselect below).
+// Match Select height to the inputs so they line up in shared rows. The root is
+// inline-flex with the default `align-items: stretch`, so the label otherwise
+// stretches full-height and its text pins to the top; center it so the
+// value/placeholder sits vertically centered (same fix as .p-multiselect).
 .p-select {
-  height: 3.75rem;
+  height: 3rem;
   align-items: center;
 }
 
