@@ -1806,10 +1806,9 @@
     <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.75.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>31.1-jre</guavaVersion>
+    <guavaVersion>33.3.1-jre</guavaVersion>
     <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
-    <guavaOsgiVersion>31.1</guavaOsgiVersion>
-    <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
+    <guavaOsgiVersion>33.3.1</guavaOsgiVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
@@ -1916,8 +1915,8 @@
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.2.16.Final</netty4Version>
-    <newtsVersion>3.0.0</newtsVersion>
-    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
+    <newtsVersion>3.0.1</newtsVersion>
+    <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
