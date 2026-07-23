@@ -30,7 +30,7 @@ In many environments, these two components are the entire deployment, and can ev
 Two optional {page-component-title} components distribute work beyond the core, and each addresses a specific problem:
 
 * *Minion*: Minions extend the core's reach into networks it cannot address directly, such as remote sites, overlapping address space, or networks behind firewalls.
-* *Sentinel*: Sentinels process high-volume push data (flows and streaming telemetry) in place of the core.
+* *Sentinel*: Sentinels process and persist high-volume push data (flows and streaming telemetry) in place of the core.
 
 Third-party components can take over storage and transport roles as a deployment grows:
 
