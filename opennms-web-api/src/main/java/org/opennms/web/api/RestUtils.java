@@ -30,7 +30,11 @@ package org.opennms.web.api;
 
 import java.beans.PropertyEditor;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -49,6 +53,15 @@ import org.springframework.beans.PropertyAccessorFactory;
 public abstract class RestUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
+
+	/**
+	 * Properties that must never be set from client-supplied request parameters via a blind
+	 * bean-property copy: primary keys and the category access-control collection. Setting
+	 * these through a generic update is a mass-assignment / privilege-escalation vector, so
+	 * they are always ignored here regardless of the caller.
+	 */
+	public static final Set<String> IMMUTABLE_PROPERTIES = Collections.unmodifiableSet(
+	        new HashSet<>(Arrays.asList("id", "nodeId", "authorizedGroups")));
 
 	/**
 	 * <p>Use Spring's {@link PropertyAccessorFactory} to set values on the specified bean.
@@ -75,6 +88,10 @@ public abstract class RestUtils {
 	    wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
 	    for(final String key : properties.keySet()) {
 	        final String propertyName = convertNameToPropertyName(key);
+	        if (IMMUTABLE_PROPERTIES.contains(propertyName)) {
+	            LOG.warn("Ignoring attempt to set protected property '{}' from request parameters", propertyName);
+	            continue;
+	        }
 	        if (wrapper.isWritableProperty(propertyName)) {
 	            final String stringValue = properties.getFirst(key);
 	            Object value = convertIfNecessary(wrapper, propertyName, stringValue);

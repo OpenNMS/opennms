@@ -687,6 +687,25 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.severity==CLEARED", 1);
     }
 
+    /**
+     * Regression guard for the mass-assignment fix. The inherited bulk-update endpoint
+     * (PUT /alarms -> updateMany in AbstractDaoRestServiceWithDTO) must NOT blindly copy
+     * request parameters onto matched entities; it now delegates only to doUpdateProperties.
+     * A ROLE_REST user sending a raw 'severity' field can no longer forge the alarm severity.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void bulkUpdateCannotForgeAlarmSeverity() throws Exception {
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        // alarm1 was created MAJOR: no CLEARED alarm with this id
+        executeQueryAndVerify("_s=alarm.id==" + alarm1.getId() + ";alarm.severity==CLEARED", 0);
+        // attempt to forge 'severity' via the bulk collection root
+        sendRequest(PUT, "/alarms",
+                parseParamData("_s=alarm.id==" + alarm1.getId() + "&severity=CLEARED"), 204);
+        // severity is unchanged: the forged field was ignored
+        executeQueryAndVerify("_s=alarm.id==" + alarm1.getId() + ";alarm.severity==CLEARED", 0);
+    }
+
     private void anticipateEvent(EventBuilder eventBuilder) {
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
     }

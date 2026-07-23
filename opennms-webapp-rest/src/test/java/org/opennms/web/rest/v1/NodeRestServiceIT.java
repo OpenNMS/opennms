@@ -320,6 +320,24 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
+    /**
+     * Regression guard for the mass-assignment fix. updateNode (PUT /nodes/{id}) must ignore
+     * provisioning-ownership fields (foreignSource/foreignId/type) while still allowing
+     * legitimate fields like sysContact. A ROLE_REST user can no longer reassign a node's
+     * provisioning ownership (requisition takeover / detach primitive).
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateNodeCannotReassignForeignSource() throws Exception {
+        createNode();
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        // sysContact (benign) alongside foreignSource/foreignId (protected) in one request
+        sendPut("/nodes/1", "sysContact=LegitContact&foreignSource=AttackerReq&foreignId=999", 204);
+        final String xml = sendRequest(GET, "/nodes/1", 200);
+        assertFalse("foreignSource must not be reassignable via updateNode", xml.contains("AttackerReq"));
+        assertTrue("legitimate fields still update", xml.contains("LegitContact"));
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testPutNodeAsset() throws Exception {

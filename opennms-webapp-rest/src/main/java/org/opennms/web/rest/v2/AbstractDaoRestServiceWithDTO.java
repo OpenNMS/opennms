@@ -80,7 +80,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.ISO8601DateEditor;
-import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.DateCollection;
@@ -475,8 +474,14 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                RestUtils.setBeanProperties(object, params);
-                doUpdateProperties(securityContext, uriInfo, object, params);
+                // Delegate to the service's doUpdateProperties (the single-id path does the
+                // same). We must NOT blindly copy request params onto the entity here: that
+                // was a mass-assignment vector that mutated arbitrary fields even for
+                // services whose doUpdateProperties is not implemented.
+                final Response response = doUpdateProperties(securityContext, uriInfo, object, params);
+                if (response != null && response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+                    return response;
+                }
             }
             return Response.noContent().build();
         } finally {

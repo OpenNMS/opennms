@@ -235,6 +235,12 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
+        // Provisioning-ownership / identity fields must not be reassigned through a generic
+        // property update (requisition takeover / node detach / soft-delete). Primary keys and
+        // ACL fields are additionally handled centrally by RestUtils.setBeanProperties.
+        params.remove("foreignSource");
+        params.remove("foreignId");
+        params.remove("type");
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
         return Response.noContent().build();
