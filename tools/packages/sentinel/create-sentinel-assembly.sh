@@ -62,7 +62,16 @@ fi
 # shellcheck disable=SC1091
 source "${TOPDIR}/bin/pkg-common.sh"
 OPA_VERSION="$(opa_version)"
+echo "OPA VERSION: ${OPA_VERSION}"
+if [ -z "$OPA_VERSION" ]; then
+	echo "ERROR: opa_version() returned an empty string; refusing to stamp debian/control" >&2
+	exit 1
+fi
 sed -i "s/OPA_VERSION/${OPA_VERSION}/g" "${TOPDIR}/opennms-assemblies/sentinel/src/main/filtered/debian/control"
+if grep -q 'OPA_VERSION' "${TOPDIR}/opennms-assemblies/sentinel/src/main/filtered/debian/control"; then
+	echo "ERROR: OPA_VERSION placeholder still present in debian/control after substitution" >&2
+	exit 1
+fi
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
 echo "=== Building root POM ==="
