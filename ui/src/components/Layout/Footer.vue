@@ -27,17 +27,10 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 .footer {
   display: block;
   text-align: center;
-  margin-left: -15px;
-  margin-right: -15px;
-  padding: 0.25rem 0.42rem;
-  background-color: #e9ecef;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 0.5rem 0.5rem;
   border-top: 1px solid rgba(0, 0, 0, .125);
-}
-
-// The hardcoded light gray above stays light in dark mode; use the (dark)
-// content background and a theme-aware border so the footer reads correctly on
-// the Vue SPA pages (JSP pages are unaffected).
-.open-dark .footer {
   background-color: var(--p-content-background);
   border-top-color: var(--p-content-border-color);
 }
