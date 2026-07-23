@@ -157,6 +157,7 @@
                         "/^merge-foundation.*/"
                     ],
                     "only": [
+                        "mem/*",
                         "/^master-.*/"
                     ]
                 },
@@ -177,6 +178,7 @@
                         "/^merge-foundation.*/"
                     ],
                     "only": [
+                        "mem/*",
                         "/^master-.*/"
                     ]
                 },
@@ -197,6 +199,7 @@
                         "/^merge-foundation.*/"
                     ],
                     "only": [
+                        "mem/*",
                         "/^master-.*/"
                     ]
                 },
