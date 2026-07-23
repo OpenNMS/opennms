@@ -111,6 +111,16 @@
   border-color: currentColor;
 }
 
+// Search-input (IconField / InputIcon) glyph. The icon is an OnmsIcon whose SVG
+// is 1em, so its size tracks the .p-inputicon font-size. PrimeVue's default is
+// too small and several screens overrode it inconsistently (1.75rem). Normalize
+// to 1.5rem everywhere. PrimeVue positions .p-inputicon at top: 50%, so the icon
+// is centered on the input mid-line with a margin-top of -½ its height.
+.p-inputicon {
+  font-size: 1.5rem;
+  margin-top: -0.75rem;
+}
+
 // Helper/hint text shown under a form field (the small sibling of an
 // IftaLabel/FloatLabel input). Global so every converted field is consistent:
 // indent to line up with the IftaLabel label/value text (the input's left

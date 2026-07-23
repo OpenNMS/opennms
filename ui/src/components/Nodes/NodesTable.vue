@@ -541,12 +541,6 @@ defineExpose({ onSort, onPage, removeItem })
         width: 100%;
         padding-right: 2.75rem;
       }
-
-      :deep(.p-inputicon) {
-        font-size: 1.75rem;
-        right: 0.625rem;
-        margin-top: -0.875rem;
-      }
     }
   }
 

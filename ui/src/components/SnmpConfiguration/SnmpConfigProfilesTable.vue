@@ -259,14 +259,6 @@ const onSearchChange = (value: string | number | undefined) => {
             width: 100%;
             padding-right: 2.75rem;
           }
-
-          // enlarge the search glyph (OnmsIcon scales with font-size) and
-          // keep it near the right edge, vertically centered
-          :deep(.p-inputicon) {
-            font-size: 1.75rem;
-            right: 0.625rem;
-            margin-top: -0.875rem;
-          }
         }
       }
     }
