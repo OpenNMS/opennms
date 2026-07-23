@@ -51,22 +51,20 @@
         <PColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
-              <PButton
+              <OnmsIconButton
                 text
                 aria-label="Edit"
                 data-test="edit-button"
+                :icon="IconEdit"
                 @click="onProfileEdit(data.label)"
-              >
-                <OnmsIcon :icon="IconEdit" />
-              </PButton>
-              <PButton
+              />
+              <OnmsIconButton
                 text
                 aria-label="Delete"
                 data-test="delete-button"
+                :icon="IconDelete"
                 @click="onConfirmProfileDelete(data.label)"
-              >
-                <OnmsIcon :icon="IconDelete" />
-              </PButton>
+              />
             </div>
           </template>
         </PColumn>
@@ -114,6 +112,7 @@ import IconSearch from '@/components/icons/action/Search.vue'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
 import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
@@ -269,11 +268,6 @@ const onSearchChange = (value: string | number | undefined) => {
       display: flex;
       align-items: center;
       gap: 5px;
-
-      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
-      :deep(.p-button) {
-        font-size: 1.3rem;
-      }
     }
   }
 
