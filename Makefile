@@ -1,7 +1,8 @@
 ##
-# Makefile to build OpenNMS docs
+# Makefile to build OpenNMS docs and debian/rpm packages
 ##
-.PHONY: help docs docs-docker docs-deps docs-deps-docker docs-serve docs-serve-stop docs-clean docs-clean-cache clean-all
+.PHONY: help docs docs-docker docs-deps docs-deps-docker docs-serve docs-serve-stop docs-clean docs-clean-cache clean-all \
+	deb deb-minion deb-sentinel rpm rpm-minion rpm-sentinel pkg-fast pkg-clean
 
 .DEFAULT_GOAL := docs
 
@@ -29,6 +30,17 @@ help:
 	@echo "  clean-all:        Clean build artifacts and Antora cache"
 	@echo "  docs-serve:       Run a local web server with Docker and Nginx to serve the docs locally"
 	@echo "  docs-serve-stop:  Stop the local web server for serving the docs"
+	@echo ""
+	@echo "Packaging targets (see PACKAGING.md for details):"
+	@echo "  deb:              Build the opennms Debian package (full compile + assembly)"
+	@echo "  deb-minion:       Build the minion Debian package"
+	@echo "  deb-sentinel:     Build the sentinel Debian package"
+	@echo "  rpm:              Build all three RPMs (opennms, minion, sentinel)"
+	@echo "  rpm-minion:       Build only the minion RPM"
+	@echo "  rpm-sentinel:     Build only the sentinel RPM"
+	@echo "  pkg-fast:         Assembly-only build of every deb/rpm (skips full Java recompile;"
+	@echo "                    use after a normal build to iterate on control/rules/spec files)"
+	@echo "  pkg-clean:        Remove packaging build artifacts (debian/temp, target/rpm, target/debs, ...)"
 	@echo ""
 	@echo "Arguments: "
 	@echo "  DOCKER_ANTORA_IMAGE: Antora Docker image to build the documentation, default: $(DOCKER_ANTORA_IMAGE)"
@@ -71,3 +83,35 @@ docs-serve-stop:
 	docker stop opennms-docs
 
 clean-all: docs-clean docs-clean-cache
+
+##
+# Packaging targets
+##
+
+deb:
+	./makedeb.sh opennms
+
+deb-minion:
+	./makedeb.sh minion
+
+deb-sentinel:
+	./makedeb.sh sentinel
+
+rpm:
+	./makerpm.sh
+
+rpm-minion:
+	./makerpm.sh -S tools/packages/minion/minion.spec
+
+rpm-sentinel:
+	./makerpm.sh -S tools/packages/sentinel/sentinel.spec
+
+pkg-fast:
+	./makedeb.sh -a -d
+	./makerpm.sh -a -d
+
+pkg-clean:
+	@echo "Cleaning packaging build artifacts ..."
+	-fakeroot ./debian/rules clean
+	rm -rf target/rpm target/debs
+	rm -rf opennms-assemblies/minion/target opennms-assemblies/sentinel/target

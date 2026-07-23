@@ -1,0 +1,35 @@
+jobs:
+  build-package-assemblies:
+    executor: build-executor
+    resource_class: medium+
+    steps:
+      - prep-package-build
+      - run:
+          name: Build Minion and Sentinel Assemblies (shared by build-debian and build-rpm)
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=2
+            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+
+            sudo apt install -y openjdk-21-jdk
+
+            tools/packages/minion/create-minion-assembly.sh -c
+            tools/packages/sentinel/create-sentinel-assembly.sh -c
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-assemblies/minion/target
+            - project/opennms-assemblies/sentinel/target
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results

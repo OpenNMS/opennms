@@ -16,8 +16,10 @@ jobs:
             export DEBEMAIL="opennms@opennms.org"
             export DEBFULLNAME="OpenNMS Build Account"
             .circleci/scripts/makedeb.sh opennms
-            .circleci/scripts/makedeb.sh minion
-            .circleci/scripts/makedeb.sh sentinel
+            # minion/sentinel assemblies were already built once by build-package-assemblies;
+            # reuse them instead of rebuilding via Maven a second time here.
+            OPENNMS_REUSE_ASSEMBLY=1 .circleci/scripts/makedeb.sh minion
+            OPENNMS_REUSE_ASSEMBLY=1 .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg

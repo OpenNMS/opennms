@@ -1,4 +1,5 @@
   #jobs:build/build#
+  #jobs:build/build-package-assemblies#
   #jobs:build/build-debian#
   #jobs:build/build-rpm#
   #jobs:build/empty#

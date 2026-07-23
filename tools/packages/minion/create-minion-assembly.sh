@@ -50,6 +50,15 @@ case "${CIRCLE_BRANCH}" in
 	;;
 esac
 
+if [ "${OPENNMS_REUSE_ASSEMBLY:-0}" = "1" ]; then
+	EXISTING_TARBALL="$(ls -1 "${TOPDIR}"/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz 2>/dev/null | head -n 1 || :)"
+	if [ -n "$EXISTING_TARBALL" ]; then
+		echo "=== Reusing pre-built minion assembly: $EXISTING_TARBALL ==="
+		exit 0
+	fi
+	echo "OPENNMS_REUSE_ASSEMBLY=1 but no pre-built minion tarball found under opennms-assemblies/minion/target; building it now."
+fi
+
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
 echo "=== Building root POM ==="
 "${TOPDIR}/compile.pl" \

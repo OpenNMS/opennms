@@ -143,7 +143,7 @@
                 "user_overridable": false
             }
         },
-        "build-debian": {
+        "build-package-assemblies": {
             "context": [
                 "CircleCI",
                 "gpg-signing"
@@ -163,13 +163,33 @@
                 "user_overridable": false
             }
         },
+        "build-debian": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build-package-assemblies"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ],
+                    "only": [
+                        "/^master-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
         "build-rpm": {
             "context": [
                 "CircleCI",
                 "gpg-signing"
             ],
             "requires": [
-                "build"
+                "build-package-assemblies"
             ],
             "filters": {
                 "branches": {
