@@ -186,38 +186,66 @@ def parse_filtered_vulnerabilities(file_path):
 
     return vulnerabilities
 
-def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
-    """Check if a Jira issue exists for the given package and CVEs."""
-    if not vulnerability_ids:
-        return None
-    
-    normalized_pkg = normalize_package_name(package_name)
-
-    cve_conditions = []
-    for vuln_id in vulnerability_ids:
-        cve_conditions.append(f'text ~ "{vuln_id}"')
-    
-    jql = (
-        f'project = {PROJECT_KEY} AND '
-        f'labels = trivy AND '
-        f'(summary ~ "{normalized_pkg}" OR description ~ "{normalized_pkg}") AND '
-        f'({" OR ".join(cve_conditions)}) AND '
-        f'resolution IS EMPTY'
-    )
-    
+def _run_jql_search(jql, fields=None, max_results=1):
+    """Execute a JQL search and return the list of matching issues."""
+    fields = fields or ["key", "summary", "id"]
     try:
         response = requests.get(
             f"{JIRA_URL}/rest/api/3/search/jql",
-            params={'jql': jql, 'maxResults': 1,"fields": ["key", "summary","id"]},
+            params={'jql': jql, 'maxResults': max_results, "fields": fields},
             auth=(JIRA_USER, JIRA_API_TOKEN)
         )
         response.raise_for_status()
-        issues = response.json().get('issues', [])
-        return issues[0] if issues else None
+        return response.json().get('issues', [])
     except requests.exceptions.RequestException as e:
         logging.error(f"Error searching for existing issues: {e}")
         logging.debug(f"JQL query that failed: {jql}")
+        return []
+
+def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
+    """
+    Check if a Jira issue exists for the given package and CVEs.
+
+    Tries a fuzzy summary/description text search first. Jira's text
+    tokenizer can silently fail to phrase-match certain package name shapes
+    (e.g. Go import paths with repeated hyphenated segments), so if that
+    comes back empty, falls back to searching by CVE alone (which reliably
+    matches) and confirms the package name ourselves in Python against the
+    candidates' summaries, instead of relying on Jira's tokenizer for that
+    part of the match too.
+    """
+    if not vulnerability_ids:
         return None
+
+    normalized_pkg = normalize_package_name(package_name)
+    cve_conditions = [f'text ~ "{vuln_id}"' for vuln_id in vulnerability_ids]
+    cve_clause = f'({" OR ".join(cve_conditions)})'
+
+    fuzzy_jql = (
+        f'project = {PROJECT_KEY} AND '
+        f'labels = trivy AND '
+        f'(summary ~ "{normalized_pkg}" OR description ~ "{normalized_pkg}") AND '
+        f'{cve_clause} AND '
+        f'resolution IS EMPTY'
+    )
+    issues = _run_jql_search(fuzzy_jql)
+    if issues:
+        return issues[0]
+
+    broad_jql = (
+        f'project = {PROJECT_KEY} AND '
+        f'labels = trivy AND '
+        f'{cve_clause} AND '
+        f'resolution IS EMPTY'
+    )
+    candidates = _run_jql_search(broad_jql, fields=["key", "summary"], max_results=50)
+    for candidate in candidates:
+        summary = (candidate.get('fields', {}) or {}).get('summary', '') or ''
+        if package_name.lower() in summary.lower() or normalized_pkg in summary.lower():
+            logging.info(f"Found existing issue for {package_name} via CVE-first fallback search.")
+            return candidate
+
+    return None
 
 def add_cves_to_existing_issue(issue_key, vulnerabilities):
     """Add missing CVEs to an existing Jira issue. Returns True if updated, False otherwise."""
@@ -368,7 +396,7 @@ def create_issue_for_package(package_name, vulnerabilities):
                 "name": "Next"
                }
             ],
-            
+
             EPIC_LINK_FIELD: EPIC_KEY  # Link to epic
         }
     }
