@@ -51,6 +51,7 @@
     <template #footer>
       <Button
         text
+        outlined
         label="Cancel"
         @click="handleCancel"
       />

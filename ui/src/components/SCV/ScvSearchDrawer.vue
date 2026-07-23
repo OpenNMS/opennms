@@ -62,6 +62,7 @@
       <div class="scv-drawer-button-container">
         <PButton
           text
+          outlined
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
           label="Cancel"

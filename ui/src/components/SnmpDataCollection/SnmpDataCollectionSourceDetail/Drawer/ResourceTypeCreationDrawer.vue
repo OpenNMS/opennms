@@ -256,6 +256,7 @@
         <div class="footer">
           <Button
             text
+            outlined
             label="Cancel"
             data-test="cancel-resource-type-parameter-button"
             @click="closeParameterDrawer"
@@ -274,6 +275,7 @@
       >
         <Button
           text
+          outlined
           label="Cancel"
           data-test="cancel-resource-type"
           @click="closeResourceTypeDrawer"

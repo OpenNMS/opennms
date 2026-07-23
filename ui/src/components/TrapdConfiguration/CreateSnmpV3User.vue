@@ -165,6 +165,7 @@
     <div class="footer">
       <PButton
         text
+        outlined
         data-test="cancel-button"
         label="Cancel"
         @click="store.closeCreateUserDrawer"

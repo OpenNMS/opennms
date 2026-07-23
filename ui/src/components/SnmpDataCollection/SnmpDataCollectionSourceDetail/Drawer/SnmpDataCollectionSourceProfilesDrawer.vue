@@ -41,6 +41,7 @@
       <div class="button-row">
         <Button
           text
+          outlined
           label="Cancel"
           @click="close"
         />

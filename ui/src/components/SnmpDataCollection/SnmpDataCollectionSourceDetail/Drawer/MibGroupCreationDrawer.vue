@@ -195,6 +195,7 @@
         <div class="footer">
           <Button
             text
+            outlined
             label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
@@ -213,6 +214,7 @@
       >
         <Button
           text
+          outlined
           label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"
