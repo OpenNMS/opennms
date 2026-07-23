@@ -340,6 +340,10 @@ onBeforeUnmount(() => {
 .graph-data-tabs {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
+
+  :deep(.p-tab) {
+    text-transform: uppercase;
+  }
 }
 .single-graph-btn {
   position: absolute;

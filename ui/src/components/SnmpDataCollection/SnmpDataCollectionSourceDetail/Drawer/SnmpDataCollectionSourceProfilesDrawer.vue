@@ -179,4 +179,11 @@ watch(() => props.visible, async (visible) => {
     margin-left: 0 !important;
   }
 }
+
+// This AutoComplete isn't wrapped in a FormField, so its input inherits the
+// global 3.75rem .p-inputtext height and reads too tall. Match the app-standard
+// field height (3rem, the value FormField applies) instead.
+:deep(.p-autocomplete-input) {
+  height: 3rem;
+}
 </style>
