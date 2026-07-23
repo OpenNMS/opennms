@@ -1,0 +1,90 @@
+
+[[arch-data-domains]]
+= Data Domains and Processing
+:description: The kinds of data OpenNMS ingests, the difference between pull and push ingestion, where each kind of data is stored, and the paths for exporting data to other systems.
+
+This page describes how data moves through {page-component-title}: what comes in, where it is stored, and how it leaves.
+Configuration details are covered in the linked references.
+
+== Inventory
+
+Data in {page-component-title} attaches to inventory: the nodes, interfaces, and services defined through xref:operation:deep-dive/provisioning/introduction.adoc[provisioning].
+An SNMP trap is enriched with the node that sent it, collected metrics are stored against a node's resources, flows are tagged with the exporting node, and topology links connect nodes to each other.
+This shared anchor is what unifies monitoring across the data domains: fault, performance, and traffic data all describe the same nodes.
+Nodes, interfaces, and services can also carry arbitrary xref:operation:deep-dive/meta-data.adoc[metadata], which can be referenced to configure service monitoring, data collection, service detection, and thresholds.
+
+Data from devices that are not in the inventory is of limited use: flows or traps from an unknown source cannot be fully enriched or correlated.
+Nodes should enter inventory through requisitions, which define the entities to monitor from an authoritative source such as a CMDB, IPAM system, or cloud inventory, and which {page-component-title} imports and keeps in sync.
+Provisioning is usually the right place to start when adopting the platform, because the other data domains depend on it.
+
+== Events and alarms
+
+Most activity in {page-component-title} is represented as events: a poller detects a service outage, a trap arrives, a threshold is exceeded, a configuration is reloaded.
+External sources such as xref:operation:deep-dive/events/sources/snmp-traps.adoc[SNMP traps], xref:operation:deep-dive/events/sources/syslog.adoc[syslog messages], and the xref:operation:deep-dive/events/sources/rest.adoc[REST API] are normalized into the same event stream as internally generated events.
+
+Events that indicate problems are raised as alarms, with repeated occurrences reduced onto a single alarm; related alarms can be grouped further through correlation.
+Alarms carry state (they can be acknowledged, escalated, and cleared) and drive notifications and ticketing integrations.
+The xref:operation:deep-dive/events/introduction.adoc[Events] documentation covers this pipeline in depth.
+
+== Pull and push ingestion
+
+Ingestion paths fall into two families, and the two families load a deployment differently.
+
+With *pull* ingestion, {page-component-title} initiates the request:
+
+* The poller runs xref:reference:service-assurance/introduction.adoc[service monitors] to test service availability on a schedule.
+* xref:reference:performance-data-collection/introduction.adoc[Collectors] gather performance metrics (SNMP, HTTPS, JMX, and others) on a schedule.
+
+Pull workloads are driven by configuration: the load depends on the number of nodes, the metrics collected from each, and the collection interval.
+
+With *push* ingestion, network devices initiate the transmission:
+
+* SNMP traps and syslog messages arrive as devices send them.
+* Flows and xref:operation:deep-dive/telemetryd/introduction.adoc[streaming telemetry] arrive continuously, at rates influenced by both network traffic and device configuration, such as export and sampling settings.
+
+Push workloads vary with conditions on the network; a routing incident or a traffic spike can multiply them.
+The scaling components (Sentinel, external flow storage) are aimed primarily at the push side for this reason.
+Minions serve both families: they run pollers and collectors remotely, and they act as listeners that receive push data close to its source.
+
+== Where data is stored
+
+[caption=]
+.Data domains and their default storage
+[cols="1,2,3"]
+|===
+| Data | Storage | Notes
+
+| Inventory, events, alarms
+| PostgreSQL
+| Required in every deployment.
+The system of record for platform state.
+
+| Performance metrics
+| Time series storage on the core's local disk (RRDtool by default)
+| Pluggable: a xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series integration plugin] fits scenarios where metric volume outgrows the local disk.
+
+| Flows
+| An Elasticsearch or OpenSearch cluster
+| Flows are persisted to an xref:operation:deep-dive/flows/basic.adoc[Elasticsearch or OpenSearch] cluster.
+
+| Topology
+| PostgreSQL
+| Discovered by enlinkd from LLDP, CDP, bridge, and routing data.
+|===
+
+State and metadata are stored in PostgreSQL.
+The two high-volume domains, metrics and flows, have pluggable storage because they are typically the first to outgrow a single host.
+
+== Exporting data
+
+{page-component-title} provides several paths for other systems to consume its data:
+
+* *REST APIs*: These expose inventory, events, alarms, measurements, and flow summaries.
+Most integrations start here.
+* *Kafka Producer*: The xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[Kafka Producer] streams events, alarms, metrics, and topology updates to Kafka topics, and a separate xref:operation:deep-dive/flows/basic.adoc#kafka-forwarder-config[flow forwarder] streams enriched flows to Kafka as well.
+This suits continuous consumers, such as data lakes or correlation engines, better than polling the REST APIs.
+* *Prometheus RemoteWrite plugin*: The xref:time-series-storage/timeseries/prometheus-remotewrite.adoc[plugin] persists time series data to a Prometheus remote-write compatible store, where other tools in the stack can query it.
+* *OpenNMS Plugin for Grafana*: The https://docs.opennms.com/grafana-plugin/latest/index.html[plugin] queries the REST APIs so dashboards can be built in Grafana.
+* *Notifications and ticketing integrations*: These forward alarms to people and workflow systems.
+
+The examples in xref:architecture/deployments-in-practice.adoc[] show these paths in use.

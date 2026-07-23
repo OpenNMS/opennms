@@ -1,5 +1,10 @@
 
 .Deployment
+* xref:architecture/introduction.adoc[]
+** xref:architecture/data-domains.adoc[]
+** xref:architecture/deployment-scenarios.adoc[]
+** xref:architecture/deployments-in-practice.adoc[]
+
 * xref:core/introduction.adoc[]
 ** xref:core/system-requirements.adoc[]
 ** xref:core/install.adoc[]

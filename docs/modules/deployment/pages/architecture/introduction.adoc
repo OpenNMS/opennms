@@ -1,0 +1,64 @@
+
+[[arch-planning]]
+= Architecture and Deployment Planning
+:description: How OpenNMS is structured as a data ingestion platform, which components are optional, and how to plan a deployment that starts small and grows.
+
+{page-component-title} is a unified platform for ingesting, correlating, and acting on network monitoring data.
+This section describes the architecture at a conceptual level: what a deployment consists of, which components are optional, and what each component is for.
+It does not replace the installation instructions in the rest of the Deployment section; it provides context for deciding which components you need.
+
+== Data domains
+
+{page-component-title} ingests several kinds of network data and correlates them around a shared inventory:
+
+* *Inventory*: The nodes, interfaces, and services you monitor, populated through xref:operation:deep-dive/provisioning/introduction.adoc[provisioning].
+* *Events and alarms*: State changes, faults, and messages from the network and from {page-component-title} itself.
+* *Performance metrics*: Numeric time series gathered by collectors and pollers, or pushed to {page-component-title} through streaming telemetry.
+* *Flows*: Traffic summaries (NetFlow, IPFIX, sFlow) exported by network devices.
+* *Topology*: Layer 2 and layer 3 relationships discovered from the network.
+
+Each kind of data arrives through its own ingestion path, but all of them attach to the same inventory.
+An alarm, a graph, a flow record, and a topology map can therefore refer to the same node.
+xref:architecture/data-domains.adoc[] describes these paths in more detail.
+
+== One core, optional components
+
+Every deployment is built around a single core instance and a PostgreSQL database.
+The core runs the ingestion, correlation, and web components; PostgreSQL holds inventory, events, alarms, and most other state.
+In many environments, these two components are the entire deployment, and can even co-locate on the same system.
+
+Two optional {page-component-title} components distribute work beyond the core, and each addresses a specific problem:
+
+* *Minion*: Minions extend the core's reach into networks it cannot address directly, such as remote sites, overlapping address space, or networks behind firewalls.
+* *Sentinel*: Sentinels process high-volume push data (flows and streaming telemetry) in place of the core.
+
+Third-party components can take over storage and transport roles as a deployment grows:
+
+* *Time series storage*: By default, the core writes performance metrics as RRD files on its local disk.
+Through a pluggable time series layer, xref:time-series-storage/timeseries/time-series-storage.adoc[alternative time series backends] fit deployment scenarios where metric volume outgrows the local disk.
+* *Search and analytics storage*: An Elasticsearch or OpenSearch cluster stores flows, and can also store historical events and alarms.
+* *Message broker*: The core includes an embedded ActiveMQ broker for communication with distributed components.
+An external broker (typically Apache Kafka) replaces it as a deployment grows, and can also serve as an integration point for other systems.
+
+{page-component-title} does not provide clustering of the core itself.
+A deployment scales by giving the core a larger host, by adding Minions and Sentinels around it, and by moving storage onto dedicated systems.
+xref:architecture/deployment-scenarios.adoc[] discusses the practical limits.
+
+== {page-component-title} in an Operational Support System (OSS) stack
+
+{page-component-title} provides the ingestion, inventory, and fault management layers of an OSS stack, and offers several paths for passing data to other tools:
+
+* REST APIs expose inventory, measurements, events, alarms, and flows.
+* The xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[Kafka Producer] streams events, alarms, metrics, and topology to Kafka for downstream consumers, and enriched flows can be forwarded to Kafka as well.
+* The xref:time-series-storage/timeseries/prometheus-remotewrite.adoc[Prometheus RemoteWrite plugin] persists time series data to a Prometheus remote-write compatible store (such as VictoriaMetrics, Mimir, or Cortex), where other tools in the stack can query it.
+* The https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] supports building dashboards in Grafana, outside the {page-component-title} UI.
+* Built-in xref:operation:deep-dive/notifications/introduction.adoc[notifications] (email, SMS, chat, and webhooks) and xref:operation:deep-dive/ticketing/introduction.adoc[ticketing integrations] push alarms and events to people and workflow systems such as Jira or ServiceNow.
+
+A complete stack often pairs {page-component-title} with a visualization tool such as Grafana and an external ticketing or notification system fed from alarms or events.
+Many other combinations fit different usage scenarios; xref:architecture/deployments-in-practice.adoc[] describes some of them.
+
+== In this section
+
+* xref:architecture/data-domains.adoc[]: How data enters, where it is stored, and how it leaves.
+* xref:architecture/deployment-scenarios.adoc[]: When to add each component, in the order deployments commonly grow.
+* xref:architecture/deployments-in-practice.adoc[]: Complete example environments that combine several scenarios into an OSS stack.
