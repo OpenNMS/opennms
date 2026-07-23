@@ -100,6 +100,17 @@
   border-width: 2px;
 }
 
+// A Button given both `outlined` and `text` (e.g. the text-variant Cancel
+// buttons) shows no visible border on its own: both p-button-outlined and
+// p-button-text classes are applied, and .p-button-text sets a transparent
+// border-color that wins over the outlined border — leaving the 2px border
+// above invisible. Reassert a visible border color for that combination (this
+// two-class selector outranks .p-button-text). currentColor matches the
+// preset's intent that an outlined border use the button's own text color.
+.p-button-outlined.p-button-text {
+  border-color: currentColor;
+}
+
 // Helper/hint text shown under a form field (the small sibling of an
 // IftaLabel/FloatLabel input). Global so every converted field is consistent:
 // indent to line up with the IftaLabel label/value text (the input's left
