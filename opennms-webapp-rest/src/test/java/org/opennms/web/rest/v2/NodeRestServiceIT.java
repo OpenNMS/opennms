@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -247,6 +248,33 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         category.put("name", "Production");
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
+    }
+
+    /**
+     * The v2 node update must ignore provisioning-ownership fields, including key variants that
+     * a literal name check would miss.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateNodeCannotReassignProtectedFields() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysName", "TestMachine1");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        // Keys are normalized before binding, so the separator form is what reaches a camelCase
+        // property (foreign_source -> foreignSource).
+        sendPut("/nodes/1", "sys_contact=LegitContact&foreign_source=AttackerReq&foreign_id=999&Type=D", 204);
+
+        final String xml = sendRequest(GET, "/nodes/1", 200); // still present -> Type=D was ignored
+        assertFalse("foreignSource must not be reassignable via update", xml.contains("AttackerReq"));
+        assertFalse("foreignId must not be reassignable via update", xml.contains("999"));
+        assertTrue("legitimate fields still update", xml.contains("LegitContact"));
     }
 
 }

@@ -97,8 +97,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class NodeRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
-    // Provisioning-ownership and identity fields that must not be reassigned through a
-    // generic property update (would allow requisition takeover / node detach / soft-delete).
     private static final Set<String> PROTECTED_NODE_PROPERTIES =
             Collections.unmodifiableSet(new HashSet<>(Arrays.asList("foreignSource", "foreignId", "type")));
 

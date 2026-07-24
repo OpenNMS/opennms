@@ -55,10 +55,8 @@ public abstract class RestUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
 
 	/**
-	 * Properties that must never be set from client-supplied request parameters via a blind
-	 * bean-property copy: primary keys and the category access-control collection. Setting
-	 * these through a generic update is a mass-assignment / privilege-escalation vector, so
-	 * they are always ignored here regardless of the caller.
+	 * Primary keys and the category access-control collection: never settable from request
+	 * parameters, for any caller.
 	 */
 	public static final Set<String> IMMUTABLE_PROPERTIES = Collections.unmodifiableSet(
 	        new HashSet<>(Arrays.asList("id", "nodeId", "authorizedGroups")));
@@ -80,6 +78,15 @@ public abstract class RestUtils {
 	 * @param properties
 	 */
 	public static void setBeanProperties(final Object bean, final MultivaluedMap<String,String> properties) {
+	    setBeanProperties(bean, properties, Collections.emptySet());
+	}
+
+	/**
+	 * As {@link #setBeanProperties(Object, MultivaluedMap)}, with additional protected property
+	 * names. Matching is done on the normalized name, so key variants such as
+	 * {@code foreign_source} are covered, not just the exact spelling.
+	 */
+	public static void setBeanProperties(final Object bean, final MultivaluedMap<String,String> properties, final Set<String> additionalProtectedProperties) {
 	    final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
 	    wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 	    wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
@@ -88,7 +95,7 @@ public abstract class RestUtils {
 	    wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
 	    for(final String key : properties.keySet()) {
 	        final String propertyName = convertNameToPropertyName(key);
-	        if (IMMUTABLE_PROPERTIES.contains(propertyName)) {
+	        if (IMMUTABLE_PROPERTIES.contains(propertyName) || additionalProtectedProperties.contains(propertyName)) {
 	            LOG.warn("Ignoring attempt to set protected property '{}' from request parameters", propertyName);
 	            continue;
 	        }

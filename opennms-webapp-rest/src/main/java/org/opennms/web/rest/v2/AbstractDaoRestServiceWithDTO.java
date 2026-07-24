@@ -474,14 +474,9 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                // Delegate to the service's doUpdateProperties (the single-id path does the
-                // same). We must NOT blindly copy request params onto the entity here: that
-                // was a mass-assignment vector that mutated arbitrary fields even for
-                // services whose doUpdateProperties is not implemented.
-                final Response response = doUpdateProperties(securityContext, uriInfo, object, params);
-                if (response != null && response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-                    return response;
-                }
+                // Applying the params is doUpdateProperties' responsibility; do not copy them
+                // onto the entity here.
+                doUpdateProperties(securityContext, uriInfo, object, params);
             }
             return Response.noContent().build();
         } finally {

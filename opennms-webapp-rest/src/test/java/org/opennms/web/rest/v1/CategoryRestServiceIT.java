@@ -88,10 +88,8 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private CategoryDao m_categoryDao;
 
     /**
-     * Regression guard for the mass-assignment fix. updateCategory (PUT /categories/{name})
-     * must ignore the access-control field authorizedGroups (the field that drives the
-     * category ACL filter), while still allowing legitimate fields like description. A
-     * ROLE_REST user can no longer grant their own group access to a category.
+     * updateCategory must ignore authorizedGroups (it drives the category ACL filter) while
+     * still applying ordinary fields.
      */
     @Test
     @JUnitTemporaryDatabase
@@ -99,7 +97,6 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void updateCategoryCannotWriteAuthorizedGroups() throws Exception {
         createCategory("AclTest");
         setUser("lowpriv", new String[]{ "ROLE_REST" });
-        // description (benign) alongside authorizedGroups (protected) in the same request
         sendPut("/categories/AclTest", "description=legit&authorizedGroups=AttackerGroup", 204);
 
         final OnmsCategory reloaded = m_categoryDao.findByName("AclTest");
