@@ -97,15 +97,13 @@
           :error="errors.description"
           hint="Provide a detailed description of the event."
         >
-          <Textarea
+          <OnmsTextarea
             :id="eventDescriptionId"
             :modelValue="eventDescription"
-            @update:model-value="eventDescription = ($event ?? '').trim()"
+            @update:modelValue="eventDescription = ($event ?? '').trim()"
             :invalid="!!errors.description"
             data-test="event-description"
-            rows="10"
-            autoResize
-            fluid
+            :rows="10"
           />
         </FormField>
         <div class="spacer"></div>
@@ -114,14 +112,12 @@
           :for="operatorInstructionsId"
           hint="Instructions for operators when this event occurs."
         >
-          <Textarea
+          <OnmsTextarea
             :id="operatorInstructionsId"
             :modelValue="operatorInstructions"
-            @update:model-value="operatorInstructions = ($event ?? '').trim()"
+            @update:modelValue="operatorInstructions = ($event ?? '').trim()"
             data-test="operator-instructions"
-            rows="5"
-            autoResize
-            fluid
+            :rows="5"
           />
         </FormField>
         <div class="spacer"></div>
@@ -152,15 +148,13 @@
           :error="errors.logmsg"
           hint="Provide the log message for this event."
         >
-          <Textarea
+          <OnmsTextarea
             :id="logMessageId"
             :modelValue="logMessage"
-            @update:model-value="logMessage = ($event ?? '').trim()"
+            @update:modelValue="logMessage = ($event ?? '').trim()"
             :invalid="!!errors.logmsg"
             data-test="log-message"
-            rows="5"
-            autoResize
-            fluid
+            :rows="5"
           />
         </FormField>
         <div class="spacer"></div>
@@ -307,13 +301,12 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsTextarea } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
 import Dialog from 'primevue/dialog'
 import Select from 'primevue/select'
-import Textarea from 'primevue/textarea'
 import vkbeautify from 'vkbeautify'
 import FormField from '@/components/Common/FormField.vue'
 import AlarmDataInfo from './AlarmDataInfo.vue'
