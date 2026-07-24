@@ -135,11 +135,43 @@ config:update
 When installed, `sentinel-flows-postgres` takes precedence over Elasticsearch flow persistence on that Sentinel.
 Kafka forwarding, if configured, continues to run alongside it.
 
-Set up partition management (creation, rotation, and expiration) on the external flow database with pg_partman and pg_cron using the `flow-partman-setup.sql` script.
-See xref:operation:deep-dive/flows/basic.adoc#flows-postgres-partman[Partition management on the external database].
+Because `runSchemaChangelog` is `false` on the Sentinel writers, create the flow schema and arrange for time-based partition maintenance on the external database out of band. A single node -- the {page-component-title} core reader or one designated writer -- may instead own schema creation with `runSchemaChangelog=true`.
 
 NOTE: For the {page-component-title} core instance to read these flows, install and configure the `opennms-flows-postgres` feature on the core, pointing it at the *same* flow database.
 See xref:operation:deep-dive/flows/basic.adoc#flows-postgres-external[Use an external PostgreSQL database].
+
+=== Reduce document volume with write-time aggregation (optional)
+
+Sentinel writers can also aggregate flows into the `flow_agg` table as they persist them, the same xref:operation:deep-dive/flows/basic.adoc#flows-postgres-aggregation[write-time aggregation] described for core.
+Enable and tune it on the same configuration, and give each Sentinel its own `aggregation.writerId`:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set aggregation.enabled true        <1>
+config:property-set aggregation.writerId sentinel-a <2>
+config:update
+----
+<1> Turn on write-time aggregation on this Sentinel; raw flows are still persisted.
+<2> A stable id for this Sentinel. Each writer emits its own partial rows per window and the core reader sums the partials, so a distinct id per Sentinel keeps the origin of rows clear (summation is correct regardless of the id).
+
+Reads are always served by the {page-component-title} core reader -- Sentinel does not serve flow queries -- so configure the `smartQuery.*` routing there, not on the Sentinels.
+
+[[flows-sentinel-aggregation-affinity]]
+==== Aggregation accuracy across multiple Sentinels
+
+Each Sentinel computes its top-K from only the flows it consumes, so correct top-K depends on all of a given exporter's flows reaching the *same* Sentinel.
+
+* With a *single Sentinel*, that node consumes the entire flow stream, so top-K is always exact.
+* With *multiple Sentinels*, exact top-K depends on exporter affinity. By default it holds: the flow message broker keys each exporter's stream by `location@exporterIP:exporterPort` (the per-queue `use-routing-key` setting, `true` by default), so Kafka routes a given exporter consistently to one Sentinel.
+
+Regardless of distribution, *interface totals and the "Other" band are always exact* -- they are additive and reconcile across writers.
+Only *top-K talker identification* can degrade to approximate (a large talker split across Sentinels may be undercounted while totals stay exact) when affinity is lost, which happens if:
+
+* a flow queue sets `use-routing-key="false"` in `telemetryd-configuration.xml` (sometimes done to spread a busy exporter's load across Sentinels), or
+* an exporter sends from an unstable/rotating source UDP port, or is received at more than one location.
+
+If you cannot guarantee exporter affinity and need exact top-K, run aggregation on a single node that sees the whole flow stream (a single Sentinel, or one designated aggregating consumer) rather than on every Sentinel; otherwise the approximate top-K -- with exact totals -- is generally acceptable for dashboards.
 
 == Set up message broker
 

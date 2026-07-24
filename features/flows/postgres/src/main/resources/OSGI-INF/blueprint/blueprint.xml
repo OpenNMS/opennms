@@ -39,6 +39,30 @@
             <!-- One node should own schema creation; set false on additional writers (e.g. Sentinels) -->
             <cm:property name="runSchemaChangelog" value="true"/>
             <cm:property name="queryThreads" value="4"/>
+            <!-- Write-time aggregation (FlowAggregator -> flow_agg): fixed-window per-dimension summaries
+                 that collapse flow cardinality. Opt-in (adds write load alongside raw persistence). Each
+                 writer must have a distinct aggregation.writerId; readers sum partial rows across writers. -->
+            <cm:property name="aggregation.enabled" value="false"/>
+            <cm:property name="aggregation.windowSizeMs" value="60000"/>
+            <cm:property name="aggregation.allowedLatenessMs" value="300000"/>
+            <cm:property name="aggregation.flushIntervalMs" value="5000"/>
+            <!-- Wall-clock age after which an open window is flushed even if its event-time watermark has
+                 stalled (e.g. an exporter went quiet). 0 = auto (windowSize + allowedLateness + 60s). -->
+            <cm:property name="aggregation.idleFlushMs" value="0"/>
+            <!-- Per exporter+interface cap on application/conversation/host; the tail rolls into one
+                 null-key "Other" row per window. Interface totals are never capped. 0 = keep every key. -->
+            <cm:property name="aggregation.topK" value="10"/>
+            <!-- Distinguishes this writer's partial rows. Leave blank to auto-default to the node identity
+                 (each Sentinel gets a distinct id); readers sum partials across writers regardless. -->
+            <cm:property name="aggregation.writerId" value=""/>
+            <!-- Read routing (mirrors the Elasticsearch SmartQueryService): route eligible queries to the
+                 aggregate table vs the raw table. Aggregates are opt-in (alwaysUseRaw=true by default);
+                 set alwaysUseRaw=false to enable threshold routing, or alwaysUseAgg=true to force it.
+                 Specific-entity/listing queries always use raw. -->
+            <cm:property name="smartQuery.alwaysUseRaw" value="true"/>
+            <cm:property name="smartQuery.alwaysUseAgg" value="false"/>
+            <cm:property name="smartQuery.durationThresholdMs" value="120000"/>
+            <cm:property name="smartQuery.endpointThresholdMs" value="604800000"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -117,7 +141,30 @@
         <property name="threads" value="${queryThreads}"/>
     </bean>
 
-    <service ref="postgresFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" ranking="100">
+    <!-- Aggregated read path: answers eligible queries from flow_agg, delegating the rest to the raw
+         query service above. -->
+    <bean id="aggregatedFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.AggregatedFlowQueryService"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowQueryService"/>
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="threads" value="${queryThreads}"/>
+    </bean>
+
+    <!-- Smart router (port of the Elasticsearch SmartQueryService): picks raw vs aggregated per query.
+         Registered as THE FlowQueryService (ranking 100, above Elasticsearch's 0). -->
+    <bean id="postgresSmartFlowQueryService"
+          class="org.opennms.netmgt.flows.postgres.PostgresSmartQueryService">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <argument ref="postgresFlowQueryService"/>
+        <argument ref="aggregatedFlowQueryService"/>
+        <property name="alwaysUseRawForQueries" value="${smartQuery.alwaysUseRaw}"/>
+        <property name="alwaysUseAggForQueries" value="${smartQuery.alwaysUseAgg}"/>
+        <property name="timeRangeDurationAggregateThresholdMs" value="${smartQuery.durationThresholdMs}"/>
+        <property name="timeRangeEndpointAggregateThresholdMs" value="${smartQuery.endpointThresholdMs}"/>
+    </bean>
+
+    <service ref="postgresSmartFlowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" ranking="100">
         <service-properties>
             <entry key="flows.query.id" value="postgres"/>
         </service-properties>
@@ -129,6 +176,37 @@
         <bean class="org.opennms.netmgt.flows.postgres.PostgresFlowHealthCheck">
             <argument ref="flowDataSourceProvider"/>
         </bean>
+    </service>
+
+    <!-- Write-time aggregation. Feeds the in-process FlowAggregator, which writes fixed-window per-
+         dimension summaries to flow_agg. Shares the flow DataSource and is inert when aggregation is
+         disabled or no DataSource is configured. -->
+    <!-- Node identity (core or this Sentinel), used to auto-default the aggregation writerId. -->
+    <reference id="flowIdentity" interface="org.opennms.distributed.core.api.Identity"/>
+
+    <bean id="aggregatingFlowRepository"
+          class="org.opennms.netmgt.flows.postgres.AggregatingFlowRepository"
+          init-method="start" destroy-method="stop">
+        <argument ref="postgresFlowMetricRegistry"/>
+        <property name="dataSourceProvider" ref="flowDataSourceProvider"/>
+        <property name="identity" ref="flowIdentity"/>
+        <property name="enabled" value="${aggregation.enabled}"/>
+        <property name="windowSizeMs" value="${aggregation.windowSizeMs}"/>
+        <property name="allowedLatenessMs" value="${aggregation.allowedLatenessMs}"/>
+        <property name="flushIntervalMs" value="${aggregation.flushIntervalMs}"/>
+        <property name="idleFlushMs" value="${aggregation.idleFlushMs}"/>
+        <property name="topK" value="${aggregation.topK}"/>
+        <property name="writerId" value="${aggregation.writerId}"/>
+    </bean>
+
+    <!-- Registered as a forwarder (like the Kafka exporter): the pipeline always delivers flows here,
+         alongside the highest-ranked primary store, so aggregation coexists with raw persistence rather
+         than competing for the primary-store tier. -->
+    <service ref="aggregatingFlowRepository" interface="org.opennms.integration.api.v1.flows.FlowRepository">
+        <service-properties>
+            <entry key="flows.repository.id" value="postgres-agg"/>
+            <entry key="flows.repository.forwarder" value="true"/>
+        </service-properties>
     </service>
 
 </blueprint>

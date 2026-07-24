@@ -163,8 +163,9 @@
     <feature name="sentinel-flows-postgres" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Sentinel :: Flows :: Postgres">
         <details>Optional PostgreSQL-backed flow persistence for Sentinel (write path). When installed it registers a
             higher-ranked FlowRepository that overrides Elasticsearch persistence on this Sentinel; flow reads are
-            served by Horizon against the same database. Configure the flow database via the
-            org.opennms.features.flows.persistence.postgres pid (datasource.url/username/password/databaseName).</details>
+            served by Horizon against the same database. Optional write-time aggregation into flow_agg can be enabled
+            per Sentinel (aggregation.enabled=true with a distinct aggregation.writerId). Configure the flow database
+            via the org.opennms.features.flows.persistence.postgres pid (datasource.url/username/password/databaseName).</details>
         <feature>sentinel-flows</feature>
         <feature version="[4.2,4.3)">spring-jdbc</feature>
         <!-- HikariCPConnectionFactory + JdbcDataSource config model + PostgreSQL driver for the dedicated flow pool -->

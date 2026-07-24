@@ -44,7 +44,7 @@ echo "opennms-flows-postgres" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/flow
 ----
 
 By default, no further configuration is required: flows are persisted to the {page-component-title} PostgreSQL database.
-The flow table is partitioned by time and maintained automatically -- {page-component-title} pre-creates upcoming partitions and drops expired ones on a daily schedule.
+The flow tables are partitioned by time and maintained automatically -- {page-component-title} pre-creates upcoming partitions and drops expired ones on a daily schedule (raw flows are kept 10 days by default; see <<flows-postgres-retention, Flow retention>> to change this).
 
 NOTE: Storing flows in the {page-component-title} database is convenient for getting started and for small-to-moderate flow volumes.
 Because flows are high volume, monitor database growth and move to a <<flows-postgres-external, dedicated external database>> or to xref:deep-dive/flows/elasticsearch.adoc[Elasticsearch] as your volume grows.
@@ -75,31 +75,56 @@ NOTE: Each writer and query thread uses one connection from the flow database co
 For a dedicated external database, keep `writerThreads` + `queryThreads` at or below the pool size (`connection.pool.maxPool`, default 25) and raise the pool if you increase them.
 When using the internal database, connections come from the shared {page-component-title} datasource.
 
+[[flows-postgres-retention]]
 === Flow retention (optional)
 
-By default, {page-component-title} keeps *14 days* of flows in the internal database.
-The `flow` table is range-partitioned by day, and a maintenance function pre-creates upcoming daily partitions and drops partitions older than the retention window.
-Expiring old flows is therefore a fast partition drop rather than a row-by-row delete.
+Both flow tables are range-partitioned by time, and a maintenance function pre-creates upcoming partitions and drops partitions older than the retention window.
+Expiring old data is therefore a fast partition drop rather than a row-by-row delete.
+Two tables are maintained independently, because they have very different write rates and value-over-time:
 
-The maintenance function takes the retention window and the number of days of partitions to pre-create, both in days:
+[cols="1,1,1,1", options="header"]
+|===
+| Table | Contents | Default granularity | Default retention
+
+| `flow`
+| Raw per-flow records (high volume, high write rate)
+| hourly
+| 10 days
+
+| `flow_agg`
+| Write-time aggregates (sparse, low write rate; only present when <<flows-postgres-aggregation, aggregation>> is enabled)
+| weekly
+| 6 months
+|===
+
+The maintenance function takes the parent table, its partition-key column, a granularity, a retention interval, and the number of future buckets to pre-create:
 
 [source, sql]
 ----
-flow_maintain_partitions(retention_days, premake_days)
+flow_maintain_partitions(parent, control_column, granularity, retention, premake) <1>
 ----
+<1> `granularity` is one of `hour`, `day`, `week`, or `month`. `retention` is a PostgreSQL `interval` (for example `'10 days'`, `'6 months'`). `premake` is a count of future buckets, so its wall-clock reach depends on the granularity -- 48 hourly buckets is two days ahead, 2 weekly buckets is two weeks ahead.
 
-On the internal database it runs from the Vacuumd daemon with the defaults `flow_maintain_partitions(14, 3)`: keep 14 days of flows, and pre-create partitions 3 days ahead of ingest.
+On the internal database it runs from the Vacuumd daemon with the defaults shown above.
+Review these defaults *before deploying* the feature and adjust them to your data-volume and reporting needs -- the initial partition set is created from the same values when the schema is first installed.
 
-To change the retention window, edit the flow-partition statement in `$\{OPENNMS_HOME}/etc/vacuumd-configuration.xml`:
+To change retention or granularity, edit the flow-partition statement in `$\{OPENNMS_HOME}/etc/vacuumd-configuration.xml`:
 
 [source, xml]
 ----
 <statement transactional="false">
-  DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions')
-    THEN PERFORM flow_maintain_partitions(30, 3); END IF; END $$;   <1>
+  DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions') THEN
+      PERFORM flow_maintain_partitions('flow',     'flow_ts',      'hour', '30 days'::interval, 48); <1>
+      PERFORM flow_maintain_partitions('flow_agg', 'window_start', 'week', '1 year'::interval,   2);  <2>
+    END IF;
+  END $$;
 </statement>
 ----
-<1> Keep 30 days of flows instead of 14. Raise the second argument as well if flows arrive with timestamps more than a few days in the future.
+<1> Keep 30 days of raw flows instead of 10. Keep `premake` comfortably larger than a day's worth of buckets so daily maintenance never runs out between runs (48 hourly buckets = two days ahead). Switch to `'day'` granularity for lower-volume deployments where hourly partitions are unnecessarily fine.
+<2> Keep one year of aggregates instead of six months. The `flow_agg` line is harmless when aggregation is not enabled -- the function is a no-op for a table that does not exist.
+
+NOTE: `premake` must stay ahead of the maintenance cadence. With the default once-per-day schedule, hourly partitions need well over 24 future buckets (the default is 48); weekly and monthly partitions only need one or two.
 
 How often maintenance runs is set by the `period` attribute (in milliseconds) on the root `<VacuumdConfiguration>` element; the default of `86400000` runs it once every 24 hours.
 
@@ -110,7 +135,8 @@ Then reload the Vacuumd configuration, or restart {page-component-title}:
 ${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Vacuumd'
 ----
 
-WARNING: Reducing the retention window drops the newly expired partitions on the next maintenance run, permanently deleting the flows they contain.
+WARNING: Reducing the retention window drops the newly expired partitions on the next maintenance run, permanently deleting the data they contain.
+Changing the *granularity* of a table that already holds data does not repartition existing partitions; the new granularity applies only to buckets created from then on, and older partitions age out normally under retention.
 
 [[flows-postgres-external]]
 == Use an external PostgreSQL database
@@ -118,7 +144,7 @@ WARNING: Reducing the retention window drops the newly expired partitions on the
 For high flow volumes, or to isolate flow storage from the {page-component-title} database, persist flows to a dedicated external PostgreSQL database.
 This is also the model used when persisting flows from xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel] in a distributed deployment, where every Sentinel writer and the {page-component-title} core reader share the same flow database.
 
-. Set up the external database and its partition management (see <<flows-postgres-partman, Partition management on the external database>>) before pointing {page-component-title} at it.
+. Set up the external database -- create its schema and arrange for time-based partition maintenance -- before pointing {page-component-title} at it.
 
 . Point {page-component-title} at the external database:
 +
@@ -153,6 +179,120 @@ ALTER DATABASE flowdb SET synchronous_commit = off;
 ----
 
 * *Batched inserts are already optimized.* {page-component-title} appends `reWriteBatchedInserts=true` to the dedicated-pool JDBC URL, so batched flow inserts are sent to PostgreSQL as single multi-row statements. No action is required; do not remove the parameter if you set `datasource.url` with your own query string.
+
+[[flows-postgres-aggregation]]
+== Reduce document volume with write-time aggregation (optional)
+
+Flows are high volume, so querying the raw `flow` table for every dashboard becomes expensive as volume grows.
+Instead, {page-component-title} can aggregate flows as they arrive into fixed time windows and store compact per-dimension summaries in a `flow_agg` table; dashboards over longer time ranges then read those summaries rather than scanning raw flows.
+This is the same model as flow aggregation with Nephron, but computed in-process by the `opennms-flows-postgres` feature -- no Apache Beam or Flink required -- and it runs on {page-component-title} core or on xref:deep-dive/flows/sentinel/sentinel.adoc[Sentinel].
+
+=== What is aggregated
+
+For each fixed window (60 seconds by default), per exporter interface, the aggregator records:
+
+* the *interface total* (exact), and
+* the *top-K* applications, conversations, and hosts by bytes, plus a single *Other* row that rolls up everything below the top-K.
+
+Each is kept both without TOS and per DSCP value, so traffic can be broken down by DSCP.
+A flow's bytes are prorated across the windows it spans, using the same arithmetic as query-time proration, so the aggregated totals reconcile with the raw values.
+The top-K cap bounds storage regardless of traffic shape: high-cardinality dimensions (conversations, hosts) collapse from potentially tens of thousands of rows per window to `top-K + 1` per exporter interface, while the interface total stays exact and the "Other" band captures the remaining traffic.
+
+=== Enable aggregation
+
+Aggregation is off by default because it adds write load alongside raw persistence.
+Enable and tune it on the same configuration:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set aggregation.enabled true             <1>
+config:property-set aggregation.windowSizeMs 60000       <2>
+config:property-set aggregation.allowedLatenessMs 300000 <3>
+config:property-set aggregation.topK 10                  <4>
+config:property-set aggregation.writerId core            <5>
+config:update
+----
+<1> Turn on write-time aggregation. Flows continue to be stored raw as well.
+<2> Fixed window size. This is the finest time resolution available to aggregated queries.
+<3> How long a window stays open for late/out-of-order flows before it is flushed; flows arriving later than this for a closed window are dropped.
+<4> Number of top applications/conversations/hosts kept per exporter interface per window; the remainder rolls into "Other". `0` keeps every key (no cap).
+<5> Identifies this writer's rows. Give each Sentinel a distinct value; readers sum the partial rows across writers.
+
+NOTE: On the internal database, the `flow_agg` table is created automatically with the rest of the schema. On an external database (`runSchemaChangelog=false`), create `flow_agg` as part of your external schema setup, alongside the `flow` table.
+
+=== Serve dashboards from aggregates
+
+Reads go through a smart query router that chooses, per request, between two backends:
+
+* the *raw* `flow` table -- every flow, exact, and current to the last write, but expensive to scan over long ranges; and
+* the *aggregated* `flow_agg` table -- compact per-window top-K summaries, cheap to read over long ranges, but top-K approximate and no fresher than the most recently closed window.
+
+The router mirrors the Elasticsearch `SmartQueryService`. It evaluates these rules in order and the first match wins:
+
+[cols="3,1,4", options="header"]
+|===
+| Condition | Backend | Why
+
+| `smartQuery.alwaysUseRaw=true` (the default)
+| Raw
+| Aggregates are opt-in; reads are unchanged until you enable routing.
+
+| `smartQuery.alwaysUseAgg=true`
+| Aggregated
+| Forces aggregates for every eligible query (mainly for testing or benchmarking).
+
+| The query names specific entities
+| Raw
+| Aggregates keep only the top-K per window, so an arbitrarily named entity may have been rolled into "Other" and is not individually available; the raw table always has it.
+
+| No time-range filter
+| Raw
+| Aggregated reads need a bounded window to scope and sum; without one there is nothing to select.
+
+| Range duration >= `smartQuery.durationThresholdMs` (default 2 minutes)
+| Aggregated
+| Long ranges are exactly where scanning raw flows is expensive, and window-granularity results are acceptable there.
+
+| Range ends older than `smartQuery.endpointThresholdMs` (default 7 days)
+| Aggregated
+| Historical data is rarely needed at per-flow precision, the raw table may already be pruned by retention, and the far smaller aggregates can be kept longer.
+
+| Otherwise (a short, recent range)
+| Raw
+| Recent narrow ranges need exact, up-to-the-moment results; aggregates lag by up to one window plus `aggregation.allowedLatenessMs`, and scanning raw over a small range is cheap.
+|===
+
+"Specific-entity" queries are those that name which entities to return -- explicit application, conversation, or host lists, and the enumeration endpoints that autocomplete entity names in the UI.
+
+Even when a query is routed to the aggregated backend, only what `flow_agg` can answer is served from it; anything else transparently falls back to the raw table:
+
+[cols="3,2", options="header"]
+|===
+| Query | Served from
+
+| Top-N application / conversation / host summaries and series | `flow_agg`
+| DSCP field values, summaries, and series | `flow_agg`
+| Flow count | Raw -- aggregates store no per-flow count, and counting per window would overcount flows that span windows
+| Non-DSCP field queries | Raw -- only DSCP is aggregated
+| Specific-entity summaries/series and entity enumeration | Raw -- always, per the routing rules above
+|===
+
+Aggregated reads are opt-in:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.postgres
+config:property-set smartQuery.alwaysUseRaw false            <1>
+config:property-set smartQuery.durationThresholdMs 120000    <2>
+config:property-set smartQuery.endpointThresholdMs 604800000 <3>
+config:update
+----
+<1> By default all reads use the raw table. Set this `false` for threshold-based routing, or set `smartQuery.alwaysUseAgg true` to force aggregates for eligible queries.
+<2> Route to aggregates when the query range is at least this long (default 2 minutes).
+<3> Route to aggregates when the query range ends further back in time than this (default 7 days).
+
+CAUTION: Aggregated results are top-K approximations at the window resolution. A per-entity byte total over a range can be slightly low for an entity that falls into "Other" in some windows (the interface total and the grand total remain exact), and a series `step` finer than `aggregation.windowSizeMs` cannot resolve below the window. Use short ranges, or `smartQuery.alwaysUseRaw true`, when you need exact per-flow precision.
 
 == Multi-protocol listener
 

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Test;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -86,6 +88,44 @@ public class PostgresFlowDisabledTest {
         final CompletableFuture<Long> result = queryService.getFlowCount(filters);
         assertTrue("queries must fail cleanly, not NPE, when unconfigured", result.isCompletedExceptionally());
         queryService.stop();
+    }
+
+    @Test
+    public void aggregationWriterIdDefaultsToNodeIdentityWhenBlank() {
+        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        final Identity id = mock(Identity.class);
+        when(id.getId()).thenReturn("sentinel-7");
+        agg.setIdentity(id);
+        agg.setWriterId("");                     // blank -> auto-default to the node identity
+        assertEquals("sentinel-7", agg.resolveWriterId());
+        agg.setWriterId("explicit-id");          // an explicit value wins
+        assertEquals("explicit-id", agg.resolveWriterId());
+    }
+
+    @Test
+    public void aggregationWriterIdFallsBackToCoreWithoutIdentity() {
+        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        agg.setWriterId("");                      // blank, and no Identity injected
+        assertEquals("core", agg.resolveWriterId());
+    }
+
+    @Test
+    public void aggregatingRepositoryIsInertWhenDisabled() throws Exception {
+        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        agg.setEnabled(false);                                          // default; aggregation off
+        agg.start();                                                    // must NOT throw or start a writer
+        agg.persist(Collections.singletonList(mock(Flow.class)));       // must be a no-op
+        agg.stop();
+    }
+
+    @Test
+    public void aggregatingRepositoryIsInertWhenEnabledButNoDataSource() throws Exception {
+        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        agg.setEnabled(true);
+        agg.setDataSourceProvider(inertProvider());
+        agg.start();                                                    // logs, but must NOT throw (feature loads)
+        agg.persist(Collections.singletonList(mock(Flow.class)));       // must be a no-op, not an NPE
+        agg.stop();
     }
 
     @Test

@@ -18,8 +18,15 @@
     -->
 
     <changeSet author="opennms" id="flows-postgres-flow-table" runInTransaction="false">
+        <!-- Liquibase 3.6.3 tableExists() does NOT detect PostgreSQL partitioned tables (relkind 'p'),
+             so a flow table pre-created outside Liquibase (e.g. by contrib/flow-partman-setup.sql on an
+             external database) would slip past <tableExists> and the CREATE below would fail and abort
+             the whole blueprint container. Use a relkind-aware check so an existing flow table -
+             partitioned or plain - cleanly MARK_RANs. validCheckSum ANY tolerates this guard changing
+             on databases where the changeset already ran. -->
+        <validCheckSum>ANY</validCheckSum>
         <preConditions onFail="MARK_RAN">
-            <not><tableExists tableName="flow"/></not>
+            <sqlCheck expectedResult="0">SELECT count(*) FROM pg_class WHERE relname = 'flow' AND relkind IN ('r','p')</sqlCheck>
         </preConditions>
         <sql splitStatements="false"><![CDATA[
             CREATE TABLE flow (
@@ -59,61 +66,163 @@
     </changeSet>
 
     <!--
-      Partition maintenance function, invoked by vacuumd (internal DB) or a repo-side
-      scheduled task (external DB). Pre-creates upcoming daily partitions and drops those
-      older than the retention window. Uses flow_pYYYYMMDD naming keyed on flow_ts day.
+      Generalized partition maintenance function, invoked by vacuumd (internal DB) or a repo-side
+      scheduled task (external DB), once per partitioned parent table (flow, flow_agg). Pre-creates
+      the current bucket plus `premake` future buckets at the requested granularity and drops
+      partitions whose upper bound has aged past the retention interval.
+
+      Parameters:
+        parent      partitioned table name (e.g. 'flow', 'flow_agg')
+        control     partition-key column (documentation only; the key is fixed by the table DDL)
+        granularity one of hour | day | week | month
+        retention   drop partitions whose entire range is older than now() - retention
+        premake     number of future buckets (beyond the current one) to pre-create
+
+      Partition naming (suffix appended to the parent name):
+        hour  -> <parent>_pYYYYMMDDhHH24   day -> <parent>_pYYYYMMDD
+        week  -> <parent>_pIYYYwIW         month -> <parent>_pYYYYMM
+      Dropping is driven by each child's catalog upper bound (pg_get_expr(relpartbound)), so it is
+      naming-agnostic and safely skips the DEFAULT partition. runOnChange re-applies edits to the
+      function body on existing databases (the body is a CREATE OR REPLACE and is idempotent).
     -->
-    <changeSet author="opennms" id="flows-postgres-maintain-fn" runInTransaction="false">
+    <changeSet author="opennms" id="flows-postgres-maintain-fn" runInTransaction="false" runOnChange="true">
         <sql splitStatements="false" endDelimiter="\n/\n"><![CDATA[
-            CREATE OR REPLACE FUNCTION flow_maintain_partitions(retention_days int DEFAULT 14,
-                                                                premake_days int DEFAULT 3)
+            -- Drop the legacy two-argument (retention_days, premake_days) signature, replaced below.
+            DROP FUNCTION IF EXISTS flow_maintain_partitions(int, int);
+
+            CREATE OR REPLACE FUNCTION flow_maintain_partitions(parent      text,
+                                                                control     text,
+                                                                granularity text,
+                                                                retention   interval,
+                                                                premake     int)
             RETURNS void AS $$
             DECLARE
-                d          date;
-                part_name  text;
-                cutoff     date := (now()::date - make_interval(days => retention_days))::date;
-                child      record;
-                child_date date;
+                step        interval;
+                fmt         text;
+                bucket      timestamptz;
+                part_name   text;
+                cutoff      timestamptz := now() - retention;
+                child       record;
+                upper_txt   text;
+                upper_bound timestamptz;
             BEGIN
-                -- Pre-create today + upcoming daily partitions.
-                FOR i IN 0..premake_days LOOP
-                    d := (now()::date + i);
-                    part_name := format('flow_p%s', to_char(d, 'YYYYMMDD'));
+                -- No-op if the parent table does not exist (e.g. flow_agg before aggregation is installed).
+                IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = parent AND relkind = 'p') THEN
+                    RETURN;
+                END IF;
+
+                IF granularity NOT IN ('hour', 'day', 'week', 'month') THEN
+                    RAISE EXCEPTION 'flow_maintain_partitions: unsupported granularity % (use hour|day|week|month)', granularity;
+                END IF;
+                step := ('1 ' || granularity)::interval;
+                fmt  := CASE granularity
+                            WHEN 'hour'  THEN '"p"YYYYMMDD"h"HH24'
+                            WHEN 'day'   THEN '"p"YYYYMMDD'
+                            WHEN 'week'  THEN '"p"IYYY"w"IW'
+                            WHEN 'month' THEN '"p"YYYYMM'
+                        END;
+
+                -- Pre-create the current + `premake` future buckets.
+                FOR i IN 0..premake LOOP
+                    bucket    := date_trunc(granularity, now()) + (i * step);
+                    part_name := parent || '_' || to_char(bucket, fmt);
                     IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = part_name) THEN
                         BEGIN
-                            EXECUTE format(
-                                'CREATE TABLE %I PARTITION OF flow FOR VALUES FROM (%L) TO (%L)',
-                                part_name, d::timestamptz, (d + 1)::timestamptz);
+                            EXECUTE format('CREATE TABLE %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
+                                           part_name, parent, bucket, bucket + step);
                         EXCEPTION WHEN others THEN
+                            -- Overlapping/pre-existing range (e.g. a coarser legacy partition still covers it).
                             RAISE NOTICE 'flow_maintain_partitions: could not create %: %', part_name, SQLERRM;
                         END;
                     END IF;
                 END LOOP;
 
-                -- Drop partitions whose day is older than the retention cutoff.
+                -- Drop partitions whose entire range is older than the retention cutoff.
                 FOR child IN
-                    SELECT c.relname AS relname
+                    SELECT c.oid, c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound
                     FROM pg_inherits i
                     JOIN pg_class c ON c.oid = i.inhrelid
                     JOIN pg_class p ON p.oid = i.inhparent
-                    WHERE p.relname = 'flow' AND c.relname ~ '^flow_p[0-9]{8}$'
+                    WHERE p.relname = parent
                 LOOP
-                    child_date := to_date(right(child.relname, 8), 'YYYYMMDD');
-                    IF child_date < cutoff THEN
+                    -- Upper bound of a range partition: FOR VALUES FROM (...) TO ('<ts>'); DEFAULT has no match.
+                    upper_txt := (regexp_match(child.bound, 'TO \(''([^'']+)''\)'))[1];
+                    CONTINUE WHEN upper_txt IS NULL;
+                    upper_bound := upper_txt::timestamptz;
+                    IF upper_bound <= cutoff THEN
                         EXECUTE format('DROP TABLE IF EXISTS %I', child.relname);
                     END IF;
                 END LOOP;
             END;
             $$ LANGUAGE plpgsql;
         ]]></sql>
-        <rollback><sql>DROP FUNCTION IF EXISTS flow_maintain_partitions(int, int);</sql></rollback>
+        <rollback><sql>DROP FUNCTION IF EXISTS flow_maintain_partitions(text, text, text, interval, int);</sql></rollback>
     </changeSet>
 
-    <!-- Default partition (safety net for stragglers) + initial partition set. -->
+    <!-- Default partition (safety net for stragglers) + initial partition set.
+         Raw flow defaults: hourly granularity, 10-day retention, 48 future buckets pre-made
+         (>1 day ahead so daily vacuumd maintenance never runs out between runs). See
+         vacuumd-configuration.xml and the flow-retention docs to change granularity/retention. -->
     <changeSet author="opennms" id="flows-postgres-initial-partitions" runInTransaction="false">
+        <validCheckSum>ANY</validCheckSum>
         <sql splitStatements="true"><![CDATA[
             CREATE TABLE IF NOT EXISTS flow_default PARTITION OF flow DEFAULT;
-            SELECT flow_maintain_partitions(14, 3);
+            SELECT flow_maintain_partitions('flow', 'flow_ts', 'hour', '10 days'::interval, 48);
+        ]]></sql>
+    </changeSet>
+
+    <!--
+      Write-time aggregation table (FlowAggregator). Each row is one grouping key's summed ingress/
+      egress bytes for a fixed time window. Multiple partial rows may exist per (window, key) - one
+      per writer (e.g. several Sentinels) and, in a later phase, per firing pane - so readers SUM the
+      partials. Range-partitioned by window_start like the raw flow table; a DEFAULT partition keeps
+      it functional before daily-partition maintenance (added with the read/retention phase).
+    -->
+    <changeSet author="opennms" id="flows-postgres-flow-agg-table" runInTransaction="false">
+        <!-- relkind-aware guard (see flows-postgres-flow-table): tableExists misses partitioned tables. -->
+        <validCheckSum>ANY</validCheckSum>
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT count(*) FROM pg_class WHERE relname = 'flow_agg' AND relkind IN ('r','p')</sqlCheck>
+        </preConditions>
+        <sql splitStatements="false"><![CDATA[
+            CREATE TABLE flow_agg (
+                window_start              timestamptz NOT NULL,
+                window_end                timestamptz NOT NULL,
+                exporter_node_id          integer     NOT NULL,
+                if_index                  integer     NOT NULL,
+                dscp                      smallint,               -- with-TOS DSCP; NULL = without-TOS rollup
+                dimension                 text        NOT NULL,   -- INTERFACE | APPLICATION | CONVERSATION | HOST
+                grouped_by_key            text,                   -- dimension value; NULL for INTERFACE totals
+                bytes_in                  bigint      NOT NULL,
+                bytes_out                 bigint      NOT NULL,
+                congestion_encountered    boolean     NOT NULL,
+                non_ecn_capable_transport boolean     NOT NULL,
+                hostname                  text,                   -- only populated for HOST rows
+                writer_id                 text        NOT NULL    -- distinguishes partials from multiple writers
+            ) PARTITION BY RANGE (window_start);
+        ]]></sql>
+        <rollback><sql>DROP TABLE IF EXISTS flow_agg;</sql></rollback>
+    </changeSet>
+
+    <!-- Default partition + indexes + initial partition set.
+         Aggregated flow_agg defaults: weekly granularity, 6-month retention, 2 future buckets
+         pre-made. flow_agg is far sparser and lower-write-rate than raw flow, so it is retained
+         much longer at a coarser granularity. See vacuumd-configuration.xml / docs to change. -->
+    <changeSet author="opennms" id="flows-postgres-flow-agg-partitions-and-indexes" runInTransaction="false">
+        <validCheckSum>ANY</validCheckSum>
+        <sql splitStatements="true"><![CDATA[
+            CREATE TABLE IF NOT EXISTS flow_agg_default PARTITION OF flow_agg DEFAULT;
+            CREATE INDEX IF NOT EXISTS flow_agg_window_idx ON flow_agg (window_start);
+            CREATE INDEX IF NOT EXISTS flow_agg_lookup_idx ON flow_agg (exporter_node_id, if_index, dimension, window_start);
+            SELECT flow_maintain_partitions('flow_agg', 'window_start', 'week', '6 months'::interval, 2);
+        ]]></sql>
+    </changeSet>
+
+    <!-- TOS/DSCP dimension: adds the with-TOS scope. Idempotent so it upgrades a flow_agg created before
+         the column existed (on an external database, run this ALTER by hand). -->
+    <changeSet author="opennms" id="flows-postgres-flow-agg-dscp" runInTransaction="false">
+        <sql splitStatements="true"><![CDATA[
+            ALTER TABLE flow_agg ADD COLUMN IF NOT EXISTS dscp smallint;
         ]]></sql>
     </changeSet>
 

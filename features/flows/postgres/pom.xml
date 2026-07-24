@@ -65,6 +65,13 @@
       <artifactId>org.opennms.features.flows.processing</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Cross-container node Identity (getId/getLocation) to auto-default the aggregation writerId -->
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Flow read contract: FlowQueryService, Filter, TrafficSummary, Conversation, Host -->
     <dependency>
       <groupId>org.opennms.features.flows</groupId>

@@ -5,11 +5,25 @@
   </statement>
 
   <statement transactional="false">
-    <!-- Postgres flow repository (opennms-flows-postgres feature): pre-create upcoming daily
-         partitions and drop expired ones. Guarded so it is a no-op on stock installs where the
-         function is absent (elastic-only, or the flow schema lives in an external database that
-         vacuumd cannot reach). Arguments are retention_days, premake_days. -->
-    DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions') THEN PERFORM flow_maintain_partitions(14, 3); END IF; END $$;
+    <!-- Postgres flow repository (opennms-flows-postgres feature): pre-create upcoming partitions
+         and drop expired ones for the raw flow and aggregated flow_agg tables. Guarded so it is a
+         no-op on stock installs where the function is absent (elastic-only, or the flow schema
+         lives in an external database that vacuumd cannot reach); the function itself is a no-op
+         for a parent table that does not exist (e.g. flow_agg when aggregation is not installed).
+
+         Arguments: (parent, control-column, granularity, retention, premake-future-buckets).
+         Granularity is one of hour|day|week|month. Defaults below:
+           flow      hourly / 10-day retention / 48 future buckets (>1 day, so daily runs never
+                     run out between invocations of this once-per-day vacuumd statement)
+           flow_agg  weekly / 6-month retention / 2 future buckets (sparse, low write rate)
+         To change retention or granularity, edit the arguments here (and, for a fresh install,
+         the matching initial call in the flows-postgres changelog). See the flow-retention docs. -->
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'flow_maintain_partitions') THEN
+        PERFORM flow_maintain_partitions('flow',     'flow_ts',      'hour', '10 days'::interval,  48);
+        PERFORM flow_maintain_partitions('flow_agg', 'window_start', 'week', '6 months'::interval,  2);
+      END IF;
+    END $$;
   </statement>
 
   <statement>
