@@ -9,13 +9,13 @@
     <div class="spacer-medium"></div>
     <div class="flex title-padding">
       <div id="status-chip-wrapper">
-        <PTag
+        <OnmsTag
           :severity="status.enabled ? 'success' : 'secondary'"
           aria-label="Usage statistics status"
         >
           <OnmsIcon :icon="status.enabled ? CheckCircle : Remove" />
           <span>{{ status.enabled ? 'Enabled' : 'Disabled' }}</span>
-        </PTag>
+        </OnmsTag>
       </div>
       <div
         class="flex button-wrapper"
@@ -53,16 +53,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Remove from '@/components/icons/action/Remove.vue'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
 import useSnackbar from '@/composables/useSnackbar'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { UsageStatisticsData, UsageStatisticsStatus } from '@/types/usageStatistics'
-
-const PTag = Tag
 
 const { showSnackBar } = useSnackbar()
 const usageStatisticsStore = useUsageStatisticsStore()
