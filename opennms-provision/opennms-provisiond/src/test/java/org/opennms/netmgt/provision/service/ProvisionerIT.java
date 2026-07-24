@@ -1088,6 +1088,40 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         assertEquals(4, getInterfaceDao().get(node, "198.51.100.204").getSnmpInterface().getIfIndex().intValue());
     }
 
+    /**
+     * NMS-19096: a scheduled NodeScan instance is reused across runs
+     * (scheduleWithFixedDelay), so its scan stamp must advance per run. When it was
+     * frozen at construction, a reused instance could not reap a non-primary
+     * interface that had gone away between runs. Here 198.51.100.204 is discovered
+     * from SNMP on the first run, disappears from the agent, and must be removed on
+     * the second run of the same NodeScan.
+     */
+    @Test(timeout = 300000)
+    @JUnitSnmpAgent(host = "198.51.100.201", port = 161, resource = "classpath:/snmpTestData3.properties")
+    public void testReusedNodeScanReapsVanishedInterfaceNms19096() throws Exception {
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
+
+        final OnmsNode node = getNodeDao().findAll().get(0);
+
+        // A single NodeScan instance, reused across runs exactly as the scheduler does.
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(),
+                node.getForeignId(), node.getLocation(), null);
+
+        // First run discovers the SNMP-only interface 198.51.100.204.
+        runScan(scan);
+        m_nodeDao.flush();
+        assertEquals(2, getInterfaceDao().countAll());
+
+        // The discovered interface disappears; the agent stays responsive (system group only).
+        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr("198.51.100.201"), 161),
+                new DefaultResourceLoader().getResource("classpath:/snmpwalk-system.properties"));
+
+        // Second run on the same instance must reap 198.51.100.204, leaving only the primary.
+        runScan(scan);
+        m_nodeDao.flush();
+        assertEquals(1, getInterfaceDao().countAll());
+    }
+
     @Test
     public void testDeleteService() throws Exception {
 
