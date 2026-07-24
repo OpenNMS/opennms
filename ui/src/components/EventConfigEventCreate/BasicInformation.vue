@@ -104,6 +104,8 @@
             :invalid="!!errors.description"
             data-test="event-description"
             :rows="10"
+            autoResize
+            fluid
           />
         </FormField>
         <div class="spacer"></div>
@@ -118,6 +120,8 @@
             @update:modelValue="operatorInstructions = ($event ?? '').trim()"
             data-test="operator-instructions"
             :rows="5"
+            autoResize
+            fluid
           />
         </FormField>
         <div class="spacer"></div>
@@ -155,6 +159,8 @@
             :invalid="!!errors.logmsg"
             data-test="log-message"
             :rows="5"
+            autoResize
+            fluid
           />
         </FormField>
         <div class="spacer"></div>

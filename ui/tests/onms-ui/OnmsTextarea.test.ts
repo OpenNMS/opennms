@@ -23,4 +23,11 @@ describe('OnmsTextarea', () => {
     expect(wrapper.find('textarea').attributes('rows')).toBe('5')
     expect(wrapper.findComponent({ name: 'Textarea' }).props('invalid')).toBe(true)
   })
+
+  it('passes autoResize and fluid to inner Textarea', () => {
+    const wrapper = mount(OnmsTextarea, { props: { autoResize: true, fluid: true }, global: globalPlugins })
+    const innerTextarea = wrapper.findComponent({ name: 'Textarea' })
+    expect(innerTextarea.props('autoResize')).toBe(true)
+    expect(innerTextarea.props('fluid')).toBe(true)
+  })
 })
