@@ -99,13 +99,11 @@
             :error="formError.authPassphrase"
           >
             <div class="input-with-icon">
-              <PPassword
+              <OnmsPassword
                 inputId="auth-passphrase"
                 data-test="auth-passphrase-input"
                 v-model="authPassphrase"
                 :invalid="!!formError.authPassphrase"
-                toggleMask
-                :feedback="false"
                 fluid
               />
               <ScvInputIcon
@@ -143,13 +141,11 @@
             :error="formError.privacyPassphrase"
           >
             <div class="input-with-icon">
-              <PPassword
+              <OnmsPassword
                 inputId="privacy-passphrase"
                 data-test="privacy-passphrase-input"
                 v-model="privacyPassphrase"
                 :invalid="!!formError.privacyPassphrase"
-                toggleMask
-                :feedback="false"
                 fluid
               />
               <ScvInputIcon
@@ -201,9 +197,8 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsPassword } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import Password from 'primevue/password'
 import Select from 'primevue/select'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@/types'
@@ -211,7 +206,6 @@ import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
-const PPassword = Password
 const PSelect = Select
 
 const store = useTrapdConfigStore()
