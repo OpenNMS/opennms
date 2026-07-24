@@ -22,6 +22,7 @@
 
 export const ONMS_UI_VERSION = '0.1.0'
 
+export { default as OnmsAutoComplete } from './components/OnmsAutoComplete.vue'
 export { default as OnmsButton } from './components/OnmsButton.vue'
 export { default as OnmsCheckbox } from './components/OnmsCheckbox.vue'
 export { default as OnmsIcon } from './components/OnmsIcon.vue'

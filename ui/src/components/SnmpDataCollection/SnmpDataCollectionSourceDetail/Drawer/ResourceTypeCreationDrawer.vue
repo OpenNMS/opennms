@@ -70,7 +70,7 @@
           :for="storageStrategyId"
           :error="errors.storageStrategy"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="storageStrategyId"
             v-model="storageStrategy"
             :suggestions="storageStrategyResults"
@@ -143,7 +143,7 @@
           :for="persistenceSelectorStrategyId"
           :error="errors.persistenceSelectorStrategy"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="persistenceSelectorStrategyId"
             v-model="persistenceSelectorStrategy"
             :suggestions="persistenceSelectorStrategyResults"
@@ -300,8 +300,7 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
-import AutoComplete from 'primevue/autocomplete'
+import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
@@ -375,12 +374,12 @@ const buildStrategyResults = (options: string[], query: string): IAutocompleteIt
   return filtered
 }
 
-const onSearchStorageStrategy = (event: { query: string }) => {
-  storageStrategyResults.value = buildStrategyResults(STORAGE_STRATEGY_OPTIONS, event.query)
+const onSearchStorageStrategy = (query: string) => {
+  storageStrategyResults.value = buildStrategyResults(STORAGE_STRATEGY_OPTIONS, query)
 }
 
-const onSearchPersistenceSelectorStrategy = (event: { query: string }) => {
-  persistenceSelectorStrategyResults.value = buildStrategyResults(PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, event.query)
+const onSearchPersistenceSelectorStrategy = (query: string) => {
+  persistenceSelectorStrategyResults.value = buildStrategyResults(PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, query)
 }
 
 const openStorageStrategyDrawer = (

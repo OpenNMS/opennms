@@ -94,6 +94,7 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', {
         paths: [
+          { name: 'primevue/autocomplete', message: 'Use OnmsAutoComplete from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/button', message: 'Use OnmsButton / OnmsIconButton from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },

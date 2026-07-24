@@ -26,12 +26,12 @@
       </div>
       <div class="spacer" />
       <FormField label="Add Profile">
-        <PAutoComplete
+        <OnmsAutoComplete
           v-model="autocompleteQuery"
           :suggestions="filteredSuggestions"
           optionLabel="name"
           @complete="onSearch"
-          @option-select="addProfile($event.value)"
+          @optionSelect="(value) => addProfile(value as SnmpCollectionProfile)"
           placeholder="Search profiles..."
           :forceSelection="true"
           data-test="profile-autocomplete"
@@ -61,14 +61,12 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton } from '@opennms/onms-ui'
 import ChipComponent from 'primevue/chip'
 import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'
 
 const PChip = ChipComponent
-const PAutoComplete = AutoCompleteComponent
 
 const props = defineProps<{
   visible: boolean
@@ -101,8 +99,8 @@ const onOpen = async () => {
   filteredSuggestions.value = [...availableProfiles.value]
 }
 
-const onSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSearch = (query: string) => {
+  const q = query.toLowerCase()
   if (q.length > 0) {
     filteredSuggestions.value = availableProfiles.value.filter(p =>
       p.name.toLowerCase().includes(q)

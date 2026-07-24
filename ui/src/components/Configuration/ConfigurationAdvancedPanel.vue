@@ -13,19 +13,19 @@
         class="item-wrapper"
       >
         <FormField label="Key" class="key-field">
-          <PAutoComplete
+          <OnmsAutoComplete
             :modelValue="item.key"
             optionLabel="name"
             :suggestions="results.list[index]"
             dropdown
-            @complete="(e) => search(e.query, props.type, props.subType, index)"
-            @item-select="(e) => onKeySelect(e.value, index)"
+            @complete="(query: string) => search(query, props.type, props.subType, index)"
+            @optionSelect="(value: unknown) => onKeySelect(value as AdvancedKey, index)"
             @update:modelValue="(val) => onKeyInput(val, index)"
           >
             <template #empty>
               <div class="autocomplete-empty">{{ labels.noResults }}</div>
             </template>
-          </PAutoComplete>
+          </OnmsAutoComplete>
         </FormField>
         <FormField label="Value" class="value-field" :hint="item.hint || ' '">
           <OnmsInputText v-model="item.value" />
@@ -53,8 +53,7 @@
   lang="ts"
 >
 import { PropType, computed, reactive, ref } from 'vue'
-import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -62,8 +61,6 @@ import { orderBy } from 'lodash'
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
-
-const PAutoComplete = AutoComplete
 
 /**
  * Props

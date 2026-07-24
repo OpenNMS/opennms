@@ -83,7 +83,7 @@
           :for="mibGroupId"
           :error="errors.mibGroupNames"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="mibGroupId"
             class="my-autocomplete"
             v-model="mibGroupNames"
@@ -127,8 +127,7 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
-import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
 import RadioButton from 'primevue/radiobutton'
@@ -198,8 +197,8 @@ const validateDefinition = (): SystemDefErrors => {
   return validationErrors
 }
 
-const search = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const search = (query: string) => {
+  const q = query.toLowerCase()
   results.value = store.mibGroupNames
     .filter(x => x.toLowerCase().indexOf(q) > -1)
     .map(x => ({ _text: x, _value: x }))
