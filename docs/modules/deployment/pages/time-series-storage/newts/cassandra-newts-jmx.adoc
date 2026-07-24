@@ -6,7 +6,7 @@
 This section describes the metrics that {page-component-title} collects to monitor the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on a Cassandra node.
 
 JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} to collect these metrics (
-see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX Authentication and Authorization] in the Cassandra documentation).
+see https://cassandra.apache.org/doc/4.0/cassandra/operating/security.html#jmx-access[JMX access] in the Cassandra documentation).
 
 The data collection process is bound to the agent IP interface whose service name is `JMX-Cassandra-Newts`.
 The JMXCollector retrieves MBean entities from the Cassandra node.
