@@ -85,7 +85,7 @@
           label="Monitoring Location"
           for="snmp-monitoring-location-select"
         >
-          <PSelect
+          <OnmsSelect
             inputId="snmp-monitoring-location-select"
             class="dropdown-select"
             data-test="snmp-monitoring-location-select"
@@ -102,14 +102,14 @@
             label="Version"
             for="snmp-definition-version"
           >
-            <PSelect
+            <OnmsSelect
               inputId="snmp-definition-version"
               class="dropdown-select"
               data-test="snmp-definition-version"
               optionLabel="_text"
               :options="SnmpVersions"
               :modelValue="snmpVersion"
-              @update:modelValue="onSnmpVersionUpdated"
+              @update:modelValue="(val) => onSnmpVersionUpdated(val as ISelectItemType | undefined)"
             />
           </FormField>
         </div>
@@ -242,9 +242,8 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import { OnmsButton, OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Card from 'primevue/card'
-import Select from 'primevue/select'
 import { ISelectItemType } from '@/types'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -258,7 +257,6 @@ import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
 
 const PCard = Card
-const PSelect = Select
 
 // Unique per-instance prefix for label `for`/input `id` pairs (multiple detail
 // panels stay mounted across PrimeVue tab panels).

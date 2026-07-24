@@ -41,10 +41,10 @@
           :for="ifTypeId"
           :error="errors.ifType"
         >
-          <Select
+          <OnmsSelect
             :inputId="ifTypeId"
             :modelValue="ifType"
-            @update:modelValue="ifType = $event"
+            @update:modelValue="ifType = $event as ISelectItemType"
             :options="IF_TYPE_FILTERS_OPTIONS"
             optionLabel="_text"
             :invalid="!!errors.ifType"
@@ -144,10 +144,10 @@
             :for="instanceId"
             :error="mibObjectErrors.instance"
           >
-            <Select
+            <OnmsSelect
               :inputId="instanceId"
               :modelValue="instance"
-              @update:modelValue="instance = $event"
+              @update:modelValue="instance = $event as ISelectItemType"
               :options="instancesOptions"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.instance"
@@ -177,10 +177,10 @@
             :for="dataTypeId"
             :error="mibObjectErrors.type"
           >
-            <Select
+            <OnmsSelect
               :inputId="dataTypeId"
               :modelValue="dataType"
-              @update:modelValue="dataType = $event"
+              @update:modelValue="dataType = $event as ISelectItemType"
               :options="MIB_OBJECT_DATA_TYPE_OPTIONS"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.type"
@@ -241,11 +241,10 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()

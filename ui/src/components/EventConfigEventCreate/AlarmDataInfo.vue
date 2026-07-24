@@ -21,7 +21,7 @@
           :error="errors.alarmType"
           hint="Select the alarm type."
         >
-          <Select
+          <OnmsSelect
             :inputId="alarmTypeId"
             :options="AlarmTypeOptions"
             optionLabel="_text"
@@ -81,12 +81,11 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
 import { ISelectItemType } from '@/types'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'
 

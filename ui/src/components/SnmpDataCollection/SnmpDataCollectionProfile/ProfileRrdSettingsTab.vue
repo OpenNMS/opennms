@@ -60,7 +60,7 @@
           header="Consolidation Function"
         >
           <template #editor="{ data }">
-            <PSelect
+            <OnmsSelect
               v-model="data.cf"
               :options="cfOptions"
               optionLabel="label"
@@ -141,20 +141,18 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputNumberComponent from 'primevue/inputnumber'
-import SelectComponent from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 const PInputNumber = InputNumberComponent
-const PSelect = SelectComponent
 
 const rrdStepId = useId()
 

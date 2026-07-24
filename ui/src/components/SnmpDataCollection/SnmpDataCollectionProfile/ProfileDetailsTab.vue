@@ -138,7 +138,7 @@
               :for="`profile-storage-flag`"
               hint=""
             >
-              <PSelect
+              <OnmsSelect
                 id="profile-storage-flag"
                 :modelValue="configDetails.storageFlag"
                 @update:modelValue="update('storageFlag', String($event))"
@@ -162,21 +162,19 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
 import Card from 'primevue/card'
 import InputNumberComponent from 'primevue/inputnumber'
-import SelectComponent from 'primevue/select'
 import TagComponent from 'primevue/tag'
 import ToggleSwitchComponent from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 
 const PCard = Card
 const PToggleSwitch = ToggleSwitchComponent
-const PSelect = SelectComponent
 const PInputNumber = InputNumberComponent
 const PTag = TagComponent
 

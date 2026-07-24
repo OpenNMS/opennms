@@ -3,7 +3,7 @@
     <div class="onms-row add-row">
       <div class="onms-col-5">
         <FormField label="Search Type">
-          <Select
+          <OnmsSelect
             v-model="currentSelection"
             :options="searchOptions"
             optionLabel="title"
@@ -67,8 +67,7 @@ import { onMounted, ref } from 'vue'
 
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import Select from 'primevue/select'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'

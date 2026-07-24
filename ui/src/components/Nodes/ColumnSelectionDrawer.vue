@@ -24,7 +24,7 @@
               aria-label="Reorder column"
               :icon="Apps"
             />
-            <Select
+            <OnmsSelect
               v-model="element.value"
               :options="getAvailableOptions(index)"
               optionLabel="name"
@@ -63,9 +63,8 @@ import { computed, ref, watch } from 'vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
-import Select from 'primevue/select'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'

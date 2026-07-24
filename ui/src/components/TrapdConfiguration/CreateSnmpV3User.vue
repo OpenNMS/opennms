@@ -59,7 +59,7 @@
             for="security-level"
             :error="formError.securityLevel"
           >
-            <PSelect
+            <OnmsSelect
               inputId="security-level"
               v-model="securityLevel"
               @update:modelValue="onSecurityLevelChange"
@@ -82,7 +82,7 @@
             for="auth-protocol"
             :error="formError.authProtocol"
           >
-            <PSelect
+            <OnmsSelect
               inputId="auth-protocol"
               v-model="authProtocol"
               showClear
@@ -124,7 +124,7 @@
             for="privacy-protocol"
             :error="formError.privacyProtocol"
           >
-            <PSelect
+            <OnmsSelect
               inputId="privacy-protocol"
               v-model="privacyProtocol"
               showClear
@@ -197,16 +197,13 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsPassword } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import Select from 'primevue/select'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@/types'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
-
-const PSelect = Select
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()

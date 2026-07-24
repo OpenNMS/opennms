@@ -10,7 +10,7 @@
     </FormField>
     <div class="flex-center">
       <FormField label="External Source" class="side-input full-width mb-m" :error="errors.type">
-        <PSelect
+        <OnmsSelect
           data-test="external-source-select"
           optionLabel="name"
           :options="requisitionTypeList"
@@ -48,7 +48,7 @@
     </div>
     <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
       <FormField label="Requisition Plugin" class="side-input mb-m">
-        <PSelect
+        <OnmsSelect
           optionLabel="name"
           :options="requisitionSubTypes"
           :modelValue="config.subType"
@@ -131,12 +131,11 @@
   lang="ts"
   setup
 >
-import Select from 'primevue/select'
 import RadioButton from 'primevue/radiobutton'
 import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { PropType, computed, ref, watch } from 'vue'
 import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
@@ -144,7 +143,6 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
 import { UpdateModelFunction } from '@/types'
 
-const PSelect = Select
 const PRadioButton = RadioButton
 
 const firstInput = ref()

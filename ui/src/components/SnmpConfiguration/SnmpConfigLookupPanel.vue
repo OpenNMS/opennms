@@ -36,7 +36,7 @@
           for="snmp-lookup-location"
           hint="Select a monitoring location"
         >
-          <PSelect
+          <OnmsSelect
             inputId="snmp-lookup-location"
             class="lookup-input"
             data-test="snmp-monitoring-location-select"
@@ -81,8 +81,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
@@ -91,8 +90,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-
-const PSelect = Select
 
 const props = defineProps<{
   autoLookupIpAddress?: string

@@ -1,6 +1,6 @@
 <template>
   <FormField label="Alarm Action" class="select-ack">
-    <PSelect
+    <OnmsSelect
       name="alarmOptions"
       id="alarmOptions"
       v-model="alarmOption"
@@ -93,14 +93,11 @@
 import { computed, reactive, ref } from 'vue'
 
 import { Alarm, AlarmQueryParameters, ISortObject } from '@/types'
-import Select from 'primevue/select'
-import { OnmsCheckbox } from '@opennms/onms-ui'
+import { OnmsCheckbox, OnmsSelect } from '@opennms/onms-ui'
 import { SORT } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SortableTh from './SortableTh.vue'
 import { useMapStore } from '@/stores/mapStore'
-
-const PSelect = Select
 
 const mapStore = useMapStore()
 const alarms = computed<Alarm[]>(() => mapStore.getAlarms())

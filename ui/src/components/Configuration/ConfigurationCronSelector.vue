@@ -5,7 +5,7 @@
       v-if="!props.config.advancedCrontab"
     >
       <FormField label="Schedule Type" class="occurance" :error="props.errors.occurance">
-        <PSelect
+        <OnmsSelect
           data-test="schedule-type-select"
           optionLabel="name"
           :options="scheduleTypes"
@@ -20,7 +20,7 @@
         class="occurance-day"
         :error="props.errors.occuranceDay"
       >
-        <PSelect
+        <OnmsSelect
           optionLabel="name"
           :options="dayTypes"
           :invalid="Boolean(props.errors.occuranceDay)"
@@ -34,7 +34,7 @@
         class="occurance-week"
         :error="props.errors.occuranceWeek"
       >
-        <PSelect
+        <OnmsSelect
           optionLabel="name"
           :options="weekTypes"
           :invalid="Boolean(props.errors.occuranceWeek)"
@@ -93,8 +93,7 @@
   lang="ts"
   setup
 >
-import { OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
-import Select from 'primevue/select'
+import { OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import { computed, PropType } from 'vue'
@@ -102,8 +101,6 @@ import { LocalConfiguration, LocalErrors } from './configuration.types'
 import { ErrorStrings } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
-
-const PSelect = Select
 
 const updateFormValue = (type: string, value: string) => {
   props.updateValue(type, value)

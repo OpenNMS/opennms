@@ -132,7 +132,7 @@
             :error="errors.dest"
             hint="Select the destination for the log message."
           >
-            <Select
+            <OnmsSelect
               :inputId="destinationId"
               data-test="event-destination"
               :invalid="!!errors.dest"
@@ -140,7 +140,7 @@
               optionLabel="_text"
               showClear
               :modelValue="destination?._value ? destination : null"
-              @update:model-value="onSelectChange(destination, $event)"
+              @update:model-value="onSelectChange(destination, $event as ISelectItemType | null)"
               fluid
             />
           </FormField>
@@ -171,7 +171,7 @@
             :error="errors.severity"
             hint="Select the severity of the event."
           >
-            <Select
+            <OnmsSelect
               :inputId="severityId"
               data-test="event-severity"
               :invalid="!!errors.severity"
@@ -179,7 +179,7 @@
               optionLabel="_text"
               showClear
               :modelValue="severity?._value ? severity : null"
-              @update:model-value="onSelectChange(severity, $event)"
+              @update:model-value="onSelectChange(severity, $event as ISelectItemType | null)"
               fluid
             />
           </FormField>
@@ -307,12 +307,11 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsTextarea } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect, OnmsTextarea } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
 import Dialog from 'primevue/dialog'
-import Select from 'primevue/select'
 import vkbeautify from 'vkbeautify'
 import FormField from '@/components/Common/FormField.vue'
 import AlarmDataInfo from './AlarmDataInfo.vue'

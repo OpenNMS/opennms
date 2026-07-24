@@ -22,7 +22,7 @@
             :for="`mask-element-name-${index}`"
             :error="errors.maskElements?.[index]?.name"
           >
-            <Select
+            <OnmsSelect
               :inputId="`mask-element-name-${index}`"
               :options="availableMaskOptions(index)"
               optionLabel="_text"
@@ -75,11 +75,10 @@
 import { ref, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskElementNameOptions } from './constants'
 

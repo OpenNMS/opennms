@@ -30,7 +30,7 @@
               <PDatePicker v-model="startDateRef" />
             </FormField>
             <FormField label="Start Time">
-              <PSelect
+              <OnmsSelect
                 :options="times"
                 v-model="startTimeRef"
                 optionLabel="label"
@@ -40,7 +40,7 @@
               <PDatePicker v-model="endDateRef" />
             </FormField>
             <FormField label="End Time">
-              <PSelect
+              <OnmsSelect
                 :options="times"
                 v-model="endTimeRef"
                 optionLabel="label"
@@ -61,17 +61,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
 import Popover from 'primevue/popover'
 import DatePicker from 'primevue/datepicker'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 
 const PPopover = Popover
 const PDatePicker = DatePicker
-const PSelect = Select
 
 interface TimeOption {
   label: string

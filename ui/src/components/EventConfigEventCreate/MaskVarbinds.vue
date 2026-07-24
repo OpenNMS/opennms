@@ -23,7 +23,7 @@
             :for="`varbind-type-${index}`"
             :error="errors.varbinds?.[index]?.type"
           >
-            <Select
+            <OnmsSelect
               :inputId="`varbind-type-${index}`"
               :options="MaskVarbindsTypeOptions"
               optionLabel="_text"
@@ -117,11 +117,10 @@
 import { computed, ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'
 

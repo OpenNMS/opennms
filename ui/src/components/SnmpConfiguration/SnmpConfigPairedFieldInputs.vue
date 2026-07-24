@@ -11,7 +11,7 @@
           :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
         >
-          <PSelect
+          <OnmsSelect
             :inputId="fieldId(field.key)"
             class="paired-input"
             :data-test="field.dataTest"
@@ -94,17 +94,15 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { computed, onMounted, ref, useId, watch } from 'vue'
 
 import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
 import InputNumber from 'primevue/inputnumber'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
 
 const PInputNumber = InputNumber
-const PSelect = Select
 
 // Unique per-instance prefix so label `for`/input `id` pairs don't collide
 // across the several PairedFieldInputs instances (and tab panels) that PrimeVue
