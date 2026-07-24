@@ -77,6 +77,42 @@ footer#footer,
   --p-text-color: rgb(255, 255, 255);
 }
 
+// Pre-mount skeleton for the Vue menu on legacy JSP pages (NMS-19975). JSP
+// navigations are full document loads and #opennms-sidemenu-container is
+// server-rendered empty, so nothing dark exists where the fixed menubar and
+// side rail belong until the menu bundle executes and Vue mounts — the light
+// page background flashes through on every JSP navigation. This stylesheet is
+// render-blocking in <head> (bootstrap.jsp), so paint the menubar and the
+// collapsed side rail as pseudo-elements of the still-empty container; :empty
+// stops matching the instant Vue mounts children, so the skeleton removes
+// itself with no JS coordination. Geometry, colors and z-indexes mirror
+// .onms-menubar (Menubar.vue) and .onms-side-menu (SideMenu.vue); the literal
+// fallbacks match --onms-surface-dark in onms-theme.scss for the first frames
+// before any theme class is present.
+#opennms-sidemenu-container:empty::before,
+#opennms-sidemenu-container:empty::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  background-color: var(--onms-surface-dark, #131736);
+}
+
+// Menubar
+#opennms-sidemenu-container:empty::before {
+  top: 0;
+  right: 0;
+  height: var(--onms-header-height, 3.75rem);
+  z-index: var(--onms-zindex-fixed, 1030);
+}
+
+// Collapsed side menu rail
+#opennms-sidemenu-container:empty::after {
+  top: var(--onms-header-height, 3.75rem);
+  bottom: 0;
+  width: var(--onms-side-menu-collapsed, 3.75rem);
+  z-index: 2000; // matches .onms-side-menu in SideMenu.vue
+}
+
 // Visited links keep the normal color (no distinct visited color), matching the
 // app convention in onms-base.scss.
 a:visited {
