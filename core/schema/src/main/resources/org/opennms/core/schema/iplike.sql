@@ -27,8 +27,9 @@
 -- (verified against the iplike reference corpus by IPLikeCoverageIT):
 --   * value classification via family(::inet) instead of regex matching
 --     (the zone id is stripped with split_part first: ::inet cannot parse
---     it, and an 8-field LIKE guard keeps compressed IPv6 out of the
---     field-parsing loop, which assumes exactly 8 groups)
+--     it; an 8-field LIKE guard plus a strpos '::' rejection keep
+--     compressed IPv6 out of the field-parsing loop, which assumes
+--     exactly 8 groups)
 --   * to_number(x, '999') replaced by ::integer casts
 --   * regex operators in check_rule replaced by strpos()
 --   * parsing wrapped in a nested block whose EXCEPTION handler turns any
@@ -88,9 +89,13 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
 
                 i := i + 1;
             end loop;
-        -- IPv6 (the LIKE guard requires the 8 fully-expanded groups this
-        -- parsing loop assumes, as the previous regex did)
+        -- IPv6: the parsing loop assumes 8 fully-expanded groups. The LIKE
+        -- guard alone still admits a middle one-group compression (seven
+        -- colons, e.g. fe80::1:2:3:4:5:6, valid to ::inet), which ltrim
+        -- would swallow and shift every later field — the strpos check
+        -- rejects all compressed forms, as the previous regex did
         elsif i_ipaddress like '%:%:%:%:%:%:%:%'
+              and strpos(split_part(i_ipaddress, '%', 1), '::') = 0
               and family(split_part(i_ipaddress, '%', 1)::inet) = 6
               and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%.+)?$' then
             c_addrwork := i_ipaddress;

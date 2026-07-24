@@ -261,8 +261,13 @@ public abstract class IplikeSqlTranslator {
             } else {
                 lo = hi = parseValue(part, hex);
             }
-            if (lo > maxValue) {
-                continue; // rule element above the field maximum never matches
+            if (lo > hi || lo > maxValue) {
+                // descending or above-maximum elements never match (iplike
+                // uses BETWEEN). Descending segments MUST be dropped before
+                // expansion: a zero-iteration segment in recurse() would
+                // enumerate every preceding combination without ever
+                // reaching the MAX_RANGES backstop.
+                continue;
             }
             segments.add(new long[] {lo, Math.min(hi, maxValue)});
         }
