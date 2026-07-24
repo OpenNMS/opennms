@@ -42,7 +42,7 @@
       </FormField>
       <div class="button-row">
         <OnmsButton
-          variant="text"
+          variant="ghost"
           label="Cancel"
           @click="close"
         />

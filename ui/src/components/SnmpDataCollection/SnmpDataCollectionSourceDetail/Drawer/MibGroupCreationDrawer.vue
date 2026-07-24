@@ -194,7 +194,7 @@
         <div class="spacer"></div>
         <div class="footer">
           <OnmsButton
-            variant="text"
+            variant="ghost"
             label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
@@ -212,7 +212,7 @@
         v-if="!mibObjectDrawerState.visible"
       >
         <OnmsButton
-          variant="text"
+          variant="ghost"
           label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"

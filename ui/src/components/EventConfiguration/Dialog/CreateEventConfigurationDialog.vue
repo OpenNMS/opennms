@@ -50,7 +50,7 @@
     </div>
     <template #footer>
       <OnmsButton
-        variant="text"
+        variant="ghost"
         label="Cancel"
         @click="handleCancel"
       />

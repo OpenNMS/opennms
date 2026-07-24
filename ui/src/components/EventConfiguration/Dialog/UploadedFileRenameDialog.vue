@@ -67,7 +67,7 @@
           data-test="save-button"
         />
         <OnmsButton
-          variant="text"
+          variant="ghost"
           label="Cancel"
           @click="onCancel"
         />

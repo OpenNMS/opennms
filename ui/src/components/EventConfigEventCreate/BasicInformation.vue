@@ -280,7 +280,7 @@
       </div>
       <template #footer>
         <OnmsButton
-          variant="text"
+          variant="ghost"
           label="Cancel"
           @click="handleSourceCreationCancel"
           data-test="cancel-source-button"

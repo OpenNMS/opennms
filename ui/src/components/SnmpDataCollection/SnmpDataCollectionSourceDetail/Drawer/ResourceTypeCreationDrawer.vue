@@ -255,7 +255,7 @@
         <div class="spacer"></div>
         <div class="footer">
           <OnmsButton
-            variant="text"
+            variant="ghost"
             label="Cancel"
             data-test="cancel-resource-type-parameter-button"
             @click="closeParameterDrawer"
@@ -273,7 +273,7 @@
         v-if="!resourceTypeDrawerState.visible"
       >
         <OnmsButton
-          variant="text"
+          variant="ghost"
           label="Cancel"
           data-test="cancel-resource-type"
           @click="closeResourceTypeDrawer"

@@ -43,6 +43,7 @@ ui/src/menu/dist-menu/
 ui/src/main/node_modules/
 ui/src/menu/node_modules/
 ui/node_modules/
+ui/packages/*/node_modules/
 ui/package-lock.json
 ui/devConfig.ts
 .circleci/main.yml

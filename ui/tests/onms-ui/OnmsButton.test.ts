@@ -25,6 +25,12 @@ describe('OnmsButton', () => {
     const filled = mount(OnmsButton).findComponent({ name: 'Button' })
     expect(filled.props('outlined')).toBe(false)
     expect(filled.props('text')).toBe(false)
+    // 'ghost' maps to both PrimeVue flags true: the bordered, transparent
+    // "Cancel" style (PrimeVue's own `.p-button-outlined.p-button-text`
+    // combo), see primevue-overrides.scss.
+    const ghost = mount(OnmsButton, { props: { variant: 'ghost' }}).findComponent({ name: 'Button' })
+    expect(ghost.props('text')).toBe(true)
+    expect(ghost.props('outlined')).toBe(true)
   })
 
   it('maps danger severity and leaves primary as PrimeVue default', () => {

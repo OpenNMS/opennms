@@ -61,7 +61,7 @@
       <div class="large-spacer"></div>
       <div class="scv-drawer-button-container">
         <OnmsButton
-          variant="text"
+          variant="ghost"
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
           label="Cancel"

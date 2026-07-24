@@ -164,7 +164,7 @@
     </div>
     <div class="footer">
       <OnmsButton
-        variant="text"
+        variant="ghost"
         data-test="cancel-button"
         label="Cancel"
         @click="store.closeCreateUserDrawer"
