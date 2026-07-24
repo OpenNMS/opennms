@@ -154,10 +154,9 @@
       <div class="large-spacer"></div>
 
       <div class="show-context-fields-row">
-        <PCheckbox
+        <OnmsCheckbox
           inputId="snmp-definition-show-context-fields-checkbox"
           data-test="snmp-definition-show-context-fields-checkbox"
-          binary
           v-model="displaySnmpV3ContextFields"
         />
         <label
@@ -243,9 +242,8 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
 import Card from 'primevue/card'
-import Checkbox from 'primevue/checkbox'
 import Select from 'primevue/select'
 import { ISelectItemType } from '@/types'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
@@ -260,7 +258,6 @@ import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
 
 const PCard = Card
-const PCheckbox = Checkbox
 const PSelect = Select
 
 // Unique per-instance prefix for label `for`/input `id` pairs (multiple detail

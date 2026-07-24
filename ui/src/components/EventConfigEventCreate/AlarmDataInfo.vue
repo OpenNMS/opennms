@@ -5,11 +5,10 @@
     </div>
     <div class="spacer"></div>
     <div class="alarm-check">
-      <Checkbox
+      <OnmsCheckbox
         :modelValue="enableAlarmData"
-        binary
         inputId="add-alarm-data-checkbox"
-        @update:model-value="$emit('setAlarmData', 'addAlarmData', $event)"
+        @update:modelValue="$emit('setAlarmData', 'addAlarmData', $event)"
       />
       <label for="add-alarm-data-checkbox">Add Alarm Data</label>
     </div>
@@ -37,11 +36,10 @@
       </div>
       <div class="spacer"></div>
       <div class="alarm-check">
-        <Checkbox
+        <OnmsCheckbox
           :modelValue="autoClean"
-          binary
           inputId="auto-clean-checkbox"
-          @update:model-value="$emit('setAlarmData', 'autoClean', $event)"
+          @update:modelValue="$emit('setAlarmData', 'autoClean', $event)"
         />
         <label for="auto-clean-checkbox">Auto Clean</label>
       </div>
@@ -83,12 +81,11 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText } from '@opennms/onms-ui'
+import { OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
 import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
 import { ISelectItemType } from '@/types'
-import Checkbox from 'primevue/checkbox'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'

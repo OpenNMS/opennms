@@ -15,8 +15,7 @@
             v-for="resource in resources"
             :key="resource.label"
           >
-            <PCheckbox
-              binary
+            <OnmsCheckbox
               :inputId="`resource-${resource.id}`"
               @update:modelValue="selectCheckbox(resource.id)"
               :modelValue="selectedResourceObject[resource.id]"
@@ -35,13 +34,10 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { groupBy } from 'lodash'
-import Checkbox from 'primevue/checkbox'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox } from '@opennms/onms-ui'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
-
-const PCheckbox = Checkbox
 
 interface GroupedResourcesObject {
   [x: string]: Resource[]

@@ -78,8 +78,7 @@
     >
       <PColumn :pt="columnHeaderPt">
         <template #header>
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             inputId="dcb-select-all"
             aria-label="Select all configurations"
             :modelValue="all"
@@ -89,8 +88,7 @@
           />
         </template>
         <template #body="{ data }">
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             class="dcb-config-checkbox"
             :disabled="all"
             :aria-label="`Select ${data.deviceName}`"
@@ -190,8 +188,7 @@ import { useScroll } from '@vueuse/core'
 
 import DataTable, { DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
-import Checkbox from 'primevue/checkbox'
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsIcon } from '@opennms/onms-ui'
 import { SORT } from '@/types'
 import History from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
@@ -210,7 +207,6 @@ import { MainMenu } from '@/types/mainMenu'
 
 const PDataTable = DataTable
 const PColumn = Column
-const PCheckbox = Checkbox
 
 // PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
 // passthrough so header cells stay associated with their columns for screen readers.

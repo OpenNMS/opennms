@@ -16,22 +16,20 @@
         <p>Choose one of the following options:</p>
         <div class="checkbox-group">
           <div class="checkbox-row">
-            <Checkbox
+            <OnmsCheckbox
               :modelValue="overwriteFile"
-              binary
               inputId="rename-overwrite-checkbox"
-              @update:model-value="onChangeOverwriteFile"
+              @update:modelValue="onChangeOverwriteFile"
             />
             <label for="rename-overwrite-checkbox">
               Keep Original File Name: <strong>{{ originalFileName }}</strong> and Overwrite Existing File.
             </label>
           </div>
           <div class="checkbox-row">
-            <Checkbox
+            <OnmsCheckbox
               :modelValue="renameFile"
-              binary
               inputId="rename-rename-checkbox"
-              @update:model-value="onChangeRenameFile"
+              @update:modelValue="onChangeRenameFile"
             />
             <label for="rename-rename-checkbox">
               Rename Uploaded File to:
@@ -80,8 +78,7 @@
 import { computed, ref, useId, watch } from 'vue'
 
 import { UploadedSourceNamesResponse, UploadEventFileType } from '@/types/eventConfig'
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
-import Checkbox from 'primevue/checkbox'
+import { OnmsButton, OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
 import Dialog from 'primevue/dialog'
 import FormField from '@/components/Common/FormField.vue'
 

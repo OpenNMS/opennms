@@ -95,6 +95,7 @@ export default tseslint.config(
       'no-restricted-imports': ['error', {
         paths: [
           { name: 'primevue/button', message: 'Use OnmsButton / OnmsIconButton from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' }

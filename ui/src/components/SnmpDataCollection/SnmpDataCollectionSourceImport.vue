@@ -89,9 +89,8 @@
             :key="profile.id"
             class="profile-checkbox"
           >
-            <Checkbox
+            <OnmsCheckbox
               :inputId="`profile-checkbox-${profile.id}`"
-              binary
               :modelValue="selectedProfileNames.includes(profile.name)"
               :disabled="hasConfigFile"
               :data-test="`profile-checkbox-${profile.name}`"
@@ -267,7 +266,7 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import UploadFile from '@/components/icons/action/UploadFile.vue'
@@ -276,7 +275,6 @@ import Apps from '@/components/icons/navigation/Apps.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Tag from 'primevue/tag'

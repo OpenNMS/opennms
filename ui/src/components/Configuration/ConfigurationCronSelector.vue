@@ -71,8 +71,7 @@
     </div>
     <div class="flex">
       <div class="checkbox-field">
-        <PCheckbox
-          binary
+        <OnmsCheckbox
           inputId="advanced-crontab-checkbox"
           :modelValue="props.config.advancedCrontab"
           @update:modelValue="(val: unknown) => updateFormValue('advancedCrontab', val as string)"
@@ -94,9 +93,8 @@
   lang="ts"
   setup
 >
-import { OnmsInputText } from '@opennms/onms-ui'
+import { OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
 import Select from 'primevue/select'
-import Checkbox from 'primevue/checkbox'
 import FormField from '@/components/Common/FormField.vue'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import { computed, PropType } from 'vue'
@@ -106,7 +104,6 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
 
 const PSelect = Select
-const PCheckbox = Checkbox
 
 const updateFormValue = (type: string, value: string) => {
   props.updateValue(type, value)
