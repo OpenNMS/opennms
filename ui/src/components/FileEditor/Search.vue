@@ -28,11 +28,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import IconSearch from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'

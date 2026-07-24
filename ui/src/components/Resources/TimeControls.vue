@@ -61,13 +61,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Popover from 'primevue/popover'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 
 const PPopover = Popover

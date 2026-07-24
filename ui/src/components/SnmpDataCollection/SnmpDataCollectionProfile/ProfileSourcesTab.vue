@@ -35,7 +35,6 @@
         <PColumn style="width: 4rem">
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Delete source"
               data-test="delete-source-button"
               :icon="Delete"
@@ -54,7 +53,7 @@ import { computed, ref } from 'vue'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import AutoCompleteComponent from 'primevue/autocomplete'
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'

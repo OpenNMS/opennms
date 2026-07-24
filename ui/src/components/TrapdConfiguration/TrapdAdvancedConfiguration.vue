@@ -95,8 +95,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import IconDownload from '@/components/icons/action/DownloadFile.vue'
 import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'

@@ -103,9 +103,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Chip from 'primevue/chip'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import MessageDialog from '../Common/MessageDialog.vue'

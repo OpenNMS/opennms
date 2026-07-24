@@ -81,10 +81,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'

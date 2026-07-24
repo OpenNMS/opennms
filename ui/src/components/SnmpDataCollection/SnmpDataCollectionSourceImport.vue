@@ -194,7 +194,6 @@
         <Column header="Action">
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Remove"
               data-test="remove-files-button"
               :icon="Delete"
@@ -268,7 +267,7 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import UploadFile from '@/components/icons/action/UploadFile.vue'
@@ -277,8 +276,6 @@ import Apps from '@/components/icons/navigation/Apps.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

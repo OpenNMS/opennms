@@ -76,9 +76,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'

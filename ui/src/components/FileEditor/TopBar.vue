@@ -17,8 +17,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 

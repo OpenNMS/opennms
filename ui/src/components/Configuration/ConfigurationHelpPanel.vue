@@ -5,7 +5,6 @@
   >
     <div class="config-help-close">
       <OnmsIconButton
-        text
         class="button"
         aria-label="Close help"
         :icon="chevronRight"
@@ -39,7 +38,7 @@
 >
 import { PropType, computed } from 'vue'
 
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'

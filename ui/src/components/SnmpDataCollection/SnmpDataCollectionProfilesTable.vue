@@ -65,14 +65,12 @@
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
               @click="onProfileClick(data)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="profile-row-menu"
               :title="`More actions for ${data.name}`"
@@ -115,12 +113,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'

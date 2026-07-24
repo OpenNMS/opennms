@@ -1,4 +1,4 @@
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
@@ -54,5 +54,24 @@ describe('OnmsIconButton.vue', () => {
     expect(wrapper.find('button').attributes('data-test')).toBe('my-btn')
     await wrapper.find('button').trigger('click')
     expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('defaults to the text variant', () => {
+    const inner = mount(OnmsIconButton, { props: { icon: StubIcon }}).findComponent({ name: 'Button' })
+    expect(inner.props('text')).toBe(true)
+    expect(inner.props('outlined')).toBe(false)
+  })
+
+  it('supports filled and outlined variants and danger severity', () => {
+    const filled = mount(OnmsIconButton, { props: { icon: StubIcon, variant: 'filled' }}).findComponent({ name: 'Button' })
+    expect(filled.props('text')).toBe(false)
+    const danger = mount(OnmsIconButton, { props: { icon: StubIcon, severity: 'danger' }}).findComponent({ name: 'Button' })
+    expect(danger.props('severity')).toBe('danger')
+  })
+
+  it('supports the ghost variant (text + outlined both true)', () => {
+    const ghost = mount(OnmsIconButton, { props: { icon: StubIcon, variant: 'ghost' }}).findComponent({ name: 'Button' })
+    expect(ghost.props('text')).toBe(true)
+    expect(ghost.props('outlined')).toBe(true)
   })
 })

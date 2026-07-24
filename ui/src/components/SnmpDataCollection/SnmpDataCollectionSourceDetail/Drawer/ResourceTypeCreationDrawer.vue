@@ -117,14 +117,12 @@
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
-                    text
                     title="Edit Storage Strategy Parameter"
                     data-test="edit-storage-strategy-button"
                     :icon="Edit"
                     @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
                   />
                   <OnmsIconButton
-                    text
                     title="Delete Storage Strategy Parameter"
                     data-test="delete-storage-strategy-button"
                     :icon="Delete"
@@ -192,14 +190,12 @@
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
-                    text
                     title="Edit Persistence Selector Strategy Parameter"
                     data-test="edit-persistence-selector-strategy-button"
                     :icon="Edit"
                     @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
                   />
                   <OnmsIconButton
-                    text
                     title="Delete Persistence Selector Strategy Parameter"
                     data-test="delete-persistence-selector-strategy-button"
                     :icon="Delete"
@@ -304,9 +300,8 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'

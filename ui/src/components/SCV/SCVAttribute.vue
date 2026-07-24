@@ -31,7 +31,6 @@
     </FormField>
 
     <OnmsIconButton
-      text
       aria-label="Remove attribute"
       data-test="rm-attr-btn"
       :icon="Delete"
@@ -44,7 +43,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import Delete from '@/components/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'

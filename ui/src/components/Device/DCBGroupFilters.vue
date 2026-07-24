@@ -37,9 +37,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Menu from 'primevue/menu'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'

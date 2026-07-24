@@ -123,10 +123,9 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 

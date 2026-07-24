@@ -21,7 +21,6 @@
       </FormField>
       <div class="icon">
         <OnmsIconButton
-          text
           aria-label="Help"
           v-tooltip="'Help'"
           :icon="Help"
@@ -138,7 +137,7 @@ import RadioButton from 'primevue/radiobutton'
 import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { PropType, computed, ref, watch } from 'vue'
 import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'

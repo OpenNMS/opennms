@@ -8,7 +8,6 @@
       <div class="section-left">
         <div class="title">
           <OnmsIconButton
-            text
             aria-label="Back"
             data-test="text-button"
             :icon="ChevronLeft"
@@ -202,12 +201,11 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@/types'
 import TableCard from '../Common/TableCard.vue'

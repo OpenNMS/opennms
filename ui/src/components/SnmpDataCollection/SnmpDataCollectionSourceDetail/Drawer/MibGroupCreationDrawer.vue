@@ -95,14 +95,12 @@
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
-                    text
                     title="Edit MIB Object"
                     data-test="edit-mib-object-button"
                     :icon="Edit"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
                   />
                   <OnmsIconButton
-                    text
                     title="Delete MIB Object"
                     data-test="delete-mib-object-button"
                     :icon="Delete"
@@ -243,8 +241,7 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'

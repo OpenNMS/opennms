@@ -98,8 +98,7 @@
 import { computed, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'

@@ -55,6 +55,7 @@
                 <template #body="{ data }">
                   {{ ellipsify(data.accessToken ?? '', 30) }}
                   <OnmsIconButton
+                    variant="filled"
                     aria-label="Copy Access Token"
                     :icon="icons.ContentCopy"
                     @click.prevent="() => onCopyToken(data.accessToken ?? '')"
@@ -65,6 +66,7 @@
                 <template #body="{ data }">
                   {{ ellipsify(data.refreshToken ?? '', 30) }}
                   <OnmsIconButton
+                    variant="filled"
                     aria-label="Copy Refresh Token"
                     :icon="icons.ContentCopy"
                     @click.prevent="() => onCopyToken(data.refreshToken ?? '')"
@@ -103,10 +105,9 @@ import { computed, markRaw, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { format as fnsFormat } from 'date-fns'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'

@@ -59,9 +59,8 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 
 import { useOutsideClick } from '@/composables/useOutsideClick'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
 import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
-import { OnmsButton } from '@opennms/onms-ui'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'

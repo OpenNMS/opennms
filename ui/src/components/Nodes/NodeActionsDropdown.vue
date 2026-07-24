@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     title="Node Actions"
     aria-label="Node Actions"
     aria-haspopup="true"
@@ -21,7 +20,7 @@
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import MoreVert from '@/components/icons/navigation/MoreVert.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 

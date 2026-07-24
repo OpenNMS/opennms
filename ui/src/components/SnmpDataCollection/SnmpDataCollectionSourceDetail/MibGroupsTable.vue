@@ -21,7 +21,6 @@
         </div>
         <div class="refresh">
           <OnmsIconButton
-            text
             title="Refresh"
             data-test="refresh-button"
             :icon="Refresh"
@@ -94,14 +93,12 @@
           <div class="action-container">
             <OnmsIconButton
               v-if="!isPluginSourced(store.selectedCollectionSource)"
-              text
               :title="`Edit ${data.name}`"
               data-test="edit-button"
               :icon="Edit"
               @click="onMibGroupEditClicked(data)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               :aria-controls="`mib-group-row-menu`"
               title="More actions"
@@ -169,13 +166,11 @@ import { computed, ref, useId } from 'vue'
 
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'

@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     class="compare-btn"
     aria-label="Compare configs"
     v-tooltip="'Compare configs'"
@@ -11,7 +10,6 @@
   />
 
   <OnmsIconButton
-    text
     class="return-btn"
     aria-label="Return"
     v-tooltip="'Return'"
@@ -21,7 +19,6 @@
   />
 
   <OnmsIconButton
-    text
     class="dwnld-btn"
     aria-label="Download configs"
     v-tooltip="'Download configs'"
@@ -87,7 +84,7 @@ import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
 import Checkbox from 'primevue/checkbox'
 import Chip from 'primevue/chip'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import Restore from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'

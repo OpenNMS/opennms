@@ -31,7 +31,6 @@
           <PInputText v-model="item.value" />
         </FormField>
         <OnmsIconButton
-          text
           class="delete-icon"
           aria-label="Delete"
           v-tooltip="'Delete'"
@@ -55,9 +54,8 @@
 >
 import { PropType, computed, reactive, ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'

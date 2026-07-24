@@ -20,7 +20,6 @@
         <template #item="{ element, index }">
           <div class="column-row">
             <OnmsIconButton
-              text
               class="drag-btn close-icon drag-handle"
               aria-label="Reorder column"
               :icon="Apps"
@@ -34,7 +33,6 @@
               class="columns-selector"
             />
             <OnmsIconButton
-              text
               :data-test="`remove-column-${index}`"
               title="Remove column"
               class="close-icon"
@@ -65,10 +63,9 @@ import { computed, ref, watch } from 'vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
 import Select from 'primevue/select'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'

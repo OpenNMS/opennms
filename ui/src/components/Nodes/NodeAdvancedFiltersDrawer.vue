@@ -41,7 +41,6 @@
         <OnmsIconButton
           v-if="!showSecondCategories"
           class="category-add-btn"
-          text
           :icon="AddIcon"
           aria-label="Add category group"
           @click="showSecondCategories = true"
@@ -66,7 +65,6 @@
         </FormField>
         <OnmsIconButton
           class="category-add-btn"
-          text
           :icon="DeleteIcon"
           aria-label="Remove category group"
           @click="removeSecondCategories"
@@ -281,7 +279,7 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
@@ -289,8 +287,6 @@ import Drawer from 'primevue/drawer'
 import MultiSelect from 'primevue/multiselect'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'

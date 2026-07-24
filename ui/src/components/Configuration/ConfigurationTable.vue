@@ -38,6 +38,7 @@
         <template #body="{ data }">
           <div class="flex">
             <OnmsIconButton
+              variant="filled"
               aria-label="Edit"
               v-tooltip="'Edit'"
               :disabled="Boolean(data[RequisitionData.ImportURL].startsWith('requisition://'))"
@@ -46,7 +47,6 @@
               @click="() => props.editClicked(data.originalIndex)"
             />
             <OnmsIconButton
-              text
               class="delete-icon"
               aria-label="Delete"
               v-tooltip="'Delete'"
@@ -67,7 +67,7 @@
 import { computed, PropType } from 'vue'
 import DataTable, { DataTablePageEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 
 import Edit from '@/components/icons/action/Edit.vue'
 import Delete from '@/components/icons/action/Delete.vue'

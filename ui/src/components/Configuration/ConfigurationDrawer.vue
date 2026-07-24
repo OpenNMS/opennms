@@ -23,7 +23,6 @@
           </div>
           <div class="icon">
             <OnmsIconButton
-              text
               aria-label="Cancel"
               :icon="cancelIcon"
               @click="props.closePanel"
@@ -78,8 +77,7 @@
 >
 import { PropType, computed, ref, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 

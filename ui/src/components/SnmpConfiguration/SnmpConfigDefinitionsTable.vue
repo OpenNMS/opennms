@@ -67,7 +67,6 @@
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
-                text
                 aria-label="Edit"
                 data-test="edit-button"
                 :icon="IconEdit"
@@ -75,7 +74,6 @@
               />
               <OnmsIconButton
                 v-if="data.original.id !== 0"
-                text
                 aria-label="Delete"
                 data-test="delete-button"
                 :icon="IconDelete"
@@ -139,14 +137,13 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Tag from 'primevue/tag'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -159,7 +156,6 @@ import { SnmpDefinition } from '@/types/snmpConfig'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
 const PColumn = Column

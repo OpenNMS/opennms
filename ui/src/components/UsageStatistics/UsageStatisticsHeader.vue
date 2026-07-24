@@ -53,9 +53,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Tag from 'primevue/tag'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Remove from '@/components/icons/action/Remove.vue'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'

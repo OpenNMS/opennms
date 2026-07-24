@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
@@ -83,7 +83,6 @@ import FormField from '@/components/Common/FormField.vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import SearchIcon from '@/components/icons/action/Search.vue'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'

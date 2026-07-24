@@ -92,7 +92,6 @@
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
@@ -102,14 +101,12 @@
                  /upload endpoint accepts). JSON is still reachable via
                  the row menu below for users who want it. -->
             <OnmsIconButton
-              text
               :title="`Download ${data.name} XML`"
               data-test="download-xml-button"
               :icon="DownloadIcon"
               @click="downloadCollectionSource(data, 'xml')"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="source-row-menu"
               :title="`More actions for ${data.name}`"
@@ -158,13 +155,11 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

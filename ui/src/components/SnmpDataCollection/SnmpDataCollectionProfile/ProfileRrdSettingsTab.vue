@@ -110,7 +110,6 @@
         >
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Delete RRA"
               data-test="delete-rra-button"
               :icon="Delete"
@@ -142,17 +141,15 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import { OnmsButton } from '@opennms/onms-ui'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputNumberComponent from 'primevue/inputnumber'
 import SelectComponent from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent

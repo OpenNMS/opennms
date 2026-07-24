@@ -51,7 +51,6 @@
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
-            text
             :icon="DeleteIcon"
             title="Remove search term"
             data-test="delete-search-term-button"
@@ -70,9 +69,7 @@ import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { OnmsButton } from '@opennms/onms-ui'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
