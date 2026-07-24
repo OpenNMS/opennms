@@ -41,6 +41,11 @@ describe('OnmsInputText', () => {
     expect(wrapper.find('input').attributes('placeholder')).toBe('IP address')
   })
 
+  it('forwards fluid to the inner InputText', () => {
+    const wrapper = mount(OnmsInputText, { props: { fluid: true }, global: globalPlugins })
+    expect(wrapper.findComponent({ name: 'InputText' }).props('fluid')).toBe(true)
+  })
+
   it('lets DOM attrs fall through to the input', () => {
     const wrapper = mount(OnmsInputText, { attrs: { id: 'f1', 'data-test': 'ip', 'aria-label': 'IP' }, global: globalPlugins })
     const input = wrapper.find('input')

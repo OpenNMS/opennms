@@ -4,6 +4,7 @@
     :invalid="invalid"
     :disabled="disabled"
     :placeholder="placeholder"
+    :fluid="fluid"
     :pt="unsafePt as never"
     @update:modelValue="onUpdate"
   />
@@ -22,6 +23,9 @@ const props = withDefaults(defineProps<{
   invalid?: boolean
   disabled?: boolean
   placeholder?: string
+  // fluid: undefined allows parent Fluid-component context to be inherited;
+  // explicit false would break that inheritance
+  fluid?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -29,6 +33,7 @@ const props = withDefaults(defineProps<{
   invalid: false,
   disabled: false,
   placeholder: undefined,
+  fluid: undefined,
   unsafePt: undefined
 })
 

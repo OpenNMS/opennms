@@ -46,7 +46,9 @@ export interface OnmsToastOptions {
 // Tracks toasts that are currently displayed (keyed by severity + group +
 // message) so that identical toasts are not stacked: a burst of identical
 // messages (e.g. one validation-error toast per invalid field) would otherwise
-// produce a pile of duplicates. Distinct messages still stack normally.
+// produce a pile of duplicates. Distinct messages still stack normally. This
+// is deliberate module-level singleton state shared across all useOnmsToast()
+// callers, not per-call state.
 const activeKeys = new Map<string, number>()
 
 export const useOnmsToast = () => {

@@ -8,6 +8,9 @@
     :invalid="invalid"
     :disabled="disabled"
     :forceSelection="forceSelection"
+    :fluid="fluid"
+    :dropdown="dropdown"
+    :multiple="multiple"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
     @complete="emit('complete', $event.query)"
@@ -43,6 +46,13 @@ withDefaults(defineProps<{
   invalid?: boolean
   disabled?: boolean
   forceSelection?: boolean
+  // fluid: undefined allows parent Fluid-component context to be inherited;
+  // explicit false would break that inheritance
+  fluid?: boolean
+  dropdown?: boolean
+  // multiple: undefined preserves PrimeVue's default; when true, the model
+  // switches to an array of selected values (chips mode)
+  multiple?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -53,6 +63,9 @@ withDefaults(defineProps<{
   invalid: false,
   disabled: false,
   forceSelection: false,
+  fluid: undefined,
+  dropdown: undefined,
+  multiple: undefined,
   unsafePt: undefined
 })
 

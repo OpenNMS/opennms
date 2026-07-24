@@ -23,11 +23,11 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@opennms/onms-ui": "workspace:*",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.6",
+    "@opennms/onms-ui": "workspace:*",
     "@primevue/themes": "^4.5.4",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.32.6",

@@ -32,4 +32,13 @@ describe('OnmsSelect', () => {
     wrapper.findComponent({ name: 'Select' }).vm.$emit('update:modelValue', options[1])
     expect(wrapper.emitted('update:modelValue')![0]).toEqual([options[1]])
   })
+
+  it('forwards fluid and showClear to the inner select', () => {
+    const inner = mount(OnmsSelect, {
+      props: { options, optionLabel: 'name', showClear: true, fluid: true },
+      global: globalPlugins
+    }).findComponent({ name: 'Select' })
+    expect(inner.props('showClear')).toBe(true)
+    expect(inner.props('fluid')).toBe(true)
+  })
 })

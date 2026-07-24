@@ -8,6 +8,8 @@
     :inputId="inputId"
     :invalid="invalid"
     :disabled="disabled"
+    :fluid="fluid"
+    :showClear="showClear"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
   />
@@ -28,6 +30,10 @@ withDefaults(defineProps<{
   inputId?: string
   invalid?: boolean
   disabled?: boolean
+  // fluid: undefined allows parent Fluid-component context to be inherited;
+  // explicit false would break that inheritance
+  fluid?: boolean
+  showClear?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -38,6 +44,8 @@ withDefaults(defineProps<{
   inputId: undefined,
   invalid: false,
   disabled: false,
+  fluid: undefined,
+  showClear: undefined,
   unsafePt: undefined
 })
 

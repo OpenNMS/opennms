@@ -38,6 +38,17 @@ describe('OnmsAutoComplete', () => {
     expect(wrapper.emitted('optionSelect')![0]).toEqual([{ label: 'node1' }])
   })
 
+  it('forwards dropdown/multiple/fluid to the inner AutoComplete', () => {
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions: [], dropdown: true, multiple: true, fluid: true },
+      global: globalPlugins
+    })
+    const inner = wrapper.findComponent({ name: 'AutoComplete' })
+    expect(inner.props('dropdown')).toBe(true)
+    expect(inner.props('multiple')).toBe(true)
+    expect(inner.props('fluid')).toBe(true)
+  })
+
   it('forwards the empty slot', () => {
     const wrapper = mount(OnmsAutoComplete, {
       props: { suggestions: [] },

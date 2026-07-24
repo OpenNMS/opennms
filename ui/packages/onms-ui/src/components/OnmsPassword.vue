@@ -6,6 +6,7 @@
     :disabled="disabled"
     :toggleMask="toggleMask"
     :feedback="false"
+    :fluid="fluid"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
   />
@@ -23,6 +24,9 @@ withDefaults(defineProps<{
   invalid?: boolean
   disabled?: boolean
   toggleMask?: boolean
+  // fluid: undefined allows parent Fluid-component context to be inherited;
+  // explicit false would break that inheritance
+  fluid?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -30,6 +34,7 @@ withDefaults(defineProps<{
   invalid: false,
   disabled: false,
   toggleMask: true,
+  fluid: undefined,
   unsafePt: undefined
 })
 

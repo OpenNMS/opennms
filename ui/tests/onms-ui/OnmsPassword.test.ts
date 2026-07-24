@@ -30,4 +30,9 @@ describe('OnmsPassword', () => {
     expect(inner.props('invalid')).toBe(true)
     expect(inner.props('toggleMask')).toBe(false)
   })
+
+  it('forwards fluid to the inner Password', () => {
+    const wrapper = mount(OnmsPassword, { props: { fluid: true }, global: globalPlugins })
+    expect(wrapper.findComponent({ name: 'Password' }).props('fluid')).toBe(true)
+  })
 })
