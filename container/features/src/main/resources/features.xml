@@ -1210,7 +1210,7 @@
     <feature name="opennms-flows-postgres" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Postgres">
         <details>Optional PostgreSQL-backed FlowRepository/FlowQueryService (jsonb). Install alongside or instead of the Elasticsearch flow persistence.</details>
         <feature>opennms-flows</feature>
-        <feature version="[4.2,4.3)">spring-jdbc</feature>
+        <feature version="[5.3,5.4)">spring-jdbc</feature>
         <!-- opennms-core-db provides HikariCPConnectionFactory + the JdbcDataSource config model + the
              PostgreSQL driver, used to build the dedicated flow connection pool in the bundle blueprint. -->
         <feature>opennms-core-db</feature>
