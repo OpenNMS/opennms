@@ -328,10 +328,28 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void updateNodeCannotReassignForeignSource() throws Exception {
         createNode();
         setUser("lowpriv", new String[]{ "ROLE_REST" });
-        sendPut("/nodes/1", "sysContact=LegitContact&foreignSource=AttackerReq&foreignId=999", 204);
+        sendPut("/nodes/1", "sysContact=LegitContact&foreignSource=AttackerReq&foreignId=999"
+                + "&assetRecord.node.foreignSource=NestedReq", 204);
         final String xml = sendRequest(GET, "/nodes/1", 200);
         assertFalse("foreignSource must not be reassignable via updateNode", xml.contains("AttackerReq"));
+        assertFalse("foreignSource must not be reachable through a nested path", xml.contains("NestedReq"));
         assertTrue("legitimate fields still update", xml.contains("LegitContact"));
+    }
+
+    /**
+     * The asset record holds a back-reference to its node, so the asset endpoint must not be a
+     * route to the node's protected properties.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateAssetRecordCannotReachNodeForeignSource() throws Exception {
+        createNode();
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        sendPut("/nodes/1/assetRecord", "description=LegitAsset&node.foreignSource=AttackerReq"
+                + "&node.foreign_source=AttackerReq2", 204);
+        assertTrue(sendRequest(GET, "/nodes/1/assetRecord", 200).contains("LegitAsset"));
+        final String xml = sendRequest(GET, "/nodes/1", 200);
+        assertFalse("node.foreignSource must not be settable via the asset endpoint", xml.contains("AttackerReq"));
     }
 
     @Test

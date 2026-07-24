@@ -267,12 +267,13 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         node.put("sysName", "TestMachine1");
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
 
-        // Keys are normalized before binding, so the separator form is what reaches a camelCase
-        // property (foreign_source -> foreignSource).
-        sendPut("/nodes/1", "sys_contact=LegitContact&foreign_source=AttackerReq&foreign_id=999&Type=D", 204);
+        // Separator keys are what reach a camelCase property (foreign_source -> foreignSource).
+        sendPut("/nodes/1", "sys_contact=LegitContact&foreign_source=AttackerReq&foreign_id=999&Type=D"
+                + "&asset_record.node.foreign_source=NestedReq", 204);
 
         final String xml = sendRequest(GET, "/nodes/1", 200); // still present -> Type=D was ignored
         assertFalse("foreignSource must not be reassignable via update", xml.contains("AttackerReq"));
+        assertFalse("foreignSource must not be reachable through a nested path", xml.contains("NestedReq"));
         assertFalse("foreignId must not be reassignable via update", xml.contains("999"));
         assertTrue("legitimate fields still update", xml.contains("LegitContact"));
     }

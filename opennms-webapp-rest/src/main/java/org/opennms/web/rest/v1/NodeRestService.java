@@ -29,10 +29,8 @@
 package org.opennms.web.rest.v1;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -96,9 +94,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("nodes")
 public class NodeRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-
-    private static final Set<String> PROTECTED_NODE_PROPERTIES =
-            Collections.unmodifiableSet(new HashSet<>(Arrays.asList("foreignSource", "foreignId", "type")));
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
@@ -300,7 +295,7 @@ public class NodeRestService extends OnmsRestService {
             boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
             for(final String key : params.keySet()) {
-                if (RestUtils.IMMUTABLE_PROPERTIES.contains(key) || PROTECTED_NODE_PROPERTIES.contains(key)) {
+                if (RestUtils.isProtectedProperty(key)) {
                     LOG.warn("updateNode: ignoring attempt to set protected property '{}'", key);
                     continue;
                 }
@@ -477,7 +472,7 @@ public class NodeRestService extends OnmsRestService {
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
             boolean updated = false;
             for(String key : params.keySet()) {
-                if (RestUtils.IMMUTABLE_PROPERTIES.contains(key) || "name".equals(key)) {
+                if (RestUtils.isProtectedProperty(key, Collections.singleton("name"))) {
                     LOG.warn("updateCategoryForNode: ignoring attempt to set protected property '{}'", key);
                     continue;
                 }

@@ -110,7 +110,7 @@ public class CategoryRestService extends OnmsRestService {
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
             boolean modified = false;
             for(String key : params.keySet()) {
-                if (RestUtils.IMMUTABLE_PROPERTIES.contains(key)) {
+                if (RestUtils.isProtectedProperty(key)) {
                     LOG.warn("updateCategory: ignoring attempt to set protected property '{}'", key);
                     continue;
                 }

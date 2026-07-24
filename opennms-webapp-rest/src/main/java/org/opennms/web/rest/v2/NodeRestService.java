@@ -94,8 +94,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
-    private static final Set<String> PROTECTED_NODE_PROPERTIES = Set.of("foreignSource", "foreignId", "type");
-
     @Autowired
     private MonitoringLocationDao m_locationDao;
 
@@ -237,7 +235,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
-        RestUtils.setBeanProperties(targetObject, params, PROTECTED_NODE_PROPERTIES);
+        RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
         return Response.noContent().build();
     }

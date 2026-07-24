@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.ISO8601DateEditor;
+import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,6 +126,10 @@ public class AssetRecordResource extends OnmsRestService {
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
         wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
         for(String key : params.keySet()) {
+            if (RestUtils.isProtectedProperty(key)) {
+                LOG.warn("updateAssetRecord: ignoring attempt to set protected property '{}'", key);
+                continue;
+            }
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
                 Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
