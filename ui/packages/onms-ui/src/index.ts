@@ -34,4 +34,9 @@ export { default as OnmsSelect } from './components/OnmsSelect.vue'
 export { default as OnmsSpinner } from './components/OnmsSpinner.vue'
 export { default as OnmsTag } from './components/OnmsTag.vue'
 export { default as OnmsTextarea } from './components/OnmsTextarea.vue'
+export { default as OnmsToastHost } from './components/OnmsToastHost.vue'
+
+export { useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
+
 export type { OnmsTagSeverity } from './types'
+export type { OnmsToastOptions, OnmsToastSeverity } from './composables/useOnmsToast'

@@ -103,7 +103,9 @@ export default tseslint.config(
           { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui (NMS-20029 seam).' },
-          { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' }
+          { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' }
         ]
       }]
     }
