@@ -13,7 +13,7 @@
                 @update:modelValue="(val) => onSearchChange(val as string)"
               />
               <InputIcon>
-                <FeatherIcon :icon="IconSearch" />
+                <OnmsIcon :icon="IconSearch" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -23,7 +23,7 @@
             data-test="new-profile-button"
             @click="onCreateProfile"
           >
-            <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
+            <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
             New Profile
           </PButton>
         </div>
@@ -57,7 +57,7 @@
                 data-test="edit-button"
                 @click="onProfileEdit(data.label)"
               >
-                <FeatherIcon :icon="IconEdit" />
+                <OnmsIcon :icon="IconEdit" />
               </PButton>
               <PButton
                 text
@@ -65,7 +65,7 @@
                 data-test="delete-button"
                 @click="onConfirmProfileDelete(data.label)"
               >
-                <FeatherIcon :icon="IconDelete" />
+                <OnmsIcon :icon="IconDelete" />
               </PButton>
             </div>
           </template>
@@ -106,11 +106,11 @@ import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import { FeatherIcon } from '@featherds/icon'
-import IconAdd from '@featherds/icon/action/Add'
-import IconDelete from '@featherds/icon/action/Delete'
-import IconEdit from '@featherds/icon/action/Edit'
-import IconSearch from '@featherds/icon/action/Search'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import IconAdd from '@/components/icons/action/Add.vue'
+import IconDelete from '@/components/icons/action/Delete.vue'
+import IconEdit from '@/components/icons/action/Edit.vue'
+import IconSearch from '@/components/icons/action/Search.vue'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -260,7 +260,7 @@ const onSearchChange = (value: string | number | undefined) => {
             padding-right: 2.75rem;
           }
 
-          // enlarge the search glyph (FeatherIcon scales with font-size) and
+          // enlarge the search glyph (OnmsIcon scales with font-size) and
           // keep it near the right edge, vertically centered
           :deep(.p-inputicon) {
             font-size: 1.75rem;
@@ -278,7 +278,7 @@ const onSearchChange = (value: string | number | undefined) => {
       align-items: center;
       gap: 5px;
 
-      // enlarge the edit/delete icons (FeatherIcon scales with font-size)
+      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
       :deep(.p-button) {
         font-size: 1.3rem;
       }

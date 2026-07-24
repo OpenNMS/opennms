@@ -48,7 +48,7 @@
                       aria-label="Copy Access Token"
                       @click.prevent="() => onCopyToken(true)"
                     >
-                      <FeatherIcon :icon="icons.ContentCopy" />
+                      <OnmsIcon :icon="icons.ContentCopy" />
                     </PButton>
                   </template>
                 </PColumn>
@@ -59,7 +59,7 @@
                       aria-label="Copy Refresh Token"
                       @click.prevent="() => onCopyToken(false)"
                     >
-                      <FeatherIcon :icon="icons.ContentCopy" />
+                      <OnmsIcon :icon="icons.ContentCopy" />
                     </PButton>
                   </template>
                 </PColumn>
@@ -85,8 +85,8 @@ import { computed, markRaw, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import { FeatherIcon } from '@featherds/icon'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -241,7 +241,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .zc-container {
   display: flex;
@@ -255,7 +255,7 @@ onMounted(async () => {
       justify-content: space-between;
 
       .title {
-        @include headline1;
+        @include onms-headline1;
         margin: 16px 0px 16px 19px;
         display: block;
       }

@@ -4,10 +4,10 @@ import { validateTrapdXml } from '@/lib/trapdValidator'
 import { useMenuStore } from '@/stores/menuStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { createTestingPinia } from '@pinia/testing'
-import { mount } from '@vue/test-utils'
+import { mount, VueWrapper } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { showSnackBarMock } = vi.hoisted(() => ({
   showSnackBarMock: vi.fn()
@@ -32,8 +32,9 @@ describe('TrapdConfiguration.vue', () => {
   let menuStore: ReturnType<typeof useMenuStore>
 
   const validateTrapdXmlMock = vi.mocked(validateTrapdXml)
+  let wrapper: VueWrapper<any>
   const mountComponent = () => {
-    return mount(TrapdConfiguration, {
+    wrapper = mount(TrapdConfiguration, {
       global: {
         plugins: [PrimeVue],
         stubs: {
@@ -45,6 +46,7 @@ describe('TrapdConfiguration.vue', () => {
         }
       }
     })
+    return wrapper
   }
 
   beforeEach(() => {
@@ -55,6 +57,14 @@ describe('TrapdConfiguration.vue', () => {
     menuStore.mainMenu = { homeUrl: '/home' } as any
     trapStore.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
     validateTrapdXmlMock.mockReturnValue({ valid: true, errors: [] })
+  })
+
+  afterEach(() => {
+    // Unmount so PrimeVue TabList's template refs are cleared before its
+    // orphaned mounted() setTimeout(updateInkBar, 150) fires. Without this the
+    // timer outlives the test file and runs against the torn-down happy-dom
+    // environment, throwing "HTMLElement is not defined" (flaky on CI).
+    wrapper?.unmount()
   })
 
   it('renders heading and child sections', () => {

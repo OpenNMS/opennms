@@ -6,7 +6,7 @@
 
     <div class="info-section">
       <span>Find the SNMP configuration that exists for a particular IP address.</span>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         @click="isMessageDialogVisible = true"
@@ -84,9 +84,9 @@ import { computed, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import { ISelectItemType } from '@featherds/select'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'

@@ -20,10 +20,9 @@
 /// License.
 ///
 
-import { DefineComponent, markRaw } from 'vue'
-import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
-import { FeatherIcon } from '@featherds/icon'
-import IconHome from '@featherds/icon/action/Home'
+import { Component } from 'vue'
+import IconHome from '@/components/icons/action/Home.vue'
+import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { Plugin } from '@/types'
 import { MenuItem } from '@/types/mainMenu'
 
@@ -84,56 +83,10 @@ const getMenuLink = (menuItem: MenuItem, baseHref?: string | null) => {
   return '#'
 }
 
-const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => DefineComponent | null) => {
-  const icon: (DefineComponent | null) = getIcon(menuItem.icon)
+const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => Component | null) => {
+  const icon: (Component | null) = getIcon(menuItem.icon)
 
-  return (icon ?? IconHome) as typeof FeatherIcon
-}
-
-const createMenuListEntry = (
-  menuItem: MenuItem,
-  baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
-  onLogout: () => void
-) => {
-  let onClick = menuItem.onClick
-
-  if (menuItem.action === 'logout') {
-    onClick = onLogout
-  }
-
-  const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
-
-  let icon: typeof FeatherIcon | undefined = undefined
-
-  if (menuItem.icon) {
-    icon = createMenuIcon(menuItem, getIcon)
-  }
-
-  return {
-    id: menuItem.id ?? menuItem.name,
-    type: 'item',
-    title: menuItem.name,
-    href: getMenuLink(menuItem, baseHref),
-    icon: icon,
-    target,
-    onClick
-  } as MenuListEntry
-}
-
-const createMenuListSeparator = () => {
-  return {
-    id: '',
-    type: 'separator'
-  } as MenuListEntry
-}
-
-const createMenuListHeader = (item: MenuItem) => {
-  return {
-    id: '',
-    type: 'header',
-    title: item.name
-  } as MenuListEntry
+  return (icon ?? IconHome) as Component
 }
 
 const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
@@ -158,44 +111,106 @@ const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
   return topMenuItem
 }
 
-const createTopMenuListEntry = (
+// ---------------------------------------------------------------------------
+// PrimeVue menu model
+//
+// The side menu renders with a PrimeVue TieredMenu. TieredMenu consumes
+// PrimeVue `MenuItem[]`, so the functions below transform our raw `MenuItem`
+// data into that shape. Separators are preserved; the dummy top-level header
+// is dropped.
+//
+// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Onms
+// icon *components*, so the icon component is stashed on a custom
+// `iconComponent` field (MenuItem allows arbitrary keys) and rendered via the
+// TieredMenu `#item` slot.
+// ---------------------------------------------------------------------------
+
+const createPrimeChildItem = (
+  menuItem: MenuItem,
+  baseHref: string | null | undefined,
+  getIcon: (iconId?: string | null) => Component | null,
+  onLogout: () => void
+): PrimeMenuItem => {
+  const item: PrimeMenuItem = {
+    key: menuItem.id ?? menuItem.name ?? undefined,
+    label: menuItem.name ?? undefined
+  }
+
+  if (menuItem.icon) {
+    item.iconComponent = createMenuIcon(menuItem, getIcon)
+  }
+
+  if (menuItem.action === 'logout') {
+    item.command = () => onLogout()
+    return item
+  }
+
+  if (menuItem.onClick) {
+    const onClick = menuItem.onClick
+    item.command = () => onClick()
+  }
+
+  const href = getMenuLink(menuItem, baseHref)
+
+  if (href && href !== '#') {
+    item.url = href
+    item.target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
+  }
+
+  return item
+}
+
+const createPrimeTopItem = (
   topMenuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
-) => {
+): PrimeMenuItem | null => {
   if (topMenuItem.type === 'separator') {
-    return createMenuListSeparator()
+    return { separator: true }
   }
 
+  // Drop 'header' entries: Feather emitted a hard-coded "Menu" header that the
+  // template suppressed with a dummy first header item; PrimeVue has no such
+  // header, so these entries are simply not rendered.
   if (topMenuItem.type === 'header') {
-    return createMenuListHeader(topMenuItem)
+    return null
   }
 
-  // 'item'
-  let entry = {
-    id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
-    type: 'item',
-    title: topMenuItem.name,
-    content: '',
-    icon: createMenuIcon(topMenuItem, getIcon),
-    component: markRaw(FeatherMenuList),
-    componentProps: {
-      items: topMenuItem.items?.map(item => createMenuListEntry(item, baseHref, getIcon, onLogout)) ?? []
-    }
-  } as MenuListEntry
-
-  if (topMenuItem.action && topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
-    const url = getMenuLink(topMenuItem, baseHref)
-
-    entry = {
-      ...entry,
-      href: url,
-      onClick: () => window.location.assign(url)
-    } as any as MenuListEntry
+  const item: PrimeMenuItem = {
+    key: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
+    label: topMenuItem.name ?? undefined,
+    iconComponent: createMenuIcon(topMenuItem, getIcon)
   }
 
-  return entry
+  const children = topMenuItem.items ?? []
+
+  if (children.length > 0) {
+    item.items = children.map(child => createPrimeChildItem(child, baseHref, getIcon, onLogout))
+  }
+
+  // Top-level entries that are direct links (no submenu), e.g. the maps.
+  if (topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
+    item.url = getMenuLink(topMenuItem, baseHref)
+  }
+
+  return item
+}
+
+/**
+ * Transforms the raw main-menu items into the PrimeVue `MenuItem[]` model
+ * consumed by the side menu's TieredMenu. Separators are preserved; the dummy
+ * top-level header is dropped.
+ */
+const createPrimeMenuModel = (
+  menus: MenuItem[],
+  baseHref: string | null | undefined,
+  getIcon: (iconId?: string | null) => Component | null,
+  onLogout: () => void
+): PrimeMenuItem[] => {
+  return menus
+    .map(menu => createPrimeTopItem(menu, baseHref, getIcon, onLogout))
+    .filter((item): item is PrimeMenuItem => item !== null)
 }
 
 /**
@@ -239,8 +254,8 @@ export {
   createFakePlugin,
   createMenuItem,
   createPluginsMenu,
+  createPrimeMenuModel,
   createTopMenuItem,
-  createTopMenuListEntry,
   getMenuLink,
   updateWithPluginsMenuItems
 }

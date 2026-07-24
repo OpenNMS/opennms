@@ -37,7 +37,7 @@ import {
   ServiceType,
   SetOperator
 } from '@/types'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { IAutocompleteItemType } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 

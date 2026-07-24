@@ -5,7 +5,7 @@
       <div class="info-section">
         <div v-if="displayTable">
           <span>SNMP definitions display how IP addresses, ranges, or patterns are currently configured.</span>
-          <FeatherIcon
+          <OnmsIcon
             :icon="InfoIcon"
             class="info-icon"
             @click="isMessageDialogVisible = true"
@@ -49,8 +49,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
@@ -103,9 +103,8 @@ const onSave = async (definition: SnmpDefinition) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-definitions-tab {

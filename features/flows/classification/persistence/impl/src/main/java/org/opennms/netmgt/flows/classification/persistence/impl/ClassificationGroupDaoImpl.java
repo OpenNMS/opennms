@@ -33,6 +33,6 @@ public class ClassificationGroupDaoImpl extends AbstractDaoHibernate<Group, Inte
 
     @Override
     public Group findByName(String groupName) {
-        return findUnique("select g from Group g where g.name = ?", groupName);
+        return findUnique("select g from Group g where g.name = ?1", groupName);
     }
 }

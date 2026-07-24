@@ -21,6 +21,20 @@ vi.mock('@/composables/useDownload', () => ({
   default: () => ({ downloadFile: downloadFileMock })
 }))
 
+// useRole returns computed refs, so the component accesses them via .value; the mock must do the same.
+vi.mock('@/composables/useRole', async () => {
+  const { computed } = await import('vue')
+  return {
+    default: () => ({
+      adminRole: computed(() => true),
+      filesystemEditorRole: computed(() => false),
+      dcbRole: computed(() => false),
+      snmpRole: computed(() => true),
+      rolesAreLoaded: computed(() => true)
+    })
+  }
+})
+
 vi.mock('@/composables/useSpinner', () => ({
   default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() })
 }))
@@ -56,7 +70,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
             </div>`,
             props: ['visible', 'title', 'actionButtonText']
           },
-          FeatherIcon: true
+          OnmsIcon: true
         }
       }
     })

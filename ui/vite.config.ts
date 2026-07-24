@@ -39,7 +39,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
-      '~@featherds': '@featherds',
       './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
     },
     dedupe: ['vue', 'primevue']
@@ -66,7 +65,6 @@ export default defineConfig({
         // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
         // https://github.com/vitest-dev/vitest/issues/3862
         inline: [
-          /@featherds\/\w+/,
           /primevue/
         ]
       }

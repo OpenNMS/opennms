@@ -27,7 +27,7 @@
           class="add-search-term-button"
           @click="onAddSearchTerm"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
         </Button>
       </div>
@@ -55,7 +55,7 @@
             data-test="delete-search-term-button"
             @click="removeGridItem(data.key)"
           >
-            <FeatherIcon :icon="DeleteIcon" />
+            <OnmsIcon :icon="DeleteIcon" />
           </Button>
         </template>
       </PColumn>
@@ -71,9 +71,9 @@ import ColumnComponent from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import DeleteIcon from '@featherds/icon/action/Delete'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
@@ -184,13 +184,13 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-typography' as *;
+@use '@/styles/onms-tokens' as variables;
 
 .extended-search-container {
   .add-search-term-button {
     border-radius: 0;
-    border: 1px solid var(--feather-primary);
+    border: 1px solid var(--onms-primary);
     width: auto;
     padding: 0.5em 1em;
   }

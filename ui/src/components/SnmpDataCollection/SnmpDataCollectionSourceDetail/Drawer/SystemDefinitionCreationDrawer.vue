@@ -126,7 +126,7 @@ import { createSystemDefinition, updateSystemDefinition } from '@/services/snmpD
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { IAutocompleteItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
@@ -276,7 +276,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .system-definition-drawer {
   .container {
@@ -286,7 +286,7 @@ watch(
 
     .drawer-content {
       .label {
-        @include headline4;
+        @include onms-headline4;
         margin-bottom: 0.5em;
       }
 
@@ -304,7 +304,7 @@ watch(
       .radio-group {
         .radio-group-label {
           display: block;
-          @include headline4;
+          @include onms-headline4;
           margin-bottom: 0.5em;
         }
 

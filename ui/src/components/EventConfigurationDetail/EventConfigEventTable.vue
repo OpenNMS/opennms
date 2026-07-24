@@ -17,7 +17,7 @@
                 :aria-label="'Search by Event UEI or Event Label'"
               />
               <InputIcon>
-                <FeatherIcon :icon="Search" />
+                <OnmsIcon :icon="Search" />
               </InputIcon>
             </IconField>
           </FormField>
@@ -29,7 +29,7 @@
             data-test="refresh-button"
             @click="store.refreshEventConfigEvents()"
           >
-            <FeatherIcon :icon="Refresh" />
+            <OnmsIcon :icon="Refresh" />
           </Button>
         </div>
       </div>
@@ -101,7 +101,7 @@
               data-test="edit-button"
               @click="onEditEvent(data)"
             >
-              <FeatherIcon :icon="Edit" />
+              <OnmsIcon :icon="Edit" />
             </Button>
             <Button
               text
@@ -111,7 +111,7 @@
               data-test="row-menu-button"
               @click="toggleRowMenu($event, data)"
             >
-              <FeatherIcon :icon="MenuIcon" />
+              <OnmsIcon :icon="MenuIcon" />
             </Button>
           </div>
         </template>
@@ -154,11 +154,11 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
-import Search from '@featherds/icon/action/Search'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import Search from '@/components/icons/action/Search.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -250,7 +250,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 @use '@/styles/_severities';
 
 .event-config-event-table {
@@ -267,7 +267,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
       align-items: center;
 
       .title {
-        @include typography.headline3;
+        @include onms-headline3;
       }
     }
 
@@ -291,7 +291,7 @@ const onChangeSearchTerm = (value: string | undefined) => {
   }
 
   .severity {
-    @include typography.caption;
+    @include onms-caption;
   }
 
   .enabled-tag {

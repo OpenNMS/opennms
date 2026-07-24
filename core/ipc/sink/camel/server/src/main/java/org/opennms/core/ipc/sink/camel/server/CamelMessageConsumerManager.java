@@ -88,6 +88,11 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
             final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, module, tracerRegistry, metricRegistry);
             context.addRoutes(routeBuilder);
             routeIdsByModule.put(module, routeBuilder.getRouteId());
+            // Camel 2 logged this for every route start; Camel 3 no longer logs
+            // dynamically added routes, and the sentinel smoke tests (and operators)
+            // rely on this line to tell that a consumer is up
+            LOG.info("Route: {} started and consuming from: queuingservice://{}",
+                    routeBuilder.getRouteId(), routeBuilder.getQueueName());
         }
     }
 
@@ -96,7 +101,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         if (routeIdsByModule.containsKey(module)) {
             LOG.info("Destroying route for module: {}", module);
             final String routeId = routeIdsByModule.remove(module);
-            context.stopRoute(routeId);
+            context.getRouteController().stopRoute(routeId);
             context.removeRoute(routeId);
         }
     }
@@ -143,6 +148,10 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
 
         public String getRouteId() {
             return "Sink.Server." + module.getId();
+        }
+
+        public String getQueueName() {
+            return new JmsQueueNameFactory(CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId()).getName();
         }
 
         @Override

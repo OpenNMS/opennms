@@ -19,7 +19,7 @@ describe('AssetFilterPanel.vue', () => {
       global: {
         plugins: [PrimeVue],
         stubs: {
-          FeatherIcon: { name: 'FeatherIcon', template: '<span />', props: ['icon'] }
+          OnmsIcon: { name: 'OnmsIcon', template: '<span />', props: ['icon'] }
         }
       }
     })

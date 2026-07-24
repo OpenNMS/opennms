@@ -1,118 +1,111 @@
 <template>
   <div>
-    <FeatherInput
-      ref="firstInput"
-      class="side-input mb-m"
-      label="Name"
-      hint="Human-friendly name. Must be unique."
-      :error="errors.name"
-      :modelValue="config.name"
-      @update:modelValue="(val: any) => updateFormValue('name', val)"
-    />
-    <div class="flex-center">
-      <FeatherSelect
-        data-test="external-source-select"
-        class="side-input full-width mb-m"
-        textProp="name"
-        label="External Source"
-        :options="requisitionTypeList"
-        :error="errors.type"
-        :modelValue="config.type"
-        @update:modelValue="updateExternalSource"
+    <FormField label="Name" class="side-input mb-m" hint="Human-friendly name. Must be unique." :error="errors.name">
+      <PInputText
+        ref="firstInput"
+        :invalid="Boolean(errors.name)"
+        :modelValue="config.name"
+        @update:modelValue="(val: any) => updateFormValue('name', val)"
       />
+    </FormField>
+    <div class="flex-center">
+      <FormField label="External Source" class="side-input full-width mb-m" :error="errors.type">
+        <PSelect
+          data-test="external-source-select"
+          optionLabel="name"
+          :options="requisitionTypeList"
+          :invalid="Boolean(errors.type)"
+          :modelValue="config.type"
+          @update:modelValue="updateExternalSource"
+        />
+      </FormField>
       <div class="icon">
-        <FeatherButton
-          icon="Help"
+        <PButton
+          text
+          aria-label="Help"
+          v-tooltip="'Help'"
           @click="() => props.toggleHelp()"
         >
-          <FeatherIcon
+          <OnmsIcon
             class="help-icon"
             :icon="Help"
-          ></FeatherIcon>
-        </FeatherButton>
+          ></OnmsIcon>
+        </PButton>
       </div>
     </div>
     <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
-      <FeatherInput
-        label="Host"
-        class="side-input host-update mb-m"
-        :error="errors.host"
-        :modelValue="config.host"
-        @update:modelValue="(val: any) => updateFormValue('host', val)"
-        :hint="hostHint || 'vCenter server host or IP address'"
-      />
+      <FormField label="Host" class="side-input host-update mb-m" :error="errors.host" :hint="hostHint || 'vCenter server host or IP address'">
+        <PInputText
+          :invalid="Boolean(errors.host)"
+          :modelValue="config.host"
+          @update:modelValue="(val: any) => updateFormValue('host', val)"
+        />
+      </FormField>
     </div>
     <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
-      <FeatherInput
-        label="Path"
-        class="side-input mb-m"
-        :error="errors.urlPath"
-        :modelValue="config.urlPath"
-        @update:modelValue="(val: any) => updateFormValue('urlPath', val)"
-        hint="URL path starting with a /"
-      />
+      <FormField label="Path" class="side-input mb-m" :error="errors.urlPath" hint="URL path starting with a /">
+        <PInputText
+          :invalid="Boolean(errors.urlPath)"
+          :modelValue="config.urlPath"
+          @update:modelValue="(val: any) => updateFormValue('urlPath', val)"
+        />
+      </FormField>
     </div>
     <div v-if="[RequisitionTypes.RequisitionPlugin].includes(config.type.name)">
-      <FeatherSelect
-        class="side-input mb-m"
-        textProp="name"
-        hint=""
-        label="Requisition Plugin"
-        :options="requisitionSubTypes"
-        @update:modelValue="(val: any) => updateFormValue('subType', val)"
-        :modelValue="config.subType"
-      />
+      <FormField label="Requisition Plugin" class="side-input mb-m">
+        <PSelect
+          optionLabel="name"
+          :options="requisitionSubTypes"
+          :modelValue="config.subType"
+          @update:modelValue="(val: any) => updateFormValue('subType', val)"
+        />
+      </FormField>
     </div>
     <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
-      <FeatherInput
-        label="Zone"
-        class="side-input mb-m"
-        :error="errors.zone"
-        :modelValue="config.zone"
-        @update:modelValue="(val: any) => updateFormValue('zone', val)"
-        hint="DNS zone to use as basis for this definition"
-      />
+      <FormField label="Zone" class="side-input mb-m" :error="errors.zone" hint="DNS zone to use as basis for this definition">
+        <PInputText
+          :invalid="Boolean(errors.zone)"
+          :modelValue="config.zone"
+          @update:modelValue="(val: any) => updateFormValue('zone', val)"
+        />
+      </FormField>
     </div>
     <div v-if="[RequisitionTypes.DNS].includes(config.type.name) || [RequisitionTypes.VMWare].includes(config.type.name)">
-      <FeatherInput
-        label="Requisition Name"
-        class="side-input mb-m"
-        :error="errors.foreignSource"
-        :modelValue="config.foreignSource"
-        @update:modelValue="(val: any) => updateFormValue('foreignSource', val)"
-        hint="Name to use for resulting requisition"
-      />
+      <FormField label="Requisition Name" class="side-input mb-m" :error="errors.foreignSource" hint="Name to use for resulting requisition">
+        <PInputText
+          :invalid="Boolean(errors.foreignSource)"
+          :modelValue="config.foreignSource"
+          @update:modelValue="(val: any) => updateFormValue('foreignSource', val)"
+        />
+      </FormField>
     </div>
     <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
       <div class="flex-center side-input">
-        <FeatherInput
-          label="Username"
-          class="side-input full-width mr-m mb-m"
-          :error="errors.username"
-          :modelValue="config.username"
-          @update:modelValue="(val: any) => updateFormValue('username', val)"
-          hint="vSphere username (optional)"
-        />
-        <FeatherInput
-          type="password"
-          label="Password"
-          class="side-input full-width mb-m"
-          :error="errors.password"
-          :modelValue="config.password"
-          @update:modelValue="(val: any) => updateFormValue('password', val)"
-          hint="vSphere password (optional)"
-        />
+        <FormField label="Username" class="side-input full-width mr-m mb-m" :error="errors.username" hint="vSphere username (optional)">
+          <PInputText
+            :invalid="Boolean(errors.username)"
+            :modelValue="config.username"
+            @update:modelValue="(val: any) => updateFormValue('username', val)"
+          />
+        </FormField>
+        <FormField label="Password" class="side-input full-width mb-m" :error="errors.password" hint="vSphere password (optional)">
+          <PInputText
+            type="password"
+            :invalid="Boolean(errors.password)"
+            :modelValue="config.password"
+            @update:modelValue="(val: any) => updateFormValue('password', val)"
+          />
+        </FormField>
       </div>
     </div>
     <div v-if="[RequisitionTypes.File].includes(config.type.name)">
-      <FeatherInput
-        label="Path"
-        class="side-input mb-m"
-        :error="errors.path"
-        :modelValue="config.path"
-        @update:modelValue="(val: any) => updateFormValue('path', val)"
-        hint="File path starting with a /"
-      />
+      <FormField label="Path" class="side-input mb-m" :error="errors.path" hint="File path starting with a /">
+        <PInputText
+          :invalid="Boolean(errors.path)"
+          :modelValue="config.path"
+          @update:modelValue="(val: any) => updateFormValue('path', val)"
+        />
+      </FormField>
     </div>
     <ConfigurationCronSelector
       :config="config"
@@ -120,19 +113,22 @@
       :updateValue="updateCronValue"
     />
     <div>
-      <FeatherRadioGroup
-        class="side-label"
-        label="Rescan Behavior"
-        :modelValue="config.rescanBehavior"
-        @update:modelValue="(val: any) => updateFormValue('rescanBehavior', val)"
-      >
-        <FeatherRadio
-          v-for="({value, name}) in rescanItems"
-          :value="value"
+      <div class="side-label">
+        <span class="group-label">Rescan Behavior</span>
+        <div
+          class="radio-option"
+          v-for="({ value, name }) in rescanItems"
           :key="name"
-          >{{ name }}</FeatherRadio
         >
-      </FeatherRadioGroup>
+          <PRadioButton
+            :inputId="`rescan-${value}`"
+            :value="value"
+            :modelValue="config.rescanBehavior"
+            @update:modelValue="(val: any) => updateFormValue('rescanBehavior', val)"
+          />
+          <label :for="`rescan-${value}`">{{ name }}</label>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -140,20 +136,27 @@
   lang="ts"
   setup
 >
-import { FeatherSelect } from '@featherds/select'
+import Select from 'primevue/select'
+import InputText from 'primevue/inputtext'
+import Button from 'primevue/button'
+import RadioButton from 'primevue/radiobutton'
+import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import { FeatherInput } from '@featherds/input'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
-import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import { PropType, computed, ref, watch } from 'vue'
-import Help from '@featherds/icon/action/Help'
+import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
 import { UpdateModelFunction } from '@/types'
-const firstInput = ref<HTMLInputElement | null>(null)
+
+const PSelect = Select
+const PInputText = InputText
+const PButton = Button
+const PRadioButton = RadioButton
+
+const firstInput = ref()
 
 const props = defineProps({
   item: { type: Object as PropType<LocalConfigurationWrapper>, required: true },
@@ -173,27 +176,16 @@ const hostHint = computed(() => {
 // Focus the first field in the drawer when opened.
 watch(formActive, () => {
   if (formActive.value && firstInput.value) {
-    firstInput.value.focus()
+    firstInput.value.$el?.focus()
   }
 })
 
-const updateExternalSource: UpdateModelFunction = (val: { name:string }) => {
+const updateExternalSource: UpdateModelFunction = (val: { name: string }) => {
   props.updateFormValue('type', val)
-  updateHint(val.name)
 }
 
-const updateCronValue = (type:string, val:string) => {
+const updateCronValue = (type: string, val: string) => {
   props.updateFormValue(type, val)
-}
-
-/**
- * The following function is related to getting the Hint Text to update properly in the FeatherInput component. Currently if you update the Hint Text after the initial render, FeatherInput does not react to the untracked attribute.
- * We could forcibly mount + unmount the component as an alternative which would also render the correct text, but I felt like these easily removable two lines of code is preferable than a forced re-render.
- * In the case that FeatherInput properly updates when the Hint Text is updated, just remove the two proceeding lines of code (getHostHint and forceSetHint)
- **/
-const updateHint = (val:string) => {
-  const hint = ConfigurationHelper.getHostHint(val)
-  ConfigurationHelper.forceSetHint({ hint }, 0, '.host-update')
 }
 </script>
 <style
@@ -208,8 +200,40 @@ const updateHint = (val:string) => {
 }
 .flex-center {
     display: flex;
+    align-items: flex-start;
 }
 .full-width {
     width: 100%;
+}
+.icon {
+    display: flex;
+    align-items: center;
+    // Offset past the FormField label (~1.6875rem) and center within the input's
+    // height so the icon lines up with the input row, not the label or any
+    // hint/error rendered below it.
+    height: 3rem;
+    margin-top: 1.6875rem;
+    .help-icon {
+        font-size: 1.5rem;
+    }
+}
+.side-label {
+    margin-top: 1rem;
+    .group-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--p-primary-color);
+    }
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        label {
+            cursor: pointer;
+        }
+    }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div class="usage-stats-container">
           <div class="table-container">
             <div class="title-container">
@@ -53,8 +53,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .card {
   background: var(--p-content-background);
@@ -72,7 +71,7 @@ onMounted(async () => {
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }

@@ -20,7 +20,24 @@
 /// License.
 ///
 
-import { SORT } from '@featherds/table'
+// Vendored from FeatherDS (Phase 6 de-Feather): SORT enum (was @featherds/table)
+// and the loose Select/Autocomplete item shapes (were @featherds/select /
+// @featherds/autocomplete). SORT's string values are preserved exactly — they
+// are compared and stored at runtime. The item interfaces are kept as an index
+// signature (matching FeatherDS) so existing {_text,_value} casts still hold.
+export enum SORT {
+  ASCENDING = 'asc',
+  DESCENDING = 'desc',
+  NONE = 'none'
+}
+
+export interface ISelectItemType {
+  [k: string]: unknown
+}
+
+export interface IAutocompleteItemType {
+  [k: string]: unknown
+}
 
 export type UpdateModelFunction = (_value: any) => any
 
@@ -304,12 +321,12 @@ export interface QueryParameters {
   [x: string]: any
 }
 
-export interface FeatherSortObject {
+export interface ISortObject {
   property: string
   value: SORT | any
 }
 
-export interface SortProps extends FeatherSortObject {
+export interface SortProps extends ISortObject {
   filters: Record<string, unknown>
   first: number
   multiSortMeta: Record<string, unknown>

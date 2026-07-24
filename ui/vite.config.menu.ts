@@ -39,7 +39,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
-      '~@featherds': '@featherds',
       './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
     },
     dedupe: ['vue', 'primevue']

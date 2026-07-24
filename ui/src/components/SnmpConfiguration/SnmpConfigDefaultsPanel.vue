@@ -4,7 +4,7 @@
       <div>
         <h3>SNMP Configuration Default Overrides</h3>
         <span>View and set "global" default override values for SNMP configuration parameters.</span>
-        <FeatherIcon
+        <OnmsIcon
           :icon="InfoIcon"
           class="info-icon"
           @click="isMessageDialogVisible = true"
@@ -161,9 +161,9 @@ import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import { ISelectItemType } from '@featherds/select'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { ISelectItemType } from '@/types'
 
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'

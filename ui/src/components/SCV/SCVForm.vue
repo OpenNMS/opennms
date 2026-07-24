@@ -55,7 +55,7 @@
 
     <div class="large-spacer"></div>
     <div class="add-btn" @click="addAttribute" data-test="add-attr-btn">
-      <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
+      <OnmsIcon :icon="Add" aria-hidden="true" focusable="false" />
       Add attribute
     </div>
 
@@ -99,8 +99,8 @@ import { computed, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
+import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
@@ -173,11 +173,11 @@ const addAttribute = () => scvStore.addAttribute()
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-elevation';
+@import '@/styles/onms-typography';
 
 .form-container {
-  @include elevation(1);
+  @include onms-elevation(1);
   background: var(--p-content-background);
   height: calc(100vh - 149px);
   display: flex;
@@ -186,7 +186,7 @@ const addAttribute = () => scvStore.addAttribute()
   overflow-y: auto;
 
   .title {
-    @include headline3;
+    @include onms-headline3;
     margin-top: 11px;
     margin-bottom: 9px;
   }
@@ -210,7 +210,7 @@ const addAttribute = () => scvStore.addAttribute()
 
   .add-btn {
     cursor: pointer;
-    @include body-small;
+    @include onms-body-small;
     margin-bottom: 10px;
   }
 

@@ -40,7 +40,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.nio.charset.Charset;
@@ -78,6 +80,9 @@ public class DeviceConfigDaoIT {
     @Autowired
     private DeviceConfigDao deviceConfigDao;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     private OnmsIpInterface ipInterface;
 
 
@@ -113,6 +118,7 @@ public class DeviceConfigDaoIT {
     }
 
     @Test
+    @Transactional
     public void testFetchDeviceConfigSortedByDate() {
         populateIpInterface();
         final int count = 10;
@@ -154,6 +160,7 @@ public class DeviceConfigDaoIT {
     }
 
     @Test
+    @Transactional
     public void testGetLatestConfigOnEachInterface() {
         Set<OnmsIpInterface> ipInterfaces = populateIpInterfaces();
         int count = 10;
@@ -191,6 +198,7 @@ public class DeviceConfigDaoIT {
     }
 
     @Test
+    @Transactional
     public void testDeviceConfigsWithoutServiceName() {
         populateIpInterface();
         int count = 1;
@@ -207,8 +215,12 @@ public class DeviceConfigDaoIT {
 
     @Test
     public void testDeviceConfigNodesBySysOidCount() {
-        Set<OnmsIpInterface> ipInterfaces = populateIpInterfacesWithSysOid();
-        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(1, ipInterface, "DeviceConfig-default"));
+        new TransactionTemplate(transactionManager).execute(status -> {
+                    Set<OnmsIpInterface> ipInterfaces = populateIpInterfacesWithSysOid();
+                    ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(1, ipInterface,
+                            "DeviceConfig-default"));
+                    return ipInterfaces;
+                });
 
         Map<String, Long> nodesWithConfigBySysOid = deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid();
         Assert.assertEquals(nodesWithConfigBySysOid.get(".1.3.6.1.4.1.9.1.799").longValue(), 2L);
