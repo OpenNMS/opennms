@@ -65,7 +65,7 @@
           :error="errors.uei"
           hint="e.g., 'uei.opennms.org/vendor/application/eventname'"
         >
-          <InputText
+          <OnmsInputText
             :id="eventUeiId"
             data-test="event-uei"
             :invalid="!!errors.uei"
@@ -81,7 +81,7 @@
           :error="errors.eventLabel"
           hint="e.g., 'Vendor Application Event Name'"
         >
-          <InputText
+          <OnmsInputText
             :id="eventLabelId"
             data-test="event-label"
             :invalid="!!errors.eventLabel"
@@ -256,7 +256,7 @@
           :for="configNameId"
           :error="sourceCreationErrors?.name"
         >
-          <InputText
+          <OnmsInputText
             :id="configNameId"
             v-model="configName"
             :invalid="!!sourceCreationErrors?.name"
@@ -269,7 +269,7 @@
           :for="vendorId"
           :error="sourceCreationErrors?.vendor"
         >
-          <InputText
+          <OnmsInputText
             :id="vendorId"
             v-model="vendor"
             :invalid="!!sourceCreationErrors?.vendor"
@@ -307,12 +307,11 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
 import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
 import vkbeautify from 'vkbeautify'

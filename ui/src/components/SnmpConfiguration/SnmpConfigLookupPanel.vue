@@ -23,7 +23,7 @@
           for="snmp-lookup-ip-address"
           hint="Enter IP Address"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-lookup-ip-address"
             class="lookup-input"
             data-test="lookup-ip-address-input"
@@ -81,8 +81,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Select from 'primevue/select'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
@@ -93,7 +92,6 @@ import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
-const PInputText = InputText
 const PSelect = Select
 
 const props = defineProps<{

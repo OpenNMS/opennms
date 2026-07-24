@@ -17,7 +17,7 @@
                 :error="errors.name"
                 hint=""
               >
-                <PInputText
+                <OnmsInputText
                   id="profile-name-input"
                   :modelValue="configDetails.name"
                   @update:modelValue="update('name', String($event))"
@@ -162,13 +162,13 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsInputText } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
 import Card from 'primevue/card'
 import InputNumberComponent from 'primevue/inputnumber'
-import InputTextComponent from 'primevue/inputtext'
 import SelectComponent from 'primevue/select'
 import TagComponent from 'primevue/tag'
 import ToggleSwitchComponent from 'primevue/toggleswitch'
@@ -177,7 +177,6 @@ import FormField from '@/components/Common/FormField.vue'
 const PCard = Card
 const PToggleSwitch = ToggleSwitchComponent
 const PSelect = SelectComponent
-const PInputText = InputTextComponent
 const PInputNumber = InputNumberComponent
 const PTag = TagComponent
 

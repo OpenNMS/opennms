@@ -47,7 +47,7 @@
             :for="fileNameInputId"
             :error="error"
           >
-            <InputText
+            <OnmsInputText
               :id="fileNameInputId"
               :modelValue="newFileName"
               :invalid="!!error"
@@ -80,10 +80,9 @@
 import { computed, ref, useId, watch } from 'vue'
 
 import { UploadedSourceNamesResponse, UploadEventFileType } from '@/types/eventConfig'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Checkbox from 'primevue/checkbox'
 import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

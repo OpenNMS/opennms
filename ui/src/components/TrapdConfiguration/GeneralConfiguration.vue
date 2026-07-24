@@ -39,7 +39,7 @@
         :error="trapConfigError.bindAddress"
         hint="* for all, or specify IP address"
       >
-        <PInputText
+        <OnmsInputText
           id="trap-bind-address"
           v-model="bindAddress"
           :invalid="!!trapConfigError.bindAddress"
@@ -180,10 +180,9 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -197,7 +196,6 @@ import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 
 const PInputNumber = InputNumber
-const PInputText = InputText
 const PToggleSwitch = ToggleSwitch
 
 const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)

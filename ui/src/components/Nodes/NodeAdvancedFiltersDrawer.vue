@@ -109,7 +109,7 @@
             :error="errors.ipAddress"
             data-test="ip-field"
           >
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.ipAddress"
               :invalid="!!errors.ipAddress"
@@ -119,7 +119,7 @@
         </div>
         <div class="onms-col-6">
           <FormField label="MAC Address" data-test="mac-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.macAddress"
               data-test="mac-input"
@@ -130,7 +130,7 @@
       <div class="onms-row">
         <div class="onms-col-6">
           <FormField label="Topology (CDP/LLDP)" data-test="topology-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.topology"
               data-test="topology-input"
@@ -279,13 +279,12 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import Drawer from 'primevue/drawer'
 import MultiSelect from 'primevue/multiselect'
-import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'

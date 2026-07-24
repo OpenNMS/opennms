@@ -47,7 +47,7 @@
             :for="`varbind-number-${index}`"
             :error="errors.varbinds?.[index]?.index"
           >
-            <InputText
+            <OnmsInputText
               :id="`varbind-number-${index}`"
               type="number"
               min="0"
@@ -69,7 +69,7 @@
             :for="`varbind-oid-${index}`"
             :error="errors.varbinds?.[index]?.index"
           >
-            <InputText
+            <OnmsInputText
               :id="`varbind-oid-${index}`"
               :modelValue="row.index"
               @update:model-value="$emit('setVarbinds', 'setVarbindOid', $event, index)"
@@ -87,7 +87,7 @@
               :for="`varbind-value-${index}`"
               :error="errors.varbinds?.[index]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`varbind-value-${index}`"
                 :modelValue="row.value"
                 @update:model-value="$emit('setVarbinds', 'setValue', $event, index)"
@@ -117,11 +117,10 @@
 import { computed, ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'

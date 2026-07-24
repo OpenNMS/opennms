@@ -77,7 +77,7 @@
               v-if="isCreateMode"
               class="source-name-input"
             >
-              <InputText
+              <OnmsInputText
                 v-model="localSourceName"
                 :invalid="!!sourceNameError"
                 placeholder="Source Name"
@@ -231,11 +231,10 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 import ChipComponent from 'primevue/chip'
-import InputText from 'primevue/inputtext'
 import TabComponent from 'primevue/tab'
 import TabListComponent from 'primevue/tablist'
 import TabPanelComponent from 'primevue/tabpanel'

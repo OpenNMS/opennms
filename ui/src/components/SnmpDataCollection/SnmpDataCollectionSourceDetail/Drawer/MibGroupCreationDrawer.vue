@@ -26,7 +26,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -129,7 +129,7 @@
             :for="oidId"
             :error="mibObjectErrors.oid"
           >
-            <InputText
+            <OnmsInputText
               :id="oidId"
               v-model.trim="oid"
               :invalid="!!mibObjectErrors.oid"
@@ -162,7 +162,7 @@
             :for="aliasId"
             :error="mibObjectErrors.alias"
           >
-            <InputText
+            <OnmsInputText
               :id="aliasId"
               v-model.trim="alias"
               :invalid="!!mibObjectErrors.alias"
@@ -241,11 +241,10 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
 

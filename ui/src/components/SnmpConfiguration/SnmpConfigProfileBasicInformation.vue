@@ -28,7 +28,7 @@
           :error="errors.label"
           hint="Label"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-profile-label"
             class="profile-input"
             data-test="snmp-profile-label"
@@ -44,7 +44,7 @@
           :error="errors.filterExpression"
           hint="Filter expression"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-profile-filter-expression"
             class="profile-input"
             data-test="snmp-profile-filter-expression"
@@ -76,8 +76,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
@@ -86,8 +85,6 @@ import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
 import { validateProfile } from '@/lib/snmpValidator'
-
-const PInputText = InputText
 
 const props = defineProps<{
   isCreate: boolean,

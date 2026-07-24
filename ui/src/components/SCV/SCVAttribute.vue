@@ -8,7 +8,7 @@
       :error="keyError"
       v-slot="{ errorId, invalid }"
     >
-      <PInputText
+      <OnmsInputText
         ref="keyRef"
         :id="keyId"
         :modelValue="attributeKey"
@@ -23,7 +23,7 @@
       label="value"
       :for="valueId"
     >
-      <PInputText
+      <OnmsInputText
         :id="valueId"
         :modelValue="attributeValue"
         @update:modelValue="updateAttributeValue"
@@ -42,15 +42,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
-import { OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Delete from '@/components/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
-
-const PInputText = InputText
 
 const scvStore = useScvStore()
 const emit = defineEmits(['set-key-error'])

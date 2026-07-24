@@ -29,7 +29,7 @@
               :for="`varbind-parmid-${index}`"
               :error="errors.varbindsDecode?.[index]?.parmId"
             >
-              <InputText
+              <OnmsInputText
                 :id="`varbind-parmid-${index}`"
                 :modelValue="row.parmId"
                 @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
@@ -71,7 +71,7 @@
               :for="`decode-value-${index}-${decodeIndex}`"
               :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`decode-value-${index}-${decodeIndex}`"
                 type="number"
                 min="0"
@@ -91,7 +91,7 @@
                 :for="`decode-key-${index}-${decodeIndex}`"
                 :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
               >
-                <InputText
+                <OnmsInputText
                   :id="`decode-key-${index}-${decodeIndex}`"
                   :modelValue="decodeRow.key"
                   @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
@@ -123,10 +123,9 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

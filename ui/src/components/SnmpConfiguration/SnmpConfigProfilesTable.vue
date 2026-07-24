@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <PInputText
+              <OnmsInputText
                 id="snmp-profiles-search"
                 placeholder="Search label or filter"
                 aria-label="Search label or filter"
@@ -96,12 +96,11 @@
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -116,7 +115,6 @@ import { SnmpProfile } from '@/types/snmpConfig'
 
 const PColumn = Column
 const PDataTable = DataTable
-const PInputText = InputText
 
 const emit = defineEmits<{
   (e: 'delete-profile', label: string): void

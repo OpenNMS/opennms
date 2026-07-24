@@ -60,7 +60,7 @@
                 :error="(formErrors as any)[param.key]"
                 :hint="param.hint"
               >
-                <PInputText
+                <OnmsInputText
                   class="snmp-config-defaults-input"
                   :data-test="`snmp-config-default-${param.key}`"
                   :aria-label="param.label"
@@ -100,7 +100,7 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PInputText
+            <OnmsInputText
               class="snmp-config-defaults-input"
               :data-test="`snmp-config-default-${param.key}`"
               :aria-label="param.label"
@@ -157,9 +157,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
@@ -194,7 +193,6 @@ import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpCo
 import MessageDialog from '../Common/MessageDialog.vue'
 
 const PInputNumber = InputNumber
-const PInputText = InputText
 const PSelect = Select
 
 // SNMP Version options

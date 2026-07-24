@@ -19,7 +19,7 @@
         for="scv-search"
       >
         <IconField>
-          <PInputText
+          <OnmsInputText
             id="scv-search"
             :modelValue="searchValue"
             @update:modelValue="val => onSearch(val as string)"
@@ -75,14 +75,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import SearchIcon from '@/components/icons/action/Search.vue'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
@@ -91,7 +90,6 @@ import { ScvSearchItem } from '@/types/scv'
 const PColumn = Column
 const PDataTable = DataTable
 const PDrawer = Drawer
-const PInputText = InputText
 
 const props = defineProps<{
   isOpen: boolean

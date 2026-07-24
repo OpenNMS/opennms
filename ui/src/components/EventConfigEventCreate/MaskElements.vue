@@ -45,7 +45,7 @@
               :for="`mask-element-value-${index}`"
               :error="errors.maskElements?.[index]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`mask-element-value-${index}`"
                 :modelValue="row.value"
                 :invalid="!!errors.maskElements?.[index]?.value"
@@ -75,11 +75,10 @@
 import { ref, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskElementNameOptions } from './constants'

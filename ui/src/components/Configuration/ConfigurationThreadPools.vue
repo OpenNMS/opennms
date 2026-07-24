@@ -22,7 +22,7 @@
         values. To adjust them, type a new number in the field or use the up/down arrows to select a value.
       </p>
       <FormField label="Import" :error="getError('importThreads')" hint="Number of threads to allocate for requisition import tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('importThreads'))"
           v-model="threadPoolData.importThreads"
@@ -30,7 +30,7 @@
         />
       </FormField>
       <FormField label="Scan" :error="getError('scanThreads')" hint="Number of threads to allocate for manual scanning tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('scanThreads'))"
           v-model="threadPoolData.scanThreads"
@@ -38,7 +38,7 @@
         />
       </FormField>
       <FormField label="Rescan" :error="getError('rescanThreads')" hint="Number of threads to allocate for scheduled rescanning tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('rescanThreads'))"
           v-model="threadPoolData.rescanThreads"
@@ -46,7 +46,7 @@
         />
       </FormField>
       <FormField class="last-input" label="Write" :error="getError('writeThreads')" hint="Number of threads to allocate for writing to the database.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('writeThreads'))"
           v-model="threadPoolData.writeThreads"
@@ -71,8 +71,7 @@ import { computed, reactive, ref } from 'vue'
 
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import { OnmsButton } from '@opennms/onms-ui'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Chip from 'primevue/chip'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -83,7 +82,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
-const PInputText = InputText
 const PChip = Chip
 
 const configurationStore = useConfigurationStore()

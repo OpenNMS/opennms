@@ -52,7 +52,7 @@
         :error="errors?.reductionKey"
         hint="Provide the reduction key for the alarm."
       >
-        <InputText
+        <OnmsInputText
           :id="reductionKeyId"
           :modelValue="alarmReductionKey"
           data-test="alarm-reduction-key"
@@ -68,7 +68,7 @@
         :error="errors.clearKey"
         hint="Provide the clear key for the alarm."
       >
-        <InputText
+        <OnmsInputText
           :id="clearKeyId"
           :modelValue="alarmClearKey"
           data-test="alarm-clear-key"
@@ -83,12 +83,12 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsInputText } from '@opennms/onms-ui'
 import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
 import { ISelectItemType } from '@/types'
 import Checkbox from 'primevue/checkbox'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'

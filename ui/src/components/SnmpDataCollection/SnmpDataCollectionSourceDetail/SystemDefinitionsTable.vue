@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField>
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.systemDefsSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -160,7 +160,7 @@ import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
-import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -171,7 +171,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import Tag from 'primevue/tag'

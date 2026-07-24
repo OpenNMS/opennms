@@ -1,7 +1,7 @@
 <template>
   <div>
     <FormField label="Name" class="side-input mb-m" hint="Human-friendly name. Must be unique." :error="errors.name">
-      <PInputText
+      <OnmsInputText
         ref="firstInput"
         :invalid="Boolean(errors.name)"
         :modelValue="config.name"
@@ -30,7 +30,7 @@
     </div>
     <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
       <FormField label="Host" class="side-input host-update mb-m" :error="errors.host" :hint="hostHint || 'vCenter server host or IP address'">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(errors.host)"
           :modelValue="config.host"
           @update:modelValue="(val: any) => updateFormValue('host', val)"
@@ -39,7 +39,7 @@
     </div>
     <div v-if="RequisitionHTTPTypes.includes(config.type.name)">
       <FormField label="Path" class="side-input mb-m" :error="errors.urlPath" hint="URL path starting with a /">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(errors.urlPath)"
           :modelValue="config.urlPath"
           @update:modelValue="(val: any) => updateFormValue('urlPath', val)"
@@ -58,7 +58,7 @@
     </div>
     <div v-if="[RequisitionTypes.DNS].includes(config.type.name)">
       <FormField label="Zone" class="side-input mb-m" :error="errors.zone" hint="DNS zone to use as basis for this definition">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(errors.zone)"
           :modelValue="config.zone"
           @update:modelValue="(val: any) => updateFormValue('zone', val)"
@@ -67,7 +67,7 @@
     </div>
     <div v-if="[RequisitionTypes.DNS].includes(config.type.name) || [RequisitionTypes.VMWare].includes(config.type.name)">
       <FormField label="Requisition Name" class="side-input mb-m" :error="errors.foreignSource" hint="Name to use for resulting requisition">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(errors.foreignSource)"
           :modelValue="config.foreignSource"
           @update:modelValue="(val: any) => updateFormValue('foreignSource', val)"
@@ -77,14 +77,14 @@
     <div v-if="[RequisitionTypes.VMWare].includes(config.type.name)">
       <div class="flex-center side-input">
         <FormField label="Username" class="side-input full-width mr-m mb-m" :error="errors.username" hint="vSphere username (optional)">
-          <PInputText
+          <OnmsInputText
             :invalid="Boolean(errors.username)"
             :modelValue="config.username"
             @update:modelValue="(val: any) => updateFormValue('username', val)"
           />
         </FormField>
         <FormField label="Password" class="side-input full-width mb-m" :error="errors.password" hint="vSphere password (optional)">
-          <PInputText
+          <OnmsInputText
             type="password"
             :invalid="Boolean(errors.password)"
             :modelValue="config.password"
@@ -95,7 +95,7 @@
     </div>
     <div v-if="[RequisitionTypes.File].includes(config.type.name)">
       <FormField label="Path" class="side-input mb-m" :error="errors.path" hint="File path starting with a /">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(errors.path)"
           :modelValue="config.path"
           @update:modelValue="(val: any) => updateFormValue('path', val)"
@@ -132,12 +132,11 @@
   setup
 >
 import Select from 'primevue/select'
-import InputText from 'primevue/inputtext'
 import RadioButton from 'primevue/radiobutton'
 import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import { OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import { PropType, computed, ref, watch } from 'vue'
 import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
@@ -146,7 +145,6 @@ import ConfigurationCronSelector from './ConfigurationCronSelector.vue'
 import { UpdateModelFunction } from '@/types'
 
 const PSelect = Select
-const PInputText = InputText
 const PRadioButton = RadioButton
 
 const firstInput = ref()

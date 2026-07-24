@@ -8,7 +8,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.sourcesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -128,7 +128,7 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
@@ -139,7 +139,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
 import Tag from 'primevue/tag'

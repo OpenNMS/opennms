@@ -16,7 +16,7 @@
         :for="nameInputId"
         :error="error?.name"
       >
-        <InputText
+        <OnmsInputText
           :id="nameInputId"
           v-model="configName"
           :invalid="!!error?.name"
@@ -28,7 +28,7 @@
         :for="vendorInputId"
         :error="error?.vendor"
       >
-        <InputText
+        <OnmsInputText
           :id="vendorInputId"
           v-model="vendor"
           :invalid="!!error?.vendor"
@@ -76,9 +76,8 @@ import { useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 
 const router = useRouter()

@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField>
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.profilesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -113,7 +113,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
@@ -121,7 +121,6 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
 import Tag from 'primevue/tag'

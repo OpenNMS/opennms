@@ -43,7 +43,7 @@
         />
       </FormField>
       <FormField label="Schedule Time" class="time">
-        <PInputText
+        <OnmsInputText
           type="time"
           @update:modelValue="(val: unknown) => updateFormValue('time', val as string)"
           :modelValue="props.config.time"
@@ -56,7 +56,7 @@
       v-if="props.config.advancedCrontab"
     >
       <FormField label="Advanced (Cron) Schedule" class="advanced-entry" :error="props.errors.occuranceAdvanced">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(props.errors.occuranceAdvanced)"
           @update:modelValue="(val: unknown) => updateFormValue('occuranceAdvanced', val as string)"
           :modelValue="props.config.occuranceAdvanced"
@@ -94,8 +94,8 @@
   lang="ts"
   setup
 >
+import { OnmsInputText } from '@opennms/onms-ui'
 import Select from 'primevue/select'
-import InputText from 'primevue/inputtext'
 import Checkbox from 'primevue/checkbox'
 import FormField from '@/components/Common/FormField.vue'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
@@ -106,7 +106,6 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
 
 const PSelect = Select
-const PInputText = InputText
 const PCheckbox = Checkbox
 
 const updateFormValue = (type: string, value: string) => {

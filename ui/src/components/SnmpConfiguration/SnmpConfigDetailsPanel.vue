@@ -15,7 +15,7 @@
                   :error="errors.firstIpAddress"
                   hint="First IP Address in range or specific IP"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-first-ip`"
                     class="ip-input"
                     data-test="snmp-definition-first-ip-address"
@@ -31,7 +31,7 @@
                   :error="errors.lastIpAddress"
                   hint="Last IP Address in range (leave blank if not a range)"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-last-ip`"
                     class="ip-input"
                     data-test="snmp-definition-last-ip-address"
@@ -51,7 +51,7 @@
                   :error="errors.ipMatch"
                   hint="IPLIKE Expression (cannot be used with First/Last IP)"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-ipmatch`"
                     class="ip-input"
                     data-test="snmp-definition-ipmatch-expression"
@@ -243,10 +243,9 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Card from 'primevue/card'
 import Checkbox from 'primevue/checkbox'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { ISelectItemType } from '@/types'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
@@ -262,7 +261,6 @@ import { ScvSearchItem } from '@/types/scv'
 
 const PCard = Card
 const PCheckbox = Checkbox
-const PInputText = InputText
 const PSelect = Select
 
 // Unique per-instance prefix for label `for`/input `id` pairs (multiple detail

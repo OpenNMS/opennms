@@ -26,7 +26,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -67,7 +67,7 @@
           :for="oidValueId"
           :error="errors.oidValue"
         >
-          <InputText
+          <OnmsInputText
             :id="oidValueId"
             v-model.trim="oidValue"
             :invalid="!!errors.oidValue"
@@ -128,9 +128,8 @@ import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
 import RadioButton from 'primevue/radiobutton'
 import ToggleSwitch from 'primevue/toggleswitch'

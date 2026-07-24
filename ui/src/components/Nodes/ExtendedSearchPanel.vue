@@ -14,7 +14,7 @@
       </div>
       <div class="onms-col-5">
         <FormField label="Search Term">
-          <InputText
+          <OnmsInputText
             v-model="searchTerm"
             data-test="search-term-input"
           />
@@ -42,7 +42,7 @@
       <PColumn field="label" header="Search Type" style="width: 40%" />
       <PColumn field="value" header="Search Term">
         <template #body="{ data }">
-          <PInputText
+          <OnmsInputText
             v-model="data.value"
             class="extended-search-input"
           />
@@ -67,9 +67,8 @@ import { onMounted, ref } from 'vue'
 
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -79,7 +78,6 @@ import { NodeQueryExtendedSearchParams } from '@/types'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PInputText = InputText
 
 const {
   getExtendedSearchValues,

@@ -25,7 +25,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -40,7 +40,7 @@
           :for="labelId"
           :error="errors.label"
         >
-          <InputText
+          <OnmsInputText
             :id="labelId"
             v-model.trim="label"
             :invalid="!!errors.label"
@@ -55,7 +55,7 @@
           :for="resourceLabelId"
           :error="errors.resourceLabel"
         >
-          <InputText
+          <OnmsInputText
             :id="resourceLabelId"
             v-model.trim="resourceLabel"
             :invalid="!!errors.resourceLabel"
@@ -224,7 +224,7 @@
             :for="keyId"
             :error="parameterErrors.key"
           >
-            <InputText
+            <OnmsInputText
               :id="keyId"
               v-model.trim="key"
               :invalid="!!parameterErrors.key"
@@ -239,7 +239,7 @@
             :for="valueId"
             :error="parameterErrors.value"
           >
-            <InputText
+            <OnmsInputText
               :id="valueId"
               v-model.trim="value"
               :invalid="!!parameterErrors.value"
@@ -300,12 +300,11 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import AutoComplete from 'primevue/autocomplete'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()

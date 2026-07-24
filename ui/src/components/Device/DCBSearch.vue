@@ -1,7 +1,7 @@
 <template>
   <FormField class="dcb-search-field">
     <IconField>
-      <PInputText
+      <OnmsInputText
         placeholder="Search device"
         aria-label="Search device"
         :modelValue="searchVal"
@@ -17,17 +17,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import { OnmsIcon } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import SearchIcon from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
-
-const PInputText = InputText
 
 const deviceStore = useDeviceStore()
 const searchVal = ref<string | undefined>(undefined)
@@ -47,7 +44,6 @@ const searchFilterHandler = (val = '') => {
   deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
   getDeviceConfigBackupsOnDebounce()
 }
-
 
 // TODO: return scroll bar to top before running, so infinite scroll won't trigger after search
 const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => deviceStore.getDeviceConfigBackups(), 1000)

@@ -3,7 +3,7 @@
     <div class="search">
       <FormField class="search-field">
         <IconField>
-          <PInputText
+          <OnmsInputText
             placeholder="Search"
             aria-label="Search"
             :modelValue="searchValue"
@@ -28,15 +28,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import IconSearch from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-
-const PInputText = InputText
 
 const fileEditorStore = useFileEditorStore()
 

@@ -28,7 +28,7 @@
           </PAutoComplete>
         </FormField>
         <FormField label="Value" class="value-field" :hint="item.hint || ' '">
-          <PInputText v-model="item.value" />
+          <OnmsInputText v-model="item.value" />
         </FormField>
         <OnmsIconButton
           class="delete-icon"
@@ -54,8 +54,7 @@
 >
 import { PropType, computed, reactive, ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -65,7 +64,6 @@ import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings
 import { AdvancedKey, AdvancedOption } from './configuration.types'
 
 const PAutoComplete = AutoComplete
-const PInputText = InputText
 
 /**
  * Props

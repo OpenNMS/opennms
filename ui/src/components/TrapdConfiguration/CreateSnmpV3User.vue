@@ -26,7 +26,7 @@
             for="security-name"
             :error="formError.securityName"
           >
-            <PInputText
+            <OnmsInputText
               id="security-name"
               data-test="security-name-input"
               v-model="securityName"
@@ -40,7 +40,7 @@
             for="engine-id"
             :error="formError.engineId"
           >
-            <PInputText
+            <OnmsInputText
               id="engine-id"
               data-test="engine-id-input"
               v-model="engineId"
@@ -201,9 +201,8 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
@@ -212,7 +211,6 @@ import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
-const PInputText = InputText
 const PPassword = Password
 const PSelect = Select
 

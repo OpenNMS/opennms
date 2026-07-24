@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <PInputText
+              <OnmsInputText
                 id="snmp-definitions-search"
                 placeholder="Search IP addresses or location"
                 aria-label="Search IP addresses or location"
@@ -137,12 +137,11 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import Tag from 'primevue/tag'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
@@ -160,7 +159,6 @@ import TableCard from '../Common/TableCard.vue'
 
 const PColumn = Column
 const PDataTable = DataTable
-const PInputText = InputText
 const PTag = Tag
 
 const store = useSnmpConfigStore()

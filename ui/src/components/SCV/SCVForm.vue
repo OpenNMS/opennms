@@ -9,7 +9,7 @@
       :error="aliasError"
       v-slot="{ errorId, invalid }"
     >
-      <PInputText
+      <OnmsInputText
         id="scv-alias"
         :disabled="isEditing"
         :modelValue="scvStore.credentials.alias"
@@ -26,7 +26,7 @@
         label="Username"
         for="scv-username"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-username"
           autocomplete="new-username"
           :modelValue="scvStore.credentials.username"
@@ -42,7 +42,7 @@
         :error="passwordError"
         v-slot="{ errorId, invalid }"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-password"
           autocomplete="new-password"
           :modelValue="scvStore.credentials.password"
@@ -97,8 +97,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
@@ -106,8 +105,6 @@ import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
-
-const PInputText = InputText
 
 const scvStore = useScvStore()
 const keyError = ref(false)
