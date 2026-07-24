@@ -147,6 +147,29 @@ public class IplikeSqlTranslatorTest {
         assertEquals(Boolean.FALSE, IplikeSqlTranslator.matches("1.2.3.4%eth0", "1.2.3.*"));
     }
 
+    /**
+     * A descending range stored as a segment would make recurse() enumerate
+     * every preceding combination through a zero-iteration loop that never
+     * reaches the MAX_RANGES backstop — 65536^2 dead paths for this pattern.
+     * Descending segments must be dropped before expansion, making this
+     * return (untranslatable) immediately.
+     */
+    @Test(timeout = 5000)
+    public void testDescendingRangeReturnsImmediately() {
+        assertNull(IplikeSqlTranslator.toSqlPredicate("0-ffff:0-ffff:1-0:0:0:0:0:0", "ipaddr"));
+        assertNull(IplikeSqlTranslator.toSqlPredicate("192.168.5-3.1", "ipaddr"));
+    }
+
+    @Test
+    public void testDescendingListElementIsDroppedNotFatal() {
+        // iplike's BETWEEN matches nothing for 5-3, so only the 7 survives
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("192.168.7.1", "192.168.5-3,7.1"));
+        assertEquals(Boolean.FALSE, IplikeSqlTranslator.matches("192.168.4.1", "192.168.5-3,7.1"));
+        assertEquals("(ipaddr IS NOT NULL AND opennms_safe_inet(ipaddr) IS NOT NULL AND "
+                + "(opennms_safe_inet(ipaddr) = inet '192.168.7.1'))",
+                IplikeSqlTranslator.toSqlPredicate("192.168.5-3,7.1", "ipaddr"));
+    }
+
     @Test
     public void testExpansionCapFallsBack() {
         // 3 x 254 x 6 x 2 = 9,144 ranges, past MAX_RANGES

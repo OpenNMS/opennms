@@ -270,6 +270,9 @@ public class IPLikeCoverageIT {
         for (final String garbage : new String[] {
                 "garbage",
                 "fe80::1",              // compressed IPv6: iplike needs 8 groups
+                "fe80::1:2:3:4:5:6",    // one-group compression still has 7 colons
+                "::1:2:3:4:5:6:7",
+                "1:2:3:4:5:6:7::",
                 "1.2.3.4%eth0",         // zone ids are IPv6-only
                 "10.0.0.999",
                 " 1.2.3.4",
@@ -277,6 +280,19 @@ public class IPLikeCoverageIT {
             checkIplikeRule(garbage, "1.2.3.*", false);
             checkIplikeRule(garbage, "fe80:*:*:*:*:*:*:*", false);
         }
+    }
+
+    /**
+     * A middle one-group compression (seven colons, valid inet) must not
+     * enter the 8-group parsing loop: ltrim would swallow the '::' and
+     * shift every later field, so the shifted rule matched and the correct
+     * expansion did not.
+     */
+    @Test
+    public void testCompressedIpv6NeverParsesShifted() throws Exception {
+        checkIplikeRule("fe80::1:2:3:4:5:6", "fe80:1:2:3:4:5:6:0", false); // the shifted misparse
+        checkIplikeRule("fe80::1:2:3:4:5:6", "fe80:0:1:2:3:4:5:6", false); // the correct expansion (value is rejected, as revision 1 did)
+        checkIplikeRule("fe80::1:2:0:4:5:6", "*:*:*:0:*:*:*:*", false);    // untranslatable rule -> the iplike() fallback path
     }
 
 }
