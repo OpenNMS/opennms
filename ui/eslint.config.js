@@ -83,5 +83,18 @@ export default tseslint.config(
       // ── General ───────────────────────────────────────────────────────────
       curly: ['error', 'all'],
     },
+  },
+
+  // ── Seam layer (NMS-20029) ─────────────────────────────────────────────
+  // Direct PrimeVue imports are banned in app code once an Onms- wrapper
+  // exists. The @opennms/onms-ui package itself (packages/onms-ui) and tests
+  // are exempt. Entries are appended as each wrapper lands.
+  {
+    files: ['src/**/*.ts', 'src/**/*.vue'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: []
+      }]
+    }
   }
 )
