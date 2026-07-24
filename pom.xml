@@ -1788,7 +1788,7 @@
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
     <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
-    <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
+    <dropwizardMetricsVersion>4.2.25</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
