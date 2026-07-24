@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 450" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="820" height="450" fill="#ffffff"/>
+  <!-- connections -->
+  <line x1="410" y1="120" x2="410" y2="175" stroke="#555555" stroke-width="2"/>
+  <line x1="360" y1="265" x2="240" y2="325" stroke="#555555" stroke-width="2"/>
+  <line x1="460" y1="265" x2="600" y2="325" stroke="#555555" stroke-width="2"/>
+  <!-- Distributed Minions -->
+  <rect x="300" y="40" width="220" height="80" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="410" y="86" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">OpenNMS Minions</text>
+  <!-- OpenNMS Core -->
+  <rect x="300" y="175" width="220" height="90" rx="10" fill="#4c9a41" stroke="#2e6b28" stroke-width="2"/>
+  <text x="410" y="226" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">OpenNMS Core</text>
+  <!-- PostgreSQL -->
+  <rect x="110" y="325" width="230" height="90" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="225" y="376" text-anchor="middle" font-size="19" font-weight="bold" fill="#222222">PostgreSQL</text>
+  <!-- Dedicated time series storage -->
+  <rect x="470" y="325" width="260" height="90" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="600" y="366" text-anchor="middle" font-size="18" font-weight="bold" fill="#222222">Dedicated time series</text>
+  <text x="600" y="391" text-anchor="middle" font-size="18" font-weight="bold" fill="#222222">storage</text>
+</svg>
