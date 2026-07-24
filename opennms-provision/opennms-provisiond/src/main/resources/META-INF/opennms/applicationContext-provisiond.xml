@@ -50,7 +50,8 @@
     <property name="threadNamePrefix" value="nodeScanExecutor-" />
   </bean>
 
-  <bean id="scheduledExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
+  <bean id="scheduledExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor"
+        destroy-method="shutdownNow">
     <constructor-arg ref="rescanThreads" />
     <constructor-arg ref="nodeScanExecutor" />
   </bean>
