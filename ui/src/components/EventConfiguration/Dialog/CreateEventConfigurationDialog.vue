@@ -1,9 +1,8 @@
 <template>
-  <Dialog
+  <OnmsDialog
     v-model:visible="store.createEventConfigSourceDialogState.visible"
     :header="labels.title"
     :modal="true"
-    :draggable="false"
     :closable="false"
     :closeOnEscape="false"
   >
@@ -66,7 +65,7 @@
         @click="visitCreatedEventConfigSource"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script lang="ts" setup>
@@ -76,8 +75,7 @@ import { useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
-import Dialog from 'primevue/dialog'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 
 const router = useRouter()

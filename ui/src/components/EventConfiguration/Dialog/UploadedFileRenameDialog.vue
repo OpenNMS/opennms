@@ -1,10 +1,9 @@
 <template>
   <div class="uploaded-file-rename-dialog">
-    <Dialog
+    <OnmsDialog
       v-model:visible="dialogVisible"
       :header="labels.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       @hide="onHide"
       data-test="dialog-title"
@@ -70,7 +69,7 @@
           @click="onCancel"
         />
       </template>
-    </Dialog>
+    </OnmsDialog>
   </div>
 </template>
 
@@ -78,8 +77,7 @@
 import { computed, ref, useId, watch } from 'vue'
 
 import { UploadedSourceNamesResponse, UploadEventFileType } from '@/types/eventConfig'
-import { OnmsButton, OnmsCheckbox, OnmsInputText } from '@opennms/onms-ui'
-import Dialog from 'primevue/dialog'
+import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

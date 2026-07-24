@@ -1,13 +1,12 @@
 <template>
   <div class="message-dialog">
-    <PDialog
+    <OnmsDialog
       v-model:visible="isVisible"
       :header="props.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       :appendTo="props.relative ? 'self' : 'body'"
-      :pt="props.relative ? relativePt : undefined"
+      :unsafePt="props.relative ? relativePt : undefined"
       @hide="onHide"
     >
       <div class="modal-body" :style="{ maxWidth: props.maxWidth, maxHeight: props.maxHeight }">
@@ -19,16 +18,13 @@
           @click="onClose"
         />
       </template>
-    </PDialog>
+    </OnmsDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import Dialog from 'primevue/dialog'
-import { OnmsButton } from '@opennms/onms-ui'
-
-const PDialog = Dialog
+import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },

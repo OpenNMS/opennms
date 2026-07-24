@@ -242,11 +242,10 @@
         </div>
       </div>
     </div>
-    <Dialog
+    <OnmsDialog
       v-model:visible="sourceCreationDialogState"
       :header="labels.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       :closeOnEscape="false"
     >
@@ -292,7 +291,7 @@
           data-test="create-source-button"
         />
       </template>
-    </Dialog>
+    </OnmsDialog>
   </div>
 </template>
 
@@ -307,10 +306,9 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsAutoComplete, OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect, OnmsTextarea } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsDialog, OnmsIcon, OnmsInputText, OnmsSelect, OnmsTextarea } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
-import Dialog from 'primevue/dialog'
 import vkbeautify from 'vkbeautify'
 import FormField from '@/components/Common/FormField.vue'
 import AlarmDataInfo from './AlarmDataInfo.vue'
