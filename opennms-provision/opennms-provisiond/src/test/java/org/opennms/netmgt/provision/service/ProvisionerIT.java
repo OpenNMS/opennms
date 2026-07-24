@@ -1111,6 +1111,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         runScan(scan);
         m_nodeDao.flush();
         assertEquals(2, getInterfaceDao().countAll());
+        assertNotNull("198.51.100.204 should have been discovered from SNMP",
+                getInterfaceDao().get(node, "198.51.100.204"));
+        final Date firstScanStamp = scan.getScanStamp();
 
         // The discovered interface disappears; the agent stays responsive (system group only).
         m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr("198.51.100.201"), 161),
@@ -1119,7 +1122,17 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Second run on the same instance must reap 198.51.100.204, leaving only the primary.
         runScan(scan);
         m_nodeDao.flush();
+
+        // The reused instance must advance its scan stamp between runs; a frozen stamp is
+        // what previously left the obsolete interface in place.
+        assertTrue("scan stamp should advance between runs of a reused NodeScan",
+                scan.getScanStamp().after(firstScanStamp));
+
         assertEquals(1, getInterfaceDao().countAll());
+        assertNull("198.51.100.204 should have been reaped after it vanished from SNMP",
+                getInterfaceDao().get(node, "198.51.100.204"));
+        assertNotNull("the requisitioned primary 198.51.100.201 should remain",
+                getInterfaceDao().get(node, "198.51.100.201"));
     }
 
     @Test
