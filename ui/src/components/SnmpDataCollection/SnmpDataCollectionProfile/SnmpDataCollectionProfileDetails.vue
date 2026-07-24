@@ -20,13 +20,13 @@
           <h1>{{ isCreateMode ? 'Create New Profile' : `Profile details for: ${store.selectedProfile.name}` }}</h1>
         </div>
         <div class="tag">
-          <PTag
+          <OnmsTag
             v-if="store.selectedProfile.enabled"
             class="enabled-tag"
             value="Enabled"
             data-test="status-tag"
           />
-          <PTag
+          <OnmsTag
             v-if="!store.selectedProfile.enabled"
             class="disabled-tag"
             value="Disabled"
@@ -132,21 +132,19 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsButton, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import TabComponent from 'primevue/tab'
 import TabListComponent from 'primevue/tablist'
 import TabPanelComponent from 'primevue/tabpanel'
 import TabPanelsComponent from 'primevue/tabpanels'
 import TabsComponent from 'primevue/tabs'
-import TagComponent from 'primevue/tag'
 
 const PTabs = TabsComponent
 const PTabList = TabListComponent
 const PTab = TabComponent
 const PTabPanels = TabPanelsComponent
 const PTabPanel = TabPanelComponent
-const PTag = TagComponent
 
 const router = useRouter()
 const route = useRoute()

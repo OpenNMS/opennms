@@ -81,7 +81,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -155,7 +155,7 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
@@ -168,7 +168,6 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {

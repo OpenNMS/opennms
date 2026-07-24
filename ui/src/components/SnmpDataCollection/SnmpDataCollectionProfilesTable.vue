@@ -54,7 +54,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -113,7 +113,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
@@ -123,7 +123,6 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'

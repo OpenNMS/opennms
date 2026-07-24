@@ -20,16 +20,4 @@
 /// License.
 ///
 
-export const ONMS_UI_VERSION = '0.1.0'
-
-export { default as OnmsAutoComplete } from './components/OnmsAutoComplete.vue'
-export { default as OnmsButton } from './components/OnmsButton.vue'
-export { default as OnmsCheckbox } from './components/OnmsCheckbox.vue'
-export { default as OnmsIcon } from './components/OnmsIcon.vue'
-export { default as OnmsIconButton } from './components/OnmsIconButton.vue'
-export { default as OnmsInputText } from './components/OnmsInputText.vue'
-export { default as OnmsPassword } from './components/OnmsPassword.vue'
-export { default as OnmsSelect } from './components/OnmsSelect.vue'
-export { default as OnmsTag } from './components/OnmsTag.vue'
-export { default as OnmsTextarea } from './components/OnmsTextarea.vue'
-export type { OnmsTagSeverity } from './types'
+export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'

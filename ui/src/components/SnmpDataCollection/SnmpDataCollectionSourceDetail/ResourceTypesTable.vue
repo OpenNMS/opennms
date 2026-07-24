@@ -86,7 +86,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -162,7 +162,7 @@ import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -175,7 +175,6 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import Tag from 'primevue/tag'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'

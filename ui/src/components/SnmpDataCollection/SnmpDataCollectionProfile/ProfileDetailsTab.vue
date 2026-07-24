@@ -59,13 +59,13 @@
                 data-test="profile-enabled-switch"
               />
               <div class="tag">
-                <PTag
+                <OnmsTag
                   v-if="configDetails.enabled"
                   class="enabled-tag"
                   value="Enabled"
                   data-test="status-tag"
                 />
-                <PTag
+                <OnmsTag
                   v-if="!configDetails.enabled"
                   class="disabled-tag"
                   value="Disabled"
@@ -162,21 +162,19 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
 import Card from 'primevue/card'
 import InputNumberComponent from 'primevue/inputnumber'
-import TagComponent from 'primevue/tag'
 import ToggleSwitchComponent from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 
 const PCard = Card
 const PToggleSwitch = ToggleSwitchComponent
 const PInputNumber = InputNumberComponent
-const PTag = TagComponent
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel

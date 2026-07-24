@@ -53,7 +53,7 @@
               v-if="data.ipLabels.length"
               class="ip-address-badge-wrapper"
             >
-              <PTag
+              <OnmsTag
                 v-for="ipAddr of data.ipLabels"
                 :key="ipAddr"
                 :value="ipAddr"
@@ -137,12 +137,11 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import Tag from 'primevue/tag'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -159,7 +158,6 @@ import TableCard from '../Common/TableCard.vue'
 
 const PColumn = Column
 const PDataTable = DataTable
-const PTag = Tag
 
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()

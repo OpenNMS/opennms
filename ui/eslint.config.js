@@ -100,6 +100,7 @@ export default tseslint.config(
           { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' }
         ]
       }]

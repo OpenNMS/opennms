@@ -231,7 +231,7 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
 import ChipComponent from 'primevue/chip'
@@ -240,10 +240,9 @@ import TabListComponent from 'primevue/tablist'
 import TabPanelComponent from 'primevue/tabpanel'
 import TabPanelsComponent from 'primevue/tabpanels'
 import TabsComponent from 'primevue/tabs'
-import TagComponent from 'primevue/tag'
 
 const PChip = ChipComponent
-const PTag = TagComponent
+const PTag = OnmsTag
 const PTabs = TabsComponent
 const PTabList = TabListComponent
 const PTab = TabComponent

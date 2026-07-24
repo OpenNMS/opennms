@@ -149,24 +149,24 @@
             <div class="file">
               <OnmsIcon :icon="Apps" />
               <span>{{ ellipsify(data.file.name, 39) }}</span>
-              <Tag
+              <OnmsTag
                 v-if="data.kind === 'config'"
                 class="kind-chip kind-config"
                 :value="`Profiles config${data.profileNames?.length ? ` (${data.profileNames.length})` : ''}`"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-else-if="data.kind === 'group'"
                 class="kind-chip kind-source"
                 value="Source"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-if="!data.isValid"
                 class="error-chip"
                 :value="data.errors.join('. ')"
               />
-              <Tag
+              <OnmsTag
                 v-if="data.isDuplicate"
                 class="update-chip"
                 :value="`Will update existing source '${data.groupName}'`"
@@ -266,7 +266,7 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsIconButton, OnmsTag } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import UploadFile from '@/components/icons/action/UploadFile.vue'
@@ -277,7 +277,6 @@ import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
