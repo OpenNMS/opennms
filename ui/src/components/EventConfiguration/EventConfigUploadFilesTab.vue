@@ -80,19 +80,19 @@
             @change="handleFolderUpload"
             ref="eventFolderInput"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Choose files to upload"
             @click="openFileDialog"
             :disabled="isLoading"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Choose folder to upload"
             @click="openFolderDialog"
             :disabled="isLoading"
           />
-          <Button
+          <OnmsButton
             label="Upload Files"
             :disabled="shouldUploadDisabled"
             :loading="isLoading"
@@ -163,7 +163,7 @@ import Text from '@/components/icons/file/Text.vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'

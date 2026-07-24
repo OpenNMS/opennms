@@ -3,14 +3,14 @@
     <div class="section-content">
       <div class="mask-elements-header">
         <h3>Mask Elements</h3>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           @click="$emit('setMaskElements', 'addMaskRow', null, -1)"
           data-test="add-mask-row-button"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
       <div
         v-for="(row, index) in maskElements"
@@ -57,14 +57,14 @@
               />
             </FormField>
           </div>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             severity="danger"
             data-test="remove-mask-row-button"
             @click="$emit('setMaskElements', 'removeMaskRow', null, index)"
           >
             <OnmsIcon :icon="Delete" />
-          </Button>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -79,7 +79,7 @@ import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'

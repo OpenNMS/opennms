@@ -9,7 +9,7 @@
         <h3>SNMPv3 User Management</h3>
       </div>
       <div class="section-right">
-        <PButton
+        <OnmsButton
           data-test="add-user-button"
           label="Add User"
           @click="store.openCreateUserDrawer(CreateEditMode.Create, -1)"
@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
@@ -139,7 +139,6 @@ import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.
 import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 

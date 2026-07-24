@@ -1,15 +1,15 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 wrapper">
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         class="graph-controls"
         aria-haspopup="true"
         @click="toggleMenu"
       >
         {{ selectedTime }} &nbsp;
         <OnmsIcon :icon="ArrowDropDown" />
-      </PButton>
+      </OnmsButton>
 
       <PPopover
         ref="menu"
@@ -46,11 +46,11 @@
                 optionLabel="label"
               />
             </FormField>
-            <PButton
+            <OnmsButton
               :disabled="disableCustomTimeBtn"
-              text
+              variant="text"
               @click="applyCustomTime"
-            >Apply custom time</PButton>
+            >Apply custom time</OnmsButton>
           </div>
         </div>
       </PPopover>
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Popover from 'primevue/popover'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
@@ -70,7 +70,6 @@ import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 
-const PButton = Button
 const PPopover = Popover
 const PDatePicker = DatePicker
 const PSelect = Select

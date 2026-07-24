@@ -6,15 +6,15 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="back-button"
             data-test="back-button"
             @click="goBack"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </PButton>
+          </OnmsButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Profile' : `Profile details for: ${store.selectedProfile.name}` }}</h1>
@@ -68,28 +68,28 @@
       </PTabs>
 
       <div class="action-row">
-        <PButton
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="cancel-button"
           @click="goBack"
         >
           Cancel
-        </PButton>
-        <PButton
+        </OnmsButton>
+        <OnmsButton
           v-if="!isCreateMode"
-          outlined
+          variant="outlined"
           data-test="delete-button"
           @click="openDeleteCollectionProfileDialog"
         >
           Delete Profile
-        </PButton>
-        <PButton
+        </OnmsButton>
+        <OnmsButton
           data-test="save-button"
           :disabled="isSaveDisabled"
           @click="saveProfile"
         >
           {{ isCreateMode ? 'Create Profile' : 'Save Profile' }}
-        </PButton>
+        </OnmsButton>
       </div>
     </TableCard>
   </div>
@@ -110,9 +110,9 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <PButton @click="goBack">
+    <OnmsButton @click="goBack">
       Go Back
-    </PButton>
+    </OnmsButton>
   </div>
 </template>
 
@@ -134,7 +134,7 @@ import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsMod
 import { CreateEditMode } from '@/types'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
-import ButtonComponent from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import TabComponent from 'primevue/tab'
 import TabListComponent from 'primevue/tablist'
 import TabPanelComponent from 'primevue/tabpanel'
@@ -142,7 +142,6 @@ import TabPanelsComponent from 'primevue/tabpanels'
 import TabsComponent from 'primevue/tabs'
 import TagComponent from 'primevue/tag'
 
-const PButton = ButtonComponent
 const PTabs = TabsComponent
 const PTabList = TabListComponent
 const PTab = TabComponent

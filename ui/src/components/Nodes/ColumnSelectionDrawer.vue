@@ -46,14 +46,14 @@
       </Draggable>
       <div class="spacer-medium"></div>
       <div class="button-row">
-        <Button @click="customizeTable">Save</Button>
-        <Button
-          outlined
+        <OnmsButton @click="customizeTable">Save</OnmsButton>
+        <OnmsButton
+          variant="outlined"
           :disabled="selectedColumns.length >= 10"
           @click="addColumn"
-        >Add Column</Button>
-        <Button outlined @click="resetColumns">Reset Columns</Button>
-        <Button outlined @click="nodeStructureStore.columnsDrawerState.visible = false">Close</Button>
+        >Add Column</OnmsButton>
+        <OnmsButton variant="outlined" @click="resetColumns">Reset Columns</OnmsButton>
+        <OnmsButton variant="outlined" @click="nodeStructureStore.columnsDrawerState.visible = false">Close</OnmsButton>
       </div>
     </div>
   </Drawer>
@@ -65,7 +65,7 @@ import { computed, ref, watch } from 'vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
 import Select from 'primevue/select'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'

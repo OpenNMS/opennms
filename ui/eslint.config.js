@@ -93,7 +93,9 @@ export default tseslint.config(
     files: ['src/**/*.ts', 'src/**/*.vue'],
     rules: {
       'no-restricted-imports': ['error', {
-        paths: []
+        paths: [
+          { name: 'primevue/button', message: 'Use OnmsButton / OnmsIconButton from @opennms/onms-ui (NMS-20029 seam).' }
+        ]
       }]
     }
   }

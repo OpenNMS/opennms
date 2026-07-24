@@ -73,7 +73,7 @@
               </PColumn>
               <PColumn header="Actions">
                 <template #body="{ data }">
-                  <PButton
+                  <OnmsButton
                     label="Send Data"
                     :disabled="!data.registered || !data.systemId"
                     @click.prevent="() => onSendData(data)"
@@ -87,7 +87,7 @@
           <div>
             Register your Meridian instance with Zenith in order to send data:
             <div class="spacer"></div>
-            <PButton
+            <OnmsButton
               label="Register with Zenith"
               @click="gotoRegister"
             />
@@ -103,7 +103,7 @@ import { computed, markRaw, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { format as fnsFormat } from 'date-fns'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
@@ -116,7 +116,6 @@ import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration } from '@/types/zenithConnect'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 
-const PButton = Button
 const PDataTable = DataTable
 const PColumn = Column
 

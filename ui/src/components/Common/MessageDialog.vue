@@ -14,7 +14,7 @@
         <slot name="content"></slot>
       </div>
       <template #footer>
-        <PButton
+        <OnmsButton
           :label="props.actionButtonText || 'Close'"
           @click="onClose"
         />
@@ -26,10 +26,9 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 const PDialog = Dialog
-const PButton = Button
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },

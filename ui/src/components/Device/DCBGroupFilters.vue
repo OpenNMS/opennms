@@ -3,18 +3,18 @@
     <p class="title">Group By</p>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, vendorMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, vendorMenu)">
         Vendor
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
+      </OnmsButton>
       <PMenu ref="vendorMenu" :model="vendorItems" :popup="true" />
     </div>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, statusMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, statusMenu)">
         Backup Status
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
+      </OnmsButton>
       <PMenu ref="statusMenu" :model="statusItems" :popup="true">
         <template #item="{ item, props }">
           <a v-bind="props.action">
@@ -25,10 +25,10 @@
     </div>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, osImageMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, osImageMenu)">
         OS Image
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
+      </OnmsButton>
       <PMenu ref="osImageMenu" :model="osImageItems" :popup="true" />
     </div>
   </div>
@@ -37,14 +37,13 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Menu from 'primevue/menu'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
-const PButton = Button
 const PMenu = Menu
 
 const deviceStore = useDeviceStore()

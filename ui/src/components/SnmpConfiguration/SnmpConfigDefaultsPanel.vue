@@ -115,12 +115,12 @@
 
       <div class="onms-row button-row">
         <div class="onms-col-12">
-          <PButton
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Reset to System Defaults"
             @click="onReset"
           />
-           <PButton
+           <OnmsButton
             label="Save"
             @click="onSave"
           />
@@ -157,7 +157,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -194,7 +194,6 @@ import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
 import MessageDialog from '../Common/MessageDialog.vue'
 
-const PButton = Button
 const PInputNumber = InputNumber
 const PInputText = InputText
 const PSelect = Select

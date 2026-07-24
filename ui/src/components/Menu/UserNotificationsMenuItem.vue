@@ -9,8 +9,8 @@
       {{ notificationSummary.teamUnacknowledgedCount }}
     </span>
 
-    <Button
-      text
+    <OnmsButton
+      variant="text"
       class="menubar-dropdown-button-dark"
       aria-haspopup="true"
       aria-label="User notifications menu"
@@ -22,7 +22,7 @@
       />
 
       <OnmsIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
-    </Button>
+    </OnmsButton>
 
     <Popover
       ref="pop"
@@ -137,7 +137,7 @@ import IconGroup from '@/components/icons/action/Group.vue'
 import IconNotificationsOff from '@/components/icons/notification/NotificationsOff.vue'
 import IconNotificationSelected from '@/components/icons/notification/NotificationSelected.vue'
 import IconPerson from '@/components/icons/action/Person.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Popover from 'primevue/popover'
 import { useMenuStore } from '@/stores/menuStore'
 import {

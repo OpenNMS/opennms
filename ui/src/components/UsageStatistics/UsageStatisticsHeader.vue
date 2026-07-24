@@ -20,9 +20,9 @@
       <div
         class="flex button-wrapper"
       >
-        <PButton
+        <OnmsButton
           class="button"
-          outlined
+          variant="outlined"
           :label="status.enabled ? 'Disable' : 'Enable'"
           @click="updateStatus"
         />
@@ -39,9 +39,9 @@
       <div
         class="flex button-wrapper"
       >
-        <PButton
+        <OnmsButton
           class="button"
-          outlined
+          variant="outlined"
           label="Copy JSON"
           @click="copyJson"
         />
@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Tag from 'primevue/tag'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
@@ -63,7 +63,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { UsageStatisticsData, UsageStatisticsStatus } from '@/types/usageStatistics'
 
-const PButton = Button
 const PTag = Tag
 
 const { showSnackBar } = useSnackbar()

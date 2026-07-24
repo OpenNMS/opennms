@@ -19,13 +19,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <PButton
+          <OnmsButton
             data-test="new-profile-button"
             @click="onCreateProfile"
           >
             <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
             New Profile
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
@@ -118,7 +118,6 @@ import TableCard from '../Common/TableCard.vue'
 import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { SnmpProfile } from '@/types/snmpConfig'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 const PInputText = InputText

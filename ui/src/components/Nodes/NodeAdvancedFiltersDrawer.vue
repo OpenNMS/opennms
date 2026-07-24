@@ -253,24 +253,24 @@
     </div>
     <template #footer>
       <div class="footer">
-        <Button
+        <OnmsButton
           :disabled="isApplyDisabled"
           @click="applySelectedFilters"
         >
           Apply Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="clearDrawerFilters"
         >
           Clear Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="nodeStructureStore.closeInstancesDrawerModal()"
         >
           Close
-        </Button>
+        </OnmsButton>
       </div>
     </template>
   </Drawer>
@@ -289,7 +289,7 @@ import Drawer from 'primevue/drawer'
 import MultiSelect from 'primevue/multiselect'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'

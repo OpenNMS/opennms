@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+// eslint-disable-next-line no-restricted-imports
 import Button from 'primevue/button'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 

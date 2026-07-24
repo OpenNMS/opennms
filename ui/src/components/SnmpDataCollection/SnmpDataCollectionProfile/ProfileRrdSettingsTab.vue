@@ -26,15 +26,15 @@
     <div class="rra-section">
       <div class="rra-header">
         <span class="rra-title">RRAs</span>
-        <PButton
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="add-rra-button"
           class="add-rra-button"
           @click="addRRA"
         >
           <OnmsIcon :icon="Add" />
           Add RRA
-        </PButton>
+        </OnmsButton>
       </div>
       <PDataTable
         v-model:editingRows="editingRows"
@@ -145,7 +145,7 @@ import { ConsolidationFunctionType } from '@/types/timeSeries'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import ButtonComponent from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
@@ -154,7 +154,6 @@ import SelectComponent from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
-const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 const PInputNumber = InputNumberComponent

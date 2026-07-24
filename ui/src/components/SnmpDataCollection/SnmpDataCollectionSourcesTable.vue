@@ -22,8 +22,8 @@
       </div>
       <div class="section-right">
         <div class="add">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Create New Data Collection Source"
             data-test="create-source-button"
             @click="goToCreateSource"
@@ -163,7 +163,7 @@ import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'

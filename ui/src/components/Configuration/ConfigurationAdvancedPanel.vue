@@ -40,10 +40,10 @@
         />
       </div>
       <div class="button-wrapper">
-        <PButton
+        <OnmsButton
           :disabled="buttonAddDisabled"
           @click="addAdvancedOption"
-        >Add</PButton>
+        >Add</OnmsButton>
       </div>
     </div>
   </TogglePanel>
@@ -55,7 +55,7 @@
 >
 import { PropType, computed, reactive, ref } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Delete.vue'
@@ -67,7 +67,6 @@ import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings
 import { AdvancedKey, AdvancedOption } from './configuration.types'
 
 const PAutoComplete = AutoComplete
-const PButton = Button
 const PInputText = InputText
 
 /**

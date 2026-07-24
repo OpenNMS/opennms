@@ -6,15 +6,15 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="back-button"
             data-test="back-button"
             @click="router.push({ name: 'SNMP Data Collection' })"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </PButton>
+          </OnmsButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Source' : `Source Details for ${store.selectedCollectionSource.name}` }}</h1>
@@ -41,23 +41,23 @@
         v-if="!isCreateMode"
         class="action-container"
       >
-        <PButton
+        <OnmsButton
           v-if="!store.selectedCollectionSource.enabled"
-          outlined
+          variant="outlined"
           label="Enable Source"
           data-test="enable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
         />
-        <PButton
+        <OnmsButton
           v-if="store.selectedCollectionSource.enabled"
-          outlined
+          variant="outlined"
           label="Disable Source"
           data-test="disable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
         />
-        <PButton
+        <OnmsButton
           v-if="!isPluginSourced(store.selectedCollectionSource)"
-          outlined
+          variant="outlined"
           label="Delete Source"
           data-test="delete-source"
           @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
@@ -133,15 +133,12 @@
             </div>
           </div>
           <div class="config-field">
-            <PButton
-              outlined
-              label="Edit Profiles..."
-              icon="pi pi-pen-to-square"
-              iconPos="right"
+            <OnmsButton
+              variant="outlined"
               class="edit-profiles-btn"
               data-test="edit-profiles-button"
               @click="isProfilesDrawerVisible = true"
-            />
+            >Edit Profiles...<i class="pi pi-pen-to-square" /></OnmsButton>
           </div>
         </div>
       </div>
@@ -174,7 +171,7 @@
         v-if="isCreateMode"
         class="create-action-row"
       >
-        <PButton
+        <OnmsButton
           data-test="create-source-button"
           label="Create Source"
           @click="onSaveSource"
@@ -187,7 +184,7 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <PButton
+    <OnmsButton
       label="Go Back"
       @click="router.push({ name: 'SNMP Data Collection' })"
     />
@@ -237,7 +234,7 @@ import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCol
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
-import ButtonComponent from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import ChipComponent from 'primevue/chip'
 import InputText from 'primevue/inputtext'
 import TabComponent from 'primevue/tab'
@@ -248,7 +245,6 @@ import TabsComponent from 'primevue/tabs'
 import TagComponent from 'primevue/tag'
 
 const PChip = ChipComponent
-const PButton = ButtonComponent
 const PTag = TagComponent
 const PTabs = TabsComponent
 const PTabList = TabListComponent

@@ -61,7 +61,7 @@
                 </FormField>
               </div>
               <div class="onms-col-6 add-range-col">
-                <PButton
+                <OnmsButton
                   label="Add"
                   :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
                   @click="onAddRange"
@@ -217,13 +217,13 @@
     <div class="onms-row">
       <div class="onms-col-12">
         <div class="action-container">
-          <PButton
+          <OnmsButton
             :label="isCreate ? 'Create Definition' : 'Save Changes'"
             @click="handleSave"
             data-test="save-definition-button"
           />
-          <PButton
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Cancel"
             @click="handleCancel"
             data-test="cancel-snmp-definition-button"
@@ -243,7 +243,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Card from 'primevue/card'
 import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
@@ -260,7 +260,6 @@ import TogglePanel from '../Common/TogglePanel.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
 
-const PButton = Button
 const PCard = Card
 const PCheckbox = Checkbox
 const PInputText = InputText

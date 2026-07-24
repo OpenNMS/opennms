@@ -2,10 +2,10 @@
   <div class="onms-row">
     <div class="onms-col-12">
       <div class="action-buttons" v-if="resources.length">
-        <PButton @click="selectAll">Select All</PButton>
-        <PButton @click="clearAll">Clear All</PButton>
-        <PButton @click="graphAll">Graph All</PButton>
-        <PButton @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</PButton>
+        <OnmsButton @click="selectAll">Select All</OnmsButton>
+        <OnmsButton @click="clearAll">Clear All</OnmsButton>
+        <OnmsButton @click="graphAll">Graph All</OnmsButton>
+        <OnmsButton @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</OnmsButton>
       </div>
       <ul class="onms-list">
         <template v-for="(resources, header) in groupedResourcesObject" :key="header">
@@ -36,13 +36,12 @@ import { useRouter } from 'vue-router'
 
 import { groupBy } from 'lodash'
 import Checkbox from 'primevue/checkbox'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
 
 const PCheckbox = Checkbox
-const PButton = Button
 
 interface GroupedResourcesObject {
   [x: string]: Resource[]

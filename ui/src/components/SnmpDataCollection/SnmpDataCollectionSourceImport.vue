@@ -31,27 +31,27 @@
             data-test="snmp-data-collection-folder-input"
             ref="sourceFolderInput"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             data-test="choose-file-button"
             @click="openFileDialog"
             :disabled="isLoading"
           >
             <OnmsIcon :icon="UploadFile" />
             Choose files to upload
-          </Button>
-          <Button
-            outlined
+          </OnmsButton>
+          <OnmsButton
+            variant="outlined"
             data-test="choose-folder-button"
             @click="openFolderDialog"
             :disabled="isLoading"
           >
             <OnmsIcon :icon="FolderAdd" />
             Choose folder to upload
-          </Button>
+          </OnmsButton>
         </div>
         <div class="section-right">
-          <Button
+          <OnmsButton
             label="Upload Files"
             :disabled="shouldUploadDisabled"
             :loading="isLoading"
@@ -277,7 +277,7 @@ import Apps from '@/components/icons/navigation/Apps.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'

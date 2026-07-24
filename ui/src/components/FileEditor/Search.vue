@@ -16,10 +16,10 @@
       </FormField>
     </div>
     <div class="save">
-      <PButton :disabled="disableBtn" @click="save">Save</PButton>
+      <OnmsButton :disabled="disableBtn" @click="save">Save</OnmsButton>
     </div>
     <div class="reset">
-      <PButton :disabled="disableBtn" @click="reset">Reset</PButton>
+      <OnmsButton :disabled="disableBtn" @click="reset">Reset</OnmsButton>
     </div>
   </div>
   <hr />
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
@@ -37,7 +37,6 @@ import IconSearch from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 
-const PButton = Button
 const PInputText = InputText
 
 const fileEditorStore = useFileEditorStore()

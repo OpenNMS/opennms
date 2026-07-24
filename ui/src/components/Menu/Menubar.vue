@@ -13,7 +13,7 @@
 
       <!-- Provision/Quick add node menu -->
       <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
-        <Button
+        <OnmsButton
           v-if="mainMenu.provisionMenu"
           label="Add a Node"
           @click="onAddNode"
@@ -61,7 +61,7 @@ import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'

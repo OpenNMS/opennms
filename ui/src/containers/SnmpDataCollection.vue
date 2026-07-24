@@ -14,15 +14,15 @@
            this, an operator can grab the full pre-edit state on disk and
            push it back via the Import tab. -->
       <div class="header-actions">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           aria-haspopup="true"
           aria-controls="download-config-menu"
           data-test="download-config-button"
           @click="toggleDownloadMenu"
         >
           <OnmsIcon :icon="DownloadIcon" /> Download Data Collection Config
-        </Button>
+        </OnmsButton>
         <Menu
           id="download-config-menu"
           ref="downloadMenu"
@@ -72,7 +72,7 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
 import Tab from 'primevue/tab'

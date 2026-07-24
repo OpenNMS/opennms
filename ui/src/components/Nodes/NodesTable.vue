@@ -8,14 +8,14 @@
             :onCsvDownload="onCsvDownload"
             :onJsonDownload="onJsonDownload"
           />
-          <Button
+          <OnmsButton
             label="Customize Columns"
             data-test="customize-columns-button"
             @click="nodeStructureStore.openColumnsDrawerModal()"
           />
-          <Button
+          <OnmsButton
             label="Clear Filters"
-            outlined
+            variant="outlined"
             data-test="clear-filters-button"
             @click="nodeStructureStore.clearAllFiltersAndSelections()"
           />
@@ -283,7 +283,7 @@ import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'

@@ -41,13 +41,12 @@
         />
       </FormField>
       <div class="button-row">
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           label="Cancel"
           @click="close"
         />
-        <Button
+        <OnmsButton
           data-test="save-profiles-button"
           label="Save"
           @click="save"
@@ -63,7 +62,7 @@ import { computed, ref, watch } from 'vue'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
 import AutoCompleteComponent from 'primevue/autocomplete'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import ChipComponent from 'primevue/chip'
 import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'

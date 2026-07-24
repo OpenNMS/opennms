@@ -21,15 +21,15 @@
         </FormField>
       </div>
       <div class="onms-col-2 add-btn-col">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="asset-add-button"
           class="add-asset-filter-button"
           @click="onAddAssetFilter"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
     </div>
 
@@ -70,7 +70,7 @@ import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'

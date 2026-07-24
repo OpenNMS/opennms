@@ -60,8 +60,8 @@
               <h3>MIB Objects</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add MIB Object"
                 data-test="add-mib-object-button"
                 @click="openMibObjectDrawer(-1, null, CreateEditMode.Create)"
@@ -193,14 +193,13 @@
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <Button
-            text
-            outlined
+          <OnmsButton
+            variant="text"
             label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
           />
-          <Button
+          <OnmsButton
             label="Save MIB Object"
             data-test="save-mib-object-button"
             @click="saveMibObject"
@@ -212,14 +211,13 @@
         class="footer"
         v-if="!mibObjectDrawerState.visible"
       >
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save MIB Group"
           data-test="save-mib-group"
           :disabled="isSaveDisabled"
@@ -246,7 +244,7 @@ import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'

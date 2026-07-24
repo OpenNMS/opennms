@@ -163,14 +163,13 @@
       </div>
     </div>
     <div class="footer">
-      <PButton
-        text
-        outlined
+      <OnmsButton
+        variant="text"
         data-test="cancel-button"
         label="Cancel"
         @click="store.closeCreateUserDrawer"
       />
-      <PButton
+      <OnmsButton
         data-test="create-user-button"
         :label="store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User'"
         :disabled="isSaveDisabled || isSaving"
@@ -203,7 +202,7 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
@@ -215,7 +214,6 @@ import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
-const PButton = Button
 const PInputText = InputText
 const PPassword = Password
 const PSelect = Select

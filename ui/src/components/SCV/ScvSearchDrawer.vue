@@ -60,9 +60,8 @@
 
       <div class="large-spacer"></div>
       <div class="scv-drawer-button-container">
-        <PButton
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
           label="Cancel"
@@ -76,7 +75,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
@@ -90,7 +89,6 @@ import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 const PDrawer = Drawer

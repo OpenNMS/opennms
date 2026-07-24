@@ -60,7 +60,7 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button flex button-align-right mt-20">
-          <PButton
+          <OnmsButton
             label="Save & Close"
             :loading="loading"
             :disabled="loading"
@@ -78,7 +78,7 @@
 >
 import { PropType, computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
 import Cancel from '@/components/icons/navigation/Cancel.vue'
@@ -88,8 +88,6 @@ import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
 import ConfigurationHelpPanel from './ConfigurationHelpPanel.vue'
 import ProvisionDForm from './ProvisionDForm.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
-
-const PButton = Button
 
 /**
  * Props

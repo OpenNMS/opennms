@@ -49,19 +49,18 @@
       <p>The event configuration source has been created successfully.</p>
     </div>
     <template #footer>
-      <Button
-        text
-        outlined
+      <OnmsButton
+        variant="text"
         label="Cancel"
         @click="handleCancel"
       />
-      <Button
+      <OnmsButton
         v-if="!successMessage"
         label="Create"
         @click="handleSave"
         :disabled="Object.keys(error || {}).length > 0"
       />
-      <Button
+      <OnmsButton
         v-else
         label="View Source"
         @click="visitCreatedEventConfigSource"
@@ -77,7 +76,7 @@ import { useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'

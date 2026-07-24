@@ -49,7 +49,7 @@
 
         <div class="onms-row">
           <div class="onms-col-12">
-            <PButton
+            <OnmsButton
               label="Lookup"
               data-test="refresh-button"
               :disabled="isLoading"
@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
@@ -94,7 +94,6 @@ import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
-const PButton = Button
 const PInputText = InputText
 const PSelect = Select
 

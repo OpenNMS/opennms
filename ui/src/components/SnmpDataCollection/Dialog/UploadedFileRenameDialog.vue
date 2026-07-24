@@ -60,15 +60,14 @@
         </div>
       </div>
       <template #footer>
-        <Button
+        <OnmsButton
           :disabled="shouldRemainDisabled"
           label="Save Changes"
           @click="saveChanges"
           data-test="save-button"
         />
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           label="Cancel"
           @click="onCancel"
         />
@@ -81,7 +80,7 @@
 import { computed, ref, useId, watch } from 'vue'
 
 import { SnmpDataCollectionSourceNamesAndIds, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Checkbox from 'primevue/checkbox'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'

@@ -34,8 +34,8 @@
           class="add"
           v-if="!isPluginSourced(store.selectedCollectionSource)"
         >
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Add System Definition"
             data-test="add-system-definition-button"
             @click="store.openSystemDefCreationDrawer(null, CreateEditMode.Create)"
@@ -169,7 +169,7 @@ import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

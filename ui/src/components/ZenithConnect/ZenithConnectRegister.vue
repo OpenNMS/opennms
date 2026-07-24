@@ -71,13 +71,13 @@
               />
             </FormField>
             <div class="btns">
-              <PButton
+              <OnmsButton
                 label="Register with Zenith"
                 @click="onRegisterWithZenith"
               />
 
-              <PButton
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="View Registrations"
                 @click="onViewRegistrations"
               />
@@ -93,7 +93,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Panel from 'primevue/panel'
 import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
@@ -103,7 +103,6 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
 
-const PButton = Button
 const PPanel = Panel
 const PInputText = InputText
 

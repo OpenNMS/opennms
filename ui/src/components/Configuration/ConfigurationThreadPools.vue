@@ -53,7 +53,7 @@
           @keypress="enterCheck"
         />
       </FormField>
-      <PButton
+      <OnmsButton
         label="Update Thread Pools"
         :loading="loading"
         :disabled="loading"
@@ -71,7 +71,7 @@ import { computed, reactive, ref } from 'vue'
 
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import Chip from 'primevue/chip'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
@@ -83,7 +83,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
-const PButton = Button
 const PInputText = InputText
 const PChip = Chip
 

@@ -2,15 +2,15 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
           <OnmsIcon :icon="ArrowBack" />
           Go Back
-        </PButton>
+        </OnmsButton>
       </div>
       <div>
         <h3>
@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
@@ -88,7 +88,6 @@ import FormField from '@/components/Common/FormField.vue'
 import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
 import { validateProfile } from '@/lib/snmpValidator'
 
-const PButton = Button
 const PInputText = InputText
 
 const props = defineProps<{

@@ -3,14 +3,14 @@
     <div class="title">
       <div class="header">
         <div>
-          <Button
-            text
+          <OnmsButton
+            variant="text"
             data-test="back-button"
             @click="handleCancel(store.selectedSource?.id)"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </Button>
+          </OnmsButton>
         </div>
         <div>
           <h3>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="action">
-        <Button
+        <OnmsButton
           label="Create New Event Source"
           @click="showSourceCreationDialog"
           data-test="create-new-event-source-button"
@@ -227,13 +227,13 @@
         </div>
         <div class="spacer"></div>
         <div class="action-container">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Cancel"
             @click="handleCancel(store.selectedSource?.id)"
             data-test="cancel-event-button"
           />
-          <Button
+          <OnmsButton
             :label="store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create Event' : 'Save Changes'"
             @click="handleSaveEvent"
             data-test="save-event-button"
@@ -279,14 +279,13 @@
         </FormField>
       </div>
       <template #footer>
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           label="Cancel"
           @click="handleSourceCreationCancel"
           data-test="cancel-source-button"
         />
-        <Button
+        <OnmsButton
           label="Create Source"
           @click="handleSourceCreationSave"
           :disabled="Object.keys(sourceCreationErrors || {}).length > 0"
@@ -312,7 +311,7 @@ import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'

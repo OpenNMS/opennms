@@ -69,7 +69,7 @@
 
     <div class="large-spacer"></div>
     <div class="btns">
-      <PButton
+      <OnmsButton
         v-if="!isEditing"
         data-test="add-creds-btn"
         :disabled="disabled"
@@ -77,7 +77,7 @@
         @click="addCredentials"
       />
 
-      <PButton
+      <OnmsButton
         v-if="isEditing"
         data-test="update-creds-btn"
         :disabled="disabled"
@@ -85,7 +85,7 @@
         @click="updateCredentials"
       />
 
-      <PButton
+      <OnmsButton
         data-test="clear-btn"
         label="Clear Form"
         @click="clearCredentials"
@@ -98,7 +98,7 @@
 import { computed, ref } from 'vue'
 
 import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
@@ -109,7 +109,6 @@ import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
 
 const PInputText = InputText
-const PButton = Button
 
 const scvStore = useScvStore()
 const keyError = ref(false)

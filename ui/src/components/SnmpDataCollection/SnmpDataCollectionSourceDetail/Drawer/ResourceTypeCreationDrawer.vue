@@ -90,8 +90,8 @@
               <h3>Storage Strategy Parameters</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add Storage Strategy Parameter"
                 data-test="add-storage-strategy-button"
                 @click="openStorageStrategyDrawer(CreateEditMode.Create)"
@@ -165,8 +165,8 @@
               <h3>Persistence Selector Strategy Parameters</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add Persistence Selector Strategy Parameter"
                 data-test="add-persistence-selector-strategy-button"
                 @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Create)"
@@ -254,14 +254,13 @@
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <Button
-            text
-            outlined
+          <OnmsButton
+            variant="text"
             label="Cancel"
             data-test="cancel-resource-type-parameter-button"
             @click="closeParameterDrawer"
           />
-          <Button
+          <OnmsButton
             label="Save"
             data-test="save-resource-type-parameter-button"
             @click="saveResourceTypeParameter"
@@ -273,14 +272,13 @@
         class="footer"
         v-if="!resourceTypeDrawerState.visible"
       >
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="text"
           label="Cancel"
           data-test="cancel-resource-type"
           @click="closeResourceTypeDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save"
           data-test="save-resource-type"
           @click="saveResourceType"
@@ -308,7 +306,7 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'

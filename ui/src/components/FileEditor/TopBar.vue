@@ -4,10 +4,10 @@
       Files<OnmsIcon :icon="ChevronRight" />
     </div>
     <div class="save">
-      <PButton :disabled="disableBtn" @click="save">Save</PButton>
+      <OnmsButton :disabled="disableBtn" @click="save">Save</OnmsButton>
     </div>
     <div class="reset">
-      <PButton :disabled="disableBtn" @click="reset">Reset</PButton>
+      <OnmsButton :disabled="disableBtn" @click="reset">Reset</OnmsButton>
     </div>
     <div class="filename headline3">{{ filename }}</div>
   </div>
@@ -17,12 +17,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-
-const PButton = Button
 
 const fileEditorStore = useFileEditorStore()
 

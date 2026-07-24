@@ -66,7 +66,7 @@
           </div>
           <div>
             <div class="spacer"></div>
-            <PButton
+            <OnmsButton
               label="View Zenith Connections"
               @click="gotoView"
             />
@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, ref } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
@@ -95,7 +95,6 @@ import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration, ZenithConnectRegistrationResponse } from '@/types/zenithConnect'
 
-const PButton = Button
 const PDataTable = DataTable
 const PColumn = Column
 

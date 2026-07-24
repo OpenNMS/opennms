@@ -19,13 +19,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <PButton
+          <OnmsButton
             data-test="new-definition-button"
             @click="onCreateDefinition"
           >
             <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
             New Definition
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -139,7 +139,7 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
@@ -162,7 +162,6 @@ import FormField from '@/components/Common/FormField.vue'
 import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 const PInputText = InputText

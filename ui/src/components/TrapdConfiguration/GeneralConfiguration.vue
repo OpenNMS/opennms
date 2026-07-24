@@ -153,7 +153,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="footer">
-      <PButton
+      <OnmsButton
         data-test="save-button"
         label="Update Changes"
         :disabled="isSaveDisabled || isSaving"
@@ -180,7 +180,7 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
@@ -197,7 +197,6 @@ import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 
-const PButton = Button
 const PInputNumber = InputNumber
 const PInputText = InputText
 const PToggleSwitch = ToggleSwitch

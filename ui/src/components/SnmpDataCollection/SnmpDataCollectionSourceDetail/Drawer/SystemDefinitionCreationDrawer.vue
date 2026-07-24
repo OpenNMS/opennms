@@ -100,13 +100,13 @@
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           label="Cancel"
           data-test="cancel-button"
           @click="store.closeSystemDefDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save Definition"
           data-test="save-button"
           :disabled="isSaveDisabled"
@@ -128,7 +128,7 @@ import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
 import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'

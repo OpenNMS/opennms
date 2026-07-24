@@ -9,14 +9,14 @@
             event description:
           </p>
         </div>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
           data-test="add-varbind-row-button"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
       <div
         v-for="(row, index) in varbindsDecodeElements"
@@ -42,23 +42,23 @@
             </FormField>
           </div>
           <div class="action-btns">
-            <Button
+            <OnmsButton
               class="remove"
-              outlined
+              variant="outlined"
               severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeVarbindDecodeRow', null, index, -1)"
             >
               <OnmsIcon :icon="Delete" />
-            </Button>
-            <Button
-              outlined
+            </OnmsButton>
+            <OnmsButton
+              variant="outlined"
               data-test="add-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'addDecodeRow', null, index, -1)"
             >
               <OnmsIcon :icon="Add" />
               Add Decode
-            </Button>
+            </OnmsButton>
           </div>
         </div>
         <div
@@ -103,15 +103,15 @@
                 />
               </FormField>
             </div>
-            <Button
+            <OnmsButton
               class="remove"
-              outlined
+              variant="outlined"
               severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeDecodeRow', null, index, decodeIndex)"
             >
               <OnmsIcon :icon="Delete" />
-            </Button>
+            </OnmsButton>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ import { EventFormErrors } from '@/types/eventConfig'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 
