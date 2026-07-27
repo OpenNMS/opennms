@@ -8,19 +8,19 @@
       >
         <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
       </router-link>
-      <PTabs value="0" class="graph-data-tabs">
-        <PTabList>
-          <PTab value="0">Graph</PTab>
-          <PTab value="1">Data</PTab>
-        </PTabList>
-        <PTabPanels>
-          <PTabPanel value="0">
+      <OnmsTabs value="0" class="graph-data-tabs">
+        <OnmsTabList>
+          <OnmsTab value="0">Graph</OnmsTab>
+          <OnmsTab value="1">Data</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel value="0">
             <div class="canvas-wrapper">
               <canvas :id="`${label}-${definition}`"></canvas>
               <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
             </div>
-          </PTabPanel>
-          <PTabPanel value="1">
+          </OnmsTabPanel>
+          <OnmsTabPanel value="1">
             <div class="canvas-wrapper" v-if="graphData">
               <GraphDataTable
                 :id="`${label}-${definition}`"
@@ -28,9 +28,9 @@
                 :graphData="graphData"
               />
             </div>
-          </PTabPanel>
-        </PTabPanels>
-      </PTabs>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -47,19 +47,9 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { OnmsButton } from '@opennms/onms-ui'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
+import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const PTabs = Tabs
-const PTabList = TabList
-const PTab = Tab
-const PTabPanels = TabPanels
-const PTabPanel = TabPanel
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -339,10 +329,6 @@ onBeforeUnmount(() => {
 .graph-data-tabs {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
-
-  :deep(.p-tab) {
-    text-transform: uppercase;
-  }
 }
 .single-graph-btn {
   position: absolute;

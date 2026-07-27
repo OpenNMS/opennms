@@ -11,25 +11,25 @@
       </div>
     </div>
     <div class="tab-container">
-      <PTabs v-model:value="store.activeTab">
-        <PTabList>
-          <PTab :value="0">General Configuration</PTab>
-          <PTab :value="1">SNMPv3 User Management</PTab>
-          <PTab :value="2">Advanced</PTab>
-        </PTabList>
-        <PTabPanels>
-          <PTabPanel :value="0">
+      <OnmsTabs v-model:value="store.activeTab">
+        <OnmsTabList>
+          <OnmsTab :value="0">General Configuration</OnmsTab>
+          <OnmsTab :value="1">SNMPv3 User Management</OnmsTab>
+          <OnmsTab :value="2">Advanced</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel :value="0">
             <GeneralConfiguration />
-          </PTabPanel>
-          <PTabPanel :value="1">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="1">
             <SnmpV3UserManagement />
             <CreateSnmpV3User />
-          </PTabPanel>
-          <PTabPanel :value="2">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="2">
             <TrapdAdvancedConfiguration />
-          </PTabPanel>
-        </PTabPanels>
-      </PTabs>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -46,17 +46,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { BreadCrumb } from '@/types'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
-
-const PTabs = Tabs
-const PTabList = TabList
-const PTab = Tab
-const PTabPanels = TabPanels
-const PTabPanel = TabPanel
+import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 
 const menuStore = useMenuStore()
 const store = useTrapdConfigStore()
@@ -92,10 +82,6 @@ onMounted(async () => {
 
   .tab-container {
     padding: 0;
-
-    :deep(.p-tab) {
-      text-transform: uppercase;
-    }
   }
 }
 </style>
