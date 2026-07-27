@@ -84,10 +84,9 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PInputNumber
+            <OnmsInputNumber
               class="snmp-config-defaults-input"
               :inputProps="{ 'data-test': `snmp-config-default-${param.key}`, 'aria-label': param.label }"
-              :useGrouping="false"
               :invalid="!!(formErrors as any)[param.key]"
               :modelValue="(formConfig[param.key] as number)"
               @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
@@ -157,8 +156,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
-import InputNumber from 'primevue/inputnumber'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 
@@ -190,8 +188,6 @@ import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/sn
 import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
 import MessageDialog from '../Common/MessageDialog.vue'
-
-const PInputNumber = InputNumber
 
 // SNMP Version options
 const SnmpVersions: ISelectItemType[] = [

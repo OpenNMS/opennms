@@ -100,6 +100,7 @@ export default tseslint.config(
           { name: 'primevue/chip', message: 'Use OnmsChip from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/drawer', message: 'Use OnmsDrawer from @opennms/onms-ui (NMS-20081 seam).' },
+          { name: 'primevue/inputnumber', message: 'Use OnmsInputNumber from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui (NMS-20081 seam).' },

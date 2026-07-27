@@ -24,12 +24,11 @@
         :error="trapConfigError.port"
         hint="Default: 10162"
       >
-        <PInputNumber
+        <OnmsInputNumber
           inputId="trap-port"
           v-model="port"
           :min="MIN_PORT"
           :max="MAX_PORT"
-          :useGrouping="false"
           :invalid="!!trapConfigError.port"
         />
       </FormField>
@@ -89,11 +88,10 @@
             :error="trapConfigError.threads"
             hint="Default: 0"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-threads"
               v-model="threads"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.threads"
             />
           </FormField>
@@ -105,11 +103,10 @@
             :error="trapConfigError.queueSize"
             hint="Default: 10000"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-queue-size"
               v-model="queueSize"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.queueSize"
             />
           </FormField>
@@ -121,11 +118,10 @@
             :error="trapConfigError.batchSize"
             hint="Default: 1000"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-batch-size"
               v-model="batchSize"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.batchSize"
             />
           </FormField>
@@ -137,11 +133,10 @@
             :error="trapConfigError.batchInterval"
             hint="Default: 500ms"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-batch-interval"
               v-model="batchInterval"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.batchInterval"
             />
           </FormField>
@@ -180,9 +175,8 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import InputNumber from 'primevue/inputnumber'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
@@ -193,8 +187,6 @@ import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
 import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
-
-const PInputNumber = InputNumber
 
 const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
 const port = ref<number>(DEFAULT_TRAPD_PORT)

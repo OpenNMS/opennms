@@ -11,11 +11,10 @@
         :error="errors.rrdStep"
         hint="RRD step size in seconds"
       >
-        <PInputNumber
-          :id="rrdStepId"
+        <OnmsInputNumber
+          :inputId="rrdStepId"
           :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
           @update:modelValue="update('rrdStep', $event == null ? '' : String($event))"
-          :useGrouping="false"
           :min="1"
           :invalid="!!errors.rrdStep"
           data-test="rrd-step"
@@ -73,7 +72,7 @@
           header="XFF"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.xff"
               :min="0"
               :maxFractionDigits="6"
@@ -85,7 +84,7 @@
           header="Step"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.steps"
               :min="1"
               :step="1"
@@ -97,7 +96,7 @@
           header="Rows"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.rows"
               :min="1"
               :step="1"
@@ -141,18 +140,16 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputNumber, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import InputNumberComponent from 'primevue/inputnumber'
 import FormField from '@/components/Common/FormField.vue'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PInputNumber = InputNumberComponent
 
 const rrdStepId = useId()
 

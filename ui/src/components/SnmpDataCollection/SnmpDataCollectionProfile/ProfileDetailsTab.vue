@@ -111,11 +111,10 @@
               hint=""
             >
               <div class="settings-input">
-                <PInputNumber
-                  id="profile-max-vars-per-pdu"
+                <OnmsInputNumber
+                  inputId="profile-max-vars-per-pdu"
                   :modelValue="configDetails.maxVarsPerPdu === '' ? null : Number(configDetails.maxVarsPerPdu)"
                   @update:modelValue="update('maxVarsPerPdu', $event == null ? '' : String($event))"
-                  :useGrouping="false"
                   :min="0"
                   :invalid="!!errors.maxVarsPerPdu"
                   data-test="max-vars-per-pdu"
@@ -162,17 +161,15 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
 import Card from 'primevue/card'
-import InputNumberComponent from 'primevue/inputnumber'
 import FormField from '@/components/Common/FormField.vue'
 
 const PCard = Card
-const PInputNumber = InputNumberComponent
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel
