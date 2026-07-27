@@ -365,13 +365,13 @@ onMounted(async () => {
 
 .snmp-data-collection-profile-details {
   margin: 0 auto;
-  padding: 45px;
+  padding: 0.5rem;
 
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 0px;
+    margin: 1.25rem 0;
 
     .title-container {
       display: flex;

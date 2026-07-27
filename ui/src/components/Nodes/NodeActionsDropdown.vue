@@ -1,18 +1,14 @@
 <template>
-  <Button
+  <OnmsIconButton
     text
     title="Node Actions"
     aria-label="Node Actions"
     aria-haspopup="true"
     :aria-controls="menuId"
     data-test="node-actions-button"
+    :icon="menuIcon"
     @click="toggle"
-  >
-    <OnmsIcon
-      :icon="menuIcon"
-      class="node-actions-icon"
-    />
-  </Button>
+  />
   <Menu
     :id="menuId"
     ref="menu"
@@ -22,11 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import MoreVert from '@/components/icons/navigation/MoreVert.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 
@@ -117,9 +112,3 @@ const mapLink = (name: string, node: Node) => {
 
 defineExpose({ items })
 </script>
-
-<style lang="scss" scoped>
-.node-actions-icon {
-  font-size: 1.1rem;
-}
-</style>

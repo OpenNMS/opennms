@@ -6,19 +6,21 @@
     <div class="section-header">Sources</div>
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="sourceSearchResults"
-        optionLabel="name"
-        @complete="onSourceSearch"
-        @option-select="onSourceSelected($event.value)"
-        placeholder="Add Source"
-        :forceSelection="true"
-        data-test="add-source-autocomplete"
-        dropdown
-        completeOnFocus
-        fluid
-      />
+      <FormField label="Add Source">
+        <PAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="sourceSearchResults"
+          optionLabel="name"
+          @complete="onSourceSearch"
+          @option-select="onSourceSelected($event.value)"
+          placeholder="Search sources..."
+          :forceSelection="true"
+          data-test="add-source-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
     </div>
     <div class="sources-card">
       <PDataTable
@@ -32,13 +34,13 @@
         <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
         <PColumn style="width: 4rem">
           <template #body="{ data }">
-            <PButton
+            <OnmsIconButton
               text
+              title="Delete source"
               data-test="delete-source-button"
+              :icon="Delete"
               @click="removeSource(data.name)"
-            >
-              <OnmsIcon :icon="Delete" />
-            </PButton>
+            />
           </template>
         </PColumn>
       </PDataTable>
@@ -50,15 +52,14 @@
 import { computed, ref } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import AutoCompleteComponent from 'primevue/autocomplete'
-import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 
 const PAutoComplete = AutoCompleteComponent
-const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 

@@ -68,6 +68,7 @@
         />
         <Button
           text
+          outlined
           label="Cancel"
           @click="onCancel"
         />

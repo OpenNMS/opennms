@@ -73,13 +73,6 @@ const save = () => fileEditorStore.saveModifiedFile()
         width: 100%;
         padding-right: 2.75rem;
       }
-
-      // enlarge the search glyph and keep it near the right edge
-      :deep(.p-inputicon) {
-        font-size: 1.75rem;
-        right: 0.625rem;
-        margin-top: -0.875rem;
-      }
     }
   }
   .save,

@@ -216,6 +216,11 @@ const getError = (key: string) => {
 >
 @import '@/styles/onms-typography';
 
+// Local replacement for the removed FeatherDS global spacing utility
+// (--onms-spacing-xl mirrors the original FeatherDS value).
+.pb-xl {
+  padding-bottom: var(--onms-spacing-xl);
+}
 .title {
   @include onms-headline3();
   margin-right: 16px;

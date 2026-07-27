@@ -50,13 +50,13 @@
       </PColumn>
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
-          <Button
+          <OnmsIconButton
             text
             data-test="delete-asset-filter-button"
+            title="Remove asset filter"
+            :icon="DeleteIcon"
             @click="removeGridItem(data.column)"
-          >
-            <OnmsIcon :icon="DeleteIcon" />
-          </Button>
+          />
         </template>
       </PColumn>
     </PDataTable>
@@ -75,6 +75,7 @@ import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 

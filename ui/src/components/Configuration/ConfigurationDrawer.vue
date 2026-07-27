@@ -22,16 +22,12 @@
             Requisition
           </div>
           <div class="icon">
-            <PButton
+            <OnmsIconButton
               text
               aria-label="Cancel"
+              :icon="cancelIcon"
               @click="props.closePanel"
-            >
-              <OnmsIcon
-                class="close-icon"
-                :icon="cancelIcon"
-              />
-            </PButton>
+            />
           </div>
         </div>
       </div>
@@ -83,7 +79,7 @@
 import { PropType, computed, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 
@@ -274,9 +270,6 @@ const toggleHelp = () => {
   :deep(.p-button) {
     margin: 0;
   }
-}
-.close-icon {
-  font-size: 32px;
 }
 .sideshared {
   z-index: 2;

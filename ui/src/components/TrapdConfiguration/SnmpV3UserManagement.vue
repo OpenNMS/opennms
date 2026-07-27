@@ -60,22 +60,20 @@
         <PColumn header="Action">
           <template #body="{ data }">
             <div class="action-container">
-              <PButton
+              <OnmsIconButton
                 text
                 aria-label="Edit User"
                 data-test="edit-user-button"
+                :icon="Edit"
                 @click="store.openCreateUserDrawer(CreateEditMode.Edit, userIndex(data))"
-              >
-                <OnmsIcon :icon="Edit" />
-              </PButton>
-              <PButton
+              />
+              <OnmsIconButton
                 text
                 aria-label="Delete User"
                 data-test="delete-user-button"
+                :icon="Delete"
                 @click="openDeleteUserDialog(userIndex(data))"
-              >
-                <OnmsIcon :icon="Delete" />
-              </PButton>
+              />
             </div>
           </template>
         </PColumn>
@@ -126,6 +124,7 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
@@ -265,11 +264,6 @@ watch(
       display: flex;
       align-items: center;
       gap: 5px;
-
-      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
-      :deep(.p-button) {
-        font-size: 1.3rem;
-      }
     }
   }
 }

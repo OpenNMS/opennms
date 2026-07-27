@@ -37,26 +37,22 @@
       <PColumn :pt="columnHeaderPt">
         <template #body="{ data }">
           <div class="flex">
-            <PButton
+            <OnmsIconButton
               aria-label="Edit"
               v-tooltip="'Edit'"
-              @click="() => props.editClicked(data.originalIndex)"
               :disabled="Boolean(data[RequisitionData.ImportURL].startsWith('requisition://'))"
               data-test="edit-btn"
-            >
-              <OnmsIcon :icon="Edit" />
-            </PButton>
-            <PButton
+              :icon="Edit"
+              @click="() => props.editClicked(data.originalIndex)"
+            />
+            <OnmsIconButton
               text
+              class="delete-icon"
               aria-label="Delete"
               v-tooltip="'Delete'"
+              :icon="Delete"
               @click="() => props.deleteClicked(data.originalIndex)"
-            >
-              <OnmsIcon
-                class="delete-icon"
-                :icon="Delete"
-              />
-            </PButton>
+            />
           </div>
         </template>
       </PColumn>
@@ -71,8 +67,7 @@
 import { computed, PropType } from 'vue'
 import DataTable, { DataTablePageEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
 import Edit from '@/components/icons/action/Edit.vue'
 import Delete from '@/components/icons/action/Delete.vue'
@@ -85,7 +80,6 @@ import { rescanCopy } from './copy/rescanItems'
 
 const PDataTable = DataTable
 const PColumn = Column
-const PButton = Button
 
 // PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
 // passthrough so header cells stay associated with their columns for screen readers.
@@ -137,11 +131,6 @@ const rescanToEnglish = (rescanVal: string) => {
 }
 .flex {
   display: flex;
-
-  // Enlarge the edit/delete glyphs (OnmsIcon scales with font-size)
-  :deep(svg) {
-    font-size: 1.25em;
-  }
 }
 .delete-icon {
   color: var(--p-red-500);

@@ -19,9 +19,12 @@
       >
         <template #item="{ element, index }">
           <div class="column-row">
-            <Button text class="drag-btn">
-              <OnmsIcon class="close-icon drag-handle" :icon="Apps" />
-            </Button>
+            <OnmsIconButton
+              text
+              class="drag-btn close-icon drag-handle"
+              aria-label="Reorder column"
+              :icon="Apps"
+            />
             <Select
               v-model="element.value"
               :options="getAvailableOptions(index)"
@@ -30,13 +33,14 @@
               :placeholder="`Column ${index + 1}`"
               class="columns-selector"
             />
-            <Button
+            <OnmsIconButton
               text
               :data-test="`remove-column-${index}`"
+              title="Remove column"
+              class="close-icon"
+              :icon="Cancel"
               @click="removeColumn(index)"
-            >
-              <OnmsIcon class="close-icon" :icon="Cancel" />
-            </Button>
+            />
           </div>
         </template>
       </Draggable>
@@ -58,13 +62,13 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
 import Select from 'primevue/select'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'

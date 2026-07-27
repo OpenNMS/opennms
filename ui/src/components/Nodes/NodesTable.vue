@@ -52,17 +52,13 @@
               />
             </div>
             <div>
-              <Button
+              <OnmsIconButton
                 text
                 title="Advanced Filters"
                 data-test="advanced-filters-button"
+                :icon="FilterAlt"
                 @click="nodeStructureStore.openInstancesDrawerModal()"
-              >
-                <OnmsIcon
-                  :icon="FilterAlt"
-                  class="advanced-filters-icon"
-                />
-              </Button>
+              />
             </div>
           </div>
           <div class="chip-container">
@@ -210,18 +206,13 @@
           >
             <template #body="{ data }">
               <div class="actions-cell-buttons">
-                <Button
+                <OnmsIconButton
                   text
                   title="View Details"
-                  class="view-details-icon"
                   data-test="view-details-button"
+                  :icon="ViewDetails"
                   @click="onNodeLinkClick(data.id)"
-                >
-                  <OnmsIcon
-                    :icon="ViewDetails"
-                    title="View Details"
-                  />
-                </Button>
+                />
                 <NodeActionsDropdown
                   :baseHref="mainMenu.baseHref"
                   :node="data"
@@ -300,6 +291,7 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import MessageDialog from '../Common/MessageDialog.vue'
+import OnmsIconButton from '../Common/OnmsIconButton.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -549,19 +541,7 @@ defineExpose({ onSort, onPage, removeItem })
         width: 100%;
         padding-right: 2.75rem;
       }
-
-      :deep(.p-inputicon) {
-        font-size: 1.75rem;
-        right: 0.625rem;
-        margin-top: -0.875rem;
-      }
     }
-  }
-
-  // The Advanced Filters trigger icon read too small; bump it to ~1.5rem
-  // (OnmsIcon scales with font-size).
-  .advanced-filters-icon {
-    font-size: 1.5rem;
   }
 
   .btn.btn-icon{
@@ -616,14 +596,6 @@ defineExpose({ onSort, onPage, removeItem })
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-.actions-cell {
-  .view-details-icon {
-    svg {
-      font-size: 1.5rem !important;
-    }
-  }
 }
 
 // Keep the View Details + Node Actions buttons on a single line; never wrap

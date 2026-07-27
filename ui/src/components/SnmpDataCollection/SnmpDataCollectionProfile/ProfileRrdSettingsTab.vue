@@ -109,13 +109,13 @@
           style="width: 4rem"
         >
           <template #body="{ data }">
-            <PButton
+            <OnmsIconButton
               text
+              title="Delete RRA"
               data-test="delete-rra-button"
+              :icon="Delete"
               @click="deleteRRA(data._id)"
-            >
-              <OnmsIcon :icon="Delete" />
-            </PButton>
+            />
           </template>
         </PColumn>
         <PColumn
@@ -152,6 +152,7 @@ import ColumnComponent from 'primevue/column'
 import InputNumberComponent from 'primevue/inputnumber'
 import SelectComponent from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
 const PButton = ButtonComponent
 const PDataTable = DataTableComponent

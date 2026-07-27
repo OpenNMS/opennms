@@ -281,6 +281,7 @@
       <template #footer>
         <Button
           text
+          outlined
           label="Cancel"
           @click="handleSourceCreationCancel"
           data-test="cancel-source-button"
