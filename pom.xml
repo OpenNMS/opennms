@@ -1150,7 +1150,6 @@
                 <exclude>**/BlueprintCamelStateService.java</exclude>
                 <exclude>**/CaffeineDnsCache*.java</exclude>
                 <exclude>**/DroolsStreamUtils.java</exclude>
-                <exclude>**/GWTTerminal/war/**/*</exclude>
                 <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
                 <exclude>**/KafkaOffsetProvider.java</exclude>
                 <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
