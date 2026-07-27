@@ -3,7 +3,7 @@
     class="config-details-box"
     data-test="profile-details-box"
   >
-    <PCard class="snmp-data-collection-profiles-card">
+    <OnmsCard class="snmp-data-collection-profiles-card">
       <template #title>
         <h4>Profile Details</h4>
       </template>
@@ -156,20 +156,17 @@
           </div>
         </div>
       </template>
-    </PCard>
+    </OnmsCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsCard, OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
-import Card from 'primevue/card'
 import FormField from '@/components/Common/FormField.vue'
-
-const PCard = Card
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel
