@@ -107,6 +107,7 @@ export default tseslint.config(
           { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/popover', message: 'Use OnmsPopover from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/radiobutton', message: 'Use OnmsRadioButton from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui (NMS-20029 seam).' },

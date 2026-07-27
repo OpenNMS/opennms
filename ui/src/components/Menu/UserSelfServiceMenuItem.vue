@@ -11,7 +11,7 @@
       <OnmsIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
     </OnmsButton>
 
-    <Popover
+    <OnmsPopover
       ref="pop"
       appendTo="self"
       class="onms-user-dropdown-panel self-service-dropdown-panel"
@@ -39,19 +39,18 @@
           </span>
         </a>
       </div>
-    </Popover>
+    </OnmsPopover>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Component, computed, ref, watch } from 'vue'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsButton, OnmsPopover } from '@opennms/onms-ui'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import IconAccountCircle from '@/components/icons/action/AccountCircle.vue'
 import IconHelp from '@/components/icons/action/Help.vue'
 import IconLogout from '@/components/icons/action/LogOut.vue'
 import IconSecurity from '@/components/icons/network/Security.vue'
-import Popover from 'primevue/popover'
 import { ellipsify } from '@/lib/utils'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'

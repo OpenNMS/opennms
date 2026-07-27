@@ -11,7 +11,7 @@
         <OnmsIcon :icon="ArrowDropDown" />
       </OnmsButton>
 
-      <PPopover
+      <OnmsPopover
         ref="menu"
         class="graph-controls-panel"
       >
@@ -53,7 +53,7 @@
             >Apply custom time</OnmsButton>
           </div>
         </div>
-      </PPopover>
+      </OnmsPopover>
     </div>
   </div>
 </template>
@@ -61,14 +61,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsSelect } from '@opennms/onms-ui'
-import Popover from 'primevue/popover'
+import { OnmsButton, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
 import DatePicker from 'primevue/datepicker'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 
-const PPopover = Popover
 const PDatePicker = DatePicker
 
 interface TimeOption {
