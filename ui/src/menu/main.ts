@@ -28,6 +28,7 @@ import '../styles/onms-base.scss'
 import '../styles/onms-theme.scss'
 import '../styles/opennms-styles.scss'
 import { setupPrimeVue } from '../theme/primevue-setup'
+import { useAppStore } from '../stores/appStore'
 import App from './App.vue'
 
 // id of div to mount this Vue app onto, expected to exist in the embedding web application
@@ -39,6 +40,12 @@ const app = createApp({
 
 setupPrimeVue(app)
 
-app
-  .use(createPinia())
-  .mount(`#${appMountId}`)
+app.use(createPinia())
+
+// Apply the persisted .open-light/.open-dark class to <html>/<body>, as the SPA
+// does in main/main.ts. The embedding JSP (includes/bootstrap.jsp) applies the
+// class to <html> before first paint; this re-asserts it (and covers <body>) so
+// theme-dependent rules and PrimeVue's darkModeSelector track the stored theme.
+useAppStore().initTheme()
+
+app.mount(`#${appMountId}`)
