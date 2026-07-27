@@ -7,19 +7,14 @@
       <div class="header-content-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor, UEI or Label"
-                :aria-label="'Search by Source, Vendor, UEI or Label'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor, UEI or Label"
+              :aria-label="'Search by Source, Vendor, UEI or Label'"
+            />
           </FormField>
         </div>
         <div class="refresh">
@@ -127,17 +122,14 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'

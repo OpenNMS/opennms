@@ -28,18 +28,13 @@
           <div class="filter">
             <div class="search-filter-column">
               <FormField class="search-field">
-                <IconField>
-                  <OnmsInputText
-                    v-model="currentSearch"
-                    @update:modelValue="searchFilterHandler"
-                    placeholder="Search node label or full IP address"
-                    aria-label="Search node label or full IP address"
-                    data-test="search-input"
-                  />
-                  <InputIcon>
-                    <OnmsIcon :icon="Search" />
-                  </InputIcon>
-                </IconField>
+                <OnmsSearchInput
+                  v-model="currentSearch"
+                  @update:modelValue="searchFilterHandler"
+                  placeholder="Search node label or full IP address"
+                  aria-label="Search node label or full IP address"
+                  data-test="search-input"
+                />
               </FormField>
             </div>
             <div>
@@ -275,16 +270,13 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsSearchInput } from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
 import Column from 'primevue/column'
 import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import MessageDialog from '../Common/MessageDialog.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'

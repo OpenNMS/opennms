@@ -1,26 +1,18 @@
 <template>
   <FormField class="dcb-search-field">
-    <IconField>
-      <OnmsInputText
-        placeholder="Search device"
-        aria-label="Search device"
-        :modelValue="searchVal"
-        @update:modelValue="(val) => searchFilterHandler(val as string)"
-      />
-      <InputIcon>
-        <OnmsIcon :icon="SearchIcon" />
-      </InputIcon>
-    </IconField>
+    <OnmsSearchInput
+      placeholder="Search device"
+      aria-label="Search device"
+      :modelValue="searchVal"
+      @update:modelValue="(val) => searchFilterHandler(val as string)"
+    />
   </FormField>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import { OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import SearchIcon from '@/components/icons/action/Search.vue'
+import { OnmsSearchInput } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useDeviceStore } from '@/stores/deviceStore'

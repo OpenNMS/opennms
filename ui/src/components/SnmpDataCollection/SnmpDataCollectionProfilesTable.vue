@@ -4,19 +4,14 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.profilesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Profile Name"
-                :aria-label="'Search by Profile Name'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.profilesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Profile Name"
+              :aria-label="'Search by Profile Name'"
+            />
           </FormField>
         </div>
       </div>
@@ -112,14 +107,11 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'

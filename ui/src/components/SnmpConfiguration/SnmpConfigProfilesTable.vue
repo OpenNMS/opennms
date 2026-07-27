@@ -4,18 +4,13 @@
       <div class="action-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <OnmsInputText
-                id="snmp-profiles-search"
-                placeholder="Search label or filter"
-                aria-label="Search label or filter"
-                v-model="searchTerm"
-                @update:modelValue="(val) => onSearchChange(val as string)"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="IconSearch" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              input-id="snmp-profiles-search"
+              placeholder="Search label or filter"
+              aria-label="Search label or filter"
+              v-model="searchTerm"
+              @update:modelValue="(val) => onSearchChange(val as string)"
+            />
           </FormField>
         </div>
         <div class="refresh">
@@ -96,15 +91,12 @@
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSearchInput } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
-import IconSearch from '@/components/icons/action/Search.vue'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'

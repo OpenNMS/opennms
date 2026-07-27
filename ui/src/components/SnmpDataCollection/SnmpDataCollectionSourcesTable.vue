@@ -4,19 +4,14 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor or Description"
-                :aria-label="'Search by Source, Vendor or Description'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor or Description"
+              :aria-label="'Search by Source, Vendor or Description'"
+            />
           </FormField>
         </div>
       </div>
@@ -154,16 +149,13 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {
