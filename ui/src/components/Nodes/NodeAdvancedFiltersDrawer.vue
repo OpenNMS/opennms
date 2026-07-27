@@ -38,15 +38,14 @@
             @update:modelValue="(items) => updateFilter('categories', items)"
           />
         </FormField>
-        <Button
+        <OnmsIconButton
           v-if="!showSecondCategories"
           class="category-add-btn"
           text
+          :icon="AddIcon"
           aria-label="Add category group"
           @click="showSecondCategories = true"
-        >
-          <OnmsIcon :icon="AddIcon" />
-        </Button>
+        />
       </div>
       <div v-if="showSecondCategories" class="category-row">
         <FormField
@@ -65,14 +64,13 @@
             @update:modelValue="(items) => updateFilter('categories2', items)"
           />
         </FormField>
-        <Button
+        <OnmsIconButton
           class="category-add-btn"
           text
+          :icon="DeleteIcon"
           aria-label="Remove category group"
           @click="removeSecondCategories"
-        >
-          <OnmsIcon :icon="DeleteIcon" />
-        </Button>
+        />
       </div>
       <hr />
       <div class="spacer-large"></div>
@@ -292,6 +290,7 @@ import MultiSelect from 'primevue/multiselect'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
@@ -505,10 +504,6 @@ defineExpose({
   margin-top: 1.25rem;
   height: 3rem;
   width: 3rem;
-
-  :deep(svg) {
-    font-size: 1.5rem;
-  }
 }
 
 .info-section {

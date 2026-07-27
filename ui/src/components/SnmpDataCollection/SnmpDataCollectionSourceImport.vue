@@ -193,14 +193,13 @@
         </Column>
         <Column header="Action">
           <template #body="{ data }">
-            <Button
+            <OnmsIconButton
               text
               title="Remove"
               data-test="remove-files-button"
+              :icon="Delete"
               @click="removeFile(data)"
-            >
-              <OnmsIcon :icon="Delete" />
-            </Button>
+            />
           </template>
         </Column>
       </DataTable>
@@ -279,6 +278,7 @@ import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
 import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Checkbox from 'primevue/checkbox'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'

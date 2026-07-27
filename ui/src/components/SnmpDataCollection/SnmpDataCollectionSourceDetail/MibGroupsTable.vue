@@ -20,14 +20,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <Button
+          <OnmsIconButton
             text
             title="Refresh"
             data-test="refresh-button"
+            :icon="Refresh"
             @click="store.resetMibGroupsFilters"
-          >
-            <OnmsIcon :icon="Refresh" />
-          </Button>
+          />
         </div>
       </div>
       <div class="section-right">
@@ -93,24 +92,23 @@
       <Column header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
+            <OnmsIconButton
               v-if="!isPluginSourced(store.selectedCollectionSource)"
               text
               :title="`Edit ${data.name}`"
               data-test="edit-button"
+              :icon="Edit"
               @click="onMibGroupEditClicked(data)"
-            >
-              <OnmsIcon :icon="Edit" />
-            </Button>
-            <Button
+            />
+            <OnmsIconButton
               text
               aria-haspopup="true"
               :aria-controls="`mib-group-row-menu`"
+              title="More actions"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <OnmsIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
       </Column>
@@ -177,6 +175,7 @@ import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'

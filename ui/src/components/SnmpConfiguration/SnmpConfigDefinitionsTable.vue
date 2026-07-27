@@ -66,23 +66,21 @@
         <PColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
-              <PButton
+              <OnmsIconButton
                 text
                 aria-label="Edit"
                 data-test="edit-button"
+                :icon="IconEdit"
                 @click="onDefinitionEdit(data.original)"
-              >
-                <OnmsIcon :icon="IconEdit" />
-              </PButton>
-              <PButton
+              />
+              <OnmsIconButton
                 v-if="data.original.id !== 0"
                 text
                 aria-label="Delete"
                 data-test="delete-button"
+                :icon="IconDelete"
                 @click="onDefinitionDelete(data.original)"
-              >
-                <OnmsIcon :icon="IconDelete" />
-              </PButton>
+              />
             </div>
           </template>
         </PColumn>
@@ -161,6 +159,7 @@ import { SnmpDefinition } from '@/types/snmpConfig'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
 const PButton = Button
@@ -359,14 +358,6 @@ const onSearchChange = (value: string | number | undefined) => {
             width: 100%;
             padding-right: 2.75rem;
           }
-
-          // enlarge the search glyph (OnmsIcon scales with font-size) and
-          // keep it near the right edge, vertically centered
-          :deep(.p-inputicon) {
-            font-size: 1.75rem;
-            right: 0.625rem;
-            margin-top: -0.875rem;
-          }
         }
       }
     }
@@ -383,11 +374,6 @@ const onSearchChange = (value: string | number | undefined) => {
       display: flex;
       align-items: center;
       gap: 5px;
-
-      // enlarge the edit/delete icons (OnmsIcon scales with font-size)
-      :deep(.p-button) {
-        font-size: 1.3rem;
-      }
     }
   }
 

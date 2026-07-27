@@ -378,9 +378,30 @@ onMounted(() => {
   }
 }
 
-.dcb-action-btn {
+.btn-container {
+  .dcb-action-btn {
+    // PrimeVue buttons are inline-flex; keep the icon centered against its label.
+    align-items: center;
+  }
+
+  // Normalize every action-button icon to 1.5em and strip the per-asset sizing
+  // and margin quirks: assets/Compare.vue hardcodes 24px + margin-top: -10px and
+  // assets/Backup.vue adds margin-top: -10px, which broke both size parity (the
+  // Compare icon rendered 24px vs the others' ~18px) and vertical alignment.
+  // Handles OnmsIcon SVGs rendered directly and the asset wrappers nesting an <svg>.
   .btn-icon {
-    margin-right: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 0.4rem 0 0;
+
+    :deep(svg) {
+      width: 1.5em;
+      height: 1.5em;
+      margin: 0;
+    }
   }
 }
 

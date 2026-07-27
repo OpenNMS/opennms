@@ -20,17 +20,13 @@
         />
       </FormField>
       <div class="icon">
-        <PButton
+        <OnmsIconButton
           text
           aria-label="Help"
           v-tooltip="'Help'"
+          :icon="Help"
           @click="() => props.toggleHelp()"
-        >
-          <OnmsIcon
-            class="help-icon"
-            :icon="Help"
-          ></OnmsIcon>
-        </PButton>
+        />
       </div>
     </div>
     <div v-if="RequsitionTypesUsingHost.includes(config.type.name)">
@@ -138,12 +134,11 @@
 >
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
 import RadioButton from 'primevue/radiobutton'
 import FormField from '@/components/Common/FormField.vue'
 import { requisitionSubTypes, RequsitionTypesUsingHost, RequisitionTypes, requisitionTypeList, RequisitionHTTPTypes } from './copy/requisitionTypes'
 import { rescanItems } from './copy/rescanItems'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { PropType, computed, ref, watch } from 'vue'
 import Help from '@/components/icons/action/Help.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
@@ -153,7 +148,6 @@ import { UpdateModelFunction } from '@/types'
 
 const PSelect = Select
 const PInputText = InputText
-const PButton = Button
 const PRadioButton = RadioButton
 
 const firstInput = ref()
@@ -195,6 +189,14 @@ const updateCronValue = (type: string, val: string) => {
 .side-input {
     padding-bottom: 0;
 }
+// Local replacements for the removed FeatherDS global spacing utilities
+// (--onms-spacing-* mirror the original FeatherDS values).
+.mb-m {
+    margin-bottom: var(--onms-spacing-m);
+}
+.mr-m {
+    margin-right: var(--onms-spacing-m);
+}
 .occurance {
     width: 100%;
 }
@@ -213,9 +215,6 @@ const updateCronValue = (type: string, val: string) => {
     // hint/error rendered below it.
     height: 3rem;
     margin-top: 1.6875rem;
-    .help-icon {
-        font-size: 1.5rem;
-    }
 }
 .side-label {
     margin-top: 1rem;

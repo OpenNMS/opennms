@@ -124,14 +124,14 @@ const downloadConfig = async (format: 'xml' | 'json') => {
 
 <style lang="scss" scoped>
 .snmp-data-collection-container {
-  padding: 20px;
+  padding: 1.5rem;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 60px 40px 25px 40px;
+    margin-bottom: 1.25rem;
+    padding: 0.5rem 0;
 
     .header-actions {
       display: flex;
@@ -141,7 +141,7 @@ const downloadConfig = async (format: 'xml' | 'json') => {
   }
 
   .tab-container {
-    padding: 0px 40px 0px 40px;
+    padding: 0.5rem;
 
     .tabs {
       :deep(.p-tab) {

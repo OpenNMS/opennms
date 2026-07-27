@@ -25,22 +25,25 @@
         >No profiles assigned</span>
       </div>
       <div class="spacer" />
-      <div class="section-label">Add Profile</div>
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="filteredSuggestions"
-        optionLabel="name"
-        @complete="onSearch"
-        @option-select="addProfile($event.value)"
-        placeholder="Search profiles..."
-        :forceSelection="true"
-        data-test="profile-autocomplete"
-        dropdown
-        completeOnFocus
-      />
+      <FormField label="Add Profile">
+        <PAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="filteredSuggestions"
+          optionLabel="name"
+          @complete="onSearch"
+          @option-select="addProfile($event.value)"
+          placeholder="Search profiles..."
+          :forceSelection="true"
+          data-test="profile-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
       <div class="button-row">
         <Button
           text
+          outlined
           label="Cancel"
           @click="close"
         />
@@ -63,6 +66,7 @@ import AutoCompleteComponent from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import ChipComponent from 'primevue/chip'
 import Drawer from 'primevue/drawer'
+import FormField from '@/components/Common/FormField.vue'
 
 const PChip = ChipComponent
 const PAutoComplete = AutoCompleteComponent
@@ -178,4 +182,5 @@ watch(() => props.visible, async (visible) => {
     margin-left: 0 !important;
   }
 }
+
 </style>

@@ -41,23 +41,19 @@
                       v-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
                       class="error-icon"
                     />
-                    <Button
+                    <OnmsIconButton
                       text
                       title="Reorder"
-                    >
-                      <OnmsIcon
-                        class="close-icon drag-handle"
-                        :icon="Apps"
-                      />
-                    </Button>
-                    <Button
+                      class="close-icon drag-handle"
+                      :icon="Apps"
+                    />
+                    <OnmsIconButton
                       text
                       title="Remove"
                       data-test="remove-files-button"
+                      :icon="Delete"
                       @click="removeFile(index)"
-                    >
-                      <OnmsIcon :icon="Delete" />
-                    </Button>
+                    />
                   </div>
                 </div>
               </template>
@@ -170,6 +166,7 @@ import Warning from '@/components/icons/notification/Warning.vue'
 import Button from 'primevue/button'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 

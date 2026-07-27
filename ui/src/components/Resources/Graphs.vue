@@ -94,7 +94,23 @@ const resources = props.singleGraphResourceId ?
   computed<GraphDefinition[]>(() => graphStore.definitions)
 
 const definitionsList = computed<string[]>(() => graphStore.definitionsList)
-let definitionsListCopy: string[] = JSON.parse(JSON.stringify(graphStore.definitionsList))
+
+// Filled reactively (see seedInitialGraphs) rather than snapshotted at setup:
+// the definitions may still be loading when this view mounts.
+let definitionsListCopy: string[] = []
+let seeded = false
+
+// Seed the initial page of graphs once the definitions are available. Idempotent
+// and guarded so it runs a single time per mount (Graphs.vue is not kept-alive,
+// so `seeded` resets on every navigation back in).
+const seedInitialGraphs = () => {
+  if (seeded || props.singleGraphDefinition || !definitionsList.value.length) {
+    return
+  }
+  seeded = true
+  definitionsListCopy = [...definitionsList.value]
+  definitionsToDisplay.value = definitionsListCopy.splice(0, initNumOfGraphs)
+}
 
 const time = reactive<StartEndTime>({
   startTime: getUnixTime(sub(now, { hours: 24 })),
@@ -115,27 +131,25 @@ const addGraphDefinition = () => {
   }
 }
 
+// A single shared debounced function: creating it per keystroke (inside the
+// handler) would give every keystroke its own independent 1s timer, so the
+// search would run once per keystroke instead of once per pause.
+const debouncedSearch = useDebounceFn((val: string) => {
+  if (val) {
+    definitionsListCopy = definitionsList.value.filter(definition =>
+      definition.toLowerCase().includes(val.toLowerCase()))
+  } else {
+    definitionsListCopy = [...definitionsList.value]
+  }
+
+  definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
+  stopSpinner()
+}, 1000)
+
 const searchHandler: UpdateModelFunction = (searchInputVal: string) => {
   startSpinner()
   searchVal.value = searchInputVal
-
-  const search = useDebounceFn((val: string) => {
-    if (val) {
-      definitionsListCopy = definitionsList.value.filter(definition =>
-        definition.toLowerCase().includes(val.toLowerCase()))
-
-      definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
-    }
-
-    if (!val) {
-      definitionsListCopy = JSON.parse(JSON.stringify(definitionsList.value))
-      definitionsToDisplay.value = definitionsListCopy.splice(0, 4)
-    }
-
-    stopSpinner()
-  }, 1000)
-
-  search(searchInputVal)
+  debouncedSearch(searchInputVal)
 }
 
 watch(arrivedState, () => {
@@ -145,16 +159,16 @@ watch(arrivedState, () => {
   }
 })
 
+// Seed as soon as definitions are present — whether that's already true at mount
+// or arrives shortly after (e.g. a deep-link straight to /resource-graphs/graphs).
+watch(definitionsList, seedInitialGraphs, { immediate: true })
+
 onMounted(() => {
   // for displaying only selected graph
   if (props.singleGraphDefinition) {
     definitionsToDisplay.value = [props.singleGraphDefinition]
-    return
   }
-
-  [...Array(initNumOfGraphs)].forEach(() => {
-    addGraphDefinition()
-  })
+  // multi-graph seeding is handled reactively by the definitionsList watch above
 })
 
 onBeforeMount(() => {

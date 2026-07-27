@@ -158,6 +158,11 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
 @import "@/styles/onms-tokens";
 @import '@/styles/onms-typography';
 
+// Local replacement for the removed FeatherDS global spacing utility
+// (--onms-spacing-m mirrors the original FeatherDS value).
+.mb-m {
+    margin-bottom: var(--onms-spacing-m);
+}
 .input-hint-custom {
     flex: 1;
     @include onms-caption();

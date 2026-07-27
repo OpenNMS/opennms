@@ -37,7 +37,7 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
   position: absolute;
   width: 250px;
   right: 80px;
-  top: 80px;
+  top: 2em;
   /* below the app bar's z-index (1030) */
   z-index: 1020;
   /* Translucent panel so the control reads clearly over the map. Follows the

@@ -64,24 +64,22 @@
       <Column header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
+            <OnmsIconButton
               text
               :title="`View ${data.name}`"
               data-test="view-button"
+              :icon="ViewDetails"
               @click="onProfileClick(data)"
-            >
-              <OnmsIcon :icon="ViewDetails" />
-            </Button>
-            <Button
+            />
+            <OnmsIconButton
               text
               aria-haspopup="true"
               aria-controls="profile-row-menu"
               :title="`More actions for ${data.name}`"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <OnmsIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
       </Column>
@@ -122,6 +120,7 @@ import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Button from 'primevue/button'
+import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'

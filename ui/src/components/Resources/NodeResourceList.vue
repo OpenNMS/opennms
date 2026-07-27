@@ -83,7 +83,10 @@ const graphSelected = async () => {
 
 const graphAll = async () => {
   const resourceIds = resources.value.map(resource => resource.id)
-  graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
+  // Await the definitions before navigating: Graphs.vue snapshots
+  // graphStore.definitionsList on mount, so if this fetch is still in flight
+  // the graph list is empty and nothing renders on the first attempt.
+  await graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
 </script>

@@ -53,7 +53,7 @@ import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
-import { PropType, computed, onMounted, ref, watch } from 'vue'
+import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const PButton = Button
 const PTabs = Tabs
@@ -100,7 +100,7 @@ const convertedGraphDataRef = ref<ConvertedGraphData>({
   printStatements: [],
   properties: {}
 })
-let chart: any = {}
+let chart: any = null
 const legendRef = ref()
 const { height } = useElementSize(legendRef)
 const yAxisFormatter = format('.3s')
@@ -288,11 +288,17 @@ const render = async (update?: boolean) => {
     formattedGraphData = getFormattedLegendStatements(graphMetrics, rrdGraphConverterModel)
     graphData.value = formattedGraphData
 
-    if (update) {
+    if (update && chart) {
       chart.data = chartData.value
       chart.update()
     } else {
       const ctx: any = document.getElementById(`${props.label}-${props.definition}`)
+      // Chart.js throws "Canvas is already in use" if a chart still owns this
+      // canvas — e.g. a stale instance left on a reused canvas after navigating
+      // away and back. Destroy any prior chart on it before creating the new one.
+      if (ctx) {
+        Chart.getChart(ctx)?.destroy()
+      }
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -310,6 +316,16 @@ const render = async (update?: boolean) => {
 watch(props.time, () => render(true))
 
 onMounted(() => render())
+
+// Release the canvas when the graph is torn down (navigation away, infinite-
+// scroll replacement) so Chart.js doesn't report it "already in use" on the
+// next render.
+onBeforeUnmount(() => {
+  if (chart && typeof chart.destroy === 'function') {
+    chart.destroy()
+    chart = null
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -324,6 +340,10 @@ onMounted(() => render())
 .graph-data-tabs {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
+
+  :deep(.p-tab) {
+    text-transform: uppercase;
+  }
 }
 .single-graph-btn {
   position: absolute;
