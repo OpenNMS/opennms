@@ -49,7 +49,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="switch-row">
-      <PToggleSwitch
+      <OnmsToggleSwitch
         v-model="newSuspectOnTrap"
         data-test="unknown-devices-input"
       />
@@ -66,7 +66,7 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-message-row">
-            <PToggleSwitch
+            <OnmsToggleSwitch
               v-model="trapMessageStatus"
               data-test="trap-message-input"
             />
@@ -75,7 +75,7 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-source-address-row">
-            <PToggleSwitch
+            <OnmsToggleSwitch
               v-model="trapSourceAddressStatus"
               data-test="trap-source-address-input"
             />
@@ -180,10 +180,9 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputNumber from 'primevue/inputnumber'
-import ToggleSwitch from 'primevue/toggleswitch'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
@@ -196,7 +195,6 @@ import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 
 const PInputNumber = InputNumber
-const PToggleSwitch = ToggleSwitch
 
 const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
 const port = ref<number>(DEFAULT_TRAPD_PORT)

@@ -52,7 +52,7 @@
               :for="`profile-status-toggle`"
               hint=""
             >
-              <PToggleSwitch
+              <OnmsToggleSwitch
                 id="profile-status-toggle"
                 :modelValue="configDetails.enabled"
                 @update:modelValue="update('enabled', Boolean($event))"
@@ -162,18 +162,16 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
 import Card from 'primevue/card'
 import InputNumberComponent from 'primevue/inputnumber'
-import ToggleSwitchComponent from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 
 const PCard = Card
-const PToggleSwitch = ToggleSwitchComponent
 const PInputNumber = InputNumberComponent
 
 const props = defineProps<{

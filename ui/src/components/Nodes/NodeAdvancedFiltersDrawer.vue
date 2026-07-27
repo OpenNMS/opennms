@@ -154,7 +154,7 @@
       <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="down-only">
           <label for="down-only">Down nodes only (nodes with a down aggregate status)</label>
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithDownAggregateStatus"
             inputId="down-only"
           />
@@ -163,7 +163,7 @@
       <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="with-assets">
           <label for="with-assets">Nodes with asset info only</label>
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithAssets"
             inputId="with-assets"
           />
@@ -278,12 +278,11 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import MultiSelect from 'primevue/multiselect'
-import ToggleSwitch from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'

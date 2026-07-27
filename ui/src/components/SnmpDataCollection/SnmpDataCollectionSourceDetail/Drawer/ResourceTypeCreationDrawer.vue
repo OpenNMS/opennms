@@ -11,7 +11,7 @@
     <div class="container">
       <div class="content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -299,10 +299,9 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
