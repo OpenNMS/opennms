@@ -29,7 +29,7 @@
       <div class="section-content">
         <h4>Configuration applies to these IP Ranges:</h4>
         <div class="chip-list" v-if="badgeItems.length">
-          <PChip
+          <OnmsChip
             v-for="item of badgeItems"
             :key="createBadgeKey(item)"
             class="definition-chip"
@@ -103,8 +103,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import Chip from 'primevue/chip'
+import { OnmsButton, OnmsChip, OnmsIcon } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
@@ -114,8 +113,6 @@ import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinition, SnmpConfigFormErrors, IpAddressRange } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import { checkForDuplicateDefinitionItems } from '@/lib/snmpValidator'
-
-const PChip = Chip
 
 const props = defineProps<{
   isCreate: boolean,

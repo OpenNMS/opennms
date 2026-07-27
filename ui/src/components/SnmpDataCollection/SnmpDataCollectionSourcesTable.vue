@@ -60,7 +60,7 @@
             class="profile-chips"
             :data-test="`profiles-cell-${data.name}`"
           >
-            <Chip
+            <OnmsChip
               v-for="profile in profilesForSource(data.name)"
               :key="profile.id"
               :label="profile.name"
@@ -154,12 +154,11 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'

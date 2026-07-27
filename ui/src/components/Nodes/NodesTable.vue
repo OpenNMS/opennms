@@ -61,79 +61,79 @@
             </div>
           </div>
           <div class="chip-container">
-            <Chip
+            <OnmsChip
               v-for="cat in nodeStructureStore.selectedCategories"
               :key="`cat-${cat._value}`"
               :label="`Category: ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category)"
             />
-            <Chip
+            <OnmsChip
               v-for="cat in nodeStructureStore.selectedCategories2"
               :key="`cat2-${cat._value}`"
               :label="`Category (2): ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category2)"
             />
-            <Chip
+            <OnmsChip
               v-for="flow in nodeStructureStore.selectedFlows"
               :key="`flow-${flow._value}`"
               :label="`Flows: ${flow._text}`"
               removable
               @remove="removeItem(flow, FilterTypeEnum.Flow)"
             />
-            <Chip
+            <OnmsChip
               v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
               :key="loc.name"
               :label="`Location: ${loc.name}`"
               removable
               @remove="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
             />
-            <Chip
+            <OnmsChip
               v-for="svc in nodeStructureStore.selectedServices"
               :key="`svc-${svc._value}`"
               :label="`Service: ${svc._text}`"
               removable
               @remove="removeItem(svc, FilterTypeEnum.MonitoredService)"
             />
-            <Chip
+            <OnmsChip
               v-for="value in extendedSearchValues"
               :key="`extended-${value.key}`"
               :label="`${value.name} ${value.value}`"
               removable
               @remove="removeExtendedSearchItem(value)"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.ipAddress"
               :label="`IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}`"
               removable
               @remove="nodeStructureStore.removeIpAddress()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.macAddress"
               :label="`MAC Address: ${nodeStructureStore.queryFilter.macAddress}`"
               removable
               @remove="nodeStructureStore.removeMacAddress()"
             />
-            <Chip
+            <OnmsChip
               v-if="hasTopologySearch"
               :label="`Topology: ${topologyTerm}`"
               removable
               @remove="nodeStructureStore.removeTopology()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
               label="Down nodes only"
               removable
               @remove="nodeStructureStore.removeDownAggregateStatus()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.nodesWithAssets"
               label="Nodes with asset info"
               removable
               @remove="nodeStructureStore.removeNodesWithAssets()"
             />
-            <Chip
+            <OnmsChip
               v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
               :key="assetFilter.column"
               :label="`Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}`"
@@ -275,13 +275,12 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
-import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'

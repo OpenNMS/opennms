@@ -23,13 +23,13 @@
           v-if="!isCreateMode"
           class="tag"
         >
-          <PTag
+          <OnmsTag
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
             value="Enabled"
             data-test="status-tag"
           />
-          <PTag
+          <OnmsTag
             v-if="!store.selectedCollectionSource.enabled"
             class="disabled-tag"
             value="Disabled"
@@ -116,7 +116,7 @@
             <span class="field-label">Profiles:</span>
             <div class="profiles-field-content">
               <span class="field-value profiles-chips">
-                <PChip
+                <OnmsChip
                   v-for="profile in drawerProfiles"
                   :key="profile.id"
                   :label="profile.name"
@@ -231,13 +231,9 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsInputText, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
-import ChipComponent from 'primevue/chip'
-
-const PChip = ChipComponent
-const PTag = OnmsTag
 
 const router = useRouter()
 const route = useRoute()

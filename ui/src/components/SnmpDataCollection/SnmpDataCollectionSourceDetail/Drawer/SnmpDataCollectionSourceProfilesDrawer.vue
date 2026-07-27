@@ -11,7 +11,7 @@
     <div class="container">
       <div class="section-label">Assigned Profiles</div>
       <div class="chips-container">
-        <PChip
+        <OnmsChip
           v-for="profile in localProfiles"
           :key="profile.id"
           :label="profile.name"
@@ -60,11 +60,8 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import { OnmsAutoComplete, OnmsButton, OnmsDrawer } from '@opennms/onms-ui'
-import ChipComponent from 'primevue/chip'
+import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsDrawer } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-
-const PChip = ChipComponent
 
 const props = defineProps<{
   visible: boolean
