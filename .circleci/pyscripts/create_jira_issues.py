@@ -13,7 +13,7 @@ JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
 
 # Dry-run mode flag - when True, logs verbose details and skips API calls
-DRY_RUN = True
+DRY_RUN = False
 
 # Priority mapping for Trivy severity levels
 PRIORITY_MAP = {

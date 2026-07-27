@@ -64,7 +64,7 @@ commands:
             pip3 install requests --break-system-packages 
 
             echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
-            python3 .circleci/pyscripts/create_jira_issues.py
+            python3 .circleci/pyscripts/create_jira_issues.py --dry-run
 
       
       - store_artifacts:
