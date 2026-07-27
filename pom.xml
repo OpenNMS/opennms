@@ -1136,7 +1136,6 @@
                 <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
                 <exclude>src/main/resources/license-header.txt</exclude>
                 <exclude>src/main/resources/nms_checks.xml</exclude>
-                <exclude>src/site/site.xml</exclude>
                 <exclude>src/test/resources/test-data.sql</exclude>
 
                 <!-- don't need this can o' worms for now -->
