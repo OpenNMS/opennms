@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import AutoComplete from 'primevue/autocomplete'
 
-// Seam wrapper (NMS-20029) around PrimeVue AutoComplete. `complete` fires with
+// Seam wrapper around PrimeVue AutoComplete. `complete` fires with
 // the raw query string (the seam does not expose PrimeVue's event object);
 // `optionSelect` fires with the selected value.
 withDefaults(defineProps<{
