@@ -1,11 +1,10 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="resource-type-drawer"
     v-model:visible="store.resourceTypeDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '80rem' }"
+    width="80rem"
     @hide="closeResourceTypeDrawer"
     class="resource-type-drawer"
   >
@@ -282,7 +281,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
@@ -300,10 +299,9 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()

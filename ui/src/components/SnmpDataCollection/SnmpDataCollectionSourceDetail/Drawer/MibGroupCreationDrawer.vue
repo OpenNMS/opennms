@@ -1,11 +1,10 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="mib-group-drawer"
     v-model:visible="store.mibGroupDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '80rem' }"
+    width="80rem"
     @hide="closeMibGroupDrawer"
     class="mib-group-drawer"
   >
@@ -223,7 +222,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -241,10 +240,9 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()

@@ -1,10 +1,9 @@
 <template>
-  <PDrawer
+  <OnmsDrawer
     data-test="scv-drawer"
     v-model:visible="drawerOpen"
-    position="right"
     header="Use an Existing Credential"
-    :style="{ width: '40em' }"
+    width="40em"
     @hide="emit('hidden')"
   >
     <div class="drawer-content">
@@ -69,16 +68,15 @@
         />
       </div>
     </div>
-  </PDrawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
@@ -89,7 +87,6 @@ import { ScvSearchItem } from '@/types/scv'
 
 const PColumn = Column
 const PDataTable = DataTable
-const PDrawer = Drawer
 
 const props = defineProps<{
   isOpen: boolean

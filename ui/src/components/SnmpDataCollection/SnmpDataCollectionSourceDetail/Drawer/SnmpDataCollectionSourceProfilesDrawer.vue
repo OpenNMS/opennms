@@ -1,11 +1,10 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
     v-model:visible="isVisible"
-    position="right"
     :header="`Edit Profiles for ${props.sourceName}`"
-    :style="{ width: '40rem' }"
+    width="40rem"
     @hide="close"
     class="source-profiles-drawer"
   >
@@ -53,7 +52,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -61,9 +60,8 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import { OnmsAutoComplete, OnmsButton } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsDrawer } from '@opennms/onms-ui'
 import ChipComponent from 'primevue/chip'
-import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'
 
 const PChip = ChipComponent
