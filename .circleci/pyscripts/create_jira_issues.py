@@ -502,17 +502,17 @@ def create_issue_for_consolidated_package(package):
 
     logging.info(f"Creating issue for {pkg_name}: {summary}")
 
-    try:
-        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
-                                 headers={"Content-Type": "application/json"},
-                                 data=json.dumps(issue_payload))
-        response.raise_for_status()
-        created_issue_key = response.json().get('key')
-        logging.info(f"Created issue: {created_issue_key}")
-        return created_issue_key
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to create issue for {pkg_name}: {e}")
-        return None
+   # try:
+   #     response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
+   #                              headers={"Content-Type": "application/json"},
+   #                              data=json.dumps(issue_payload))
+   #     response.raise_for_status()
+   #     created_issue_key = response.json().get('key')
+   #     logging.info(f"Created issue: {created_issue_key}")
+   #     return created_issue_key
+   # except requests.exceptions.RequestException as e:
+   #     logging.error(f"Failed to create issue for {pkg_name}: {e}")
+   #     return None
 
 def create_issues_from_json(packages_dict):
     """
