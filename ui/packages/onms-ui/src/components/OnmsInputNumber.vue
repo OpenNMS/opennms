@@ -77,9 +77,21 @@ const pt = computed(() => {
     return undefined
   }
 
+  if (props.inputProps === undefined) {
+    return props.unsafePt
+  }
+
+  // Deep-merge inputProps into unsafePt.pcInputText.root instead of clobbering
+  // it, so a caller's unsafePt.pcInputText survives alongside inputProps.
+  // inputProps wins on key collisions within root.
+  const base = props.unsafePt as Record<string, unknown> | undefined
+  const existing = (base?.pcInputText as Record<string, unknown> | undefined)?.root
   return {
-    ...(props.unsafePt as Record<string, unknown> | undefined),
-    pcInputText: { root: props.inputProps }
+    ...base,
+    pcInputText: {
+      ...(base?.pcInputText as Record<string, unknown> | undefined),
+      root: { ...(existing as Record<string, unknown> | undefined), ...props.inputProps }
+    }
   }
 })
 </script>

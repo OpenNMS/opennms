@@ -35,6 +35,21 @@ describe('OnmsInputNumber contract', () => {
     expect(wrapper.find('input').attributes('data-test')).toBe('x')
   })
 
+  it('forwards unsafePt.pcInputText.root through unchanged when inputProps is absent', () => {
+    const wrapper = mountIt({ unsafePt: { pcInputText: { root: { 'data-x': 'y' }}}})
+    expect(wrapper.find('input').attributes('data-x')).toBe('y')
+  })
+
+  it('merges inputProps into unsafePt.pcInputText.root instead of clobbering it', () => {
+    const wrapper = mountIt({
+      unsafePt: { pcInputText: { root: { 'data-x': 'y' }}},
+      inputProps: { 'data-test': 'x' }
+    })
+    const input = wrapper.find('input')
+    expect(input.attributes('data-x')).toBe('y')
+    expect(input.attributes('data-test')).toBe('x')
+  })
+
   it('leaves fluid undefined by default (Fluid context inheritance)', () => {
     const wrapper = mountIt()
     expect(wrapper.props('fluid')).toBeUndefined()
