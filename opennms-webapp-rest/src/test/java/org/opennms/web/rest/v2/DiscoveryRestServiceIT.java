@@ -163,4 +163,57 @@ public class DiscoveryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         assertNotNull(sendPost("/discovery", oneTimeScan, 200, null));
     }
+
+    /**
+     * Discovery is a provisioning operation (its include/exclude URLs can read local files or
+     * fetch URLs), so the scan endpoint must require ROLE_PROVISION/ROLE_ADMIN. A plain
+     * low-privilege ROLE_REST user must be rejected.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void discoveryScanRequiresProvisioningRole() throws Exception {
+        final String scan = fullScanConfig();
+
+        // low-privilege ROLE_REST must be forbidden
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        sendPost("/discovery", scan, 403, null);
+
+        // a provisioning user is allowed
+        setUser("provisioner", new String[]{ "ROLE_PROVISION" });
+        assertNotNull(sendPost("/discovery", scan, 200, null));
+    }
+
+    private static String fullScanConfig() {
+        return "<discoveryConfiguration>\n" +
+                "  <location>My-Location</location>\n" +
+                "  <retries>6</retries>\n" +
+                "  <timeout>4000</timeout>\n" +
+                "  <chunkSize>200</chunkSize>\n" +
+                "  <foreignSource>My-ForeignSource</foreignSource>\n" +
+                "  <specifics>\n" +
+                "    <specific>\n" +
+                "      <retries>3</retries>\n" +
+                "      <timeout>2000</timeout>\n" +
+                "      <content>192.0.2.1</content>\n" +
+                "    </specific>\n" +
+                "  </specifics>\n" +
+                "  <includeRanges>\n" +
+                "    <includeRange>\n" +
+                "      <retries>3</retries>\n" +
+                "      <timeout>2000</timeout>\n" +
+                "      <begin>192.0.2.128</begin>\n" +
+                "      <end>192.0.2.254</end>\n" +
+                "    </includeRange>\n" +
+                "  </includeRanges>\n" +
+                "  <excludeRanges>\n" +
+                "    <excludeRange>\n" +
+                "      <begin>192.0.2.0</begin>\n" +
+                "      <end>192.0.2.63</end>\n" +
+                "    </excludeRange>\n" +
+                "  </excludeRanges>\n" +
+                "  <includeUrls>\n" +
+                "  </includeUrls>\n" +
+                "</discoveryConfiguration>";
+    }
 }

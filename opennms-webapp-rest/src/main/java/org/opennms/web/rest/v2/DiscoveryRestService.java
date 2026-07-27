@@ -34,8 +34,11 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -48,6 +51,7 @@ import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
+import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -401,7 +405,16 @@ public class DiscoveryRestService {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response scan(DiscoveryConfigurationDTO discoveryConfigurationDTO) {
+    public Response scan(@Context final SecurityContext securityContext, DiscoveryConfigurationDTO discoveryConfigurationDTO) {
+
+        // Discovery is a provisioning operation: its include/exclude URLs can read local files
+        // or fetch arbitrary URLs. Restrict to provisioning/admin roles rather than allowing any
+        // ROLE_REST user (this mirrors the spring-security rule for /api/v2/discovery).
+        if (!securityContext.isUserInRole(Authentication.ROLE_PROVISION)
+                && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return Response.status(Status.FORBIDDEN)
+                    .entity("The PROVISION or ADMIN role is required to submit a discovery scan.").build();
+        }
 
         DiscoveryConfiguration discoveryConfiguration = getDiscoveryConfig(discoveryConfigurationDTO);
 
