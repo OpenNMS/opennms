@@ -57,7 +57,7 @@ endif::[]
 
 === Step 3: Download OpenJDK
 
-Download and install OpenJDK packages (OpenJDK 17 here but please refer to system requirements):
+Download and install OpenJDK packages (OpenJDK 21 here but please refer to system requirements):
 
 [source,console]
 ----
