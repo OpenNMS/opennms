@@ -13,7 +13,7 @@ JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
 
 # Dry-run mode flag - when True, logs verbose details and skips API calls
-DRY_RUN = False
+DRY_RUN = True
 
 # Priority mapping for Trivy severity levels
 PRIORITY_MAP = {
@@ -409,18 +409,18 @@ def create_issue_for_package(package_name, vulnerabilities):
         logging.info(f"[DRY-RUN]   CVEs: {', '.join(vuln_ids)}")
         return f"DRY-RUN-{package_name}"
 
-    try:
-        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
-                                 headers={"Content-Type": "application/json"},
-                                 data=json.dumps(issue_payload))
-        response.raise_for_status()
-        created_issue_key = response.json().get('key')
-        processed_issues.add(created_issue_key)
-        logging.info(f"Created issue: {created_issue_key}")
-        return created_issue_key
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to create issue: {e}")
-        return None
+   # try:
+   #     response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
+   #                              headers={"Content-Type": "application/json"},
+   #                              data=json.dumps(issue_payload))
+   #     response.raise_for_status()
+   #     created_issue_key = response.json().get('key')
+   #     processed_issues.add(created_issue_key)
+   #     logging.info(f"Created issue: {created_issue_key}")
+   #     return created_issue_key
+   # except requests.exceptions.RequestException as e:
+   #     logging.error(f"Failed to create issue: {e}")
+   #     return None
 
 def create_issues(vulnerabilities):
     """Legacy function for backward compatibility with old text format."""
