@@ -99,6 +99,8 @@ export default tseslint.config(
           { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui (NMS-20081 seam).' },
+          { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui (NMS-20029 seam).' },
@@ -109,6 +111,7 @@ export default tseslint.config(
           { name: 'primevue/tabs', message: 'Use OnmsTabs from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/tieredmenu', message: 'No seam wrapper yet — SideMenu.vue is the only sanctioned use (inline-disabled). Talk to the UI team (NMS-20081 seam).' },
           { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' }
         ]

@@ -121,11 +121,10 @@
       </template>
     </DataTable>
 
-    <Menu
+    <OnmsMenu
       id="event-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.events.length">
@@ -148,7 +147,7 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
-import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -158,8 +157,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -178,12 +175,12 @@ const expandedRows = ref<Record<string | number, boolean>>({})
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigEvent | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Event' : 'Enable Event',
       command: () => store.showChangeEventConfigEventStatusDialog(target)

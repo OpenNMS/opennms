@@ -11,25 +11,22 @@
     Backup Status
     <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
   </span>
-  <PMenu ref="menu" :model="menuItems" :popup="true" class="dcb-table-status-dropdown">
+  <OnmsMenu ref="menu" :items="menuItems" class="dcb-table-status-dropdown">
     <template #item="{ item, props }">
       <a v-bind="props.action">
         <div class="option" :class="item.statusClass">{{ item.label }}</div>
       </a>
     </template>
-  </PMenu>
+  </OnmsMenu>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import Menu from 'primevue/menu'
-import { OnmsIcon } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
 import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
-
-const PMenu = Menu
 
 const deviceStore = useDeviceStore()
 const menu = ref()

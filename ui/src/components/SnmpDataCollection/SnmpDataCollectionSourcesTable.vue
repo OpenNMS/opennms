@@ -119,11 +119,10 @@
       </Column>
     </DataTable>
 
-    <Menu
+    <OnmsMenu
       id="source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -155,7 +154,7 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
@@ -166,8 +165,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {
@@ -231,12 +228,12 @@ watch(
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: 'Download XML',
       command: () => downloadCollectionSource(target, 'xml')

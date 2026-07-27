@@ -132,11 +132,10 @@
       </template>
     </DataTable>
 
-    <Menu
+    <OnmsMenu
       id="mib-group-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.mibGroups.length">
@@ -166,7 +165,7 @@ import { computed, ref, useId } from 'vue'
 
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -176,8 +175,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
@@ -201,12 +198,12 @@ const snackbar = useSnackbar()
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionMibGroup | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable MIB Group' : 'Enable MIB Group',
       command: () => openChangeStatusDialog(target)

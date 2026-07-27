@@ -23,11 +23,10 @@
         >
           <OnmsIcon :icon="DownloadIcon" /> Download Data Collection Config
         </OnmsButton>
-        <Menu
+        <OnmsMenu
           id="download-config-menu"
           ref="downloadMenu"
-          :model="downloadMenuItems"
-          popup
+          :items="downloadMenuItems"
         />
       </div>
     </div>
@@ -70,10 +69,8 @@ import { downloadDatacollectionConfig } from '@/services/snmpDataCollectionServi
 import { useMenuStore } from '@/stores/menuStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
-import { OnmsButton, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsMenu, OnmsMenuItem, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 
 const menuStore = useMenuStore()
 const store = useSnmpDataCollectionStore()
@@ -90,7 +87,7 @@ const onTabChange = (value: string | number) => {
 }
 
 const downloadMenu = ref()
-const downloadMenuItems = computed<MenuItem[]>(() => ([
+const downloadMenuItems = computed<OnmsMenuItem[]>(() => ([
   { label: 'Download XML', command: () => downloadConfig('xml') },
   { label: 'Download JSON', command: () => downloadConfig('json') }
 ]))

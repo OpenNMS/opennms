@@ -21,3 +21,19 @@
 ///
 
 export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'
+
+// Menu model item in OpenNMS vocabulary (structurally compatible with
+// PrimeVue's MenuItem). The index signature permits app-specific fields
+// (e.g. iconComponent, statusClass) consumed by custom #item templates.
+export interface OnmsMenuItem {
+  label?: string
+  key?: string
+  separator?: boolean
+  url?: string
+  target?: string
+  disabled?: boolean
+  visible?: boolean
+  items?: OnmsMenuItem[]
+  command?: (event: { originalEvent: Event, item: OnmsMenuItem }) => void
+  [custom: string]: unknown
+}

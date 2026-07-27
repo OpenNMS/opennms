@@ -20,7 +20,7 @@
 
     <TieredMenu
       ref="tieredMenuRef"
-      :model="topPanels"
+      :model="topPanels as never"
       class="onms-side-menu__menu"
       breakpoint="0px"
     >
@@ -45,9 +45,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+// eslint-disable-next-line no-restricted-imports -- deliberately unwrapped: SideMenu drives TieredMenu internals (dirty flag, DOM queries); revisit when the side menu is redesigned (NMS-20081)
 import TieredMenu from 'primevue/tieredmenu'
-import type { MenuItem } from 'primevue/menuitem'
-import { OnmsIcon } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'
@@ -113,7 +113,11 @@ const onPerformLogout = async () => {
   await performLogout()
 }
 
-const topPanels = computed<MenuItem[]>(() => {
+// `as never` at the :model binding above: PrimeVue's own MenuItem.label
+// accepts a render function in addition to string, which our narrower
+// OnmsMenuItem.label doesn't — TS rejects the plain assignment even though
+// this is structurally what TieredMenu expects at runtime.
+const topPanels = computed<OnmsMenuItem[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
     return []

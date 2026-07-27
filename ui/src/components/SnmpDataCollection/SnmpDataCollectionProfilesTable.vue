@@ -83,11 +83,10 @@
       </Column>
     </DataTable>
 
-    <Menu
+    <OnmsMenu
       id="profile-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!searchedProfiles.length">
@@ -113,7 +112,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
@@ -121,8 +120,6 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'
@@ -161,7 +158,7 @@ const searchedProfiles = computed(() => {
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionProfile | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []

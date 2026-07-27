@@ -124,11 +124,10 @@
       </template>
     </DataTable>
 
-    <Menu
+    <OnmsMenu
       id="resource-type-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.resourceTypes.length">
@@ -162,7 +161,7 @@ import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMenu, OnmsMenuItem, OnmsTag } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -173,8 +172,6 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
@@ -193,12 +190,12 @@ const snackbar = useSnackbar()
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionResourceType | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Resource Type' : 'Enable Resource Type',
       command: () => openChangeStatusDialog(target)
