@@ -47,6 +47,8 @@ import org.opennms.container.web.bridge.proxy.trackers.ServletTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Apache Felix Http Bridge requires a Http Proxy on the SErvlet Container (Jetty) Side in order to work properly.
@@ -59,6 +61,8 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author mvrueden
  */
 public class ProxyFilter implements Filter, RequestHandlerRegistry {
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyFilter.class);
+
     private BundleContext bundleContext;
     private DispatcherTracker dispatcherTracker;
     /**
@@ -75,8 +79,11 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     public void init(FilterConfig filterConfig) throws ServletException {
         bundleContext = getBundleContext(filterConfig.getServletContext());
         if (bundleContext == null) {
-            filterConfig.getServletContext().log(
-                    "No Karaf BundleContext is available; the OSGi HTTP proxy filter is disabled.");
+            // This filter is attached once, when the web application starts. If Karaf
+            // comes up later, or is restarted on its own, the proxy stays disabled
+            // until the web application is restarted as well.
+            LOG.warn("No Karaf BundleContext is available; the OSGi HTTP proxy filter is disabled. "
+                    + "Requests served by OSGi-registered servlets and resources will not be reachable.");
             return;
         }
         try {

@@ -53,6 +53,12 @@
             <artifactId>opennms-config-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- For the catalog of valid OpenNMS security roles. -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>

@@ -215,6 +215,33 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         assertTrue(dao.getAllPrefabGraphs().isEmpty());
         MockLogAppender.assertLogAtLevel(Level.WARN);
     }
+
+    /**
+     * A graph configuration that exists but cannot be parsed must not prevent
+     * initialization either, otherwise the Spring context that holds this DAO
+     * fails to start and takes the rest of OpenNMS with it.
+     */
+    @Test
+    public void testUnparseableConfiguredGraphResourcesDoNotPreventInitialization() throws Exception {
+        m_testSpecificLoggingTest = true;
+        final File borkedFile = m_fileAnticipator.tempFile("snmp-graph.properties");
+
+        // 'command.prefix' and 'output.mime' are required, so this fails with a
+        // DataAccessResourceFailureException rather than an IOException.
+        m_outputStream = new FileOutputStream(borkedFile);
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
+        m_writer.write("reports=mib2.bits\n");
+        m_writer.close();
+        m_outputStream.close();
+
+        final Map<String, Resource> prefabConfigs = new HashMap<>();
+        prefabConfigs.put("performance", new FileSystemResource(borkedFile));
+
+        final PropertiesGraphDao dao = createPropertiesGraphDao(prefabConfigs, s_emptyMap);
+
+        assertTrue(dao.getAllPrefabGraphs().isEmpty());
+        MockLogAppender.assertLogAtLevel(Level.ERROR);
+    }
     
     @Test
     public void testNoType() throws Exception {

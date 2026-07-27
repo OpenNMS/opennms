@@ -41,6 +41,7 @@ import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,11 +103,14 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
             throw loginException;
         }
 
-        principals = createPrincipals(configUser);
-        if (!hasAdminRole(configUser)) {
+        final Set<Principal> rolePrincipals = createPrincipals(configUser);
+
+        // This login module guards the OSGi console, so only administrators may log in.
+        if (!rolePrincipals.contains(new RolePrincipal(Authentication.ROLE_ADMIN))) {
             throw new LoginException("User " + user + " is not an administrator! OSGi console access is forbidden.");
         }
 
+        principals = rolePrincipals;
         succeeded = true;
         LOG.debug("Successfully logged in {}.", user);
         return true;
@@ -118,23 +122,26 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
 
     private Set<Principal> createPrincipals(final User configUser) {
         final Set<Principal> principals = new HashSet<>();
-        for (String configuredRole : configUser.getRoles()) {
-            final String role = normalizeRole(configuredRole);
-            principals.add(new RolePrincipal(role));
-            principals.add(new RolePrincipal(role.toLowerCase(Locale.ROOT)));
-            principals.add(new RolePrincipal(configuredRole));
+        for (final String configuredRole : configUser.getRoles()) {
+            // Only roles known to OpenNMS grant privileges; anything else in users.xml is ignored.
+            if (!Authentication.isValidRole(configuredRole)) {
+                LOG.debug("Ignoring role {} of user {}: it is not a known OpenNMS role.", configuredRole, user);
+                continue;
+            }
+            addRolePrincipals(principals, configuredRole);
+            if (Authentication.ROLE_ADMIN.equals(configuredRole)) {
+                // ROLE_ADMIN implies ROLE_USER, as it does for the web user interface.
+                addRolePrincipals(principals, Authentication.ROLE_USER);
+            }
         }
         LOG.debug("Created principals from user roles {}: {}", configUser.getRoles(), principals);
         return principals;
     }
 
-    private boolean hasAdminRole(final User configUser) {
-        return configUser.getRoles().stream()
-                .map(OpenNMSLoginModule::normalizeRole)
-                .anyMatch("admin"::equalsIgnoreCase);
-    }
-
-    private static String normalizeRole(final String role) {
-        return role.replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
+    private static void addRolePrincipals(final Set<Principal> principals, final String role) {
+        final String name = role.replaceFirst("^[Rr][Oo][Ll][Ee]_", "");
+        principals.add(new RolePrincipal(name));
+        principals.add(new RolePrincipal(name.toLowerCase(Locale.ROOT)));
+        principals.add(new RolePrincipal(role));
     }
 }

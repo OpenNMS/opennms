@@ -90,23 +90,37 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     public PropertiesGraphDao() {
     }
 
-    private void initPrefab() throws IOException {
+    private void initPrefab() {
         for (Map.Entry<String, Resource> configEntry : getPrefabConfigs().entrySet()) {
             if (!configEntry.getValue().exists()) {
                 LOG.warn("Skipping missing prefab graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
                 continue;
             }
-            loadProperties(configEntry.getKey(), configEntry.getValue());
+            // Graphs are a presentation concern: a configuration that cannot be read or
+            // is missing required properties must degrade graphing of that type rather
+            // than prevent the Spring context holding this DAO from starting, which
+            // would stop OpenNMS from starting at all.
+            try {
+                loadProperties(configEntry.getKey(), configEntry.getValue());
+            } catch (final Exception e) {
+                LOG.error("Failed to load prefab graph configuration of type '{}' from {}. Graphs of this type will be unavailable.",
+                        configEntry.getKey(), configEntry.getValue(), e);
+            }
         }
     }
 
-    private void initAdhoc() throws IOException {
+    private void initAdhoc() {
         for (Map.Entry<String, Resource> configEntry : getAdhocConfigs().entrySet()) {
             if (!configEntry.getValue().exists()) {
                 LOG.warn("Skipping missing ad hoc graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
                 continue;
             }
-            loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
+            try {
+                loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
+            } catch (final Exception e) {
+                LOG.error("Failed to load ad hoc graph configuration of type '{}' from {}. Ad hoc graphs of this type will be unavailable.",
+                        configEntry.getKey(), configEntry.getValue(), e);
+            }
         }
     }
 

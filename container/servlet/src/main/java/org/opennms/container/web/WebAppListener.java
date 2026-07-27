@@ -21,20 +21,26 @@ import javax.servlet.ServletContextListener;
 
 import org.opennms.container.daemon.KarafContext;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Publishes the context of the OpenNMS-managed Karaf service to the servlet
  * bridge. Karaf lifecycle ownership remains outside the web application.
  */
 public class WebAppListener implements ServletContextListener {
+    private static final Logger LOG = LoggerFactory.getLogger(WebAppListener.class);
+
     @Override
     public void contextInitialized(final ServletContextEvent event) {
         final BundleContext bundleContext = getBundleContext();
         if (bundleContext != null) {
             event.getServletContext().setAttribute(BundleContext.class.getName(), bundleContext);
         } else {
-            event.getServletContext().log(
-                    "Karaf is not running; OSGi servlet and resource proxying is disabled.");
+            // The context is read once, at web application startup: starting Karaf
+            // afterwards does not enable proxying until the web application restarts.
+            LOG.warn("Karaf is not running; OSGi servlet and resource proxying is disabled. "
+                    + "Check that the Karaf service is enabled in service-configuration.xml.");
         }
     }
 

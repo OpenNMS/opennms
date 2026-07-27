@@ -64,9 +64,9 @@ public class WebAppListenerTest {
 
         listener.contextInitialized(event);
 
+        // Startup must succeed; the bridge simply has no context to publish.
         verify(servletContext, never()).setAttribute(
                 org.mockito.ArgumentMatchers.eq(BundleContext.class.getName()),
                 org.mockito.ArgumentMatchers.any());
-        verify(servletContext).log("Karaf is not running; OSGi servlet and resource proxying is disabled.");
     }
 }

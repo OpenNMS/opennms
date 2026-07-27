@@ -21,6 +21,7 @@
  */
 package org.opennms.container.jaas;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -39,11 +42,29 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
 
 public class OpenNMSLoginModuleTest {
+    @Rule
+    public TemporaryFolder m_opennmsHome = new TemporaryFolder();
+
+    @Before
+    public void setUp() {
+        // Keep Authentication from picking up a security-roles.properties outside of this test.
+        System.setProperty("opennms.home", m_opennmsHome.getRoot().getAbsolutePath());
+    }
+
+    @After
+    public void tearDown() {
+        System.clearProperty("opennms.home");
+    }
+
     @Test
     public void authenticatesAdminUsingOnlyUserConfig() throws Exception {
         final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN", "ROLE_USER");
@@ -52,10 +73,19 @@ public class OpenNMSLoginModuleTest {
 
         assertTrue(module.login());
         assertTrue(module.commit());
-        assertTrue(subject.getPrincipals(RolePrincipal.class).stream()
-                .anyMatch(principal -> "admin".equals(principal.getName())));
-        assertTrue(subject.getPrincipals(RolePrincipal.class).stream()
-                .anyMatch(principal -> "ROLE_ADMIN".equals(principal.getName())));
+        assertEquals(Set.of("ADMIN", "admin", "ROLE_ADMIN", "USER", "user", "ROLE_USER"), roleNames(subject));
+    }
+
+    @Test
+    public void grantsRoleUserToAdministrators() throws Exception {
+        // ROLE_ADMIN implies ROLE_USER, as it does for the web user interface.
+        final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN");
+        final Subject subject = new Subject();
+        final OpenNMSLoginModule module = loginModule(userConfig, subject, "admin", "secret");
+
+        assertTrue(module.login());
+        assertTrue(module.commit());
+        assertEquals(Set.of("ADMIN", "admin", "ROLE_ADMIN", "USER", "user", "ROLE_USER"), roleNames(subject));
     }
 
     @Test
@@ -68,11 +98,49 @@ public class OpenNMSLoginModuleTest {
     }
 
     @Test
+    public void rejectsRolesThatOnlyResembleTheAdminRole() throws Exception {
+        // None of these are valid OpenNMS roles, so none of them may unlock the OSGi console.
+        for (final String role : List.of("admin", "Admin", "role_admin", "ROLE_ADMINISTRATOR")) {
+            final UserConfig userConfig = userConfig("someone", "secret", role);
+            final OpenNMSLoginModule module = loginModule(userConfig, new Subject(), "someone", "secret");
+
+            final LoginException exception = assertThrows("role " + role + " must not grant console access",
+                    LoginException.class, module::login);
+            assertTrue(exception.getMessage().contains("is not an administrator"));
+        }
+    }
+
+    @Test
+    public void ignoresRolesThatOpenNmsDoesNotKnow() throws Exception {
+        final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN", "ROLE_MADE_UP");
+        final Subject subject = new Subject();
+        final OpenNMSLoginModule module = loginModule(userConfig, subject, "admin", "secret");
+
+        assertTrue(module.login());
+        assertTrue(module.commit());
+        assertEquals(Set.of("ADMIN", "admin", "ROLE_ADMIN", "USER", "user", "ROLE_USER"), roleNames(subject));
+    }
+
+    @Test
     public void rejectsInvalidPasswords() throws Exception {
         final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN");
         final OpenNMSLoginModule module = loginModule(userConfig, new Subject(), "admin", "wrong");
 
         assertThrows(FailedLoginException.class, module::login);
+    }
+
+    @Test
+    public void failsWhenUserConfigIsUnavailable() {
+        final OpenNMSLoginModule module = loginModule(null, new Subject(), "admin", "secret");
+
+        final LoginException exception = assertThrows(LoginException.class, module::login);
+        assertTrue(exception.getMessage().contains("UserConfig service is unavailable"));
+    }
+
+    private static Set<String> roleNames(final Subject subject) {
+        return subject.getPrincipals(RolePrincipal.class).stream()
+                .map(RolePrincipal::getName)
+                .collect(Collectors.toSet());
     }
 
     private static UserConfig userConfig(final String username, final String password, final String... roles)

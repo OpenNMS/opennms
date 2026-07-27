@@ -48,8 +48,8 @@ public class ProxyFilterTest {
         filter.doFilter(request, response, chain);
         filter.destroy();
 
+        // Without a BundleContext the filter must stay out of the way rather than
+        // failing the request or the web application startup.
         verify(chain).doFilter(request, response);
-        verify(servletContext).log(
-                "No Karaf BundleContext is available; the OSGi HTTP proxy filter is disabled.");
     }
 }
