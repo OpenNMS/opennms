@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -113,6 +114,9 @@ public class FlowAggregator implements AutoCloseable {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     /** Highest window-start already evicted (any flush path); flows for it or earlier are late. Lock-guarded. */
     private long emittedFloor = Long.MIN_VALUE;
+    /** Test seam: set on each window emit to whether the eviction write lock is held. Must stay false —
+     *  emit (grouping + top-K selection) runs OUTSIDE the lock so it never blocks ingestion. */
+    private volatile boolean writeLockHeldDuringEmit;
 
     /** Wall clock, injectable for tests. */
     private java.util.function.LongSupplier clock = System::currentTimeMillis;
@@ -298,7 +302,7 @@ public class FlowAggregator implements AutoCloseable {
      */
     void flushIdleWindows() {
         final long cutoff = clock.getAsLong() - idleFlushMs;
-        final List<AggregatedFlow> batch = new ArrayList<>();
+        final List<Map.Entry<Long, ConcurrentHashMap<Key, Acc>>> evicted = new ArrayList<>();
         lock.writeLock().lock();
         try {
             for (final Map.Entry<Long, Long> e : windowFirstSeenMs.entrySet()) {
@@ -308,18 +312,18 @@ public class FlowAggregator implements AutoCloseable {
                     final ConcurrentHashMap<Key, Acc> acc = windows.remove(windowStart);
                     if (acc != null) {
                         emittedFloor = Math.max(emittedFloor, windowStart);
-                        emitWindow(windowStart, acc, batch);
+                        evicted.add(Map.entry(windowStart, acc));
                     }
                 }
             }
         } finally {
             lock.writeLock().unlock();
         }
-        deliver(batch); // outside the lock: sink I/O must not block flow ingestion
+        emitAndDeliver(evicted);
     }
 
     private void drainWindowsUpTo(final long thresholdInclusive) {
-        final List<AggregatedFlow> batch = new ArrayList<>();
+        final List<Map.Entry<Long, ConcurrentHashMap<Key, Acc>>> evicted = new ArrayList<>();
         lock.writeLock().lock();
         try {
             while (!windows.isEmpty()) {
@@ -331,13 +335,30 @@ public class FlowAggregator implements AutoCloseable {
                 if (entry != null) {
                     windowFirstSeenMs.remove(entry.getKey());
                     emittedFloor = Math.max(emittedFloor, entry.getKey());
-                    emitWindow(entry.getKey(), entry.getValue(), batch);
+                    evicted.add(entry);
                 }
             }
         } finally {
             lock.writeLock().unlock();
         }
-        deliver(batch); // outside the lock: sink I/O must not block flow ingestion
+        emitAndDeliver(evicted);
+    }
+
+    /**
+     * Group / select top-K / build rows for the evicted windows and hand the batch to the sink &mdash; all
+     * OUTSIDE the eviction lock. The write lock (in the two flush methods above) is held only long enough to
+     * remove the windows from {@code windows} and advance {@code emittedFloor}; the per-window top-K work,
+     * which is O(entries) and can be large under high cardinality, must never block flow ingestion.
+     */
+    private void emitAndDeliver(final List<Map.Entry<Long, ConcurrentHashMap<Key, Acc>>> evicted) {
+        if (evicted.isEmpty()) {
+            return;
+        }
+        final List<AggregatedFlow> batch = new ArrayList<>();
+        for (final Map.Entry<Long, ConcurrentHashMap<Key, Acc>> w : evicted) {
+            emitWindow(w.getKey(), w.getValue(), batch);
+        }
+        deliver(batch);
     }
 
     /**
@@ -364,7 +385,13 @@ public class FlowAggregator implements AutoCloseable {
         this.clock = Objects.requireNonNull(clock);
     }
 
+    /** Test hook: whether the eviction write lock was held during the most recent window emit (must be false). */
+    boolean wasWriteLockHeldDuringEmit() {
+        return writeLockHeldDuringEmit;
+    }
+
     private void emitWindow(final long windowStart, final Map<Key, Acc> accumulators, final List<AggregatedFlow> out) {
+        writeLockHeldDuringEmit = lock.isWriteLockedByCurrentThread(); // test seam; must be false (emit is off-lock)
         final long windowEnd = windowStart + windowSizeMs;
         if (topK <= 0) {
             for (final Map.Entry<Key, Acc> e : accumulators.entrySet()) {
@@ -381,31 +408,36 @@ public class FlowAggregator implements AutoCloseable {
         for (final Map.Entry<Key, List<Map.Entry<Key, Acc>>> group : byOuter.entrySet()) {
             final Key outer = group.getKey();
             final List<Map.Entry<Key, Acc>> entries = group.getValue();
-            if (!CAPPED.contains(outer.dimension)) {
-                // Interface (and future exporter/tos) totals are never capped.
+            if (!CAPPED.contains(outer.dimension) || entries.size() <= topK) {
+                // Interface (and future exporter/tos) totals are never capped; a group already within the
+                // cap needs no selection and produces no "Other" row.
                 for (final Map.Entry<Key, Acc> e : entries) {
                     emit(out, windowStart, windowEnd, e.getKey(), e.getValue());
                 }
                 continue;
             }
-            // Keep the top-K by bytes; roll everything else into one null-key "Other" row.
-            entries.sort(BY_BYTES_DESC);
-            Acc other = null;
-            for (int i = 0; i < entries.size(); i++) {
-                if (i < topK) {
-                    emit(out, windowStart, windowEnd, entries.get(i).getKey(), entries.get(i).getValue());
+            // Select the top-K by bytes with a bounded min-heap (O(n log K)) rather than sorting all n
+            // entries (O(n log n)) -- decisive when a high-cardinality window holds millions of keys. The
+            // heap holds the current top-K (its head is the weakest of them); everything displaced rolls
+            // into one null-key "Other" row. The order of the kept rows is irrelevant to readers.
+            final PriorityQueue<Map.Entry<Key, Acc>> top = new PriorityQueue<>(topK, BY_BYTES_DESC.reversed());
+            final Acc other = new Acc();
+            for (final Map.Entry<Key, Acc> e : entries) {
+                if (top.size() < topK) {
+                    top.add(e);
+                } else if (BY_BYTES_DESC.compare(e, top.peek()) < 0) {
+                    other.mergeCounts(top.poll().getValue());
+                    top.add(e);
                 } else {
-                    if (other == null) {
-                        other = new Acc();
-                    }
-                    other.mergeCounts(entries.get(i).getValue());
+                    other.mergeCounts(e.getValue());
                 }
             }
-            if (other != null) {
-                out.add(new AggregatedFlow(windowStart, windowEnd, outer.exporterNodeId, outer.ifIndex,
-                        outer.dscp, outer.dimension, null, other.bytesIn, other.bytesOut,
-                        other.congestionEncountered, other.nonEcnCapableTransport, null));
+            for (final Map.Entry<Key, Acc> e : top) {
+                emit(out, windowStart, windowEnd, e.getKey(), e.getValue());
             }
+            out.add(new AggregatedFlow(windowStart, windowEnd, outer.exporterNodeId, outer.ifIndex,
+                    outer.dscp, outer.dimension, null, other.bytesIn, other.bytesOut,
+                    other.congestionEncountered, other.nonEcnCapableTransport, null));
         }
     }
 

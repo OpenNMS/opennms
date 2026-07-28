@@ -411,6 +411,25 @@ public class FlowAggregatorTest {
         assertNotNull(row(20_000L, AggregatedFlow.Dimension.INTERFACE, null, 1));
     }
 
+    @Test
+    public void windowEmitRunsOutsideTheEvictionLock() {
+        // A capped window with many keys so emit does real grouping + top-K selection. The eviction write
+        // lock must cover only the removal from the window map, never the emit -- otherwise a big flush
+        // would stall all ingestion. The seam records whether the lock was held during emit; must be false.
+        final FlowAggregator agg = aggregator(0L, 10);
+        for (int i = 0; i < 500; i++) {
+            agg.add(flow(1000L, 1999L, 100L + i, null, true, 1, 10, null, "c" + i, null, null, null));
+        }
+        advanceWatermark(agg, 10_000L); // closes [1000,2000)
+        agg.flushClosedWindows();
+
+        assertFalse("window emit (grouping / top-K selection) must run outside the eviction write lock",
+                agg.wasWriteLockHeldDuringEmit());
+        // sanity: the bounded top-K selection actually ran (10 kept + 1 Other for the conversation dimension)
+        assertEquals(11L, captured.stream()
+                .filter(r -> r.dimension == AggregatedFlow.Dimension.CONVERSATION && r.exporterNodeId == 1).count());
+    }
+
     // ---- FlowInput.from direction / byte-count handling -------------------------------------------
 
     private static Flow mockFlow(final Flow.Direction direction, final Long bytes) {
