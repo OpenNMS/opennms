@@ -73,7 +73,6 @@ import com.google.common.collect.Maps;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml",
         "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",

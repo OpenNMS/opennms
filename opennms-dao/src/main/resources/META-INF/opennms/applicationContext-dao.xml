@@ -149,6 +149,22 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
 
+  <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
+    <property name="prefabConfigs">
+      <map>
+        <entry key="performance" value="file:${opennms.home}/etc/snmp-graph.properties"/>
+        <entry key="response" value="file:${opennms.home}/etc/response-graph.properties"/>
+      </map>
+    </property>
+    <property name="adhocConfigs">
+      <map>
+        <entry key="performance" value="file:${opennms.home}/etc/snmp-adhoc-graph.properties"/>
+        <entry key="response" value="file:${opennms.home}/etc/response-adhoc-graph.properties"/>
+      </map>
+    </property>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao" />
+
   <bean id="rrdDao" class="org.opennms.netmgt.dao.support.DefaultRrdDao">
     <property name="rrdStrategy" ref="rrdStrategy" />
     <property name="rrdBaseDirectory" value="${rrd.base.dir}" />

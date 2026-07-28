@@ -6,9 +6,9 @@
           class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg>
             <list>
-                <value>META-INF/opennms/applicationContext-reportingRepository.xml</value>
-                <value>META-INF/opennms/applicationContext-reportingDao.xml</value>
+                <!-- Reporting repositories are initialized by daoContext. -->
             </list>
         </constructor-arg>
+        <constructor-arg ref="daoContext" />
     </bean>
 </beans>

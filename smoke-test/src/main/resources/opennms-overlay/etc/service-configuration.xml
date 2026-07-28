@@ -22,10 +22,11 @@
   <service><name>OpenNMS:Name=Statsd</name></service>
   <service><name>OpenNMS:Name=Provisiond</name></service>
   <service><name>OpenNMS:Name=Ackd</name></service>
-  <service><name>OpenNMS:Name=JettyServer</name></service>
-  <service><name>OpenNMS:Name=KarafStartupMonitor</name></service>
+  <service enabled="${env:CORE_SERVICE_KARAF_ENABLED|true}"><name>OpenNMS:Name=Karaf</name></service>
+  <service enabled="${env:CORE_SERVICE_JETTYSERVER_ENABLED|true}"><name>OpenNMS:Name=JettyServer</name></service>
+  <service enabled="${env:CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED|true}"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
   <service><name>OpenNMS:Name=Syslogd</name></service>
-  <service><name>OpenNMS:Name=Telemetryd</name></service>
+  <service enabled="${env:CORE_SERVICE_TELEMETRYD_ENABLED|true}"><name>OpenNMS:Name=Telemetryd</name></service>
   <service><name>OpenNMS:Name=Trapd</name></service>
   <service><name>OpenNMS:Name=PerspectivePoller</name></service>
 </service-configuration>

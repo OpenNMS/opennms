@@ -3,7 +3,19 @@
 :description: Learn about the daemon sub-services available in OpenNMS {page-component-title} and how to enable or disable them.
 
 The {page-component-title} service is composed of several daemon "sub-services" that each perform a specific set of tasks.
-You can enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.
+You can enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`, or with the container environment variables listed below.
+
+To turn a daemon off, set `enabled="false"` on its `<service>` entry:
+
+[source, xml]
+----
+<service enabled="false"><name>OpenNMS:Name=Syslogd</name></service>
+----
+
+IMPORTANT: Do not delete `<service>` entries and do not change their order.
+{page-component-title} ships a default catalog that defines the complete set of daemons and the order in which they start, and your file is applied on top of it as a set of enable/disable overrides.
+A deleted entry is therefore restored at its default state on the next start, and reordering entries has no effect because the startup order always comes from the default catalog.
+An entry naming a daemon that is not in the catalog is ignored, and a warning is logged.
 
 See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] section for details on sending daemon reload commands.
 
@@ -62,11 +74,13 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | `CORE_SERVICE_JETTYSERVER_ENABLED=true`
 
 | Karaf
-| The Karaf runtime is the framework that maintains all the other daemons running within the {page-component-title} system.
-| -
+| The Karaf runtime hosts the OSGi services and features used by the {page-component-title} system.
+If you disable it, you must also disable KarafStartupMonitor.
+| `CORE_SERVICE_KARAF_ENABLED=true`
 
 | KarafStartupMonitor
 | Used in startup script to detect if Karaf started properly.
+It waits for the Karaf runtime to come up and fails startup if it does not, so leaving it enabled while Karaf is disabled delays and then fails startup.
 | `CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED=true`
 
 | Notifd
