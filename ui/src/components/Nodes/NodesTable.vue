@@ -236,7 +236,7 @@
   <NodeAdvancedFiltersDrawer />
   <ColumnSelectionDrawer />
 
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="isHelpMessageDialogVisible"
     :relative="true"
     maxHeight="22em"
@@ -252,7 +252,7 @@
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -270,14 +270,13 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsSearchInput } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsMessageDialog, OnmsSearchInput } from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
 import Column from 'primevue/column'
 import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
-import MessageDialog from '../Common/MessageDialog.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'

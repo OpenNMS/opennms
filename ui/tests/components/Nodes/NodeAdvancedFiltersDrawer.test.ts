@@ -133,7 +133,7 @@ const mountDrawer = () =>
         MultiSelect: MultiSelectStub,
         AssetFilterPanel: AssetFilterPanelStub,
         ExtendedSearchPanel: ExtendedSearchPanelStub,
-        MessageDialog: true
+        OnmsMessageDialog: true
       }
     }
   })

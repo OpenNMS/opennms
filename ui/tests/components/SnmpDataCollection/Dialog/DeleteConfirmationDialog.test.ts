@@ -2,11 +2,11 @@ import DeleteConfirmationDialog from '@/components/SnmpDataCollection/Dialog/Del
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events),
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
+  name: 'OnmsConfirmationDialog',
   template: '<div class="confirmation-dialog"><div class="dialog-content"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
@@ -23,12 +23,12 @@ describe('DeleteConfirmationDialog', () => {
         ...props
       },
       global: {
-        stubs: { ConfirmationDialog: ConfirmationDialogStub }
+        stubs: { OnmsConfirmationDialog: ConfirmationDialogStub }
       }
     })
   }
 
-  const confirmationDialog = () => wrapper.findComponent({ name: 'ConfirmationDialog' })
+  const confirmationDialog = () => wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
 
   afterEach(() => {
     if (wrapper) {
@@ -37,13 +37,13 @@ describe('DeleteConfirmationDialog', () => {
   })
 
   describe('Component Rendering', () => {
-    it('renders the ConfirmationDialog', async () => {
+    it('renders the OnmsConfirmationDialog', async () => {
       wrapper = createWrapper()
       await flushPromises()
       expect(confirmationDialog().exists()).toBe(true)
     })
 
-    it('passes the visible prop through to ConfirmationDialog', async () => {
+    it('passes the visible prop through to OnmsConfirmationDialog', async () => {
       wrapper = createWrapper({ visible: true })
       await flushPromises()
       expect(confirmationDialog().props('visible')).toBe(true)

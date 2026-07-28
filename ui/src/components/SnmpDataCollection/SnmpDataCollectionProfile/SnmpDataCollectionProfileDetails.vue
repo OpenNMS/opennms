@@ -93,7 +93,7 @@
       </div>
     </TableCard>
   </div>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Profile"
     actionButtonText="Delete"
@@ -103,7 +103,7 @@
     <template #content>
       <p>Are you sure you want to delete the profile <strong>{{ store.selectedProfile?.name }}</strong>? This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
   </template>
   <div
     v-else
@@ -120,7 +120,6 @@
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ProfileDetailsTab from './ProfileDetailsTab.vue'
 import ProfileSourcesTab from './ProfileSourcesTab.vue'
@@ -132,7 +131,7 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { OnmsButton, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 
 const router = useRouter()

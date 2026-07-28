@@ -37,7 +37,7 @@
       </div>
     </div>
   </div>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="Boolean(fileEditorStore.fileToDelete)"
     title="Delete confirmation"
     action-button-text="Confirm"
@@ -47,14 +47,13 @@
     <template #content>
       <p>Delete {{ fileEditorStore.fileToDelete?.name }}?</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import { OnmsButton } from '@opennms/onms-ui'
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsButton, OnmsConfirmationDialog } from '@opennms/onms-ui'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
 import Help from '@/components/FileEditor/Help.vue'

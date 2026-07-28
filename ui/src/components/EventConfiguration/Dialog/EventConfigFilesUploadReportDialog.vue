@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="store.uploadedEventConfigFilesReportDialogState.visible"
     title="Upload Report"
     action-button-text="View Uploaded Files"
@@ -28,11 +28,11 @@
         </ul>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 

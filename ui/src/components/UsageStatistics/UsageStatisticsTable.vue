@@ -57,7 +57,7 @@
       </PColumn>
     </PDataTable>
   </div>
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="showValueModalVisible"
     :title="showValueModalSubtitle ? `Usage Statistics: ${showValueModalSubtitle}` : 'Usage Statistics'"
     max-height="500px"
@@ -73,7 +73,7 @@
         </div>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -88,7 +88,7 @@ import {
 } from '@/types/usageStatistics'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import MessageDialog from '@/components/Common/MessageDialog.vue'
+import { OnmsMessageDialog } from '@opennms/onms-ui'
 
 const PDataTable = DataTable
 const PColumn = Column

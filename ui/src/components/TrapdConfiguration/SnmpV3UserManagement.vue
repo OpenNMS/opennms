@@ -86,7 +86,7 @@
       @close="cancelDeleteUser"
       @confirm="confirmDeleteUser"
     />
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -111,14 +111,14 @@
           <p>We strongly suggest that you use an SCV (Secure Credentials Vault) expression for storing credentials securely, rather than entering them directly.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsMessageDialog } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Delete from '@/components/icons/action/Delete.vue'
@@ -132,7 +132,6 @@ import { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
 const PColumn = Column

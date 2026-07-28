@@ -71,7 +71,7 @@
     </div>
   </TableCard>
 
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="displayDeleteDialog"
     title="Delete SNMP Configuration Profile"
     action-button-text="Delete"
@@ -84,20 +84,19 @@
         <strong>{{ selectedProfileLabel }}</strong>
       </p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSearchInput } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'

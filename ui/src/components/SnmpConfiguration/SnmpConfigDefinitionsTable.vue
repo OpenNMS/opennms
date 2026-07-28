@@ -86,7 +86,7 @@
       </PDataTable>
     </div>
   </TableCard>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete SNMP Definition"
     actionButtonText="Delete"
@@ -125,14 +125,14 @@
         </div>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconAdd from '@/components/icons/action/Add.vue'
@@ -143,7 +143,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { ActiveTabs, SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpDefinition } from '@/types/snmpConfig'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'

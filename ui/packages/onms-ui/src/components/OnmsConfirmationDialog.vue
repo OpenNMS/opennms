@@ -27,7 +27,8 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
+import OnmsButton from './OnmsButton.vue'
+import OnmsDialog from './OnmsDialog.vue'
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },

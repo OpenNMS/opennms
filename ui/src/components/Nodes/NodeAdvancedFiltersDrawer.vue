@@ -185,7 +185,7 @@
         <div class="spacer-medium"></div>
         <ExtendedSearchPanel ref="extendedSearchPanelRef" />
       </div>
-      <MessageDialog
+      <OnmsMessageDialog
         :visible="isMessageDialogVisible"
         :relative="true"
         maxHeight="22em"
@@ -246,7 +246,7 @@
             <p>This is a case-insensitive partial string match against the selected field.</p>
           </div>
         </template>
-      </MessageDialog>
+      </OnmsMessageDialog>
     </div>
     <template #footer>
       <div class="footer">
@@ -278,12 +278,11 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import FormField from '@/components/Common/FormField.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'

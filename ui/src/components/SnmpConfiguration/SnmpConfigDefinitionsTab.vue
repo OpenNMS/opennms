@@ -29,7 +29,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Definitions"
       @close="isMessageDialogVisible = false"
@@ -42,21 +42,20 @@
           <p>Note that OpenNMS also modifies and optimizes these configurations automatically.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsIcon } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()

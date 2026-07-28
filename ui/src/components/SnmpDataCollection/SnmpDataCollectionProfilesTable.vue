@@ -91,7 +91,7 @@
       />
     </div>
   </TableCard>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Profile"
     actionButtonText="Delete"
@@ -101,13 +101,13 @@
     <template #content>
       <p>Are you sure you want to delete the profile <strong>{{ profileToDelete?.name }}</strong>? This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsButton, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import Column from 'primevue/column'
@@ -118,7 +118,6 @@ import { useRouter } from 'vue-router'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import FormField from '@/components/Common/FormField.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'

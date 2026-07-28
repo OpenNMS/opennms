@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -74,18 +74,17 @@
           <p>The SNMP configuration that applies to that IP address will then be displayed.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'

@@ -5,11 +5,11 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import * as eventConfigService from '@/services/eventConfigService'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events),
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
+  name: 'OnmsConfirmationDialog',
   template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
@@ -64,7 +64,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          ConfirmationDialog: ConfirmationDialogStub
+          OnmsConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -78,7 +78,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
 
   describe('Dialog Rendering', () => {
     it('renders dialog when visible is true', () => {
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       expect(dialog.exists()).toBe(true)
       expect(dialog.props('title')).toBe('Delete Event Configuration Source')
     })
@@ -86,7 +86,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
     it('hides dialog when visible is false', async () => {
       store.deleteEventConfigSourceDialogState.visible = false
       await wrapper.vm.$nextTick()
-      expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
+      expect(wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).props('visible')).toBe(false)
     })
 
     it('renders Cancel and Delete buttons', () => {
@@ -236,7 +236,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
 
   describe('Dialog Dismiss Event', () => {
     it('calls hideDeleteEventConfigSourceDialog when dialog emits cancel event', async () => {
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       dialog.vm.$emit('cancel')
       expect(store.hideDeleteEventConfigSourceDialog).toHaveBeenCalled()
     })

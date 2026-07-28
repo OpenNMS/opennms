@@ -155,7 +155,7 @@
         @click="updateConfig"
       />
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -167,7 +167,7 @@
           <p>Configure trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
@@ -175,7 +175,7 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -184,7 +184,6 @@ import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
-import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 

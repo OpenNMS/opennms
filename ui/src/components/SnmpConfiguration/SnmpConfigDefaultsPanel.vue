@@ -132,7 +132,7 @@
       @hidden="scvSearchDrawerOpen = false"
       @itemSelected="scvItemSelected"
     />
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Configuration Defaults"
       @close="isMessageDialogVisible = false"
@@ -149,14 +149,14 @@
           <p>To reset all overrides and return to using the system defaults, click the "Reset to System Defaults" button and then click Save to apply the reset.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 
@@ -187,7 +187,6 @@ import { saveSnmpConfigDefaultOverrides } from '@/services/snmpConfigService'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
-import MessageDialog from '../Common/MessageDialog.vue'
 
 // SNMP Version options
 const SnmpVersions: ISelectItemType[] = [
