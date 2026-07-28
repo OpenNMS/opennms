@@ -20,8 +20,8 @@
               <h3>Registration Results</h3>
             </div>
             <div class="results-container">
-              <PDataTable :value="resultRows">
-                <PColumn header="Result">
+              <OnmsTable :value="resultRows">
+                <OnmsColumn header="Result">
                   <template #body>
                     <div
                       v-if="zenithConnectStore.registerResponse?.success === true"
@@ -32,16 +32,16 @@
                       class="register-failed"
                     >Failed</div>
                   </template>
-                </PColumn>
-                <PColumn
+                </OnmsColumn>
+                <OnmsColumn
                   field="systemId"
                   header="System ID"
                 />
-                <PColumn
+                <OnmsColumn
                   field="displayName"
                   header="Display Name"
                 />
-                <PColumn header="Access Token">
+                <OnmsColumn header="Access Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.accessToken ?? '', 30) }}
                     <OnmsIconButton
@@ -51,8 +51,8 @@
                       @click.prevent="() => onCopyToken(true)"
                     />
                   </template>
-                </PColumn>
-                <PColumn header="Refresh Token">
+                </OnmsColumn>
+                <OnmsColumn header="Refresh Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.refreshToken ?? '', 30) }}
                     <OnmsIconButton
@@ -62,8 +62,8 @@
                       @click.prevent="() => onCopyToken(false)"
                     />
                   </template>
-                </PColumn>
-              </PDataTable>
+                </OnmsColumn>
+              </OnmsTable>
             </div>
           </div>
           <div>
@@ -82,9 +82,7 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, ref } from 'vue'
 
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -95,9 +93,6 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration, ZenithConnectRegistrationResponse } from '@/types/zenithConnect'
-
-const PDataTable = DataTable
-const PColumn = Column
 
 const menuStore = useMenuStore()
 const zenithConnectStore = useZenithConnectStore()

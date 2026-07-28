@@ -1,6 +1,6 @@
 <template>
   <div class="usage-stats-table">
-    <PDataTable
+    <OnmsTable
       :value="tableData"
       sortField="key"
       :sortOrder="1"
@@ -11,33 +11,29 @@
       tableStyle="table-layout: fixed; width: 100%"
       aria-label="Usage Statistics Sharing"
     >
-      <PColumn
+      <OnmsColumn
         field="name"
         header="Name"
         sortable
         style="width: 20%"
-        :pt="columnHeaderPt"
       />
-      <PColumn
+      <OnmsColumn
         field="key"
         header="Key name"
         sortable
         style="width: 20%"
-        :pt="columnHeaderPt"
       />
-      <PColumn
+      <OnmsColumn
         field="description"
         header="Description"
         sortable
         style="width: 40%"
-        :pt="columnHeaderPt"
       />
-      <PColumn
+      <OnmsColumn
         field="latestValue"
         header="Latest value"
         sortable
         style="width: 20%"
-        :pt="columnHeaderPt"
       >
         <template #body="{ data }">
           <a
@@ -54,8 +50,8 @@
           </template>
           <template v-else>{{ data.latestValue }}</template>
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
   <OnmsMessageDialog
     :visible="showValueModalVisible"
@@ -86,17 +82,7 @@ import {
   UsageStatisticsMetadata,
   UsageStatisticsMetadataItem
 } from '@/types/usageStatistics'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { OnmsMessageDialog } from '@opennms/onms-ui'
-
-const PDataTable = DataTable
-const PColumn = Column
-
-// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via
-// the passthrough so the header cells stay associated with their columns for
-// screen readers (the FeatherDS table set scope="col" per column).
-const columnHeaderPt = { headerCell: { scope: 'col' }}
+import { OnmsColumn, OnmsMessageDialog, OnmsTable } from '@opennms/onms-ui'
 
 interface StatisticsItem {
   // this is just for sorting

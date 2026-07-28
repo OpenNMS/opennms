@@ -27,16 +27,16 @@
       <div class="large-spacer"></div>
 
       <div class="results-table-container">
-        <PDataTable
+        <OnmsTable
           :value="filteredResults"
           aria-label="SCV Search Results Table"
         >
-          <PColumn header="Alias">
+          <OnmsColumn header="Alias">
             <template #body="{ data }">
               {{ data.type === 'alias' ? data.alias : '' }}
             </template>
-          </PColumn>
-          <PColumn header="Key">
+          </OnmsColumn>
+          <OnmsColumn header="Key">
             <template #body="{ data }">
               <a
                 v-if="data.type === 'key' && data.key"
@@ -45,11 +45,11 @@
                 @click.prevent="onItemSelected(data)"
               >{{ data.key }}</a>
             </template>
-          </PColumn>
+          </OnmsColumn>
           <template #empty>
             <div class="empty-results">No results found.</div>
           </template>
-        </PDataTable>
+        </OnmsTable>
       </div>
 
       <div class="large-spacer"></div>
@@ -69,16 +69,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDrawer, OnmsSearchInput } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
-
-const PColumn = Column
-const PDataTable = DataTable
 
 const props = defineProps<{
   isOpen: boolean
