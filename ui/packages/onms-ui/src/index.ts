@@ -20,7 +20,7 @@
 /// License.
 ///
 
-export const ONMS_UI_VERSION = '0.1.0'
+export const ONMS_UI_VERSION = '0.2.0'
 
 export { default as OnmsAutoComplete } from './components/OnmsAutoComplete.vue'
 export { default as OnmsButton } from './components/OnmsButton.vue'
