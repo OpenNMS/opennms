@@ -321,7 +321,6 @@
                           <feature>opennms-mate-shell</feature>
                           <feature>opennms-newts</feature>
                           <feature>opennms-poller-monitors-core</feature>
-                          <feature>opennms-telemetry-daemon</feature>
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-grpc-exporter</feature>
