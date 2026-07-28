@@ -4028,6 +4028,13 @@
         <artifactId>caffeine</artifactId>
         <version>${caffeineVersion}</version>
       </dependency>
+      <!-- no direct users, but pins the xstream shipped in lib/ (transitive of
+           drools-xml-support, which declares an older release) -->
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>${xstreamVersion}</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
@@ -4470,6 +4477,18 @@
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-osgi-bundle</artifactId>
+        <version>${kotlinVersion}</version>
+      </dependency>
+      <!-- no direct users, but pins the kotlin-stdlib shipped in lib/ (transitive of
+           okhttp, which declares an older release) -->
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib-common</artifactId>
         <version>${kotlinVersion}</version>
       </dependency>
       <dependency>
