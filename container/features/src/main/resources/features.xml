@@ -1207,6 +1207,19 @@
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.core/${project.version}</bundle>
     </feature>
+
+    <!-- Backend-agnostic write-time flow aggregation engine (fixed windows, proration, top-K) plus the
+         AggregatedFlowSink SPI and the abstract forwarder repository. Consumed by flow persistence
+         backends. Deliberately lightweight: only the integration-api flow contract, the distributed node
+         Identity, and dropwizard metrics. -->
+    <feature name="opennms-flows-aggregation" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Aggregation">
+        <details>Backend-agnostic write-time flow aggregation engine shared by the flow persistence backends.</details>
+        <feature>opennms-integration-api</feature>
+        <feature>opennms-distributed-core-api</feature>
+        <feature>dropwizard-metrics</feature>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.aggregation/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>
         <feature>opennms-situation-feedback-api</feature>
