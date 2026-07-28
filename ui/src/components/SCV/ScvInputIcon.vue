@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     class="scv-edit-icon"
     :aria-label="title ?? tooltipTitle"
     :disabled="disabled"
@@ -11,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import IconSecurity from '@/components/icons/network/Security.vue'
 
 defineProps<{

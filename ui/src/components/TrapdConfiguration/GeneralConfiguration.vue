@@ -39,7 +39,7 @@
         :error="trapConfigError.bindAddress"
         hint="* for all, or specify IP address"
       >
-        <PInputText
+        <OnmsInputText
           id="trap-bind-address"
           v-model="bindAddress"
           :invalid="!!trapConfigError.bindAddress"
@@ -153,7 +153,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="footer">
-      <PButton
+      <OnmsButton
         data-test="save-button"
         label="Update Changes"
         :disabled="isSaveDisabled || isSaving"
@@ -180,12 +180,10 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
 import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
@@ -197,9 +195,7 @@ import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 
-const PButton = Button
 const PInputNumber = InputNumber
-const PInputText = InputText
 const PToggleSwitch = ToggleSwitch
 
 const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)

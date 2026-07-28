@@ -22,7 +22,7 @@
     </Column>
     <Column field="severity" header="Severity">
       <template #body="{ data }">
-        <Tag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
+        <OnmsTag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
       </template>
     </Column>
     <Column field="logMessage" header="Message">
@@ -42,7 +42,7 @@ import { useRoute } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { type DataTablePageEvent } from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsTag, type OnmsTagSeverity } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useEventStore } from '@/stores/eventStore'
 
@@ -53,7 +53,7 @@ const pageSize = ref(5)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
-const severityMap: Record<string, string> = {
+const severityMap: Record<string, OnmsTagSeverity> = {
   critical: 'danger',
   major: 'danger',
   minor: 'warn',

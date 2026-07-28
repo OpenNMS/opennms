@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import Open from '@/components/icons/navigation/ExpandMore.vue'
 import Close from '@/components/icons/navigation/ChevronRight.vue'
 import Remove from '@/components/icons/action/Remove.vue'

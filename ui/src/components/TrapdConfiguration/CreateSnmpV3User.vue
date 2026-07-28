@@ -8,7 +8,6 @@
       <div class="section-left">
         <div class="title">
           <OnmsIconButton
-            text
             aria-label="Back"
             data-test="text-button"
             :icon="ChevronLeft"
@@ -27,7 +26,7 @@
             for="security-name"
             :error="formError.securityName"
           >
-            <PInputText
+            <OnmsInputText
               id="security-name"
               data-test="security-name-input"
               v-model="securityName"
@@ -41,7 +40,7 @@
             for="engine-id"
             :error="formError.engineId"
           >
-            <PInputText
+            <OnmsInputText
               id="engine-id"
               data-test="engine-id-input"
               v-model="engineId"
@@ -60,7 +59,7 @@
             for="security-level"
             :error="formError.securityLevel"
           >
-            <PSelect
+            <OnmsSelect
               inputId="security-level"
               v-model="securityLevel"
               @update:modelValue="onSecurityLevelChange"
@@ -83,7 +82,7 @@
             for="auth-protocol"
             :error="formError.authProtocol"
           >
-            <PSelect
+            <OnmsSelect
               inputId="auth-protocol"
               v-model="authProtocol"
               showClear
@@ -100,13 +99,11 @@
             :error="formError.authPassphrase"
           >
             <div class="input-with-icon">
-              <PPassword
+              <OnmsPassword
                 inputId="auth-passphrase"
                 data-test="auth-passphrase-input"
                 v-model="authPassphrase"
                 :invalid="!!formError.authPassphrase"
-                toggleMask
-                :feedback="false"
                 fluid
               />
               <ScvInputIcon
@@ -127,7 +124,7 @@
             for="privacy-protocol"
             :error="formError.privacyProtocol"
           >
-            <PSelect
+            <OnmsSelect
               inputId="privacy-protocol"
               v-model="privacyProtocol"
               showClear
@@ -144,13 +141,11 @@
             :error="formError.privacyPassphrase"
           >
             <div class="input-with-icon">
-              <PPassword
+              <OnmsPassword
                 inputId="privacy-passphrase"
                 data-test="privacy-passphrase-input"
                 v-model="privacyPassphrase"
                 :invalid="!!formError.privacyPassphrase"
-                toggleMask
-                :feedback="false"
                 fluid
               />
               <ScvInputIcon
@@ -163,14 +158,13 @@
       </div>
     </div>
     <div class="footer">
-      <PButton
-        text
-        outlined
+      <OnmsButton
+        variant="ghost"
         data-test="cancel-button"
         label="Cancel"
         @click="store.closeCreateUserDrawer"
       />
-      <PButton
+      <OnmsButton
         data-test="create-user-button"
         :label="store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User'"
         :disabled="isSaveDisabled || isSaving"
@@ -203,22 +197,13 @@ import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Select from 'primevue/select'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import { ISelectItemType } from '@/types'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
-
-const PButton = Button
-const PInputText = InputText
-const PPassword = Password
-const PSelect = Select
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()

@@ -19,7 +19,7 @@
         for="scv-search"
       >
         <IconField>
-          <PInputText
+          <OnmsInputText
             id="scv-search"
             :modelValue="searchValue"
             @update:modelValue="val => onSearch(val as string)"
@@ -60,9 +60,8 @@
 
       <div class="large-spacer"></div>
       <div class="scv-drawer-button-container">
-        <PButton
-          text
-          outlined
+        <OnmsButton
+          variant="ghost"
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
           label="Cancel"
@@ -76,25 +75,21 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
 import FormField from '@/components/Common/FormField.vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import SearchIcon from '@/components/icons/action/Search.vue'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 const PDrawer = Drawer
-const PInputText = InputText
 
 const props = defineProps<{
   isOpen: boolean

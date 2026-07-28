@@ -7,12 +7,12 @@
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
       <FormField label="Add Source">
-        <PAutoComplete
+        <OnmsAutoComplete
           v-model="autocompleteQuery"
           :suggestions="sourceSearchResults"
           optionLabel="name"
           @complete="onSourceSearch"
-          @option-select="onSourceSelected($event.value)"
+          @optionSelect="(value) => onSourceSelected(value as SourceItem)"
           placeholder="Search sources..."
           :forceSelection="true"
           data-test="add-source-autocomplete"
@@ -35,7 +35,6 @@
         <PColumn style="width: 4rem">
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Delete source"
               data-test="delete-source-button"
               :icon="Delete"
@@ -54,12 +53,10 @@ import { computed, ref } from 'vue'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import AutoCompleteComponent from 'primevue/autocomplete'
+import { OnmsAutoComplete, OnmsIconButton } from '@opennms/onms-ui'
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 
-const PAutoComplete = AutoCompleteComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 
@@ -84,8 +81,8 @@ const sortedSources = computed(() =>
   [...props.sources].sort((a, b) => a.localeCompare(b)).map(name => ({ name }))
 )
 
-const onSourceSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSourceSearch = (query: string) => {
+  const q = query.toLowerCase()
   sourceSearchResults.value = store.uploadedSourceNames
     .filter(s => !props.sources.includes(s.name))
     .filter(s => s.name.toLowerCase().includes(q))

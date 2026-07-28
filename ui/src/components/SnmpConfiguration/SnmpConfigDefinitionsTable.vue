@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <PInputText
+              <OnmsInputText
                 id="snmp-definitions-search"
                 placeholder="Search IP addresses or location"
                 aria-label="Search IP addresses or location"
@@ -19,13 +19,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <PButton
+          <OnmsButton
             data-test="new-definition-button"
             @click="onCreateDefinition"
           >
             <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
             New Definition
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
               v-if="data.ipLabels.length"
               class="ip-address-badge-wrapper"
             >
-              <PTag
+              <OnmsTag
                 v-for="ipAddr of data.ipLabels"
                 :key="ipAddr"
                 :value="ipAddr"
@@ -67,7 +67,6 @@
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
-                text
                 aria-label="Edit"
                 data-test="edit-button"
                 :icon="IconEdit"
@@ -75,7 +74,6 @@
               />
               <OnmsIconButton
                 v-if="data.original.id !== 0"
-                text
                 aria-label="Delete"
                 data-test="delete-button"
                 :icon="IconDelete"
@@ -139,14 +137,11 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import Tag from 'primevue/tag'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -159,14 +154,10 @@ import { SnmpDefinition } from '@/types/snmpConfig'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
-const PInputText = InputText
-const PTag = Tag
 
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()

@@ -6,7 +6,7 @@
         :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
         target="_blank"
       >
-        <PButton outlined class="single-graph-btn">Open</PButton>
+        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
       </router-link>
       <PTabs value="0" class="graph-data-tabs">
         <PTabList>
@@ -47,7 +47,7 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
@@ -55,7 +55,6 @@ import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const PButton = Button
 const PTabs = Tabs
 const PTabList = TabList
 const PTab = Tab

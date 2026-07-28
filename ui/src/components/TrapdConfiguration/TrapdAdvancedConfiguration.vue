@@ -18,7 +18,7 @@
             <label class="label">Download file in XML format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="download-xml-button"
               class="upload-download-button"
               :disabled="!adminRole"
@@ -26,7 +26,7 @@
             >
               <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download XML
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
         <div class="onms-row">
@@ -34,7 +34,7 @@
             <label class="label">Download file in JSON format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="download-json-button"
               class="upload-download-button"
               :disabled="!adminRole"
@@ -42,7 +42,7 @@
             >
               <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download JSON
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
          <div class="onms-row">
@@ -50,7 +50,7 @@
             <label class="label">Upload file in XML format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="upload-xml-button"
               class="upload-download-button"
               :disabled="!adminRole"
@@ -58,7 +58,7 @@
             >
               <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload XML
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
          <div class="onms-row">
@@ -66,7 +66,7 @@
             <label class="label">Upload file in JSON format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="upload-json-button"
               class="upload-download-button"
               :disabled="!adminRole"
@@ -74,7 +74,7 @@
             >
               <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload JSON
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
     </div>
@@ -95,8 +95,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import IconDownload from '@/components/icons/action/DownloadFile.vue'
 import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
@@ -107,8 +106,6 @@ import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
-
-const PButton = Button
 
 const { downloadFile } = useDownload()
 const { adminRole } = useRole()

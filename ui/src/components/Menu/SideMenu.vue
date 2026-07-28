@@ -47,7 +47,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import TieredMenu from 'primevue/tieredmenu'
 import type { MenuItem } from 'primevue/menuitem'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'

@@ -5,11 +5,10 @@
     </div>
     <div class="spacer"></div>
     <div class="alarm-check">
-      <Checkbox
+      <OnmsCheckbox
         :modelValue="enableAlarmData"
-        binary
         inputId="add-alarm-data-checkbox"
-        @update:model-value="$emit('setAlarmData', 'addAlarmData', $event)"
+        @update:modelValue="$emit('setAlarmData', 'addAlarmData', $event)"
       />
       <label for="add-alarm-data-checkbox">Add Alarm Data</label>
     </div>
@@ -22,7 +21,7 @@
           :error="errors.alarmType"
           hint="Select the alarm type."
         >
-          <Select
+          <OnmsSelect
             :inputId="alarmTypeId"
             :options="AlarmTypeOptions"
             optionLabel="_text"
@@ -37,11 +36,10 @@
       </div>
       <div class="spacer"></div>
       <div class="alarm-check">
-        <Checkbox
+        <OnmsCheckbox
           :modelValue="autoClean"
-          binary
           inputId="auto-clean-checkbox"
-          @update:model-value="$emit('setAlarmData', 'autoClean', $event)"
+          @update:modelValue="$emit('setAlarmData', 'autoClean', $event)"
         />
         <label for="auto-clean-checkbox">Auto Clean</label>
       </div>
@@ -52,7 +50,7 @@
         :error="errors?.reductionKey"
         hint="Provide the reduction key for the alarm."
       >
-        <InputText
+        <OnmsInputText
           :id="reductionKeyId"
           :modelValue="alarmReductionKey"
           data-test="alarm-reduction-key"
@@ -68,7 +66,7 @@
         :error="errors.clearKey"
         hint="Provide the clear key for the alarm."
       >
-        <InputText
+        <OnmsInputText
           :id="clearKeyId"
           :modelValue="alarmClearKey"
           data-test="alarm-clear-key"
@@ -83,13 +81,11 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { ref, useId, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
 import { ISelectItemType } from '@/types'
-import Checkbox from 'primevue/checkbox'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { AlarmTypeOptions } from './constants'
 

@@ -43,7 +43,7 @@
 import { PropType, computed } from 'vue'
 import { orderBy } from 'lodash'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@/components/icons/action/Location.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'

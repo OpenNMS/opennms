@@ -12,7 +12,7 @@
           v-if="!singleGraphDefinition"
           class="search-input"
         >
-          <PInputText
+          <OnmsInputText
             placeholder="Search"
             aria-label="Search"
             :modelValue="searchVal"
@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsInputText } from '@opennms/onms-ui'
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
@@ -42,7 +43,6 @@ import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
-import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
@@ -51,8 +51,6 @@ import { GraphDefinition, useGraphStore } from '@/stores/graphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
-
-const PInputText = InputText
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 }})

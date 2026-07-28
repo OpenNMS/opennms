@@ -8,7 +8,7 @@
         <div class="search-container">
           <FormField>
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.eventsSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -24,7 +24,6 @@
         </div>
         <div class="refresh">
           <OnmsIconButton
-            text
             title="Refresh"
             data-test="refresh-button"
             :icon="Refresh"
@@ -72,7 +71,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="`${data.severity.toLowerCase()}-color severity`"
             :value="data.severity"
           />
@@ -84,7 +83,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -95,14 +94,12 @@
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`Edit ${data.eventLabel}`"
               data-test="edit-button"
               :icon="Edit"
               @click="onEditEvent(data)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="event-row-menu"
               title="More Options"
@@ -151,7 +148,7 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
@@ -161,14 +158,11 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'

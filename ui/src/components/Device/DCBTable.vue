@@ -14,8 +14,8 @@
       <div class="config-column">
         <div>Configurations:</div>
         <div class="btn-container">
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="dcb-action-btn"
             data-test="view-history-btn"
             @click="onViewHistory"
@@ -23,10 +23,10 @@
           >
             <OnmsIcon :icon="History" class="btn-icon" />
             View History
-          </PButton>
+          </OnmsButton>
 
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="dcb-action-btn"
             data-test="download-btn"
             @click="onDownload"
@@ -34,10 +34,10 @@
           >
             <OnmsIcon :icon="Download" class="btn-icon" />
             Download
-          </PButton>
+          </OnmsButton>
 
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="dcb-action-btn"
             data-test="backup-now-btn"
             @click="onBackupNow"
@@ -45,10 +45,10 @@
           >
             <OnmsIcon :icon="Backup" class="btn-icon" />
             Backup
-          </PButton>
+          </OnmsButton>
 
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="dcb-action-btn"
             data-test="compare-btn"
             @click="onCompare"
@@ -56,7 +56,7 @@
           >
             <OnmsIcon :icon="Compare" class="btn-icon" />
             Compare
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -78,8 +78,7 @@
     >
       <PColumn :pt="columnHeaderPt">
         <template #header>
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             inputId="dcb-select-all"
             aria-label="Select all configurations"
             :modelValue="all"
@@ -89,8 +88,7 @@
           />
         </template>
         <template #body="{ data }">
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             class="dcb-config-checkbox"
             :disabled="all"
             :aria-label="`Select ${data.deviceName}`"
@@ -190,10 +188,8 @@ import { useScroll } from '@vueuse/core'
 
 import DataTable, { DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
-import Checkbox from 'primevue/checkbox'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsCheckbox, OnmsIcon } from '@opennms/onms-ui'
 import { SORT } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import History from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import Backup from '@/assets/Backup.vue'
@@ -211,8 +207,6 @@ import { MainMenu } from '@/types/mainMenu'
 
 const PDataTable = DataTable
 const PColumn = Column
-const PCheckbox = Checkbox
-const PButton = Button
 
 // PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
 // passthrough so header cells stay associated with their columns for screen readers.

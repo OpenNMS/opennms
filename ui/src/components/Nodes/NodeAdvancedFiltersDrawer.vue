@@ -41,7 +41,6 @@
         <OnmsIconButton
           v-if="!showSecondCategories"
           class="category-add-btn"
-          text
           :icon="AddIcon"
           aria-label="Add category group"
           @click="showSecondCategories = true"
@@ -66,7 +65,6 @@
         </FormField>
         <OnmsIconButton
           class="category-add-btn"
-          text
           :icon="DeleteIcon"
           aria-label="Remove category group"
           @click="removeSecondCategories"
@@ -111,7 +109,7 @@
             :error="errors.ipAddress"
             data-test="ip-field"
           >
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.ipAddress"
               :invalid="!!errors.ipAddress"
@@ -121,7 +119,7 @@
         </div>
         <div class="onms-col-6">
           <FormField label="MAC Address" data-test="mac-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.macAddress"
               data-test="mac-input"
@@ -132,7 +130,7 @@
       <div class="onms-row">
         <div class="onms-col-6">
           <FormField label="Topology (CDP/LLDP)" data-test="topology-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.topology"
               data-test="topology-input"
@@ -253,24 +251,24 @@
     </div>
     <template #footer>
       <div class="footer">
-        <Button
+        <OnmsButton
           :disabled="isApplyDisabled"
           @click="applySelectedFilters"
         >
           Apply Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="clearDrawerFilters"
         >
           Clear Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="nodeStructureStore.closeInstancesDrawerModal()"
         >
           Close
-        </Button>
+        </OnmsButton>
       </div>
     </template>
   </Drawer>
@@ -281,16 +279,13 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import Drawer from 'primevue/drawer'
 import MultiSelect from 'primevue/multiselect'
-import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'

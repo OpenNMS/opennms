@@ -40,7 +40,7 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PSelect
+            <OnmsSelect
               class="snmp-config-defaults-select"
               :data-test="`snmp-config-default-${param.key}`"
               :aria-label="param.label"
@@ -60,7 +60,7 @@
                 :error="(formErrors as any)[param.key]"
                 :hint="param.hint"
               >
-                <PInputText
+                <OnmsInputText
                   class="snmp-config-defaults-input"
                   :data-test="`snmp-config-default-${param.key}`"
                   :aria-label="param.label"
@@ -100,7 +100,7 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PInputText
+            <OnmsInputText
               class="snmp-config-defaults-input"
               :data-test="`snmp-config-default-${param.key}`"
               :aria-label="param.label"
@@ -115,12 +115,12 @@
 
       <div class="onms-row button-row">
         <div class="onms-col-12">
-          <PButton
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Reset to System Defaults"
             @click="onReset"
           />
-           <PButton
+           <OnmsButton
             label="Save"
             @click="onSave"
           />
@@ -157,11 +157,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 
@@ -194,10 +191,7 @@ import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
 import MessageDialog from '../Common/MessageDialog.vue'
 
-const PButton = Button
 const PInputNumber = InputNumber
-const PInputText = InputText
-const PSelect = Select
 
 // SNMP Version options
 const SnmpVersions: ISelectItemType[] = [

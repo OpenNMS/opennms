@@ -3,15 +3,15 @@
     <div class="section-content">
       <div class="mask-varbinds-header">
         <h3>Mask Varbinds</h3>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           @click="$emit('setVarbinds', 'addVarbindRow', null, -1)"
           data-test="add-varbind-row-button"
           :disabled="!hasMaskElements"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
       <div
         v-for="(row, index) in maskVarbinds"
@@ -23,7 +23,7 @@
             :for="`varbind-type-${index}`"
             :error="errors.varbinds?.[index]?.type"
           >
-            <Select
+            <OnmsSelect
               :inputId="`varbind-type-${index}`"
               :options="MaskVarbindsTypeOptions"
               optionLabel="_text"
@@ -47,7 +47,7 @@
             :for="`varbind-number-${index}`"
             :error="errors.varbinds?.[index]?.index"
           >
-            <InputText
+            <OnmsInputText
               :id="`varbind-number-${index}`"
               type="number"
               min="0"
@@ -69,7 +69,7 @@
             :for="`varbind-oid-${index}`"
             :error="errors.varbinds?.[index]?.index"
           >
-            <InputText
+            <OnmsInputText
               :id="`varbind-oid-${index}`"
               :modelValue="row.index"
               @update:model-value="$emit('setVarbinds', 'setVarbindOid', $event, index)"
@@ -87,7 +87,7 @@
               :for="`varbind-value-${index}`"
               :error="errors.varbinds?.[index]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`varbind-value-${index}`"
                 :modelValue="row.value"
                 @update:model-value="$emit('setVarbinds', 'setValue', $event, index)"
@@ -99,14 +99,14 @@
               />
             </FormField>
           </div>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             severity="danger"
             data-test="remove-varbind-row-button"
             @click="$emit('setVarbinds', 'removeVarbindRow', null, index)"
           >
             <OnmsIcon :icon="Delete" />
-          </Button>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -117,13 +117,10 @@
 import { computed, ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import { ISelectItemType } from '@/types'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'
 

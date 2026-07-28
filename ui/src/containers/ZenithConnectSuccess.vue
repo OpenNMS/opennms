@@ -29,7 +29,7 @@
                 <div>
                   Click to save values. You will then be redirected back to /zenith-connect to view your existing connections.
                 </div>
-                <PButton
+                <OnmsButton
                   :disabled="savedSuccess"
                   label="Save Values"
                   @click="onSaveValues"
@@ -39,7 +39,7 @@
                 <div>
                   Click to return to view connections. Eventually this will be automatic.
                 </div>
-                <PButton
+                <OnmsButton
                   :disabled="!savedSuccess"
                   label="View Connections"
                   @click="onViewConnections"
@@ -60,12 +60,11 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { v2 } from '@/services/axiosInstances'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { useRoute, useRouter } from 'vue-router'
 
-const PButton = Button
 const PDataTable = DataTable
 const PColumn = Column
 

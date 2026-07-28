@@ -1,8 +1,7 @@
 <template>
   <div id="wrap">
     <div class="raw-checkbox">
-      <PCheckbox
-        binary
+      <OnmsCheckbox
         :inputId="`${id}-raw-values`"
         :modelValue="displayRawValues"
         @update:modelValue="valueDisplayHandler"
@@ -58,11 +57,9 @@
   lang="ts"
 >
 import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
-import Checkbox from 'primevue/checkbox'
+import { OnmsCheckbox } from '@opennms/onms-ui'
 import { format } from 'd3'
 import { PropType, ref } from 'vue'
-
-const PCheckbox = Checkbox
 
 const displayRawValues = ref(false)
 const d3format = format('.3s')

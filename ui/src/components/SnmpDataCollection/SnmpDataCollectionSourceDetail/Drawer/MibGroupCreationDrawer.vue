@@ -26,7 +26,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -41,10 +41,10 @@
           :for="ifTypeId"
           :error="errors.ifType"
         >
-          <Select
+          <OnmsSelect
             :inputId="ifTypeId"
             :modelValue="ifType"
-            @update:modelValue="ifType = $event"
+            @update:modelValue="ifType = $event as ISelectItemType"
             :options="IF_TYPE_FILTERS_OPTIONS"
             optionLabel="_text"
             :invalid="!!errors.ifType"
@@ -60,8 +60,8 @@
               <h3>MIB Objects</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add MIB Object"
                 data-test="add-mib-object-button"
                 @click="openMibObjectDrawer(-1, null, CreateEditMode.Create)"
@@ -95,14 +95,12 @@
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
-                    text
                     title="Edit MIB Object"
                     data-test="edit-mib-object-button"
                     :icon="Edit"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
                   />
                   <OnmsIconButton
-                    text
                     title="Delete MIB Object"
                     data-test="delete-mib-object-button"
                     :icon="Delete"
@@ -131,7 +129,7 @@
             :for="oidId"
             :error="mibObjectErrors.oid"
           >
-            <InputText
+            <OnmsInputText
               :id="oidId"
               v-model.trim="oid"
               :invalid="!!mibObjectErrors.oid"
@@ -146,10 +144,10 @@
             :for="instanceId"
             :error="mibObjectErrors.instance"
           >
-            <Select
+            <OnmsSelect
               :inputId="instanceId"
               :modelValue="instance"
-              @update:modelValue="instance = $event"
+              @update:modelValue="instance = $event as ISelectItemType"
               :options="instancesOptions"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.instance"
@@ -164,7 +162,7 @@
             :for="aliasId"
             :error="mibObjectErrors.alias"
           >
-            <InputText
+            <OnmsInputText
               :id="aliasId"
               v-model.trim="alias"
               :invalid="!!mibObjectErrors.alias"
@@ -179,10 +177,10 @@
             :for="dataTypeId"
             :error="mibObjectErrors.type"
           >
-            <Select
+            <OnmsSelect
               :inputId="dataTypeId"
               :modelValue="dataType"
-              @update:modelValue="dataType = $event"
+              @update:modelValue="dataType = $event as ISelectItemType"
               :options="MIB_OBJECT_DATA_TYPE_OPTIONS"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.type"
@@ -193,14 +191,13 @@
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <Button
-            text
-            outlined
+          <OnmsButton
+            variant="ghost"
             label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
           />
-          <Button
+          <OnmsButton
             label="Save MIB Object"
             data-test="save-mib-object-button"
             @click="saveMibObject"
@@ -212,14 +209,13 @@
         class="footer"
         v-if="!mibObjectDrawerState.visible"
       >
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save MIB Group"
           data-test="save-mib-group"
           :disabled="isSaveDisabled"
@@ -245,13 +241,10 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
 
 const store = useSnmpDataCollectionDetailStore()

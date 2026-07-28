@@ -6,27 +6,27 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="back-button"
             data-test="back-button"
             @click="goBack"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </PButton>
+          </OnmsButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Profile' : `Profile details for: ${store.selectedProfile.name}` }}</h1>
         </div>
         <div class="tag">
-          <PTag
+          <OnmsTag
             v-if="store.selectedProfile.enabled"
             class="enabled-tag"
             value="Enabled"
             data-test="status-tag"
           />
-          <PTag
+          <OnmsTag
             v-if="!store.selectedProfile.enabled"
             class="disabled-tag"
             value="Disabled"
@@ -68,28 +68,28 @@
       </PTabs>
 
       <div class="action-row">
-        <PButton
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="cancel-button"
           @click="goBack"
         >
           Cancel
-        </PButton>
-        <PButton
+        </OnmsButton>
+        <OnmsButton
           v-if="!isCreateMode"
-          outlined
+          variant="outlined"
           data-test="delete-button"
           @click="openDeleteCollectionProfileDialog"
         >
           Delete Profile
-        </PButton>
-        <PButton
+        </OnmsButton>
+        <OnmsButton
           data-test="save-button"
           :disabled="isSaveDisabled"
           @click="saveProfile"
         >
           {{ isCreateMode ? 'Create Profile' : 'Save Profile' }}
-        </PButton>
+        </OnmsButton>
       </div>
     </TableCard>
   </div>
@@ -110,9 +110,9 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <PButton @click="goBack">
+    <OnmsButton @click="goBack">
       Go Back
-    </PButton>
+    </OnmsButton>
   </div>
 </template>
 
@@ -132,23 +132,19 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsButton, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
-import ButtonComponent from 'primevue/button'
 import TabComponent from 'primevue/tab'
 import TabListComponent from 'primevue/tablist'
 import TabPanelComponent from 'primevue/tabpanel'
 import TabPanelsComponent from 'primevue/tabpanels'
 import TabsComponent from 'primevue/tabs'
-import TagComponent from 'primevue/tag'
 
-const PButton = ButtonComponent
 const PTabs = TabsComponent
 const PTabList = TabListComponent
 const PTab = TabComponent
 const PTabPanels = TabPanelsComponent
 const PTabPanel = TabPanelComponent
-const PTag = TagComponent
 
 const router = useRouter()
 const route = useRoute()

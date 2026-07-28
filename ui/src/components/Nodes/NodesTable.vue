@@ -8,14 +8,14 @@
             :onCsvDownload="onCsvDownload"
             :onJsonDownload="onJsonDownload"
           />
-          <Button
+          <OnmsButton
             label="Customize Columns"
             data-test="customize-columns-button"
             @click="nodeStructureStore.openColumnsDrawerModal()"
           />
-          <Button
+          <OnmsButton
             label="Clear Filters"
-            outlined
+            variant="outlined"
             data-test="clear-filters-button"
             @click="nodeStructureStore.clearAllFiltersAndSelections()"
           />
@@ -29,7 +29,7 @@
             <div class="search-filter-column">
               <FormField class="search-field">
                 <IconField>
-                  <InputText
+                  <OnmsInputText
                     v-model="currentSearch"
                     @update:modelValue="searchFilterHandler"
                     placeholder="Search node label or full IP address"
@@ -53,7 +53,6 @@
             </div>
             <div>
               <OnmsIconButton
-                text
                 title="Advanced Filters"
                 data-test="advanced-filters-button"
                 :icon="FilterAlt"
@@ -207,7 +206,6 @@
             <template #body="{ data }">
               <div class="actions-cell-buttons">
                 <OnmsIconButton
-                  text
                   title="View Details"
                   data-test="view-details-button"
                   :icon="ViewDetails"
@@ -277,21 +275,18 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
-import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import MessageDialog from '../Common/MessageDialog.vue'
-import OnmsIconButton from '../Common/OnmsIconButton.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'

@@ -1,10 +1,9 @@
 <template>
   <div class="uploaded-file-rename-dialog">
-    <Dialog
+    <OnmsDialog
       v-model:visible="dialogVisible"
       :header="labels.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       @hide="onHide"
       data-test="dialog-title"
@@ -16,22 +15,20 @@
         <p>Choose one of the following options:</p>
         <div class="checkbox-group">
           <div class="checkbox-row">
-            <Checkbox
+            <OnmsCheckbox
               :modelValue="overwriteFile"
-              binary
               inputId="rename-overwrite-checkbox"
-              @update:model-value="onChangeOverwriteFile"
+              @update:modelValue="onChangeOverwriteFile"
             />
             <label for="rename-overwrite-checkbox">
               Keep Original File Name: <strong>{{ originalFileName }}</strong> and Overwrite Existing File.
             </label>
           </div>
           <div class="checkbox-row">
-            <Checkbox
+            <OnmsCheckbox
               :modelValue="renameFile"
-              binary
               inputId="rename-rename-checkbox"
-              @update:model-value="onChangeRenameFile"
+              @update:modelValue="onChangeRenameFile"
             />
             <label for="rename-rename-checkbox">
               Rename Uploaded File to:
@@ -47,7 +44,7 @@
             :for="fileNameInputId"
             :error="error"
           >
-            <InputText
+            <OnmsInputText
               :id="fileNameInputId"
               :modelValue="newFileName"
               :invalid="!!error"
@@ -60,20 +57,19 @@
         </div>
       </div>
       <template #footer>
-        <Button
+        <OnmsButton
           :disabled="shouldRemainDisabled"
           label="Save Changes"
           @click="saveChanges"
           data-test="save-button"
         />
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           @click="onCancel"
         />
       </template>
-    </Dialog>
+    </OnmsDialog>
   </div>
 </template>
 
@@ -81,10 +77,7 @@
 import { computed, ref, useId, watch } from 'vue'
 
 import { SnmpDataCollectionSourceNamesAndIds, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

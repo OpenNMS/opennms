@@ -9,7 +9,7 @@
       :error="aliasError"
       v-slot="{ errorId, invalid }"
     >
-      <PInputText
+      <OnmsInputText
         id="scv-alias"
         :disabled="isEditing"
         :modelValue="scvStore.credentials.alias"
@@ -26,7 +26,7 @@
         label="Username"
         for="scv-username"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-username"
           autocomplete="new-username"
           :modelValue="scvStore.credentials.username"
@@ -42,7 +42,7 @@
         :error="passwordError"
         v-slot="{ errorId, invalid }"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-password"
           autocomplete="new-password"
           :modelValue="scvStore.credentials.password"
@@ -69,7 +69,7 @@
 
     <div class="large-spacer"></div>
     <div class="btns">
-      <PButton
+      <OnmsButton
         v-if="!isEditing"
         data-test="add-creds-btn"
         :disabled="disabled"
@@ -77,7 +77,7 @@
         @click="addCredentials"
       />
 
-      <PButton
+      <OnmsButton
         v-if="isEditing"
         data-test="update-creds-btn"
         :disabled="disabled"
@@ -85,7 +85,7 @@
         @click="updateCredentials"
       />
 
-      <PButton
+      <OnmsButton
         data-test="clear-btn"
         label="Clear Form"
         @click="clearCredentials"
@@ -97,9 +97,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
@@ -107,9 +105,6 @@ import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
-
-const PInputText = InputText
-const PButton = Button
 
 const scvStore = useScvStore()
 const keyError = ref(false)

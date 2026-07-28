@@ -8,7 +8,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.sourcesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -24,7 +24,6 @@
         </div>
         <div class="refresh">
           <OnmsIconButton
-            text
             title="Refresh"
             data-test="refresh-button"
             :icon="Refresh"
@@ -68,7 +67,7 @@
       />
       <Column header="Status">
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -79,21 +78,18 @@
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
               @click="onEventClick(data)"
             />
             <OnmsIconButton
-              text
               :title="`Download ${data.name} XML`"
               data-test="download-button"
               :icon="Download"
               @click="downloadEventConfXmlBySourceId(data.id)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="event-source-row-menu"
               :title="`More actions for ${data.name}`"
@@ -132,7 +128,7 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
@@ -143,14 +139,11 @@ import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'

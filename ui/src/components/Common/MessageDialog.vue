@@ -1,35 +1,30 @@
 <template>
   <div class="message-dialog">
-    <PDialog
+    <OnmsDialog
       v-model:visible="isVisible"
       :header="props.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       :appendTo="props.relative ? 'self' : 'body'"
-      :pt="props.relative ? relativePt : undefined"
+      :unsafePt="props.relative ? relativePt : undefined"
       @hide="onHide"
     >
       <div class="modal-body" :style="{ maxWidth: props.maxWidth, maxHeight: props.maxHeight }">
         <slot name="content"></slot>
       </div>
       <template #footer>
-        <PButton
+        <OnmsButton
           :label="props.actionButtonText || 'Close'"
           @click="onClose"
         />
       </template>
-    </PDialog>
+    </OnmsDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
-
-const PDialog = Dialog
-const PButton = Button
+import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },

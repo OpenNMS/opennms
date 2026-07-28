@@ -1,9 +1,10 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     header="Node Details"
-    :style="{ width: '40rem' }"
+    width="40rem"
+    draggable
     @update:visible="onUpdateVisible"
   >
     <div class="node-details-content">
@@ -17,12 +18,12 @@
         </div>
       </div>
     </div>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
-import Dialog from 'primevue/dialog'
+import { OnmsDialog } from '@opennms/onms-ui'
 import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
 import { useNodeStore } from '@/stores/nodeStore'

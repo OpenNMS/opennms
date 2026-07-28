@@ -26,13 +26,13 @@
             </div>
           </transition>
 
-          <PButton
+          <OnmsButton
             v-if="!isHelpOpen && snippets"
             class="help-btn"
-            text
+            variant="text"
             @click="triggerHelp">
             Help
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
@@ -63,8 +63,6 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-
-const PButton = Button
 
 const fileEditorStore = useFileEditorStore()
 const menuStore = useMenuStore()

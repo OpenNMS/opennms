@@ -9,7 +9,7 @@
 
     <div class="main-content">
       <Spinner />
-      <Snackbar />
+      <OnmsToastHost />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -28,12 +28,12 @@
 >
 import { onMounted } from 'vue'
 
+import { OnmsToastHost } from '@opennms/onms-ui'
 import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
 import Spinner from '@/components/Common/Spinner.vue'
-import Snackbar from '@/components/Common/Snackbar.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'

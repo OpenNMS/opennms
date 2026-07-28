@@ -1,10 +1,9 @@
 <template>
   <div class="confirmation-dialog">
-    <PDialog
+    <OnmsDialog
       v-model:visible="isVisible"
       :header="props.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       @hide="onHide"
     >
@@ -12,27 +11,23 @@
         <slot name="content"></slot>
       </div>
       <template #footer>
-        <PButton
+        <OnmsButton
           :label="props.actionButtonText || 'OK'"
           @click="onAction"
         />
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           :label="props.cancelButtonText || 'Cancel'"
           @click="onCancel"
         />
       </template>
-    </PDialog>
+    </OnmsDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
-
-const PDialog = Dialog
-const PButton = Button
+import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },

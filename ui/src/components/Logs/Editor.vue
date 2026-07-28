@@ -3,7 +3,6 @@
     <div class="toolbar">
       <OnmsIconButton
         v-if="reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display oldest first."
@@ -13,7 +12,6 @@
 
       <OnmsIconButton
         v-if="!reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display newest first."
@@ -36,7 +34,7 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { onKeyStroke } from '@vueuse/core'
 import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
 import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'

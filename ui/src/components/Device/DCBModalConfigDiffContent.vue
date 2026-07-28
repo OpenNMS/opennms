@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     class="compare-btn"
     aria-label="Compare configs"
     v-tooltip="'Compare configs'"
@@ -11,7 +10,6 @@
   />
 
   <OnmsIconButton
-    text
     class="return-btn"
     aria-label="Return"
     v-tooltip="'Return'"
@@ -21,7 +19,6 @@
   />
 
   <OnmsIconButton
-    text
     class="dwnld-btn"
     aria-label="Download configs"
     v-tooltip="'Download configs'"
@@ -58,8 +55,7 @@
           v-for="config of deviceStore.historyModalBackups"
           :key="config.id"
         >
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             :inputId="`dcb-date-${config.id}`"
             :modelValue="selectedConfigs[config.id]"
             @update:modelValue="onCheckbox(config)"
@@ -85,9 +81,8 @@ import { computed, onMounted, ref } from 'vue'
 
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
-import Checkbox from 'primevue/checkbox'
 import Chip from 'primevue/chip'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsCheckbox, OnmsIconButton } from '@opennms/onms-ui'
 import Restore from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
@@ -95,7 +90,6 @@ import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 
-const PCheckbox = Checkbox
 const PChip = Chip
 
 const deviceStore = useDeviceStore()

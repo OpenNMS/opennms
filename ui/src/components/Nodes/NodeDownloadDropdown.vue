@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     title="Download"
     aria-label="Download"
     aria-haspopup="true"
@@ -22,7 +21,7 @@
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import Download from '@/components/icons/action/DownloadFile.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { markRaw, ref, PropType } from 'vue'
 
 const props = defineProps({

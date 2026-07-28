@@ -83,5 +83,31 @@ export default tseslint.config(
       // ── General ───────────────────────────────────────────────────────────
       curly: ['error', 'all'],
     },
+  },
+
+  // ── Seam layer (NMS-20029) ─────────────────────────────────────────────
+  // Direct PrimeVue imports are banned in app code once an Onms- wrapper
+  // exists. The @opennms/onms-ui package itself (packages/onms-ui) and tests
+  // are exempt. Entries are appended as each wrapper lands.
+  {
+    files: ['src/**/*.ts', 'src/**/*.vue'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          { name: 'primevue/autocomplete', message: 'Use OnmsAutoComplete from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/button', message: 'Use OnmsButton / OnmsIconButton from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' },
+          { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' }
+        ]
+      }]
+    }
   }
 )

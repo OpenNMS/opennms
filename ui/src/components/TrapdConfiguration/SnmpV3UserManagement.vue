@@ -9,7 +9,7 @@
         <h3>SNMPv3 User Management</h3>
       </div>
       <div class="section-right">
-        <PButton
+        <OnmsButton
           data-test="add-user-button"
           label="Add User"
           @click="store.openCreateUserDrawer(CreateEditMode.Create, -1)"
@@ -61,14 +61,12 @@
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
-                text
                 aria-label="Edit User"
                 data-test="edit-user-button"
                 :icon="Edit"
                 @click="store.openCreateUserDrawer(CreateEditMode.Edit, userIndex(data))"
               />
               <OnmsIconButton
-                text
                 aria-label="Delete User"
                 data-test="delete-user-button"
                 :icon="Delete"
@@ -120,11 +118,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
@@ -139,7 +135,6 @@ import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.
 import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
 

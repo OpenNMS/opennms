@@ -26,15 +26,15 @@
     <div class="rra-section">
       <div class="rra-header">
         <span class="rra-title">RRAs</span>
-        <PButton
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="add-rra-button"
           class="add-rra-button"
           @click="addRRA"
         >
           <OnmsIcon :icon="Add" />
           Add RRA
-        </PButton>
+        </OnmsButton>
       </div>
       <PDataTable
         v-model:editingRows="editingRows"
@@ -60,7 +60,7 @@
           header="Consolidation Function"
         >
           <template #editor="{ data }">
-            <PSelect
+            <OnmsSelect
               v-model="data.cf"
               :options="cfOptions"
               optionLabel="label"
@@ -110,7 +110,6 @@
         >
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Delete RRA"
               data-test="delete-rra-button"
               :icon="Delete"
@@ -142,23 +141,18 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import ButtonComponent from 'primevue/button'
 import DataTableComponent from 'primevue/datatable'
 import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
 import InputNumberComponent from 'primevue/inputnumber'
-import SelectComponent from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 
-const PButton = ButtonComponent
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
 const PInputNumber = InputNumberComponent
-const PSelect = SelectComponent
 
 const rrdStepId = useId()
 

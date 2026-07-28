@@ -1,7 +1,7 @@
 <template>
   <div class="map-search">
     <i class="pi pi-search map-search__icon" aria-hidden="true" />
-    <PAutoComplete
+    <OnmsAutoComplete
       v-model="searchStr"
       multiple
       :suggestions="results"
@@ -9,13 +9,13 @@
       class="map-search__input"
       aria-label="Search"
       placeholder="Search"
-      @complete="(e) => resetLabelsAndSearch(e.query)"
+      @complete="resetLabelsAndSearch"
       @update:modelValue="selectItem"
     >
       <template #empty>
         <div class="autocomplete-empty">{{ labels.noResults }}</div>
       </template>
-    </PAutoComplete>
+    </OnmsAutoComplete>
   </div>
 </template>
 
@@ -26,11 +26,9 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 
 import { debounce } from 'lodash'
-import AutoComplete from 'primevue/autocomplete'
+import { OnmsAutoComplete } from '@opennms/onms-ui'
 import { useMapStore } from '@/stores/mapStore'
 import { useSearchStore } from '@/stores/searchStore'
-
-const PAutoComplete = AutoComplete
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 

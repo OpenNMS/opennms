@@ -2,9 +2,9 @@
 import { defineComponent, h, toRaw, PropType, DefineComponent } from 'vue'
 
 // Self-contained icon wrapper (replaces @featherds/icon's FeatherIcon).
-// Depends only on `vue`. Renders a locally-vendored icon component (see
-// src/components/icons/<category>/<Name>.vue) as an inline <svg>, sized in `em`
-// and coloured via currentColor. Same API/behavior as FeatherIcon.
+// Depends only on `vue`. Renders one of the consuming app's vendored icon
+// components as an inline <svg>, sized in `em` and coloured via currentColor.
+// Same API/behavior as FeatherIcon.
 export const props = {
   icon: {
     type: Object as PropType<unknown>,

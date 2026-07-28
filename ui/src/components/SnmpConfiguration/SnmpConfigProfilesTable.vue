@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField class="search-field">
             <IconField>
-              <PInputText
+              <OnmsInputText
                 id="snmp-profiles-search"
                 placeholder="Search label or filter"
                 aria-label="Search label or filter"
@@ -19,13 +19,13 @@
           </FormField>
         </div>
         <div class="refresh">
-          <PButton
+          <OnmsButton
             data-test="new-profile-button"
             @click="onCreateProfile"
           >
             <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
             New Profile
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -52,14 +52,12 @@
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
-                text
                 aria-label="Edit"
                 data-test="edit-button"
                 :icon="IconEdit"
                 @click="onProfileEdit(data.label)"
               />
               <OnmsIconButton
-                text
                 aria-label="Delete"
                 data-test="delete-button"
                 :icon="IconDelete"
@@ -98,13 +96,11 @@
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -112,16 +108,13 @@ import IconSearch from '@/components/icons/action/Search.vue'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
 import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { SnmpProfile } from '@/types/snmpConfig'
 
-const PButton = Button
 const PColumn = Column
 const PDataTable = DataTable
-const PInputText = InputText
 
 const emit = defineEmits<{
   (e: 'delete-profile', label: string): void

@@ -43,7 +43,7 @@
 >
 import { computed } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import Error from '@/components/icons/notification/Error.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { FileEditorResponseLog } from '@/types'

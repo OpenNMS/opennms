@@ -2,15 +2,15 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
           <OnmsIcon :icon="ArrowBack" />
           Go Back
-        </PButton>
+        </OnmsButton>
       </div>
       <div>
         <h3>
@@ -28,7 +28,7 @@
           :error="errors.label"
           hint="Label"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-profile-label"
             class="profile-input"
             data-test="snmp-profile-label"
@@ -44,7 +44,7 @@
           :error="errors.filterExpression"
           hint="Filter expression"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-profile-filter-expression"
             class="profile-input"
             data-test="snmp-profile-filter-expression"
@@ -76,9 +76,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
@@ -87,9 +85,6 @@ import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
 import { validateProfile } from '@/lib/snmpValidator'
-
-const PButton = Button
-const PInputText = InputText
 
 const props = defineProps<{
   isCreate: boolean,

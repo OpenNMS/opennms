@@ -45,6 +45,7 @@
                   <template #body="{ data }">
                     {{ ellipsify(data.accessToken ?? '', 30) }}
                     <OnmsIconButton
+                      variant="filled"
                       aria-label="Copy Access Token"
                       :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(true)"
@@ -55,6 +56,7 @@
                   <template #body="{ data }">
                     {{ ellipsify(data.refreshToken ?? '', 30) }}
                     <OnmsIconButton
+                      variant="filled"
                       aria-label="Copy Refresh Token"
                       :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(false)"
@@ -66,7 +68,7 @@
           </div>
           <div>
             <div class="spacer"></div>
-            <PButton
+            <OnmsButton
               label="View Zenith Connections"
               @click="gotoView"
             />
@@ -80,10 +82,9 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, ref } from 'vue'
 
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -95,7 +96,6 @@ import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration, ZenithConnectRegistrationResponse } from '@/types/zenithConnect'
 
-const PButton = Button
 const PDataTable = DataTable
 const PColumn = Column
 

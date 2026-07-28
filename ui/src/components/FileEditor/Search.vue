@@ -3,7 +3,7 @@
     <div class="search">
       <FormField class="search-field">
         <IconField>
-          <PInputText
+          <OnmsInputText
             placeholder="Search"
             aria-label="Search"
             :modelValue="searchValue"
@@ -16,10 +16,10 @@
       </FormField>
     </div>
     <div class="save">
-      <PButton :disabled="disableBtn" @click="save">Save</PButton>
+      <OnmsButton :disabled="disableBtn" @click="save">Save</OnmsButton>
     </div>
     <div class="reset">
-      <PButton :disabled="disableBtn" @click="reset">Reset</PButton>
+      <OnmsButton :disabled="disableBtn" @click="reset">Reset</OnmsButton>
     </div>
   </div>
   <hr />
@@ -28,17 +28,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import IconSearch from '@/components/icons/action/Search.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-
-const PButton = Button
-const PInputText = InputText
 
 const fileEditorStore = useFileEditorStore()
 

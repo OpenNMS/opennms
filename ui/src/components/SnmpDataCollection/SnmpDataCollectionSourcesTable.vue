@@ -5,7 +5,7 @@
         <div class="search-container">
           <FormField>
             <IconField>
-              <InputText
+              <OnmsInputText
                 :id="searchId"
                 :modelValue="store.sourcesSearchTerm"
                 @update:modelValue="onChangeSearchTerm"
@@ -22,8 +22,8 @@
       </div>
       <div class="section-right">
         <div class="add">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Create New Data Collection Source"
             data-test="create-source-button"
             @click="goToCreateSource"
@@ -81,7 +81,7 @@
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
@@ -92,7 +92,6 @@
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
@@ -102,14 +101,12 @@
                  /upload endpoint accepts). JSON is still reachable via
                  the row menu below for users who want it. -->
             <OnmsIconButton
-              text
               :title="`Download ${data.name} XML`"
               data-test="download-xml-button"
               :icon="DownloadIcon"
               @click="downloadCollectionSource(data, 'xml')"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="source-row-menu"
               :title="`More actions for ${data.name}`"
@@ -158,23 +155,19 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import Chip from 'primevue/chip'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import type { MenuItem } from 'primevue/menuitem'
 import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {

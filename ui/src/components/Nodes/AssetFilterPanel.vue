@@ -3,7 +3,7 @@
     <div class="onms-row add-row">
       <div class="onms-col-5">
         <FormField label="Asset Field">
-          <Select
+          <OnmsSelect
             v-model="currentSelection"
             :options="assetOptions"
             optionLabel="title"
@@ -14,22 +14,22 @@
       </div>
       <div class="onms-col-5">
         <FormField label="Value">
-          <InputText
+          <OnmsInputText
             v-model="assetValue"
             data-test="asset-value-input"
           />
         </FormField>
       </div>
       <div class="onms-col-2 add-btn-col">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="asset-add-button"
           class="add-asset-filter-button"
           @click="onAddAssetFilter"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
     </div>
 
@@ -42,7 +42,7 @@
       <PColumn field="label" header="Asset Field" style="width: 40%" />
       <PColumn field="value" header="Value">
         <template #body="{ data }">
-          <PInputText
+          <OnmsInputText
             v-model="data.value"
             class="asset-filter-input"
           />
@@ -51,7 +51,6 @@
       <PColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
-            text
             data-test="delete-asset-filter-button"
             title="Remove asset filter"
             :icon="DeleteIcon"
@@ -68,20 +67,15 @@ import { onMounted, ref } from 'vue'
 
 import DataTableComponent from 'primevue/datatable'
 import ColumnComponent from 'primevue/column'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 const PDataTable = DataTableComponent
 const PColumn = ColumnComponent
-const PInputText = InputText
 
 interface GridItem {
   column: string
