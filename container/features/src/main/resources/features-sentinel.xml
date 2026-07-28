@@ -167,6 +167,7 @@
             per Sentinel (aggregation.enabled=true with a distinct aggregation.writerId). Configure the flow database
             via the org.opennms.features.flows.persistence.postgres pid (datasource.url/username/password/databaseName).</details>
         <feature>sentinel-flows</feature>
+        <feature>opennms-flows-aggregation</feature>
         <feature version="[5.3,5.4)">spring-jdbc</feature>
         <!-- HikariCPConnectionFactory + JdbcDataSource config model + PostgreSQL driver for the dedicated flow pool -->
         <feature>opennms-core-db</feature>

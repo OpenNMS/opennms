@@ -185,7 +185,7 @@
     <reference id="flowIdentity" interface="org.opennms.distributed.core.api.Identity"/>
 
     <bean id="aggregatingFlowRepository"
-          class="org.opennms.netmgt.flows.postgres.AggregatingFlowRepository"
+          class="org.opennms.netmgt.flows.postgres.PostgresAggregatingFlowRepository"
           init-method="start" destroy-method="stop">
         <argument ref="postgresFlowMetricRegistry"/>
         <property name="dataSourceProvider" ref="flowDataSourceProvider"/>

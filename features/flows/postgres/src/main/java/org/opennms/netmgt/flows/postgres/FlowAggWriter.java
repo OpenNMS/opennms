@@ -30,18 +30,21 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.flows.aggregation.AggregatedFlow;
+import org.opennms.netmgt.flows.aggregation.AggregatedFlowSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * The {@link FlowAggregator} sink that persists closed-window {@link AggregatedFlow} rows to the
- * {@code flow_agg} table. Each row carries this writer's {@code writerId}; when several writers feed
- * the same window+key (e.g. multiple Sentinels), each writes its own partial row and readers SUM
- * them. A single Horizon-core writer therefore produces already-final rows.
+ * The {@link org.opennms.netmgt.flows.aggregation.FlowAggregator} sink that persists closed-window
+ * {@link AggregatedFlow} rows to the {@code flow_agg} table. Each row carries this writer's
+ * {@code writerId}; when several writers feed the same window+key (e.g. multiple Sentinels), each writes
+ * its own partial row and readers SUM them. A single Horizon-core writer therefore produces
+ * already-final rows.
  */
-public class FlowAggWriter implements java.util.function.Consumer<List<AggregatedFlow>> {
+public class FlowAggWriter implements AggregatedFlowSink {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowAggWriter.class);
 

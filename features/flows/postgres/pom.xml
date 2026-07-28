@@ -65,6 +65,12 @@
       <artifactId>org.opennms.features.flows.processing</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Shared write-time aggregation engine + SPI + abstract forwarder repository -->
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.aggregation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Cross-container node Identity (getId/getLocation) to auto-default the aggregation writerId -->
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>

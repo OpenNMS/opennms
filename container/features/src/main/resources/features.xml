@@ -1207,9 +1207,12 @@
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.core/${project.version}</bundle>
     </feature>
+    <!-- The opennms-flows-aggregation feature (the shared write-time aggregation engine) is defined
+         separately and is a prerequisite of this feature; it is consumed as a dependency below. -->
     <feature name="opennms-flows-postgres" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Postgres">
         <details>Optional PostgreSQL-backed FlowRepository/FlowQueryService (jsonb). Install alongside or instead of the Elasticsearch flow persistence.</details>
         <feature>opennms-flows</feature>
+        <feature>opennms-flows-aggregation</feature>
         <feature version="[5.3,5.4)">spring-jdbc</feature>
         <!-- opennms-core-db provides HikariCPConnectionFactory + the JdbcDataSource config model + the
              PostgreSQL driver, used to build the dedicated flow connection pool in the bundle blueprint. -->

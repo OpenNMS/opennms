@@ -92,7 +92,7 @@ public class PostgresFlowDisabledTest {
 
     @Test
     public void aggregationWriterIdDefaultsToNodeIdentityWhenBlank() {
-        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        final PostgresAggregatingFlowRepository agg = new PostgresAggregatingFlowRepository(new MetricRegistry());
         final Identity id = mock(Identity.class);
         when(id.getId()).thenReturn("sentinel-7");
         agg.setIdentity(id);
@@ -104,14 +104,14 @@ public class PostgresFlowDisabledTest {
 
     @Test
     public void aggregationWriterIdFallsBackToCoreWithoutIdentity() {
-        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        final PostgresAggregatingFlowRepository agg = new PostgresAggregatingFlowRepository(new MetricRegistry());
         agg.setWriterId("");                      // blank, and no Identity injected
         assertEquals("core", agg.resolveWriterId());
     }
 
     @Test
     public void aggregatingRepositoryIsInertWhenDisabled() throws Exception {
-        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        final PostgresAggregatingFlowRepository agg = new PostgresAggregatingFlowRepository(new MetricRegistry());
         agg.setEnabled(false);                                          // default; aggregation off
         agg.start();                                                    // must NOT throw or start a writer
         agg.persist(Collections.singletonList(mock(Flow.class)));       // must be a no-op
@@ -120,7 +120,7 @@ public class PostgresFlowDisabledTest {
 
     @Test
     public void aggregatingRepositoryIsInertWhenEnabledButNoDataSource() throws Exception {
-        final AggregatingFlowRepository agg = new AggregatingFlowRepository(new MetricRegistry());
+        final PostgresAggregatingFlowRepository agg = new PostgresAggregatingFlowRepository(new MetricRegistry());
         agg.setEnabled(true);
         agg.setDataSourceProvider(inertProvider());
         agg.start();                                                    // logs, but must NOT throw (feature loads)

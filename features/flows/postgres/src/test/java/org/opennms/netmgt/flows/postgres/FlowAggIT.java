@@ -30,6 +30,8 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.flows.aggregation.FlowAggregator;
+import org.opennms.netmgt.flows.aggregation.FlowInput;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.DockerClientFactory;
