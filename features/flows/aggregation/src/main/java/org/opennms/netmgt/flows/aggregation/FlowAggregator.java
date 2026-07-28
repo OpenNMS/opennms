@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,25 +89,39 @@ public class FlowAggregator implements AutoCloseable {
         return ky == null ? -1 : kx.compareTo(ky);
     };
 
+    /** A flow whose {@code lastSwitched} is farther in the future than this (vs the wall clock) is
+     *  rejected, so one bad record cannot push the watermark ahead and strand every later flow. */
+    private static final long MAX_FUTURE_SKEW_MS = TimeUnit.HOURS.toMillis(1);
+    /** A flow spanning a longer wall-clock duration than this is rejected (implausible timestamps),
+     *  bounding the per-window loop so a near-epoch {@code deltaSwitched} cannot iterate for ages. */
+    private static final long MAX_FLOW_DURATION_MS = TimeUnit.DAYS.toMillis(1);
+
     private final long windowSizeMs;
     private final long allowedLatenessMs;
     private final long flushIntervalMs;
     private final long idleFlushMs;
     private final int topK;
-    private final Consumer<List<AggregatedFlow>> sink;
+    private final AggregatedFlowSink sink;
 
     /** Open windows, keyed by window start (ascending), each holding its per-key accumulators. */
     private final ConcurrentSkipListMap<Long, ConcurrentHashMap<Key, Acc>> windows = new ConcurrentSkipListMap<>();
     /** Wall-clock time each open window was first created, for the idle (processing-time) flush fallback. */
     private final ConcurrentHashMap<Long, Long> windowFirstSeenMs = new ConcurrentHashMap<>();
     private final AtomicLong maxEventTimeMs = new AtomicLong(Long.MIN_VALUE);
+    /** Guards flow ingestion (read) against window eviction (write): a flow can never land in a window
+     *  that the flusher is emitting/evicting, and cannot resurrect one that has already been emitted. */
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    /** Highest window-start already evicted (any flush path); flows for it or earlier are late. Lock-guarded. */
+    private long emittedFloor = Long.MIN_VALUE;
 
     /** Wall clock, injectable for tests. */
     private java.util.function.LongSupplier clock = System::currentTimeMillis;
 
     private final Meter flowsAggregated;
     private final Meter flowsDroppedLate;
+    private final Meter flowsDroppedInvalid;
     private final Meter rowsEmitted;
+    private final Meter rowsDroppedOnSink;
 
     private volatile boolean running = false;
     private Thread flusher;
@@ -121,7 +135,7 @@ public class FlowAggregator implements AutoCloseable {
      *             safely larger than the normal event-time close ({@code windowSize + lateness + 60s}).
      */
     public FlowAggregator(final long windowSizeMs, final long allowedLatenessMs, final long flushIntervalMs,
-                          final int topK, final long idleFlushMs, final Consumer<List<AggregatedFlow>> sink,
+                          final int topK, final long idleFlushMs, final AggregatedFlowSink sink,
                           final MetricRegistry metrics) {
         if (windowSizeMs < 1) {
             throw new IllegalArgumentException("windowSizeMs must be >= 1");
@@ -138,7 +152,9 @@ public class FlowAggregator implements AutoCloseable {
         Objects.requireNonNull(metrics);
         this.flowsAggregated = metrics.meter(MetricRegistry.name("flowAggregator", "flowsAggregated"));
         this.flowsDroppedLate = metrics.meter(MetricRegistry.name("flowAggregator", "flowsDroppedLate"));
+        this.flowsDroppedInvalid = metrics.meter(MetricRegistry.name("flowAggregator", "flowsDroppedInvalid"));
         this.rowsEmitted = metrics.meter(MetricRegistry.name("flowAggregator", "rowsEmitted"));
+        this.rowsDroppedOnSink = metrics.meter(MetricRegistry.name("flowAggregator", "rowsDroppedOnSink"));
         metrics.register(MetricRegistry.name("flowAggregator", "openWindows"),
                 (com.codahale.metrics.Gauge<Integer>) windows::size);
     }
@@ -160,36 +176,53 @@ public class FlowAggregator implements AutoCloseable {
         if (f == null) {
             return false;
         }
-        // Decide lateness against the watermark established by PRIOR flows, then advance it. A flow must
-        // not close its own earlier windows just because it also extends into a later one.
-        final long closedAtOrBefore = closedWindowStartCeiling(maxEventTimeMs.get());
-        maxEventTimeMs.updateAndGet(prev -> Math.max(prev, f.lastSwitchedMs));
-
-        final double value = f.bytes * FixedWindowAggregation.samplingMultiplier(f.samplingInterval);
-        final long firstWindow = FixedWindowAggregation.windowNumber(0L, windowSizeMs, f.deltaSwitchedMs);
-        final long lastWindow = FixedWindowAggregation.windowNumber(0L, windowSizeMs, f.lastSwitchedMs);
+        // Timestamp sanity, before touching the watermark: reject a flow whose lastSwitched is implausibly
+        // far in the future (it would advance the watermark and mark every later flow late forever) or
+        // whose span is implausibly long (a near-epoch deltaSwitched would iterate millions of windows).
+        if (f.lastSwitchedMs - f.deltaSwitchedMs > MAX_FLOW_DURATION_MS
+                || f.lastSwitchedMs > clock.getAsLong() + MAX_FUTURE_SKEW_MS) {
+            flowsDroppedInvalid.mark();
+            return false;
+        }
 
         boolean anyAccepted = false;
-        for (long wn = firstWindow; wn <= lastWindow; wn++) {
-            final long windowStart = wn * windowSizeMs; // shift == 0
-            if (windowStart <= closedAtOrBefore) {
-                // The window has already closed (and likely flushed); do not resurrect it.
-                flowsDroppedLate.mark();
-                continue;
+        // Read lock: flows aggregate concurrently, but none runs while the flusher evicts (write lock),
+        // so a flow can neither land in a window mid-eviction nor resurrect one already emitted.
+        lock.readLock().lock();
+        try {
+            // Decide lateness against the watermark from PRIOR flows AND the highest window already emitted
+            // (so an idle-flushed window is not resurrected), then advance the watermark. A flow must not
+            // close its own earlier windows just because it also extends into a later one.
+            final long closedAtOrBefore = Math.max(closedWindowStartCeiling(maxEventTimeMs.get()), emittedFloor);
+            maxEventTimeMs.updateAndGet(prev -> Math.max(prev, f.lastSwitchedMs));
+
+            final double value = f.bytes * FixedWindowAggregation.samplingMultiplier(f.samplingInterval);
+            final long firstWindow = FixedWindowAggregation.windowNumber(0L, windowSizeMs, f.deltaSwitchedMs);
+            final long lastWindow = FixedWindowAggregation.windowNumber(0L, windowSizeMs, f.lastSwitchedMs);
+
+            for (long wn = firstWindow; wn <= lastWindow; wn++) {
+                final long windowStart = wn * windowSizeMs; // shift == 0
+                if (windowStart <= closedAtOrBefore) {
+                    // The window has already closed (and likely flushed); do not resurrect it.
+                    flowsDroppedLate.mark();
+                    continue;
+                }
+                final long windowEndInclusive = windowStart + windowSizeMs - 1;
+                final long bytes = FixedWindowAggregation.bytesInWindow(
+                        f.deltaSwitchedMs, f.lastSwitchedMs, value, windowStart, windowEndInclusive);
+                if (bytes <= 0) {
+                    continue; // no bytes attributable to this window (e.g. sub-millisecond overlap rounding)
+                }
+                final ConcurrentHashMap<Key, Acc> w = windows.computeIfAbsent(windowStart, k -> new ConcurrentHashMap<>());
+                windowFirstSeenMs.putIfAbsent(windowStart, clock.getAsLong()); // for the idle-flush fallback
+                accumulateDimensions(w, f, bytes, null);        // without-TOS rollup (over all DSCP)
+                if (f.dscp != null) {
+                    accumulateDimensions(w, f, bytes, f.dscp);  // with-TOS (this flow's DSCP)
+                }
+                anyAccepted = true;
             }
-            final long windowEndInclusive = windowStart + windowSizeMs - 1;
-            final long bytes = FixedWindowAggregation.bytesInWindow(
-                    f.deltaSwitchedMs, f.lastSwitchedMs, value, windowStart, windowEndInclusive);
-            if (bytes <= 0) {
-                continue; // no bytes attributable to this window (e.g. sub-millisecond overlap rounding)
-            }
-            final ConcurrentHashMap<Key, Acc> w = windows.computeIfAbsent(windowStart, k -> new ConcurrentHashMap<>());
-            windowFirstSeenMs.putIfAbsent(windowStart, clock.getAsLong()); // for the idle-flush fallback
-            accumulateDimensions(w, f, bytes, null);        // without-TOS rollup (over all DSCP)
-            if (f.dscp != null) {
-                accumulateDimensions(w, f, bytes, f.dscp);  // with-TOS (this flow's DSCP)
-            }
-            anyAccepted = true;
+        } finally {
+            lock.readLock().unlock();
         }
         if (anyAccepted) {
             flowsAggregated.mark();
@@ -247,7 +280,7 @@ public class FlowAggregator implements AutoCloseable {
                 flushClosedWindows();
                 flushIdleWindows();
             } catch (final Exception e) {
-                LOG.warn("Flow aggregation flush failed; will retry on the next tick.", e);
+                LOG.warn("Flow aggregation flush encountered an unexpected error.", e);
             }
         }
     }
@@ -266,38 +299,63 @@ public class FlowAggregator implements AutoCloseable {
     void flushIdleWindows() {
         final long cutoff = clock.getAsLong() - idleFlushMs;
         final List<AggregatedFlow> batch = new ArrayList<>();
-        for (final Map.Entry<Long, Long> e : windowFirstSeenMs.entrySet()) {
-            if (e.getValue() <= cutoff) {
-                final Long windowStart = e.getKey();
-                windowFirstSeenMs.remove(windowStart);
-                final ConcurrentHashMap<Key, Acc> acc = windows.remove(windowStart);
-                if (acc != null) {
-                    emitWindow(windowStart, acc, batch);
+        lock.writeLock().lock();
+        try {
+            for (final Map.Entry<Long, Long> e : windowFirstSeenMs.entrySet()) {
+                if (e.getValue() <= cutoff) {
+                    final Long windowStart = e.getKey();
+                    windowFirstSeenMs.remove(windowStart);
+                    final ConcurrentHashMap<Key, Acc> acc = windows.remove(windowStart);
+                    if (acc != null) {
+                        emittedFloor = Math.max(emittedFloor, windowStart);
+                        emitWindow(windowStart, acc, batch);
+                    }
                 }
             }
+        } finally {
+            lock.writeLock().unlock();
         }
-        if (!batch.isEmpty()) {
-            rowsEmitted.mark(batch.size());
-            sink.accept(batch);
-        }
+        deliver(batch); // outside the lock: sink I/O must not block flow ingestion
     }
 
     private void drainWindowsUpTo(final long thresholdInclusive) {
         final List<AggregatedFlow> batch = new ArrayList<>();
-        while (!windows.isEmpty()) {
-            final Long first = windows.firstKey();
-            if (first == null || first > thresholdInclusive) {
-                break;
+        lock.writeLock().lock();
+        try {
+            while (!windows.isEmpty()) {
+                final Long first = windows.firstKey();
+                if (first == null || first > thresholdInclusive) {
+                    break;
+                }
+                final Map.Entry<Long, ConcurrentHashMap<Key, Acc>> entry = windows.pollFirstEntry();
+                if (entry != null) {
+                    windowFirstSeenMs.remove(entry.getKey());
+                    emittedFloor = Math.max(emittedFloor, entry.getKey());
+                    emitWindow(entry.getKey(), entry.getValue(), batch);
+                }
             }
-            final Map.Entry<Long, ConcurrentHashMap<Key, Acc>> entry = windows.pollFirstEntry();
-            if (entry != null) {
-                windowFirstSeenMs.remove(entry.getKey());
-                emitWindow(entry.getKey(), entry.getValue(), batch);
-            }
+        } finally {
+            lock.writeLock().unlock();
         }
-        if (!batch.isEmpty()) {
-            rowsEmitted.mark(batch.size());
+        deliver(batch); // outside the lock: sink I/O must not block flow ingestion
+    }
+
+    /**
+     * Hand a drained batch to the sink. The engine is best-effort and in-memory: these rows have already
+     * been evicted, so if the sink throws they are dropped (and counted), NOT retried &mdash; the sink
+     * owns its own durability and error handling (see {@link AggregatedFlowSink}).
+     */
+    private void deliver(final List<AggregatedFlow> batch) {
+        if (batch.isEmpty()) {
+            return;
+        }
+        rowsEmitted.mark(batch.size());
+        try {
             sink.accept(batch);
+        } catch (final RuntimeException e) {
+            rowsDroppedOnSink.mark(batch.size());
+            LOG.warn("Aggregated flow sink rejected a batch of {} rows; the rows are dropped (not retried).",
+                    batch.size(), e);
         }
     }
 

@@ -27,11 +27,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Optional;
 
 import org.opennms.integration.api.v1.flows.Flow;
 
@@ -50,7 +52,7 @@ public class FlowAggregatorTest {
     private static final long SIZE = 1000L;
 
     private final List<AggregatedFlow> captured = new ArrayList<>();
-    private final Consumer<List<AggregatedFlow>> sink = captured::addAll;
+    private final AggregatedFlowSink sink = captured::addAll;
 
     private FlowAggregator aggregator(final long latenessMs) {
         return aggregator(latenessMs, 0); // uncapped
@@ -186,7 +188,7 @@ public class FlowAggregatorTest {
 
         // a late flow for the still-open window is accepted and merged
         assertTrue(agg.add(flow(1500L, 1600L, 500L, null, true, 1, 10, "http", null, null, null, null)));
-        advanceWatermark(agg, 6001L); // now 6001-1000-5000 = 1 >= 1000? no... push further
+        advanceWatermark(agg, 6001L); // closes start <= 6001-1000-5000 = 1; [1000,2000) still open
         advanceWatermark(agg, 7000L); // 7000-1000-5000 = 1000 >= 1000 -> closes [1000,2000)
         agg.flushClosedWindows();
         final AggregatedFlow itf = row(1000L, AggregatedFlow.Dimension.INTERFACE, null, 1);
@@ -334,5 +336,118 @@ public class FlowAggregatorTest {
     public void fromFlowSkipsFlowsMissingRequiredFields() {
         // a Flow with no switched timestamps / exporter yields no FlowInput (Mockito returns null/empty)
         assertNull(FlowInput.from(mock(Flow.class)));
+    }
+
+    // ---- timestamp sanity, re-emission, and sink-failure hardening --------------------------------
+
+    @Test
+    public void futureTimestampDoesNotPoisonTheWatermark() {
+        final FlowAggregator agg = aggregator(0L);
+        agg.setClock(() -> 10_000_000L); // fixed wall clock
+
+        // A flow whose lastSwitched is well beyond now + skew must be rejected WITHOUT advancing the
+        // watermark; otherwise every later flow would be considered late forever.
+        assertFalse(agg.add(flow(10_000_000L, 10_000_000L + 7_200_000L /* +2h */, 500L, null,
+                true, 1, 10, "http", null, null, null, null)));
+
+        // A normal (past) flow added afterward must still aggregate and close normally.
+        assertTrue(agg.add(flow(1_000_000L, 1_000_999L, 1000L, null, true, 1, 10, "http", null, null, null, null)));
+        advanceWatermark(agg, 2_000_000L); // closes [1_000_000, 1_001_000)
+        agg.flushClosedWindows();
+        assertNotNull("normal flow must not be stranded by the future flow",
+                row(1_000_000L, AggregatedFlow.Dimension.INTERFACE, null, 1));
+    }
+
+    @Test
+    public void implausiblyLongFlowIsDropped() {
+        final FlowAggregator agg = aggregator(0L);
+        agg.setClock(() -> 500_000_000L);
+        // Span of 2 days (> the 1-day cap) — e.g. a near-epoch deltaSwitched. Rejected, and it must not
+        // iterate a window per millisecond of the span.
+        assertFalse(agg.add(flow(0L, 2L * 86_400_000L, 1000L, null, true, 1, 10, "http", null, null, null, null)));
+        agg.flushClosedWindows();
+        assertTrue(captured.isEmpty());
+    }
+
+    @Test
+    public void idleFlushedWindowIsNotResurrectedByALateFlow() {
+        final long[] now = {1_000_000L};
+        final FlowAggregator agg = new FlowAggregator(SIZE, 0L, 3_600_000L, 0, 5000L, sink, new MetricRegistry());
+        agg.setClock(() -> now[0]);
+
+        agg.add(flow(1000L, 1999L, 1000L, null, true, 1, 10, "http", null, null, null, null));
+        now[0] += 6000L; // past the idle timeout
+        agg.flushIdleWindows();
+        assertEquals("window released once by the idle flush", 1000L,
+                row(1000L, AggregatedFlow.Dimension.INTERFACE, null, 1).bytesIn);
+
+        captured.clear();
+        // A late flow for the just-emitted window must NOT resurrect it (the watermark never closed it).
+        assertFalse(agg.add(flow(1500L, 1600L, 777L, null, true, 1, 10, "http", null, null, null, null)));
+        agg.flushClosedWindows();
+        agg.flushIdleWindows();
+        assertTrue("an idle-flushed window must not be emitted a second time", captured.isEmpty());
+    }
+
+    @Test
+    public void sinkFailureDoesNotBreakTheFlusher() {
+        final boolean[] first = {true};
+        final AggregatedFlowSink boom = batch -> {
+            if (first[0]) {
+                first[0] = false;
+                throw new RuntimeException("sink is down");
+            }
+            captured.addAll(batch);
+        };
+        final FlowAggregator agg = new FlowAggregator(SIZE, 0L, 3_600_000L, 0, 0L, boom, new MetricRegistry());
+        agg.add(flow(1000L, 1999L, 1000L, null, true, 1, 10, "http", null, null, null, null));
+        advanceWatermark(agg, 10_000L);
+        agg.flushClosedWindows(); // sink throws; the flush must swallow it (rows dropped, not retried)
+
+        // The aggregator keeps working: a later window delivers to the now-recovered sink.
+        agg.add(flow(20_000L, 20_999L, 500L, null, true, 1, 10, "http", null, null, null, null));
+        advanceWatermark(agg, 40_000L);
+        agg.flushClosedWindows();
+        assertNotNull(row(20_000L, AggregatedFlow.Dimension.INTERFACE, null, 1));
+    }
+
+    // ---- FlowInput.from direction / byte-count handling -------------------------------------------
+
+    private static Flow mockFlow(final Flow.Direction direction, final Long bytes) {
+        final Flow.NodeInfo exporter = mock(Flow.NodeInfo.class);
+        when(exporter.getNodeId()).thenReturn(42);
+        final Flow f = mock(Flow.class);
+        when(f.getDeltaSwitched()).thenReturn(Instant.ofEpochMilli(1000L));
+        when(f.getLastSwitched()).thenReturn(Instant.ofEpochMilli(1999L));
+        when(f.getExporterNodeInfo()).thenReturn(exporter);
+        when(f.getBytes()).thenReturn(bytes);
+        when(f.getDirection()).thenReturn(direction);
+        when(f.getInputSnmp()).thenReturn(10);
+        when(f.getOutputSnmp()).thenReturn(20);
+        when(f.getSrcAddrHostname()).thenReturn(Optional.empty());
+        when(f.getDstAddrHostname()).thenReturn(Optional.empty());
+        return f;
+    }
+
+    @Test
+    public void unknownDirectionIsTreatedAsIngressUsingInputInterface() {
+        final FlowInput in = FlowInput.from(mockFlow(Flow.Direction.UNKNOWN, 100L));
+        assertNotNull(in);
+        assertTrue("UNKNOWN direction follows the OpenNMS convention of ingress", in.ingress);
+        assertEquals("ingress uses the input SNMP interface", 10, in.ifIndex);
+    }
+
+    @Test
+    public void egressUsesOutputInterface() {
+        final FlowInput in = FlowInput.from(mockFlow(Flow.Direction.EGRESS, 100L));
+        assertNotNull(in);
+        assertFalse(in.ingress);
+        assertEquals(20, in.ifIndex);
+    }
+
+    @Test
+    public void nullByteCountIsSkipped() {
+        assertNull("a flow with no byte count must be skipped, not NPE unboxing it",
+                FlowInput.from(mockFlow(Flow.Direction.INGRESS, null)));
     }
 }

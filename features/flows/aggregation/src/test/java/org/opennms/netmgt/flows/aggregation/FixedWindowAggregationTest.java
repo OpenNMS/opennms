@@ -198,7 +198,9 @@ public class FixedWindowAggregationTest {
     @Test
     public void perNodeShiftMatchesFastutilGoldenValues() {
         final long ws = 60000L;
-        final long[] expected = {0L, 43410L, 14940L, 28243L, 29881L, 42824L, 2022L, 41611L, 47533L, 48846L, 25648L};
+        // fastutil HashCommon.mix(nodeId) wrapped with Math.floorMod (always in [0, ws), unlike a naive
+        // Math.abs(...) % ws which is negative for the one nodeId whose hash is Integer.MIN_VALUE).
+        final long[] expected = {0L, 16590L, 14940L, 31757L, 29881L, 42824L, 57978L, 41611L, 12467L, 11154L, 25648L};
         for (int nodeId = 0; nodeId <= 10; nodeId++) {
             assertEquals("perNodeShift(" + nodeId + ", " + ws + ")", expected[nodeId],
                     FixedWindowAggregation.perNodeShift(nodeId, ws));

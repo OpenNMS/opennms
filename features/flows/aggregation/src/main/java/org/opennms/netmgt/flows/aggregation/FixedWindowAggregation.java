@@ -118,7 +118,9 @@ final class FixedWindowAggregation {
      * for the optional per-node alignment mode; global-grid aggregation uses {@code shift == 0}.
      */
     static long perNodeShift(final int nodeId, final long windowSize) {
-        return Math.abs(mix(nodeId)) % windowSize;
+        // floorMod (not Math.abs(...) % ...): Math.abs(Integer.MIN_VALUE) is still negative, which would
+        // yield a negative shift for that one nodeId. floorMod is always in [0, windowSize).
+        return Math.floorMod((long) mix(nodeId), windowSize);
     }
 
     /** fastutil {@code HashCommon.INT_PHI} (2^32 * (sqrt(5) - 1) / 2), i.e. -1640531527. */

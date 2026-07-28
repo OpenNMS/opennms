@@ -30,8 +30,9 @@ import org.opennms.integration.api.v1.flows.Flow;
  * immutable holder. Keeping the engine ({@link FlowAggregator}) decoupled from the (large) {@code Flow}
  * interface makes the aggregation/windowing logic unit-testable without mocking dozens of accessors,
  * and isolates the one piece of interpretation that matters: the aggregation interface is the flow's
- * <em>ingress</em> interface for INGRESS flows and its <em>egress</em> interface otherwise (mirroring
- * Nephron's {@code RefType.INTERFACE_PART}).
+ * <em>egress</em> interface for EGRESS flows and its <em>ingress</em> interface otherwise. INGRESS and
+ * UNKNOWN both use the ingress interface, following the OpenNMS convention (InterfaceMarkerImpl /
+ * FlowThresholdingImpl) that treats an UNKNOWN direction as ingress.
  */
 public final class FlowInput {
 
@@ -74,17 +75,20 @@ public final class FlowInput {
 
     /**
      * Extract the aggregation inputs from a {@link Flow}. Returns {@code null} when the flow lacks the
-     * fields the aggregator requires (switched timestamps, exporter node, the direction's interface) so
-     * the caller can count and skip it rather than aggregate garbage.
+     * fields the aggregator requires (switched timestamps, exporter node, byte count, the direction's
+     * interface) so the caller can count and skip it rather than aggregate garbage.
      */
     public static FlowInput from(final Flow flow) {
         final Instant delta = flow.getDeltaSwitched();
         final Instant last = flow.getLastSwitched();
         final Flow.NodeInfo exporter = flow.getExporterNodeInfo();
-        if (delta == null || last == null || exporter == null) {
+        final Long bytes = flow.getBytes();
+        if (delta == null || last == null || exporter == null || bytes == null) {
             return null;
         }
-        final boolean ingress = flow.getDirection() != null && "INGRESS".equals(flow.getDirection().name());
+        // Only an explicit EGRESS is egress; INGRESS, UNKNOWN, and a missing direction are all treated as
+        // ingress (OpenNMS convention) and use the input (ingress) SNMP interface.
+        final boolean ingress = flow.getDirection() == null || !"EGRESS".equals(flow.getDirection().name());
         final Integer ifIndex = ingress ? flow.getInputSnmp() : flow.getOutputSnmp();
         if (ifIndex == null) {
             return null;
@@ -92,7 +96,7 @@ public final class FlowInput {
         return new FlowInput(
                 delta.toEpochMilli(),
                 last.toEpochMilli(),
-                flow.getBytes(),
+                bytes,
                 flow.getSamplingInterval(),
                 ingress,
                 exporter.getNodeId(),

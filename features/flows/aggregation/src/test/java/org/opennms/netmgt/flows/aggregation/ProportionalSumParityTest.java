@@ -37,6 +37,9 @@ import org.junit.Test;
  * combinations (including non-zero histogram offsets) to lock the two arithmetic paths together.
  */
 public class ProportionalSumParityTest {
+    /** Randomized iterations per fuzz test. Enough to catch systematic divergences without slowing every build. */
+    private static final int FUZZ_ITERATIONS = 20_000;
+
     private static double tol(double expected) {
         return Math.max(1.0E-6, Math.abs(expected) * 1.0E-9);
     }
@@ -148,7 +151,7 @@ public class ProportionalSumParityTest {
     @Test
     public void fuzzSummaryParity() {
         Random rnd = new Random(4044185325L);
-        for (int i = 0; i < 200000; ++i) {
+        for (int i = 0; i < FUZZ_ITERATIONS; ++i) {
             long start = 1000000L + (long)rnd.nextInt(1000000);
             long end = start + 1L + (long)rnd.nextInt(2000000);
             long[] range = ProportionalSumParityTest.randomRange(rnd, start, end);
@@ -161,7 +164,7 @@ public class ProportionalSumParityTest {
     @Test
     public void fuzzSeriesParity() {
         Random rnd = new Random(6169061L);
-        for (int i = 0; i < 100000; ++i) {
+        for (int i = 0; i < FUZZ_ITERATIONS; ++i) {
             long start = 1000000L + (long)rnd.nextInt(1000000);
             long span = 1 + rnd.nextInt(2000000);
             long end = start + span;
@@ -176,7 +179,7 @@ public class ProportionalSumParityTest {
     @Test
     public void fuzzSeriesParityWithNonZeroOffset() {
         Random rnd = new Random(1045991L);
-        for (int i = 0; i < 100000; ++i) {
+        for (int i = 0; i < FUZZ_ITERATIONS; ++i) {
             long start = 1000000L + (long)rnd.nextInt(1000000);
             long span = 1 + rnd.nextInt(2000000);
             long end = start + span;

@@ -22,9 +22,7 @@
 package org.opennms.netmgt.flows.aggregation;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.integration.api.v1.flows.Flow;
@@ -73,7 +71,7 @@ public abstract class AbstractAggregatingFlowRepository implements FlowRepositor
      * {@code writerId}, or return {@code null} to stay inert when the backend is not configured (e.g. no
      * DataSource). Called once from {@link #start()} when aggregation is enabled.
      */
-    protected abstract Consumer<List<AggregatedFlow>> createSink(String writerId);
+    protected abstract AggregatedFlowSink createSink(String writerId);
 
     public void start() {
         if (!enabled) {
@@ -81,7 +79,7 @@ public abstract class AbstractAggregatingFlowRepository implements FlowRepositor
             return;
         }
         final String effectiveWriterId = resolveWriterId();
-        final Consumer<List<AggregatedFlow>> sink = createSink(effectiveWriterId);
+        final AggregatedFlowSink sink = createSink(effectiveWriterId);
         if (sink == null) {
             // The backend reported it is not configured; stay inert rather than failing to load. The
             // concrete repository is expected to have logged the backend-specific reason and remedy.

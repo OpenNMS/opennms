@@ -29,6 +29,15 @@ import java.util.function.Consumer;
  * backend (PostgreSQL, Elasticsearch, ...) implements this to store {@link AggregatedFlow} rows however
  * it sees fit; the aggregation engine itself stays storage-agnostic. It is a named specialization of
  * {@code Consumer<List<AggregatedFlow>>} so the SPI reads clearly at the wiring points.
+ *
+ * <p><b>Contract.</b> {@code accept} is called from the aggregator's single flush thread with a batch of
+ * already-final rows. The engine is best-effort and in-memory: the rows have already been evicted before
+ * {@code accept} runs, so a thrown exception causes that batch to be dropped (and counted) &mdash; it is
+ * <em>not</em> retried. A sink needing durability or retry must implement it internally and should avoid
+ * throwing for recoverable errors. (A process restart likewise loses the still-open windows held in
+ * memory.) Rows carry a writer id and are summed per {@code (window, key, writer)} by readers, so a
+ * reader must tolerate the same tuple recurring (e.g. across a writer restart) rather than assume
+ * exactly-once delivery.
  */
 public interface AggregatedFlowSink extends Consumer<List<AggregatedFlow>> {
 }
