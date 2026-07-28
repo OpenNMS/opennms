@@ -15,6 +15,10 @@ describe('OnmsDrawer contract', () => {
     expect(drawer.props('position')).toBe('right')
     expect(drawer.props('header')).toBe('Customize Columns')
     expect(drawer.props('visible')).toBe(true)
+    // style isn't a declared Drawer prop, so it falls through as an attr rather
+    // than a prop; PrimeVue's own DOM (behind Teleport) isn't reachable via
+    // wrapper.attributes() here, so assert on the raw fallthrough attrs instead
+    expect((drawer.vm.$attrs as { style?: unknown }).style).toEqual({ width: '55em' })
   })
 
   it('forwards update:visible and hide', async () => {

@@ -75,7 +75,10 @@ Other tranche-2 notes:
   through `pt.pcInputText.root`, the pass-through PrimeVue uses to reach the
   nested `InputText`'s rendered `<input>`, and deep-merged with `unsafePt` (a
   caller-supplied `unsafePt.pcInputText` survives; `inputProps` wins on a
-  root-key collision).
+  root-key collision). Function-valued `pt` sections (e.g. a function
+  `unsafePt.pcInputText` or `.root`) aren't supported in combination with
+  `inputProps` — the object spread drops them; use one mechanism or the
+  other.
 - **`OnmsListbox`**'s `change` event emits the selected value directly, not
   PrimeVue's `{ originalEvent, value }` event object, matching the
   `OnmsAutoComplete` `optionSelect` precedent.

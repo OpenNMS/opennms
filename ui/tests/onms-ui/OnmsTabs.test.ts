@@ -45,9 +45,10 @@ describe('OnmsTabs family contract', () => {
     expect(wrapper.findComponent({ name: 'Tabs' }).props('value')).toBe('alarms')
   })
 
-  it('OnmsTab maps value and uppercases its label via baked style', () => {
+  it('OnmsTab maps value', () => {
     const wrapper = mountTabs()
     const tab = wrapper.findAllComponents({ name: 'Tab' })[0]
     expect(tab.props('value')).toBe(0)
+    expect(tab.classes()).toContain('p-tab')
   })
 })
