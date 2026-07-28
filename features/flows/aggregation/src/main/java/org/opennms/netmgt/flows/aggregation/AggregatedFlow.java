@@ -23,8 +23,8 @@ package org.opennms.netmgt.flows.aggregation;
 
 /**
  * One aggregated row emitted when a window closes: the summed ingress/egress bytes for a single
- * grouping key within a fixed time window. This is what {@link FlowAggregator} hands to its sink (for
- * example {@link FlowAggWriter}) and what a reader sums back up per {@code (window, key)}.
+ * grouping key within a fixed time window. This is what {@link FlowAggregator} hands to its
+ * {@link AggregatedFlowSink} and what a reader sums back up per {@code (window, key)}.
  */
 public final class AggregatedFlow {
 

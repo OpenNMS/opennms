@@ -49,7 +49,7 @@ import com.codahale.metrics.MetricRegistry;
  *
  * <h2>Windowing and watermark</h2>
  * Windows use the global grid ({@code shift == 0}), so every exporter shares the same boundaries and the
- * results roll up cleanly in SQL. Event time is the flow's {@code lastSwitched}; the watermark is the
+ * results roll up cleanly when partials are summed. Event time is the flow's {@code lastSwitched}; the watermark is the
  * greatest event time seen. A window {@code [start, start+size)} closes once
  * {@code watermark >= start + size + allowedLateness}; {@code allowedLateness} therefore doubles as the
  * out-of-order holdback. This phase fires each window exactly once, at close (no early/incremental panes);
@@ -148,7 +148,7 @@ public class FlowAggregator implements AutoCloseable {
             return;
         }
         running = true;
-        flusher = new Thread(this::flushLoop, "postgres-flow-aggregator");
+        flusher = new Thread(this::flushLoop, "flow-aggregator");
         flusher.setDaemon(true);
         flusher.start();
         LOG.info("FlowAggregator started (windowSizeMs={}, allowedLatenessMs={}, flushIntervalMs={}, topK={}, idleFlushMs={}).",

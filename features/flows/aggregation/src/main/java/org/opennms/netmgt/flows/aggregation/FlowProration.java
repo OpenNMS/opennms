@@ -25,11 +25,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Pure-Java reference for the byte-proration arithmetic that {@link PostgresFlowQueryService}
- * renders as SQL. It is a line-for-line mirror of the {@code proratedForWindow} /
- * {@code proratedForBucket} / {@code SAMPLING} expressions and exists so the proportional-sum
- * behaviour can be unit-tested (against the Elasticsearch drift-plugin's {@code ProportionalSumAggregator})
- * without a live PostgreSQL. Changing the SQL means changing this in lockstep.
+ * Canonical, backend-neutral reference implementation of the byte-proration arithmetic. It is the
+ * single source of truth that the write-time sampling scale-up shares and that a backend's read path
+ * mirrors (for example rendered as SQL), so the proportional-sum behaviour can be unit-tested (against
+ * the OpenNMS Elasticsearch drift-plugin's {@code ProportionalSumAggregator}) without a live database.
+ * A backend that renders this arithmetic itself must keep its rendering in lockstep with this class.
  *
  * <p>A flow's bytes (scaled by its sampling interval) are distributed across time buckets in
  * proportion to the overlap of {@code [delta_switched, last_switched]} with each bucket, using the
@@ -42,7 +42,7 @@ final class FlowProration {
     private FlowProration() {
     }
 
-    /** Mirrors the {@code SAMPLING} SQL CASE: scale only by a finite, non-zero interval; else 1. */
+    /** Sampling scale-up: scale only by a finite, non-zero interval; else 1. */
     static double effectiveSampling(final Double samplingInterval) {
         if (samplingInterval == null || !Double.isFinite(samplingInterval) || samplingInterval == 0.0) {
             return 1.0;
@@ -64,15 +64,15 @@ final class FlowProration {
         return value * overlap / (double) (last - delta);
     }
 
-    /** Bucket starts a series row expands to, epoch-aligned (origin 0 — Elastic's only mode). */
+    /** Bucket starts a series row expands to, epoch-aligned (origin 0 — the only alignment mode used). */
     static long[] seriesBucketStarts(final long delta, final long last, final long s, final long e, final long step) {
         return seriesBucketStarts(delta, last, s, e, step, 0L);
     }
 
     /**
-     * Bucket starts a series row expands to, aligned to {@code origin} + k*{@code step}. Mirrors the
-     * {@code generate_series(...)} bounds; floor toward -inf matches PostgreSQL FLOOR and the drift
-     * plugin's {@code round(v - offset) + offset}.
+     * Bucket starts a series row expands to, aligned to {@code origin} + k*{@code step}. Flooring
+     * toward -inf ({@code Math.floorDiv}) matches the drift plugin's {@code round(v - offset) + offset}
+     * bucketing.
      */
     static long[] seriesBucketStarts(final long delta, final long last, final long s, final long e,
                                      final long step, final long origin) {

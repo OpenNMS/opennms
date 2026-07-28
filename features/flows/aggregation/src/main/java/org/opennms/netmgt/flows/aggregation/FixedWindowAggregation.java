@@ -45,7 +45,7 @@ package org.opennms.netmgt.flows.aggregation;
  *
  * <h2>Window alignment</h2>
  * Windows align to {@code shift + k*windowSize}. Horizon/Sentinel aggregation uses a global grid
- * ({@code shift == 0}) so windows are consistent across exporters and cheap to roll up in SQL;
+ * ({@code shift == 0}) so windows are consistent across exporters and cheap to roll up at read time;
  * {@link #perNodeShift(int, long)} reproduces Nephron's per-exporter jitter for an optional
  * per-node mode. The window arithmetic assumes {@code timestamp >= shift} (Nephron guards flows with
  * {@code deltaSwitched < shift} upstream); with the default {@code shift == 0} this always holds for

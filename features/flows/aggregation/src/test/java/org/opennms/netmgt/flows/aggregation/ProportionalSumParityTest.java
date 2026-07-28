@@ -30,9 +30,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Verifies that {@link FlowProration} (the pure-Java mirror of the proration SQL rendered by
- * {@link PostgresFlowQueryService}) produces byte-for-byte the same results as a faithful port of
- * the Elasticsearch drift-plugin's {@code ProportionalSumAggregator}. The {@code drift*} helpers
+ * Verifies that {@link FlowProration} (the canonical, backend-neutral proration reference that a
+ * backend's read path mirrors) produces byte-for-byte the same results as a faithful port of the
+ * OpenNMS Elasticsearch drift-plugin's {@code ProportionalSumAggregator}. The {@code drift*} helpers
  * below are that port; the fuzz tests exercise hundreds of thousands of random flow/window/step
  * combinations (including non-zero histogram offsets) to lock the two arithmetic paths together.
  */
