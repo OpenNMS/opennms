@@ -99,6 +99,8 @@ export default tseslint.config(
           { name: 'primevue/card', message: 'Use OnmsCard from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/chip', message: 'Use OnmsChip from @opennms/onms-ui (NMS-20081 seam).' },
+          { name: 'primevue/column', message: 'Use OnmsColumn from @opennms/onms-ui (NMS-20081 seam).' },
+          { name: 'primevue/datatable', message: 'Use OnmsTable from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/datepicker', message: 'Use OnmsDatePicker from @opennms/onms-ui (NMS-20081 seam).' },
           { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/drawer', message: 'Use OnmsDrawer from @opennms/onms-ui (NMS-20081 seam).' },

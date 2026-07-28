@@ -83,6 +83,42 @@ Other tranche-2 notes:
   PrimeVue's `{ originalEvent, value }` event object, matching the
   `OnmsAutoComplete` `optionSelect` precedent.
 
+## Components (tranche 3)
+
+OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
+`OnmsTableRowEditSaveEvent` types) and OnmsColumn.
+
+- **`OnmsColumn`** is a *compile-time re-export* of PrimeVue `Column`, not a
+  component wrapper — the one component in this package where that
+  distinction matters. `DataTable` discovers its columns by walking its
+  default-slot vnode tree for `type.name === 'Column'`; a `Column` nested
+  inside a real wrapper component is only discovered when the wrapper vnode
+  carries an explicit `key`, and a forgotten `key` silently drops the column.
+  So `OnmsColumn`'s runtime component *is* PrimeVue `Column` — identical
+  discovery, ordering and slot behavior — and the seam narrowing lives
+  entirely in a type cast (`OnmsColumnProps`/`OnmsColumnSlots`), enforced by
+  `vue-tsc` in consumer templates. A future framework swap replaces
+  `OnmsColumn.ts` with a real column-collection component under the same tag.
+  Because it's a re-export, its passthrough escape hatch keeps PrimeVue's
+  `pt` prop name rather than `unsafePt` — a cast cannot rename a runtime prop
+  — the one deliberate naming exception to rule 3 above.
+- **`OnmsTable`** bakes `scope="col"` onto every column's header cell
+  (PrimeVue's own `DataTable`/`Column` never sets it), by defaulting
+  `pt.column.headerCell.scope` on the underlying `DataTable`. That default is
+  deep-merged with the consumer-supplied `unsafePt`, so a consumer's own
+  `unsafePt.column.headerCell` keys — including an explicit `scope` — win on
+  collision.
+- **`virtualScrollItemSize`** is the narrowed virtual-scroll surface: it maps
+  to PrimeVue's `virtualScrollerOptions.itemSize` only. The rest of
+  `virtualScrollerOptions` isn't exposed.
+- **`expandedRows`** accepts either an array of row instances or an object
+  keyed by `dataKey`, matching PrimeVue's own `DataTableExpandedRows` shape
+  for tables that expand by key rather than by row identity.
+- Not exposed (never used anywhere in the app today): selection mode,
+  filters, `loading`, removable sort, paginator templates, CSV export. Extend
+  the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
+  `unsafePt` if a real need for one of these appears.
+
 ## Sanctioned direct-PrimeVue exceptions
 
 Outside this package, importing `primevue/*` is banned by ESLint
@@ -101,12 +137,9 @@ over time, not grow:
   wrapper. The import carries an inline `eslint-disable-next-line
   no-restricted-imports` with a comment pointing back to NMS-20081; revisit
   when the side menu is redesigned.
-- `primevue/datatable` and `primevue/column` — used at ~40 and ~29 call sites
-  respectively across the app. Wrapping `DataTable` is its own design effort
-  (`OnmsTable`), deferred to a future tranche.
 
 ## Planned next
 
-OnmsTable (DataTable + Column) as its own effort. Theme tokens, the library
-build/`.d.ts` output, npm publishing, and `window.OnmsUI` runtime exposure
-arrive with the plugin-sharing phase (see NMS-20029).
+Theme tokens, the library build/`.d.ts` output, npm publishing, and
+`window.OnmsUI` runtime exposure arrive with the plugin-sharing phase (see
+NMS-20029).
