@@ -398,10 +398,8 @@
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>
                 <feature>json-lib</feature>
-                <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
                 <feature>opennms-activemq-shell</feature>
-                <feature>opennms-bootstrap</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
@@ -455,8 +453,6 @@
                 <feature>opennms-osgi-core-rest</feature>
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
-                <feature>smack</feature>
-                <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>
                 <feature>opennms-amqp-event-forwarder</feature>
