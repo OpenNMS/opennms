@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="searchedProfiles.length"
       v-model:first="firstRow"
       :value="searchedProfiles"
@@ -38,12 +38,12 @@
       class="data-table"
       data-test="profiles-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Profile Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -55,8 +55,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -75,8 +75,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <OnmsMenu
       id="profile-row-menu"
@@ -107,11 +107,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { OnmsButton, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'

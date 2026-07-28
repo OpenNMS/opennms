@@ -97,22 +97,22 @@
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="storageStrategyParams"
             paginator
             :rows="3"
             :rowsPerPageOptions="[3, 6, 9]"
             data-test="storage-strategy-table"
           >
-            <Column
+            <OnmsColumn
               field="key"
               header="Key"
             />
-            <Column
+            <OnmsColumn
               field="value"
               header="Value"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
@@ -129,11 +129,11 @@
                   />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No Storage Strategy parameters added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -170,22 +170,22 @@
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="persistenceSelectorStrategyParams"
             paginator
             :rows="3"
             :rowsPerPageOptions="[3, 6, 9]"
             data-test="persistence-selector-strategy-table"
           >
-            <Column
+            <OnmsColumn
               field="key"
               header="Key"
             />
-            <Column
+            <OnmsColumn
               field="value"
               header="Value"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
@@ -202,11 +202,11 @@
                   />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No Persistence Selector Strategy parameters added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -299,9 +299,7 @@ import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } 
 import { IAutocompleteItemType } from '@/types'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
-import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()

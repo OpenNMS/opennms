@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="table-container">
-      <PDataTable
+      <OnmsTable
         :value="definitionRows"
         paginator
         :rows="50"
@@ -33,12 +33,12 @@
         v-model:first="firstRow"
         aria-label="SNMP Config Definition Table"
       >
-        <PColumn
+        <OnmsColumn
           field="location"
           header="Location"
           sortable
         />
-        <PColumn
+        <OnmsColumn
           field="ipSortKey"
           header="IP Addresses"
           sortable
@@ -57,8 +57,8 @@
             </div>
             <span v-else>--</span>
           </template>
-        </PColumn>
-        <PColumn header="Actions">
+        </OnmsColumn>
+        <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
@@ -76,14 +76,14 @@
               />
             </div>
           </template>
-        </PColumn>
+        </OnmsColumn>
         <template #empty>
           <EmptyList
             :content="emptyListContent"
             data-test="empty-list"
           />
         </template>
-      </PDataTable>
+      </OnmsTable>
     </div>
   </TableCard>
   <OnmsConfirmationDialog
@@ -132,9 +132,7 @@
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
@@ -146,9 +144,6 @@ import { SnmpDefinition } from '@/types/snmpConfig'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
-
-const PColumn = Column
-const PDataTable = DataTable
 
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()

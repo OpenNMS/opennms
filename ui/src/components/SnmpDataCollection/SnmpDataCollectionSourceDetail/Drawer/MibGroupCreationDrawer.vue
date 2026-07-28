@@ -67,30 +67,30 @@
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="mibObjects"
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 15, 20]"
             data-test="mib-objects-table"
           >
-            <Column
+            <OnmsColumn
               field="oid"
               header="OID"
             />
-            <Column
+            <OnmsColumn
               field="instance"
               header="Instance"
             />
-            <Column
+            <OnmsColumn
               field="alias"
               header="Alias"
             />
-            <Column
+            <OnmsColumn
               field="type"
               header="Type"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
@@ -107,11 +107,11 @@
                   />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No MIB Objects added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -240,9 +240,7 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()

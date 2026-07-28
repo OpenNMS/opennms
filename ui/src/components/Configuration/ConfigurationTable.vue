@@ -1,6 +1,6 @@
 <template>
   <div class="main-wrapper">
-    <PDataTable
+    <OnmsTable
       :value="tableData"
       dataKey="originalIndex"
       stripedRows
@@ -11,30 +11,30 @@
       @page="onPage"
       aria-label="External Requisitions"
     >
-      <PColumn :field="RequisitionData.ImportName" header="Name" sortable :pt="columnHeaderPt">
+      <OnmsColumn :field="RequisitionData.ImportName" header="Name" sortable>
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay :text="data[RequisitionData.ImportName]" />
         </template>
-      </PColumn>
-      <PColumn :field="RequisitionData.ImportURL" header="URL" sortable :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn :field="RequisitionData.ImportURL" header="URL" sortable>
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay :text="data[RequisitionData.ImportURL]" />
         </template>
-      </PColumn>
-      <PColumn header="Schedule Frequency" :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn header="Schedule Frequency">
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay
             :showCopyBtn="false"
             :text="ConfigurationHelper.cronToEnglish(data[RequisitionData.CronSchedule])"
           />
         </template>
-      </PColumn>
-      <PColumn :field="RequisitionData.RescanExisting" header="Rescan Behavior" sortable :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn :field="RequisitionData.RescanExisting" header="Rescan Behavior" sortable>
         <template #body="{ data }">
           {{ rescanToEnglish(data[RequisitionData.RescanExisting]) }}
         </template>
-      </PColumn>
-      <PColumn :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn>
         <template #body="{ data }">
           <div class="flex">
             <OnmsIconButton
@@ -55,8 +55,8 @@
             />
           </div>
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
@@ -65,9 +65,7 @@
   lang="ts"
 >
 import { computed, PropType } from 'vue'
-import DataTable, { DataTablePageEvent } from 'primevue/datatable'
-import Column from 'primevue/column'
-import { OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsColumn, OnmsIconButton, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 
 import Edit from '@/components/icons/action/Edit.vue'
 import Delete from '@/components/icons/action/Delete.vue'
@@ -77,13 +75,6 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCopyPasteDisplay from './ConfigurationCopyPasteDisplay.vue'
 import { ProvisionDServerConfiguration } from './configuration.types'
 import { rescanCopy } from './copy/rescanItems'
-
-const PDataTable = DataTable
-const PColumn = Column
-
-// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
-// passthrough so header cells stay associated with their columns for screen readers.
-const columnHeaderPt = { headerCell: { scope: 'col' }}
 
 /**
  * Props
@@ -109,7 +100,7 @@ const tableData = computed(() => {
 /**
  * When the user changes the page number.
  */
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (props.setNewPage) {
     props.setNewPage(event.page + 1)
   }
