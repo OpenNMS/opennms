@@ -71,14 +71,6 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     historyModalBackups.value = resp
   }
 
-  const getAndMergeDeviceConfigBackups = async () => {
-    const backups = await API.getDeviceConfigBackups(deviceConfigBackupQueryParams.value)
-
-    if (backups && backups.data) {
-      deviceConfigBackups.value = backups.data
-    }
-  }
-
   const downloadByConfig = async (configIds: number[]) => {
     const file = await API.downloadDeviceConfigs(configIds)
 
@@ -166,7 +158,6 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     getDeviceConfigBackupObjByIds,
     getDeviceConfigBackups,
     getHistoryByIpInterface,
-    getAndMergeDeviceConfigBackups,
     downloadByConfig,
     downloadSelectedDevices,
     backupSelectedDevices,
