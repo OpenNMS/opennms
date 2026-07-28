@@ -53,4 +53,18 @@ describe('OnmsInputText', () => {
     expect(input.attributes('data-test')).toBe('ip')
     expect(input.attributes('aria-label')).toBe('IP')
   })
+
+  it('re-syncs the visible input on change when trim leaves the model unchanged', async () => {
+    const wrapper = mount(OnmsInputText, {
+      props: { modelValue: 'foo', modelModifiers: { trim: true }},
+      global: globalPlugins
+    })
+    const input = wrapper.find('input')
+    ;(input.element as HTMLInputElement).value = 'foo '
+    await input.trigger('input')
+    // trimmed emit equals the current model — no prop change, no re-render
+    expect(wrapper.emitted('update:modelValue')![0]).toEqual(['foo'])
+    await input.trigger('change')
+    expect((input.element as HTMLInputElement).value).toBe('foo')
+  })
 })

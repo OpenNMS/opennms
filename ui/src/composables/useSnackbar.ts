@@ -26,6 +26,16 @@ import { useOnmsToast, OnmsToastSeverity } from '@opennms/onms-ui'
 // Legacy snackbar API, now a thin adapter over the @opennms/onms-ui toast seam
 // (NMS-20029). New code should call useOnmsToast() directly; this adapter exists
 // so the many existing showSnackBar call sites keep working.
+
+// Total map: adding a MessageSeverity member without a seam equivalent (or
+// renaming a seam severity) fails compilation here instead of at runtime.
+const SEVERITY_MAP: Record<MessageSeverity, OnmsToastSeverity> = {
+  [MessageSeverity.Error]: 'error',
+  [MessageSeverity.Info]: 'info',
+  [MessageSeverity.Success]: 'success',
+  [MessageSeverity.Warn]: 'warn'
+}
+
 const useSnackbar = () => {
   const { showToast, hideAllToasts } = useOnmsToast()
 
@@ -33,7 +43,7 @@ const useSnackbar = () => {
     const { center, error, msg, severity: severityProp, timeout } = snackbarProps
 
     // Prefer an explicit severity; fall back to the legacy error boolean.
-    const severity = (severityProp ?? (error ? MessageSeverity.Error : MessageSeverity.Success)) as OnmsToastSeverity
+    const severity = SEVERITY_MAP[severityProp ?? (error ? MessageSeverity.Error : MessageSeverity.Success)]
 
     showToast({
       message: msg,

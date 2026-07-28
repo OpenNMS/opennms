@@ -20,7 +20,8 @@
 /// License.
 ///
 
-export const ONMS_UI_VERSION = '0.3.0'
+import packageInfo from '../package.json'
+export const ONMS_UI_VERSION: string = packageInfo.version
 
 export { default as OnmsAutoComplete } from './components/OnmsAutoComplete.vue'
 export { default as OnmsButton } from './components/OnmsButton.vue'
@@ -58,7 +59,7 @@ export { default as OnmsTextarea } from './components/OnmsTextarea.vue'
 export { default as OnmsToastHost } from './components/OnmsToastHost.vue'
 export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 
-export { useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
+export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
 
 export type { OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent, OnmsTagSeverity } from './types'
 export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'
