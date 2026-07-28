@@ -69,6 +69,17 @@ describe('DCB pagination', () => {
     vi.mocked(API.getDeviceConfigBackups).mockResolvedValue(false)
   })
 
+  test('rows initializes from the persisted store limit on mount, not the default page size', async () => {
+    const deviceStore = useDeviceStore()
+    deviceStore.deviceConfigBackupQueryParams = { offset: 200, limit: 100 }
+
+    const wrapper = mount(DCBTable, mountOpts)
+    const table = wrapper.findComponent(OnmsTable)
+
+    expect(table.props('rows')).toBe(100)
+    expect(table.props('first')).toBe(200)
+  })
+
   test('page event merges { limit, offset } from the event into the store and refetches', async () => {
     const wrapper = mount(DCBTable, mountOpts)
     const table = wrapper.findComponent(OnmsTable)

@@ -222,7 +222,7 @@ const defaultQuerySize = 20
 const selectedDeviceConfigBackups = ref<Record<string, boolean>>({})
 const sortField = ref('deviceName')
 const sortOrder = ref(1)
-const rows = ref(defaultQuerySize)
+const rows = ref(deviceStore.deviceConfigBackupQueryParams.limit || defaultQuerySize)
 const first = computed(() => deviceStore.deviceConfigBackupQueryParams.offset || 0)
 
 const computeNodeLink = (nodeId: number) => {
