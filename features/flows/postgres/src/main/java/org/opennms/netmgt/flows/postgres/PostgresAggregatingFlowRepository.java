@@ -21,13 +21,10 @@
  */
 package org.opennms.netmgt.flows.postgres;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.flows.aggregation.AbstractAggregatingFlowRepository;
-import org.opennms.netmgt.flows.aggregation.AggregatedFlow;
+import org.opennms.netmgt.flows.aggregation.AggregatedFlowSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +49,7 @@ public class PostgresAggregatingFlowRepository extends AbstractAggregatingFlowRe
     }
 
     @Override
-    protected Consumer<List<AggregatedFlow>> createSink(final String writerId) {
+    protected AggregatedFlowSink createSink(final String writerId) {
         if (this.dataSource == null && this.dataSourceProvider != null) {
             this.dataSource = this.dataSourceProvider.getDataSource();
         }
