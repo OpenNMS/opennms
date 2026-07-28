@@ -23,16 +23,16 @@
       </FormField>
     </div>
     <div class="sources-card">
-      <PDataTable
+      <OnmsTable
         :value="sortedSources"
         scrollable
         scrollHeight="400px"
         :size="'small'"
-        :virtualScrollerOptions="{ itemSize: 44 }"
+        :virtualScrollItemSize="44"
         tableStyle="min-width: 50rem"
       >
-        <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
-        <PColumn style="width: 4rem">
+        <OnmsColumn field="name" style="width: 20%; height: 44px"></OnmsColumn>
+        <OnmsColumn style="width: 4rem">
           <template #body="{ data }">
             <OnmsIconButton
               title="Delete source"
@@ -41,8 +41,8 @@
               @click="removeSource(data.name)"
             />
           </template>
-        </PColumn>
-      </PDataTable>
+        </OnmsColumn>
+      </OnmsTable>
     </div>
   </div>
 </template>
@@ -53,12 +53,7 @@ import { computed, ref } from 'vue'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsAutoComplete, OnmsIconButton } from '@opennms/onms-ui'
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
+import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
 interface SourceItem {
   name: string
