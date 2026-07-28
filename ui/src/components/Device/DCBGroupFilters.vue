@@ -67,8 +67,9 @@ const osImageItems = computed(() => deviceStore.osImageOptions.map((option: stri
 const toggleMenu = (event: Event, menuRef: { toggle: (e: Event) => void }) => menuRef.toggle(event)
 
 const onGroupByOptionClick = (groupBy: string, value: string) => {
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     groupBy: groupBy,
     groupByValue: value

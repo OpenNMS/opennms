@@ -40,8 +40,9 @@ const menuItems = computed(() => deviceStore.backupStatusOptions.map((option: st
 const toggleMenu = (event: Event) => menu.value.toggle(event)
 
 const filterByStatus = (value: status) => {
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     status: value
   }

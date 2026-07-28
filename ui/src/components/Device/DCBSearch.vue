@@ -27,8 +27,9 @@ const searchFilterHandler = (val = '') => {
   } // prevents dup mounted call
   searchVal.value = val
 
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     search: val
   }
