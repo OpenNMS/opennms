@@ -79,7 +79,7 @@ public class RestUtilsTest {
         assertTrue(isProtected("metaData[foreign_source]"));
     }
 
-    /** Endpoints that never wire a guard are still covered, e.g. via a node back-reference. */
+    /** Node properties are protected even when the caller passes no extra names of its own. */
     @Test
     public void nodePropertiesAreProtectedByDefault() {
         assertTrue(RestUtils.isProtectedProperty("node.foreign_source"));

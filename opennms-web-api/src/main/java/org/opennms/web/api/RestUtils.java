@@ -60,13 +60,13 @@ public abstract class RestUtils {
 
 	/** Primary keys and the category ACL collection: never settable from request parameters. */
 	public static final Set<String> IMMUTABLE_PROPERTIES = Collections.unmodifiableSet(
-	        new HashSet<>(Arrays.asList("id", "nodeId", "authorizedGroups")));
+	        new HashSet<>(Arrays.asList("id", "dbId", "nodeId", "authorizedGroups")));
 
 	/** Node identity and provisioning-ownership properties. */
 	public static final Set<String> PROTECTED_NODE_PROPERTIES = Collections.unmodifiableSet(
 	        new HashSet<>(Arrays.asList("foreignSource", "foreignId", "type")));
 
-	/** Applied unless a caller opts out, so a new endpoint is covered without wiring a guard. */
+	/** Enforced for every caller that does not explicitly opt out. */
 	private static final Set<String> DEFAULT_PROTECTED_PROPERTIES;
 	static {
 	    final Set<String> defaults = new HashSet<>(IMMUTABLE_PROPERTIES);

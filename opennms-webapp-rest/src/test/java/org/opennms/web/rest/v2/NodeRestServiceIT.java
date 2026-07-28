@@ -259,8 +259,8 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
-     * The v2 node update must ignore provisioning-ownership fields, including key variants that
-     * a literal name check would miss.
+     * The v2 node update must ignore provisioning-ownership fields, however the request spells
+     * them and whether or not they are reached through a nested path.
      */
     @Test
     @JUnitTemporaryDatabase
@@ -323,7 +323,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         snmpInterface.put("ifType", 6);
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/snmpinterfaces", snmpInterface.toString(), 201);
 
-        final String attack = "node.foreign_source=AttackerReq&node.foreignId=666";
+        final String attack = "node.foreign_source=AttackerReq&node.foreign_id=666";
         sendPut("/nodes/1/ipinterfaces/10.10.10.10", attack, 204);
         sendPut("/nodes/1/snmpinterfaces/6", attack, 204);
         // this one reports 304 Not Modified because the service status did not change

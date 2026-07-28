@@ -122,7 +122,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
 
     /**
      * This service does not implement a property update, so the bulk endpoint must report that
-     * rather than copying the parameters onto every matched row and answering 204.
+     * instead of reporting success.
      */
     @Test
     @JUnitTemporaryDatabase

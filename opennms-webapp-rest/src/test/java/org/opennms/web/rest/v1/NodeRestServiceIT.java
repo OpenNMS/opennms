@@ -341,6 +341,32 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * The v1 sub-resources bind the raw request key, so a camelCase nested path reaches the
+     * node. None of them may be a route to its protected properties or primary key.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void v1SubResourceUpdatesCannotReachNode() throws Exception {
+        createSnmpInterface(); // node 1 + ipInterface 10.10.10.10 + snmpInterface 6
+        final String service = "<service status=\"A\"><serviceType><name>ICMP</name></serviceType></service>";
+        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 201,
+                "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+
+        // each request carries one legitimate field, so a 204 shows the update ran and only the
+        // protected properties were dropped
+        final String attack = "&node.foreignSource=AttackerReq&node.id=999";
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10", "isManaged=U" + attack, 204);
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", "status=F" + attack, 204);
+        sendPut("/nodes/1/snmpinterfaces/6", "ifAlias=legit" + attack, 204);
+
+        final OnmsNode node = m_nodeDao.get(1);
+        assertNotNull("the node must still exist under its original id", node);
+        assertNull("foreignSource must not be reachable from a v1 sub-resource", node.getForeignSource());
+        assertEquals("the node's primary key must not be overwritten", Integer.valueOf(1), node.getId());
+    }
+
+    /**
      * The asset record holds a back-reference to its node, so the asset endpoint must not be a
      * route to the node's protected properties.
      */
