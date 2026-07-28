@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
@@ -65,6 +66,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -116,6 +118,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -330,10 +335,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         setUser("lowpriv", new String[]{ "ROLE_REST" });
         sendPut("/nodes/1", "sysContact=LegitContact&foreignSource=AttackerReq&foreignId=999"
                 + "&assetRecord.node.foreignSource=NestedReq", 204);
-        final String xml = sendRequest(GET, "/nodes/1", 200);
-        assertFalse("foreignSource must not be reassignable via updateNode", xml.contains("AttackerReq"));
-        assertFalse("foreignSource must not be reachable through a nested path", xml.contains("NestedReq"));
-        assertTrue("legitimate fields still update", xml.contains("LegitContact"));
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertNull("foreignSource must not be reassignable via updateNode", updated.getForeignSource());
+        assertEquals("legitimate fields still update", "LegitContact", updated.getSysContact());
     }
 
     /**
@@ -348,8 +352,8 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPut("/nodes/1/assetRecord", "description=LegitAsset&node.foreignSource=AttackerReq"
                 + "&node.foreign_source=AttackerReq2", 204);
         assertTrue(sendRequest(GET, "/nodes/1/assetRecord", 200).contains("LegitAsset"));
-        final String xml = sendRequest(GET, "/nodes/1", 200);
-        assertFalse("node.foreignSource must not be settable via the asset endpoint", xml.contains("AttackerReq"));
+        assertNull("node.foreignSource must not be settable via the asset endpoint",
+                m_nodeDao.get(1).getForeignSource());
     }
 
     @Test
