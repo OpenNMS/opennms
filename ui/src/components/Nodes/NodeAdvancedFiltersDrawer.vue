@@ -26,7 +26,7 @@
           class="category-field"
           data-test="categories-multiselect"
         >
-          <MultiSelect
+          <OnmsMultiSelect
             v-model="selectedFilters.categories"
             :options="categoryOptions"
             optionLabel="_text"
@@ -34,7 +34,7 @@
             filter
             display="chip"
             placeholder="Select categories"
-            @update:modelValue="(items) => updateFilter('categories', items)"
+            @update:modelValue="(items) => updateFilter('categories', items as IAutocompleteItemType[])"
           />
         </FormField>
         <OnmsIconButton
@@ -51,7 +51,7 @@
           class="category-field"
           data-test="categories2-multiselect"
         >
-          <MultiSelect
+          <OnmsMultiSelect
             v-model="selectedFilters.categories2"
             :options="categoryOptions"
             optionLabel="_text"
@@ -59,7 +59,7 @@
             filter
             display="chip"
             placeholder="Select categories"
-            @update:modelValue="(items) => updateFilter('categories2', items)"
+            @update:modelValue="(items) => updateFilter('categories2', items as IAutocompleteItemType[])"
           />
         </FormField>
         <OnmsIconButton
@@ -74,7 +74,7 @@
       <div class="onms-row">
         <div class="onms-col-6">
           <FormField label="Monitoring Locations" data-test="locations-multiselect">
-            <MultiSelect
+            <OnmsMultiSelect
               v-model="selectedFilters.locations"
               :options="locationOptions"
               optionLabel="_text"
@@ -82,13 +82,13 @@
               filter
               display="chip"
               placeholder="Select locations"
-              @update:modelValue="(items) => updateFilter('locations', items)"
+              @update:modelValue="(items) => updateFilter('locations', items as IAutocompleteItemType[])"
             />
           </FormField>
         </div>
         <div class="onms-col-6">
           <FormField label="Monitored Services" data-test="services-multiselect">
-            <MultiSelect
+            <OnmsMultiSelect
               v-model="selectedFilters.services"
               :options="serviceOptions"
               optionLabel="_text"
@@ -96,7 +96,7 @@
               filter
               display="chip"
               placeholder="Select services"
-              @update:modelValue="(items) => updateFilter('services', items)"
+              @update:modelValue="(items) => updateFilter('services', items as IAutocompleteItemType[])"
             />
           </FormField>
         </div>
@@ -139,7 +139,7 @@
       </div>
       <div class="spacer-large"></div>
       <FormField label="Flows" data-test="flows-multiselect">
-        <MultiSelect
+        <OnmsMultiSelect
           v-model="selectedFilters.flows"
           :options="flowOptions"
           optionLabel="_text"
@@ -147,7 +147,7 @@
           filter
           display="chip"
           placeholder="Select flows"
-          @update:modelValue="(items) => updateFilter('flows', items)"
+          @update:modelValue="(items) => updateFilter('flows', items as IAutocompleteItemType[])"
         />
       </FormField>
       <div class="spacer-medium"></div>
@@ -278,11 +278,10 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
-import MultiSelect from 'primevue/multiselect'
 import FormField from '@/components/Common/FormField.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'

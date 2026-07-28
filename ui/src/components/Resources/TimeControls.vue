@@ -27,7 +27,7 @@
 
           <div class="custom-col">
             <FormField label="Start Date" class="date-input">
-              <PDatePicker v-model="startDateRef" />
+              <OnmsDatePicker v-model="startDateRef" />
             </FormField>
             <FormField label="Start Time">
               <OnmsSelect
@@ -37,7 +37,7 @@
               />
             </FormField>
             <FormField label="End Date" class="date-input">
-              <PDatePicker v-model="endDateRef" />
+              <OnmsDatePicker v-model="endDateRef" />
             </FormField>
             <FormField label="End Time">
               <OnmsSelect
@@ -61,13 +61,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
-import DatePicker from 'primevue/datepicker'
+import { OnmsButton, OnmsDatePicker, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-
-const PDatePicker = DatePicker
 
 interface TimeOption {
   label: string
