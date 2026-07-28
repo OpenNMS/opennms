@@ -142,7 +142,7 @@
 
     <div class="onms-row">
       <div class="onms-col-12">
-        <DataTable
+        <OnmsTable
           lazy
           scrollable
           size="small"
@@ -160,7 +160,7 @@
           @page="onPage"
           @sort="onSort"
         >
-          <Column
+          <OnmsColumn
             v-for="col in orderedSelectedColumns"
             :key="col.id"
             :field="col.id"
@@ -190,8 +190,8 @@
                 :text="data[col.id]"
               />
             </template>
-          </Column>
-          <Column
+          </OnmsColumn>
+          <OnmsColumn
             header="Actions"
             class="actions-cell"
             style="min-width: 8rem"
@@ -214,14 +214,14 @@
                 />
               </div>
             </template>
-          </Column>
+          </OnmsColumn>
           <template #empty>
             <EmptyList
               :content="emptyListContent"
               data-test="empty-list"
             />
           </template>
-        </DataTable>
+        </OnmsTable>
       </div>
     </div>
   </div>
@@ -270,13 +270,22 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsButton, OnmsChip, OnmsIcon, OnmsIconButton, OnmsMessageDialog, OnmsSearchInput } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsMessageDialog,
+  OnmsSearchInput,
+  OnmsTable,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
-import Column from 'primevue/column'
-import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -321,7 +330,7 @@ const orderedSelectedColumns = computed<NodeColumnSelectionItem[]>(() =>
     .sort((a, b) => a.order - b.order)
 )
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   const field = (event.sortField as string) || 'label'
   if (field === 'ipaddress') {
     return
@@ -333,7 +342,7 @@ const onSort = (event: DataTableSortEvent) => {
   updateQuery({ orderBy: field, order })
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== pageSize.value) {
     updatePageSize(event.rows)
   } else {

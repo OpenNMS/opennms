@@ -81,7 +81,9 @@ const props = withDefaults(defineProps<{
   tableStyle?: string | Record<string, string>
   editMode?: 'row'
   editingRows?: any[]
-  expandedRows?: any[]
+  // PrimeVue accepts either an array of row instances or an object keyed by
+  // dataKey (its DataTableExpandedRows shape) when a table uses dataKey.
+  expandedRows?: any[] | Record<string, boolean>
   // Narrowed from PrimeVue's virtualScrollerOptions object: row height in px
   virtualScrollItemSize?: number
   unsafePt?: unknown
@@ -114,7 +116,7 @@ const emit = defineEmits<{
   'row-edit-save': [event: OnmsTableRowEditSaveEvent]
   'update:first': [value: number]
   'update:rows': [value: number]
-  'update:expandedRows': [value: any[]]
+  'update:expandedRows': [value: any[] | Record<string, boolean>]
   'update:editingRows': [value: any[]]
 }>()
 

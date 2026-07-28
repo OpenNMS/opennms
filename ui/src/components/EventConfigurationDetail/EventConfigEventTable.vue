@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.events.length"
       :value="store.events"
       lazy
@@ -46,21 +46,21 @@
       class="data-table"
       data-test="event-config-event-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="uei"
         header="Event UEI"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="eventLabel"
         header="Event Label"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="severity"
         header="Severity"
         sortable
@@ -71,8 +71,8 @@
             :value="data.severity"
           />
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -84,8 +84,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -104,7 +104,7 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h6>Description:</h6>
@@ -114,7 +114,7 @@
           ></p>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
     <OnmsMenu
       id="event-row-menu"
@@ -142,13 +142,20 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
-import { OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -192,7 +199,7 @@ const toggleRowMenu = (event: Event, eventConfig: EventConfigEvent) => {
   rowMenu.value?.toggle(event)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onEventsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -200,7 +207,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.eventsPagination.pageSize) {
     store.onEventsPageSizeChange(event.rows)
   } else {

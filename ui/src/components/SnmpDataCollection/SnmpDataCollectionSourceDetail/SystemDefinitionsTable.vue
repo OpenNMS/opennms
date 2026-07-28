@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.systemDefinitions.length"
       :value="store.systemDefinitions"
       lazy
@@ -56,26 +56,26 @@
       class="data-table"
       data-test="system-definitions-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="name"
         header="Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="sysoid"
         header="SysOID"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="sysoidMask"
         header="SysOID Mask"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -87,8 +87,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -108,14 +108,14 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h6>MIB Group Names:</h6>
           <p class="description">{{ data.mibGroupNames?.join(', ') }}</p>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
     <OnmsMenu
       id="system-definition-row-menu"
@@ -154,14 +154,22 @@ import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
@@ -209,7 +217,7 @@ const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
   store.openSystemDefCreationDrawer(defs, CreateEditMode.Edit)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSystemDefsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -217,7 +225,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.systemDefsPagination.pageSize) {
     store.onSystemDefsPageSizeChange(event.rows)
   } else {

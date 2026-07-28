@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.mibGroups.length"
       :value="store.mibGroups"
       lazy
@@ -56,21 +56,21 @@
       class="data-table"
       data-test="mib-groups-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="name"
         header="Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="ifType"
         header="Interface Type"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -82,8 +82,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -103,7 +103,7 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h5>MIB Group Names</h5>
@@ -125,7 +125,7 @@
           </div>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
     <OnmsMenu
       id="mib-group-row-menu"
@@ -160,13 +160,21 @@ import { computed, ref, useId } from 'vue'
 
 import { debounce } from 'lodash'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
@@ -219,7 +227,7 @@ const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
   store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onMibGroupsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -227,7 +235,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.mibGroupsPagination.pageSize) {
     store.onMibGroupsPageSizeChange(event.rows)
   } else {

@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -45,22 +45,22 @@
       class="data-table"
       data-test="event-config-source-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="vendor"
         header="Vendor"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="eventCount"
         header="Event Count"
         sortable
       />
-      <Column header="Status">
+      <OnmsColumn header="Status">
         <template #body="{ data }">
           <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
@@ -68,8 +68,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -94,8 +94,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <OnmsMenu
       id="event-source-row-menu"
@@ -122,14 +122,21 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -178,7 +185,7 @@ const onEventClick = (source: EventConfigSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -186,7 +193,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {
