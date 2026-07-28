@@ -136,7 +136,7 @@ Many of the properties here are documented with much greater detail in their rel
 | Enable or disable the Situations box on the front page in the OpenNMS web UI
 
 | `opennms.ticketer.plugin`
-| "org.opennms.netmgt.ticketd.NullTicketerPlugin"
+| "org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin"
 | The ticket plugin implementation to use to create tickets via the Alarm details pages (if configured)
 
 | `org.opennms.collectd.instrumentationClass`
