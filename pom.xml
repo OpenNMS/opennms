@@ -1849,6 +1849,12 @@
     <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
     <javaxMailVersion>1.4.7</javaxMailVersion>
+    <jakartaMailApiVersion>2.1.5</jakartaMailApiVersion>
+    <angusMailVersion>2.0.5</angusMailVersion>
+    <jakartaActivationApiVersion>2.1.4</jakartaActivationApiVersion>
+    <angusActivationVersion>2.0.3</angusActivationVersion>
+    <!-- javax.mail-namespace API only, kept solely for EclipseLink MOXy 2.5.1; see dependencies/jaxb -->
+    <javaxMailApiShimVersion>1.6.7</javaxMailApiShimVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
@@ -4734,6 +4740,27 @@
         <artifactId>mail</artifactId>
         <version>${javaxMailVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakartaMailApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
+        <version>${angusMailVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+        <version>${angusActivationVersion}</version>
+      </dependency>
+      <!-- javax.mail-namespace API classes only, no impl/providers; MOXy shim, see dependencies/jaxb -->
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>mailapi</artifactId>
+        <version>${javaxMailApiShimVersion}</version>
+      </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
       <dependency>
@@ -4741,10 +4768,11 @@
         <artifactId>jakarta.activation</artifactId>
         <version>1.2.1</version>
       </dependency>
+      <!-- 2.x = jakarta.activation namespace (for jakarta.mail); javax.activation classes come from com.sun.activation:jakarta.activation 1.2.1 above -->
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
-        <version>1.2.2</version>
+        <version>${jakartaActivationApiVersion}</version>
       </dependency>
       <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
