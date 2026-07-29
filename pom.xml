@@ -1253,7 +1253,11 @@
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
-                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: javax.mail:mail -->
+                   <exclude>javax.mail:mail</exclude>                <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>com.sun.mail:javax.mail</exclude>        <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>org.eclipse.angus:jakarta.mail</exclude> <!-- merged API+impl jar, duplicates jakarta.mail-api + angus-mail classes -->
+                   <exclude>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</exclude> <!-- use: com.sun.mail:mailapi (MOXy shim) -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
@@ -1848,7 +1852,6 @@
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
-    <javaxMailVersion>1.4.7</javaxMailVersion>
     <jakartaMailApiVersion>2.1.5</jakartaMailApiVersion>
     <angusMailVersion>2.0.5</angusMailVersion>
     <jakartaActivationApiVersion>2.1.4</jakartaActivationApiVersion>
@@ -4728,11 +4731,6 @@
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javaxMailVersion}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.mail</groupId>
