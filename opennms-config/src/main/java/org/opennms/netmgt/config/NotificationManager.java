@@ -138,8 +138,6 @@ public abstract class NotificationManager {
     public static final String PARAM_MOBILE_PHONE = "-mphone";
     /** Constant <code>PARAM_TUI_PIN="-tuipin"</code> */
     public static final String PARAM_TUI_PIN = "-tuipin";
-    /** Constant <code>PARAM_MICROBLOG_USERNAME="-ublog"</code> */
-    public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
 
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;

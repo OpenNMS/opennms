@@ -277,7 +277,6 @@
         String workPhone = null;
         String mobilePhone = null;
         String homePhone = null;
-        String microblog = null;
         String fullName = null;
         String comments = null;
         String tuiPin = null;
@@ -297,7 +296,6 @@
                     workPhone = userFactory.getWorkPhone(userid);
                     mobilePhone = userFactory.getMobilePhone(userid);
                     homePhone = userFactory.getHomePhone(userid);
-                    microblog = userFactory.getMicroblogName(userid);
             } else {
                     List<Contact> contacts = user.getContacts();
                     for (int i = 0; i < contacts.size(); i++) {
@@ -317,8 +315,6 @@
                                     mobilePhone = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("homePhone")) {
                                     homePhone = contacts.get(i).getInfo().orElse(null);
-                            } else if (contacts.get(i).getType().equals("microblog")) {
-                            		microblog = contacts.get(i).getInfo().orElse(null);
                             }
                     }
             }
@@ -387,13 +383,6 @@
           <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address</label>
           <div class="col-sm-10">
             <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>' ng-non-bindable/>
-          </div>
-        </div>
-
-	<div class="form-row form-group">
-          <label for="microblog" class="col-sm-2 col-form-label">Microblog Username</label>
-          <div class="col-sm-10">
-            <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>' ng-non-bindable/>
           </div>
         </div>
 

@@ -478,32 +478,6 @@ public abstract class UserManager implements UserConfig {
         }
     }
     
-    /**
-     * Get a user's microblog username by username
-     *
-     * @param name
-     *            the username of the user whose microblog username should be returned
-     * @return the microblog username of the specified user
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public String getMicroblogName(final String name) throws FileNotFoundException, IOException {
-        return getContactInfo(name, ContactType.microblog.toString());
-    }
-
-    /**
-     * Get a user's microblog username by User
-     *
-     * @param user
-     *            the user object of the user whose microblog username should be returned
-     * @return the microblog username of the specified user
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public String getMicroblogName(final User user) throws FileNotFoundException, IOException {
-        return getContactInfo(user, ContactType.microblog.toString());
-    }
-    
     public void setContactInfo(final String userId, final ContactType contactType, final String contactValue) throws Exception {
     	 update();
          m_writeLock.lock();

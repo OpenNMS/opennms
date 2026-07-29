@@ -2,6 +2,14 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.3]]
+
+== Release 36.0.3
+
+=== Enhancement
+
+* Remove the defunct microblog (Twitter/Identi.ca/StatusNet) notification strategies (Issue https://issues.opennms.org/browse/NMS-20098[NMS-20098])
+
 [[releasenotes-changelog-36.0.2]]
 
 == Release 36.0.2

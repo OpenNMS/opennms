@@ -60,7 +60,6 @@
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>
-    <module>twitter4j</module>
     <module>jcifs-shaded</module>
   </modules>
 </project>

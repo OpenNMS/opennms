@@ -240,7 +240,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("home_phone", arg.getValue(), String.class);
             if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("mobile_phone", arg.getValue(), String.class);
             if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("phone_pin", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) s_bsfManager.declareBean("microblog_username", arg.getValue(), String.class);
         }
     }
 
@@ -277,7 +276,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) undeclareBean("home_phone");
             if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) undeclareBean("mobile_phone");
             if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) undeclareBean("phone_pin");
-            if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) undeclareBean("microblog_username");
         }
     }
 
