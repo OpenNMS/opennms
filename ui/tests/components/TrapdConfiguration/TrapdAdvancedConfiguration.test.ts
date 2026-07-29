@@ -62,7 +62,7 @@ describe('TrapdAdvancedConfiguration.vue', () => {
       global: {
         plugins: [PrimeVue],
         stubs: {
-          ConfirmationDialog: {
+          OnmsConfirmationDialog: {
             template: `<div class="confirmation-dialog" v-if="visible">
               <slot name="content" />
               <button data-test="confirm-btn" @click="$emit('ok')">Confirm</button>

@@ -38,12 +38,12 @@
     aria-label="Compare selected configurations."
     v-if="config1 && config2"
   >
-    <PChip>
+    <OnmsChip>
       <span v-date>{{ config1.lastBackupDate }}</span>
-    </PChip>
-    <PChip>
+    </OnmsChip>
+    <OnmsChip>
       <span v-date>{{ config2.lastBackupDate }}</span>
-    </PChip>
+    </OnmsChip>
   </div>
 
   <div class="flex-container" v-if="!isCompareView">
@@ -81,16 +81,13 @@ import { computed, onMounted, ref } from 'vue'
 
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
-import Chip from 'primevue/chip'
-import { OnmsCheckbox, OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsCheckbox, OnmsChip, OnmsIconButton } from '@opennms/onms-ui'
 import Restore from '@/components/icons/action/Restore.vue'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
-
-const PChip = Chip
 
 const deviceStore = useDeviceStore()
 

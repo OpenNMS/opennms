@@ -15,15 +15,15 @@
             <div>
               <div>Connection response:</div>
               <div class="spacer-medium"></div>
-              <PDataTable
+              <OnmsTable
                 class="kv-table"
                 :value="responseRows"
                 stripedRows
                 size="small"
               >
-                <PColumn field="label" />
-                <PColumn field="value" />
-              </PDataTable>
+                <OnmsColumn field="label" />
+                <OnmsColumn field="value" />
+              </OnmsTable>
               <div class="spacer-medium"></div>
               <div>
                 <div>
@@ -60,13 +60,8 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { v2 } from '@/services/axiosInstances'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-import { OnmsButton } from '@opennms/onms-ui'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { OnmsButton, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
 import { useRoute, useRouter } from 'vue-router'
-
-const PDataTable = DataTable
-const PColumn = Column
 
 const menuStore = useMenuStore()
 const route = useRoute()

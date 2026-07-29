@@ -58,13 +58,12 @@
           :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
         >
-          <PInputNumber
+          <OnmsInputNumber
             :inputId="fieldId(field.key)"
             class="paired-input"
             :inputProps="{ 'data-test': field.dataTest }"
             :disabled="field.disabled"
             :modelValue="(props.config as any)[field.key]"
-            :useGrouping="false"
             :invalid="!!(props.validationErrors as any)[field.key]"
             @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), true)"
           />
@@ -94,15 +93,12 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsInputNumber, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { computed, onMounted, ref, useId, watch } from 'vue'
 
 import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import InputNumber from 'primevue/inputnumber'
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
-
-const PInputNumber = InputNumber
 
 // Unique per-instance prefix so label `for`/input `id` pairs don't collide
 // across the several PairedFieldInputs instances (and tab panels) that PrimeVue

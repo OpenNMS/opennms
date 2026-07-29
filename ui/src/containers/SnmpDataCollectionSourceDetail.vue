@@ -23,13 +23,13 @@
           v-if="!isCreateMode"
           class="tag"
         >
-          <PTag
+          <OnmsTag
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
             value="Enabled"
             data-test="status-tag"
           />
-          <PTag
+          <OnmsTag
             v-if="!store.selectedCollectionSource.enabled"
             class="disabled-tag"
             value="Disabled"
@@ -116,7 +116,7 @@
             <span class="field-label">Profiles:</span>
             <div class="profiles-field-content">
               <span class="field-value profiles-chips">
-                <PChip
+                <OnmsChip
                   v-for="profile in drawerProfiles"
                   :key="profile.id"
                   :label="profile.name"
@@ -146,26 +146,26 @@
         v-if="!isCreateMode"
         class="tab-container"
       >
-        <PTabs
+        <OnmsTabs
           class="tabs"
           v-model:value="store.activeTab">
-          <PTabList>
-            <PTab :value="0">System Definitions</PTab>
-            <PTab :value="1">MIB Groups</PTab>
-            <PTab :value="2">Resource Types</PTab>
-          </PTabList>
-          <PTabPanels>
-            <PTabPanel :value="0">
+          <OnmsTabList>
+            <OnmsTab :value="0">System Definitions</OnmsTab>
+            <OnmsTab :value="1">MIB Groups</OnmsTab>
+            <OnmsTab :value="2">Resource Types</OnmsTab>
+          </OnmsTabList>
+          <OnmsTabPanels>
+            <OnmsTabPanel :value="0">
               <SystemDefinitionsTable />
-            </PTabPanel>
-            <PTabPanel :value="1">
+            </OnmsTabPanel>
+            <OnmsTabPanel :value="1">
               <MibGroupsTable />
-            </PTabPanel>
-            <PTabPanel :value="2">
+            </OnmsTabPanel>
+            <OnmsTabPanel :value="2">
               <ResourceTypesTable />
-            </PTabPanel>
-          </PTabPanels>
-        </PTabs>
+            </OnmsTabPanel>
+          </OnmsTabPanels>
+        </OnmsTabs>
       </div>
       <div
         v-if="isCreateMode"
@@ -231,23 +231,9 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsInputText, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
-import ChipComponent from 'primevue/chip'
-import TabComponent from 'primevue/tab'
-import TabListComponent from 'primevue/tablist'
-import TabPanelComponent from 'primevue/tabpanel'
-import TabPanelsComponent from 'primevue/tabpanels'
-import TabsComponent from 'primevue/tabs'
-
-const PChip = ChipComponent
-const PTag = OnmsTag
-const PTabs = TabsComponent
-const PTabList = TabListComponent
-const PTab = TabComponent
-const PTabPanels = TabPanelsComponent
-const PTabPanel = TabPanelComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -600,12 +586,6 @@ watch(() => route.params.id, (id: string | string[]) => {
     .tab-container {
       margin-top: 25px;
       padding: 10px;
-
-      .tabs {
-        :deep(.p-tab) {
-          text-transform: uppercase;
-        }
-      }
     }
 
     .create-action-row {

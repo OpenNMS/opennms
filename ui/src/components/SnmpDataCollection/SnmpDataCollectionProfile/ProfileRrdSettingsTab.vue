@@ -11,11 +11,10 @@
         :error="errors.rrdStep"
         hint="RRD step size in seconds"
       >
-        <PInputNumber
-          :id="rrdStepId"
+        <OnmsInputNumber
+          :inputId="rrdStepId"
           :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
           @update:modelValue="update('rrdStep', $event == null ? '' : String($event))"
-          :useGrouping="false"
           :min="1"
           :invalid="!!errors.rrdStep"
           data-test="rrd-step"
@@ -36,7 +35,7 @@
           Add RRA
         </OnmsButton>
       </div>
-      <PDataTable
+      <OnmsTable
         v-model:editingRows="editingRows"
         :value="rrdSettings.rras"
         editMode="row"
@@ -44,7 +43,7 @@
         @row-edit-save="onRowEditSave"
         data-test="rra-table"
       >
-        <PColumn
+        <OnmsColumn
           header="RRA"
           style="width: 4rem"
         >
@@ -54,8 +53,8 @@
           <template #editor>
             <span>RRA</span>
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="cf"
           header="Consolidation Function"
         >
@@ -67,44 +66,44 @@
               optionValue="value"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="xff"
           header="XFF"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.xff"
               :min="0"
               :maxFractionDigits="6"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="steps"
           header="Step"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.steps"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="rows"
           header="Rows"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.rows"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           header=""
           style="width: 4rem"
         >
@@ -116,8 +115,8 @@
               @click="deleteRRA(data._id)"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           :rowEditor="true"
           style="width: 8rem"
           bodyStyle="text-align: center"
@@ -127,7 +126,7 @@
             }
           }"
         />
-      </PDataTable>
+      </OnmsTable>
     </div>
     <span
       v-if="errors.rrdRras"
@@ -141,18 +140,19 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsInputNumber,
+  OnmsSelect,
+  OnmsTable,
+  type OnmsTableRowEditSaveEvent
+} from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import Delete from '@/components/icons/action/Delete.vue'
-import DataTableComponent from 'primevue/datatable'
-import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import InputNumberComponent from 'primevue/inputnumber'
 import FormField from '@/components/Common/FormField.vue'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-const PInputNumber = InputNumberComponent
 
 const rrdStepId = useId()
 
@@ -204,7 +204,7 @@ const deleteRRA = (id: number) => {
   })
 }
 
-const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
+const onRowEditSave = (event: OnmsTableRowEditSaveEvent) => {
   const rras = [...props.rrdSettings.rras]
   rras[event.index] = { ...event.newData } as EditableRRA
   emit('update:rrdSettings', { ...props.rrdSettings, rras })

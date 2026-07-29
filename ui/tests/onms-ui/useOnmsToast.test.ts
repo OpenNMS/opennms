@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('primevue/toasteventbus', () => ({ default: { emit: vi.fn() }}))
 
-import { useOnmsToast } from '@opennms/onms-ui'
+import { releaseActiveToast, useOnmsToast } from '@opennms/onms-ui'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - no type declarations published for this entry point
 import ToastEventBus from 'primevue/toasteventbus'
@@ -51,5 +51,17 @@ describe('useOnmsToast', () => {
   it('hideAllToasts clears every group', () => {
     useOnmsToast().hideAllToasts()
     expect(ToastEventBus.emit).toHaveBeenCalledWith('remove-all-groups')
+  })
+
+  it('releaseActiveToast ends duplicate suppression immediately on dismissal', () => {
+    const { showToast } = useOnmsToast()
+    showToast({ message: 'dup' })
+    releaseActiveToast({ severity: 'success', group: 'onms-toast-center', detail: 'dup' })
+    showToast({ message: 'dup' })
+    expect(vi.mocked(ToastEventBus.emit).mock.calls.filter((c: unknown[]) => c[0] === 'add')).toHaveLength(2)
+  })
+
+  it('releaseActiveToast is a no-op for an unknown key', () => {
+    expect(() => releaseActiveToast({ severity: 'error', group: 'onms-toast-start', detail: 'never shown' })).not.toThrow()
   })
 })

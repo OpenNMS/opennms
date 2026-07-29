@@ -29,16 +29,16 @@
       />
     </div>
     <div class="table-container">
-      <PDataTable
+      <OnmsTable
         :value="tableRecords"
         aria-label="SNMPv3 Users Table"
       >
-        <PColumn
+        <OnmsColumn
           field="securityName"
           header="Security Name"
           sortable
         />
-        <PColumn
+        <OnmsColumn
           field="securityLevel"
           header="Security Level"
           sortable
@@ -46,18 +46,18 @@
           <template #body="{ data }">
             {{ displaySecurityLevel(data.securityLevel) }}
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="authProtocol"
           header="Authentication Protocol"
           sortable
         />
-        <PColumn
+        <OnmsColumn
           field="privacyProtocol"
           header="Privacy Protocol"
           sortable
         />
-        <PColumn header="Action">
+        <OnmsColumn header="Action">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
@@ -74,11 +74,11 @@
               />
             </div>
           </template>
-        </PColumn>
+        </OnmsColumn>
         <template #empty>
           <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
         </template>
-      </PDataTable>
+      </OnmsTable>
     </div>
     <DeleteUserConfirmationDialog
       :index="deleteUserIndex"
@@ -86,7 +86,7 @@
       @close="cancelDeleteUser"
       @confirm="confirmDeleteUser"
     />
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -111,16 +111,14 @@
           <p>We strongly suggest that you use an SCV (Secure Credentials Vault) expression for storing credentials securely, rather than entering them directly.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsMessageDialog, OnmsTable } from '@opennms/onms-ui'
 import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
@@ -132,11 +130,7 @@ import { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
-
-const PColumn = Column
-const PDataTable = DataTable
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()

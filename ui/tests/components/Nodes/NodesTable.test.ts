@@ -85,7 +85,7 @@ const stubs = {
   NodeTooltipCell: { name: 'NodeTooltipCell', template: '<span></span>', props: ['text'] },
   ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
-  MessageDialog: { name: 'MessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
+  OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
   EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] }
 }
 

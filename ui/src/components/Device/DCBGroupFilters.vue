@@ -7,7 +7,7 @@
         Vendor
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </OnmsButton>
-      <PMenu ref="vendorMenu" :model="vendorItems" :popup="true" />
+      <OnmsMenu ref="vendorMenu" :items="vendorItems" />
     </div>
 
     <div class="dropdown">
@@ -15,13 +15,13 @@
         Backup Status
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </OnmsButton>
-      <PMenu ref="statusMenu" :model="statusItems" :popup="true">
+      <OnmsMenu ref="statusMenu" :items="statusItems">
         <template #item="{ item, props }">
           <a v-bind="props.action">
             <div class="option" :class="item.statusClass">{{ item.label }}</div>
           </a>
         </template>
-      </PMenu>
+      </OnmsMenu>
     </div>
 
     <div class="dropdown">
@@ -29,7 +29,7 @@
         OS Image
         <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
       </OnmsButton>
-      <PMenu ref="osImageMenu" :model="osImageItems" :popup="true" />
+      <OnmsMenu ref="osImageMenu" :items="osImageItems" />
     </div>
   </div>
 </template>
@@ -37,13 +37,10 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
-import Menu from 'primevue/menu'
+import { OnmsButton, OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
 import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
-
-const PMenu = Menu
 
 const deviceStore = useDeviceStore()
 
@@ -70,8 +67,9 @@ const osImageItems = computed(() => deviceStore.osImageOptions.map((option: stri
 const toggleMenu = (event: Event, menuRef: { toggle: (e: Event) => void }) => menuRef.toggle(event)
 
 const onGroupByOptionClick = (groupBy: string, value: string) => {
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     groupBy: groupBy,
     groupByValue: value

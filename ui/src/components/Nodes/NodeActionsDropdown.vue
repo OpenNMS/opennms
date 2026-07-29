@@ -8,19 +8,16 @@
     :icon="menuIcon"
     @click="toggle"
   />
-  <Menu
+  <OnmsMenu
     :id="menuId"
     ref="menu"
-    :model="items"
-    popup
+    :items="items"
   />
 </template>
 
 <script setup lang="ts">
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import MoreVert from '@/components/icons/navigation/MoreVert.vue'
-import { OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 
@@ -59,7 +56,7 @@ const linkItems = [
   { name: 'topology', label: 'View Topology Map' }
 ]
 
-const items = computed<MenuItem[]>(() => [
+const items = computed<OnmsMenuItem[]>(() => [
   { label: 'Info...', command: () => props.triggerNodeInfo(props.node) },
   ...linkItems.map(li => ({
     label: li.label,

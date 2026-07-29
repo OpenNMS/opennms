@@ -1,9 +1,8 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     v-model:visible="drawerVisible"
-    position="right"
     header="Customize Columns"
-    :style="{ width: '55em' }"
+    width="55em"
   >
     <div class="drawer-content">
       <section>
@@ -54,7 +53,7 @@
         <OnmsButton variant="outlined" @click="nodeStructureStore.columnsDrawerState.visible = false">Close</OnmsButton>
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -63,8 +62,7 @@ import { computed, ref, watch } from 'vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import { OnmsButton, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
-import Drawer from 'primevue/drawer'
+import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'

@@ -15,7 +15,7 @@
             Register your OpenNMS instance with Zenith in order to send data.
           </div>
           <div class="spacer"></div>
-          <PPanel
+          <OnmsPanel
             toggleable
             class="zc-register-steps-expansion-panel"
           >
@@ -36,7 +36,7 @@
                 </li>
               </ul>
             </div>
-          </PPanel>
+          </OnmsPanel>
 
           <div class="form-fields">
             <FormField
@@ -93,16 +93,13 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
-import Panel from 'primevue/panel'
+import { OnmsButton, OnmsInputText, OnmsPanel } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
-
-const PPanel = Panel
 
 const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()

@@ -4,19 +4,14 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.resourceTypesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Name or Label"
-                :aria-label="'Search by Name or Label'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.resourceTypesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Name or Label"
+              :aria-label="'Search by Name or Label'"
+            />
           </FormField>
         </div>
         <div class="refresh">
@@ -43,7 +38,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.resourceTypes.length"
       :value="store.resourceTypes"
       lazy
@@ -61,26 +56,26 @@
       class="data-table"
       data-test="resource-types-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="name"
         header="Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="label"
         header="Label"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="resourceLabel"
         header="Resource Label"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -92,8 +87,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -113,7 +108,7 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h6>Storage Strategy:</h6>
@@ -122,13 +117,12 @@
           <p class="description">{{ data.persistenceSelectorStrategy }}</p>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="resource-type-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.resourceTypes.length">
@@ -162,19 +156,22 @@ import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
-import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
@@ -193,12 +190,12 @@ const snackbar = useSnackbar()
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionResourceType | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Resource Type' : 'Enable Resource Type',
       command: () => openChangeStatusDialog(target)
@@ -222,7 +219,7 @@ const onResourceTypeEditClicked = (resourceType: SnmpCollectionResourceType) => 
   store.openResourceTypeCreationDrawer(resourceType, CreateEditMode.Edit)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onResourceTypesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -230,7 +227,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.resourceTypesPagination.pageSize) {
     store.onResourceTypesPageSizeChange(event.rows)
   } else {

@@ -36,36 +36,36 @@
       </div>
     </div>
     <TableCard class="content">
-      <PTabs v-model:value="activeTab" class="tabs">
-        <PTabList>
-          <PTab :value="0">Profile Details</PTab>
-          <PTab :value="1">Sources</PTab>
-          <PTab :value="2">RRD Settings</PTab>
-        </PTabList>
-        <PTabPanels>
-          <PTabPanel :value="0">
+      <OnmsTabs v-model:value="activeTab" class="tabs">
+        <OnmsTabList>
+          <OnmsTab :value="0">Profile Details</OnmsTab>
+          <OnmsTab :value="1">Sources</OnmsTab>
+          <OnmsTab :value="2">RRD Settings</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel :value="0">
             <ProfileDetailsTab
               :configDetails="configDetailsModel"
               @update:configDetails="onConfigDetailsUpdate"
               :isCreateMode="isCreateMode"
               :errors="errors"
             />
-          </PTabPanel>
-          <PTabPanel :value="1">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="1">
             <ProfileSourcesTab
               :sources="localSourceNames"
               @update:sources="localSourceNames = $event"
             />
-          </PTabPanel>
-          <PTabPanel :value="2">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="2">
             <ProfileRrdSettingsTab
               :rrdSettings="rrdSettingsModel"
               @update:rrdSettings="onRrdSettingsUpdate"
               :errors="errors"
             />
-          </PTabPanel>
-        </PTabPanels>
-      </PTabs>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
 
       <div class="action-row">
         <OnmsButton
@@ -93,7 +93,7 @@
       </div>
     </TableCard>
   </div>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Profile"
     actionButtonText="Delete"
@@ -103,7 +103,7 @@
     <template #content>
       <p>Are you sure you want to delete the profile <strong>{{ store.selectedProfile?.name }}</strong>? This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
   </template>
   <div
     v-else
@@ -120,7 +120,6 @@
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ProfileDetailsTab from './ProfileDetailsTab.vue'
 import ProfileSourcesTab from './ProfileSourcesTab.vue'
@@ -132,19 +131,8 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { OnmsIcon, OnmsButton, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
-import TabComponent from 'primevue/tab'
-import TabListComponent from 'primevue/tablist'
-import TabPanelComponent from 'primevue/tabpanel'
-import TabPanelsComponent from 'primevue/tabpanels'
-import TabsComponent from 'primevue/tabs'
-
-const PTabs = TabsComponent
-const PTabList = TabListComponent
-const PTab = TabComponent
-const PTabPanels = TabPanelsComponent
-const PTabPanel = TabPanelComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -419,12 +407,6 @@ onMounted(async () => {
       margin-top: 0;
       padding-top: 20px;
       border-top: 1px solid var(--p-content-border-color);
-    }
-
-    .tabs {
-      :deep(.p-tab) {
-        text-transform: uppercase;
-      }
     }
   }
 }

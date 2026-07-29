@@ -51,6 +51,17 @@ export interface OnmsToastOptions {
 // callers, not per-call state.
 const activeKeys = new Map<string, number>()
 
+// Internal (used by OnmsToastHost): when the user dismisses a toast, stop
+// suppressing duplicates of it immediately instead of waiting out its life.
+export const releaseActiveToast = (message: { severity?: string, detail?: string, group?: string }) => {
+  const key = `${message.severity}::${message.group}::${message.detail}`
+  const timer = activeKeys.get(key)
+  if (timer !== undefined) {
+    window.clearTimeout(timer)
+    activeKeys.delete(key)
+  }
+}
+
 export const useOnmsToast = () => {
   const showToast = (options: OnmsToastOptions) => {
     const severity = options.severity ?? 'success'

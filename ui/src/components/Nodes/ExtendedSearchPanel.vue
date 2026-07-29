@@ -33,22 +33,22 @@
       </div>
     </div>
 
-    <PDataTable
+    <OnmsTable
       v-if="gridItems.length > 0"
       :value="gridItems"
       dataKey="key"
       class="extended-search-table"
     >
-      <PColumn field="label" header="Search Type" style="width: 40%" />
-      <PColumn field="value" header="Search Term">
+      <OnmsColumn field="label" header="Search Type" style="width: 40%" />
+      <OnmsColumn field="value" header="Search Term">
         <template #body="{ data }">
           <OnmsInputText
             v-model="data.value"
             class="extended-search-input"
           />
         </template>
-      </PColumn>
-      <PColumn header="" style="width: 3.5rem">
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
             :icon="DeleteIcon"
@@ -57,26 +57,21 @@
             @click="removeGridItem(data.key)"
           />
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodeQueryExtendedSearchParams } from '@/types'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
 
 const {
   getExtendedSearchValues,

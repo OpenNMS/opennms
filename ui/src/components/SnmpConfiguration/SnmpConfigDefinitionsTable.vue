@@ -4,18 +4,13 @@
       <div class="header-content-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <OnmsInputText
-                id="snmp-definitions-search"
-                placeholder="Search IP addresses or location"
-                aria-label="Search IP addresses or location"
-                v-model="searchTerm"
-                @update:modelValue="(val) => onSearchChange(val as string)"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="IconSearch" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              input-id="snmp-definitions-search"
+              placeholder="Search IP addresses or location"
+              aria-label="Search IP addresses or location"
+              v-model="searchTerm"
+              @update:modelValue="(val) => onSearchChange(val as string)"
+            />
           </FormField>
         </div>
         <div class="refresh">
@@ -30,7 +25,7 @@
       </div>
     </div>
     <div class="table-container">
-      <PDataTable
+      <OnmsTable
         :value="definitionRows"
         paginator
         :rows="50"
@@ -38,12 +33,12 @@
         v-model:first="firstRow"
         aria-label="SNMP Config Definition Table"
       >
-        <PColumn
+        <OnmsColumn
           field="location"
           header="Location"
           sortable
         />
-        <PColumn
+        <OnmsColumn
           field="ipSortKey"
           header="IP Addresses"
           sortable
@@ -62,8 +57,8 @@
             </div>
             <span v-else>--</span>
           </template>
-        </PColumn>
-        <PColumn header="Actions">
+        </OnmsColumn>
+        <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
@@ -81,17 +76,17 @@
               />
             </div>
           </template>
-        </PColumn>
+        </OnmsColumn>
         <template #empty>
           <EmptyList
             :content="emptyListContent"
             data-test="empty-list"
           />
         </template>
-      </PDataTable>
+      </OnmsTable>
     </div>
   </TableCard>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete SNMP Definition"
     actionButtonText="Delete"
@@ -130,34 +125,25 @@
         </div>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
-import IconSearch from '@/components/icons/action/Search.vue'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { ActiveTabs, SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpDefinition } from '@/types/snmpConfig'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '../Common/TableCard.vue'
-
-const PColumn = Column
-const PDataTable = DataTable
 
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()

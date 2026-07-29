@@ -33,22 +33,22 @@
       </div>
     </div>
 
-    <PDataTable
+    <OnmsTable
       v-if="gridItems.length > 0"
       :value="gridItems"
       dataKey="column"
       class="asset-filter-table"
     >
-      <PColumn field="label" header="Asset Field" style="width: 40%" />
-      <PColumn field="value" header="Value">
+      <OnmsColumn field="label" header="Asset Field" style="width: 40%" />
+      <OnmsColumn field="value" header="Value">
         <template #body="{ data }">
           <OnmsInputText
             v-model="data.value"
             class="asset-filter-input"
           />
         </template>
-      </PColumn>
-      <PColumn header="" style="width: 3.5rem">
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
             data-test="delete-asset-filter-button"
@@ -57,25 +57,20 @@
             @click="removeGridItem(data.column)"
           />
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
 
 interface GridItem {
   column: string

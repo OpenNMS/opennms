@@ -7,19 +7,14 @@
       <div class="action-container">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.eventsSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Event UEI or Event Label"
-                :aria-label="'Search by Event UEI or Event Label'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.eventsSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Event UEI or Event Label"
+              :aria-label="'Search by Event UEI or Event Label'"
+            />
           </FormField>
         </div>
         <div class="refresh">
@@ -33,7 +28,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.events.length"
       :value="store.events"
       lazy
@@ -51,21 +46,21 @@
       class="data-table"
       data-test="event-config-event-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="uei"
         header="Event UEI"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="eventLabel"
         header="Event Label"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="severity"
         header="Severity"
         sortable
@@ -76,8 +71,8 @@
             :value="data.severity"
           />
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -89,8 +84,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -109,7 +104,7 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h6>Description:</h6>
@@ -119,13 +114,12 @@
           ></p>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="event-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.events.length">
@@ -148,18 +142,20 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
-import { OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
-import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -178,12 +174,12 @@ const expandedRows = ref<Record<string | number, boolean>>({})
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigEvent | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Event' : 'Enable Event',
       command: () => store.showChangeEventConfigEventStatusDialog(target)
@@ -203,7 +199,7 @@ const toggleRowMenu = (event: Event, eventConfig: EventConfigEvent) => {
   rowMenu.value?.toggle(event)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onEventsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -211,7 +207,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.eventsPagination.pageSize) {
     store.onEventsPageSizeChange(event.rows)
   } else {
