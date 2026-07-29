@@ -37,26 +37,26 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Address;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Part;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.Address;
+import jakarta.mail.Authenticator;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
+import jakarta.mail.Part;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.event.TransportEvent;
+import jakarta.mail.event.TransportListener;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.opennms.core.utils.PropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,7 +254,7 @@ public class JavaMailer {
     /**
      * Helper method to create an Authenticator based on Password Authentication
      *
-     * @return a {@link javax.mail.Authenticator} object.
+     * @return a {@link jakarta.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator() {
         Authenticator auth;
@@ -375,7 +375,7 @@ public class JavaMailer {
      *
      * @param file file to attach
      * @return attachment body part
-     * @throws javax.mail.MessagingException if we can't set the data handler or
+     * @throws jakarta.mail.MessagingException if we can't set the data handler or
      *      the file name on the MimeBodyPart
      * @throws org.opennms.javamail.JavaMailerException if the file does not exist or is not
      *      readable
@@ -434,7 +434,7 @@ public class JavaMailer {
     /**
      * Send message.
      *
-     * @param message a {@link javax.mail.Message} object.
+     * @param message a {@link jakarta.mail.Message} object.
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public void sendMessage(Message message) throws JavaMailerException {

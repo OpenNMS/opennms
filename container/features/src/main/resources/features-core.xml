@@ -201,6 +201,13 @@
         <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.mail/jakarta.mail-api/${javaxMailApiShimVersion}</bundle>
     </feature>
 
+    <feature name="jakarta.mail" version="${jakartaMailApiVersion}" description="Jakarta Mail API + Eclipse Angus implementation">
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.activation/jakarta.activation-api/${jakartaActivationApiVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:org.eclipse.angus/angus-activation/${angusActivationVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.mail/jakarta.mail-api/${jakartaMailApiVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:org.eclipse.angus/angus-mail/${angusMailVersion}</bundle>
+    </feature>
+
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
         <bundle start-level="${systemStartLevel}" dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
     </feature>

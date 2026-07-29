@@ -27,13 +27,15 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
@@ -44,7 +46,6 @@ import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.google.common.base.Strings;
 
@@ -129,13 +130,12 @@ public class JavaSendMailer extends JavaMailer2 {
 
             try {
                 final String charset = m_config.getSendmailProtocol() != null? m_config.getSendmailProtocol().getCharSet() : Charset.defaultCharset().name();
-                final MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, charset);
-                helper.setFrom(configMsg.getFrom());
+                mimeMsg.setFrom(new InternetAddress(configMsg.getFrom()));
                 if (!Strings.isNullOrEmpty(configMsg.getReplyTo())) {
-                    helper.setReplyTo(configMsg.getReplyTo());
+                    mimeMsg.setReplyTo(InternetAddress.parse(configMsg.getReplyTo()));
                 }
-                helper.setTo(configMsg.getTo());
-                helper.setSubject(configMsg.getSubject());
+                mimeMsg.setRecipient(Message.RecipientType.TO, new InternetAddress(configMsg.getTo()));
+                mimeMsg.setSubject(configMsg.getSubject(), charset);
             } catch (final MessagingException e) {
                 LOG.warn("found a problem building message: {}", e.getMessage());
             }
