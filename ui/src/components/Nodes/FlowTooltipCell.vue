@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="hasIngressFlow(node) || hasEgressFlow(node)"
-    v-tooltip.top="flowTooltipTitle(node)"
+    v-onms-tooltip.top="flowTooltipTitle(node)"
     class="pointer"
   >
     <OnmsIcon v-if="hasIngressFlow(node)" :icon="ArrowBack" class="flow-icon" />

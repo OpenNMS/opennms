@@ -128,7 +128,8 @@ export default tseslint.config(
           { name: 'primevue/tieredmenu', message: 'No seam wrapper yet — SideMenu.vue is the only sanctioned use (inline-disabled). Talk to the UI team (NMS-20081 seam).' },
           { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' },
           { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui (NMS-20029 seam).' },
-          { name: 'primevue/toggleswitch', message: 'Use OnmsToggleSwitch from @opennms/onms-ui (NMS-20081 seam).' }
+          { name: 'primevue/toggleswitch', message: 'Use OnmsToggleSwitch from @opennms/onms-ui (NMS-20081 seam).' },
+          { name: 'primevue/tooltip', message: 'Use the OnmsTooltip directive from @opennms/onms-ui, registered as v-onms-tooltip (NMS-20054 seam).' }
         ]
       }]
     }
