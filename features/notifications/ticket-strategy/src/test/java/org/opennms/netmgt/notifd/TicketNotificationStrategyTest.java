@@ -134,6 +134,15 @@ public class TicketNotificationStrategyTest {
     }
 
     @Test
+    public void testNoticeWithExistingTicket() {
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1, "TICKET-1", 1));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	assertEquals("Strategy should succeed without sending an event if the alarm already has a ticket.", 0, m_ticketNotificationStrategy.send(arguments));
+    	assertEquals("Strategy should not send a create-ticket event if the alarm already has a ticket.", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
     public void testCreateTicketWithCustomUser() {
         EventBuilder createTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, m_ticketNotificationStrategy.getName());
         createTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");

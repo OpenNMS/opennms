@@ -157,10 +157,18 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		LOG.error("There is no alarm-id associated with the event-id='{}'. Will not create ticket.", eventID);
         	return 1;
         }
-        
-        /* Log everything we know so far.
-         * The tticketid and tticketstate are only informational.
+
+        /* Guard against duplicate tickets: a previous notification, an escalation,
+         * or another member of a group target may already have created one.
+         * Near-simultaneous deliveries can still race the asynchronous ticket
+         * creation, so single-user targets remain the recommended configuration.
          */
+        if( StringUtils.isNotBlank(alarmState.getTticketID()) ) {
+		LOG.info("Alarm-id='{}' already has ticket-id='{}'. Will not create another ticket.", alarmState.getAlarmID(), alarmState.getTticketID());
+        	return 0;
+        }
+
+        // Log everything we know so far.
         LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}' and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser);

@@ -17,6 +17,9 @@ A destination path that fires immediately can run before the alarm exists, in wh
 Use a destination path with a non-zero `initial-delay` to avoid this; 30 seconds is usually enough.
 * The destination path target's contact information is not used, whether the target is a user or a group.
 The strategy reads only event parameters, so the target serves to satisfy the destination path schema.
+* Target a single user rather than a group.
+Notifd runs each command once per member of a group target, and each run sends its own create-ticket event.
+The strategy skips the create event when the alarm already has a ticket, but near-simultaneous deliveries can race the asynchronous ticket creation, so a group target can still produce duplicate tickets.
 * The create-ticket event carries a `user` parameter that defaults to `admin`.
 You can override it with the optional `ticketUser` argument described below.
 Whether the value appears on the created ticket depends on the ticketer plugin.
@@ -52,7 +55,7 @@ Add a destination path with an initial delay to `destinationPaths.xml`:
 ----
 <path name="Create-Ticket" initial-delay="30s">
     <target>
-        <name>Admin</name>
+        <name>admin</name>
         <command>createTicket</command>
     </target>
 </path>
