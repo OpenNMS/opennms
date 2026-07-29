@@ -57,28 +57,6 @@
         </argument>
     </command>
     <command binary="false">
-        <name>xmppMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
-        <comment>class for sending XMPP notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>xmppGroupMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPGroupNotificationStrategy</execute>
-        <comment>class for sending XMPP Group Chat notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
         <name>ircCat</name>
         <execute>org.opennms.netmgt.notifd.IrcCatNotificationStrategy</execute>
         <comment>class for sending IRC notifications via an IRCcat bot</comment>
