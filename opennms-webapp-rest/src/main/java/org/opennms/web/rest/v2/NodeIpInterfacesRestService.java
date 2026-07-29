@@ -142,7 +142,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
-        if (params.getFirst("ipAddress") != null) {
+        if (RestUtils.containsProperty(params, "ipAddress")) {
             throw getException(Status.BAD_REQUEST, "Cannot change the IP address.");
         }
         RestUtils.setBeanProperties(targetObject, params);
