@@ -61,7 +61,6 @@
             CREATE INDEX IF NOT EXISTS flow_application_idx  ON flow (application);
             CREATE INDEX IF NOT EXISTS flow_convo_key_idx    ON flow (convo_key);
             CREATE INDEX IF NOT EXISTS flow_exporter_idx     ON flow (exporter_node_id);
-            CREATE INDEX IF NOT EXISTS flow_document_gin_idx ON flow USING gin (document);
         ]]></sql>
     </changeSet>
 
