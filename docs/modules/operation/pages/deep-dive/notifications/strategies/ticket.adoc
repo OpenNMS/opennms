@@ -1,0 +1,70 @@
+
+= Trouble Ticket Notifications
+:description: How to configure {page-component-title} to create trouble tickets from notifications.
+
+{page-component-title} normally creates trouble tickets from alarms, either manually from the web UI or through the automations described in xref:operation:deep-dive/ticketing/introduction.adoc[Ticketing].
+The ticket notification strategy provides a third path: it creates a ticket for the alarm associated with a notification's event.
+Because it runs through notifd, it can take advantage of notification features that alarm automations do not, such as destination paths, escalation, and path outage suppression.
+
+== Requirements and caveats
+
+* A ticketer plugin must be configured.
+Without one, the create-ticket events that this strategy sends are not acted on.
+* The event that triggers the notification must have `alarm-data` in its event definition.
+Events without alarm data are skipped, and the notification completes without creating a ticket.
+* The strategy looks up the alarm for the event at delivery time, but alarmd performs that association asynchronously.
+A destination path that fires immediately can run before the alarm exists, in which case the notification fails with a "no alarm-id" error.
+Use a destination path with a non-zero `initial-delay` to avoid this; 30 seconds is usually enough.
+* The target user's contact information is not used.
+The strategy reads only event parameters, so the target serves to satisfy the destination path schema.
+* The create-ticket event carries a `user` parameter that defaults to `admin`.
+You can override it with the optional `ticketUser` argument described below.
+Whether the value appears on the created ticket depends on the ticketer plugin.
+
+== Setup
+
+Add the following command to `notificationCommands.xml`:
+
+[source, xml]
+----
+<command binary="false">
+    <name>createTicket</name>
+    <execute>org.opennms.netmgt.notifd.TicketNotificationStrategy</execute>
+    <comment>class for creating a trouble ticket for the alarm associated with the notification's event</comment>
+    <argument streamed="false">
+        <switch>eventID</switch>
+    </argument>
+    <argument streamed="false">
+        <switch>eventUEI</switch>
+    </argument>
+    <argument streamed="false">
+        <switch>noticeid</switch>
+    </argument>
+    <argument streamed="false">
+        <switch>ticketUser</switch>
+    </argument>
+</command>
+----
+
+Add a destination path with an initial delay to `destinationPaths.xml`:
+
+[source, xml]
+----
+<path name="Create-Ticket" initial-delay="30s">
+    <target>
+        <name>admin</name>
+        <command>createTicket</command>
+    </target>
+</path>
+----
+
+Reference the `Create-Ticket` destination path from each notification in `notifications.xml` that should open a ticket.
+
+To set the ticket user for a notification, add a `ticketUser` parameter to its definition:
+
+[source, xml]
+----
+<parameter name="ticketUser" value="noc"/>
+----
+
+If the parameter is absent, the strategy uses `admin`.

@@ -216,4 +216,15 @@
                 <command>growlMessage</command>
         </target>
     </path>
+    <!-- Creates a trouble ticket for the alarm associated with the notification's event.
+    The createTicket command is defined in the notificationCommands.xml example.  The
+    initial-delay gives alarmd time to associate the event with an alarm; with 0s the
+    ticket lookup can run before the alarm exists and the notification fails.  The target
+    user's contact information is not used. -->
+    <path name="Create-Ticket" initial-delay="30s">
+        <target>
+                <name>Admin</name>
+                <command>createTicket</command>
+        </target>
+    </path>
 </destinationPaths>

@@ -51,6 +51,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 public class TicketNotificationStrategy implements NotificationStrategy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TicketNotificationStrategy.class);
+	/** Used as the create-ticket user unless the command supplies a ticketUser argument. */
+	public static final String DEFAULT_TICKET_USER = "admin";
 	private EventIpcManager m_eventManager;
 	private EventConfDao m_eventConfDao;
 	
@@ -114,17 +116,22 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         String eventID = null;
         String eventUEI = null;
         String noticeID = null;
-        
+        String ticketUser = DEFAULT_TICKET_USER;
+
         // Pull the arguments we're interested in from the list.
         for (Argument arg : arguments) {
 		LOG.debug("arguments: {} = {}", arg.getSwitch(), arg.getValue());
-        	
+
             if ("eventID".equalsIgnoreCase(arg.getSwitch())) {
             	eventID = arg.getValue();
             } else if ("eventUEI".equalsIgnoreCase(arg.getSwitch())) {
             	eventUEI = arg.getValue();
             } else if ("noticeid".equalsIgnoreCase(arg.getSwitch())) {
             	noticeID = arg.getValue();
+            } else if ("ticketUser".equalsIgnoreCase(arg.getSwitch())) {
+                if (StringUtils.isNotBlank(arg.getValue())) {
+                    ticketUser = arg.getValue();
+                }
             }
         }
         
@@ -156,7 +163,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
          */
         LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}'and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         
-        sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI);
+        sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser);
 
         return 0;
 	}
@@ -215,12 +222,16 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      * @return
      */
 	public void sendCreateTicketEvent(int alarmID, String alarmUEI) {
-        LOG.debug("Sending create ticket for alarm '{}' with id={}", alarmUEI, alarmID);
+		sendCreateTicketEvent(alarmID, alarmUEI, DEFAULT_TICKET_USER);
+	}
+
+	public void sendCreateTicketEvent(int alarmID, String alarmUEI, String ticketUser) {
+        LOG.debug("Sending create ticket for alarm '{}' with id={} as user '{}'", alarmUEI, alarmID, ticketUser);
         EventBuilder ebldr = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, getName());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarmID);
         // These fields are required by the trouble ticketer, but not used
         ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarmUEI);
-        ebldr.addParam(EventConstants.PARM_USER, "admin");
+        ebldr.addParam(EventConstants.PARM_USER, ticketUser);
         m_eventManager.sendNow(ebldr.getEvent());
 	}
 	
