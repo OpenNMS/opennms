@@ -20,12 +20,39 @@
 /// License.
 ///
 
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+import type { PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
 // for process.env.VITE_APP_LOGO_NAME in resolve.alias
 import dotenv from 'dotenv'
 dotenv.config()
+
+// this file is ESM with no __dirname; derive it from import.meta.url instead
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
+
+// Serves the built example plugin during `pnpm dev` only (NMS-20054).
+// apply: 'serve' means this cannot exist in production builds. URL shape is
+// load-bearing: externalComponent() derives the window-global key from the
+// second-to-last path segment ('exampleUiExtension').
+const examplePluginDevServer = (): PluginOption => ({
+  name: 'onms-example-plugin-dev-server',
+  apply: 'serve',
+  configureServer(server) {
+    server.middlewares.use('/plugin-modules/exampleUiExtension', (req, res, next) => {
+      const fileName = (req.url ?? '').split('?')[0].replace(/^\//, '')
+      const file = resolve(__dirname, 'packages/onms-ui-example-plugin/dist', fileName)
+      if (!fileName || !existsSync(file)) {
+        return next()
+      }
+      res.setHeader('Content-Type', 'text/javascript')
+      res.end(readFileSync(file))
+    })
+  }
+})
 
 export default defineConfig({
   css: {
@@ -51,7 +78,8 @@ export default defineConfig({
         }
       }
     }),
-    svgLoader()
+    svgLoader(),
+    examplePluginDevServer()
   ],
   test: {
     dir: './tests',

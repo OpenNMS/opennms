@@ -5,7 +5,8 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@opennms/onms-ui": "workspace:*",
@@ -15,6 +16,7 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "typescript": "~5.4.5",
     "vite": "^6.4.3",
-    "vite-plugin-externals": "^0.6.2"
+    "vite-plugin-externals": "^0.6.2",
+    "vue-tsc": "^2.2.12"
   }
 }

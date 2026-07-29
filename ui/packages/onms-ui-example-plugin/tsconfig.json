@@ -5,7 +5,8 @@
     "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

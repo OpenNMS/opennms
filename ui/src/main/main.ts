@@ -98,6 +98,19 @@ for (const plugin of plugins) {
   }
 }
 
+// Dev-only harness for packages/onms-ui-example-plugin (NMS-20054): mounts
+// the built example module through the SAME externalComponent/Container path
+// real plugins use, served by the vite middleware (see vite.config.ts).
+// Enable with VITE_EXAMPLE_PLUGIN=true; see the example package's README.
+if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
+  router.addRoute({
+    path: '/example-plugin',
+    name: 'ExamplePluginDev',
+    component: () => import('@/components/Plugin/Container.vue'),
+    props: { script: '/plugin-modules/exampleUiExtension/exampleUiExtension.es.js' }
+  })
+}
+
 const app = createApp({
   render: () => h(App)
 })

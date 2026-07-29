@@ -109,6 +109,14 @@ pnpm --filter @opennms/onms-ui-example-plugin build
 
 This produces `dist/exampleUiExtension.es.js`.
 
+Type-check the package on its own strict `tsconfig.json` (nothing in the
+normal `pnpm build`/`pnpm test` gates at the repo root reaches into this
+package):
+
+```bash
+pnpm --filter @opennms/onms-ui-example-plugin typecheck
+```
+
 ## Run it in the dev harness
 
 ```bash
