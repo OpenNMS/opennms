@@ -47,6 +47,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -55,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -81,6 +83,28 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private ServletContext m_servletContext;
+
+    @Autowired
+    private CategoryDao m_categoryDao;
+
+    /**
+     * updateCategory must ignore authorizedGroups (it drives the category ACL filter) while
+     * still applying ordinary fields.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void updateCategoryCannotWriteAuthorizedGroups() throws Exception {
+        createCategory("AclTest");
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        sendPut("/categories/AclTest", "description=legit&authorizedGroups=AttackerGroup", 204);
+
+        final OnmsCategory reloaded = m_categoryDao.findByName("AclTest");
+        assertNotNull(reloaded);
+        assertFalse("authorizedGroups must not be mass-assignable via updateCategory",
+                reloaded.getAuthorizedGroups().contains("AttackerGroup"));
+        assertEquals("legit", reloaded.getDescription());
+    }
 
     @Override
     protected void afterServletStart() throws Exception {

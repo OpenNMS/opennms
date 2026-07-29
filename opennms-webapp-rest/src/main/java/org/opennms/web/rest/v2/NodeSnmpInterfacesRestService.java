@@ -110,7 +110,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsSnmpInterface targetObject, MultivaluedMapImpl params) {
-        if (params.getFirst("ifIndex") != null) {
+        if (RestUtils.containsProperty(params, "ifIndex")) {
             throw getException(Status.BAD_REQUEST, "Cannot change ifIndex.");
         }
         RestUtils.setBeanProperties(targetObject, params);

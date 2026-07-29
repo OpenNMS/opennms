@@ -687,6 +687,21 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.severity==CLEARED", 1);
     }
 
+    /**
+     * The inherited bulk-update endpoint (PUT /alarms) must not let a raw 'severity' parameter
+     * forge the alarm severity.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void bulkUpdateCannotForgeAlarmSeverity() throws Exception {
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        // alarm1 was created MAJOR
+        executeQueryAndVerify("_s=alarm.id==" + alarm1.getId() + ";alarm.severity==CLEARED", 0);
+        sendRequest(PUT, "/alarms",
+                parseParamData("_s=alarm.id==" + alarm1.getId() + "&severity=CLEARED"), 204);
+        executeQueryAndVerify("_s=alarm.id==" + alarm1.getId() + ";alarm.severity==CLEARED", 0);
+    }
+
     private void anticipateEvent(EventBuilder eventBuilder) {
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
     }
