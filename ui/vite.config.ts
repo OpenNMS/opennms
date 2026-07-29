@@ -70,7 +70,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
-      './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
+      // Absolute path required: a relative replacement resolves against the
+      // IMPORTER's directory in dev-mode import analysis (breaking `pnpm dev`
+      // with "Failed to resolve import ./src/assets/ProductLogo.vue"), while
+      // production builds resolved it against the project root — absolute
+      // works identically in both.
+      './src/assets/ProductLogo.vue': new URL(`./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`, import.meta.url).pathname
     },
     dedupe: ['vue', 'primevue']
   },
