@@ -7,12 +7,12 @@
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
       <FormField label="Add Source">
-        <PAutoComplete
+        <OnmsAutoComplete
           v-model="autocompleteQuery"
           :suggestions="sourceSearchResults"
           optionLabel="name"
           @complete="onSourceSearch"
-          @option-select="onSourceSelected($event.value)"
+          @optionSelect="(value) => onSourceSelected(value as SourceItem)"
           placeholder="Search sources..."
           :forceSelection="true"
           data-test="add-source-autocomplete"
@@ -23,27 +23,26 @@
       </FormField>
     </div>
     <div class="sources-card">
-      <PDataTable
+      <OnmsTable
         :value="sortedSources"
         scrollable
         scrollHeight="400px"
         :size="'small'"
-        :virtualScrollerOptions="{ itemSize: 44 }"
+        :virtualScrollItemSize="44"
         tableStyle="min-width: 50rem"
       >
-        <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
-        <PColumn style="width: 4rem">
+        <OnmsColumn field="name" style="width: 20%; height: 44px"></OnmsColumn>
+        <OnmsColumn style="width: 4rem">
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Delete source"
               data-test="delete-source-button"
               :icon="Delete"
               @click="removeSource(data.name)"
             />
           </template>
-        </PColumn>
-      </PDataTable>
+        </OnmsColumn>
+      </OnmsTable>
     </div>
   </div>
 </template>
@@ -54,14 +53,7 @@ import { computed, ref } from 'vue'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-
-const PAutoComplete = AutoCompleteComponent
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
+import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
 interface SourceItem {
   name: string
@@ -84,8 +76,8 @@ const sortedSources = computed(() =>
   [...props.sources].sort((a, b) => a.localeCompare(b)).map(name => ({ name }))
 )
 
-const onSourceSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSourceSearch = (query: string) => {
+  const q = query.toLowerCase()
   sourceSearchResults.value = store.uploadedSourceNames
     .filter(s => !props.sources.includes(s.name))
     .filter(s => s.name.toLowerCase().includes(q))

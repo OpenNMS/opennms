@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     class="compare-btn"
     aria-label="Compare configs"
     v-tooltip="'Compare configs'"
@@ -9,7 +8,6 @@
   />
 
   <OnmsIconButton
-    text
     class="dwnld-btn"
     aria-label="Download config"
     v-tooltip="'Download config'"
@@ -45,7 +43,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'

@@ -4,7 +4,6 @@
     <div class="file-tools">
      <OnmsIconButton
         v-if="changedFilesOnly"
-        text
         class="btn"
         aria-label="Click to show all files."
         v-tooltip="'Click to show all files.'"
@@ -15,7 +14,6 @@
 
       <OnmsIconButton
         v-if="!changedFilesOnly"
-        text
         class="btn unfiltered"
         aria-label="Click to show modified files only."
         v-tooltip="'Click to show modified files only.'"
@@ -25,7 +23,6 @@
       />
 
       <OnmsIconButton
-        text
         class="btn"
         :disabled="!selectedFileName"
         aria-label="Scroll to selected file."
@@ -36,7 +33,6 @@
       />
 
       <OnmsIconButton
-        text
         class="btn info-icon"
         aria-label="Click for info."
         v-tooltip="'Click for info.'"
@@ -51,7 +47,7 @@
       </ul>
     </div>
   </div>
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="isMessageDialogVisible"
     :relative="true"
     maxHeight="22em"
@@ -74,16 +70,15 @@
         <p>Use the Save button to save changes to the selected file. Use the Reset button to discard changes and revert the file to its previous state.</p>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton, OnmsMessageDialog } from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import SupportCenter from '@/components/icons/action/SupportCenter.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'

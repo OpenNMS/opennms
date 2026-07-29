@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@/components/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
 import { Node } from '@/types'

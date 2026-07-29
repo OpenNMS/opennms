@@ -1,33 +1,22 @@
 <template>
   <FormField class="dcb-search-field">
-    <IconField>
-      <PInputText
-        placeholder="Search device"
-        aria-label="Search device"
-        :modelValue="searchVal"
-        @update:modelValue="(val) => searchFilterHandler(val as string)"
-      />
-      <InputIcon>
-        <OnmsIcon :icon="SearchIcon" />
-      </InputIcon>
-    </IconField>
+    <OnmsSearchInput
+      placeholder="Search device"
+      aria-label="Search device"
+      :modelValue="searchVal"
+      @update:modelValue="(val) => searchFilterHandler(val as string)"
+    />
   </FormField>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import SearchIcon from '@/components/icons/action/Search.vue'
+import { OnmsSearchInput } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
-
-const PInputText = InputText
 
 const deviceStore = useDeviceStore()
 const searchVal = ref<string | undefined>(undefined)
@@ -38,8 +27,9 @@ const searchFilterHandler = (val = '') => {
   } // prevents dup mounted call
   searchVal.value = val
 
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     search: val
   }
@@ -47,7 +37,6 @@ const searchFilterHandler = (val = '') => {
   deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
   getDeviceConfigBackupsOnDebounce()
 }
-
 
 // TODO: return scroll bar to top before running, so infinite scroll won't trigger after search
 const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => deviceStore.getDeviceConfigBackups(), 1000)

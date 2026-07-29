@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
     v-model:visible="isVisible"
-    position="right"
     :header="`Edit Profiles for ${props.sourceName}`"
-    :style="{ width: '40rem' }"
+    width="40rem"
     @hide="close"
     class="source-profiles-drawer"
   >
     <div class="container">
       <div class="section-label">Assigned Profiles</div>
       <div class="chips-container">
-        <PChip
+        <OnmsChip
           v-for="profile in localProfiles"
           :key="profile.id"
           :label="profile.name"
@@ -26,12 +25,12 @@
       </div>
       <div class="spacer" />
       <FormField label="Add Profile">
-        <PAutoComplete
+        <OnmsAutoComplete
           v-model="autocompleteQuery"
           :suggestions="filteredSuggestions"
           optionLabel="name"
           @complete="onSearch"
-          @option-select="addProfile($event.value)"
+          @optionSelect="(value) => addProfile(value as SnmpCollectionProfile)"
           placeholder="Search profiles..."
           :forceSelection="true"
           data-test="profile-autocomplete"
@@ -41,20 +40,19 @@
         />
       </FormField>
       <div class="button-row">
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           @click="close"
         />
-        <Button
+        <OnmsButton
           data-test="save-profiles-button"
           label="Save"
           @click="save"
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -62,14 +60,8 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import ChipComponent from 'primevue/chip'
-import Drawer from 'primevue/drawer'
+import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsDrawer } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-
-const PChip = ChipComponent
-const PAutoComplete = AutoCompleteComponent
 
 const props = defineProps<{
   visible: boolean
@@ -102,8 +94,8 @@ const onOpen = async () => {
   filteredSuggestions.value = [...availableProfiles.value]
 }
 
-const onSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSearch = (query: string) => {
+  const q = query.toLowerCase()
   if (q.length > 0) {
     filteredSuggestions.value = availableProfiles.value.filter(p =>
       p.name.toLowerCase().includes(q)

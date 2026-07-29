@@ -1,5 +1,5 @@
 <template>
-  <PInputText
+  <OnmsInputText
     class="new-input"
     ref="input"
     aria-label="New file name"
@@ -11,12 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
+import { OnmsInputText } from '@opennms/onms-ui'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
 import { getExtensionFromFilenameSafely } from './utils'
 import { PropType, computed, onMounted, ref } from 'vue'
-
-const PInputText = InputText
 
 const fileEditorStore = useFileEditorStore()
 const input = ref()

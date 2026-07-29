@@ -7,24 +7,18 @@
       <div class="header-content-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor, UEI or Label"
-                :aria-label="'Search by Source, Vendor, UEI or Label'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor, UEI or Label"
+              :aria-label="'Search by Source, Vendor, UEI or Label'"
+            />
           </FormField>
         </div>
         <div class="refresh">
           <OnmsIconButton
-            text
             title="Refresh"
             data-test="refresh-button"
             :icon="Refresh"
@@ -34,7 +28,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -51,49 +45,46 @@
       class="data-table"
       data-test="event-config-source-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="vendor"
         header="Vendor"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="eventCount"
         header="Event Count"
         sortable
       />
-      <Column header="Status">
+      <OnmsColumn header="Status">
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
               @click="onEventClick(data)"
             />
             <OnmsIconButton
-              text
               :title="`Download ${data.name} XML`"
               data-test="download-button"
               :icon="Download"
               @click="downloadEventConfXmlBySourceId(data.id)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="event-source-row-menu"
               :title="`More actions for ${data.name}`"
@@ -103,14 +94,13 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="event-source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -132,25 +122,24 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import {
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Download from '@/components/icons/action/DownloadFile.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
@@ -164,12 +153,12 @@ const emptyListContent = {
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Source' : 'Enable Source',
       command: () => store.showChangeEventConfigSourceStatusDialog(target)
@@ -196,7 +185,7 @@ const onEventClick = (source: EventConfigSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -204,7 +193,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {

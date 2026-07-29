@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="system-definition-drawer"
     v-model:visible="store.systemDefDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '40rem' }"
+    width="40rem"
     @hide="store.closeSystemDefDrawer"
     class="system-definition-drawer"
   >
     <div class="container">
       <div class="drawer-content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -26,7 +25,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -47,8 +46,9 @@
               :key="item.name"
               class="radio-option"
             >
-              <RadioButton
-                v-model="oidType"
+              <OnmsRadioButton
+                :modelValue="oidType"
+                @update:modelValue="(val) => oidType = val as string"
                 :inputId="`oid-type-${item.value}`"
                 :value="item.value"
               />
@@ -67,7 +67,7 @@
           :for="oidValueId"
           :error="errors.oidValue"
         >
-          <InputText
+          <OnmsInputText
             :id="oidValueId"
             v-model.trim="oidValue"
             :invalid="!!errors.oidValue"
@@ -83,7 +83,7 @@
           :for="mibGroupId"
           :error="errors.mibGroupNames"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="mibGroupId"
             class="my-autocomplete"
             v-model="mibGroupNames"
@@ -100,13 +100,13 @@
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           label="Cancel"
           data-test="cancel-button"
           @click="store.closeSystemDefDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save Definition"
           data-test="save-button"
           :disabled="isSaveDisabled"
@@ -114,7 +114,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
@@ -127,13 +127,8 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
-import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
+import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsInputText, OnmsRadioButton, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
-import RadioButton from 'primevue/radiobutton'
-import ToggleSwitch from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 
 const store = useSnmpDataCollectionDetailStore()
@@ -199,8 +194,8 @@ const validateDefinition = (): SystemDefErrors => {
   return validationErrors
 }
 
-const search = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const search = (query: string) => {
+  const q = query.toLowerCase()
   results.value = store.mibGroupNames
     .filter(x => x.toLowerCase().indexOf(q) > -1)
     .map(x => ({ _text: x, _value: x }))

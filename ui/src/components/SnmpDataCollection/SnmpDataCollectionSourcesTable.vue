@@ -4,26 +4,21 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor or Description"
-                :aria-label="'Search by Source, Vendor or Description'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor or Description"
+              :aria-label="'Search by Source, Vendor or Description'"
+            />
           </FormField>
         </div>
       </div>
       <div class="section-right">
         <div class="add">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Create New Data Collection Source"
             data-test="create-source-button"
             @click="goToCreateSource"
@@ -32,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -49,18 +44,18 @@
       class="data-table"
       data-test="sources-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column header="Profiles">
+      <OnmsColumn header="Profiles">
         <template #body="{ data }">
           <div
             class="profile-chips"
             :data-test="`profiles-cell-${data.name}`"
           >
-            <Chip
+            <OnmsChip
               v-for="profile in profilesForSource(data.name)"
               :key="profile.id"
               :label="profile.name"
@@ -74,25 +69,24 @@
             >—</span>
           </div>
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
-              text
               :title="`View ${data.name}`"
               data-test="view-button"
               :icon="ViewDetails"
@@ -102,14 +96,12 @@
                  /upload endpoint accepts). JSON is still reachable via
                  the row menu below for users who want it. -->
             <OnmsIconButton
-              text
               :title="`Download ${data.name} XML`"
               data-test="download-xml-button"
               :icon="DownloadIcon"
               @click="downloadCollectionSource(data, 'xml')"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="source-row-menu"
               :title="`More actions for ${data.name}`"
@@ -119,14 +111,13 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -158,23 +149,22 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import Chip from 'primevue/chip'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {
@@ -238,12 +228,12 @@ watch(
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: 'Download XML',
       command: () => downloadCollectionSource(target, 'xml')
@@ -285,7 +275,7 @@ const onSourceClick = (source: SnmpCollectionSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -293,7 +283,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {

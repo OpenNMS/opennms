@@ -4,24 +4,18 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.systemDefsSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Name"
-                :aria-label="'Search by Name'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.systemDefsSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Name"
+              :aria-label="'Search by Name'"
+            />
           </FormField>
         </div>
         <div class="refresh">
           <OnmsIconButton
-            text
             title="Refresh"
             data-test="refresh-button"
             :icon="Refresh"
@@ -34,8 +28,8 @@
           class="add"
           v-if="!isPluginSourced(store.selectedCollectionSource)"
         >
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Add System Definition"
             data-test="add-system-definition-button"
             @click="store.openSystemDefCreationDrawer(null, CreateEditMode.Create)"
@@ -44,7 +38,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.systemDefinitions.length"
       :value="store.systemDefinitions"
       lazy
@@ -62,51 +56,49 @@
       class="data-table"
       data-test="system-definitions-table"
     >
-      <Column
+      <OnmsColumn
         expander
         style="width: 3rem"
       />
-      <Column
+      <OnmsColumn
         field="name"
         header="Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="sysoid"
         header="SysOID"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="sysoidMask"
         header="SysOID Mask"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
               v-if="!isPluginSourced(store.selectedCollectionSource)"
-              text
               :title="`Edit ${data.name}`"
               data-test="edit-button"
               :icon="Edit"
               @click="onSystemDefEditClicked(data)"
             />
             <OnmsIconButton
-              text
               aria-haspopup="true"
               aria-controls="system-definition-row-menu"
               title="More actions"
@@ -116,20 +108,19 @@
             />
           </div>
         </template>
-      </Column>
+      </OnmsColumn>
       <template #expansion="{ data }">
         <div class="expanded-content">
           <h6>MIB Group Names:</h6>
           <p class="description">{{ data.mibGroupNames?.join(', ') }}</p>
         </div>
       </template>
-    </DataTable>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="system-definition-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.systemDefinitions.length">
@@ -163,23 +154,22 @@ import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import Edit from '@/components/icons/action/Edit.vue'
-import Search from '@/components/icons/action/Search.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
-import Tag from 'primevue/tag'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
@@ -198,12 +188,12 @@ const snackbar = useSnackbar()
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionSystemDef | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Definition' : 'Enable Definition',
       command: () => openChangeStatusDialog(target)
@@ -227,7 +217,7 @@ const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
   store.openSystemDefCreationDrawer(defs, CreateEditMode.Edit)
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSystemDefsSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -235,7 +225,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.systemDefsPagination.pageSize) {
     store.onSystemDefsPageSizeChange(event.rows)
   } else {

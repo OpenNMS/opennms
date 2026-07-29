@@ -3,7 +3,7 @@
     class="config-details-box"
     data-test="profile-details-box"
   >
-    <PCard class="snmp-data-collection-profiles-card">
+    <OnmsCard class="snmp-data-collection-profiles-card">
       <template #title>
         <h4>Profile Details</h4>
       </template>
@@ -17,7 +17,7 @@
                 :error="errors.name"
                 hint=""
               >
-                <PInputText
+                <OnmsInputText
                   id="profile-name-input"
                   :modelValue="configDetails.name"
                   @update:modelValue="update('name', String($event))"
@@ -52,20 +52,20 @@
               :for="`profile-status-toggle`"
               hint=""
             >
-              <PToggleSwitch
+              <OnmsToggleSwitch
                 id="profile-status-toggle"
                 :modelValue="configDetails.enabled"
                 @update:modelValue="update('enabled', Boolean($event))"
                 data-test="profile-enabled-switch"
               />
               <div class="tag">
-                <PTag
+                <OnmsTag
                   v-if="configDetails.enabled"
                   class="enabled-tag"
                   value="Enabled"
                   data-test="status-tag"
                 />
-                <PTag
+                <OnmsTag
                   v-if="!configDetails.enabled"
                   class="disabled-tag"
                   value="Disabled"
@@ -111,11 +111,10 @@
               hint=""
             >
               <div class="settings-input">
-                <PInputNumber
-                  id="profile-max-vars-per-pdu"
+                <OnmsInputNumber
+                  inputId="profile-max-vars-per-pdu"
                   :modelValue="configDetails.maxVarsPerPdu === '' ? null : Number(configDetails.maxVarsPerPdu)"
                   @update:modelValue="update('maxVarsPerPdu', $event == null ? '' : String($event))"
-                  :useGrouping="false"
                   :min="0"
                   :invalid="!!errors.maxVarsPerPdu"
                   data-test="max-vars-per-pdu"
@@ -138,7 +137,7 @@
               :for="`profile-storage-flag`"
               hint=""
             >
-              <PSelect
+              <OnmsSelect
                 id="profile-storage-flag"
                 :modelValue="configDetails.storageFlag"
                 @update:modelValue="update('storageFlag', String($event))"
@@ -157,29 +156,17 @@
           </div>
         </div>
       </template>
-    </PCard>
+    </OnmsCard>
   </div>
 </template>
 
 <script setup lang="ts">
+import { OnmsCard, OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
-import Card from 'primevue/card'
-import InputNumberComponent from 'primevue/inputnumber'
-import InputTextComponent from 'primevue/inputtext'
-import SelectComponent from 'primevue/select'
-import TagComponent from 'primevue/tag'
-import ToggleSwitchComponent from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
-
-const PCard = Card
-const PToggleSwitch = ToggleSwitchComponent
-const PSelect = SelectComponent
-const PInputText = InputTextComponent
-const PInputNumber = InputNumberComponent
-const PTag = TagComponent
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel

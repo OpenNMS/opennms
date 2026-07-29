@@ -31,27 +31,27 @@
             data-test="snmp-data-collection-folder-input"
             ref="sourceFolderInput"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             data-test="choose-file-button"
             @click="openFileDialog"
             :disabled="isLoading"
           >
             <OnmsIcon :icon="UploadFile" />
             Choose files to upload
-          </Button>
-          <Button
-            outlined
+          </OnmsButton>
+          <OnmsButton
+            variant="outlined"
             data-test="choose-folder-button"
             @click="openFolderDialog"
             :disabled="isLoading"
           >
             <OnmsIcon :icon="FolderAdd" />
             Choose folder to upload
-          </Button>
+          </OnmsButton>
         </div>
         <div class="section-right">
-          <Button
+          <OnmsButton
             label="Upload Files"
             :disabled="shouldUploadDisabled"
             :loading="isLoading"
@@ -89,9 +89,8 @@
             :key="profile.id"
             class="profile-checkbox"
           >
-            <Checkbox
+            <OnmsCheckbox
               :inputId="`profile-checkbox-${profile.id}`"
-              binary
               :modelValue="selectedProfileNames.includes(profile.name)"
               :disabled="hasConfigFile"
               :data-test="`profile-checkbox-${profile.name}`"
@@ -132,7 +131,7 @@
       </div>
     </div>
     <div class="container">
-      <DataTable
+      <OnmsTable
         v-if="orderedSourceFiles.length"
         v-model:first="firstRow"
         v-model:rows="rowsPerPage"
@@ -142,7 +141,7 @@
         class="data-table"
         data-test="import-files-table"
       >
-        <Column
+        <OnmsColumn
           header="Source"
           style="width: 85%"
         >
@@ -150,24 +149,24 @@
             <div class="file">
               <OnmsIcon :icon="Apps" />
               <span>{{ ellipsify(data.file.name, 39) }}</span>
-              <Tag
+              <OnmsTag
                 v-if="data.kind === 'config'"
                 class="kind-chip kind-config"
                 :value="`Profiles config${data.profileNames?.length ? ` (${data.profileNames.length})` : ''}`"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-else-if="data.kind === 'group'"
                 class="kind-chip kind-source"
                 value="Source"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-if="!data.isValid"
                 class="error-chip"
                 :value="data.errors.join('. ')"
               />
-              <Tag
+              <OnmsTag
                 v-if="data.isDuplicate"
                 class="update-chip"
                 :value="`Will update existing source '${data.groupName}'`"
@@ -190,19 +189,18 @@
               />
             </div>
           </template>
-        </Column>
-        <Column header="Action">
+        </OnmsColumn>
+        <OnmsColumn header="Action">
           <template #body="{ data }">
             <OnmsIconButton
-              text
               title="Remove"
               data-test="remove-files-button"
               :icon="Delete"
               @click="removeFile(data)"
             />
           </template>
-        </Column>
-      </DataTable>
+        </OnmsColumn>
+      </OnmsTable>
       <div v-if="!orderedSourceFiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -268,7 +266,7 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsCheckbox, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import UploadFile from '@/components/icons/action/UploadFile.vue'
@@ -277,12 +275,6 @@ import Apps from '@/components/icons/navigation/Apps.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import Checkbox from 'primevue/checkbox'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'

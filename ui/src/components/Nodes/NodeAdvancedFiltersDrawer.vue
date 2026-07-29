@@ -1,9 +1,8 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     v-model:visible="drawerVisible"
-    position="right"
     header="Advanced Node Filters"
-    :style="{ width: '60em' }"
+    width="60em"
     data-test="left-drawer"
   >
     <div class="node-filters-drawer-custom-padding">
@@ -27,7 +26,7 @@
           class="category-field"
           data-test="categories-multiselect"
         >
-          <MultiSelect
+          <OnmsMultiSelect
             v-model="selectedFilters.categories"
             :options="categoryOptions"
             optionLabel="_text"
@@ -35,13 +34,12 @@
             filter
             display="chip"
             placeholder="Select categories"
-            @update:modelValue="(items) => updateFilter('categories', items)"
+            @update:modelValue="(items) => updateFilter('categories', items as IAutocompleteItemType[])"
           />
         </FormField>
         <OnmsIconButton
           v-if="!showSecondCategories"
           class="category-add-btn"
-          text
           :icon="AddIcon"
           aria-label="Add category group"
           @click="showSecondCategories = true"
@@ -53,7 +51,7 @@
           class="category-field"
           data-test="categories2-multiselect"
         >
-          <MultiSelect
+          <OnmsMultiSelect
             v-model="selectedFilters.categories2"
             :options="categoryOptions"
             optionLabel="_text"
@@ -61,12 +59,11 @@
             filter
             display="chip"
             placeholder="Select categories"
-            @update:modelValue="(items) => updateFilter('categories2', items)"
+            @update:modelValue="(items) => updateFilter('categories2', items as IAutocompleteItemType[])"
           />
         </FormField>
         <OnmsIconButton
           class="category-add-btn"
-          text
           :icon="DeleteIcon"
           aria-label="Remove category group"
           @click="removeSecondCategories"
@@ -77,7 +74,7 @@
       <div class="onms-row">
         <div class="onms-col-6">
           <FormField label="Monitoring Locations" data-test="locations-multiselect">
-            <MultiSelect
+            <OnmsMultiSelect
               v-model="selectedFilters.locations"
               :options="locationOptions"
               optionLabel="_text"
@@ -85,13 +82,13 @@
               filter
               display="chip"
               placeholder="Select locations"
-              @update:modelValue="(items) => updateFilter('locations', items)"
+              @update:modelValue="(items) => updateFilter('locations', items as IAutocompleteItemType[])"
             />
           </FormField>
         </div>
         <div class="onms-col-6">
           <FormField label="Monitored Services" data-test="services-multiselect">
-            <MultiSelect
+            <OnmsMultiSelect
               v-model="selectedFilters.services"
               :options="serviceOptions"
               optionLabel="_text"
@@ -99,7 +96,7 @@
               filter
               display="chip"
               placeholder="Select services"
-              @update:modelValue="(items) => updateFilter('services', items)"
+              @update:modelValue="(items) => updateFilter('services', items as IAutocompleteItemType[])"
             />
           </FormField>
         </div>
@@ -111,7 +108,7 @@
             :error="errors.ipAddress"
             data-test="ip-field"
           >
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.ipAddress"
               :invalid="!!errors.ipAddress"
@@ -121,7 +118,7 @@
         </div>
         <div class="onms-col-6">
           <FormField label="MAC Address" data-test="mac-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.macAddress"
               data-test="mac-input"
@@ -132,7 +129,7 @@
       <div class="onms-row">
         <div class="onms-col-6">
           <FormField label="Topology (CDP/LLDP)" data-test="topology-field">
-            <InputText
+            <OnmsInputText
               class="filter-input"
               v-model="selectedFilters.topology"
               data-test="topology-input"
@@ -142,7 +139,7 @@
       </div>
       <div class="spacer-large"></div>
       <FormField label="Flows" data-test="flows-multiselect">
-        <MultiSelect
+        <OnmsMultiSelect
           v-model="selectedFilters.flows"
           :options="flowOptions"
           optionLabel="_text"
@@ -150,14 +147,14 @@
           filter
           display="chip"
           placeholder="Select flows"
-          @update:modelValue="(items) => updateFilter('flows', items)"
+          @update:modelValue="(items) => updateFilter('flows', items as IAutocompleteItemType[])"
         />
       </FormField>
       <div class="spacer-medium"></div>
       <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="down-only">
           <label for="down-only">Down nodes only (nodes with a down aggregate status)</label>
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithDownAggregateStatus"
             inputId="down-only"
           />
@@ -166,7 +163,7 @@
       <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="with-assets">
           <label for="with-assets">Nodes with asset info only</label>
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithAssets"
             inputId="with-assets"
           />
@@ -188,7 +185,7 @@
         <div class="spacer-medium"></div>
         <ExtendedSearchPanel ref="extendedSearchPanelRef" />
       </div>
-      <MessageDialog
+      <OnmsMessageDialog
         :visible="isMessageDialogVisible"
         :relative="true"
         maxHeight="22em"
@@ -249,31 +246,31 @@
             <p>This is a case-insensitive partial string match against the selected field.</p>
           </div>
         </template>
-      </MessageDialog>
+      </OnmsMessageDialog>
     </div>
     <template #footer>
       <div class="footer">
-        <Button
+        <OnmsButton
           :disabled="isApplyDisabled"
           @click="applySelectedFilters"
         >
           Apply Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="clearDrawerFilters"
         >
           Clear Filters
-        </Button>
-        <Button
-          outlined
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
           @click="nodeStructureStore.closeInstancesDrawerModal()"
         >
           Close
-        </Button>
+        </OnmsButton>
       </div>
     </template>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -281,18 +278,11 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 import AddIcon from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
-import Drawer from 'primevue/drawer'
-import MultiSelect from 'primevue/multiselect'
-import InputText from 'primevue/inputtext'
-import ToggleSwitch from 'primevue/toggleswitch'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import FormField from '@/components/Common/FormField.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'

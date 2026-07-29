@@ -26,18 +26,18 @@
             </div>
           </transition>
 
-          <PButton
+          <OnmsButton
             v-if="!isHelpOpen && snippets"
             class="help-btn"
-            text
+            variant="text"
             @click="triggerHelp">
             Help
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
   </div>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="Boolean(fileEditorStore.fileToDelete)"
     title="Delete confirmation"
     action-button-text="Confirm"
@@ -47,14 +47,13 @@
     <template #content>
       <p>Delete {{ fileEditorStore.fileToDelete?.name }}?</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import Button from 'primevue/button'
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsButton, OnmsConfirmationDialog } from '@opennms/onms-ui'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
 import Help from '@/components/FileEditor/Help.vue'
@@ -63,8 +62,6 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-
-const PButton = Button
 
 const fileEditorStore = useFileEditorStore()
 const menuStore = useMenuStore()

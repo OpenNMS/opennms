@@ -14,46 +14,45 @@
            this, an operator can grab the full pre-edit state on disk and
            push it back via the Import tab. -->
       <div class="header-actions">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           aria-haspopup="true"
           aria-controls="download-config-menu"
           data-test="download-config-button"
           @click="toggleDownloadMenu"
         >
           <OnmsIcon :icon="DownloadIcon" /> Download Data Collection Config
-        </Button>
-        <Menu
+        </OnmsButton>
+        <OnmsMenu
           id="download-config-menu"
           ref="downloadMenu"
-          :model="downloadMenuItems"
-          popup
+          :items="downloadMenuItems"
         />
       </div>
     </div>
     <div class="tab-container">
-      <Tabs
+      <OnmsTabs
         class="tabs"
         :value="store.activeTab"
         @update:value="onTabChange"
       >
-        <TabList>
-          <Tab :value="0">Data Collection Sources</Tab>
-          <Tab :value="1">Import Data Collection Sources</Tab>
-          <Tab :value="2">Profiles</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel :value="0">
+        <OnmsTabList>
+          <OnmsTab :value="0">Data Collection Sources</OnmsTab>
+          <OnmsTab :value="1">Import Data Collection Sources</OnmsTab>
+          <OnmsTab :value="2">Profiles</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel :value="0">
             <SnmpDataCollectionSourcesTable />
-          </TabPanel>
-          <TabPanel :value="1">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="1">
             <SnmpDataCollectionSourceImport />
-          </TabPanel>
-          <TabPanel :value="2">
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="2">
             <SnmpDataCollectionProfilesTable />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -70,16 +69,8 @@ import { downloadDatacollectionConfig } from '@/services/snmpDataCollectionServi
 import { useMenuStore } from '@/stores/menuStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsMenu, OnmsMenuItem, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
-import Button from 'primevue/button'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tab from 'primevue/tab'
-import TabList from 'primevue/tablist'
-import TabPanel from 'primevue/tabpanel'
-import TabPanels from 'primevue/tabpanels'
-import Tabs from 'primevue/tabs'
 
 const menuStore = useMenuStore()
 const store = useSnmpDataCollectionStore()
@@ -96,7 +87,7 @@ const onTabChange = (value: string | number) => {
 }
 
 const downloadMenu = ref()
-const downloadMenuItems = computed<MenuItem[]>(() => ([
+const downloadMenuItems = computed<OnmsMenuItem[]>(() => ([
   { label: 'Download XML', command: () => downloadConfig('xml') },
   { label: 'Download JSON', command: () => downloadConfig('json') }
 ]))
@@ -142,12 +133,6 @@ const downloadConfig = async (format: 'xml' | 'json') => {
 
   .tab-container {
     padding: 0.5rem;
-
-    .tabs {
-      :deep(.p-tab) {
-        text-transform: uppercase;
-      }
-    }
   }
 }
 </style>

@@ -15,8 +15,8 @@
             <h3>Current Registrations</h3>
           </div>
           <div class="registrations-container">
-            <PDataTable :value="registrationRows">
-              <PColumn header="Registration Status">
+            <OnmsTable :value="registrationRows">
+              <OnmsColumn header="Registration Status">
                 <template #body="{ data }">
                   <div
                     v-if="data.registered"
@@ -27,11 +27,11 @@
                     class="register-failed"
                   >Unregistered</div>
                 </template>
-              </PColumn>
-              <PColumn header="Registered On">
+              </OnmsColumn>
+              <OnmsColumn header="Registered On">
                 <template #body="{ data }">{{ formatRegistrationDate(data) }}</template>
-              </PColumn>
-              <PColumn header="Active">
+              </OnmsColumn>
+              <OnmsColumn header="Active">
                 <template #body="{ data }">
                   <div
                     v-if="data.active"
@@ -42,52 +42,54 @@
                     class="register-failed"
                   >Inactive</div>
                 </template>
-              </PColumn>
-              <PColumn
+              </OnmsColumn>
+              <OnmsColumn
                 field="systemId"
                 header="System ID"
               />
-              <PColumn
+              <OnmsColumn
                 field="displayName"
                 header="Display Name"
               />
-              <PColumn header="Access Token">
+              <OnmsColumn header="Access Token">
                 <template #body="{ data }">
                   {{ ellipsify(data.accessToken ?? '', 30) }}
                   <OnmsIconButton
+                    variant="filled"
                     aria-label="Copy Access Token"
                     :icon="icons.ContentCopy"
                     @click.prevent="() => onCopyToken(data.accessToken ?? '')"
                   />
                 </template>
-              </PColumn>
-              <PColumn header="Refresh Token">
+              </OnmsColumn>
+              <OnmsColumn header="Refresh Token">
                 <template #body="{ data }">
                   {{ ellipsify(data.refreshToken ?? '', 30) }}
                   <OnmsIconButton
+                    variant="filled"
                     aria-label="Copy Refresh Token"
                     :icon="icons.ContentCopy"
                     @click.prevent="() => onCopyToken(data.refreshToken ?? '')"
                   />
                 </template>
-              </PColumn>
-              <PColumn header="Actions">
+              </OnmsColumn>
+              <OnmsColumn header="Actions">
                 <template #body="{ data }">
-                  <PButton
+                  <OnmsButton
                     label="Send Data"
                     :disabled="!data.registered || !data.systemId"
                     @click.prevent="() => onSendData(data)"
                   />
                 </template>
-              </PColumn>
-            </PDataTable>
+              </OnmsColumn>
+            </OnmsTable>
           </div>
           <div class="spacer"></div>
           <h3>Register</h3>
           <div>
             Register your Meridian instance with Zenith in order to send data:
             <div class="spacer"></div>
-            <PButton
+            <OnmsButton
               label="Register with Zenith"
               @click="gotoRegister"
             />
@@ -103,10 +105,7 @@ import { computed, markRaw, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { format as fnsFormat } from 'date-fns'
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
@@ -115,10 +114,6 @@ import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration } from '@/types/zenithConnect'
 import ContentCopy from '@/components/icons/action/ContentCopy.vue'
-
-const PButton = Button
-const PDataTable = DataTable
-const PColumn = Column
 
 const menuStore = useMenuStore()
 const zenithConnectStore = useZenithConnectStore()

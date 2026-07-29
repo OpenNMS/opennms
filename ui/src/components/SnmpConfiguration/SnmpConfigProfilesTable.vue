@@ -4,33 +4,28 @@
       <div class="action-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <PInputText
-                id="snmp-profiles-search"
-                placeholder="Search label or filter"
-                aria-label="Search label or filter"
-                v-model="searchTerm"
-                @update:modelValue="(val) => onSearchChange(val as string)"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="IconSearch" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              input-id="snmp-profiles-search"
+              placeholder="Search label or filter"
+              aria-label="Search label or filter"
+              v-model="searchTerm"
+              @update:modelValue="(val) => onSearchChange(val as string)"
+            />
           </FormField>
         </div>
         <div class="refresh">
-          <PButton
+          <OnmsButton
             data-test="new-profile-button"
             @click="onCreateProfile"
           >
             <OnmsIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
             New Profile
-          </PButton>
+          </OnmsButton>
         </div>
       </div>
     </div>
     <div class="container">
-      <PDataTable
+      <OnmsTable
         :value="profileRows"
         paginator
         :rows="50"
@@ -38,28 +33,26 @@
         v-model:first="firstRow"
         aria-label="SNMP Config Profile Table"
       >
-        <PColumn
+        <OnmsColumn
           field="label"
           header="Label"
           sortable
         />
-        <PColumn
+        <OnmsColumn
           field="filter"
           header="Filter Expression"
           sortable
         />
-        <PColumn header="Actions">
+        <OnmsColumn header="Actions">
           <template #body="{ data }">
             <div class="action-container">
               <OnmsIconButton
-                text
                 aria-label="Edit"
                 data-test="edit-button"
                 :icon="IconEdit"
                 @click="onProfileEdit(data.label)"
               />
               <OnmsIconButton
-                text
                 aria-label="Delete"
                 data-test="delete-button"
                 :icon="IconDelete"
@@ -67,18 +60,18 @@
               />
             </div>
           </template>
-        </PColumn>
+        </OnmsColumn>
         <template #empty>
           <EmptyList
             :content="emptyListContent"
             data-test="empty-list"
           />
         </template>
-      </PDataTable>
+      </OnmsTable>
     </div>
   </TableCard>
 
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="displayDeleteDialog"
     title="Delete SNMP Configuration Profile"
     action-button-text="Delete"
@@ -91,37 +84,23 @@
         <strong>{{ selectedProfileLabel }}</strong>
       </p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
 import { debounce } from 'lodash'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import IconAdd from '@/components/icons/action/Add.vue'
 import IconDelete from '@/components/icons/action/Delete.vue'
 import IconEdit from '@/components/icons/action/Edit.vue'
-import IconSearch from '@/components/icons/action/Search.vue'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import TableCard from '../Common/TableCard.vue'
 
 import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { SnmpProfile } from '@/types/snmpConfig'
-
-const PButton = Button
-const PColumn = Column
-const PDataTable = DataTable
-const PInputText = InputText
 
 const emit = defineEmits<{
   (e: 'delete-profile', label: string): void

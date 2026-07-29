@@ -3,14 +3,14 @@
     <div class="title">
       <div class="header">
         <div>
-          <Button
-            text
+          <OnmsButton
+            variant="text"
             data-test="back-button"
             @click="handleCancel(store.selectedSource?.id)"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </Button>
+          </OnmsButton>
         </div>
         <div>
           <h3>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="action">
-        <Button
+        <OnmsButton
           label="Create New Event Source"
           @click="showSourceCreationDialog"
           data-test="create-new-event-source-button"
@@ -37,7 +37,7 @@
       :for="sourceNameId"
       class="my-autocomplete"
     >
-      <AutoComplete
+      <OnmsAutoComplete
         :inputId="sourceNameId"
         :disabled="store.selectedSource?.name && store.selectedSource?.id ? true : false"
         :modelValue="selectedSource"
@@ -48,7 +48,7 @@
         dropdown
         forceSelection
         fluid
-        @complete="search($event.query)"
+        @complete="search"
       />
     </FormField>
     <div class="spacer"></div>
@@ -65,7 +65,7 @@
           :error="errors.uei"
           hint="e.g., 'uei.opennms.org/vendor/application/eventname'"
         >
-          <InputText
+          <OnmsInputText
             :id="eventUeiId"
             data-test="event-uei"
             :invalid="!!errors.uei"
@@ -81,7 +81,7 @@
           :error="errors.eventLabel"
           hint="e.g., 'Vendor Application Event Name'"
         >
-          <InputText
+          <OnmsInputText
             :id="eventLabelId"
             data-test="event-label"
             :invalid="!!errors.eventLabel"
@@ -97,13 +97,13 @@
           :error="errors.description"
           hint="Provide a detailed description of the event."
         >
-          <Textarea
+          <OnmsTextarea
             :id="eventDescriptionId"
             :modelValue="eventDescription"
-            @update:model-value="eventDescription = ($event ?? '').trim()"
+            @update:modelValue="eventDescription = ($event ?? '').trim()"
             :invalid="!!errors.description"
             data-test="event-description"
-            rows="10"
+            :rows="10"
             autoResize
             fluid
           />
@@ -114,12 +114,12 @@
           :for="operatorInstructionsId"
           hint="Instructions for operators when this event occurs."
         >
-          <Textarea
+          <OnmsTextarea
             :id="operatorInstructionsId"
             :modelValue="operatorInstructions"
-            @update:model-value="operatorInstructions = ($event ?? '').trim()"
+            @update:modelValue="operatorInstructions = ($event ?? '').trim()"
             data-test="operator-instructions"
-            rows="5"
+            :rows="5"
             autoResize
             fluid
           />
@@ -132,7 +132,7 @@
             :error="errors.dest"
             hint="Select the destination for the log message."
           >
-            <Select
+            <OnmsSelect
               :inputId="destinationId"
               data-test="event-destination"
               :invalid="!!errors.dest"
@@ -140,7 +140,7 @@
               optionLabel="_text"
               showClear
               :modelValue="destination?._value ? destination : null"
-              @update:model-value="onSelectChange(destination, $event)"
+              @update:model-value="onSelectChange(destination, $event as ISelectItemType | null)"
               fluid
             />
           </FormField>
@@ -152,13 +152,13 @@
           :error="errors.logmsg"
           hint="Provide the log message for this event."
         >
-          <Textarea
+          <OnmsTextarea
             :id="logMessageId"
             :modelValue="logMessage"
-            @update:model-value="logMessage = ($event ?? '').trim()"
+            @update:modelValue="logMessage = ($event ?? '').trim()"
             :invalid="!!errors.logmsg"
             data-test="log-message"
-            rows="5"
+            :rows="5"
             autoResize
             fluid
           />
@@ -171,7 +171,7 @@
             :error="errors.severity"
             hint="Select the severity of the event."
           >
-            <Select
+            <OnmsSelect
               :inputId="severityId"
               data-test="event-severity"
               :invalid="!!errors.severity"
@@ -179,7 +179,7 @@
               optionLabel="_text"
               showClear
               :modelValue="severity?._value ? severity : null"
-              @update:model-value="onSelectChange(severity, $event)"
+              @update:model-value="onSelectChange(severity, $event as ISelectItemType | null)"
               fluid
             />
           </FormField>
@@ -227,13 +227,13 @@
         </div>
         <div class="spacer"></div>
         <div class="action-container">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Cancel"
             @click="handleCancel(store.selectedSource?.id)"
             data-test="cancel-event-button"
           />
-          <Button
+          <OnmsButton
             :label="store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create Event' : 'Save Changes'"
             @click="handleSaveEvent"
             data-test="save-event-button"
@@ -242,11 +242,10 @@
         </div>
       </div>
     </div>
-    <Dialog
+    <OnmsDialog
       v-model:visible="sourceCreationDialogState"
       :header="labels.title"
       :modal="true"
-      :draggable="false"
       :closable="false"
       :closeOnEscape="false"
     >
@@ -256,7 +255,7 @@
           :for="configNameId"
           :error="sourceCreationErrors?.name"
         >
-          <InputText
+          <OnmsInputText
             :id="configNameId"
             v-model="configName"
             :invalid="!!sourceCreationErrors?.name"
@@ -269,7 +268,7 @@
           :for="vendorId"
           :error="sourceCreationErrors?.vendor"
         >
-          <InputText
+          <OnmsInputText
             :id="vendorId"
             v-model="vendor"
             :invalid="!!sourceCreationErrors?.vendor"
@@ -279,21 +278,20 @@
         </FormField>
       </div>
       <template #footer>
-        <Button
-          text
-          outlined
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           @click="handleSourceCreationCancel"
           data-test="cancel-source-button"
         />
-        <Button
+        <OnmsButton
           label="Create Source"
           @click="handleSourceCreationSave"
           :disabled="Object.keys(sourceCreationErrors || {}).length > 0"
           data-test="create-source-button"
         />
       </template>
-    </Dialog>
+    </OnmsDialog>
   </div>
 </template>
 
@@ -308,15 +306,9 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsAutoComplete, OnmsButton, OnmsDialog, OnmsIcon, OnmsInputText, OnmsSelect, OnmsTextarea } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { ISelectItemType } from '@/types'
-import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Textarea from 'primevue/textarea'
 import vkbeautify from 'vkbeautify'
 import FormField from '@/components/Common/FormField.vue'
 import AlarmDataInfo from './AlarmDataInfo.vue'

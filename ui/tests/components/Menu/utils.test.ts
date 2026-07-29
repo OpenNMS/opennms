@@ -21,7 +21,7 @@
 ///
 
 import { describe, it, expect, vi } from 'vitest'
-import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
+import type { OnmsMenuItem as PrimeMenuItem } from '@opennms/onms-ui'
 import { Plugin } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { computePluginRelLink, createPrimeMenuModel, updateWithPluginsMenuItems } from '@/components/Menu/utils'

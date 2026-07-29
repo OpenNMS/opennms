@@ -8,14 +8,14 @@
             :onCsvDownload="onCsvDownload"
             :onJsonDownload="onJsonDownload"
           />
-          <Button
+          <OnmsButton
             label="Customize Columns"
             data-test="customize-columns-button"
             @click="nodeStructureStore.openColumnsDrawerModal()"
           />
-          <Button
+          <OnmsButton
             label="Clear Filters"
-            outlined
+            variant="outlined"
             data-test="clear-filters-button"
             @click="nodeStructureStore.clearAllFiltersAndSelections()"
           />
@@ -28,18 +28,13 @@
           <div class="filter">
             <div class="search-filter-column">
               <FormField class="search-field">
-                <IconField>
-                  <InputText
-                    v-model="currentSearch"
-                    @update:modelValue="searchFilterHandler"
-                    placeholder="Search node label or full IP address"
-                    aria-label="Search node label or full IP address"
-                    data-test="search-input"
-                  />
-                  <InputIcon>
-                    <OnmsIcon :icon="Search" />
-                  </InputIcon>
-                </IconField>
+                <OnmsSearchInput
+                  v-model="currentSearch"
+                  @update:modelValue="searchFilterHandler"
+                  placeholder="Search node label or full IP address"
+                  aria-label="Search node label or full IP address"
+                  data-test="search-input"
+                />
               </FormField>
             </div>
             <div>
@@ -53,7 +48,6 @@
             </div>
             <div>
               <OnmsIconButton
-                text
                 title="Advanced Filters"
                 data-test="advanced-filters-button"
                 :icon="FilterAlt"
@@ -62,79 +56,79 @@
             </div>
           </div>
           <div class="chip-container">
-            <Chip
+            <OnmsChip
               v-for="cat in nodeStructureStore.selectedCategories"
               :key="`cat-${cat._value}`"
               :label="`Category: ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category)"
             />
-            <Chip
+            <OnmsChip
               v-for="cat in nodeStructureStore.selectedCategories2"
               :key="`cat2-${cat._value}`"
               :label="`Category (2): ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category2)"
             />
-            <Chip
+            <OnmsChip
               v-for="flow in nodeStructureStore.selectedFlows"
               :key="`flow-${flow._value}`"
               :label="`Flows: ${flow._text}`"
               removable
               @remove="removeItem(flow, FilterTypeEnum.Flow)"
             />
-            <Chip
+            <OnmsChip
               v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
               :key="loc.name"
               :label="`Location: ${loc.name}`"
               removable
               @remove="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
             />
-            <Chip
+            <OnmsChip
               v-for="svc in nodeStructureStore.selectedServices"
               :key="`svc-${svc._value}`"
               :label="`Service: ${svc._text}`"
               removable
               @remove="removeItem(svc, FilterTypeEnum.MonitoredService)"
             />
-            <Chip
+            <OnmsChip
               v-for="value in extendedSearchValues"
               :key="`extended-${value.key}`"
               :label="`${value.name} ${value.value}`"
               removable
               @remove="removeExtendedSearchItem(value)"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.ipAddress"
               :label="`IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}`"
               removable
               @remove="nodeStructureStore.removeIpAddress()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.macAddress"
               :label="`MAC Address: ${nodeStructureStore.queryFilter.macAddress}`"
               removable
               @remove="nodeStructureStore.removeMacAddress()"
             />
-            <Chip
+            <OnmsChip
               v-if="hasTopologySearch"
               :label="`Topology: ${topologyTerm}`"
               removable
               @remove="nodeStructureStore.removeTopology()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
               label="Down nodes only"
               removable
               @remove="nodeStructureStore.removeDownAggregateStatus()"
             />
-            <Chip
+            <OnmsChip
               v-if="nodeStructureStore.queryFilter.nodesWithAssets"
               label="Nodes with asset info"
               removable
               @remove="nodeStructureStore.removeNodesWithAssets()"
             />
-            <Chip
+            <OnmsChip
               v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
               :key="assetFilter.column"
               :label="`Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}`"
@@ -148,7 +142,7 @@
 
     <div class="onms-row">
       <div class="onms-col-12">
-        <DataTable
+        <OnmsTable
           lazy
           scrollable
           size="small"
@@ -166,7 +160,7 @@
           @page="onPage"
           @sort="onSort"
         >
-          <Column
+          <OnmsColumn
             v-for="col in orderedSelectedColumns"
             :key="col.id"
             :field="col.id"
@@ -196,8 +190,8 @@
                 :text="data[col.id]"
               />
             </template>
-          </Column>
-          <Column
+          </OnmsColumn>
+          <OnmsColumn
             header="Actions"
             class="actions-cell"
             style="min-width: 8rem"
@@ -207,7 +201,6 @@
             <template #body="{ data }">
               <div class="actions-cell-buttons">
                 <OnmsIconButton
-                  text
                   title="View Details"
                   data-test="view-details-button"
                   :icon="ViewDetails"
@@ -221,14 +214,14 @@
                 />
               </div>
             </template>
-          </Column>
+          </OnmsColumn>
           <template #empty>
             <EmptyList
               :content="emptyListContent"
               data-test="empty-list"
             />
           </template>
-        </DataTable>
+        </OnmsTable>
       </div>
     </div>
   </div>
@@ -243,7 +236,7 @@
   <NodeAdvancedFiltersDrawer />
   <ColumnSelectionDrawer />
 
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="isHelpMessageDialogVisible"
     :relative="true"
     maxHeight="22em"
@@ -259,7 +252,7 @@
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -277,21 +270,22 @@ import {
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { IAutocompleteItemType } from '@/types'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsMessageDialog,
+  OnmsSearchInput,
+  OnmsTable,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { SORT } from '@/types'
-import Button from 'primevue/button'
-import Chip from 'primevue/chip'
-import Column from 'primevue/column'
-import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import MessageDialog from '../Common/MessageDialog.vue'
-import OnmsIconButton from '../Common/OnmsIconButton.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -336,7 +330,7 @@ const orderedSelectedColumns = computed<NodeColumnSelectionItem[]>(() =>
     .sort((a, b) => a.order - b.order)
 )
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   const field = (event.sortField as string) || 'label'
   if (field === 'ipaddress') {
     return
@@ -348,7 +342,7 @@ const onSort = (event: DataTableSortEvent) => {
   updateQuery({ orderBy: field, order })
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== pageSize.value) {
     updatePageSize(event.rows)
   } else {

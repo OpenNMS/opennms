@@ -6,31 +6,31 @@
     <div class="header">
       <div class="title-container">
         <div>
-          <Button
-            text
+          <OnmsButton
+            variant="text"
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
           >
             <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </Button>
+          </OnmsButton>
         </div>
         <div>
           <h1>Manage Event Config for a Source</h1>
         </div>
       </div>
       <div class="action-container">
-        <Button
+        <OnmsButton
           label="Add Event Config"
           data-test="add-event-config"
           @click="onAddEventClick(store.selectedSource)"
         />
-        <Button
+        <OnmsButton
           :label="store.selectedSource.enabled ? 'Disable Source' : 'Enable Source'"
           @click="store.showChangeEventConfigSourceStatusDialog(store.selectedSource)"
           data-test="enable-disable-source"
         />
-        <Button
+        <OnmsButton
           label="Delete Source"
           @click="store.showDeleteEventConfigSourceDialog(store.selectedSource)"
           data-test="delete-source"
@@ -89,7 +89,7 @@
     class="not-found-container"
   >
     <p>No event configuration found.</p>
-    <Button
+    <OnmsButton
       label="Go Back"
       @click="router.push({ name: 'Event Configuration' })"
     />
@@ -108,9 +108,8 @@ import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
 import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
-import Button from 'primevue/button'
 import { format } from 'date-fns-tz'
 
 const store = useEventConfigDetailStore()

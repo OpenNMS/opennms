@@ -15,7 +15,7 @@
             Register your OpenNMS instance with Zenith in order to send data.
           </div>
           <div class="spacer"></div>
-          <PPanel
+          <OnmsPanel
             toggleable
             class="zc-register-steps-expansion-panel"
           >
@@ -36,7 +36,7 @@
                 </li>
               </ul>
             </div>
-          </PPanel>
+          </OnmsPanel>
 
           <div class="form-fields">
             <FormField
@@ -44,7 +44,7 @@
               label="Zenith Connect URL"
               for="zc-url"
             >
-              <PInputText
+              <OnmsInputText
                 id="zc-url"
                 v-model="zenithUrl"
               />
@@ -54,7 +54,7 @@
               label="OpenNMS System ID"
               for="zc-system-id"
             >
-              <PInputText
+              <OnmsInputText
                 id="zc-system-id"
                 :modelValue="systemId"
                 disabled
@@ -65,19 +65,19 @@
               label="OpenNMS System Display Name"
               for="zc-display-name"
             >
-              <PInputText
+              <OnmsInputText
                 id="zc-display-name"
                 v-model="displayName"
               />
             </FormField>
             <div class="btns">
-              <PButton
+              <OnmsButton
                 label="Register with Zenith"
                 @click="onRegisterWithZenith"
               />
 
-              <PButton
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="View Registrations"
                 @click="onViewRegistrations"
               />
@@ -93,19 +93,13 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import Button from 'primevue/button'
-import Panel from 'primevue/panel'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsInputText, OnmsPanel } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
-
-const PButton = Button
-const PPanel = Panel
-const PInputText = InputText
 
 const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()

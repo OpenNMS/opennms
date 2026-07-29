@@ -29,7 +29,7 @@ How `profileNames` is applied depends on the batch composition:
 | Optional. If non-empty, applied additively to every source.
 
 | Mixed (≥1 new and ≥1 update)
-| Required for the new sources; ignored for updates. Use `/profiles/{profileId}/sources` to change existing memberships.
+| Required for the new sources; ignored for updates. Use `/profiles/\{profileId}/sources` to change existing memberships.
 
 | `<datacollection-config>` present in the batch
 | Ignored — the config's `<include-collection>` entries drive attachment.

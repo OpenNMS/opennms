@@ -23,7 +23,7 @@
           for="snmp-lookup-ip-address"
           hint="Enter IP Address"
         >
-          <PInputText
+          <OnmsInputText
             id="snmp-lookup-ip-address"
             class="lookup-input"
             data-test="lookup-ip-address-input"
@@ -36,7 +36,7 @@
           for="snmp-lookup-location"
           hint="Select a monitoring location"
         >
-          <PSelect
+          <OnmsSelect
             inputId="snmp-lookup-location"
             class="lookup-input"
             data-test="snmp-monitoring-location-select"
@@ -49,7 +49,7 @@
 
         <div class="onms-row">
           <div class="onms-col-12">
-            <PButton
+            <OnmsButton
               label="Lookup"
               data-test="refresh-button"
               :disabled="isLoading"
@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -74,29 +74,21 @@
           <p>The SNMP configuration that applies to that IP address will then be displayed.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-
-const PButton = Button
-const PInputText = InputText
-const PSelect = Select
 
 const props = defineProps<{
   autoLookupIpAddress?: string

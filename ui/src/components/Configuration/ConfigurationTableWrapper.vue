@@ -9,11 +9,11 @@
         class="flex button-wrapper"
         v-if="provisionDList?.length > 0"
       >
-        <PButton
+        <OnmsButton
           class="button"
-          text
+          variant="text"
           @click="addNew"
-        >Add External Requisition</PButton>
+        >Add External Requisition</OnmsButton>
       </div>
     </div>
     <ConfigurationTable
@@ -42,7 +42,7 @@
       :advancedKeyUpdate="advancedKeyUpdate"
       :helpState="helpState"
     />
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="doubleCheck.active"
       :title="`Delete ${doubleCheck.title}`"
       @cancel="doubleCheckSelected(false)"
@@ -51,7 +51,7 @@
       <template v-slot:content>
         <p>This will delete the requisition: {{ doubleCheck.title }}. Are you sure?</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
@@ -63,7 +63,7 @@ import { computed, reactive } from 'vue'
 
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import Button from 'primevue/button'
+import { OnmsButton, OnmsConfirmationDialog } from '@opennms/onms-ui'
 
 import { putProvisionDService } from '@/services/configurationService'
 import { useProvisionD } from './hooks'
@@ -73,10 +73,7 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationTable from './ConfigurationTable.vue'
 import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
 import ConfigurationDrawer from './ConfigurationDrawer.vue'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import { RequisitionData } from './copy/requisitionTypes'
-
-const PButton = Button
 
 const configurationStore = useConfigurationStore()
 

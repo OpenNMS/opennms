@@ -1,6 +1,6 @@
 <template>
   <FormField label="Show Severity" class="severity-select">
-    <PSelect
+    <OnmsSelect
       v-model="selectedSeverity"
       :options="options"
       optionLabel="option"
@@ -12,11 +12,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import Select from 'primevue/select'
+import { OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useMapStore } from '@/stores/mapStore'
-
-const PSelect = Select
 
 const mapStore = useMapStore()
 

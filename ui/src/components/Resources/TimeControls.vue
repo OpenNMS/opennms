@@ -1,17 +1,17 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 wrapper">
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         class="graph-controls"
         aria-haspopup="true"
         @click="toggleMenu"
       >
         {{ selectedTime }} &nbsp;
         <OnmsIcon :icon="ArrowDropDown" />
-      </PButton>
+      </OnmsButton>
 
-      <PPopover
+      <OnmsPopover
         ref="menu"
         class="graph-controls-panel"
       >
@@ -27,33 +27,33 @@
 
           <div class="custom-col">
             <FormField label="Start Date" class="date-input">
-              <PDatePicker v-model="startDateRef" />
+              <OnmsDatePicker v-model="startDateRef" />
             </FormField>
             <FormField label="Start Time">
-              <PSelect
+              <OnmsSelect
                 :options="times"
                 v-model="startTimeRef"
                 optionLabel="label"
               />
             </FormField>
             <FormField label="End Date" class="date-input">
-              <PDatePicker v-model="endDateRef" />
+              <OnmsDatePicker v-model="endDateRef" />
             </FormField>
             <FormField label="End Time">
-              <PSelect
+              <OnmsSelect
                 :options="times"
                 v-model="endTimeRef"
                 optionLabel="label"
               />
             </FormField>
-            <PButton
+            <OnmsButton
               :disabled="disableCustomTimeBtn"
-              text
+              variant="text"
               @click="applyCustomTime"
-            >Apply custom time</PButton>
+            >Apply custom time</OnmsButton>
           </div>
         </div>
-      </PPopover>
+      </OnmsPopover>
     </div>
   </div>
 </template>
@@ -61,19 +61,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import Button from 'primevue/button'
-import Popover from 'primevue/popover'
-import DatePicker from 'primevue/datepicker'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsDatePicker, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-
-const PButton = Button
-const PPopover = Popover
-const PDatePicker = DatePicker
-const PSelect = Select
 
 interface TimeOption {
   label: string

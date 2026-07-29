@@ -42,13 +42,11 @@
                       class="error-icon"
                     />
                     <OnmsIconButton
-                      text
                       title="Reorder"
                       class="close-icon drag-handle"
                       :icon="Apps"
                     />
                     <OnmsIconButton
-                      text
                       title="Remove"
                       data-test="remove-files-button"
                       :icon="Delete"
@@ -80,19 +78,19 @@
             @change="handleFolderUpload"
             ref="eventFolderInput"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Choose files to upload"
             @click="openFileDialog"
             :disabled="isLoading"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Choose folder to upload"
             @click="openFolderDialog"
             :disabled="isLoading"
           />
-          <Button
+          <OnmsButton
             label="Upload Files"
             :disabled="shouldUploadDisabled"
             :loading="isLoading"
@@ -156,17 +154,15 @@ import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import Text from '@/components/icons/file/Text.vue'
 import Apps from '@/components/icons/navigation/Apps.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Button from 'primevue/button'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 

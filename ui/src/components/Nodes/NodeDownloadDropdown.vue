@@ -1,6 +1,5 @@
 <template>
   <OnmsIconButton
-    text
     title="Download"
     aria-label="Download"
     aria-haspopup="true"
@@ -10,19 +9,16 @@
     :icon="downloadIcon"
     @click="toggle"
   />
-  <Menu
+  <OnmsMenu
     id="node-download-menu"
     ref="menu"
-    :model="items"
-    popup
+    :items="items"
   />
 </template>
 
 <script setup lang="ts">
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import Download from '@/components/icons/action/DownloadFile.vue'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, ref, PropType } from 'vue'
 
 const props = defineProps({
@@ -39,7 +35,7 @@ const props = defineProps({
 const downloadIcon = markRaw(Download)
 const menu = ref()
 
-const items = ref<MenuItem[]>([
+const items = ref<OnmsMenuItem[]>([
   { label: 'Download CSV...', command: () => props.onCsvDownload() },
   { label: 'Download JSON...', command: () => props.onJsonDownload() }
 ])

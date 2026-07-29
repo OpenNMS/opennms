@@ -3,7 +3,7 @@
     <div class="onms-row add-row">
       <div class="onms-col-5">
         <FormField label="Search Type">
-          <Select
+          <OnmsSelect
             v-model="currentSelection"
             :options="searchOptions"
             optionLabel="title"
@@ -14,75 +14,64 @@
       </div>
       <div class="onms-col-5">
         <FormField label="Search Term">
-          <InputText
+          <OnmsInputText
             v-model="searchTerm"
             data-test="search-term-input"
           />
         </FormField>
       </div>
       <div class="onms-col-2 add-btn-col">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="add-search-term-button"
           class="add-search-term-button"
           @click="onAddSearchTerm"
         >
           <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
     </div>
 
-    <PDataTable
+    <OnmsTable
       v-if="gridItems.length > 0"
       :value="gridItems"
       dataKey="key"
       class="extended-search-table"
     >
-      <PColumn field="label" header="Search Type" style="width: 40%" />
-      <PColumn field="value" header="Search Term">
+      <OnmsColumn field="label" header="Search Type" style="width: 40%" />
+      <OnmsColumn field="value" header="Search Term">
         <template #body="{ data }">
-          <PInputText
+          <OnmsInputText
             v-model="data.value"
             class="extended-search-input"
           />
         </template>
-      </PColumn>
-      <PColumn header="" style="width: 3.5rem">
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
-            text
             :icon="DeleteIcon"
             title="Remove search term"
             data-test="delete-search-term-button"
             @click="removeGridItem(data.key)"
           />
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
-import OnmsIconButton from '@/components/Common/OnmsIconButton.vue'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodeQueryExtendedSearchParams } from '@/types'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-const PInputText = InputText
 
 const {
   getExtendedSearchValues,

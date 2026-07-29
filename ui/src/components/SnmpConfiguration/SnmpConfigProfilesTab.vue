@@ -31,7 +31,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Profiles"
       @close="isMessageDialogVisible = false"
@@ -44,21 +44,20 @@
           <p>A profile with a filter expression will be fitted to a given IP address only if the filter expression evaluates true against that IP address.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
 import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
 import SnmpConfigProfilesTable from './SnmpConfigProfilesTable.vue'
 import SnmpConfigProfileBasicInformation from './SnmpConfigProfileBasicInformation.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
