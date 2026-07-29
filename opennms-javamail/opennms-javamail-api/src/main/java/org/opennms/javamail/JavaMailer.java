@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -83,7 +84,9 @@ public class JavaMailer {
     private static final String DEFAULT_MAILER = "smtpsend";
     private static final String DEFAULT_TRANSPORT = "smtp";
     private static final boolean DEFAULT_MAILER_DEBUG = false;
-    private static final boolean DEFAULT_USE_JMTA = true;
+    private static final boolean DEFAULT_USE_JMTA = false;
+
+    private static final AtomicBoolean JMTA_WARNED = new AtomicBoolean(false);
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
     private static final String DEFAULT_ENCODING = "Q"; // I think this means quoted-printable encoding, see bug 2825
@@ -443,10 +446,7 @@ public class JavaMailer {
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
-            if (t.getURLName().getProtocol().equals("mta")) {
-                // JMTA throws an AuthenticationFailedException if we call connect()
-                LOG.debug("transport is 'mta', not trying to connect()");
-            } else if (isAuthenticate()) {
+            if (isAuthenticate()) {
                 LOG.debug("authenticating to {}", getMailHost());
                 t.connect(getMailHost(), getSmtpPort(), getUser(), getPassword());
             } else {
@@ -801,11 +801,10 @@ public class JavaMailer {
      * @return a {@link java.lang.String} object.
      */
     public String getTransport() {
-        if (isUseJMTA()) {
-            return "mta";
-        } else {
-            return m_transport;
+        if (isUseJMTA() && JMTA_WARNED.compareAndSet(false, true)) {
+            LOG.warn("useJMTA is no longer supported; sending via the configured transport '{}' instead", m_transport);
         }
+        return m_transport;
     }
 
     /**

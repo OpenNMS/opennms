@@ -347,19 +347,14 @@ public class JavaSendMailer extends JavaMailer2 {
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
-            if ("mta".equals(t.getURLName().getProtocol())) {
-                // JMTA throws an AuthenticationFailedException if we call connect()
-                LOG.debug("transport is 'mta', not trying to connect()");
+            final SendmailHost sendmailHost = m_config.getSendmailHost();
+            if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
+                LOG.debug("authenticating to {}", sendmailHost.getHost());
+                final UserAuth userAuth = m_config.getUserAuth();
+                t.connect(sendmailHost.getHost(), sendmailHost.getPort(), JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
             } else {
-                final SendmailHost sendmailHost = m_config.getSendmailHost();
-                if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
-                    LOG.debug("authenticating to {}", sendmailHost.getHost());
-                    final UserAuth userAuth = m_config.getUserAuth();
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
-                } else {
-                    LOG.debug("not authenticating to {}", sendmailHost.getHost());
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);
-                }
+                LOG.debug("not authenticating to {}", sendmailHost.getHost());
+                t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);
             }
 
             t.sendMessage(message, message.getAllRecipients());
