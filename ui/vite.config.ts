@@ -20,8 +20,8 @@
 /// License.
 ///
 
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
@@ -38,21 +38,25 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 // apply: 'serve' means this cannot exist in production builds. URL shape is
 // load-bearing: externalComponent() derives the window-global key from the
 // second-to-last path segment ('exampleUiExtension').
-const examplePluginDevServer = (): PluginOption => ({
-  name: 'onms-example-plugin-dev-server',
-  apply: 'serve',
-  configureServer(server) {
-    server.middlewares.use('/plugin-modules/exampleUiExtension', (req, res, next) => {
-      const fileName = (req.url ?? '').split('?')[0].replace(/^\//, '')
-      const file = resolve(__dirname, 'packages/onms-ui-example-plugin/dist', fileName)
-      if (!fileName || !existsSync(file)) {
-        return next()
-      }
-      res.setHeader('Content-Type', 'text/javascript')
-      res.end(readFileSync(file))
-    })
+const examplePluginDevServer = (): PluginOption => {
+  const distDir = resolve(__dirname, 'packages/onms-ui-example-plugin/dist')
+  return {
+    name: 'onms-example-plugin-dev-server',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use('/plugin-modules/exampleUiExtension', (req, res, next) => {
+        const fileName = (req.url ?? '').split('?')[0].replace(/^\//, '')
+        const file = resolve(distDir, fileName)
+        // Containment check prevents ../ traversal attacks (connect does not normalize mount-prefix match)
+        if (!fileName || !file.startsWith(distDir + sep) || !existsSync(file) || !statSync(file).isFile()) {
+          return next()
+        }
+        res.setHeader('Content-Type', 'text/javascript')
+        res.end(readFileSync(file))
+      })
+    }
   }
-})
+}
 
 export default defineConfig({
   css: {
