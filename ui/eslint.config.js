@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename)
 export default tseslint.config(
   // Replaces --ignore-path ../.gitignore on the CLI
   includeIgnoreFile(path.resolve(__dirname, '../.gitignore')),
-  { ignores: ['dist/**', 'src/main/dist/**', 'src/menu/dist-menu/**', '**/*.d.ts', 'scripts/**'] },
+  { ignores: ['dist/**', 'src/main/dist/**', 'src/menu/dist-menu/**', 'packages/onms-ui-example-plugin/dist/**', '**/*.d.ts', 'scripts/**'] },
 
   // Base recommended rule sets
   eslint.configs.recommended,
