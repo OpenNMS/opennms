@@ -161,7 +161,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         /* Log everything we know so far.
          * The tticketid and tticketstate are only informational.
          */
-        LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}'and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
+        LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}' and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser);
 
@@ -187,7 +187,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
     /**
      * <p>Helper function that determines the alarm type for a given UEI.</p>
      *
-     * @return 0 if alarmid is null
+     * @return NOT_AN_ALARM if the event definition has no alarm-data
      */
 	protected AlarmType getAlarmTypeFromUEI(final String eventUEI) {
 	    final Event event = getEventConfDao().findByUei(eventUEI);

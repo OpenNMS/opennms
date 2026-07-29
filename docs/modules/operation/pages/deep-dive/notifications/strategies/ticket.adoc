@@ -15,7 +15,7 @@ Events without alarm data are skipped, and the notification completes without cr
 * The strategy looks up the alarm for the event at delivery time, but alarmd performs that association asynchronously.
 A destination path that fires immediately can run before the alarm exists, in which case the notification fails with a "no alarm-id" error.
 Use a destination path with a non-zero `initial-delay` to avoid this; 30 seconds is usually enough.
-* The target user's contact information is not used.
+* The destination path target's contact information is not used, whether the target is a user or a group.
 The strategy reads only event parameters, so the target serves to satisfy the destination path schema.
 * The create-ticket event carries a `user` parameter that defaults to `admin`.
 You can override it with the optional `ticketUser` argument described below.
@@ -52,7 +52,7 @@ Add a destination path with an initial delay to `destinationPaths.xml`:
 ----
 <path name="Create-Ticket" initial-delay="30s">
     <target>
-        <name>admin</name>
+        <name>Admin</name>
         <command>createTicket</command>
     </target>
 </path>
