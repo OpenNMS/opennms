@@ -33,6 +33,7 @@ import App from './App.vue'
 import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
 import * as VueRouter from 'vue-router'
+import * as OnmsUI from '@opennms/onms-ui'
 
 import '@/styles/onms-base.scss'
 import '@/styles/themes.scss'
@@ -49,6 +50,13 @@ import { useAppStore } from '@/stores/appStore'
 (window as any).Pinia = Pinia;
 (window as any).VueRouter = VueRouter;
 (window as any)['VRouter'] = router
+
+// Shared seam UI library for plugins (NMS-20054): plugins externalize
+// '@opennms/onms-ui' to this global, exactly as they externalize vue/pinia/
+// vue-router above. The namespace object IS the package's public contract
+// (guarded by tests/onms-ui/exports.test.ts); the version marker is
+// window.OnmsUI.ONMS_UI_VERSION.
+;(window as any).OnmsUI = OnmsUI
 
 // plugin scripts must be loaded before app to use their routes
 const baseRestUrl = import.meta.env.VITE_BASE_REST_URL
