@@ -77,6 +77,17 @@ footer#footer,
   --p-text-color: rgb(255, 255, 255);
 }
 
+// Base (collapsed-rail) left offset for legacy JSP hosts. SideMenu.vue only
+// pushes the content when the rail is pinned open (inline padding-left, which
+// overrides this rule); the collapsed/base offset is the host stylesheet's
+// contract — the SPA owns its own in .app-layout (main/App.vue). Scope via
+// :has(> #opennms-sidemenu-container) so quiet pages (no menu) and
+// superQuiet/Vaadin embeds (menu outside #content) keep their full width.
+// Geometry mirrors .app-layout: collapsed rail width + the rail gap.
+#content:has(> #opennms-sidemenu-container) {
+  padding-left: calc(var(--onms-side-menu-collapsed, 3.75rem) + 0.25rem);
+}
+
 // Pre-mount skeleton for the Vue menu on legacy JSP pages (NMS-19975). JSP
 // navigations are full document loads and #opennms-sidemenu-container is
 // server-rendered empty, so nothing dark exists where the fixed menubar and
