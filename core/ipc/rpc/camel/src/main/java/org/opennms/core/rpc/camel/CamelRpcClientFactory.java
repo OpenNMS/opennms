@@ -82,6 +82,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
      */
     private static final long rpcExecTimeoutMs = SystemProperties.getLong(CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
 
+    public static final String LOCAL_EXEC_TIMEOUT_PROPERTY = "org.opennms.core.ipc.rpc.local.timeout";
+
+    public static final long LOCAL_EXEC_TIMEOUT_MS_DEFAULT = TimeUnit.MINUTES.toMillis(30);
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("CamelRpcClientFactory-Pool-%d")
             .build();
@@ -114,9 +118,15 @@ public class CamelRpcClientFactory implements RpcClientFactory {
             public CompletableFuture<T> execute(S request) {
 
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
-                    // Invoke directly, but bound it to the TTL (or default RPC timeout) so a never-completing future can't hang the caller. NMS-19951.
-                    final long execTimeoutMs = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs() : rpcExecTimeoutMs;
-                    return module.execute(request).orTimeout(execTimeoutMs, TimeUnit.MILLISECONDS);
+                    // The request is for the current location, invoke it directly.
+                    // Bound it to a fixed timeout — deliberately not the request TTL — so a module future that
+                    // never completes cannot wedge the caller (NMS-19951) while slow-but-completing operations
+                    // are unaffected by TTL configuration intended for the Minion path (NMS-20006).
+                    final long localExecTimeoutMs = SystemProperties.getLong(LOCAL_EXEC_TIMEOUT_PROPERTY, LOCAL_EXEC_TIMEOUT_MS_DEFAULT);
+                    if (localExecTimeoutMs <= 0) {
+                        return module.execute(request);
+                    }
+                    return module.execute(request).orTimeout(localExecTimeoutMs, TimeUnit.MILLISECONDS);
                 }
                 Span span = buildAndStartSpan(request);
                 TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);

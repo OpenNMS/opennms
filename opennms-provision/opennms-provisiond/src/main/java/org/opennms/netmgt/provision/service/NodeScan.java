@@ -79,7 +79,8 @@ public class NodeScan implements Scan {
     private final String m_foreignSource;
     private final String m_foreignId;
     private final OnmsMonitoringLocation m_location;
-    private final Date m_scanStamp;
+    // Refreshed per run in reset(); scheduled instances are reused across runs.
+    private Date m_scanStamp;
     private final ProvisionService m_provisionService;
     private final EventForwarder m_eventForwarder;
     private final SnmpAgentConfigFactory m_agentConfigFactory;
@@ -448,6 +449,8 @@ public class NodeScan implements Scan {
     private void reset() {
         m_aborted = false;
         m_agentFound = false;
+        // Fresh stamp per run; obsolete-interface deletion compares against it.
+        m_scanStamp = new Date();
     }
 
     /**
