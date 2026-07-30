@@ -30,7 +30,10 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
   const availableRoles = ref([] as string[])
 
   const getUsers = async () => {
-    users.value = await API.getManagedUsers()
+    const result = await API.getManagedUsers()
+    if (result !== null) {
+      users.value = result
+    }
   }
 
   const getAvailableRoles = async () => {

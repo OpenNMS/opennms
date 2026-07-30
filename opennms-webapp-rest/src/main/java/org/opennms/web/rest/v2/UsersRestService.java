@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.Response;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.users.Contact;
+import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.api.UsersRestApi;
@@ -53,6 +55,10 @@ import org.springframework.stereotype.Component;
  * the system of record and hand-editing keeps working. Unlike the legacy JSPs
  * (which only hid the buttons), the admin/rtc delete and rename protections
  * are enforced here, server-side. The password hash is never serialized.
+ *
+ * Mutations validate the full request up front and then apply it to a
+ * detached copy of the stored user, so a rejected request can never leave
+ * partial changes in the manager's shared in-memory state.
  */
 @Component("usersRestServiceV2")
 public class UsersRestService implements UsersRestApi {
@@ -62,8 +68,27 @@ public class UsersRestService implements UsersRestApi {
     /** System accounts that must not be deleted or renamed. */
     private static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
 
-    /** Mirrors the legacy servlets' markup check on user ids. */
-    private static final Pattern INVALID_USER_ID = Pattern.compile(".*[&<>\"`']+.*");
+    /**
+     * Rejects markup (legacy servlet rule) plus characters that break how the
+     * id is used downstream: ':' (HTTP basic auth), whitespace (group
+     * references), and '/', '\', '%', '?', '#' (the id is a URL path segment
+     * in every per-user endpoint).
+     */
+    private static final Pattern INVALID_USER_ID = Pattern.compile(".*[&<>\"`':/\\\\%?#\\s]+.*");
+
+    /**
+     * Day tokens + military begin-end times, e.g. MoWeFr800-1700. Overnight
+     * schedules (begin after end, e.g. MoTu2000-800) are legal — the legacy
+     * UI wrote them and hand-edited files contain them.
+     */
+    private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
+
+    /**
+     * Serializes this service's check-then-act sequences. UserManager's own
+     * lock is internal to each call, so without this two concurrent creates
+     * could both pass the hasUser() check.
+     */
+    private final Object m_lock = new Object();
 
     @Autowired
     private UserManager m_userManager;
@@ -72,12 +97,14 @@ public class UsersRestService implements UsersRestApi {
     public Response listUsers(final SecurityContext securityContext) {
         assertAdmin(securityContext);
         try {
-            final List<UserDto> users = new ArrayList<>();
-            for (final User user : m_userManager.getUsers().values()) {
-                users.add(toDto(user));
+            synchronized (m_lock) {
+                final List<UserDto> users = new ArrayList<>();
+                for (final User user : m_userManager.getUsers().values()) {
+                    users.add(toDto(user));
+                }
+                users.sort(Comparator.comparing(UserDto::getUserId, String.CASE_INSENSITIVE_ORDER));
+                return Response.ok(users).build();
             }
-            users.sort(Comparator.comparing(UserDto::getUserId, String.CASE_INSENSITIVE_ORDER));
-            return Response.ok(users).build();
         } catch (final Exception e) {
             return serverError("Can't read users: %s", e);
         }
@@ -87,11 +114,13 @@ public class UsersRestService implements UsersRestApi {
     public Response getUser(final SecurityContext securityContext, final String userId) {
         assertAdmin(securityContext);
         try {
-            final User user = m_userManager.getUser(userId);
-            if (user == null) {
-                return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+            synchronized (m_lock) {
+                final User user = m_userManager.getUser(userId);
+                if (user == null) {
+                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                return Response.ok(toDto(user)).build();
             }
-            return Response.ok(toDto(user)).build();
         } catch (final Exception e) {
             return serverError("Can't read user: %s", e);
         }
@@ -112,22 +141,35 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("A user-id is required.").build();
         }
         final String userId = request.getUserId().trim();
-        if (INVALID_USER_ID.matcher(userId).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity("The user-id must not contain any HTML markup.").build();
+        final String userIdProblem = validateUserId(userId);
+        if (userIdProblem != null) {
+            return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
         }
         if (isBlank(request.getPassword())) {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
-            if (m_userManager.hasUser(userId)) {
-                return Response.status(Status.BAD_REQUEST).entity("User " + userId + " already exists.").build();
+            validateDtoFields(request);
+        } catch (final IllegalArgumentException e) {
+            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        try {
+            synchronized (m_lock) {
+                if (m_userManager.hasUser(userId)) {
+                    return Response.status(Status.BAD_REQUEST).entity("User " + userId + " already exists.").build();
+                }
+                final User user = new User();
+                user.setUserId(userId);
+                user.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
+                applyDto(user, request);
+                try {
+                    m_userManager.saveUser(userId, user);
+                } catch (final Exception e) {
+                    rollbackPhantomUser(userId);
+                    throw e;
+                }
             }
-            final User user = new User();
-            user.setUserId(userId);
-            user.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
-            applyDto(user, request);
-            m_userManager.saveUser(userId, user);
-            LOG.info("User {} created by {}", userId, securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName());
+            LOG.info("User {} created by {}", userId, principal(securityContext));
             return Response.status(Status.CREATED).build();
         } catch (final Exception e) {
             return serverError("Can't create user: %s", e);
@@ -140,13 +182,25 @@ public class UsersRestService implements UsersRestApi {
         if (dto == null) {
             return Response.status(Status.BAD_REQUEST).entity("A user body is required.").build();
         }
+        if (dto.getUserId() != null && !userId.equals(dto.getUserId())) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("The user-id in the body does not match the request path; use the rename endpoint to change ids.").build();
+        }
         try {
-            final User user = m_userManager.getUser(userId);
-            if (user == null) {
-                return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+            validateDtoFields(dto);
+        } catch (final IllegalArgumentException e) {
+            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        try {
+            synchronized (m_lock) {
+                final User existing = m_userManager.getUser(userId);
+                if (existing == null) {
+                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                final User updated = copyOf(existing);
+                applyDto(updated, dto);
+                m_userManager.saveUser(userId, updated);
             }
-            applyDto(user, dto);
-            m_userManager.saveUser(userId, user);
             return Response.noContent().build();
         } catch (final Exception e) {
             return serverError("Can't update user: %s", e);
@@ -160,13 +214,16 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
-            final User user = m_userManager.getUser(userId);
-            if (user == null) {
-                return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+            synchronized (m_lock) {
+                final User existing = m_userManager.getUser(userId);
+                if (existing == null) {
+                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                final User updated = copyOf(existing);
+                updated.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
+                m_userManager.saveUser(userId, updated);
             }
-            user.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
-            m_userManager.saveUser(userId, user);
-            LOG.info("Password changed for user {} by {}", userId, securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName());
+            LOG.info("Password changed for user {} by {}", userId, principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
             return serverError("Can't change password: %s", e);
@@ -183,18 +240,21 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be renamed.").build();
         }
         final String newUserId = request.getNewUserId().trim();
-        if (INVALID_USER_ID.matcher(newUserId).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity("The user-id must not contain any HTML markup.").build();
+        final String userIdProblem = validateUserId(newUserId);
+        if (userIdProblem != null) {
+            return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
         }
         try {
-            if (!m_userManager.hasUser(userId)) {
-                return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+            synchronized (m_lock) {
+                if (!m_userManager.hasUser(userId)) {
+                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                if (m_userManager.hasUser(newUserId)) {
+                    return Response.status(Status.BAD_REQUEST).entity("User " + newUserId + " already exists.").build();
+                }
+                m_userManager.renameUser(userId, newUserId);
             }
-            if (m_userManager.hasUser(newUserId)) {
-                return Response.status(Status.BAD_REQUEST).entity("User " + newUserId + " already exists.").build();
-            }
-            m_userManager.renameUser(userId, newUserId);
-            LOG.info("User {} renamed to {} by {}", userId, newUserId, securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName());
+            LOG.info("User {} renamed to {} by {}", userId, newUserId, principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
             return serverError("Can't rename user: %s", e);
@@ -208,11 +268,13 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be deleted.").build();
         }
         try {
-            if (!m_userManager.hasUser(userId)) {
-                return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+            synchronized (m_lock) {
+                if (!m_userManager.hasUser(userId)) {
+                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                m_userManager.deleteUser(userId);
             }
-            m_userManager.deleteUser(userId);
-            LOG.info("User {} deleted by {}", userId, securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName());
+            LOG.info("User {} deleted by {}", userId, principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
             return serverError("Can't delete user: %s", e);
@@ -234,30 +296,41 @@ public class UsersRestService implements UsersRestApi {
         return dto;
     }
 
+    /** Detached copy so mutations never touch the manager's live object. */
+    private static User copyOf(final User user) {
+        final User copy = new User();
+        copy.setUserId(user.getUserId());
+        copy.setFullName(user.getFullName().orElse(null));
+        copy.setUserComments(user.getUserComments().orElse(null));
+        final Password password = user.getPassword();
+        if (password != null) {
+            copy.setPassword(password.getEncryptedPassword(), password.getSalt());
+        }
+        for (final Contact contact : user.getContacts()) {
+            final Contact contactCopy = new Contact(contact.getType());
+            contactCopy.setInfo(contact.getInfo().orElse(null));
+            contactCopy.setServiceProvider(contact.getServiceProvider().orElse(null));
+            copy.getContacts().add(contactCopy);
+        }
+        copy.setDutySchedules(new ArrayList<>(user.getDutySchedules()));
+        copy.setRoles(new ArrayList<>(user.getRoles()));
+        copy.setTuiPin(user.getTuiPin().orElse(null));
+        copy.setTimeZoneId(user.getTimeZoneId().orElse(null));
+        return copy;
+    }
+
     /**
-     * Applies the DTO onto the JAXB user. Only the exposed contact types
-     * (email, pagerEmail) are touched; every other contact — XMPP, microblog,
-     * phones, paging services — and the password survive untouched, so a v2
-     * update can never corrupt hand-maintained users.xml entries.
+     * Validates every field of the request BEFORE anything is applied, so a
+     * rejected request cannot leave partial state anywhere.
      */
-    private void applyDto(final User user, final UserDto dto) {
-        user.setFullName(trimToNull(dto.getFullName()));
-        user.setUserComments(trimToNull(dto.getUserComments()));
-        user.setTuiPin(trimToNull(dto.getTuiPin()));
+    private static void validateDtoFields(final UserDto dto) {
         final String timeZoneId = trimToNull(dto.getTimeZoneId());
-        if (timeZoneId == null) {
-            user.setTimeZoneId((java.time.ZoneId) null);
-        } else {
+        if (timeZoneId != null) {
             try {
-                user.setTimeZoneId(timeZoneId);
+                java.time.ZoneId.of(timeZoneId);
             } catch (final RuntimeException e) {
                 throw new IllegalArgumentException("Invalid time-zone-id: " + timeZoneId);
             }
-        }
-        setContact(user, ContactType.email, dto.getEmail());
-        setContact(user, ContactType.pagerEmail, dto.getPagerEmail());
-        if (dto.getDutySchedules() != null) {
-            user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
         }
         if (dto.getRoles() != null) {
             for (final String role : dto.getRoles()) {
@@ -265,7 +338,79 @@ public class UsersRestService implements UsersRestApi {
                     throw new IllegalArgumentException("Unknown security role: " + role);
                 }
             }
+        }
+        if (dto.getDutySchedules() != null) {
+            for (final String schedule : dto.getDutySchedules()) {
+                validateDutySchedule(schedule);
+            }
+        }
+    }
+
+    /**
+     * Applies the pre-validated DTO. Only the exposed contact types (email,
+     * pagerEmail) are touched; every other contact — XMPP, microblog, phones,
+     * paging services — and the password survive untouched, so a v2 update
+     * can never corrupt hand-maintained users.xml entries. List fields left
+     * out of the request body arrive as null and are preserved.
+     */
+    private static void applyDto(final User user, final UserDto dto) {
+        user.setFullName(trimToNull(dto.getFullName()));
+        user.setUserComments(trimToNull(dto.getUserComments()));
+        user.setTuiPin(trimToNull(dto.getTuiPin()));
+        final String timeZoneId = trimToNull(dto.getTimeZoneId());
+        if (timeZoneId == null) {
+            user.setTimeZoneId((java.time.ZoneId) null);
+        } else {
+            user.setTimeZoneId(timeZoneId);
+        }
+        setContact(user, ContactType.email, dto.getEmail());
+        setContact(user, ContactType.pagerEmail, dto.getPagerEmail());
+        if (dto.getDutySchedules() != null) {
+            user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
+        }
+        if (dto.getRoles() != null) {
             user.setRoles(new ArrayList<>(dto.getRoles()));
+        }
+    }
+
+    /**
+     * A failed save leaves the new user in UserManager's in-memory map
+     * (_writeUser puts before _saveCurrent), which would 400 every retry as
+     * "already exists". Best effort: remove the phantom again.
+     */
+    private void rollbackPhantomUser(final String userId) {
+        try {
+            if (m_userManager.hasUser(userId)) {
+                m_userManager.deleteUser(userId);
+            }
+        } catch (final Exception rollbackFailure) {
+            LOG.warn("Could not roll back partially created user {}", userId, rollbackFailure);
+        }
+    }
+
+    /** Returns a problem description, or null when the user id is acceptable. */
+    private static String validateUserId(final String userId) {
+        if (INVALID_USER_ID.matcher(userId).matches()) {
+            return "The user-id must not contain markup, whitespace, or the characters : / \\ % ? #";
+        }
+        return null;
+    }
+
+    /**
+     * Duty schedules are stored as strings like MoWeFr800-1700 and parsed with
+     * unchecked exceptions all over notifd/group scheduling — an invalid string
+     * saved here would break duty evaluation at runtime. Overnight ranges
+     * (begin after end) are legal.
+     */
+    private static void validateDutySchedule(final String schedule) {
+        final Matcher matcher = schedule == null ? null : DUTY_SCHEDULE.matcher(schedule);
+        if (matcher == null || !matcher.matches()) {
+            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': expected day tokens followed by begin-end military times, e.g. MoWeFr800-1700");
+        }
+        final int begin = Integer.parseInt(matcher.group(2));
+        final int end = Integer.parseInt(matcher.group(3));
+        if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
+            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': times must be military clock values between 0 and 2359");
         }
     }
 
@@ -299,7 +444,9 @@ public class UsersRestService implements UsersRestApi {
         }
     }
 
-
+    private static String principal(final SecurityContext securityContext) {
+        return securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName();
+    }
 
     private Response serverError(final String format, final Exception e) {
         if (e instanceof IllegalArgumentException) {

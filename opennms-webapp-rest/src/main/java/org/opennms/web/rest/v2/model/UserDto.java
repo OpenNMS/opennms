@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.v2.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -60,11 +59,13 @@ public class UserDto {
     @XmlElement(name = "time-zone-id")
     private String timeZoneId;
 
+    // null (not empty) defaults: a request body that omits these keys
+    // deserializes to null, which update semantics treat as "preserve"
     @XmlElement(name = "duty-schedule")
-    private List<String> dutySchedules = new ArrayList<>();
+    private List<String> dutySchedules;
 
     @XmlElement(name = "role")
-    private List<String> roles = new ArrayList<>();
+    private List<String> roles;
 
     @XmlElement(name = "read-only")
     private Boolean readOnly;

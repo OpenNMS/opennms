@@ -97,6 +97,16 @@ describe('useUserAdminStore', () => {
     expect(store.users).toEqual([mockUsers[0]])
   })
 
+  it('a failed refresh should keep the previous user list', async () => {
+    vi.mocked(API.getManagedUsers).mockResolvedValue(mockUsers)
+    await store.getUsers()
+    expect(store.users).toEqual(mockUsers)
+
+    vi.mocked(API.getManagedUsers).mockResolvedValue(null)
+    await store.getUsers()
+    expect(store.users).toEqual(mockUsers)
+  })
+
   it('setPassword should not trigger a reload', async () => {
     vi.mocked(API.setManagedUserPassword).mockResolvedValue(true)
 

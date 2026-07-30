@@ -195,6 +195,7 @@
 
     <!-- User management exposes contact details and account controls; admin-only in every method -->
     <intercept-url pattern="/api/v2/users/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/users/**" method="HEAD" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/users/**" method="DELETE" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/users/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/users/**" method="PUT" access="ROLE_ADMIN" />

@@ -34,14 +34,15 @@ const errorMessage = (err: any, fallback: string): string => {
   return typeof detail === 'string' && detail ? detail : fallback
 }
 
-const getManagedUsers = async (): Promise<ManagedUser[]> => {
+// null on failure (not []) so callers can keep showing the previous list
+const getManagedUsers = async (): Promise<ManagedUser[] | null> => {
   try {
     startSpinner()
     const resp = await v2.get(endpoint)
     return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load users.' })
-    return []
+    return null
   } finally {
     stopSpinner()
   }
