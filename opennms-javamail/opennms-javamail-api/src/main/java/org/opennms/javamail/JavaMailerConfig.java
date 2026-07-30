@@ -25,10 +25,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.spring.BeanUtils;
@@ -46,6 +49,8 @@ public abstract class JavaMailerConfig {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailerConfig.class);
 
     private static Scope secureCredentialsVaultScope;
+
+    private static Scope tokenScope;
 
     private static synchronized Scope getSecureCredentialsScope() {
         if (secureCredentialsVaultScope == null) {
@@ -67,8 +72,50 @@ public abstract class JavaMailerConfig {
         return secureCredentialsVaultScope;
     }
 
+    private static synchronized Scope getTokenScope() {
+        if (tokenScope == null) {
+            try {
+                tokenScope = BeanUtils.getBean("daoContext", "tokenScope", Scope.class);
+
+                if (tokenScope == null) {
+                    LOG.warn("JavaMailConfig: token scope is null, ${token:} not available for metadata interpolation");
+                }
+            } catch (RuntimeException e) {
+                // ${token:} support is optional; run without it when the bean isn't reachable
+                LOG.warn("JavaMailConfig: Error retrieving tokenScope bean, ${token:} not available for metadata interpolation");
+                tokenScope = EmptyScope.EMPTY;
+            }
+        }
+
+        return tokenScope;
+    }
+
+    /**
+     * The scope used to interpolate mail credentials: SCV entries plus
+     * token-auth tokens, each independently optional.
+     */
+    private static synchronized Scope getInterpolationScope() {
+        final List<Scope> scopes = new ArrayList<>();
+        final Scope scv = getSecureCredentialsScope();
+        if (scv != null) {
+            scopes.add(scv);
+        }
+        final Scope token = getTokenScope();
+        if (token != null) {
+            scopes.add(token);
+        }
+        if (scopes.isEmpty()) {
+            return null;
+        }
+        return new FallbackScope(scopes);
+    }
+
     public static void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
         JavaMailerConfig.secureCredentialsVaultScope = secureCredentialsVaultScope;
+    }
+
+    public static void setTokenScope(final Scope tokenScope) {
+        JavaMailerConfig.tokenScope = tokenScope;
     }
 
     /**
@@ -88,7 +135,7 @@ public abstract class JavaMailerConfig {
     }
 
     public static synchronized Properties getProperties() throws IOException {
-        return getProperties(getSecureCredentialsScope());
+        return getProperties(getInterpolationScope());
     }
 
     private static Properties interpolate(final Properties properties, final String key, final Scope scope) {
@@ -114,7 +161,7 @@ public abstract class JavaMailerConfig {
     }
 
     public static String interpolate(final String string) {
-        final Scope scope = getSecureCredentialsScope();
+        final Scope scope = getInterpolationScope();
 
         if (scope == null) {
             LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of string");
