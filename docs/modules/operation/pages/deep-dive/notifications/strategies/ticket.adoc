@@ -19,7 +19,8 @@ Use a destination path with a non-zero `initial-delay` to avoid this; 30 seconds
 The strategy reads only event parameters, so the target serves to satisfy the destination path schema.
 * Target a single user rather than a group.
 Notifd runs each command once per member of a group target, and each run sends its own create-ticket event.
-The strategy skips the create event when the alarm already has a ticket, but near-simultaneous deliveries can race the asynchronous ticket creation, so a group target can still produce duplicate tickets.
+The strategy skips the create event when the alarm already has an active ticket; tickets that are closed, resolved, or cancelled, or whose creation failed, do not block a new one.
+Near-simultaneous deliveries can race the asynchronous ticket creation, so a group target can still produce duplicate tickets.
 * The create-ticket event carries a `user` parameter that defaults to `admin`.
 You can override it with the optional `ticketUser` argument described below.
 Whether the value appears on the created ticket depends on the ticketer plugin.
@@ -60,6 +61,9 @@ Add a destination path with an initial delay to `destinationPaths.xml`:
     </target>
 </path>
 ----
+
+NOTE: Use a single user as the target, not a group.
+Notifd runs the command once per member of a group target, and near-simultaneous runs can each create a ticket for the same alarm.
 
 Reference the `Create-Ticket` destination path from each notification in `notifications.xml` that should open a ticket.
 

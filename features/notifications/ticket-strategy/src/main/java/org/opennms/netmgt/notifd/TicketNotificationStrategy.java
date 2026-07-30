@@ -23,7 +23,9 @@ package org.opennms.netmgt.notifd;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
@@ -32,6 +34,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
@@ -53,6 +56,12 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 	private static final Logger LOG = LoggerFactory.getLogger(TicketNotificationStrategy.class);
 	/** Used as the create-ticket user unless the command supplies a ticketUser argument. */
 	public static final String DEFAULT_TICKET_USER = "admin";
+	/** Ticket states that no longer block creating a new ticket for the alarm. */
+	private static final Set<TroubleTicketState> INACTIVE_TICKET_STATES = EnumSet.of(
+			TroubleTicketState.CREATE_FAILED,
+			TroubleTicketState.CLOSED,
+			TroubleTicketState.RESOLVED,
+			TroubleTicketState.CANCELLED);
 	private EventIpcManager m_eventManager;
 	private EventConfDao m_eventConfDao;
 	
@@ -153,6 +162,10 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         
         // We know the event is an alarm, pull the alarm and current ticket details from the database
         AlarmState alarmState = getAlarmStateFromEvent(Integer.parseInt(eventID));
+        if( alarmState == null ) {
+		LOG.error("There is no event with event-id='{}' in the database. Will not create ticket.", eventID);
+        	return 1;
+        }
         if( alarmState.getAlarmID() == 0 ) {
 		LOG.error("There is no alarm-id associated with the event-id='{}'. Will not create ticket.", eventID);
         	return 1;
@@ -160,11 +173,13 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 
         /* Guard against duplicate tickets: a previous notification, an escalation,
          * or another member of a group target may already have created one.
+         * Tickets in a terminal state (or whose creation failed) do not block a
+         * new ticket, so a re-fired problem can open a fresh one.
          * Near-simultaneous deliveries can still race the asynchronous ticket
          * creation, so single-user targets remain the recommended configuration.
          */
-        if( StringUtils.isNotBlank(alarmState.getTticketID()) ) {
-		LOG.info("Alarm-id='{}' already has ticket-id='{}'. Will not create another ticket.", alarmState.getAlarmID(), alarmState.getTticketID());
+        if( StringUtils.isNotBlank(alarmState.getTticketID()) && isTicketActive(alarmState.getTticketState()) ) {
+		LOG.info("Alarm-id='{}' already has an active ticket-id='{}' in state '{}'. Will not create another ticket.", alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         	return 0;
         }
 
@@ -174,6 +189,21 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser);
 
         return 0;
+	}
+
+    /**
+     * A ticket still blocks creating a new one unless it reached a terminal
+     * state or its creation failed. Unknown state values are treated as active
+     * to stay on the no-duplicate side; a NULL tticketstate column also lands
+     * there, because JDBC getInt() maps it to 0 (OPEN).
+     */
+	protected static boolean isTicketActive(int tticketStateValue) {
+		for (TroubleTicketState state : INACTIVE_TICKET_STATES) {
+			if (state.getValue() == tticketStateValue) {
+				return false;
+			}
+		}
+		return true;
 	}
 
     /**
