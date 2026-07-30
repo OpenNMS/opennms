@@ -68,6 +68,11 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * <p>This class is a static singleton so that {@code Manager.stop()} can reach
  * it to trigger a clean shutdown while the Starter thread may be blocked.
+ *
+ * <p>Everything above describes {@link HaMode#COORDINATOR} (the default). In
+ * {@link HaMode#HEARTBEAT_ONLY} the entire state machine is suppressed — an
+ * external HA agent supervises the pair — and this class only publishes
+ * liveness via {@link HaHeartbeatWriter}; startup is never gated.
  */
 public class HaStartupCoordinator {
 
@@ -86,6 +91,7 @@ public class HaStartupCoordinator {
     /** Mutable: replaced by {@link #applyConfigReload(HaConfiguration)} when the on-disk file changes. */
     private volatile HaConfiguration config;
     private final DbConnectionFactory dbFactory;
+    private final HaHeartbeatWriter heartbeatWriter;
     private final CountDownLatch startupGate = new CountDownLatch(1);
     private final AtomicBoolean stopRequested = new AtomicBoolean(false);
     private final AtomicReference<HaInstanceState> currentState = new AtomicReference<>(HaInstanceState.STANDBY);
@@ -101,6 +107,7 @@ public class HaStartupCoordinator {
     private HaStartupCoordinator(HaConfiguration config, DbConnectionFactory dbFactory) {
         this.config = config;
         this.dbFactory = dbFactory;
+        this.heartbeatWriter = new HaHeartbeatWriter(dbFactory, () -> this.config.getInstanceId());
     }
 
     /**
@@ -230,6 +237,10 @@ public class HaStartupCoordinator {
             throw new IllegalArgumentException(
                     "'role' cannot be changed at runtime (requires restart)");
         }
+        if (newCfg.getMode() != current.getMode()) {
+            throw new IllegalArgumentException(
+                    "'mode' cannot be changed at runtime (requires restart)");
+        }
 
         clampConfig(newCfg);
 
@@ -283,6 +294,11 @@ public class HaStartupCoordinator {
         if (newCfg.getRole() != oldCfg.getRole()) {
             LOG.error("HA: config reload rejected — 'role' changed ({} → {}); requires restart",
                     oldCfg.getRole(), newCfg.getRole());
+            return;
+        }
+        if (newCfg.getMode() != oldCfg.getMode()) {
+            LOG.error("HA: config reload rejected — 'mode' changed ({} → {}); requires restart",
+                    oldCfg.getMode(), newCfg.getMode());
             return;
         }
 
@@ -343,7 +359,8 @@ public class HaStartupCoordinator {
             && Objects.equals(a.getPartnerInstanceId(), b.getPartnerInstanceId())
             && Objects.equals(a.getPartnerRestUrl(),    b.getPartnerRestUrl())
             && Objects.equals(a.getSyncUsername(),      b.getSyncUsername())
-            && Objects.equals(a.getSyncPassword(),      b.getSyncPassword());
+            && Objects.equals(a.getSyncPassword(),      b.getSyncPassword())
+            && Objects.equals(a.getSyncExcludes(),      b.getSyncExcludes());
     }
 
     public static HaStartupCoordinator getInstance() {
@@ -382,6 +399,17 @@ public class HaStartupCoordinator {
 
     boolean doAwaitReadyToStart() {
         try {
+            HaStatusSchema.ensureSchema(dbFactory);
+        } catch (Exception e) {
+            LOG.error("HA: failed to ensure ha_instance_status schema; HA is disabled, proceeding with startup", e);
+            return true;
+        }
+
+        if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
+            return startHeartbeatOnly();
+        }
+
+        try {
             writeInitialStatus();
         } catch (Exception e) {
             LOG.error("HA: failed to write initial status to DB; HA is disabled, proceeding with startup", e);
@@ -410,8 +438,8 @@ public class HaStartupCoordinator {
                 startSyncIfApplicable();
 
                 // Heartbeat from DEGRADED so the active partner can tell we're alive.
-                // writeHeartbeat publishes whichever state currentState holds at write time,
-                // so it correctly tracks the transition DEGRADED → ACTIVE after promotion.
+                // The heartbeat carries liveness only; DEGRADED/ACTIVE state is
+                // written on the transition edges by updateState().
                 heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                         config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
@@ -447,7 +475,8 @@ public class HaStartupCoordinator {
         startSyncIfApplicable();
 
         // Heartbeat from STANDBY so the active partner can tell we're alive.
-        // After promotion the same task continues, publishing currentState=ACTIVE.
+        // After promotion the same task continues; the ACTIVE state itself is
+        // written once, at the promotion edge, by updateState().
         heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                 config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
@@ -467,8 +496,65 @@ public class HaStartupCoordinator {
         }
 
         LOG.info("HA: SECONDARY promoted to ACTIVE — proceeding with service startup");
-        // heartbeat task already running; it will publish the new ACTIVE state on the next cycle.
+        // heartbeat task already running; promote() has already written ACTIVE.
         return true;
+    }
+
+    /**
+     * heartbeat-only mode: an external HA agent owns supervision — it writes
+     * {@code current_state}/{@code active_since}/{@code agent_last_seen},
+     * decides promotion and fencing, and starts/stops this service. OpenNMS's
+     * only HA job here is publishing liveness, so this never gates startup:
+     * no standby monitoring, no promotion, no DEGRADED/failback handling, no
+     * split-brain check, and no config sync run from this JVM.
+     */
+    private boolean startHeartbeatOnly() {
+        try {
+            upsertSelfNonClobbering();
+        } catch (Exception e) {
+            LOG.error("HA: failed to register instance row; heartbeat disabled, proceeding with startup", e);
+            return true;
+        }
+
+        scheduler = Executors.newScheduledThreadPool(1, r -> {
+            Thread t = new Thread(r, "ha-heartbeat");
+            t.setDaemon(true);
+            return t;
+        });
+
+        reloadFuture = scheduler.scheduleAtFixedRate(this::reloadConfig,
+                CONFIG_RELOAD_INTERVAL_SECONDS, CONFIG_RELOAD_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+                0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
+
+        LOG.info("HA heartbeat-only mode — external agent supervises; proceeding with service startup");
+        return true;
+    }
+
+    /**
+     * Registers this node's row without ever touching the supervisor-owned
+     * columns: on conflict only {@code configured_role}, {@code hostname} and
+     * {@code last_heartbeat} are refreshed — {@code current_state} and
+     * {@code active_since} belong to the external agent in heartbeat-only mode.
+     */
+    private void upsertSelfNonClobbering() throws Exception {
+        String hostname = resolveHostname();
+        try (Connection conn = dbFactory.getConnection()) {
+            String sql = "INSERT INTO ha_instance_status (instance_id, configured_role, current_state, last_heartbeat, hostname) " +
+                         "VALUES (?, ?, 'STANDBY', NOW(), ?) " +
+                         "ON CONFLICT (instance_id) DO UPDATE SET " +
+                         "configured_role = EXCLUDED.configured_role, " +
+                         "last_heartbeat = NOW(), " +
+                         "hostname = EXCLUDED.hostname";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, config.getInstanceId());
+                ps.setString(2, config.getRole().name());
+                ps.setString(3, hostname);
+                ps.executeUpdate();
+            }
+        }
+        LOG.info("HA: registered instance row (heartbeat-only): instance={}, role={}",
+                config.getInstanceId(), config.getRole());
     }
 
     /**
@@ -511,7 +597,9 @@ public class HaStartupCoordinator {
             scheduler.shutdownNow();
         }
         // Don't overwrite STANDBY with FAILED — failback already set the correct state.
-        if (currentState.get() != HaInstanceState.STANDBY) {
+        // In heartbeat-only mode current_state belongs to the external agent: never write it.
+        if (config.getMode() == HaMode.COORDINATOR
+                && currentState.get() != HaInstanceState.STANDBY) {
             updateState(HaInstanceState.FAILED);
         }
         startupGate.countDown(); // unblock Starter if waiting
@@ -526,6 +614,10 @@ public class HaStartupCoordinator {
      * responsible for triggering the service shutdown after this returns.
      */
     public void initiateFailover() {
+        if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
+            throw new IllegalStateException(
+                    "HA is in heartbeat-only mode; failover is controlled by the external HA agent");
+        }
         LOG.warn("HA failover: {} ({}) stepping down ACTIVE → STANDBY",
                 config.getInstanceId(), config.getRole());
         currentState.set(HaInstanceState.STANDBY);
@@ -565,18 +657,15 @@ public class HaStartupCoordinator {
 
     private void writeHeartbeat() {
         if (stopRequested.get()) return;
-        checkForSplitBrain();
-        if (stopRequested.get()) return;
-        try (Connection conn = dbFactory.getConnection()) {
-            String sql = "UPDATE ha_instance_status SET last_heartbeat = NOW(), current_state = ? WHERE instance_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, currentState.get().name());
-                ps.setString(2, config.getInstanceId());
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            LOG.warn("HA: failed to write heartbeat for instance {}", config.getInstanceId(), e);
+        if (config.getMode() == HaMode.COORDINATOR) {
+            checkForSplitBrain();
+            if (stopRequested.get()) return;
         }
+        // Liveness only: the heartbeat never carries current_state. State is
+        // written exclusively on edge transitions (updateState), so a stale
+        // in-JVM view can never overwrite a demotion written by the partner's
+        // operator or by an external agent.
+        heartbeatWriter.write();
     }
 
     /**
@@ -893,7 +982,32 @@ public class HaStartupCoordinator {
         return config;
     }
 
+    public DbConnectionFactory getDbFactory() {
+        return dbFactory;
+    }
+
     public HaInstanceState getCurrentState() {
+        if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
+            // The external agent owns current_state; the DB row is the truth.
+            return readStateFromDb();
+        }
         return currentState.get();
+    }
+
+    private HaInstanceState readStateFromDb() {
+        try (Connection conn = dbFactory.getConnection()) {
+            String sql = "SELECT current_state FROM ha_instance_status WHERE instance_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, config.getInstanceId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return HaInstanceState.valueOf(rs.getString(1));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.debug("HA: could not read current_state from DB", e);
+        }
+        return HaInstanceState.STANDBY;
     }
 }

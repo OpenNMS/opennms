@@ -21,17 +21,28 @@
  */
 package org.opennms.netmgt.ha;
 
-public enum HaInstanceState {
-    /** Fully running and serving traffic. */
-    ACTIVE,
-    /** Configured-SECONDARY in waiting mode. */
-    STANDBY,
-    /** Configured-PRIMARY blocked from starting because a SECONDARY is currently ACTIVE; waiting for failback. */
-    DEGRADED,
-    /** Service start in progress; a missing heartbeat is tolerated while fresh. Written by the external HA agent. */
-    STARTING,
-    /** In the process of activating or stepping down. */
-    TRANSITIONING,
-    /** Stopped or unreachable. */
-    FAILED
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+
+/**
+ * Who supervises this HA pair.
+ */
+@XmlEnum
+public enum HaMode {
+    /**
+     * This JVM's {@link HaStartupCoordinator} owns supervision: startup
+     * gating, standby monitoring, promotion, failback, split-brain
+     * resolution, and config sync.
+     */
+    @XmlEnumValue("coordinator")
+    COORDINATOR,
+
+    /**
+     * An external HA agent owns supervision (it writes {@code current_state},
+     * {@code active_since} and {@code agent_last_seen}, and starts/stops this
+     * service). OpenNMS's only HA job is publishing liveness by writing
+     * {@code last_heartbeat}; startup is never gated in this mode.
+     */
+    @XmlEnumValue("heartbeat-only")
+    HEARTBEAT_ONLY
 }

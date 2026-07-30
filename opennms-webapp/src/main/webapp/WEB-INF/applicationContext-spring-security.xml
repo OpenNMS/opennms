@@ -123,6 +123,17 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
+    <!-- HA management (OSGi whiteboard endpoint; only present on builds that
+         ship the opennms-ha-rest feature). Config carries sync-credential
+         references, failover stops the node, and the sync endpoints serve raw
+         credential stores: ADMIN only. GET /rest/ha/status intentionally
+         falls through to the generic /rest/** GET rule below. These rules are
+         harmless when the feature is not installed (the paths 404). -->
+    <intercept-url pattern="/rest/ha/config" method="GET" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/config" method="PUT" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/failover" method="POST" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/sync/**" method="GET" access="ROLE_ADMIN"/>
+
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 

@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,48 +38,82 @@ public class HaConfigSyncerTest {
     public TemporaryFolder tmp = new TemporaryFolder();
 
     // -------------------------------------------------------------------------
-    // JSON array parser
+    // Manifest format (HaSyncFiles)
     // -------------------------------------------------------------------------
 
     @Test
-    public void parsesSimpleArray() {
-        List<String> result = HaConfigSyncer.parseJsonStringArray(
-                "[\"events/foo.xml\",\"threshd-configuration.xml\"]");
-        assertEquals(2, result.size());
-        assertEquals("events/foo.xml", result.get(0));
-        assertEquals("threshd-configuration.xml", result.get(1));
+    public void manifestRoundTrips() {
+        List<HaSyncFiles.Entry> entries = List.of(
+                new HaSyncFiles.Entry("poller-configuration.xml", "ab12", 1234L),
+                new HaSyncFiles.Entry("events/my events.xml", "cd34", 9L));
+        String text = HaSyncFiles.toManifestText(entries);
+        assertEquals(entries, HaSyncFiles.parseManifestText(text));
     }
 
     @Test
-    public void parsesEmptyArray() {
-        assertTrue(HaConfigSyncer.parseJsonStringArray("[]").isEmpty());
+    public void manifestParserSkipsMalformedLines() {
+        assertTrue(HaSyncFiles.parseManifestText("garbage\n\nno-size path\n").isEmpty());
+        assertEquals(1, HaSyncFiles.parseManifestText("aa notanumber x\nbb 5 ok.xml\n").size());
     }
 
     @Test
-    public void parsesNullInput() {
-        assertTrue(HaConfigSyncer.parseJsonStringArray(null).isEmpty());
+    public void manifestPathsMayContainSpaces() {
+        List<HaSyncFiles.Entry> parsed =
+                HaSyncFiles.parseManifestText("aa 5 dir with space/file name.xml\n");
+        assertEquals("dir with space/file name.xml", parsed.get(0).relativePath());
+    }
+
+    // -------------------------------------------------------------------------
+    // Manifest building: binary files, exclusions
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void buildManifestIncludesBinaryFilesAndAppliesExclusions() throws Exception {
+        Path etc = tmp.newFolder("etc").toPath();
+        Files.write(etc.resolve("scv.jce"), new byte[]{0, 1, 2, (byte) 0xFF}); // binary
+        Files.writeString(etc.resolve("ha-configuration.xml"), "<ha/>");       // builtin exclusion
+        Files.createDirectories(etc.resolve("local"));
+        Files.writeString(etc.resolve("local/keep.xml"), "<x/>");              // operator exclusion
+
+        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(etc, List.of("local/"));
+        assertEquals(1, manifest.size());
+        assertEquals("scv.jce", manifest.get(0).relativePath());
+        assertEquals(4, manifest.get(0).size());
+        assertEquals(HaSyncFiles.sha256(etc.resolve("scv.jce")), manifest.get(0).sha256());
     }
 
     @Test
-    public void parsesArrayWithWhitespace() {
-        List<String> result = HaConfigSyncer.parseJsonStringArray(
-                "[ \"a.xml\" , \"b.xml\" ]");
-        assertEquals(2, result.size());
-        assertEquals("a.xml", result.get(0));
-        assertEquals("b.xml", result.get(1));
+    public void exclusionRulesMatchExactAndSubtree() {
+        assertTrue(HaSyncFiles.isExcluded("ha-configuration.xml", null));
+        assertTrue(HaSyncFiles.isExcluded("examples/foo.xml", null));
+        assertTrue(HaSyncFiles.isExcluded("node-local/x.pem", List.of("node-local/")));
+        assertFalse(HaSyncFiles.isExcluded("poller-configuration.xml", null));
     }
 
-    @Test
-    public void handlesMalformedInput() {
-        assertTrue(HaConfigSyncer.parseJsonStringArray("not json").isEmpty());
-        assertTrue(HaConfigSyncer.parseJsonStringArray("{\"key\":\"val\"}").isEmpty());
-    }
+    // -------------------------------------------------------------------------
+    // Path safety
+    // -------------------------------------------------------------------------
 
     @Test
-    public void parsesSingleElement() {
-        List<String> result = HaConfigSyncer.parseJsonStringArray("[\"only.xml\"]");
-        assertEquals(1, result.size());
-        assertEquals("only.xml", result.get(0));
+    public void resolveSafeRejectsTraversal() throws Exception {
+        Path etc = tmp.newFolder("etc").toPath().toAbsolutePath().normalize();
+        assertThrows(java.io.IOException.class,
+                () -> HaSyncFiles.resolveSafe(etc, "../outside.txt"));
+        assertThrows(java.io.IOException.class,
+                () -> HaSyncFiles.resolveSafe(etc, "a/../../outside.txt"));
+        assertEquals(etc.resolve("a/b.xml"), HaSyncFiles.resolveSafe(etc, "a/b.xml"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Hashing
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void sha256MatchesKnownVector() throws Exception {
+        Path f = tmp.newFile("v.txt").toPath();
+        Files.write(f, "abc".getBytes(StandardCharsets.UTF_8));
+        assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                HaSyncFiles.sha256(f));
     }
 
     // -------------------------------------------------------------------------
@@ -109,18 +142,16 @@ public class HaConfigSyncerTest {
         System.setProperty("opennms.home", "/tmp/no-such-dir-" + System.currentTimeMillis());
         try {
             HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
-            // Should not throw; should return null (or possibly the empty-keystore case)
-            String result = syncer.resolveScvExpression("${scv:hasync:password}");
             // With a non-existent keystore file, JCEKSSecureCredentialsVault returns an empty vault
             // so getCredentials returns null → resolveScvExpression returns null
-            assertNull(result);
+            assertNull(syncer.resolveScvExpression("${scv:hasync:password}"));
         } finally {
             System.clearProperty("opennms.home");
         }
     }
 
     // -------------------------------------------------------------------------
-    // Sync skips sync-disabled and missing partner URL configs
+    // Sync skips: disabled, missing partner URL, ACTIVE instance
     // -------------------------------------------------------------------------
 
     @Test
@@ -149,57 +180,5 @@ public class HaConfigSyncerTest {
         // When this instance is ACTIVE it must not attempt to sync from the partner
         HaConfigSyncer syncer = new HaConfigSyncer(cfg, () -> HaInstanceState.ACTIVE);
         syncer.sync(); // would throw/fail if HTTP was attempted against a non-existent partner
-    }
-
-    // -------------------------------------------------------------------------
-    // writeLocalFile skips unchanged content
-    // -------------------------------------------------------------------------
-
-    @Test
-    public void writeLocalFileSkipsUnchangedContent() throws Exception {
-        Path etc = tmp.newFolder("etc").toPath();
-        Path target = etc.resolve("test.xml");
-        Files.writeString(target, "<config/>", StandardCharsets.UTF_8);
-
-        System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
-        try {
-            long beforeMtime = Files.getLastModifiedTime(target).toMillis();
-            // Small sleep to ensure mtime would differ if a write occurred
-            Thread.sleep(50);
-
-            HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
-            // Invoke writeLocalFile via reflection (package-private visibility via same package)
-            invokeWriteLocalFile(syncer, "test.xml", "<config/>");
-
-            long afterMtime = Files.getLastModifiedTime(target).toMillis();
-            assertEquals("File should not have been rewritten when content is identical",
-                    beforeMtime, afterMtime);
-        } finally {
-            System.clearProperty("opennms.home");
-        }
-    }
-
-    @Test
-    public void writeLocalFileWritesWhenContentDiffers() throws Exception {
-        Path etc = tmp.newFolder("etc").toPath();
-        Path target = etc.resolve("test2.xml");
-        Files.writeString(target, "<old/>", StandardCharsets.UTF_8);
-
-        System.setProperty("opennms.home", tmp.getRoot().getAbsolutePath());
-        try {
-            HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
-            invokeWriteLocalFile(syncer, "test2.xml", "<new/>");
-            assertEquals("<new/>", Files.readString(target, StandardCharsets.UTF_8));
-        } finally {
-            System.clearProperty("opennms.home");
-        }
-    }
-
-    private static void invokeWriteLocalFile(HaConfigSyncer syncer, String filename, String content)
-            throws Exception {
-        java.lang.reflect.Method m = HaConfigSyncer.class
-                .getDeclaredMethod("writeLocalFile", String.class, String.class);
-        m.setAccessible(true);
-        m.invoke(syncer, filename, content);
     }
 }

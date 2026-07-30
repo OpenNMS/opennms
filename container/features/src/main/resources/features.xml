@@ -1806,6 +1806,11 @@
         <bundle>mvn:org.opennms.features.ha-management/org.opennms.features.ha-management.ha-shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-ha-rest" version="${project.version}" description="OpenNMS :: Features :: HA Management :: REST">
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.ha-management/org.opennms.features.ha-management.ha-rest/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <feature>opennms-bridge-http-service</feature>
     </feature>

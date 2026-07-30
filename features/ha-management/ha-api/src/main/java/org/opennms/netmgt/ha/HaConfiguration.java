@@ -24,8 +24,11 @@ package org.opennms.netmgt.ha;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAXB model for {@code $OPENNMS_HOME/etc/ha-configuration.xml}.
@@ -56,6 +59,14 @@ public class HaConfiguration implements Serializable {
 
     @XmlElement(name = "role", required = true)
     private HaRole role;
+
+    /**
+     * Supervision mode: {@code coordinator} (this JVM runs the full HA state
+     * machine) or {@code heartbeat-only} (an external HA agent supervises and
+     * this JVM only publishes liveness). Immutable at runtime.
+     */
+    @XmlElement(name = "mode", defaultValue = "coordinator")
+    private HaMode mode = HaMode.COORDINATOR;
 
     @XmlElement(name = "partner-instance-id")
     private String partnerInstanceId;
@@ -103,6 +114,15 @@ public class HaConfiguration implements Serializable {
     @XmlElement(name = "sync-password")
     private String syncPassword;
 
+    /**
+     * Per-node files that sync must never overwrite or delete, as paths
+     * relative to {@code $OPENNMS_HOME/etc}. A trailing {@code /} excludes a
+     * subtree. {@code ha-configuration.xml} is always excluded regardless.
+     */
+    @XmlElementWrapper(name = "sync-excludes")
+    @XmlElement(name = "exclude")
+    private List<String> syncExcludes = new ArrayList<>();
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -125,6 +145,14 @@ public class HaConfiguration implements Serializable {
 
     public void setRole(HaRole role) {
         this.role = role;
+    }
+
+    public HaMode getMode() {
+        return mode == null ? HaMode.COORDINATOR : mode;
+    }
+
+    public void setMode(HaMode mode) {
+        this.mode = mode;
     }
 
     public String getPartnerInstanceId() {
@@ -189,5 +217,13 @@ public class HaConfiguration implements Serializable {
 
     public void setSyncPassword(String syncPassword) {
         this.syncPassword = syncPassword;
+    }
+
+    public List<String> getSyncExcludes() {
+        return syncExcludes == null ? new ArrayList<>() : syncExcludes;
+    }
+
+    public void setSyncExcludes(List<String> syncExcludes) {
+        this.syncExcludes = syncExcludes;
     }
 }

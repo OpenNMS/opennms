@@ -37,35 +37,43 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Fetches configuration files from the partner (ACTIVE) instance's
- * {@code /rest/filesystem} API and writes them to the local
- * {@code $OPENNMS_HOME/etc} directory.
+ * Synchronizes {@code $OPENNMS_HOME/etc} from the partner (ACTIVE) instance
+ * using the HA sync endpoints ({@code /rest/ha/sync/manifest} and
+ * {@code /rest/ha/sync/file}) — a binary-safe, manifest-based transfer:
+ *
+ * <ul>
+ *   <li>the manifest lists every in-scope file with its sha256 and size;</li>
+ *   <li>only files whose hash differs locally are fetched, as raw bytes
+ *       (keystores such as {@code scv.jce}, {@code users.xml}, and TLS
+ *       material all transfer intact);</li>
+ *   <li>fetched files are staged and moved into place atomically;</li>
+ *   <li>local files that are in scope but absent from the manifest are
+ *       deleted — removals on the ACTIVE node propagate.</li>
+ * </ul>
+ *
+ * <p>Exclusions (never overwritten or deleted) are shared with the serving
+ * side via {@link HaSyncFiles}: {@code ha-configuration.xml} always, plus the
+ * operator-extensible {@code <sync-excludes>} list.
  *
  * <p>The {@code hasync} service account credentials are resolved from the
  * Secure Credentials Vault at sync time, supporting an SCV expression of the
  * form {@code ${scv:alias:attribute}} in the {@code sync-password} field of
  * {@code ha-configuration.xml}.
- *
- * <p>The file {@code ha-configuration.xml} is always excluded from sync since
- * each node has a distinct role assignment.
  */
 public class HaConfigSyncer {
 
     private static final Logger LOG = LoggerFactory.getLogger(HaConfigSyncer.class);
-
-    /** Files that must never be overwritten by sync, regardless of what the partner returns. vault extensions are already excluded by the filesystem API */
-    private static final List<String> SYNC_EXCLUSIONS = List.of("ha-configuration.xml", "examples/");
 
     private static final Pattern SCV_PATTERN =
             Pattern.compile("^\\$\\{scv:([^:}]+):([^}]+)\\}$");
@@ -98,10 +106,8 @@ public class HaConfigSyncer {
     }
 
     /**
-     * Performs one synchronization pass: fetches the file list from the partner
-     * and overwrites each local file whose content has changed. Skipped entirely
-     * when this instance is {@link HaInstanceState#ACTIVE}. Failures are logged
-     * but do not throw.
+     * Performs one synchronization pass. Skipped entirely when this instance
+     * is {@link HaInstanceState#ACTIVE}. Failures are logged but do not throw.
      */
     public void sync() {
         HaConfiguration config = configSupplier.get(); // snapshot for this cycle
@@ -130,105 +136,145 @@ public class HaConfigSyncer {
 
         String authHeader = basicAuthHeader(config.getSyncUsername(), resolvedPassword);
         String baseUrl = config.getPartnerRestUrl().replaceAll("/$", "");
+        List<String> excludes = config.getSyncExcludes();
 
-        List<String> files = fetchFileList(baseUrl, authHeader);
-        if (files.isEmpty()) {
-            LOG.warn("HA sync: file list from {} was empty or unavailable", baseUrl);
+        List<HaSyncFiles.Entry> manifest = fetchManifest(baseUrl, authHeader);
+        if (manifest == null) {
+            return; // already logged
+        }
+        if (manifest.isEmpty()) {
+            LOG.warn("HA sync: manifest from {} was empty; skipping cycle (refusing to delete everything)", baseUrl);
             return;
         }
 
-        int synced = 0;
+        Path etcRoot = HaSyncFiles.etcRoot();
+        int fetched = 0;
         int failed = 0;
-        for (String filename : files) {
-            if (SYNC_EXCLUSIONS.stream().anyMatch(e ->
-                    e.endsWith("/") ? filename.startsWith(e) : filename.equals(e))) {
-                LOG.debug("HA sync: skipping excluded file {}", filename);
+        Set<String> manifestPaths = new HashSet<>();
+
+        for (HaSyncFiles.Entry entry : manifest) {
+            manifestPaths.add(entry.relativePath());
+            // The serving side applies exclusions too, but the local list may
+            // legitimately be stricter — never let the partner overwrite an
+            // excluded file.
+            if (HaSyncFiles.isExcluded(entry.relativePath(), excludes)) {
                 continue;
             }
             try {
-                syncFile(baseUrl, authHeader, filename);
-                synced++;
+                if (localMatches(etcRoot, entry)) {
+                    continue;
+                }
+                fetchFile(baseUrl, authHeader, etcRoot, entry);
+                fetched++;
             } catch (Exception e) {
-                LOG.warn("HA sync: failed to sync file {}: {}", filename, e.getMessage());
+                LOG.warn("HA sync: failed to sync {}: {}", entry.relativePath(), e.getMessage());
                 failed++;
             }
         }
-        LOG.info("HA sync complete: {} files synced, {} failed", synced, failed);
+
+        int deleted = propagateDeletions(etcRoot, manifestPaths, excludes);
+
+        if (fetched > 0 || failed > 0 || deleted > 0) {
+            LOG.info("HA sync complete: {} files fetched, {} deleted, {} failed", fetched, deleted, failed);
+        } else {
+            LOG.debug("HA sync complete: no changes");
+        }
     }
 
     // -------------------------------------------------------------------------
-    // Private helpers
+    // Manifest + transfer
     // -------------------------------------------------------------------------
 
-    private List<String> fetchFileList(String baseUrl, String authHeader) {
+    /** @return the parsed manifest, or null if it could not be fetched. */
+    private List<HaSyncFiles.Entry> fetchManifest(String baseUrl, String authHeader) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/rest/filesystem/"))
+                    .uri(URI.create(baseUrl + "/rest/ha/sync/manifest"))
                     .header("Authorization", authHeader)
-                    .header("Accept", "application/json")
                     .GET()
                     .timeout(Duration.ofSeconds(30))
                     .build();
-
             HttpResponse<String> response =
                     httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                return parseJsonStringArray(response.body());
-            } else {
-                LOG.warn("HA sync: file list request returned HTTP {}", response.statusCode());
-                return List.of();
+            if (response.statusCode() != 200) {
+                LOG.warn("HA sync: manifest request returned HTTP {}", response.statusCode());
+                return null;
             }
+            return HaSyncFiles.parseManifestText(response.body());
         } catch (Exception e) {
-            LOG.warn("HA sync: failed to fetch file list from {}: {}", baseUrl, e.getMessage());
-            return List.of();
+            LOG.warn("HA sync: failed to fetch manifest from {}: {}", baseUrl, e.getMessage());
+            return null;
         }
     }
 
-    private void syncFile(String baseUrl, String authHeader, String filename) throws Exception {
-        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+    private boolean localMatches(Path etcRoot, HaSyncFiles.Entry entry) throws IOException {
+        Path local = HaSyncFiles.resolveSafe(etcRoot, entry.relativePath());
+        return Files.isRegularFile(local)
+                && Files.size(local) == entry.size()
+                && HaSyncFiles.sha256(local).equals(entry.sha256());
+    }
+
+    /** Downloads one file as raw bytes, stages it, verifies the hash, then
+     * moves it into place atomically. */
+    private void fetchFile(String baseUrl, String authHeader, Path etcRoot, HaSyncFiles.Entry entry)
+            throws Exception {
+        Path target = HaSyncFiles.resolveSafe(etcRoot, entry.relativePath());
+
+        String encoded = URLEncoder.encode(entry.relativePath(), StandardCharsets.UTF_8);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/rest/filesystem/contents?f=" + encodedFilename))
+                .uri(URI.create(baseUrl + "/rest/ha/sync/file?f=" + encoded))
                 .header("Authorization", authHeader)
                 .GET()
-                .timeout(Duration.ofSeconds(60))
+                .timeout(Duration.ofSeconds(120))
                 .build();
-
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            writeLocalFile(filename, response.body());
-        } else if (response.statusCode() == 204) {
-            LOG.debug("HA sync: file {} is empty on partner, skipping", filename);
-        } else {
-            throw new IOException("HTTP " + response.statusCode() + " for file " + filename);
-        }
-    }
-
-    private void writeLocalFile(String filename, String content) throws IOException {
-        String opennmsHome = System.getProperty("opennms.home", ".");
-        Path target = Paths.get(opennmsHome, "etc", filename).normalize();
-        Path etcDir = Paths.get(opennmsHome, "etc").toAbsolutePath();
-
-        // Guard against path traversal
-        if (!target.toAbsolutePath().startsWith(etcDir)) {
-            throw new IOException("Sync rejected: " + filename + " resolves outside etc directory");
-        }
-
-        if (Files.exists(target)) {
-            String existing = Files.readString(target, StandardCharsets.UTF_8);
-            if (existing.equals(content)) {
-                LOG.debug("HA sync: {} unchanged, skipping write", filename);
-                return;
-            }
+        HttpResponse<byte[]> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        if (response.statusCode() != 200) {
+            throw new IOException("HTTP " + response.statusCode() + " for " + entry.relativePath());
         }
 
         Files.createDirectories(target.getParent());
-        Files.writeString(target, content, StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        LOG.debug("HA sync: wrote {}", filename);
+        Path staged = Files.createTempFile(target.getParent(), "." + target.getFileName(), ".sync");
+        try {
+            Files.write(staged, response.body());
+            String stagedHash = HaSyncFiles.sha256(staged);
+            if (!stagedHash.equals(entry.sha256())) {
+                throw new IOException("hash mismatch for " + entry.relativePath()
+                        + " (file changed on partner mid-transfer?)");
+            }
+            try {
+                Files.move(staged, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException e) {
+                Files.move(staged, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+            LOG.debug("HA sync: wrote {}", entry.relativePath());
+        } finally {
+            Files.deleteIfExists(staged);
+        }
     }
+
+    /** Deletes local in-scope files that no longer exist on the partner. */
+    private int propagateDeletions(Path etcRoot, Set<String> manifestPaths, List<String> excludes) {
+        int deleted = 0;
+        try {
+            for (HaSyncFiles.Entry local : HaSyncFiles.buildManifest(etcRoot, excludes)) {
+                if (manifestPaths.contains(local.relativePath())) {
+                    continue;
+                }
+                Path p = HaSyncFiles.resolveSafe(etcRoot, local.relativePath());
+                Files.deleteIfExists(p);
+                deleted++;
+                LOG.info("HA sync: deleted {} (removed on partner)", local.relativePath());
+            }
+        } catch (Exception e) {
+            LOG.warn("HA sync: deletion propagation failed: {}", e.getMessage());
+        }
+        return deleted;
+    }
+
+    // -------------------------------------------------------------------------
+    // SCV credential resolution
+    // -------------------------------------------------------------------------
 
     /**
      * Resolves an SCV expression {@code ${scv:alias:attribute}} by reading the
@@ -273,41 +319,6 @@ public class HaConfigSyncer {
                 JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY,
                 JCEKSSecureCredentialsVault.DEFAULT_KEYSTORE_KEY);
         return new JCEKSSecureCredentialsVault(keystorePath, keystorePassword);
-    }
-
-    /** Parses a simple JSON string array: {@code ["a","b","c"]}. */
-    static List<String> parseJsonStringArray(String json) {
-        List<String> result = new ArrayList<>();
-        if (json == null) return result;
-        json = json.trim();
-        if (!json.startsWith("[") || !json.endsWith("]")) return result;
-        json = json.substring(1, json.length() - 1).trim();
-        if (json.isEmpty()) return result;
-
-        // Simple tokeniser: split on "," boundaries that are outside quotes
-        boolean inQuote = false;
-        int start = 0;
-        for (int i = 0; i < json.length(); i++) {
-            char c = json.charAt(i);
-            if (c == '"') {
-                inQuote = !inQuote;
-            } else if (c == ',' && !inQuote) {
-                addToken(json.substring(start, i), result);
-                start = i + 1;
-            }
-        }
-        addToken(json.substring(start), result);
-        return result;
-    }
-
-    private static void addToken(String token, List<String> result) {
-        token = token.trim();
-        if (token.startsWith("\"") && token.endsWith("\"") && token.length() >= 2) {
-            String value = token.substring(1, token.length() - 1)
-                    .replace("\\\"", "\"")
-                    .replace("\\\\", "\\");
-            if (!value.isEmpty()) result.add(value);
-        }
     }
 
     private static String basicAuthHeader(String username, String password) {

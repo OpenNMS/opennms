@@ -655,6 +655,142 @@ public class HaStartupCoordinatorTest {
     }
 
     // -------------------------------------------------------------------------
+    // Column ownership: the heartbeat writes last_heartbeat ONLY
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void heartbeatWritesOnlyLastHeartbeat() throws Exception {
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+
+        java.lang.reflect.Method m = HaStartupCoordinator.class.getDeclaredMethod("writeHeartbeat");
+        m.setAccessible(true);
+        m.invoke(coord);
+
+        org.mockito.ArgumentCaptor<String> sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
+        boolean sawHeartbeatUpdate = false;
+        for (String s : sql.getAllValues()) {
+            if (s.contains("SET last_heartbeat")) {
+                sawHeartbeatUpdate = true;
+                assertFalse("heartbeat UPDATE must not touch current_state: " + s,
+                        s.contains("current_state"));
+            }
+        }
+        assertTrue("expected a heartbeat UPDATE to be issued", sawHeartbeatUpdate);
+    }
+
+    // -------------------------------------------------------------------------
+    // Schema bootstrap
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void ensureSchemaSerializesStepsUnderAdvisoryLock() throws Exception {
+        PreparedStatement lockPs = mock(PreparedStatement.class);
+        PreparedStatement ddlPs = mock(PreparedStatement.class);
+        PreparedStatement unlockPs = mock(PreparedStatement.class);
+        when(mockConn.prepareStatement(contains("pg_advisory_lock"))).thenReturn(lockPs);
+        when(mockConn.prepareStatement(contains("CREATE TABLE"))).thenReturn(ddlPs);
+        when(mockConn.prepareStatement(contains("pg_advisory_unlock"))).thenReturn(unlockPs);
+
+        HaStatusSchema.ensureSchema(mockDbFactory);
+
+        org.mockito.InOrder inOrder = inOrder(lockPs, ddlPs, unlockPs);
+        inOrder.verify(lockPs).execute();
+        inOrder.verify(ddlPs).execute();
+        inOrder.verify(unlockPs).execute();
+    }
+
+    @Test
+    public void ensureSchemaReleasesLockWhenStepFails() throws Exception {
+        PreparedStatement lockPs = mock(PreparedStatement.class);
+        PreparedStatement ddlPs = mock(PreparedStatement.class);
+        PreparedStatement unlockPs = mock(PreparedStatement.class);
+        when(mockConn.prepareStatement(contains("pg_advisory_lock"))).thenReturn(lockPs);
+        when(mockConn.prepareStatement(contains("CREATE TABLE"))).thenReturn(ddlPs);
+        when(mockConn.prepareStatement(contains("pg_advisory_unlock"))).thenReturn(unlockPs);
+        when(ddlPs.execute()).thenThrow(new java.sql.SQLException("permission denied"));
+
+        try {
+            HaStatusSchema.ensureSchema(mockDbFactory);
+            fail("expected the step failure to propagate");
+        } catch (java.sql.SQLException expected) {
+            // DDL failures must surface (fail loudly), but never leak the lock.
+        }
+        verify(unlockPs).execute();
+    }
+
+    // -------------------------------------------------------------------------
+    // Mode immutability + heartbeat-only mode
+    // -------------------------------------------------------------------------
+
+    @Test(expected = IllegalArgumentException.class)
+    public void writeConfigRejectsModeChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration mutated = copyOf(original);
+        mutated.setMode(HaMode.HEARTBEAT_ONLY);
+
+        coord.writeConfig(mutated);
+    }
+
+    @Test
+    public void heartbeatOnlyModeStartsImmediatelyAndNeverPromotes() throws Exception {
+        HaConfiguration cfg = secondaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            long start = System.currentTimeMillis();
+            boolean proceed = coord.doAwaitReadyToStart();
+            long elapsed = System.currentTimeMillis() - start;
+
+            // A SECONDARY in coordinator mode would block on the startup gate;
+            // heartbeat-only must return true immediately — the agent gates.
+            assertTrue("heartbeat-only mode must never gate startup", proceed);
+            assertTrue("expected immediate return, took " + elapsed + "ms", elapsed < 2000);
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
+    @Test
+    public void heartbeatOnlyUpsertDoesNotClobberState() throws Exception {
+        HaConfiguration cfg = primaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        try {
+            assertTrue(coord.doAwaitReadyToStart());
+
+            org.mockito.ArgumentCaptor<String> sql = org.mockito.ArgumentCaptor.forClass(String.class);
+            verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
+            boolean sawUpsert = false;
+            for (String s : sql.getAllValues()) {
+                if (s.contains("ON CONFLICT")) {
+                    sawUpsert = true;
+                    String updateClause = s.substring(s.indexOf("DO UPDATE"));
+                    assertFalse("heartbeat-only upsert must not update current_state (agent owns it): " + s,
+                            updateClause.contains("current_state"));
+                    assertFalse("heartbeat-only upsert must not update active_since (agent owns it): " + s,
+                            updateClause.contains("active_since"));
+                }
+            }
+            assertTrue("expected the registration upsert to be issued", sawUpsert);
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void failoverRejectedInHeartbeatOnlyMode() throws Exception {
+        HaConfiguration cfg = primaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+
+        coord.initiateFailover();
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -699,6 +835,7 @@ public class HaStartupCoordinatorTest {
         c.setEnabled(src.isEnabled());
         c.setInstanceId(src.getInstanceId());
         c.setRole(src.getRole());
+        c.setMode(src.getMode());
         c.setPartnerInstanceId(src.getPartnerInstanceId());
         c.setHeartbeatIntervalSeconds(src.getHeartbeatIntervalSeconds());
         c.setFailoverThresholdSeconds(src.getFailoverThresholdSeconds());

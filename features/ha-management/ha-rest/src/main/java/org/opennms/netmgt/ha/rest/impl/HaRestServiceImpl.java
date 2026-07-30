@@ -19,88 +19,72 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1;
+package org.opennms.netmgt.ha.rest.impl;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.opennms.netmgt.ha.DbConnectionFactory;
 import org.opennms.netmgt.ha.HaConfiguration;
 import org.opennms.netmgt.ha.HaInstanceState;
+import org.opennms.netmgt.ha.HaMode;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
+import org.opennms.netmgt.ha.HaSyncFiles;
+import org.opennms.netmgt.ha.rest.HaRestService;
 import org.opennms.netmgt.ha.rest.dto.HaInstanceStatusDto;
 import org.opennms.netmgt.ha.rest.dto.HaStatusCollectionDto;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import java.io.File;
-import java.io.StringWriter;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * REST resource exposing HA cluster status and configuration.
+ * Whiteboard implementation of the HA REST API. Reaches the in-JVM
+ * {@link HaStartupCoordinator} singleton through the system-bundle export of
+ * {@code org.opennms.netmgt.ha} — the same mechanism the Karaf shell commands
+ * use, so all surfaces observe identical state.
  *
- * <p>Endpoints:
- * <ul>
- *   <li>{@code GET  /rest/ha/status} — current state of all HA instances (all roles)</li>
- *   <li>{@code GET  /rest/ha/config} — current HA configuration for this instance</li>
- *   <li>{@code PUT  /rest/ha/config} — replace the on-disk configuration. The new
- *       configuration is applied immediately. Requires ROLE_ADMIN. Rejects changes
- *       to immutable fields ({@code enabled}, {@code instance-id}, {@code role})
- *       with 400 Bad Request.</li>
- *   <li>{@code POST /rest/ha/failover} — initiate graceful failover; only valid when
- *       this instance is currently ACTIVE. Requires ROLE_ADMIN.</li>
- * </ul>
+ * <p>No programmatic role checks here: authorization is container-side
+ * (Spring Security intercept-urls). The principal is used for audit logging
+ * only.
  */
-@Component("haResource")
-@Path("ha")
-@Tag(name = "HA", description = "High Availability management API")
-public class HaResource extends OnmsRestService {
+public class HaRestServiceImpl implements HaRestService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HaResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HaRestServiceImpl.class);
 
-    @Autowired
-    private DataSource dataSource;
+    private volatile DbConnectionFactory fallbackDbFactory;
 
     // -------------------------------------------------------------------------
     // GET /rest/ha/status
     // -------------------------------------------------------------------------
 
-    @GET
-    @Path("status")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Override
     public Response getStatus() {
         // Failover threshold for staleness detection comes from the live local config.
-        // If HA isn't enabled on this node, we fall back to the schema default.
+        // If HA isn't enabled on this node, fall back to the schema default.
         int failoverThresholdSeconds = new HaConfiguration().getFailoverThresholdSeconds();
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
         if (coord != null) {
             failoverThresholdSeconds = coord.getConfig().getFailoverThresholdSeconds();
         }
 
-        try (Connection conn = dataSource.getConnection();
+        DbConnectionFactory dbFactory = dbFactory(coord);
+        if (dbFactory == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("HA is not enabled on this instance").build();
+        }
+
+        try (Connection conn = dbFactory.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
                      "SELECT instance_id, configured_role, current_state, last_heartbeat, active_since, " +
@@ -134,18 +118,32 @@ public class HaResource extends OnmsRestService {
             return Response.ok(collection).build();
 
         } catch (Exception e) {
+            if (isUndefinedTable(e)) {
+                // The table is created when HA first starts enabled; its
+                // absence simply means HA has never been enabled here.
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("HA is not enabled on this instance").build();
+            }
             LOG.error("Failed to query HA instance status", e);
             return Response.serverError().entity("Failed to query HA status: " + e.getMessage()).build();
         }
+    }
+
+    /** True if the exception chain contains Postgres undefined_table (42P01). */
+    private static boolean isUndefinedTable(Throwable t) {
+        for (Throwable c = t; c != null; c = c.getCause()) {
+            if (c instanceof java.sql.SQLException sql && "42P01".equals(sql.getSQLState())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // -------------------------------------------------------------------------
     // GET /rest/ha/config
     // -------------------------------------------------------------------------
 
-    @GET
-    @Path("config")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Override
     public Response getConfig() {
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
         if (coord == null) {
@@ -159,16 +157,8 @@ public class HaResource extends OnmsRestService {
     // PUT /rest/ha/config — replace the on-disk configuration and reload
     // -------------------------------------------------------------------------
 
-    @PUT
-    @Path("config")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateConfig(@Context SecurityContext securityContext, HaConfiguration newCfg) {
-        if (!securityContext.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN)) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("ROLE_ADMIN is required to modify HA configuration").build();
-        }
-
+    @Override
+    public Response updateConfig(SecurityContext securityContext, HaConfiguration newCfg) {
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
         if (coord == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -191,8 +181,7 @@ public class HaResource extends OnmsRestService {
                     .entity("Failed to write configuration: " + e.getMessage()).build();
         }
 
-        LOG.info("HA configuration updated via REST by user '{}'",
-                securityContext.getUserPrincipal().getName());
+        LOG.info("HA configuration updated via REST by user '{}'", principal(securityContext));
         return Response.ok(coord.getConfig()).build();
     }
 
@@ -200,19 +189,18 @@ public class HaResource extends OnmsRestService {
     // POST /rest/ha/failover
     // -------------------------------------------------------------------------
 
-    @POST
-    @Path("failover")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response initiateFailover(@Context SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN)) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("ROLE_ADMIN is required to initiate failover").build();
-        }
-
+    @Override
+    public Response initiateFailover(SecurityContext securityContext) {
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
         if (coord == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("HA is not enabled on this instance").build();
+        }
+
+        if (coord.getConfig().getMode() == HaMode.HEARTBEAT_ONLY) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("HA is in heartbeat-only mode; failover is controlled by the external HA agent")
+                    .build();
         }
 
         if (coord.getCurrentState() != HaInstanceState.ACTIVE) {
@@ -222,7 +210,7 @@ public class HaResource extends OnmsRestService {
 
         HaConfiguration config = coord.getConfig();
         LOG.warn("HA failover initiated via REST by user '{}' on {} ({})",
-                securityContext.getUserPrincipal().getName(), config.getInstanceId(), config.getRole());
+                principal(securityContext), config.getInstanceId(), config.getRole());
 
         Thread failoverThread = new Thread(() -> {
             try {
@@ -254,5 +242,84 @@ public class HaResource extends OnmsRestService {
                 .entity("Failover initiated. This instance will stop services and must be manually restarted to enter STANDBY. " +
                         "Monitor GET /rest/ha/status to confirm the partner activates.")
                 .build();
+    }
+
+    // -------------------------------------------------------------------------
+    // GET /rest/ha/sync/manifest + /rest/ha/sync/file — served by the ACTIVE
+    // node for the standby's HaConfigSyncer (binary-safe, manifest-based)
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Response getSyncManifest() {
+        HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
+        if (coord == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("HA is not enabled on this instance").build();
+        }
+        try {
+            List<HaSyncFiles.Entry> manifest =
+                    HaSyncFiles.buildManifest(HaSyncFiles.etcRoot(), coord.getConfig().getSyncExcludes());
+            return Response.ok(HaSyncFiles.toManifestText(manifest)).build();
+        } catch (Exception e) {
+            LOG.error("HA sync: failed to build manifest", e);
+            return Response.serverError().entity("Failed to build manifest: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getSyncFile(String relativePath) {
+        HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
+        if (coord == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("HA is not enabled on this instance").build();
+        }
+        if (relativePath == null || relativePath.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("query parameter 'f' is required").build();
+        }
+        if (HaSyncFiles.isExcluded(relativePath, coord.getConfig().getSyncExcludes())) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("file is excluded from sync: " + relativePath).build();
+        }
+        try {
+            Path file = HaSyncFiles.resolveSafe(HaSyncFiles.etcRoot(), relativePath);
+            if (!Files.isRegularFile(file)) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("no such file: " + relativePath).build();
+            }
+            return Response.ok(Files.readAllBytes(file)).build();
+        } catch (IOException e) {
+            // resolveSafe rejects traversal with IOException — treat as client error
+            LOG.warn("HA sync: rejected file request '{}': {}", relativePath, e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+
+    /** DB access: prefer the coordinator's factory; fall back to parsing
+     * opennms-datasources.xml directly (status can then still be served when
+     * the local coordinator failed to initialise). */
+    private DbConnectionFactory dbFactory(HaStartupCoordinator coord) {
+        if (coord != null) {
+            return coord.getDbFactory();
+        }
+        DbConnectionFactory cached = fallbackDbFactory;
+        if (cached != null) {
+            return cached;
+        }
+        try {
+            cached = DbConnectionFactory.fromDatasourcesXml();
+            fallbackDbFactory = cached;
+            return cached;
+        } catch (Exception e) {
+            LOG.debug("HA: could not create fallback DB connection factory", e);
+            return null;
+        }
+    }
+
+    private static String principal(SecurityContext ctx) {
+        return ctx != null && ctx.getUserPrincipal() != null
+                ? ctx.getUserPrincipal().getName() : "<unknown>";
     }
 }

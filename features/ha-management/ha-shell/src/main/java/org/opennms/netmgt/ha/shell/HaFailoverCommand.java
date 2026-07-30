@@ -67,6 +67,12 @@ public class HaFailoverCommand implements Action {
         }
 
         HaConfiguration cfg = coord.getConfig();
+
+        if (cfg.getMode() == org.opennms.netmgt.ha.HaMode.HEARTBEAT_ONLY) {
+            System.out.println("HA is in heartbeat-only mode; failover is controlled by the external HA agent.");
+            return null;
+        }
+
         HaInstanceState state = coord.getCurrentState();
 
         if (state != HaInstanceState.ACTIVE) {
