@@ -60,10 +60,16 @@
           <InputText
             id="user-editor-comments"
             v-model="form.comments"
+            :invalid="!!commentsProblem"
             data-test="comments-input"
           />
           <label for="user-editor-comments">Comments</label>
         </IftaLabel>
+        <small
+          v-if="commentsProblem"
+          class="field-error"
+          data-test="comments-error"
+        >{{ commentsProblem }}</small>
       </FormField>
       <FormField>
         <IftaLabel>
@@ -143,7 +149,7 @@ import MultiSelect from 'primevue/multiselect'
 import Password from 'primevue/password'
 
 import FormField from '@/components/Common/FormField.vue'
-import { validateAdminName, validateEmailShape } from '@/lib/adminValidation'
+import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser } from '@/types/userAdmin'
 
@@ -173,11 +179,21 @@ const isEditing = computed(() => props.user !== null)
 const originalUserId = computed(() => props.user?.['user-id'] ?? '')
 
 const userIdProblem = computed(() => (isEditing.value ? null : validateAdminName(form.userId, 'user-id')))
-const emailProblem = computed(() => validateEmailShape(form.email, 'email'))
-const pagerEmailProblem = computed(() => validateEmailShape(form.pagerEmail, 'pager email'))
+
+// pre-existing values are never flagged (hand-edited users.xml may hold
+// forms these checks don't model); only changed input is validated
+const changedOnly = (value: string, original: string | undefined, problem: string | null) =>
+  value.trim() === (original ?? '').trim() ? null : problem
+
+const emailProblem = computed(() =>
+  changedOnly(form.email, props.user?.email ?? '', validateEmailShape(form.email, 'email')))
+const pagerEmailProblem = computed(() =>
+  changedOnly(form.pagerEmail, props.user?.['pager-email'] ?? '', validateEmailShape(form.pagerEmail, 'pager email')))
+const commentsProblem = computed(() =>
+  changedOnly(form.comments, props.user?.['user-comments'] ?? '', validateAdminComments(form.comments)))
 
 const isValid = computed(() => {
-  if (userIdProblem.value || emailProblem.value || pagerEmailProblem.value) {
+  if (userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {
     return false
   }
   if (isEditing.value) {

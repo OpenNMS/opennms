@@ -43,15 +43,17 @@ describe('validateAdminComments', () => {
 })
 
 describe('validateEmailShape', () => {
-  it('accepts empty and name@domain shapes', () => {
+  it('accepts empty values and common deliverable forms', () => {
     expect(validateEmailShape('', 'email')).toBeNull()
     expect(validateEmailShape('noc@example.org', 'email')).toBeNull()
+    expect(validateEmailShape('Bill Smith <bill@example.com>', 'email')).toBeNull()
+    expect(validateEmailShape('a@example.com, b@example.com', 'email')).toBeNull()
   })
 
-  it('rejects values without an @ or with whitespace', () => {
+  it('rejects values without a local@domain part', () => {
     expect(validateEmailShape('not-an-email', 'email')).toContain('email')
-    expect(validateEmailShape('a b@example.org', 'pager email')).toContain('pager email')
     expect(validateEmailShape('a@', 'email')).not.toBeNull()
+    expect(validateEmailShape('a@example.com,,b@example.com', 'pager email')).toContain('pager email')
   })
 })
 

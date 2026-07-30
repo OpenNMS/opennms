@@ -70,6 +70,9 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private UserManager m_userManager;
 
+    @Autowired
+    private org.opennms.netmgt.config.GroupManager m_groupManager;
+
     public UsersRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -316,6 +319,76 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(after.has("full-name") && !after.isNull("full-name"));
         assertFalse(after.has("email") && !after.isNull("email"));
         sendRequest(DELETE, "/users/clearme", 204);
+    }
+
+    @Test
+    public void testAdminRoleCannotBeStripped() throws Exception {
+        // removing ROLE_ADMIN from admin would lock every administrator out
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
+                "{\"user-id\":\"admin\",\"role\":[\"ROLE_USER\"]}", 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
+                "{\"user-id\":\"admin\",\"role\":[\"ROLE_USER\",\"ROLE_ADMIN\"]}", 204);
+    }
+
+    @Test
+    public void testPartialUpdatePreservesScalarFields() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"user-id\":\"partial\",\"password\":\"pw\",\"full-name\":\"Full Name\",\"user-comments\":\"kept\",\"email\":\"p@example.org\"}", 201);
+        // a roles-only body must not wipe the other fields
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/partial",
+                "{\"user-id\":\"partial\",\"role\":[\"ROLE_USER\"]}", 204);
+        final JSONObject after = new JSONObject(getJson("/users/partial", 200));
+        assertEquals("Full Name", after.getString("full-name"));
+        assertEquals("kept", after.getString("user-comments"));
+        assertEquals("p@example.org", after.getString("email"));
+        sendRequest(DELETE, "/users/partial", 204);
+    }
+
+    @Test
+    public void testCommentsMarkupRejectedEvenWithNewlines() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"user-id\":\"markup\",\"password\":\"pw\"}", 201);
+        // newlines must not smuggle markup past the check
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/markup",
+                "{\"user-id\":\"markup\",\"user-comments\":\"hello\\n<script>alert(1)</script>\"}", 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/markup",
+                "{\"user-id\":\"markup\",\"user-comments\":\"plain text\"}", 204);
+        sendRequest(DELETE, "/users/markup", 204);
+    }
+
+    @Test
+    public void testHandEditedMarkupCommentStaysEditable() throws Exception {
+        // a hand-edited users.xml comment with markup characters must not
+        // make the user uneditable when it round-trips unchanged
+        final User user = new User();
+        user.setUserId("legacycomment");
+        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
+        user.setUserComments("Bob's R&D user");
+        m_userManager.saveUser("legacycomment", user);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacycomment",
+                "{\"user-id\":\"legacycomment\",\"user-comments\":\"Bob's R&D user\",\"full-name\":\"Touched\"}", 204);
+        final JSONObject after = new JSONObject(getJson("/users/legacycomment", 200));
+        assertEquals("Bob's R&D user", after.getString("user-comments"));
+        assertEquals("Touched", after.getString("full-name"));
+        sendRequest(DELETE, "/users/legacycomment", 204);
+    }
+
+    @Test
+    public void testDeleteBlockedWhileSupervisingOnCallRole() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"user-id\":\"rolesuper\",\"password\":\"pw\"}", 201);
+        final org.opennms.netmgt.config.groups.Role role = new org.opennms.netmgt.config.groups.Role();
+        role.setName("super-role");
+        role.setMembershipGroup("Admin");
+        role.setSupervisor("rolesuper");
+        m_groupManager.saveRole(role);
+
+        // deleting the supervisor would leave the rota's fallback dangling
+        sendData(DELETE, MediaType.APPLICATION_JSON, "/users/rolesuper", "", 400);
+
+        m_groupManager.deleteRole("super-role");
+        sendRequest(DELETE, "/users/rolesuper", 204);
     }
 
     @Test

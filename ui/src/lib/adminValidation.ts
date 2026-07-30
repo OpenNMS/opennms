@@ -26,7 +26,7 @@
 
 const INVALID_NAME = /[&<>"`':/\\%?#\s]/
 const INVALID_COMMENTS = /[&<>"`']/
-const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+$/
+const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
 
 /**
  * Validates a user-id, group name or on-call role name.
@@ -62,10 +62,18 @@ export const validateAdminComments = (value: string): string | null => {
  */
 export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 
-/** Loose shape check: notification delivery needs at least local@domain. */
+/**
+ * Loose shape check: every comma-separated recipient must contain a
+ * local@domain somewhere, which also accepts RFC-5322 display-name forms
+ * like `Bill Smith <bill@example.com>`.
+ */
 export const validateEmailShape = (value: string, label: string): string | null => {
   const trimmed = value.trim()
-  if (trimmed && !EMAIL_SHAPE.test(trimmed)) {
+  if (!trimmed) {
+    return null
+  }
+  const parts = trimmed.split(',').map((part) => part.trim())
+  if (parts.some((part) => !part || !EMAIL_SHAPE.test(part))) {
     return `The ${label} must look like an email address (name@domain).`
   }
   return null

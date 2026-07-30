@@ -78,7 +78,10 @@ public class UsersRestService implements UsersRestApi {
      * references), and '/', '\', '%', '?', '#' (the id is a URL path segment
      * in every per-user endpoint).
      */
-    private static final Pattern INVALID_USER_ID = Pattern.compile(".*[&<>\"`':/\\\\%?#\\s]+.*");
+    private static final Pattern INVALID_USER_ID = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
+
+    /** Same markup characters the groups API rejects in comments. */
+    private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
 
     /**
      * Day tokens + military begin-end times, e.g. MoWeFr800-1700. Overnight
@@ -89,6 +92,10 @@ public class UsersRestService implements UsersRestApi {
 
     @Autowired
     private UserManager m_userManager;
+
+    /** For the on-call-role supervisor referential check on delete. */
+    @Autowired
+    private org.opennms.netmgt.config.GroupManager m_groupManager;
 
     @Override
     public Response listUsers(final SecurityContext securityContext) {
@@ -183,6 +190,12 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST)
                     .entity("The user-id in the body does not match the request path; use the rename endpoint to change ids.").build();
         }
+        // stripping ROLE_ADMIN from the admin account would lock every
+        // administrator out of the web UI until users.xml is hand-edited
+        if ("admin".equals(userId) && dto.getRoles() != null && !dto.getRoles().contains(Authentication.ROLE_ADMIN)) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("The admin user must keep the " + Authentication.ROLE_ADMIN + " role.").build();
+        }
         try {
             synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final User existing = m_userManager.getUser(userId);
@@ -269,6 +282,20 @@ public class UsersRestService implements UsersRestApi {
                 if (!m_userManager.hasUser(userId)) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
                 }
+                // GroupManager.deleteUser strips memberships and schedules but
+                // leaves role supervisors dangling, silently killing the
+                // supervisor fallback for those rotas
+                final List<String> supervisedRoles = new ArrayList<>();
+                for (final org.opennms.netmgt.config.groups.Role role : m_groupManager.getRoles()) {
+                    if (userId.equals(role.getSupervisor())) {
+                        supervisedRoles.add(role.getName());
+                    }
+                }
+                if (!supervisedRoles.isEmpty()) {
+                    return Response.status(Status.BAD_REQUEST).entity("User " + userId
+                            + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
+                            + "; assign a different supervisor first.").build();
+                }
                 m_userManager.deleteUser(userId);
             }
             LOG.info("User {} deleted by {}", userId, principal(securityContext));
@@ -321,6 +348,10 @@ public class UsersRestService implements UsersRestApi {
      * rejected request cannot leave partial state anywhere.
      */
     private static void validateDtoFields(final UserDto dto, final User existing) {
+        if (dto.getUserComments() != null && INVALID_COMMENTS.matcher(dto.getUserComments()).find()
+                && (existing == null || !dto.getUserComments().equals(existing.getUserComments().orElse(null)))) {
+            throw new IllegalArgumentException("The comments must not contain any HTML markup.");
+        }
         final String timeZoneId = trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
@@ -358,17 +389,31 @@ public class UsersRestService implements UsersRestApi {
      * out of the request body arrive as null and are preserved.
      */
     private static void applyDto(final User user, final UserDto dto) {
-        user.setFullName(trimToNull(dto.getFullName()));
-        user.setUserComments(trimToNull(dto.getUserComments()));
-        user.setTuiPin(trimToNull(dto.getTuiPin()));
-        final String timeZoneId = trimToNull(dto.getTimeZoneId());
-        if (timeZoneId == null) {
-            user.setTimeZoneId((java.time.ZoneId) null);
-        } else {
-            user.setTimeZoneId(timeZoneId);
+        // omitted (null) fields are preserved, matching the groups and
+        // on-call services; an empty string clears a field
+        if (dto.getFullName() != null) {
+            user.setFullName(trimToNull(dto.getFullName()));
         }
-        setContact(user, ContactType.email, dto.getEmail());
-        setContact(user, ContactType.pagerEmail, dto.getPagerEmail());
+        if (dto.getUserComments() != null) {
+            user.setUserComments(trimToNull(dto.getUserComments()));
+        }
+        if (dto.getTuiPin() != null) {
+            user.setTuiPin(trimToNull(dto.getTuiPin()));
+        }
+        if (dto.getTimeZoneId() != null) {
+            final String timeZoneId = trimToNull(dto.getTimeZoneId());
+            if (timeZoneId == null) {
+                user.setTimeZoneId((java.time.ZoneId) null);
+            } else {
+                user.setTimeZoneId(timeZoneId);
+            }
+        }
+        if (dto.getEmail() != null) {
+            setContact(user, ContactType.email, dto.getEmail());
+        }
+        if (dto.getPagerEmail() != null) {
+            setContact(user, ContactType.pagerEmail, dto.getPagerEmail());
+        }
         if (dto.getDutySchedules() != null) {
             user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
         }
@@ -394,7 +439,7 @@ public class UsersRestService implements UsersRestApi {
 
     /** Returns a problem description, or null when the user id is acceptable. */
     private static String validateUserId(final String userId) {
-        if (INVALID_USER_ID.matcher(userId).matches()) {
+        if (INVALID_USER_ID.matcher(userId).find()) {
             return "The user-id must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
         if (".".equals(userId) || "..".equals(userId)) {
