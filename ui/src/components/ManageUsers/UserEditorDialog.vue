@@ -9,15 +9,28 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-grid">
+      <Message
+        v-if="errorText"
+        severity="error"
+        :closable="false"
+        class="full-width"
+        data-test="dialog-error"
+      >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
           <InputText
             id="user-editor-id"
             v-model="form.userId"
+            :invalid="!!userIdProblem"
             data-test="user-id-input"
           />
           <label for="user-editor-id">User ID *</label>
         </IftaLabel>
+        <small
+          v-if="userIdProblem"
+          class="field-error"
+          data-test="user-id-error"
+        >{{ userIdProblem }}</small>
       </FormField>
       <FormField v-if="!isEditing">
         <IftaLabel>
@@ -57,20 +70,32 @@
           <InputText
             id="user-editor-email"
             v-model="form.email"
+            :invalid="!!emailProblem"
             data-test="email-input"
           />
           <label for="user-editor-email">Email</label>
         </IftaLabel>
+        <small
+          v-if="emailProblem"
+          class="field-error"
+          data-test="email-error"
+        >{{ emailProblem }}</small>
       </FormField>
       <FormField>
         <IftaLabel>
           <InputText
             id="user-editor-pager-email"
             v-model="form.pagerEmail"
+            :invalid="!!pagerEmailProblem"
             data-test="pager-email-input"
           />
           <label for="user-editor-pager-email">Pager Email</label>
         </IftaLabel>
+        <small
+          v-if="pagerEmailProblem"
+          class="field-error"
+          data-test="pager-email-error"
+        >{{ pagerEmailProblem }}</small>
       </FormField>
       <FormField class="full-width">
         <IftaLabel>
@@ -113,10 +138,12 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import Message from 'primevue/message'
 import MultiSelect from 'primevue/multiselect'
 import Password from 'primevue/password'
 
 import FormField from '@/components/Common/FormField.vue'
+import { validateAdminName, validateEmailShape } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser } from '@/types/userAdmin'
 
@@ -140,11 +167,19 @@ const form = reactive({
 })
 
 const saving = ref(false)
+const errorText = ref('')
 
 const isEditing = computed(() => props.user !== null)
 const originalUserId = computed(() => props.user?.['user-id'] ?? '')
 
+const userIdProblem = computed(() => (isEditing.value ? null : validateAdminName(form.userId, 'user-id')))
+const emailProblem = computed(() => validateEmailShape(form.email, 'email'))
+const pagerEmailProblem = computed(() => validateEmailShape(form.pagerEmail, 'pager email'))
+
 const isValid = computed(() => {
+  if (userIdProblem.value || emailProblem.value || pagerEmailProblem.value) {
+    return false
+  }
   if (isEditing.value) {
     return true
   }
@@ -157,6 +192,7 @@ watch(
     if (!isVisible) {
       return
     }
+    errorText.value = ''
     if (props.user) {
       Object.assign(form, {
         userId: props.user['user-id'],
@@ -189,11 +225,13 @@ const save = async () => {
       'pager-email': form.pagerEmail.trim(),
       role: [...form.roles]
     }
-    const ok = isEditing.value
+    const error = isEditing.value
       ? await store.updateUser(payload)
       : await store.createUser({ ...payload, password: form.password })
-    if (ok) {
+    if (error === null) {
       emit('update:visible', false)
+    } else {
+      errorText.value = error
     }
   } finally {
     saving.value = false
@@ -217,5 +255,11 @@ const save = async () => {
   :deep(.p-multiselect) {
     width: 100%;
   }
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-red-500, #e24c4c);
 }
 </style>

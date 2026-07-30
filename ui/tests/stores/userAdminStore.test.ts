@@ -50,26 +50,26 @@ describe('useUserAdminStore', () => {
   })
 
   it('createUser should refresh on success', async () => {
-    vi.mocked(API.createManagedUser).mockResolvedValue(true)
+    vi.mocked(API.createManagedUser).mockResolvedValue(null)
     vi.mocked(API.getManagedUsers).mockResolvedValue(mockUsers)
 
     const ok = await store.createUser({ 'user-id': 'noc', password: 'secret' })
 
-    expect(ok).toBe(true)
+    expect(ok).toBe(null)
     expect(API.getManagedUsers).toHaveBeenCalledTimes(1)
   })
 
   it('createUser should not refresh on failure', async () => {
-    vi.mocked(API.createManagedUser).mockResolvedValue(false)
+    vi.mocked(API.createManagedUser).mockResolvedValue('it failed')
 
     const ok = await store.createUser({ 'user-id': 'noc', password: 'secret' })
 
-    expect(ok).toBe(false)
+    expect(ok).toBe('it failed')
     expect(API.getManagedUsers).not.toHaveBeenCalled()
   })
 
   it('updateUser should refresh on success', async () => {
-    vi.mocked(API.updateManagedUser).mockResolvedValue(true)
+    vi.mocked(API.updateManagedUser).mockResolvedValue(null)
     vi.mocked(API.getManagedUsers).mockResolvedValue(mockUsers)
 
     await store.updateUser(mockUsers[1])
@@ -79,7 +79,7 @@ describe('useUserAdminStore', () => {
   })
 
   it('renameUser should pass old and new ids and refresh', async () => {
-    vi.mocked(API.renameManagedUser).mockResolvedValue(true)
+    vi.mocked(API.renameManagedUser).mockResolvedValue(null)
     vi.mocked(API.getManagedUsers).mockResolvedValue(mockUsers)
 
     await store.renameUser('noc', 'noc2')
@@ -89,7 +89,7 @@ describe('useUserAdminStore', () => {
   })
 
   it('deleteUser should refresh on success', async () => {
-    vi.mocked(API.deleteManagedUser).mockResolvedValue(true)
+    vi.mocked(API.deleteManagedUser).mockResolvedValue(null)
     vi.mocked(API.getManagedUsers).mockResolvedValue([mockUsers[0]])
 
     await store.deleteUser('noc')
@@ -108,11 +108,11 @@ describe('useUserAdminStore', () => {
   })
 
   it('setPassword should not trigger a reload', async () => {
-    vi.mocked(API.setManagedUserPassword).mockResolvedValue(true)
+    vi.mocked(API.setManagedUserPassword).mockResolvedValue(null)
 
     const ok = await store.setPassword('noc', 'newpw')
 
-    expect(ok).toBe(true)
+    expect(ok).toBe(null)
     expect(API.setManagedUserPassword).toHaveBeenCalledWith('noc', 'newpw')
     expect(API.getManagedUsers).not.toHaveBeenCalled()
   })

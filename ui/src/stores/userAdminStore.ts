@@ -41,19 +41,19 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
   }
 
   const createUser = async (user: ManagedUserCreate) => {
-    const ok = await API.createManagedUser(user)
-    if (ok) {
+    const error = await API.createManagedUser(user)
+    if (error === null) {
       await getUsers()
     }
-    return ok
+    return error
   }
 
   const updateUser = async (user: ManagedUser) => {
-    const ok = await API.updateManagedUser(user)
-    if (ok) {
+    const error = await API.updateManagedUser(user)
+    if (error === null) {
       await getUsers()
     }
-    return ok
+    return error
   }
 
   const setPassword = async (userId: string, password: string) => {
@@ -61,19 +61,19 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
   }
 
   const renameUser = async (userId: string, newUserId: string) => {
-    const ok = await API.renameManagedUser(userId, newUserId)
-    if (ok) {
+    const error = await API.renameManagedUser(userId, newUserId)
+    if (error === null) {
       await getUsers()
     }
-    return ok
+    return error
   }
 
   const deleteUser = async (userId: string) => {
-    const ok = await API.deleteManagedUser(userId)
-    if (ok) {
+    const error = await API.deleteManagedUser(userId)
+    if (error === null) {
       await getUsers()
     }
-    return ok
+    return error
   }
 
   const populate = async () => {

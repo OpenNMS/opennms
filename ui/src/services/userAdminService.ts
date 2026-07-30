@@ -58,71 +58,76 @@ const getAvailableUserRoles = async (): Promise<string[]> => {
   }
 }
 
-const createManagedUser = async (user: ManagedUserCreate): Promise<boolean> => {
+const createManagedUser = async (user: ManagedUserCreate): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(endpoint, user)
     showSnackBar({ msg: `User '${user['user-id']}' created.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to create user '${user['user-id']}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to create user '${user['user-id']}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const updateManagedUser = async (user: ManagedUser): Promise<boolean> => {
+const updateManagedUser = async (user: ManagedUser): Promise<string | null> => {
   try {
     startSpinner()
     await v2.put(`${endpoint}/${encodeURIComponent(user['user-id'])}`, user)
     showSnackBar({ msg: `User '${user['user-id']}' updated.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to update user '${user['user-id']}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to update user '${user['user-id']}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const setManagedUserPassword = async (userId: string, password: string): Promise<boolean> => {
+const setManagedUserPassword = async (userId: string, password: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.put(`${endpoint}/${encodeURIComponent(userId)}/password`, { password })
     showSnackBar({ msg: `Password changed for '${userId}'.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to change the password for '${userId}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to change the password for '${userId}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const renameManagedUser = async (userId: string, newUserId: string): Promise<boolean> => {
+const renameManagedUser = async (userId: string, newUserId: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(`${endpoint}/${encodeURIComponent(userId)}/rename`, { 'new-user-id': newUserId })
     showSnackBar({ msg: `User '${userId}' renamed to '${newUserId}'.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to rename user '${userId}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to rename user '${userId}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const deleteManagedUser = async (userId: string): Promise<boolean> => {
+const deleteManagedUser = async (userId: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.delete(`${endpoint}/${encodeURIComponent(userId)}`)
     showSnackBar({ msg: `User '${userId}' deleted.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to delete user '${userId}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to delete user '${userId}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }

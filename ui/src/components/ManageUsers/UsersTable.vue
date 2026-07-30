@@ -58,7 +58,13 @@
       </Column>
       <Column header="Actions">
         <template #body="{ data }">
-          <div class="action-container">
+          <span
+            v-if="!isPathAddressable(data['user-id'])"
+            class="unaddressable"
+            v-tooltip.top="'This user-id contains / \\ or %, which the API cannot address; manage it by editing users.xml.'"
+            data-test="unaddressable-note"
+          >file-managed</span>
+          <div v-else class="action-container">
             <Button
               text
               label="Edit"
@@ -146,6 +152,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
@@ -227,6 +234,11 @@ const cancelDelete = () => {
 .roles {
   font-size: 0.875rem;
   color: var(--p-text-muted-color);
+}
+
+.unaddressable {
+  color: var(--p-text-muted-color);
+  font-style: italic;
 }
 
 .action-container {

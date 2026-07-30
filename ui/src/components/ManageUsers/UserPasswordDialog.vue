@@ -9,6 +9,12 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
+      <Message
+        v-if="errorText"
+        severity="error"
+        :closable="false"
+        data-test="dialog-error"
+      >{{ errorText }}</Message>
       <FormField>
         <IftaLabel>
           <Password
@@ -65,6 +71,7 @@ import { ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
+import Message from 'primevue/message'
 import Password from 'primevue/password'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -82,6 +89,7 @@ const store = useUserAdminStore()
 const password = ref('')
 const confirmation = ref('')
 const saving = ref(false)
+const errorText = ref('')
 
 watch(
   () => props.visible,
@@ -89,6 +97,7 @@ watch(
     if (isVisible) {
       password.value = ''
       confirmation.value = ''
+      errorText.value = ''
     }
   }
 )
@@ -96,9 +105,11 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const ok = await store.setPassword(props.userId, password.value)
-    if (ok) {
+    const error = await store.setPassword(props.userId, password.value)
+    if (error === null) {
       emit('update:visible', false)
+    } else {
+      errorText.value = error
     }
   } finally {
     saving.value = false
