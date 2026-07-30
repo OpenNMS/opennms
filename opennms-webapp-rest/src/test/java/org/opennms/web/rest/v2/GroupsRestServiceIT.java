@@ -180,6 +180,28 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testPreExistingUnknownMemberStaysEditable() throws Exception {
+        // a hand-edited groups.xml may reference a user that no longer exists;
+        // the group must remain editable while that member round-trips
+        final Group group = new Group();
+        group.setName("stalemember");
+        group.addUser("ghostuser");
+        m_groupManager.saveGroup("stalemember", group);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/stalemember",
+                "{\"name\":\"stalemember\",\"comments\":\"touched\",\"user\":[\"ghostuser\"]}", 204);
+        final JSONObject after = new JSONObject(getJson("/groups/stalemember", 200));
+        assertEquals("touched", after.getString("comments"));
+        assertEquals("ghostuser", after.getJSONArray("user").getString(0));
+
+        // but ADDING a different unknown user is still rejected
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/stalemember",
+                "{\"name\":\"stalemember\",\"user\":[\"ghostuser\",\"anotherghost\"]}", 400);
+
+        sendRequest(DELETE, "/groups/stalemember", 204);
+    }
+
+    @Test
     public void testDotSegmentNamesRejected() throws Exception {
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\".\"}", 400);
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"..\"}", 400);

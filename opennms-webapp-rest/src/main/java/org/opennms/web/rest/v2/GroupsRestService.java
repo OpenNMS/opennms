@@ -292,6 +292,11 @@ public class GroupsRestService implements GroupsRestApi {
             throw new IllegalArgumentException("The comments must not contain any HTML markup.");
         }
         if (dto.getUsers() != null) {
+            // members already stored on the group are grandfathered (a
+            // hand-edited file may reference a user that no longer exists);
+            // only members new to this request must resolve to a real user
+            final Set<String> preExistingMembers = existing == null
+                    ? Set.of() : new LinkedHashSet<>(existing.getUsers());
             final Set<String> seen = new LinkedHashSet<>();
             for (final String user : dto.getUsers()) {
                 if (isBlank(user)) {
@@ -300,7 +305,7 @@ public class GroupsRestService implements GroupsRestApi {
                 if (!seen.add(user)) {
                     throw new IllegalArgumentException("Duplicate group member: " + user);
                 }
-                if (!m_userManager.hasUser(user)) {
+                if (!preExistingMembers.contains(user) && !m_userManager.hasUser(user)) {
                     throw new IllegalArgumentException("Unknown user: " + user);
                 }
             }
