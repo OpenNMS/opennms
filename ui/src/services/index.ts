@@ -74,6 +74,12 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  getDestinationPaths,
+  getNotificationConfigStatus,
+  setNotificationConfigStatus
+} from './notificationConfigService'
+import { acknowledgeNotice, browseNotices } from './noticesService'
 
 export default {
   search,
@@ -135,5 +141,10 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
-  performLogout
+  performLogout,
+  acknowledgeNotice,
+  browseNotices,
+  getDestinationPaths,
+  getNotificationConfigStatus,
+  setNotificationConfigStatus
 }

@@ -26,9 +26,11 @@
   setup
   lang="ts"
 >
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { whenever } from '@vueuse/core'
 
 import { OnmsToastHost } from '@opennms/onms-ui'
+import startBrowserNotifications from '@/composables/useBrowserNotifications'
 import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
@@ -47,6 +49,10 @@ const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
 const nodeStructureStore = useNodeStructureStore()
 const pluginStore = usePluginStore()
+
+// notifd 'browser' method delivery for /ui pages; needs baseHref from the menu
+const baseHref = computed<string>(() => menuStore.mainMenu?.baseHref ?? '')
+whenever(() => !!baseHref.value, () => startBrowserNotifications(baseHref.value), { once: true })
 
 onMounted(() => {
   authStore.getWhoAmI()
