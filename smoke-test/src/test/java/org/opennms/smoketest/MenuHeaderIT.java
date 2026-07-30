@@ -162,7 +162,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // User Management Menu
         clickMenuItem("User Management", "Manage Users");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
 
         clickMenuItem("User Management", "Manage Groups");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
