@@ -21,7 +21,7 @@
 ///
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
-import { resolve, sep } from 'node:path'
+import { extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
@@ -34,24 +34,28 @@ dotenv.config()
 // this file is ESM with no __dirname; derive it from import.meta.url instead
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
-// Serves the built example plugin during `pnpm dev` only (NMS-20054).
+// Serves a built plugin module during `pnpm dev` only (NMS-20054).
 // apply: 'serve' means this cannot exist in production builds. URL shape is
 // load-bearing: externalComponent() derives the window-global key from the
-// second-to-last path segment ('exampleUiExtension').
-const examplePluginDevServer = (): PluginOption => {
-  const distDir = resolve(__dirname, 'packages/onms-ui-example-plugin/dist')
+// second-to-last path segment (the extensionId).
+const PLUGIN_DEV_CONTENT_TYPES: Record<string, string> = {
+  '.js': 'text/javascript',
+  '.css': 'text/css'
+}
+
+const pluginDevServer = (extensionId: string, distDir: string): PluginOption => {
   return {
-    name: 'onms-example-plugin-dev-server',
+    name: `onms-plugin-dev-server-${extensionId}`,
     apply: 'serve',
     configureServer(server) {
-      server.middlewares.use('/plugin-modules/exampleUiExtension', (req, res, next) => {
+      server.middlewares.use(`/plugin-modules/${extensionId}`, (req, res, next) => {
         const fileName = (req.url ?? '').split('?')[0].replace(/^\//, '')
         const file = resolve(distDir, fileName)
         // Containment check prevents ../ traversal attacks (connect does not normalize mount-prefix match)
         if (!fileName || !file.startsWith(distDir + sep) || !existsSync(file) || !statSync(file).isFile()) {
           return next()
         }
-        res.setHeader('Content-Type', 'text/javascript')
+        res.setHeader('Content-Type', PLUGIN_DEV_CONTENT_TYPES[extname(fileName)] ?? 'application/octet-stream')
         res.end(readFileSync(file))
       })
     }
@@ -88,7 +92,14 @@ export default defineConfig({
       }
     }),
     svgLoader(),
-    examplePluginDevServer()
+    pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist')),
+    // Dev harness for opennms-servicenow-plugin (MPLUG-100): point
+    // VITE_SERVICENOW_PLUGIN_DIST at that repo's built UI, e.g.
+    // /path/to/opennms-servicenow-plugin/plugin/src/main/ui/dist
+    // (dotenv is loaded above, so .env.local works).
+    ...(process.env.VITE_SERVICENOW_PLUGIN_DIST
+      ? [pluginDevServer('serviceNowUiExtension', resolve(process.env.VITE_SERVICENOW_PLUGIN_DIST))]
+      : [])
   ],
   test: {
     dir: './tests',

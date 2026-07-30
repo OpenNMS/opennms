@@ -41,7 +41,7 @@ import '@/styles/themes.scss'
 import 'vue-diff/dist/index.css'
 
 import dateFormatDirective from '../directives/v-date'
-import { externalComponent, getJSPath } from '../components/Plugin/utils'
+import { addStylesheet, externalComponent, getJSPath } from '../components/Plugin/utils'
 import { setupPrimeVue } from '../theme/primevue-setup'
 import { useAppStore } from '@/stores/appStore'
 
@@ -109,6 +109,29 @@ if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
     component: () => import('@/components/Plugin/Container.vue'),
     props: { script: '/plugin-modules/exampleUiExtension/exampleUiExtension.es.js' }
   })
+}
+
+// Dev-only harness for opennms-servicenow-plugin (MPLUG-100): serves that
+// repo's built module through the same externalComponent/Container path real
+// plugins use (middleware in vite.config.ts). The route name follows the
+// production 'Plugin-<extensionId>' convention because the plugin registers
+// its child routes under that named route, and the module is loaded before
+// app mount — like production plugins above — so those routes exist before
+// first navigation. Enable by setting VITE_SERVICENOW_PLUGIN_DIST.
+if (import.meta.env.DEV && import.meta.env.VITE_SERVICENOW_PLUGIN_DIST) {
+  const script = '/plugin-modules/serviceNowUiExtension/serviceNowUiExtension.es.js'
+  router.addRoute({
+    path: '/servicenow-plugin',
+    name: 'Plugin-serviceNowUiExtension',
+    component: () => import('@/components/Plugin/Container.vue'),
+    props: { script }
+  })
+  addStylesheet('/plugin-modules/serviceNowUiExtension/style.css')
+  try {
+    await externalComponent(script)
+  } catch (e) {
+    console.error('Error loading servicenow plugin dev module: ', e)
+  }
 }
 
 const app = createApp({
