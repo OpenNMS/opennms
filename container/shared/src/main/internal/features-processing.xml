@@ -4,6 +4,13 @@
   xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
 >
 
+  <!-- OPENNMS: Karaf's "standard" feature repository pins mvn:org.jline/jline/3.21.0, which is
+       affected by CVE-2026-56740. Redirect any 3.x jline bundle to the version we ship in
+       etc/startup.properties so only one (fixed) jline lands in system/. -->
+  <bundleReplacements>
+    <bundle originalUri="mvn:org.jline/jline/[3,4)" replacement="mvn:org.jline/jline/${jlineVersion}" mode="maven"/>
+  </bundleReplacements>
+
   <featureReplacements>
     <replacement mode="replace">
       <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">

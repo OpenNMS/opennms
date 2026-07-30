@@ -134,6 +134,42 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!--
+                    OPENNMS: The Karaf framework KAR ships a copy of jline 3.21.0 in its
+                    resources/system/ payload, which is extracted verbatim and is therefore not
+                    covered by the bundle replacement in features-processing.xml. Drop every staged
+                    jline except the one we boot (see jlineVersion), which is not affected by
+                    CVE-2026-56740, and repoint the launcher scripts that name the jar explicitly
+                    on their classpath.
+
+                    Must run after karaf:assembly and before checksum-maven-plugin below.
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>remove-superseded-jline</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/jline/jline"
+                                             excludes="${jlineVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
+                                               replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
                 <artifactId>checksum-maven-plugin</artifactId>
                 <executions>

@@ -134,6 +134,17 @@
                                   <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
                                   <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-features" includes="**/*-jettyconfig.xml" />
                                 </delete>
+                                <!--
+                                    OPENNMS: features-add-to-repository stages the jline version
+                                    pinned by Karaf's own feature repository (3.21.0, affected by
+                                    CVE-2026-56740). Drop every jline except the one the container
+                                    boots (see jlineVersion); that one is resolved from the
+                                    container's system/ directory at runtime.
+                                -->
+                                <delete includeemptydirs="true">
+                                  <fileset dir="${project.build.directory}/maven-repo/org/jline/jline"
+                                           excludes="${jlineVersion}/**" erroronmissingdir="false" />
+                                </delete>
                             </target>
                         </configuration>
                     </execution>

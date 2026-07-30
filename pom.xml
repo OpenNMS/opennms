@@ -1893,7 +1893,12 @@
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.0</jansiVersion>
-    <jlineVersion>3.21.0</jlineVersion>
+    <!-- OPENNMS: deliberately ahead of the 3.21.0 provided by Karaf 4.3.10 to fix CVE-2026-56740
+         (unbounded Telnet NEW-ENVIRON variables in the shaded jline-remote-telnet module).
+         Must stay on the 3.x line: org.apache.karaf.shell.core imports org.jline.* with the
+         range [3.21,4), so jline 4.x would not resolve. See features-processing.xml, which
+         redirects the jline bundle of Karaf's own "jline" feature to this version. -->
+    <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
     <paxLoggingVersion>2.0.19</paxLoggingVersion>
     <paxSwissboxVersion>1.8.5</paxSwissboxVersion>

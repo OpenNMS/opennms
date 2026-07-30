@@ -723,6 +723,32 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!--
+              OPENNMS: features-add-to-repository has no featuresProcessing support, so it stages
+              the jline version pinned by Karaf's own feature repository (3.21.0, affected by
+              CVE-2026-56740). Drop every jline except the one the container boots (see
+              jlineVersion); that one is resolved from the container's system/ directory at runtime.
+
+              Bound to process-classes so it runs after features-add-to-repository
+              (process-resources) and before checksum-maven-plugin (prepare-package).
+          -->
+          <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
           <execution>
             <phase>verify</phase>
             <goals>
