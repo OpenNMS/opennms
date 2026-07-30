@@ -83,6 +83,9 @@ public class HaStartupCoordinator {
     static final int MIN_HEARTBEAT_INTERVAL_SECONDS = 5;
     static final int MIN_FAILOVER_THRESHOLD_SECONDS = 20;
 
+    /** Pace between retries while establishing HA state at startup (fail closed). */
+    static final int STARTUP_RETRY_SECONDS = 10;
+
     /** How often to re-read {@code ha-configuration.xml} from disk while running. */
     static final int CONFIG_RELOAD_INTERVAL_SECONDS = 60;
 
@@ -94,6 +97,7 @@ public class HaStartupCoordinator {
     private final HaHeartbeatWriter heartbeatWriter;
     private final CountDownLatch startupGate = new CountDownLatch(1);
     private final AtomicBoolean stopRequested = new AtomicBoolean(false);
+    private final AtomicBoolean heartbeatOnlyRegistered = new AtomicBoolean(false);
     private final AtomicReference<HaInstanceState> currentState = new AtomicReference<>(HaInstanceState.STANDBY);
     private ScheduledExecutorService scheduler;
 
@@ -398,22 +402,58 @@ public class HaStartupCoordinator {
     // -------------------------------------------------------------------------
 
     boolean doAwaitReadyToStart() {
-        try {
-            HaStatusSchema.ensureSchema(dbFactory);
-        } catch (Exception e) {
-            LOG.error("HA: failed to ensure ha_instance_status schema; HA is disabled, proceeding with startup", e);
-            return true;
-        }
-
         if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
             return startHeartbeatOnly();
         }
 
-        try {
-            writeInitialStatus();
-        } catch (Exception e) {
-            LOG.error("HA: failed to write initial status to DB; HA is disabled, proceeding with startup", e);
-            return true;
+        // Fail closed: an enabled coordinator-mode node must never start services
+        // without its coordination state established. Retries pace on the startup
+        // gate so a shutdown request wakes them immediately.
+        while (true) {
+            if (stopRequested.get()) {
+                LOG.info("HA: shutdown requested before HA state was established; exiting without starting services");
+                return false;
+            }
+            try {
+                HaStatusSchema.ensureSchema(dbFactory);
+                break;
+            } catch (Exception e) {
+                LOG.error("HA: failed to ensure ha_instance_status schema; retrying in {}s (startup stays gated)",
+                        STARTUP_RETRY_SECONDS, e);
+                if (!waitBeforeRetry()) {
+                    LOG.info("HA: shutdown requested before HA state was established; exiting without starting services");
+                    return false;
+                }
+            }
+        }
+
+        // Establish the initial state before this node advertises anything: a
+        // PRIMARY may claim ACTIVE only after proving the partner is not serving —
+        // when the partner is ACTIVE, the very first row write is DEGRADED, so a
+        // restarting PRIMARY never briefly shows ACTIVE next to a serving
+        // SECONDARY (which would trip the partner's split-brain arbitration). A
+        // failed partner check or status write keeps startup gated and retries;
+        // it never authorizes startup.
+        boolean partnerActive = false;
+        while (true) {
+            if (stopRequested.get()) {
+                LOG.info("HA: shutdown requested before HA state was established; exiting without starting services");
+                return false;
+            }
+            try {
+                partnerActive = config.getRole() == HaRole.PRIMARY && isPartnerActive();
+                HaInstanceState initialState = partnerActive ? HaInstanceState.DEGRADED
+                        : config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY;
+                writeInitialStatus(initialState);
+                break;
+            } catch (Exception e) {
+                LOG.error("HA: could not establish initial HA state; retrying in {}s (startup stays gated)",
+                        STARTUP_RETRY_SECONDS, e);
+                if (!waitBeforeRetry()) {
+                    LOG.info("HA: shutdown requested before HA state was established; exiting without starting services");
+                    return false;
+                }
+            }
         }
 
         // Two-thread pool: heartbeat/monitor on one thread, config sync on another
@@ -429,11 +469,9 @@ public class HaStartupCoordinator {
                 CONFIG_RELOAD_INTERVAL_SECONDS, CONFIG_RELOAD_INTERVAL_SECONDS, TimeUnit.SECONDS);
 
         if (config.getRole() == HaRole.PRIMARY) {
-            if (isPartnerActive()) {
+            if (partnerActive) {
                 LOG.warn("HA: PRIMARY mode — partner {} is currently ACTIVE; entering DEGRADED state until failback",
                         config.getPartnerInstanceId());
-                updateState(HaInstanceState.DEGRADED);
-                currentState.set(HaInstanceState.DEGRADED);
 
                 startSyncIfApplicable();
 
@@ -463,8 +501,7 @@ public class HaStartupCoordinator {
                 return true;
             }
 
-            updateState(HaInstanceState.ACTIVE);
-            currentState.set(HaInstanceState.ACTIVE);
+            // Initial status write above already claimed ACTIVE and stamped active_since.
             heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                     0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
             LOG.info("HA: PRIMARY mode — heartbeat thread started, proceeding with service startup");
@@ -501,6 +538,22 @@ public class HaStartupCoordinator {
     }
 
     /**
+     * Paces a fail-closed startup retry. Waits on the startup gate rather than
+     * sleeping so a shutdown request wakes the Starter thread immediately.
+     *
+     * @return {@code true} to retry, {@code false} if shutdown was requested
+     */
+    private boolean waitBeforeRetry() {
+        try {
+            startupGate.await(STARTUP_RETRY_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+        return !stopRequested.get();
+    }
+
+    /**
      * heartbeat-only mode: an external HA agent owns supervision — it writes
      * {@code current_state}/{@code active_since}/{@code agent_last_seen},
      * decides promotion and fencing, and starts/stops this service. OpenNMS's
@@ -510,10 +563,13 @@ public class HaStartupCoordinator {
      */
     private boolean startHeartbeatOnly() {
         try {
+            HaStatusSchema.ensureSchema(dbFactory);
             upsertSelfNonClobbering();
+            heartbeatOnlyRegistered.set(true);
         } catch (Exception e) {
-            LOG.error("HA: failed to register instance row; heartbeat disabled, proceeding with startup", e);
-            return true;
+            // Never gate startup in this mode — the external agent supervises.
+            // The heartbeat task below keeps retrying the registration.
+            LOG.error("HA: failed to register instance row; heartbeat task will keep retrying", e);
         }
 
         scheduler = Executors.newScheduledThreadPool(1, r -> {
@@ -524,11 +580,31 @@ public class HaStartupCoordinator {
 
         reloadFuture = scheduler.scheduleAtFixedRate(this::reloadConfig,
                 CONFIG_RELOAD_INTERVAL_SECONDS, CONFIG_RELOAD_INTERVAL_SECONDS, TimeUnit.SECONDS);
-        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
+        heartbeatFuture = scheduler.scheduleAtFixedRate(this::heartbeatOnlyTick,
                 0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
         LOG.info("HA heartbeat-only mode — external agent supervises; proceeding with service startup");
         return true;
+    }
+
+    /**
+     * Heartbeat-only cycle: completes the schema/row registration first if it
+     * failed at startup (the heartbeat UPDATE silently matches zero rows until
+     * the row exists), then publishes liveness.
+     */
+    private void heartbeatOnlyTick() {
+        if (stopRequested.get()) return;
+        if (!heartbeatOnlyRegistered.get()) {
+            try {
+                HaStatusSchema.ensureSchema(dbFactory);
+                upsertSelfNonClobbering();
+                heartbeatOnlyRegistered.set(true);
+            } catch (Exception e) {
+                LOG.warn("HA: instance registration failed; will retry next heartbeat cycle: {}", e.toString());
+                return;
+            }
+        }
+        heartbeatWriter.write();
     }
 
     /**
@@ -628,12 +704,12 @@ public class HaStartupCoordinator {
         }
     }
 
-    private void writeInitialStatus() throws Exception {
+    private void writeInitialStatus(HaInstanceState initialState) throws Exception {
         String hostname = resolveHostname();
         try (Connection conn = dbFactory.getConnection()) {
-            HaInstanceState initialState = config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY;
-            // A PRIMARY starting up clean takes ACTIVE now, so stamp active_since with the DB
-            // clock; a SECONDARY starts STANDBY with no ownership (NULL). See checkForSplitBrain.
+            // A PRIMARY that proved the partner inactive takes ACTIVE now, so stamp
+            // active_since with the DB clock; any other initial state carries no
+            // ownership (NULL). See checkForSplitBrain.
             String activeSinceExpr = initialState == HaInstanceState.ACTIVE ? "NOW()" : "NULL";
             String sql = "INSERT INTO ha_instance_status (instance_id, configured_role, current_state, last_heartbeat, hostname, active_since) " +
                          "VALUES (?, ?, ?, NOW(), ?, " + activeSinceExpr + ") " +
@@ -651,8 +727,8 @@ public class HaStartupCoordinator {
                 ps.executeUpdate();
             }
         }
-        currentState.set(config.getRole() == HaRole.PRIMARY ? HaInstanceState.ACTIVE : HaInstanceState.STANDBY);
-        LOG.info("HA: wrote initial status: instance={}, role={}, state={}", config.getInstanceId(), config.getRole(), currentState.get());
+        currentState.set(initialState);
+        LOG.info("HA: wrote initial status: instance={}, role={}, state={}", config.getInstanceId(), config.getRole(), initialState);
     }
 
     private void writeHeartbeat() {
@@ -869,9 +945,11 @@ public class HaStartupCoordinator {
 
     /**
      * Returns true if the configured partner currently has {@code current_state=ACTIVE}
-     * and a heartbeat fresher than the failover threshold. Called once at PRIMARY startup.
+     * and a heartbeat fresher than the failover threshold. Called at PRIMARY startup.
+     * Throws when the check cannot be performed — callers must fail closed rather
+     * than treat an unanswered question as "not active".
      */
-    private boolean isPartnerActive() {
+    private boolean isPartnerActive() throws Exception {
         if (config.getPartnerInstanceId() == null) return false;
         try (Connection conn = dbFactory.getConnection()) {
             String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
@@ -887,8 +965,6 @@ public class HaStartupCoordinator {
                     }
                 }
             }
-        } catch (Exception e) {
-            LOG.warn("HA: could not check partner active state at startup; assuming not active", e);
         }
         return false;
     }

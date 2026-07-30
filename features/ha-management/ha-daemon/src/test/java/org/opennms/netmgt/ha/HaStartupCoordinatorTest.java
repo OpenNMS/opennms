@@ -655,6 +655,92 @@ public class HaStartupCoordinatorTest {
     }
 
     // -------------------------------------------------------------------------
+    // Fail-closed startup: DB failures keep the gate shut, never authorize startup
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void schemaFailureKeepsStartupGated() throws Exception {
+        when(mockDbFactory.getConnection()).thenThrow(new java.sql.SQLException("db down"));
+
+        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
+        setStaticInstance(coord);
+        scheduleShutdown(coord, 200);
+
+        assertFalse("schema failure must not authorize startup", coord.doAwaitReadyToStart());
+    }
+
+    @Test
+    public void initialStatusWriteFailureKeepsStartupGated() throws Exception {
+        when(mockPs.executeUpdate()).thenThrow(new java.sql.SQLException("connection reset"));
+
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setStaticInstance(coord);
+        scheduleShutdown(coord, 200);
+
+        assertFalse("initial status write failure must not authorize startup", coord.doAwaitReadyToStart());
+    }
+
+    @Test
+    public void partnerCheckFailureKeepsPrimaryGated() throws Exception {
+        // Schema DDL (execute) succeeds; the partner read (executeQuery) fails —
+        // the PRIMARY must not treat the unanswered question as "partner inactive".
+        when(mockPs.executeQuery()).thenThrow(new java.sql.SQLException("connection reset"));
+
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setStaticInstance(coord);
+        scheduleShutdown(coord, 200);
+
+        assertFalse("unproven partner state must not authorize startup", coord.doAwaitReadyToStart());
+        verify(mockConn, never()).prepareStatement(contains("INSERT INTO ha_instance_status"));
+    }
+
+    @Test
+    public void restartingPrimaryWritesDegradedBeforeAdvertisingAnything() throws Exception {
+        HaConfiguration cfg = primaryConfig();
+        cfg.setHeartbeatIntervalSeconds(1);
+        cfg.setFailoverThresholdSeconds(5);
+
+        // isPartnerActive(): SECONDARY is ACTIVE with a fresh heartbeat;
+        // monitorForFailback() then sees it step down → failback promotion.
+        when(mockRs.next()).thenReturn(true);
+        when(mockRs.getString(1))
+                .thenReturn(HaInstanceState.ACTIVE.name())
+                .thenReturn(HaInstanceState.STANDBY.name());
+        when(mockRs.getLong(2)).thenReturn(1L);
+
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+
+        assertTrue(coord.doAwaitReadyToStart());
+
+        // The initial row write (state = parameter 3) must be DEGRADED — never a
+        // transient ACTIVE that could trip the serving partner's split-brain check.
+        org.mockito.ArgumentCaptor<String> stateParam = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(mockPs, atLeastOnce()).setString(eq(3), stateParam.capture());
+        assertEquals(java.util.List.of(HaInstanceState.DEGRADED.name()), stateParam.getAllValues());
+    }
+
+    @Test
+    public void heartbeatOnlyNeverGatesEvenWhenRegistrationFails() throws Exception {
+        when(mockDbFactory.getConnection()).thenThrow(new java.sql.SQLException("db down"));
+
+        HaConfiguration cfg = secondaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            long start = System.currentTimeMillis();
+            boolean proceed = coord.doAwaitReadyToStart();
+            long elapsed = System.currentTimeMillis() - start;
+
+            assertTrue("heartbeat-only must proceed even when registration fails", proceed);
+            assertTrue("expected immediate return, took " + elapsed + "ms", elapsed < 2000);
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Column ownership: the heartbeat writes last_heartbeat ONLY
     // -------------------------------------------------------------------------
 
