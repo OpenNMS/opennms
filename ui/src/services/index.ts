@@ -74,6 +74,17 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createOnCallRole,
+  deleteOnCallRole,
+  getOnCallCalendar,
+  getOnCallGroupCandidates,
+  getOnCallRole,
+  getOnCallSupervisorCandidates,
+  listOnCallRoles,
+  renameOnCallRole,
+  updateOnCallRole
+} from './onCallRoleAdminService'
 
 export default {
   search,
@@ -135,5 +146,14 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
+  createOnCallRole,
+  deleteOnCallRole,
+  getOnCallCalendar,
+  getOnCallGroupCandidates,
+  getOnCallRole,
+  getOnCallSupervisorCandidates,
+  listOnCallRoles,
+  renameOnCallRole,
+  updateOnCallRole,
   performLogout
 }

@@ -193,6 +193,13 @@
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
+    <!-- On-call roles drive notification scheduling; admin-only in every method -->
+    <intercept-url pattern="/api/v2/on-call-roles/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/on-call-roles/**" method="HEAD" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/on-call-roles/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/on-call-roles/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/on-call-roles/**" method="PUT" access="ROLE_ADMIN" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 

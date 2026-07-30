@@ -1,0 +1,171 @@
+<template>
+  <Dialog
+    :visible="visible"
+    modal
+    :header="isEditing ? `Edit On-Call Role: ${originalName}` : 'Add New On-Call Role'"
+    class="role-editor-dialog"
+    :style="{ width: '520px', maxWidth: '95vw' }"
+    data-test="role-editor-dialog"
+    @update:visible="(value: boolean) => emit('update:visible', value)"
+  >
+    <div class="form-column">
+      <FormField v-if="!isEditing">
+        <IftaLabel>
+          <InputText
+            id="role-editor-name"
+            v-model="name"
+            data-test="role-name-input"
+          />
+          <label for="role-editor-name">Role Name *</label>
+        </IftaLabel>
+      </FormField>
+      <FormField>
+        <IftaLabel>
+          <Select
+            v-model="membershipGroup"
+            labelId="role-editor-group"
+            :options="groupOptions"
+            filter
+            data-test="membership-group-select"
+          />
+          <label for="role-editor-group">Membership Group *</label>
+        </IftaLabel>
+        <small class="hint">Scheduled users are chosen from this group's members.</small>
+      </FormField>
+      <FormField>
+        <IftaLabel>
+          <Select
+            v-model="supervisor"
+            labelId="role-editor-supervisor"
+            :options="store.supervisorCandidates"
+            filter
+            data-test="supervisor-select"
+          />
+          <label for="role-editor-supervisor">Supervisor *</label>
+        </IftaLabel>
+        <small class="hint">On call whenever nobody is scheduled.</small>
+      </FormField>
+      <FormField>
+        <IftaLabel>
+          <InputText
+            id="role-editor-description"
+            v-model="description"
+            data-test="role-description-input"
+          />
+          <label for="role-editor-description">Description</label>
+        </IftaLabel>
+      </FormField>
+    </div>
+
+    <template #footer>
+      <Button
+        text
+        label="Cancel"
+        data-test="cancel-button"
+        @click="emit('update:visible', false)"
+      />
+      <Button
+        :label="isEditing ? 'Save Role' : 'Add Role'"
+        :disabled="!isValid || saving"
+        data-test="save-button"
+        @click="save"
+      />
+    </template>
+  </Dialog>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import IftaLabel from 'primevue/iftalabel'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+
+import FormField from '@/components/Common/FormField.vue'
+import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
+import { OnCallRole } from '@/types/onCallRoleAdmin'
+
+const props = defineProps<{
+  visible: boolean
+  role: OnCallRole | null
+}>()
+
+const emit = defineEmits(['update:visible'])
+
+const store = useOnCallRoleAdminStore()
+
+const name = ref('')
+const membershipGroup = ref<string | null>(null)
+const supervisor = ref<string | null>(null)
+const description = ref('')
+const saving = ref(false)
+
+const isEditing = computed(() => props.role !== null)
+const originalName = computed(() => props.role?.name ?? '')
+
+const groupOptions = computed(() => Object.keys(store.groupMembers))
+
+const isValid = computed(() =>
+  (isEditing.value || !!name.value.trim()) && !!membershipGroup.value && !!supervisor.value)
+
+watch(
+  () => props.visible,
+  (isVisible) => {
+    if (!isVisible) {
+      return
+    }
+    if (props.role) {
+      name.value = props.role.name
+      membershipGroup.value = props.role['membership-group'] ?? null
+      supervisor.value = props.role.supervisor ?? null
+      description.value = props.role.description ?? ''
+    } else {
+      name.value = ''
+      membershipGroup.value = null
+      supervisor.value = null
+      description.value = ''
+    }
+  }
+)
+
+const save = async () => {
+  saving.value = true
+  try {
+    // schedules are deliberately omitted: the server preserves them
+    const payload: OnCallRole = {
+      name: isEditing.value ? originalName.value : name.value.trim(),
+      'membership-group': membershipGroup.value ?? undefined,
+      supervisor: supervisor.value ?? undefined,
+      description: description.value.trim()
+    }
+    const ok = isEditing.value ? await store.updateRole(payload) : await store.createRole(payload)
+    if (ok) {
+      emit('update:visible', false)
+    }
+  } finally {
+    saving.value = false
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+
+  :deep(input),
+  :deep(.p-select) {
+    width: 100%;
+  }
+}
+
+.hint {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-text-muted-color);
+}
+</style>

@@ -159,6 +159,23 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin/oncall-roles',
+      name: 'Manage On-Call Roles',
+      component: () => import('@/containers/ManageOnCallRoles.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to manage on-call roles.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
       path: '/map',
       name: 'Map',
       component: () => import('@/containers/Map.vue'),

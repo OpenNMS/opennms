@@ -418,7 +418,7 @@
         {
           "id": "manageOnCall",
           "name": "Manage On-call Roles",
-          "url": "admin/userGroupView/roles",
+          "url": "ui/index.html#/admin/oncall-roles",
           "locationMatch": "",
           "roles": null
         }
