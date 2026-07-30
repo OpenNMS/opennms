@@ -490,15 +490,21 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     /**
      * The runtime (BasicScheduleUtils.setOutCalTime) parses stored dd-MMM-yyyy
-     * strings with the JVM default locale, so that is what must be written. A
-     * locale whose month abbreviations break the 20-character width cannot be
-     * represented at all — reject rather than store an entry notifd ignores.
+     * strings with the JVM default locale. Always store the canonical English
+     * form (fixed width, matches what the API accepts and returns) and reject
+     * when the default locale cannot parse it back — otherwise the entry would
+     * be stored but silently ignored by notifd. The check is locale-level, not
+     * month-level, so the same request never flips between accept and reject.
      */
     private static String runtimeDateTimeString(final Date date) {
-        final String stored = strictFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(date);
-        if (stored.length() != DATE_TIME_FORMAT.length()) {
+        final String stored = strictFormat(DATE_TIME_FORMAT, Locale.ROOT).format(date);
+        try {
+            if (!date.equals(strictFormat(DATE_TIME_FORMAT, Locale.getDefault()).parse(stored))) {
+                throw new ParseException(stored, 0);
+            }
+        } catch (final ParseException e) {
             throw new IllegalArgumentException("The server locale " + Locale.getDefault()
-                    + " cannot represent schedule dates in the dd-MMM-yyyy format the scheduler requires.");
+                    + " cannot parse the dd-MMM-yyyy schedule format the scheduler requires, so specific schedules would be ignored at runtime.");
         }
         return stored;
     }
