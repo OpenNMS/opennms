@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
+import { DestinationPath, NotifdStatus, PathOutage, PathOutagePreview, PathOutageRequest } from '@/types/notificationConfig'
 import { rest } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
@@ -69,9 +69,69 @@ const getDestinationPaths = async (): Promise<DestinationPath[]> => {
   }
 }
 
+const getPathOutages = async (): Promise<PathOutage[]> => {
+  try {
+    startSpinner()
+    const resp = await rest.get(`${endpoint}/path-outages`)
+    return resp.data ?? []
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load path outages.' })
+    return []
+  } finally {
+    stopSpinner()
+  }
+}
+
+const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+  try {
+    startSpinner()
+    const resp = await rest.get(`${endpoint}/path-outages/preview?rule=${encodeURIComponent(rule)}`)
+    return resp.data ?? null
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to validate the filter rule.' })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
+
+const applyPathOutage = async (request: PathOutageRequest): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.post(`${endpoint}/path-outages`, request)
+    showSnackBar({ msg: request.criticalIp ? 'Critical path applied.' : 'Critical path cleared.' })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to apply the critical path.' })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const deletePathOutage = async (nodeId: number): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.delete(`${endpoint}/path-outages/${nodeId}`)
+    showSnackBar({ msg: 'Critical path removed.' })
+    return true
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to remove the critical path.' })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
 
 export {
+  applyPathOutage,
+  deletePathOutage,
   getDestinationPaths,
   getNotificationConfigStatus,
+  getPathOutages,
+  previewPathOutageRule,
   setNotificationConfigStatus
 }

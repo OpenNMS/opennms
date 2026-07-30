@@ -11,9 +11,13 @@
   >
     <Tabs v-model:value="activeTab">
       <TabList>
+        <Tab value="path-outages" data-test="tab-path-outages">Path Outages</Tab>
         <Tab value="general" data-test="tab-general">General</Tab>
       </TabList>
       <TabPanels>
+        <TabPanel value="path-outages">
+          <PathOutagesTab />
+        </TabPanel>
         <TabPanel value="general">
           <div class="general-tab">
             <div class="status-toggle">
@@ -48,6 +52,7 @@ import TabPanels from 'primevue/tabpanels'
 import Tabs from 'primevue/tabs'
 import ToggleSwitch from 'primevue/toggleswitch'
 
+import PathOutagesTab from '@/components/AdminNotifications/PathOutagesTab.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 
