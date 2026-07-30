@@ -11,7 +11,6 @@
   <service enabled="\${env:CORE_SERVICE_TICKETER_ENABLED|true}"><name>OpenNMS:Name=Ticketer</name></service>
   <service enabled="\${env:CORE_SERVICE_CORRELATOR_ENABLED|false}"><name>OpenNMS:Name=Correlator</name></service>
   <service enabled="\${env:CORE_SERVICE_QUEUED_ENABLED|true}"><name>OpenNMS:Name=Queued</name></service>
-  <service enabled="\${env:CORE_SERVICE_ACTIOND_ENABLED|true}"><name>OpenNMS:Name=Actiond</name></service>
   <service enabled="\${env:CORE_SERVICE_NOTIFD_ENABLED|true}"><name>OpenNMS:Name=Notifd</name></service>
   <service enabled="\${env:CORE_SERVICE_SCRIPTD_ENABLED|true}"><name>OpenNMS:Name=Scriptd</name></service>
   <service enabled="\${env:CORE_SERVICE_RTCD_ENABLED|true}"><name>OpenNMS:Name=Rtcd</name></service>

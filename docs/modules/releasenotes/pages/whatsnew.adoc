@@ -131,6 +131,21 @@ These provided auto-rotating, dashlet-composed displays intended for wall-mounte
 The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
 There is no drop-in replacement.
 
+=== Actiond removed
+
+The `Actiond` daemon has been removed, along with its configuration file `etc/actiond-configuration.xml` and schema.
+Actiond subscribed to all events and launched an external process for each `<autoaction>` and `<tticket>` element attached to them.
+
+The `<autoaction>`, `<tticket>`, and `<operaction>` elements remain valid in event configuration, so existing customized event definitions continue to validate and require no changes.
+However, they are no longer executed — they are retained as event data only.
+(`<operaction>` has not been executed by any daemon for several major releases.)
+
+If you relied on autoactions to run shell commands in response to events, migrate that logic to Scriptd (`etc/scriptd-configuration.xml`), which executes BSF/Groovy scripts on event receipt, or to a notification command via `etc/notificationCommands.xml`.
+
+The `CORE_SERVICE_ACTIOND_ENABLED` environment variable no longer has any effect.
+No action is required in `service-configuration.xml`: a leftover `<service><name>OpenNMS:Name=Actiond</name></service>` entry is ignored on startup and logs a warning, because that file is an enable/disable overlay on the shipped service catalog rather than the catalog itself.
+An unmodified `etc/actiond-configuration.xml` is removed on upgrade; if you customized it, your copy is left behind as `actiond-configuration.xml.rpmsave` and can be deleted.
+
 === KSC Reports renamed to Graph Collections
 
 The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
