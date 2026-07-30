@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  # VictoriaMetrics speaks the Prometheus query API, so the built-in Prometheus
+  # data source works as-is. The /prometheus prefix is optional for VictoriaMetrics
+  # but keeps the URL identical in shape to Cortex/Mimir setups.
+  - name: VictoriaMetrics
+    type: prometheus
+    access: proxy
+    url: http://victoriametrics:8428/prometheus
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 300s

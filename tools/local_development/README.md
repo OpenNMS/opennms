@@ -1,5 +1,10 @@
 # Helper scripts for setting up and bringing up OpenNMS Development Environment
 
+The scripts below build and run OpenNMS on your machine, backed by a Dockerized
+PostgreSQL. If you would rather run everything in containers — including
+VictoriaMetrics as the time series store and Grafana — see
+[`stack/`](stack/README.md).
+
 # `dependencies.sh`
 
 ```

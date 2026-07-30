@@ -42,6 +42,8 @@ For details on installing OpenNMS, see [Install OpenNMS][].
 
 TL;DR - If you just want to set up a simple non-production evaluation of OpenNMS Horizon on Linux, some basic install scripts are available at [opennms-forge/opennms-install](https://github.com/opennms-forge/opennms-install)
 
+Or run the whole thing in containers with [tools/local_development/stack](tools/local_development/stack/README.md): `docker compose up -d` gives you PostgreSQL, OpenNMS, VictoriaMetrics as the metrics store, and Grafana.
+
 Build OpenNMS
 ================
 

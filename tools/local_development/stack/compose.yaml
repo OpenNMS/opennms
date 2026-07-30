@@ -1,0 +1,136 @@
+# OpenNMS developer stack: PostgreSQL + OpenNMS + VictoriaMetrics + Grafana.
+#
+# Metrics are stored through the Time Series Integration Layer
+# (org.opennms.timeseries.strategy=integration) by the Prometheus RemoteWrite
+# plugin, which writes to VictoriaMetrics and reads back through its PromQL API.
+# No RRD files are involved.
+#
+#   docker compose up -d                                      # start the stack
+#   docker compose -f compose.yaml -f compose.local.yml up -d  # image from this branch
+#
+# See README.md for ports, credentials, and troubleshooting.
+
+name: opennms-stack
+
+volumes:
+  data-postgres: {}
+  data-opennms: {}
+  data-config: {}
+  data-plugins: {}
+  data-vm: {}
+  data-grafana: {}
+
+networks:
+  stack: {}
+
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION:-15}
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: opennms
+      TZ: ${TIMEZONE:-UTC}
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d opennms"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [stack]
+
+  # One-shot: fetch the Prometheus RemoteWrite plugin KAR from Maven Central
+  # into the volume mounted as $OPENNMS_HOME/deploy. Runs as root because a
+  # fresh named volume is root-owned. Exits 0 without downloading if the KAR is
+  # already there, so restarts work offline.
+  plugin-init:
+    image: curlimages/curl:${CURL_VERSION:-8.11.1}
+    user: root
+    environment:
+      PLUGIN_VERSION: ${PLUGIN_VERSION:-2.1.0}
+    volumes:
+      - data-plugins:/deploy
+      - ./scripts/fetch-plugin-kar.sh:/usr/local/bin/fetch-plugin-kar.sh:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/fetch-plugin-kar.sh"]
+    restart: "no"
+    networks: [stack]
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:${VM_VERSION:-v1.148.0}
+    command:
+      - -storageDataPath=/victoria-metrics-data
+      - -retentionPeriod=${VM_RETENTION:-30d}
+      - -selfScrapeInterval=10s
+      - -httpListenAddr=:8428
+    volumes:
+      - data-vm:/victoria-metrics-data
+    ports:
+      - "${VM_HTTP_PORT:-8428}:8428/tcp"
+    networks: [stack]
+
+  opennms:
+    # Default: last published Horizon release. To run this branch instead:
+    #   docker compose -f compose.yaml -f compose.local.yml up -d
+    image: ${ONMS_IMAGE:-opennms/horizon:36.0.2}
+    command: ["-s"]
+    depends_on:
+      db:
+        condition: service_healthy
+      plugin-init:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${TIMEZONE:-UTC}
+      # Database
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      # Time Series Integration Layer. Set here (not in a properties file) so
+      # the strategy is defined exactly once -- the image's confd template
+      # renders etc/opennms.properties.d/_confd.timeseries.properties from it.
+      OPENNMS_TIMESERIES_STRATEGY: integration
+      OPENNMS_RRD_STOREBYFOREIGNSOURCE: "true"
+      JAVA_OPTS: ${ONMS_JAVA_OPTS:--Xmx2g -XX:MaxMetaspaceSize=512m}
+    volumes:
+      - data-opennms:/opennms-data
+      - data-config:/opt/opennms/etc
+      - data-plugins:/opt/opennms/deploy
+      - ./overlay/etc:/opt/opennms-etc-overlay:ro
+    # Host ports are configurable so the stack can run alongside a locally
+    # built OpenNMS, which already owns 8980/8101.
+    ports:
+      - "${ONMS_HTTP_PORT:-8980}:8980/tcp"       # web UI / REST
+      - "${ONMS_KARAF_PORT:-8101}:8101/tcp"      # Karaf shell
+      - "${ONMS_TRAPD_PORT:-1162}:1162/udp"      # trapd
+      - "${ONMS_SYSLOG_PORT:-10514}:10514/udp"   # syslogd
+    # Deliberately not the image's /health.sh: in releases up to 36.0.2 that
+    # script calls `curl -sSF <url>`, which curl rejects, so it can never pass.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -sSf http://localhost:8980/opennms/rest/health/probe | grep -q 'Everything is awesome'
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 300s
+    networks: [stack]
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-11.6.0}
+    depends_on: [victoriametrics]
+    environment:
+      TZ: ${TIMEZONE:-UTC}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - data-grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000/tcp"
+    networks: [stack]

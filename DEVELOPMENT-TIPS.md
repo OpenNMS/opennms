@@ -370,6 +370,11 @@ It might be easier to work to eliminate web bits other than CXF/ReST and move to
 
 Docker containers as of `foundation-2023` (Meridian 2023) are all based on images built in [the deploy-base project](https://app.circleci.com/pipelines/github/OpenNMS/deploy-base).
 
+### Running a Full Stack Locally
+
+[tools/local_development/stack](tools/local_development/stack/README.md) is a Compose stack that brings up PostgreSQL, OpenNMS, VictoriaMetrics (as the time series store, via the Time Series Integration Layer and the Prometheus RemoteWrite plugin), and Grafana with `docker compose up -d`.
+It defaults to the last published Horizon release; `compose.local.yml` switches it to the image you built from your working tree with `make -C opennms-container/core image`.
+
 ### The Variants
 
 There are 2 branches:

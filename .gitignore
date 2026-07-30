@@ -75,3 +75,6 @@ __pycache__
 opennms-base-assembly/src/main/filtered/etc/scv.jce
 
 core/web-assets/.eslintcache
+
+# Local overrides for the developer Compose stack (copy .env.example to .env)
+tools/local_development/stack/.env
