@@ -118,6 +118,7 @@ public class HaConfigCommand implements Action {
         System.out.printf(FMT, "Enabled:",            cfg.isEnabled());
         System.out.printf(FMT, "Instance ID:",         nvl(cfg.getInstanceId()));
         System.out.printf(FMT, "Role:",                nvl(cfg.getRole()));
+        System.out.printf(FMT, "Mode:",                nvl(cfg.getMode()));
         System.out.printf(FMT, "Partner Instance ID:", nvl(cfg.getPartnerInstanceId()));
         System.out.printf(FMT, "Heartbeat Interval:",  cfg.getHeartbeatIntervalSeconds() + "s");
         System.out.printf(FMT, "Failover Threshold:",  cfg.getFailoverThresholdSeconds() + "s");
@@ -136,6 +137,7 @@ public class HaConfigCommand implements Action {
         c.setEnabled(src.isEnabled());
         c.setInstanceId(src.getInstanceId());
         c.setRole(src.getRole());
+        c.setMode(src.getMode());
         c.setPartnerInstanceId(src.getPartnerInstanceId());
         c.setHeartbeatIntervalSeconds(src.getHeartbeatIntervalSeconds());
         c.setFailoverThresholdSeconds(src.getFailoverThresholdSeconds());
@@ -144,6 +146,7 @@ public class HaConfigCommand implements Action {
         c.setPartnerRestUrl(src.getPartnerRestUrl());
         c.setSyncUsername(src.getSyncUsername());
         c.setSyncPassword(src.getSyncPassword());
+        c.setSyncExcludes(src.getSyncExcludes());
         return c;
     }
 

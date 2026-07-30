@@ -457,6 +457,28 @@ public class HaStartupCoordinatorTest {
         assertEquals(HaStartupCoordinator.MIN_FAILOVER_THRESHOLD_SECONDS, cfg.getFailoverThresholdSeconds());
     }
 
+    @Test
+    public void clampConfigEnforcesThresholdToIntervalRatio() {
+        HaConfiguration cfg = new HaConfiguration();
+        cfg.setHeartbeatIntervalSeconds(60);
+        cfg.setFailoverThresholdSeconds(20); // passes the absolute minimum but < interval
+
+        HaStartupCoordinator.clampConfig(cfg);
+
+        assertEquals("threshold must be clamped to 2x the heartbeat interval",
+                120, cfg.getFailoverThresholdSeconds());
+    }
+
+    @Test
+    public void clampConfigClampsSyncIntervalBelowMinimum() {
+        HaConfiguration cfg = new HaConfiguration();
+        cfg.setSyncIntervalSeconds(0); // scheduleAtFixedRate would reject this
+
+        HaStartupCoordinator.clampConfig(cfg);
+
+        assertEquals(HaStartupCoordinator.MIN_SYNC_INTERVAL_SECONDS, cfg.getSyncIntervalSeconds());
+    }
+
     // -------------------------------------------------------------------------
     // PRIMARY mode
     // -------------------------------------------------------------------------
@@ -655,6 +677,133 @@ public class HaStartupCoordinatorTest {
     }
 
     // -------------------------------------------------------------------------
+    // Fail-closed config loading: only "absent" or "disabled" may bypass HA
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void loadDisablesHaWhenConfigFileAbsent() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertNull("absent config file means HA is simply disabled", HaStartupCoordinator.load());
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void loadDisablesHaWhenExplicitlyDisabled() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        Files.writeString(tempEtc.resolve("ha-configuration.xml"),
+                "<ha-configuration><enabled>false</enabled></ha-configuration>");
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertNull("enabled=false means HA is disabled", HaStartupCoordinator.load());
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void loadFailsClosedOnMalformedConfig() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        Files.writeString(tempEtc.resolve("ha-configuration.xml"),
+                "<ha-configuration><enabled>tru"); // truncated/corrupt
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertThrows("a present-but-unreadable config must abort startup, not disable HA",
+                    IllegalStateException.class, HaStartupCoordinator::load);
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void loadFailsClosedOnMissingPartnerInCoordinatorMode() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        Files.writeString(tempEtc.resolve("ha-configuration.xml"),
+                "<ha-configuration><enabled>true</enabled>" +
+                "<instance-id>a</instance-id><role>PRIMARY</role></ha-configuration>");
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertThrows(IllegalStateException.class, HaStartupCoordinator::load);
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void loadFailsClosedOnSelfReferentialPartner() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        Files.writeString(tempEtc.resolve("ha-configuration.xml"),
+                "<ha-configuration><enabled>true</enabled>" +
+                "<instance-id>a</instance-id><role>PRIMARY</role>" +
+                "<partner-instance-id>a</partner-instance-id></ha-configuration>");
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertThrows(IllegalStateException.class, HaStartupCoordinator::load);
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void writeConfigRejectsSelfReferentialPartner() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration mutated = copyOf(original);
+        mutated.setPartnerInstanceId(original.getInstanceId());
+
+        coord.writeConfig(mutated);
+    }
+
+    @Test
+    public void configReloadRejectsBlankPartner() throws Exception {
+        HaConfiguration original = primaryConfig();
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setPartnerInstanceId(" ");
+
+        coord.applyConfigReload(updated);
+
+        assertEquals("blank partner must be rejected on reload",
+                "opennms-secondary", coord.getConfig().getPartnerInstanceId());
+    }
+
+    @Test
+    public void loadFailsClosedOnMissingRequiredFields() throws Exception {
+        Path tempEtc = Files.createTempDirectory("ha-load-test").resolve("etc");
+        Files.createDirectories(tempEtc);
+        Files.writeString(tempEtc.resolve("ha-configuration.xml"),
+                "<ha-configuration><enabled>true</enabled></ha-configuration>"); // no instance-id/role
+        String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", tempEtc.getParent().toString());
+        try {
+            assertThrows(IllegalStateException.class, HaStartupCoordinator::load);
+        } finally {
+            if (oldHome != null) System.setProperty("opennms.home", oldHome);
+            else System.clearProperty("opennms.home");
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Fail-closed startup: DB failures keep the gate shut, never authorize startup
     // -------------------------------------------------------------------------
 
@@ -738,6 +887,38 @@ public class HaStartupCoordinatorTest {
         } finally {
             coord.doShutdown();
         }
+    }
+
+    @Test
+    public void promotionDoesNotReleaseGateWhenActiveWriteFails() throws Exception {
+        when(mockPs.executeUpdate()).thenThrow(new java.sql.SQLException("write failed"));
+        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
+
+        java.lang.reflect.Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
+        promote.setAccessible(true);
+        promote.invoke(coord);
+
+        Field gate = HaStartupCoordinator.class.getDeclaredField("startupGate");
+        gate.setAccessible(true);
+        assertEquals("gate must stay closed when the ACTIVE write fails",
+                1, ((CountDownLatch) gate.get(coord)).getCount());
+        assertEquals(HaInstanceState.STANDBY, coord.getCurrentState());
+    }
+
+    @Test
+    public void promotionDoesNotReleaseGateWhenActiveWriteMatchesNoRow() throws Exception {
+        when(mockPs.executeUpdate()).thenReturn(0);
+        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
+
+        java.lang.reflect.Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
+        promote.setAccessible(true);
+        promote.invoke(coord);
+
+        Field gate = HaStartupCoordinator.class.getDeclaredField("startupGate");
+        gate.setAccessible(true);
+        assertEquals("gate must stay closed when the ACTIVE write matched no row",
+                1, ((CountDownLatch) gate.get(coord)).getCount());
+        assertEquals(HaInstanceState.STANDBY, coord.getCurrentState());
     }
 
     // -------------------------------------------------------------------------
@@ -862,6 +1043,32 @@ public class HaStartupCoordinatorTest {
                 }
             }
             assertTrue("expected the registration upsert to be issued", sawUpsert);
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
+    @Test
+    public void heartbeatOnlyModeNeverStartsConfigSync() throws Exception {
+        HaConfiguration cfg = secondaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        cfg.setSyncEnabled(false);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            assertTrue(coord.doAwaitReadyToStart());
+
+            // A later reload that enables sync must not schedule it — the
+            // external agent owns config sync in heartbeat-only mode.
+            HaConfiguration updated = copyOf(cfg);
+            updated.setSyncEnabled(true);
+            updated.setPartnerRestUrl("http://partner:8980/opennms");
+            coord.applyConfigReload(updated);
+
+            Field syncFuture = HaStartupCoordinator.class.getDeclaredField("syncFuture");
+            syncFuture.setAccessible(true);
+            assertNull("config sync must never be scheduled in heartbeat-only mode",
+                    syncFuture.get(coord));
         } finally {
             coord.doShutdown();
         }

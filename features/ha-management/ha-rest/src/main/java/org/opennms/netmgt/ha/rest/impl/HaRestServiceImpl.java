@@ -214,25 +214,33 @@ public class HaRestServiceImpl implements HaRestService {
 
         Thread failoverThread = new Thread(() -> {
             try {
-                // Brief delay to allow this HTTP response to be delivered before services stop
+                // Brief delay to allow this HTTP response to be delivered before services stop.
+                // An interrupt here is safe: nothing has been advertised yet.
                 Thread.sleep(1000);
-
-                // 1. Write STANDBY to DB and stop the heartbeat — partner monitor sees this immediately
-                coord.initiateFailover();
-
-                // 2. Stop all OpenNMS services via the in-process Manager MBean
-                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-                if (!servers.isEmpty()) {
-                    servers.get(0).invoke(
-                            ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
-                            new Object[0], new String[0]);
-                } else {
-                    LOG.error("HA failover: no MBeanServer found; OpenNMS services may not stop cleanly");
-                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                return;
+            }
+
+            // 1. Write STANDBY to DB and stop the heartbeat — partner monitor sees this immediately
+            coord.initiateFailover();
+
+            // 2. Stop all OpenNMS services via the in-process Manager MBean. From here the
+            // partner is already promoting on the STANDBY row, and this node's heartbeat and
+            // split-brain check are silenced — if the stop cannot run, the only safe outcome
+            // is to halt, or both nodes run with no way to detect it.
+            try {
+                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
+                if (servers.isEmpty()) {
+                    LOG.error("HA failover: no MBeanServer found; halting to honor the step-down");
+                    Runtime.getRuntime().halt(70);
+                }
+                servers.get(0).invoke(
+                        ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
+                        new Object[0], new String[0]);
             } catch (Exception e) {
-                LOG.error("HA failover: error stopping services", e);
+                LOG.error("HA failover: failed to stop services after stepping down; halting to prevent an undetectable active-active pair", e);
+                Runtime.getRuntime().halt(70);
             }
         }, "ha-failover");
         failoverThread.setDaemon(false); // must not be daemon — must outlive the HTTP request
@@ -257,9 +265,10 @@ public class HaRestServiceImpl implements HaRestService {
                     .entity("HA is not enabled on this instance").build();
         }
         try {
+            List<String> excludes = coord.getConfig().getSyncExcludes();
             List<HaSyncFiles.Entry> manifest =
-                    HaSyncFiles.buildManifest(HaSyncFiles.etcRoot(), coord.getConfig().getSyncExcludes());
-            return Response.ok(HaSyncFiles.toManifestText(manifest)).build();
+                    HaSyncFiles.buildManifest(HaSyncFiles.etcRoot(), excludes);
+            return Response.ok(HaSyncFiles.toManifestText(manifest, excludes)).build();
         } catch (Exception e) {
             LOG.error("HA sync: failed to build manifest", e);
             return Response.serverError().entity("Failed to build manifest: " + e.getMessage()).build();

@@ -152,7 +152,9 @@ public class Starter {
         } catch (ClassNotFoundException e) {
             LOG.debug("HA module not on classpath; skipping HA coordination");
         } catch (Exception e) {
-            LOG.warn("HA coordination failed; proceeding with normal startup", e);
+            // Fail closed: an unexpected error from an HA-enabled node must not
+            // bypass the standby gate — both nodes could otherwise run concurrently.
+            die("HA coordination failed; refusing to start services", e);
         }
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();

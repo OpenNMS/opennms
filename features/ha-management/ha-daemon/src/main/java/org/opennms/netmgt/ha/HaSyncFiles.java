@@ -24,6 +24,7 @@ package org.opennms.netmgt.ha;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -39,10 +40,11 @@ import java.util.stream.Stream;
  * standby (to diff against local state) — one implementation, so both sides
  * always agree on what is in scope.
  *
- * <p>Manifest wire format is deliberately plain text, one file per line:
- * {@code <sha256> <size> <relative-path>} — binary-safe transfer happens on
- * the separate per-file endpoint, and the standby can parse this without any
- * JSON machinery.
+ * <p>Manifest wire format is deliberately plain text: {@code #exclude <pattern>}
+ * header lines advertising the serving node's exclusions, then one file per
+ * line as {@code <sha256> <size> <relative-path>} — binary-safe transfer
+ * happens on the separate per-file endpoint, and the standby can parse this
+ * without any JSON machinery.
  */
 public final class HaSyncFiles {
 
@@ -61,35 +63,59 @@ public final class HaSyncFiles {
     }
 
     /** True if {@code relativePath} is excluded from sync (builtin rules plus
-     * the operator-extensible list; a trailing "/" excludes a subtree). */
+     * the operator-extensible list; a trailing "/" excludes a subtree). The
+     * path is canonicalized first so a non-canonical spelling such as
+     * {@code subdir/../ha-configuration.xml} cannot slip past a rule. */
     public static boolean isExcluded(String relativePath, List<String> configuredExcludes) {
+        String normalized = normalizeRelative(relativePath);
         List<String> all = new ArrayList<>(BUILTIN_EXCLUSIONS);
         if (configuredExcludes != null) {
             all.addAll(configuredExcludes);
         }
         return all.stream().anyMatch(e ->
-                e.endsWith("/") ? relativePath.startsWith(e) : relativePath.equals(e));
+                e.endsWith("/") ? normalized.startsWith(e) : normalized.equals(e));
+    }
+
+    /** Canonical, forward-slash form of a manifest-relative path ({@code ./},
+     * {@code ..} segments collapsed). Escapes are not decided here — that is
+     * {@link #resolveSafe}'s job. */
+    static String normalizeRelative(String relativePath) {
+        return Paths.get(relativePath).normalize().toString().replace('\\', '/');
     }
 
     /**
      * Resolves a manifest-relative path inside {@code root}, rejecting
-     * anything that escapes it (absolute paths, {@code ..} traversal).
+     * anything that escapes it: absolute paths, {@code ..} traversal, and
+     * symlinks that point outside the root.
      */
     public static Path resolveSafe(Path root, String relativePath) throws IOException {
         Path resolved = root.resolve(relativePath).normalize();
         if (!resolved.startsWith(root)) {
             throw new IOException("path escapes sync root: " + relativePath);
         }
+        // Lexical containment is not enough — a symlink inside the root can
+        // point anywhere. Verify the deepest existing path element's real
+        // location is still inside the root (the tail may not exist yet when
+        // resolving a fetch target).
+        Path realRoot = root.toRealPath();
+        Path existing = resolved;
+        while (existing != null && !Files.exists(existing, LinkOption.NOFOLLOW_LINKS)) {
+            existing = existing.getParent();
+        }
+        if (existing != null && !existing.toRealPath().startsWith(realRoot)) {
+            throw new IOException("path escapes sync root via symlink: " + relativePath);
+        }
         return resolved;
     }
 
     /** Walks {@code root} and builds manifest entries for every regular,
-     * non-excluded file. */
+     * non-excluded file. Symlinks are skipped: they are never advertised,
+     * served, or deleted — their targets live outside the sync contract. */
     public static List<Entry> buildManifest(Path root, List<String> configuredExcludes) throws IOException {
         List<Entry> entries = new ArrayList<>();
         try (Stream<Path> walk = Files.walk(root)) {
             for (Path p : (Iterable<Path>) walk::iterator) {
-                if (!Files.isRegularFile(p)) {
+                if (!Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)) {
                     continue;
                 }
                 String rel = root.relativize(p).toString().replace('\\', '/');
@@ -102,8 +128,21 @@ public final class HaSyncFiles {
         return entries;
     }
 
-    public static String toManifestText(List<Entry> entries) {
+    /** Header line prefix advertising one of the serving node's exclusion
+     * patterns. The standby unions these with its own list for deletion
+     * propagation: a path missing from the manifest only means "deleted on
+     * the active" when neither side excludes it. */
+    static final String EXCLUDE_HEADER_PREFIX = "#exclude ";
+
+    public static String toManifestText(List<Entry> entries, List<String> configuredExcludes) {
         StringBuilder sb = new StringBuilder();
+        List<String> all = new ArrayList<>(BUILTIN_EXCLUSIONS);
+        if (configuredExcludes != null) {
+            all.addAll(configuredExcludes);
+        }
+        for (String exclude : all) {
+            sb.append(EXCLUDE_HEADER_PREFIX).append(exclude).append('\n');
+        }
         for (Entry e : entries) {
             sb.append(e.sha256()).append(' ').append(e.size()).append(' ')
               .append(e.relativePath()).append('\n');
@@ -111,17 +150,20 @@ public final class HaSyncFiles {
         return sb.toString();
     }
 
-    /** Parses {@link #toManifestText}; malformed lines are skipped. */
+    /** Parses the entry lines of {@link #toManifestText}; header ({@code #})
+     * and malformed lines are skipped. Entry paths are canonicalized so every
+     * consumer (exclusion matching, fetching, deletion diffing) sees one
+     * spelling per file. */
     public static List<Entry> parseManifestText(String text) {
         List<Entry> entries = new ArrayList<>();
         for (String line : text.split("\n")) {
-            if (line.isBlank()) continue;
+            if (line.isBlank() || line.startsWith("#")) continue;
             int firstSpace = line.indexOf(' ');
             int secondSpace = line.indexOf(' ', firstSpace + 1);
             if (firstSpace < 0 || secondSpace < 0) continue;
             try {
                 entries.add(new Entry(
-                        line.substring(secondSpace + 1),
+                        normalizeRelative(line.substring(secondSpace + 1)),
                         line.substring(0, firstSpace),
                         Long.parseLong(line.substring(firstSpace + 1, secondSpace))));
             } catch (NumberFormatException e) {
@@ -129,6 +171,17 @@ public final class HaSyncFiles {
             }
         }
         return entries;
+    }
+
+    /** Parses the serving node's exclusion patterns from a manifest. */
+    public static List<String> parseManifestExcludes(String text) {
+        List<String> excludes = new ArrayList<>();
+        for (String line : text.split("\n")) {
+            if (line.startsWith(EXCLUDE_HEADER_PREFIX)) {
+                excludes.add(line.substring(EXCLUDE_HEADER_PREFIX.length()));
+            }
+        }
+        return excludes;
     }
 
     public static String sha256(Path file) throws IOException {

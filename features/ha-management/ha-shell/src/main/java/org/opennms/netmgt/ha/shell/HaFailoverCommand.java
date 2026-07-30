@@ -108,23 +108,28 @@ public class HaFailoverCommand implements Action {
         System.out.println("Stopping OpenNMS services...");
 
         // 2. Stop all services via MBean on a short delay to allow this output to flush.
+        // The STANDBY row is already written and the partner is promoting on it — if the
+        // stop cannot run, halt rather than leave an undetectable active-active pair.
         Thread stopThread = new Thread(() -> {
             try {
                 Thread.sleep(500);
-                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-                if (!servers.isEmpty()) {
-                    servers.get(0).invoke(
-                            ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
-                            new Object[0], new String[0]);
-                } else {
-                    LOG.error("HA failover: no MBeanServer found; services may not stop cleanly");
-                    System.err.println("WARNING: No MBeanServer found — services may not stop cleanly.");
-                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            }
+            try {
+                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
+                if (servers.isEmpty()) {
+                    LOG.error("HA failover: no MBeanServer found; halting to honor the step-down");
+                    System.err.println("ERROR: No MBeanServer found — halting to honor the step-down.");
+                    Runtime.getRuntime().halt(70);
+                }
+                servers.get(0).invoke(
+                        ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
+                        new Object[0], new String[0]);
             } catch (Exception e) {
-                LOG.error("HA failover: error stopping services", e);
-                System.err.println("ERROR stopping services: " + e.getMessage());
+                LOG.error("HA failover: failed to stop services after stepping down; halting to prevent an undetectable active-active pair", e);
+                System.err.println("ERROR stopping services: " + e.getMessage() + " — halting.");
+                Runtime.getRuntime().halt(70);
             }
         }, "ha-failover-shell");
         stopThread.setDaemon(false);

@@ -46,7 +46,22 @@ public class HaConfigSyncerTest {
         List<HaSyncFiles.Entry> entries = List.of(
                 new HaSyncFiles.Entry("poller-configuration.xml", "ab12", 1234L),
                 new HaSyncFiles.Entry("events/my events.xml", "cd34", 9L));
-        String text = HaSyncFiles.toManifestText(entries);
+        String text = HaSyncFiles.toManifestText(entries, null);
+        assertEquals(entries, HaSyncFiles.parseManifestText(text));
+    }
+
+    @Test
+    public void manifestCarriesServerExclusions() {
+        List<HaSyncFiles.Entry> entries =
+                List.of(new HaSyncFiles.Entry("ok.xml", "aa", 5L));
+        String text = HaSyncFiles.toManifestText(entries, List.of("node-local/"));
+
+        // Header lines advertise the serving node's effective exclusions...
+        List<String> excludes = HaSyncFiles.parseManifestExcludes(text);
+        assertTrue(excludes.contains("node-local/"));
+        assertTrue("builtin exclusions must be advertised too",
+                excludes.contains("ha-configuration.xml"));
+        // ...and never leak into the entry list.
         assertEquals(entries, HaSyncFiles.parseManifestText(text));
     }
 
@@ -90,6 +105,21 @@ public class HaConfigSyncerTest {
         assertFalse(HaSyncFiles.isExcluded("poller-configuration.xml", null));
     }
 
+    @Test
+    public void exclusionRulesCannotBeBypassedWithNonCanonicalPaths() {
+        assertTrue(HaSyncFiles.isExcluded("subdir/../ha-configuration.xml", null));
+        assertTrue(HaSyncFiles.isExcluded("./ha-configuration.xml", null));
+        assertTrue(HaSyncFiles.isExcluded("examples/x/../foo.xml", null));
+        assertTrue(HaSyncFiles.isExcluded("a/../node-local/x.pem", List.of("node-local/")));
+    }
+
+    @Test
+    public void manifestParserCanonicalizesEntryPaths() {
+        List<HaSyncFiles.Entry> parsed =
+                HaSyncFiles.parseManifestText("aa 5 subdir/../poller-configuration.xml\n");
+        assertEquals("poller-configuration.xml", parsed.get(0).relativePath());
+    }
+
     // -------------------------------------------------------------------------
     // Path safety
     // -------------------------------------------------------------------------
@@ -102,6 +132,41 @@ public class HaConfigSyncerTest {
         assertThrows(java.io.IOException.class,
                 () -> HaSyncFiles.resolveSafe(etc, "a/../../outside.txt"));
         assertEquals(etc.resolve("a/b.xml"), HaSyncFiles.resolveSafe(etc, "a/b.xml"));
+    }
+
+    @Test
+    public void resolveSafeRejectsSymlinkEscape() throws Exception {
+        Path etc = tmp.newFolder("etc").toPath().toAbsolutePath().normalize();
+        Path outside = tmp.newFolder("outside").toPath().toAbsolutePath().normalize();
+        Files.writeString(outside.resolve("secret.txt"), "s3cret");
+
+        // A symlinked file and a symlinked directory, both pointing outside the root
+        Files.createSymbolicLink(etc.resolve("link.txt"), outside.resolve("secret.txt"));
+        Files.createSymbolicLink(etc.resolve("linkdir"), outside);
+
+        assertThrows(java.io.IOException.class,
+                () -> HaSyncFiles.resolveSafe(etc, "link.txt"));
+        assertThrows(java.io.IOException.class,
+                () -> HaSyncFiles.resolveSafe(etc, "linkdir/secret.txt"));
+
+        // A symlink that stays inside the root is fine
+        Files.writeString(etc.resolve("real.xml"), "<x/>");
+        Files.createSymbolicLink(etc.resolve("alias.xml"), etc.resolve("real.xml"));
+        assertEquals(etc.resolve("alias.xml"), HaSyncFiles.resolveSafe(etc, "alias.xml"));
+    }
+
+    @Test
+    public void buildManifestSkipsSymlinks() throws Exception {
+        Path etc = tmp.newFolder("etc-manifest").toPath().toAbsolutePath().normalize();
+        Path outside = tmp.newFolder("outside-manifest").toPath().toAbsolutePath().normalize();
+        Files.writeString(etc.resolve("real.xml"), "<x/>");
+        Files.writeString(outside.resolve("secret.txt"), "s3cret");
+        Files.createSymbolicLink(etc.resolve("leak.txt"), outside.resolve("secret.txt"));
+
+        List<HaSyncFiles.Entry> manifest = HaSyncFiles.buildManifest(etc, null);
+
+        assertEquals(1, manifest.size());
+        assertEquals("real.xml", manifest.get(0).relativePath());
     }
 
     // -------------------------------------------------------------------------
@@ -145,6 +210,19 @@ public class HaConfigSyncerTest {
             // With a non-existent keystore file, JCEKSSecureCredentialsVault returns an empty vault
             // so getCredentials returns null → resolveScvExpression returns null
             assertNull(syncer.resolveScvExpression("${scv:hasync:password}"));
+        } finally {
+            System.clearProperty("opennms.home");
+        }
+    }
+
+    @Test
+    public void scvExpressionFallsBackToDefaultWhenEntryMissing() {
+        // The shipped template default: ${scv:hasync:password|opennms} must
+        // resolve to "opennms" when the vault has no hasync entry.
+        System.setProperty("opennms.home", "/tmp/no-such-dir-" + System.currentTimeMillis());
+        try {
+            HaConfigSyncer syncer = new HaConfigSyncer(new HaConfiguration());
+            assertEquals("opennms", syncer.resolveScvExpression("${scv:hasync:password|opennms}"));
         } finally {
             System.clearProperty("opennms.home");
         }

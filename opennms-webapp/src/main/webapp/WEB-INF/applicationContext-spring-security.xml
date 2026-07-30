@@ -129,9 +129,11 @@
          credential stores: ADMIN only. GET /rest/ha/status intentionally
          falls through to the generic /rest/** GET rule below. These rules are
          harmless when the feature is not installed (the paths 404). -->
-    <intercept-url pattern="/rest/ha/config" method="GET" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/ha/config" method="PUT" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/ha/failover" method="POST" access="ROLE_ADMIN"/>
+    <!-- Subtree patterns ("/x/**" also matches "/x") so CXF's trailing-slash
+         variants cannot fall through to the generic /rest/** rules. -->
+    <intercept-url pattern="/rest/ha/config/**" method="GET" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/config/**" method="PUT" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/failover/**" method="POST" access="ROLE_ADMIN"/>
     <intercept-url pattern="/rest/ha/sync/**" method="GET" access="ROLE_ADMIN"/>
 
     <!-- Allow certain actions for the ROLE_USER role -->

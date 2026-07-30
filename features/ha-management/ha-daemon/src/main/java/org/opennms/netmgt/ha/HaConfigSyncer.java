@@ -27,7 +27,6 @@ import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -39,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
@@ -75,8 +75,10 @@ public class HaConfigSyncer {
 
     private static final Logger LOG = LoggerFactory.getLogger(HaConfigSyncer.class);
 
+    /** {@code ${scv:alias:attribute}} with an optional {@code |default} segment,
+     * matching the SCV expression grammar in {@code ScvUtils}. */
     private static final Pattern SCV_PATTERN =
-            Pattern.compile("^\\$\\{scv:([^:}]+):([^}]+)\\}$");
+            Pattern.compile("^\\$\\{scv:([^:|}]+):([^:|}]+)(?:\\|([^|}]*))?\\}$");
 
     private final Supplier<HaConfiguration> configSupplier;
     private final Supplier<HaInstanceState> stateSupplier;
@@ -138,10 +140,11 @@ public class HaConfigSyncer {
         String baseUrl = config.getPartnerRestUrl().replaceAll("/$", "");
         List<String> excludes = config.getSyncExcludes();
 
-        List<HaSyncFiles.Entry> manifest = fetchManifest(baseUrl, authHeader);
-        if (manifest == null) {
+        String manifestText = fetchManifest(baseUrl, authHeader);
+        if (manifestText == null) {
             return; // already logged
         }
+        List<HaSyncFiles.Entry> manifest = HaSyncFiles.parseManifestText(manifestText);
         if (manifest.isEmpty()) {
             LOG.warn("HA sync: manifest from {} was empty; skipping cycle (refusing to delete everything)", baseUrl);
             return;
@@ -160,6 +163,12 @@ public class HaConfigSyncer {
             if (HaSyncFiles.isExcluded(entry.relativePath(), excludes)) {
                 continue;
             }
+            // Re-check before every mutation: a promotion mid-cycle must not
+            // keep rewriting etc/ under the services that are now starting.
+            if (stateSupplier.get() == HaInstanceState.ACTIVE) {
+                LOG.warn("HA sync: this instance became ACTIVE mid-cycle; aborting sync");
+                return;
+            }
             try {
                 if (localMatches(etcRoot, entry)) {
                     continue;
@@ -167,12 +176,23 @@ public class HaConfigSyncer {
                 fetchFile(baseUrl, authHeader, etcRoot, entry);
                 fetched++;
             } catch (Exception e) {
+                if (stateSupplier.get() == HaInstanceState.ACTIVE) {
+                    LOG.warn("HA sync: this instance became ACTIVE mid-cycle; aborting sync");
+                    return;
+                }
                 LOG.warn("HA sync: failed to sync {}: {}", entry.relativePath(), e.getMessage());
                 failed++;
             }
         }
 
-        int deleted = propagateDeletions(etcRoot, manifestPaths, excludes);
+        // A path absent from the manifest only means "deleted on the active"
+        // when neither side excludes it — the manifest's exclusion header
+        // covers files the active holds locally but refuses to advertise.
+        List<String> deletionExcludes = new ArrayList<>(HaSyncFiles.parseManifestExcludes(manifestText));
+        if (excludes != null) {
+            deletionExcludes.addAll(excludes);
+        }
+        int deleted = propagateDeletions(etcRoot, manifestPaths, deletionExcludes);
 
         if (fetched > 0 || failed > 0 || deleted > 0) {
             LOG.info("HA sync complete: {} files fetched, {} deleted, {} failed", fetched, deleted, failed);
@@ -185,8 +205,8 @@ public class HaConfigSyncer {
     // Manifest + transfer
     // -------------------------------------------------------------------------
 
-    /** @return the parsed manifest, or null if it could not be fetched. */
-    private List<HaSyncFiles.Entry> fetchManifest(String baseUrl, String authHeader) {
+    /** @return the raw manifest text, or null if it could not be fetched. */
+    private String fetchManifest(String baseUrl, String authHeader) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/rest/ha/sync/manifest"))
@@ -200,7 +220,7 @@ public class HaConfigSyncer {
                 LOG.warn("HA sync: manifest request returned HTTP {}", response.statusCode());
                 return null;
             }
-            return HaSyncFiles.parseManifestText(response.body());
+            return response.body();
         } catch (Exception e) {
             LOG.warn("HA sync: failed to fetch manifest from {}: {}", baseUrl, e.getMessage());
             return null;
@@ -242,6 +262,12 @@ public class HaConfigSyncer {
                 throw new IOException("hash mismatch for " + entry.relativePath()
                         + " (file changed on partner mid-transfer?)");
             }
+            // Last check before touching the live file: the download and hash
+            // verification above can take long enough for a promotion to land.
+            if (stateSupplier.get() == HaInstanceState.ACTIVE) {
+                throw new IOException("instance became ACTIVE mid-transfer; discarding "
+                        + entry.relativePath());
+            }
             try {
                 Files.move(staged, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } catch (IOException e) {
@@ -253,13 +279,18 @@ public class HaConfigSyncer {
         }
     }
 
-    /** Deletes local in-scope files that no longer exist on the partner. */
+    /** Deletes local in-scope files that no longer exist on the partner.
+     * {@code excludes} must already be the union of both nodes' exclusions. */
     private int propagateDeletions(Path etcRoot, Set<String> manifestPaths, List<String> excludes) {
         int deleted = 0;
         try {
             for (HaSyncFiles.Entry local : HaSyncFiles.buildManifest(etcRoot, excludes)) {
                 if (manifestPaths.contains(local.relativePath())) {
                     continue;
+                }
+                if (stateSupplier.get() == HaInstanceState.ACTIVE) {
+                    LOG.warn("HA sync: this instance became ACTIVE mid-cycle; aborting deletion propagation");
+                    return deleted;
                 }
                 Path p = HaSyncFiles.resolveSafe(etcRoot, local.relativePath());
                 Files.deleteIfExists(p);
@@ -277,9 +308,10 @@ public class HaConfigSyncer {
     // -------------------------------------------------------------------------
 
     /**
-     * Resolves an SCV expression {@code ${scv:alias:attribute}} by reading the
-     * local JCEKS keystore directly. Returns the raw string unchanged if it is
-     * not an SCV expression.
+     * Resolves an SCV expression {@code ${scv:alias:attribute}} — optionally
+     * with a {@code |default} segment, used when the alias/attribute cannot be
+     * resolved — by reading the local vault. Returns the raw string unchanged
+     * if it is not an SCV expression.
      */
     String resolveScvExpression(String expression) {
         if (expression == null) return null;
@@ -291,34 +323,50 @@ public class HaConfigSyncer {
 
         String alias = m.group(1);
         String attribute = m.group(2);
+        String fallback = m.group(3);
 
         try {
             SecureCredentialsVault scv = loadScv();
             Credentials creds = scv.getCredentials(alias);
             if (creds == null) {
+                if (fallback != null) {
+                    LOG.debug("HA sync: no SCV entry for alias '{}'; using the expression's default", alias);
+                    return fallback;
+                }
                 LOG.warn("HA sync: no SCV entry found for alias '{}'", alias);
                 return null;
             }
-            if ("username".equals(attribute)) return creds.getUsername();
-            if ("password".equals(attribute)) return creds.getPassword();
-            String attr = creds.getAttribute(attribute);
-            if (attr == null) {
+            String value;
+            if ("username".equals(attribute)) {
+                value = creds.getUsername();
+            } else if ("password".equals(attribute)) {
+                value = creds.getPassword();
+            } else {
+                value = creds.getAttribute(attribute);
+            }
+            if (value == null) {
+                if (fallback != null) {
+                    LOG.debug("HA sync: SCV alias '{}' has no attribute '{}'; using the expression's default", alias, attribute);
+                    return fallback;
+                }
                 LOG.warn("HA sync: SCV alias '{}' has no attribute '{}'", alias, attribute);
             }
-            return attr;
+            return value;
         } catch (Exception e) {
+            if (fallback != null) {
+                LOG.warn("HA sync: failed to resolve SCV expression for alias '{}'; using the expression's default: {}",
+                        alias, e.toString());
+                return fallback;
+            }
             LOG.error("HA sync: failed to resolve SCV expression for alias '{}'", alias, e);
             return null;
         }
     }
 
+    /** The stock vault: resolves the keystore key and type (JCEKS or PKCS12)
+     * from system properties and opennms.properties(.d). */
     private SecureCredentialsVault loadScv() {
-        String opennmsHome = System.getProperty("opennms.home", ".");
-        String keystorePath = opennmsHome + File.separator + "etc" + File.separator + "scv.jce";
-        String keystorePassword = System.getProperty(
-                JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY,
-                JCEKSSecureCredentialsVault.DEFAULT_KEYSTORE_KEY);
-        return new JCEKSSecureCredentialsVault(keystorePath, keystorePassword);
+        return JCEKSSecureCredentialsVault.defaultScv();
     }
 
     private static String basicAuthHeader(String username, String password) {

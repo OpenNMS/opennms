@@ -82,6 +82,7 @@ public class HaStartupCoordinator {
 
     static final int MIN_HEARTBEAT_INTERVAL_SECONDS = 5;
     static final int MIN_FAILOVER_THRESHOLD_SECONDS = 20;
+    static final int MIN_SYNC_INTERVAL_SECONDS = 5;
 
     /** Pace between retries while establishing HA state at startup (fail closed). */
     static final int STARTUP_RETRY_SECONDS = 10;
@@ -116,8 +117,11 @@ public class HaStartupCoordinator {
 
     /**
      * Loads {@code ha-configuration.xml} from {@code $OPENNMS_HOME/etc/} and
-     * initialises the static singleton. Returns {@code null} (and registers a
-     * no-op singleton) if the file is absent or HA is disabled.
+     * initialises the static singleton. Returns {@code null} (HA disabled)
+     * only when the file is absent or explicitly sets {@code enabled=false}.
+     * Any other failure — unreadable/malformed config, missing required
+     * fields, initialization errors — throws so the caller aborts startup:
+     * a node whose HA intent cannot be established must not run ungated.
      */
     public static HaStartupCoordinator load() {
         HaConfiguration cfg;
@@ -128,9 +132,8 @@ public class HaStartupCoordinator {
             INSTANCE = null;
             return null;
         } catch (Exception e) {
-            LOG.error("Failed to load HA configuration; HA is disabled", e);
             INSTANCE = null;
-            return null;
+            throw new IllegalStateException("Failed to load HA configuration from etc/" + CONFIG_FILE, e);
         }
 
         if (!cfg.isEnabled()) {
@@ -139,10 +142,16 @@ public class HaStartupCoordinator {
             return null;
         }
 
-        if (cfg.getInstanceId() == null || cfg.getRole() == null) {
-            LOG.error("HA config is missing required fields (instance-id, role); HA is disabled");
+        if (cfg.getInstanceId() == null || cfg.getInstanceId().isBlank() || cfg.getRole() == null) {
             INSTANCE = null;
-            return null;
+            throw new IllegalStateException(
+                    "HA config is missing required fields (instance-id, role) in etc/" + CONFIG_FILE);
+        }
+
+        String partnerError = partnerConfigError(cfg);
+        if (partnerError != null) {
+            INSTANCE = null;
+            throw new IllegalStateException(partnerError + " in etc/" + CONFIG_FILE);
         }
 
         clampConfig(cfg);
@@ -153,9 +162,8 @@ public class HaStartupCoordinator {
             LOG.info("HA enabled: instance-id={}, role={}", cfg.getInstanceId(), cfg.getRole());
             return INSTANCE;
         } catch (Exception e) {
-            LOG.error("Failed to initialize HA coordinator; HA is disabled", e);
             INSTANCE = null;
-            return null;
+            throw new IllegalStateException("Failed to initialize the HA coordinator", e);
         }
     }
 
@@ -174,6 +182,28 @@ public class HaStartupCoordinator {
         return (HaConfiguration) u.unmarshal(configFile);
     }
 
+    /**
+     * Coordinator mode monitors, arbitrates against, and fails over to the
+     * partner's row — a missing partner-instance-id silently disables all of
+     * it, and a self-referential one makes split-brain detection read this
+     * node's own row. Heartbeat-only mode needs no partner.
+     *
+     * @return an error message, or {@code null} when the config is valid
+     */
+    static String partnerConfigError(HaConfiguration cfg) {
+        if (cfg.getMode() != HaMode.COORDINATOR) {
+            return null;
+        }
+        String partner = cfg.getPartnerInstanceId();
+        if (partner == null || partner.isBlank()) {
+            return "coordinator mode requires a partner-instance-id";
+        }
+        if (partner.equals(cfg.getInstanceId())) {
+            return "partner-instance-id must differ from instance-id";
+        }
+        return null;
+    }
+
     static void clampConfig(HaConfiguration cfg) {
         if (cfg.getHeartbeatIntervalSeconds() < MIN_HEARTBEAT_INTERVAL_SECONDS) {
             LOG.warn("HA config: heartbeat-interval-seconds={} is below minimum {}; clamping to {}",
@@ -184,6 +214,20 @@ public class HaStartupCoordinator {
             LOG.warn("HA config: failover-threshold-seconds={} is below minimum {}; clamping to {}",
                     cfg.getFailoverThresholdSeconds(), MIN_FAILOVER_THRESHOLD_SECONDS, MIN_FAILOVER_THRESHOLD_SECONDS);
             cfg.setFailoverThresholdSeconds(MIN_FAILOVER_THRESHOLD_SECONDS);
+        }
+        // The threshold must comfortably exceed the heartbeat interval, or the
+        // SECONDARY can observe a near-threshold age on both of its checks and
+        // promote while the PRIMARY is healthy.
+        int minThreshold = 2 * cfg.getHeartbeatIntervalSeconds();
+        if (cfg.getFailoverThresholdSeconds() < minThreshold) {
+            LOG.warn("HA config: failover-threshold-seconds={} is below 2x heartbeat-interval-seconds ({}); clamping to {}",
+                    cfg.getFailoverThresholdSeconds(), cfg.getHeartbeatIntervalSeconds(), minThreshold);
+            cfg.setFailoverThresholdSeconds(minThreshold);
+        }
+        if (cfg.getSyncIntervalSeconds() < MIN_SYNC_INTERVAL_SECONDS) {
+            LOG.warn("HA config: sync-interval-seconds={} is below minimum {}; clamping to {}",
+                    cfg.getSyncIntervalSeconds(), MIN_SYNC_INTERVAL_SECONDS, MIN_SYNC_INTERVAL_SECONDS);
+            cfg.setSyncIntervalSeconds(MIN_SYNC_INTERVAL_SECONDS);
         }
     }
 
@@ -245,6 +289,10 @@ public class HaStartupCoordinator {
             throw new IllegalArgumentException(
                     "'mode' cannot be changed at runtime (requires restart)");
         }
+        String partnerError = partnerConfigError(newCfg);
+        if (partnerError != null) {
+            throw new IllegalArgumentException(partnerError);
+        }
 
         clampConfig(newCfg);
 
@@ -303,6 +351,11 @@ public class HaStartupCoordinator {
         if (newCfg.getMode() != oldCfg.getMode()) {
             LOG.error("HA: config reload rejected — 'mode' changed ({} → {}); requires restart",
                     oldCfg.getMode(), newCfg.getMode());
+            return;
+        }
+        String partnerError = partnerConfigError(newCfg);
+        if (partnerError != null) {
+            LOG.error("HA: config reload rejected — {}", partnerError);
             return;
         }
 
@@ -639,6 +692,11 @@ public class HaStartupCoordinator {
      * scheduled, it is cancelled and replaced.
      */
     private void startSyncIfApplicable() {
+        if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
+            LOG.debug("HA: heartbeat-only mode — config sync is owned by the external agent; not scheduling");
+            return;
+        }
+
         cancelIfActive(syncFuture);
         syncFuture = null;
 
@@ -1011,7 +1069,10 @@ public class HaStartupCoordinator {
 
     private void promoteFromDegraded() {
         LOG.warn("HA: PRIMARY {} reclaiming ACTIVE role", config.getInstanceId());
-        updateState(HaInstanceState.ACTIVE);
+        if (!updateState(HaInstanceState.ACTIVE)) {
+            LOG.error("HA: could not persist ACTIVE state; promotion aborted — will retry on the next monitor cycle");
+            return;
+        }
         currentState.set(HaInstanceState.ACTIVE);
         startupGate.countDown();
     }
@@ -1019,12 +1080,16 @@ public class HaStartupCoordinator {
 
     private void promote() {
         LOG.warn("HA: PRIMARY appears failed — SECONDARY {} is promoting to ACTIVE", config.getInstanceId());
-        updateState(HaInstanceState.ACTIVE);
+        if (!updateState(HaInstanceState.ACTIVE)) {
+            LOG.error("HA: could not persist ACTIVE state; promotion aborted — will retry on the next monitor cycle");
+            return;
+        }
         currentState.set(HaInstanceState.ACTIVE);
         startupGate.countDown();
     }
 
-    private void updateState(HaInstanceState state) {
+    /** @return {@code true} only if the state was persisted (exactly one row updated). */
+    private boolean updateState(HaInstanceState state) {
         // active_since records when this instance took ownership of the ACTIVE role and is
         // the signal used to resolve split-brain (see checkForSplitBrain). On a transition
         // INTO ACTIVE we stamp it with the DB clock, but only on the actual edge — the
@@ -1039,10 +1104,17 @@ public class HaStartupCoordinator {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, state.name());
                 ps.setString(2, config.getInstanceId());
-                ps.executeUpdate();
+                int rows = ps.executeUpdate();
+                if (rows != 1) {
+                    LOG.error("HA: state update to {} matched {} rows for instance {} (expected 1)",
+                            state, rows, config.getInstanceId());
+                    return false;
+                }
+                return true;
             }
         } catch (Exception e) {
             LOG.error("HA: failed to update state to {} for instance {}", state, config.getInstanceId(), e);
+            return false;
         }
     }
 
