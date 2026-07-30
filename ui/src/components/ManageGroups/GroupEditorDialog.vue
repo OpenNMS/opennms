@@ -203,7 +203,7 @@ const save = async () => {
     const payload: ManagedGroup = {
       ...base,
       name: isEditing.value ? originalName.value : name.value.trim(),
-      comments: comments.value.trim() || undefined,
+      comments: comments.value.trim(),
       user: [...members.value]
     }
     const ok = isEditing.value ? await store.updateGroup(payload) : await store.createGroup(payload)

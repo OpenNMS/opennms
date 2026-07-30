@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.svclayer.api.GroupService;
 import org.opennms.web.rest.v2.api.GroupsRestApi;
 import org.opennms.web.rest.v2.model.GroupDto;
 import org.opennms.web.rest.v2.model.GroupRenameRequest;
@@ -62,6 +63,11 @@ import org.springframework.stereotype.Component;
 @Component("groupsRestServiceV2")
 public class GroupsRestService implements GroupsRestApi {
 
+    // Check-then-act sequences synchronize on GroupFactory.class: user
+    // mutations cascade into GroupManager (deleteUser/renameUser walk every
+    // group), so a service-private lock cannot serialize the two v2 services
+    // against each other.
+
     private static final Logger LOG = LoggerFactory.getLogger(GroupsRestService.class);
 
     /** The default group; the on-call role machinery references it. */
@@ -72,11 +78,8 @@ public class GroupsRestService implements GroupsRestApi {
 
     private static final Pattern INVALID_COMMENTS = Pattern.compile(".*[&<>\"`']+.*");
 
-    /** Same grammar as the users API; overnight ranges are legal. */
+    /** Same grammar as the users API. */
     private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
-
-    /** Serializes this service's check-then-act sequences. */
-    private final Object m_lock = new Object();
 
     @Autowired
     private GroupManager m_groupManager;
@@ -84,11 +87,15 @@ public class GroupsRestService implements GroupsRestApi {
     @Autowired
     private UserManager m_userManager;
 
+    /** Handles the DB-side category authorizations on delete/rename. */
+    @Autowired
+    private GroupService m_groupService;
+
     @Override
     public Response listGroups(final SecurityContext securityContext) {
         assertAdmin(securityContext);
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final List<GroupDto> groups = new ArrayList<>();
                 for (final Group group : m_groupManager.getGroups().values()) {
                     groups.add(toDto(group));
@@ -105,7 +112,7 @@ public class GroupsRestService implements GroupsRestApi {
     public Response getGroup(final SecurityContext securityContext, final String name) {
         assertAdmin(securityContext);
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final Group group = m_groupManager.getGroup(name);
                 if (group == null) {
                     return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
@@ -129,8 +136,8 @@ public class GroupsRestService implements GroupsRestApi {
             return Response.status(Status.BAD_REQUEST).entity(nameProblem).build();
         }
         try {
-            validateDtoFields(dto);
-            synchronized (m_lock) {
+            validateDtoFields(dto, null);
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (m_groupManager.hasGroup(name)) {
                     return Response.status(Status.BAD_REQUEST).entity("Group " + name + " already exists.").build();
                 }
@@ -157,12 +164,12 @@ public class GroupsRestService implements GroupsRestApi {
                     .entity("The name in the body does not match the request path; use the rename endpoint to change names.").build();
         }
         try {
-            validateDtoFields(dto);
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final Group existing = m_groupManager.getGroup(name);
                 if (existing == null) {
                     return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
                 }
+                validateDtoFields(dto, existing);
                 final Group updated = copyOf(existing);
                 applyDto(updated, dto);
                 m_groupManager.saveGroup(name, updated);
@@ -188,21 +195,32 @@ public class GroupsRestService implements GroupsRestApi {
             return Response.status(Status.BAD_REQUEST).entity(nameProblem).build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (!m_groupManager.hasGroup(name)) {
                     return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
                 }
                 if (m_groupManager.hasGroup(newName)) {
                     return Response.status(Status.BAD_REQUEST).entity("Group " + newName + " already exists.").build();
                 }
-                m_groupManager.renameGroup(name, newName);
-                // GroupManager.renameGroup does not touch roles; keep the
-                // on-call roles' membership-group references working
-                for (final Role role : new ArrayList<>(m_groupManager.getRoles())) {
+                // Pre-point the on-call roles at the new name in memory, then
+                // let the rename's single save persist groups AND roles
+                // together (GroupManager.renameGroup ends in saveGroups, which
+                // serializes both). GroupService.renameGroup also migrates the
+                // DB category authorizations, as the legacy page did.
+                final List<Role> repointedRoles = new ArrayList<>();
+                for (final Role role : m_groupManager.getRoles()) {
                     if (name.equals(role.getMembershipGroup())) {
                         role.setMembershipGroup(newName);
-                        m_groupManager.saveRole(role);
+                        repointedRoles.add(role);
                     }
+                }
+                try {
+                    m_groupService.renameGroup(name, newName);
+                } catch (final Exception e) {
+                    for (final Role role : repointedRoles) {
+                        role.setMembershipGroup(name);
+                    }
+                    throw e;
                 }
             }
             LOG.info("Group {} renamed to {} by {}", name, newName, principal(securityContext));
@@ -219,7 +237,7 @@ public class GroupsRestService implements GroupsRestApi {
             return Response.status(Status.BAD_REQUEST).entity("The system group " + name + " cannot be deleted.").build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (!m_groupManager.hasGroup(name)) {
                     return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
                 }
@@ -233,7 +251,10 @@ public class GroupsRestService implements GroupsRestApi {
                             .entity("Group " + name + " is the membership group of on-call role(s) " + String.join(", ", referencingRoles)
                                     + "; delete or reassign those roles first.").build();
                 }
-                m_groupManager.deleteGroup(name);
+                // GroupService.deleteGroup also clears the DB category
+                // authorizations; without that, a future group reusing the
+                // name would silently inherit the old authorizations
+                m_groupService.deleteGroup(name);
             }
             LOG.info("Group {} deleted by {}", name, principal(securityContext));
             return Response.noContent().build();
@@ -266,7 +287,7 @@ public class GroupsRestService implements GroupsRestApi {
      * Validates every field of the request BEFORE anything is applied, so a
      * rejected request cannot leave partial state anywhere.
      */
-    private void validateDtoFields(final GroupDto dto) throws Exception {
+    private void validateDtoFields(final GroupDto dto, final Group existing) throws Exception {
         if (dto.getComments() != null && INVALID_COMMENTS.matcher(dto.getComments()).matches()) {
             throw new IllegalArgumentException("The comments must not contain any HTML markup.");
         }
@@ -285,8 +306,15 @@ public class GroupsRestService implements GroupsRestApi {
             }
         }
         if (dto.getDutySchedules() != null) {
+            // strings already stored on the record are preserved as-is so
+            // hand-edited files never make a group uneditable; only entries
+            // new to this request must pass validation
+            final Set<String> preExisting = existing == null
+                    ? Set.of() : new LinkedHashSet<>(existing.getDutySchedules());
             for (final String schedule : dto.getDutySchedules()) {
-                validateDutySchedule(schedule);
+                if (!preExisting.contains(schedule)) {
+                    validateDutySchedule(schedule);
+                }
             }
         }
     }
@@ -314,6 +342,9 @@ public class GroupsRestService implements GroupsRestApi {
         if (INVALID_NAME.matcher(name).matches()) {
             return "The group name must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
+        if (".".equals(name) || "..".equals(name)) {
+            return "The group name must not be a dot segment.";
+        }
         return null;
     }
 
@@ -326,6 +357,12 @@ public class GroupsRestService implements GroupsRestApi {
         final int end = Integer.parseInt(matcher.group(3));
         if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
             throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': times must be military clock values between 0 and 2359");
+        }
+        // DutySchedule.isInSchedule compares within one calendar day, so an
+        // overnight range can never match and would silently disable the
+        // schedule; require two rows (e.g. MoTu2000-2359 + TuWe0-800) instead
+        if (begin > end) {
+            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': the begin time must not be after the end time; split overnight coverage into two schedules");
         }
     }
 

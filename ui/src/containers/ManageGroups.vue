@@ -6,6 +6,7 @@
   </div>
   <div class="manage-groups-container">
     <h1 class="page-title">Manage Groups</h1>
+    <GroupsHelpPanel />
     <GroupsTable />
   </div>
 </template>
@@ -14,6 +15,7 @@
 import { computed, onMounted } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import GroupsHelpPanel from '@/components/ManageGroups/GroupsHelpPanel.vue'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { useMenuStore } from '@/stores/menuStore'

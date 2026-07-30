@@ -149,12 +149,52 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testOvernightDutyScheduleRoundTrips() throws Exception {
+    public void testOvernightDutyScheduleRejectedForNewEntries() throws Exception {
+        // DutySchedule.isInSchedule compares within one calendar day, so an
+        // overnight range never matches — accepting it would silently put the
+        // group permanently off duty
         sendData(POST, MediaType.APPLICATION_JSON, "/groups",
-                "{\"name\":\"nightgroup\",\"duty-schedule\":[\"MoTu2000-800\"]}", 201);
-        final JSONObject created = new JSONObject(getJson("/groups/nightgroup", 200));
-        assertEquals("MoTu2000-800", created.getJSONArray("duty-schedule").getString(0));
-        sendRequest(DELETE, "/groups/nightgroup", 204);
+                "{\"name\":\"nightgroup\",\"duty-schedule\":[\"MoTu2000-800\"]}", 400);
+        sendRequest(GET, "/groups/nightgroup", 404);
+    }
+
+    @Test
+    public void testPreExistingOddDutyScheduleStaysEditable() throws Exception {
+        // a hand-edited groups.xml may already carry an overnight string; the
+        // record must remain editable when the UI round-trips it unchanged
+        final Group group = new Group();
+        group.setName("legacynight");
+        group.addDutySchedule("MoTu2000-800");
+        m_groupManager.saveGroup("legacynight", group);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacynight",
+                "{\"name\":\"legacynight\",\"comments\":\"touched\",\"duty-schedule\":[\"MoTu2000-800\"]}", 204);
+        final JSONObject after = new JSONObject(getJson("/groups/legacynight", 200));
+        assertEquals("MoTu2000-800", after.getJSONArray("duty-schedule").getString(0));
+
+        // but ADDING another overnight entry is still rejected
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacynight",
+                "{\"name\":\"legacynight\",\"duty-schedule\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", 400);
+
+        sendRequest(DELETE, "/groups/legacynight", 204);
+    }
+
+    @Test
+    public void testDotSegmentNamesRejected() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\".\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"..\"}", 400);
+    }
+
+    @Test
+    public void testCommentsCanBeCleared() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups",
+                "{\"name\":\"commentgroup\",\"comments\":\"to be removed\"}", 201);
+        // an explicit empty string clears; an omitted key preserves
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/commentgroup",
+                "{\"name\":\"commentgroup\",\"comments\":\"\"}", 204);
+        final String json = getJson("/groups/commentgroup", 200);
+        assertTrue(!new JSONObject(json).has("comments") || new JSONObject(json).isNull("comments"));
+        sendRequest(DELETE, "/groups/commentgroup", 204);
     }
 
     @Test
