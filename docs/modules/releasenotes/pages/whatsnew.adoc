@@ -88,6 +88,10 @@ Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they a
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== XMPP (Jabber) notification strategies removed
+The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
+Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
