@@ -180,6 +180,36 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testCommentsMarkupRejectedEvenWithNewlines() throws Exception {
+        // newlines must not smuggle markup past the full-string match
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups",
+                "{\"name\":\"nlgroup\",\"comments\":\"hello\\n<script>alert(1)</script>\"}", 400);
+        sendRequest(GET, "/groups/nlgroup", 404);
+    }
+
+    @Test
+    public void testHandEditedMarkupCommentStaysEditable() throws Exception {
+        // "Bob's R&D team" is legal free text in a hand-edited groups.xml;
+        // the group must stay editable while the comment is unchanged
+        final Group group = new Group();
+        group.setName("legacycomment");
+        group.setComments("Bob's R&D team");
+        m_groupManager.saveGroup("legacycomment", group);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacycomment",
+                "{\"name\":\"legacycomment\",\"comments\":\"Bob's R&D team\",\"user\":[\"admin\"]}", 204);
+        final JSONObject after = new JSONObject(getJson("/groups/legacycomment", 200));
+        assertEquals("Bob's R&D team", after.getString("comments"));
+        assertEquals("admin", after.getJSONArray("user").getString(0));
+
+        // but CHANGING the comment to new markup is still rejected
+        sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacycomment",
+                "{\"name\":\"legacycomment\",\"comments\":\"<b>new markup</b>\"}", 400);
+
+        sendRequest(DELETE, "/groups/legacycomment", 204);
+    }
+
+    @Test
     public void testPreExistingUnknownMemberStaysEditable() throws Exception {
         // a hand-edited groups.xml may reference a user that no longer exists;
         // the group must remain editable while that member round-trips

@@ -74,9 +74,9 @@ public class GroupsRestService implements GroupsRestApi {
     private static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
 
     /** Markup per the legacy controller, plus URL-path-segment safety. */
-    private static final Pattern INVALID_NAME = Pattern.compile(".*[&<>\"`':/\\\\%?#\\s]+.*");
+    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
 
-    private static final Pattern INVALID_COMMENTS = Pattern.compile(".*[&<>\"`']+.*");
+    private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
 
     /** Same grammar as the users API. */
     private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
@@ -217,6 +217,15 @@ public class GroupsRestService implements GroupsRestApi {
                 try {
                     m_groupService.renameGroup(name, newName);
                 } catch (final Exception e) {
+                    // only roll the roles back if the rename did NOT persist
+                    // (GroupService renames the file first, then migrates the
+                    // DB category authorizations); re-pointing after a
+                    // persisted rename would diverge memory from groups.xml
+                    if (m_groupManager.hasGroup(newName) && !m_groupManager.hasGroup(name)) {
+                        throw new IllegalStateException("The group was renamed, but migrating its category"
+                                + " authorizations failed; review the group's authorized categories. ("
+                                + e.getMessage() + ")", e);
+                    }
                     for (final Role role : repointedRoles) {
                         role.setMembershipGroup(name);
                     }
@@ -288,7 +297,8 @@ public class GroupsRestService implements GroupsRestApi {
      * rejected request cannot leave partial state anywhere.
      */
     private void validateDtoFields(final GroupDto dto, final Group existing) throws Exception {
-        if (dto.getComments() != null && INVALID_COMMENTS.matcher(dto.getComments()).matches()) {
+        if (dto.getComments() != null && INVALID_COMMENTS.matcher(dto.getComments()).find()
+                && (existing == null || !dto.getComments().equals(existing.getComments().orElse(null)))) {
             throw new IllegalArgumentException("The comments must not contain any HTML markup.");
         }
         if (dto.getUsers() != null) {
@@ -344,7 +354,7 @@ public class GroupsRestService implements GroupsRestApi {
 
     /** Returns a problem description, or null when the group name is acceptable. */
     private static String validateName(final String name) {
-        if (INVALID_NAME.matcher(name).matches()) {
+        if (INVALID_NAME.matcher(name).find()) {
             return "The group name must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
         if (".".equals(name) || "..".equals(name)) {

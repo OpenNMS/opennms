@@ -177,7 +177,11 @@ const originalName = computed(() => props.group?.name ?? '')
 const addableUsers = computed(() => store.memberCandidates.filter((u) => !members.value.includes(u)))
 
 const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name')))
-const commentsProblem = computed(() => validateAdminComments(comments.value))
+
+// a hand-edited comment that predates this page stays editable: only
+// changed input is validated (the server grandfathers unchanged values too)
+const commentsProblem = computed(() =>
+  comments.value.trim() === (props.group?.comments ?? '').trim() ? null : validateAdminComments(comments.value))
 
 const isValid = computed(() =>
   (isEditing.value || !!name.value.trim()) && !nameProblem.value && !commentsProblem.value)
