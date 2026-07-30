@@ -1,7 +1,7 @@
 # @opennms/onms-ui-example-plugin
 
 A reference OpenNMS UI plugin. It is dev-only tooling — private, never part of
-the core bundle — that exists for two reasons:
+the core bundle. It exists for two reasons:
 
 1. **Proves the seam works.** It builds a real, externalized `.es.js` module
    using the exact toolchain a third-party plugin author would use, and
