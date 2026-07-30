@@ -22,19 +22,25 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
-import org.apache.bsf.util.IOUtils;
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
+
 import org.opennms.core.spring.BeanFactoryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +57,17 @@ import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 /**
+ * Runs a script as a notification command via JSR-223 ({@code javax.script}).
+ *
+ * <p>This strategy originally ran on the (now retired) Apache Bean Scripting
+ * Framework; the class name and every script variable name are retained so
+ * existing notificationCommands.xml entries and scripts keep working. Two
+ * things from the BSF era no longer exist: the implicit {@code bsf} helper
+ * object BSF injected into engines, and the {@code bsf-engine} /
+ * {@code file-extensions} switches (ignored with a warning). Script engines
+ * are discovered from the classpath; BeanShell and Groovy ship with
+ * OpenNMS.</p>
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="mailto:dschlenk@converge-one.com</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
@@ -61,78 +78,92 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
     private List<Argument> m_arguments;
     private Map<String,String> m_notifParams = new HashMap<String,String>();
-    
-    
-    /* 
-     * Since instances of this class are short lived (unlike BSFMonitor) we need to
-     * make a static instance and synchronize access to it to
-     * take advantage of caching script engines. If this becomes a bottleneck
-     * perhaps a small pool of managers would help.
+
+    /*
+     * Instances of this class are short lived (one per notification), so the
+     * engine manager and the compiled-script cache are static. Caching the
+     * compiled form matters for Groovy, which leaks a class per compilation
+     * (see JSR223ScriptCache in opennms-provision-persistence, which this
+     * mirrors).
      */
-    private static BSFManager s_bsfManager;
-    static {
-        LOG.debug("creating static BSFManager");
-        s_bsfManager = new BSFManager();
+    private static final ScriptEngineManager MANAGER = new ScriptEngineManager();
+
+    private static final ConcurrentHashMap<String, ScriptState> SCRIPT_CACHE = new ConcurrentHashMap<>();
+
+    private static class ScriptState {
+        private final Object lock = new Object();
+        private long lastCompiled = -1;
+        private CompiledScript compiled;
+        private boolean compileUnsupported;
     }
-    
-    private static synchronized int executeScript(String fileName, BSFNotificationStrategy obj){
-        String lang = obj.getLangClass();
-        String engine = obj.getBsfEngine();
-        String runType = obj.getBsfRunType();
-        String[] extensions = obj.getFileExtensions();
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
+     */
+    @Override
+    public int send(List<Argument> arguments) {
+        m_arguments = arguments;
+        String fileName = getFileName();
+        return executeScript(fileName);
+    }
+
+    private int executeScript(String fileName) {
+        warnAboutDeprecatedSwitches();
 
         LOG.info("Loading notification script from file '{}'", fileName);
+        if (fileName == null) {
+            LOG.warn("No 'file-name' argument supplied for the BSF notification command. Returning failure indication.");
+            return -1;
+        }
         File scriptFile = new File(fileName);
         int ret = -1;
         try {
-
-            if(lang==null) lang = BSFManager.getLangFromFilename(fileName);
-
-            // Declare some beans that can be used inside the script                    
-            HashMap<String,String> results = new HashMap<String,String>();
-            s_bsfManager.declareBean("results", results, Map.class);
-            declareBeans(obj);
-
-            if(engine != null && lang != null && extensions != null && extensions.length > 0 ){
-              //We register the scripting engine again no matter what since  
-                //BSFManager doesn't let us know what engine is currently registered
-                //for this language and it might not be the same as what we want. 
-                LOG.debug("Registering scripting engine '{}' for '{}'", engine, lang);
-                BSFManager.registerScriptingEngine(lang,engine,extensions);
+            if (!scriptFile.exists() || !scriptFile.canRead()) {
+                LOG.warn("Cannot locate or read script file '{}'. Returning failure indication.", fileName);
+                return -1;
             }
 
-            if(scriptFile.exists() && scriptFile.canRead()){   
-                String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(scriptFile), StandardCharsets.UTF_8));
+            final ScriptEngine engine = resolveEngine(getLangClass(), fileName);
+            if (engine == null) {
+                LOG.error("No JSR-223 script engine found for script '{}' (lang-class '{}'). BeanShell and Groovy are available by default; other engines must be on the classpath.",
+                        fileName, getLangClass());
+                return -1;
+            }
 
-                // Check foot before firing
-                obj.checkAberrantScriptBehaviors(code);
+            String runType = getBsfRunType();
+            if (!"eval".equals(runType) && !"exec".equals(runType)) {
+                LOG.warn("Invalid run-type parameter value '{}' for BSF notification script '{}'. Only 'eval' and 'exec' are supported.", runType, scriptFile);
+                return -1;
+            }
 
-                // Execute the script
-                if("eval".equals(runType)){
-                    results.put("status", s_bsfManager.eval(lang, "BSFNotificationStrategy", 0, 0, code).toString());  
-                }else if("exec".equals(runType)){
-                    s_bsfManager.exec(lang, "BSFNotificationStrategy", 0, 0, code);
-                }else{
-                    LOG.warn("Invalid run-type parameter value '{}' for BSF notification script '{}'. Only 'eval' and 'exec' are supported.", runType, scriptFile);
-                }
+            // Variables the script can use
+            HashMap<String,String> results = new HashMap<String,String>();
+            Bindings bindings = buildBindings(results);
+            ScriptContext context = new SimpleScriptContext();
+            context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
-                // Check whether the script finished successfully
-                if ("OK".equals(results.get("status"))) {
-                    LOG.info("Execution succeeded and successful status passed back for script '{}'", scriptFile);
-                    ret = 0;
-                } else {
-                    LOG.warn("Execution succeeded for script '{}', but script did not indicate successful notification by putting an entry into the 'results' bean with key 'status' and value 'OK'", scriptFile);
-                    ret = -1;
-                }
+            // Execute the script
+            Object returnValue;
+            CompiledScript compiled = getOrCompile(engine, scriptFile);
+            if (compiled != null) {
+                returnValue = compiled.eval(context);
             } else {
-                LOG.warn("Cannot locate or read BSF script file '{}'. Returning failure indication.", fileName);
+                returnValue = engine.eval(Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8), context);
+            }
+            if ("eval".equals(runType)) {
+                results.put("status", String.valueOf(returnValue));
+            }
+
+            // Check whether the script finished successfully
+            if ("OK".equals(results.get("status"))) {
+                LOG.info("Execution succeeded and successful status passed back for script '{}'", scriptFile);
+                ret = 0;
+            } else {
+                LOG.warn("Execution succeeded for script '{}', but script did not indicate successful notification by putting an entry into the 'results' bean with key 'status' and value 'OK'", scriptFile);
                 ret = -1;
             }
-        } catch (BSFException e) {
-            LOG.warn("Execution of script '{}' failed with BSFException: {}", scriptFile, e.getMessage(), e);
-            ret = -1;
-        } catch (FileNotFoundException e){
-            LOG.warn("Could not find BSF script file '{}'.", fileName);
+        } catch (ScriptException e) {
+            LOG.warn("Execution of script '{}' failed with ScriptException: {}", scriptFile, e.getMessage(), e);
             ret = -1;
         } catch (IOException e) {
             LOG.warn("Execution of script '{}' failed with IOException: {}", scriptFile, e.getMessage(), e);
@@ -141,31 +172,88 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             // Catch any RuntimeException throws
             LOG.warn("Execution of script '{}' failed with unexpected throwable: {}", scriptFile, e.getMessage(), e);
             ret = -1;
-        } finally { 
-            undeclareBean("results");
-            undeclareBeans(obj);
         }
         LOG.debug("Finished running BSF script notification.");
         return ret;
     }
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
+
+    /**
+     * Resolution order: an explicit lang-class is looked up as a JSR-223
+     * engine name (the BSF names "beanshell" and "groovy" match), then as an
+     * extension; otherwise the file extension decides, with BSF's ".gy" alias
+     * mapped to Groovy since the Groovy engine does not register it.
      */
-    @Override
-    public int send(List<Argument> arguments) {
-        m_arguments = arguments;
-        String fileName = getFileName();
-        int returnCode = executeScript(fileName, this);
-        return returnCode;
+    private static ScriptEngine resolveEngine(String langClass, String fileName) {
+        if (langClass != null) {
+            ScriptEngine engine = MANAGER.getEngineByName(langClass);
+            if (engine == null) {
+                engine = MANAGER.getEngineByExtension(langClass);
+            }
+            return engine;
+        }
+        final int dot = fileName.lastIndexOf('.');
+        if (dot < 0 || dot == fileName.length() - 1) {
+            return null;
+        }
+        String extension = fileName.substring(dot + 1);
+        if ("gy".equals(extension)) {
+            extension = "groovy";
+        }
+        ScriptEngine engine = MANAGER.getEngineByExtension(extension);
+        if (engine == null) {
+            engine = MANAGER.getEngineByName(extension);
+        }
+        return engine;
     }
 
-    private static void declareBeans(BSFNotificationStrategy obj) throws BSFException {
+    /**
+     * Returns the cached compiled form of the script, recompiling when the
+     * file changes, or null when the engine cannot compile (the script is
+     * then evaluated from source with the per-invocation engine, which keeps
+     * that path free of shared state).
+     */
+    private static CompiledScript getOrCompile(ScriptEngine engine, File scriptFile) throws IOException {
+        final String key = scriptFile.getAbsolutePath() + "|" + engine.getFactory().getEngineName();
+        final ScriptState state = SCRIPT_CACHE.computeIfAbsent(key, k -> new ScriptState());
+        synchronized (state.lock) {
+            if (state.compileUnsupported) {
+                return null;
+            }
+            final long lastModified = scriptFile.lastModified();
+            if (lastModified > state.lastCompiled) {
+                if (!(engine instanceof Compilable)) {
+                    state.compileUnsupported = true;
+                    return null;
+                }
+                try {
+                    state.compiled = ((Compilable) engine).compile(Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8));
+                    state.lastCompiled = lastModified;
+                } catch (Throwable t) {
+                    // must catch Throwable: BeanShell declares Compilable but its
+                    // compile() throws java.lang.Error("unimplemented")
+                    LOG.debug("Script engine '{}' cannot compile '{}' ({}); evaluating from source instead",
+                            engine.getFactory().getEngineName(), scriptFile, t.toString());
+                    state.compileUnsupported = true;
+                    return null;
+                }
+            }
+            return state.compiled;
+        }
+    }
+
+    private void warnAboutDeprecatedSwitches() {
+        if (getBsfEngine() != null || getFileExtensions() != null) {
+            LOG.warn("The 'bsf-engine' and 'file-extensions' switches are no longer supported now that the BSF notification strategy runs on JSR-223; they are ignored. Use 'lang-class' or the script file extension to select the engine.");
+        }
+    }
+
+    private Bindings buildBindings(Map<String,String> results) {
         // Retrieve the parameters before accessing them
-        obj.retrieveParams();
+        retrieveParams();
 
         Integer nodeId;
         try {
-            nodeId = Integer.valueOf(obj.m_notifParams.get(NotificationManager.PARAM_NODE));
+            nodeId = Integer.valueOf(m_notifParams.get(NotificationManager.PARAM_NODE));
         } catch (NumberFormatException nfe) {
             nodeId = null;
         }
@@ -212,69 +300,38 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             }
         }
 
-        s_bsfManager.declareBean("bsf_notif_strategy", obj, BSFNotificationStrategy.class);
+        Bindings bindings = new SimpleBindings();
+        bindings.put("results", results);
+        bindings.put("bsf_notif_strategy", this);
 
-        s_bsfManager.declareBean("logger", LOG, Logger.class);
-        s_bsfManager.declareBean("notif_params", obj.m_notifParams, Map.class);
+        bindings.put("logger", LOG);
+        bindings.put("notif_params", m_notifParams);
 
-        s_bsfManager.declareBean("node_label", nodeLabel, String.class);
-        s_bsfManager.declareBean("foreign_source", foreignSource, String.class);
-        s_bsfManager.declareBean("foreign_id", foreignId, String.class);
-        s_bsfManager.declareBean("node_assets", assets, OnmsAssetRecord.class);
-        s_bsfManager.declareBean("node_categories", categories, List.class);
-        s_bsfManager.declareBean("node", node, OnmsNode.class);
+        bindings.put("node_label", nodeLabel);
+        bindings.put("foreign_source", foreignSource);
+        bindings.put("foreign_id", foreignId);
+        bindings.put("node_assets", assets);
+        bindings.put("node_categories", categories);
+        bindings.put("node", node);
 
-        for (Argument arg : obj.m_arguments) {
-            if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) s_bsfManager.declareBean("text_message", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) s_bsfManager.declareBean("numeric_message", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) s_bsfManager.declareBean("node_id", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) s_bsfManager.declareBean("ip_addr", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_SERVICE.equals(arg.getSwitch())) s_bsfManager.declareBean("svc_name", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) s_bsfManager.declareBean("subject", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) s_bsfManager.declareBean("email", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) s_bsfManager.declareBean("pager_email", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("text_pin", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("numeric_pin", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("work_phone", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("home_phone", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("mobile_phone", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("phone_pin", arg.getValue(), String.class);
+        for (Argument arg : m_arguments) {
+            if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) bindings.put("text_message", arg.getValue());
+            if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) bindings.put("numeric_message", arg.getValue());
+            if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) bindings.put("node_id", arg.getValue());
+            if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) bindings.put("ip_addr", arg.getValue());
+            if (NotificationManager.PARAM_SERVICE.equals(arg.getSwitch())) bindings.put("svc_name", arg.getValue());
+            if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) bindings.put("subject", arg.getValue());
+            if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) bindings.put("email", arg.getValue());
+            if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) bindings.put("pager_email", arg.getValue());
+            if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(arg.getSwitch())) bindings.put("text_pin", arg.getValue());
+            if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(arg.getSwitch())) bindings.put("numeric_pin", arg.getValue());
+            if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) bindings.put("work_phone", arg.getValue());
+            if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) bindings.put("home_phone", arg.getValue());
+            if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) bindings.put("mobile_phone", arg.getValue());
+            if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) bindings.put("phone_pin", arg.getValue());
         }
-    }
 
-    private static void undeclareBean( String beanName){
-        try{
-            s_bsfManager.undeclareBean(beanName);
-        }catch(BSFException e) {
-            LOG.warn("Unable to undeclareBean '{}'", beanName);
-        }
-    }
-    private static void undeclareBeans(BSFNotificationStrategy obj) {
-        undeclareBean("logger");
-        undeclareBean("bsf_notif_strategy");
-        undeclareBean("notif_params");
-        undeclareBean("node_label");
-        undeclareBean("foreign_source");
-        undeclareBean("foreign_id");
-        undeclareBean("node_assets");
-        undeclareBean("node_categories");
-        undeclareBean("node");
-        for (Argument arg : obj.m_arguments) {
-            if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) undeclareBean("text_message");
-            if (NotificationManager.PARAM_NUM_MSG.equals(arg.getSwitch())) undeclareBean("numeric_message");
-            if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) undeclareBean("node_id");
-            if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) undeclareBean("ip_addr");
-            if (NotificationManager.PARAM_SERVICE.equals(arg.getSwitch())) undeclareBean("svc_name");
-            if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) undeclareBean("subject");
-            if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) undeclareBean("email");
-            if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) undeclareBean("pager_email");
-            if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(arg.getSwitch())) undeclareBean("text_pin");
-            if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(arg.getSwitch())) undeclareBean("numeric_pin");
-            if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) undeclareBean("work_phone");
-            if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) undeclareBean("home_phone");
-            if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) undeclareBean("mobile_phone");
-            if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) undeclareBean("phone_pin");
-        }
+        return bindings;
     }
 
     private String getSwitchValue(String argSwitch) {
@@ -300,13 +357,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         if (value != null && value.equals("")) value = null;
 
         return value;
-    }
-
-    private void checkAberrantScriptBehaviors(String script) {
-        if (script.matches("(?s)\\.exec\\s*\\(")) {
-            // Here we should check for stupid stuff like use of System.exec()
-            // and log stern warnings if found.
-        }
     }
 
     private String getFileName() {
@@ -335,10 +385,9 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         return runType;
     }
 
-
     private void retrieveParams() {
         for (Argument arg : m_arguments) {
-            m_notifParams.put(arg.getSwitch(), arg.getValue()); 
+            m_notifParams.put(arg.getSwitch(), arg.getValue());
         }
     }
 
