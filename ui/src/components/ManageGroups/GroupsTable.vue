@@ -49,7 +49,13 @@
       </Column>
       <Column header="Actions">
         <template #body="{ data }">
-          <div class="action-container">
+          <span
+            v-if="!isPathAddressable(data.name)"
+            class="unaddressable"
+            v-tooltip.top="'This group name contains / \\ or %, which the API cannot address; manage it by editing groups.xml.'"
+            data-test="unaddressable-note"
+          >file-managed</span>
+          <div v-else class="action-container">
             <Button
               text
               label="Edit"
@@ -125,6 +131,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
@@ -200,6 +207,11 @@ const cancelDelete = () => {
 .members {
   font-size: 0.875rem;
   color: var(--p-text-muted-color);
+}
+
+.unaddressable {
+  color: var(--p-text-muted-color);
+  font-style: italic;
 }
 
 .action-container {

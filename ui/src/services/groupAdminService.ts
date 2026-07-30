@@ -60,57 +60,61 @@ const getGroupMemberCandidates = async (): Promise<string[]> => {
   }
 }
 
-const createManagedGroup = async (group: ManagedGroup): Promise<boolean> => {
+const createManagedGroup = async (group: ManagedGroup): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(endpoint, group)
     showSnackBar({ msg: `Group '${group.name}' created.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to create group '${group.name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to create group '${group.name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const updateManagedGroup = async (group: ManagedGroup): Promise<boolean> => {
+const updateManagedGroup = async (group: ManagedGroup): Promise<string | null> => {
   try {
     startSpinner()
     await v2.put(`${endpoint}/${encodeURIComponent(group.name)}`, group)
     showSnackBar({ msg: `Group '${group.name}' updated.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to update group '${group.name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to update group '${group.name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const renameManagedGroup = async (name: string, newName: string): Promise<boolean> => {
+const renameManagedGroup = async (name: string, newName: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { 'new-name': newName })
     showSnackBar({ msg: `Group '${name}' renamed to '${newName}'.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to rename group '${name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to rename group '${name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const deleteManagedGroup = async (name: string): Promise<boolean> => {
+const deleteManagedGroup = async (name: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.delete(`${endpoint}/${encodeURIComponent(name)}`)
     showSnackBar({ msg: `Group '${name}' deleted.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to delete group '${name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to delete group '${name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }

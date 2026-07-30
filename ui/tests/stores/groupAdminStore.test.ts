@@ -59,29 +59,29 @@ describe('useGroupAdminStore', () => {
   })
 
   it('createGroup should refresh on success and preserve member order in the payload', async () => {
-    vi.mocked(API.createManagedGroup).mockResolvedValue(true)
+    vi.mocked(API.createManagedGroup).mockResolvedValue(null)
     vi.mocked(API.getManagedGroups).mockResolvedValue(mockGroups)
 
     const group: ManagedGroup = { name: 'NOC', user: ['second', 'first'] }
     const ok = await store.createGroup(group)
 
-    expect(ok).toBe(true)
+    expect(ok).toBe(null)
     expect(API.createManagedGroup).toHaveBeenCalledWith(group)
     expect(vi.mocked(API.createManagedGroup).mock.calls[0][0].user).toEqual(['second', 'first'])
     expect(API.getManagedGroups).toHaveBeenCalledTimes(1)
   })
 
   it('createGroup should not refresh on failure', async () => {
-    vi.mocked(API.createManagedGroup).mockResolvedValue(false)
+    vi.mocked(API.createManagedGroup).mockResolvedValue('it failed')
 
     const ok = await store.createGroup({ name: 'NOC' })
 
-    expect(ok).toBe(false)
+    expect(ok).toBe('it failed')
     expect(API.getManagedGroups).not.toHaveBeenCalled()
   })
 
   it('updateGroup should refresh on success', async () => {
-    vi.mocked(API.updateManagedGroup).mockResolvedValue(true)
+    vi.mocked(API.updateManagedGroup).mockResolvedValue(null)
     vi.mocked(API.getManagedGroups).mockResolvedValue(mockGroups)
 
     await store.updateGroup(mockGroups[1])
@@ -91,7 +91,7 @@ describe('useGroupAdminStore', () => {
   })
 
   it('renameGroup should pass old and new names and refresh', async () => {
-    vi.mocked(API.renameManagedGroup).mockResolvedValue(true)
+    vi.mocked(API.renameManagedGroup).mockResolvedValue(null)
     vi.mocked(API.getManagedGroups).mockResolvedValue(mockGroups)
 
     await store.renameGroup('NOC', 'NOC2')
@@ -101,7 +101,7 @@ describe('useGroupAdminStore', () => {
   })
 
   it('deleteGroup should refresh on success', async () => {
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue(true)
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue(null)
     vi.mocked(API.getManagedGroups).mockResolvedValue([mockGroups[0]])
 
     await store.deleteGroup('NOC')

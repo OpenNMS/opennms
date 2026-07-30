@@ -41,35 +41,35 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
   }
 
   const createGroup = async (group: ManagedGroup) => {
-    const ok = await API.createManagedGroup(group)
-    if (ok) {
+    const error = await API.createManagedGroup(group)
+    if (error === null) {
       await getGroups()
     }
-    return ok
+    return error
   }
 
   const updateGroup = async (group: ManagedGroup) => {
-    const ok = await API.updateManagedGroup(group)
-    if (ok) {
+    const error = await API.updateManagedGroup(group)
+    if (error === null) {
       await getGroups()
     }
-    return ok
+    return error
   }
 
   const renameGroup = async (name: string, newName: string) => {
-    const ok = await API.renameManagedGroup(name, newName)
-    if (ok) {
+    const error = await API.renameManagedGroup(name, newName)
+    if (error === null) {
       await getGroups()
     }
-    return ok
+    return error
   }
 
   const deleteGroup = async (name: string) => {
-    const ok = await API.deleteManagedGroup(name)
-    if (ok) {
+    const error = await API.deleteManagedGroup(name)
+    if (error === null) {
       await getGroups()
     }
-    return ok
+    return error
   }
 
   const populate = async () => {

@@ -9,25 +9,43 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
+      <Message
+        v-if="errorText"
+        severity="error"
+        :closable="false"
+        data-test="dialog-error"
+      >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
           <InputText
             id="group-editor-name"
             v-model="name"
+            :invalid="!!nameProblem"
             data-test="group-name-input"
           />
           <label for="group-editor-name">Group Name *</label>
         </IftaLabel>
+        <small
+          v-if="nameProblem"
+          class="field-error"
+          data-test="name-error"
+        >{{ nameProblem }}</small>
       </FormField>
       <FormField>
         <IftaLabel>
           <InputText
             id="group-editor-comments"
             v-model="comments"
+            :invalid="!!commentsProblem"
             data-test="group-comments-input"
           />
           <label for="group-editor-comments">Comments</label>
         </IftaLabel>
+        <small
+          v-if="commentsProblem"
+          class="field-error"
+          data-test="comments-error"
+        >{{ commentsProblem }}</small>
       </FormField>
 
       <div class="members-section">
@@ -129,9 +147,11 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import Message from 'primevue/message'
 import Select from 'primevue/select'
 
 import FormField from '@/components/Common/FormField.vue'
+import { validateAdminComments, validateAdminName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup } from '@/types/groupAdmin'
 
@@ -149,13 +169,18 @@ const comments = ref('')
 const members = ref<string[]>([])
 const memberToAdd = ref<string | null>(null)
 const saving = ref(false)
+const errorText = ref('')
 
 const isEditing = computed(() => props.group !== null)
 const originalName = computed(() => props.group?.name ?? '')
 
 const addableUsers = computed(() => store.memberCandidates.filter((u) => !members.value.includes(u)))
 
-const isValid = computed(() => isEditing.value || !!name.value.trim())
+const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name')))
+const commentsProblem = computed(() => validateAdminComments(comments.value))
+
+const isValid = computed(() =>
+  (isEditing.value || !!name.value.trim()) && !nameProblem.value && !commentsProblem.value)
 
 watch(
   () => props.visible,
@@ -163,6 +188,7 @@ watch(
     if (!isVisible) {
       return
     }
+    errorText.value = ''
     memberToAdd.value = null
     if (props.group) {
       name.value = props.group.name
@@ -206,9 +232,11 @@ const save = async () => {
       comments: comments.value.trim(),
       user: [...members.value]
     }
-    const ok = isEditing.value ? await store.updateGroup(payload) : await store.createGroup(payload)
-    if (ok) {
+    const error = isEditing.value ? await store.updateGroup(payload) : await store.createGroup(payload)
+    if (error === null) {
       emit('update:visible', false)
+    } else {
+      errorText.value = error
     }
   } finally {
     saving.value = false
@@ -227,6 +255,12 @@ const save = async () => {
   :deep(.p-select) {
     width: 100%;
   }
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-red-500, #e24c4c);
 }
 
 .members-section {
