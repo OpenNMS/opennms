@@ -77,9 +77,11 @@ public class JavaMailerWireTest {
     private GreenMail greenMail;
     private int smtpPort;
     private int imapPort;
+    private String previousOpennmsHome;
 
     @Before
     public void setUp() throws IOException {
+        previousOpennmsHome = System.getProperty("opennms.home");
         final File homeDir = new ClassPathResource("/etc/javamail-configuration.properties")
                 .getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
@@ -104,6 +106,11 @@ public class JavaMailerWireTest {
         }
         JavaMailerConfig.setSecureCredentialsVaultScope(EmptyScope.EMPTY);
         JavaMailerConfig.setTokenScope(EmptyScope.EMPTY);
+        if (previousOpennmsHome != null) {
+            System.setProperty("opennms.home", previousOpennmsHome);
+        } else {
+            System.clearProperty("opennms.home");
+        }
     }
 
     private static JavamailProperty javamailProperty(final String name, final String value) {
@@ -177,7 +184,8 @@ public class JavaMailerWireTest {
 
         final SendmailMessage message = new SendmailMessage();
         message.setFrom("sender@opennms.org");
-        message.setTo("receiver@opennms.org");
+        // comma-separated recipient list, matching JavaMailer's behavior
+        message.setTo("receiver@opennms.org, second@opennms.org");
         message.setSubject("sendmailer wire test");
         message.setBody("sendmailer body");
         config.setSendmailMessage(message);
@@ -193,10 +201,11 @@ public class JavaMailerWireTest {
         final JavaSendMailer sendMailer = new JavaSendMailer(config, false);
         sendMailer.send();
 
-        assertTrue(greenMail.waitForIncomingEmail(5000, 1));
+        assertTrue(greenMail.waitForIncomingEmail(5000, 2));
         final Message received = greenMail.getReceivedMessages()[0];
         assertEquals("sendmailer wire test", received.getSubject());
         assertEquals("sender@opennms.org", received.getFrom()[0].toString());
+        assertEquals(2, received.getRecipients(Message.RecipientType.TO).length);
     }
 
     @Test

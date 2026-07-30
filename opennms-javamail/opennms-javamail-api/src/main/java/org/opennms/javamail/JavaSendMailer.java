@@ -136,7 +136,8 @@ public class JavaSendMailer extends JavaMailer2 {
                 if (!Strings.isNullOrEmpty(configMsg.getReplyTo())) {
                     mimeMsg.setReplyTo(InternetAddress.parse(configMsg.getReplyTo()));
                 }
-                mimeMsg.setRecipient(Message.RecipientType.TO, new InternetAddress(configMsg.getTo()));
+                // parse like JavaMailer.initializeMessage() so comma-separated recipient lists work
+                mimeMsg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(configMsg.getTo(), false));
                 mimeMsg.setSubject(configMsg.getSubject(), charset);
             } catch (final MessagingException e) {
                 LOG.warn("found a problem building message: {}", e.getMessage());
@@ -289,9 +290,6 @@ public class JavaSendMailer extends JavaMailer2 {
             final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol();
             if (!props.containsKey("mail.smtp.starttls.enable")) {
                 props.setProperty("mail.smtp.starttls.enable", String.valueOf(sendmailProtocol.isStartTls()));
-            }
-            if (!props.containsKey("mail.smtp.quitwait")) {
-                props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
             }
             if (!props.containsKey("mail.smtp.quitwait")) {
                 props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
