@@ -63,6 +63,10 @@ import org.springframework.stereotype.Component;
 @Component("usersRestServiceV2")
 public class UsersRestService implements UsersRestApi {
 
+    // Check-then-act sequences synchronize on GroupFactory.class: user
+    // mutations cascade into GroupManager (deleteUser/renameUser walk every
+    // group), so the v2 users and groups services must share one monitor.
+
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
 
     /** System accounts that must not be deleted or renamed. */
@@ -83,13 +87,6 @@ public class UsersRestService implements UsersRestApi {
      */
     private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
 
-    /**
-     * Serializes this service's check-then-act sequences. UserManager's own
-     * lock is internal to each call, so without this two concurrent creates
-     * could both pass the hasUser() check.
-     */
-    private final Object m_lock = new Object();
-
     @Autowired
     private UserManager m_userManager;
 
@@ -97,7 +94,7 @@ public class UsersRestService implements UsersRestApi {
     public Response listUsers(final SecurityContext securityContext) {
         assertAdmin(securityContext);
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final List<UserDto> users = new ArrayList<>();
                 for (final User user : m_userManager.getUsers().values()) {
                     users.add(toDto(user));
@@ -114,7 +111,7 @@ public class UsersRestService implements UsersRestApi {
     public Response getUser(final SecurityContext securityContext, final String userId) {
         assertAdmin(securityContext);
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final User user = m_userManager.getUser(userId);
                 if (user == null) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
@@ -149,12 +146,12 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
-            validateDtoFields(request);
+            validateDtoFields(request, null);
         } catch (final IllegalArgumentException e) {
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (m_userManager.hasUser(userId)) {
                     return Response.status(Status.BAD_REQUEST).entity("User " + userId + " already exists.").build();
                 }
@@ -187,15 +184,15 @@ public class UsersRestService implements UsersRestApi {
                     .entity("The user-id in the body does not match the request path; use the rename endpoint to change ids.").build();
         }
         try {
-            validateDtoFields(dto);
-        } catch (final IllegalArgumentException e) {
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final User existing = m_userManager.getUser(userId);
                 if (existing == null) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
+                }
+                try {
+                    validateDtoFields(dto, existing);
+                } catch (final IllegalArgumentException e) {
+                    return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
                 }
                 final User updated = copyOf(existing);
                 applyDto(updated, dto);
@@ -214,7 +211,7 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 final User existing = m_userManager.getUser(userId);
                 if (existing == null) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
@@ -245,7 +242,7 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (!m_userManager.hasUser(userId)) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
                 }
@@ -268,7 +265,7 @@ public class UsersRestService implements UsersRestApi {
             return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be deleted.").build();
         }
         try {
-            synchronized (m_lock) {
+            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
                 if (!m_userManager.hasUser(userId)) {
                     return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
                 }
@@ -323,7 +320,7 @@ public class UsersRestService implements UsersRestApi {
      * Validates every field of the request BEFORE anything is applied, so a
      * rejected request cannot leave partial state anywhere.
      */
-    private static void validateDtoFields(final UserDto dto) {
+    private static void validateDtoFields(final UserDto dto, final User existing) {
         final String timeZoneId = trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
@@ -340,8 +337,15 @@ public class UsersRestService implements UsersRestApi {
             }
         }
         if (dto.getDutySchedules() != null) {
+            // strings already stored on the record are preserved as-is so
+            // hand-edited files never make a user uneditable; only entries
+            // new to this request must pass validation
+            final Set<String> preExisting = existing == null
+                    ? Set.of() : new java.util.LinkedHashSet<>(existing.getDutySchedules());
             for (final String schedule : dto.getDutySchedules()) {
-                validateDutySchedule(schedule);
+                if (!preExisting.contains(schedule)) {
+                    validateDutySchedule(schedule);
+                }
             }
         }
     }
@@ -393,14 +397,16 @@ public class UsersRestService implements UsersRestApi {
         if (INVALID_USER_ID.matcher(userId).matches()) {
             return "The user-id must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
+        if (".".equals(userId) || "..".equals(userId)) {
+            return "The user-id must not be a dot segment.";
+        }
         return null;
     }
 
     /**
      * Duty schedules are stored as strings like MoWeFr800-1700 and parsed with
      * unchecked exceptions all over notifd/group scheduling — an invalid string
-     * saved here would break duty evaluation at runtime. Overnight ranges
-     * (begin after end) are legal.
+     * saved here would break duty evaluation at runtime.
      */
     private static void validateDutySchedule(final String schedule) {
         final Matcher matcher = schedule == null ? null : DUTY_SCHEDULE.matcher(schedule);
@@ -411,6 +417,12 @@ public class UsersRestService implements UsersRestApi {
         final int end = Integer.parseInt(matcher.group(3));
         if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
             throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': times must be military clock values between 0 and 2359");
+        }
+        // DutySchedule.isInSchedule compares within one calendar day, so an
+        // overnight range can never match and would silently disable the
+        // schedule; require two rows (e.g. MoTu2000-2359 + TuWe0-800) instead
+        if (begin > end) {
+            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': the begin time must not be after the end time; split overnight coverage into two schedules");
         }
     }
 

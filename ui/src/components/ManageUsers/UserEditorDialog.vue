@@ -183,10 +183,10 @@ const save = async () => {
     const payload: ManagedUser = {
       ...base,
       'user-id': isEditing.value ? originalUserId.value : form.userId.trim(),
-      'full-name': form.fullName.trim() || undefined,
-      'user-comments': form.comments.trim() || undefined,
-      email: form.email.trim() || undefined,
-      'pager-email': form.pagerEmail.trim() || undefined,
+      'full-name': form.fullName.trim(),
+      'user-comments': form.comments.trim(),
+      email: form.email.trim(),
+      'pager-email': form.pagerEmail.trim(),
       role: [...form.roles]
     }
     const ok = isEditing.value

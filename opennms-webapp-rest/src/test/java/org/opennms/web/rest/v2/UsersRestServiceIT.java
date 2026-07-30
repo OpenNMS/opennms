@@ -269,19 +269,53 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testOvernightDutyScheduleRoundTrips() throws Exception {
-        // legacy UI and hand-edited users.xml contain overnight schedules;
-        // they must be accepted and must not make the user uneditable
+    public void testOvernightDutyScheduleRejectedForNewEntries() throws Exception {
+        // DutySchedule.isInSchedule compares within one calendar day, so an
+        // overnight range never matches and would silently disable the schedule
         sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"user-id\":\"nightshift\",\"password\":\"pw\",\"duty-schedule\":[\"MoTu2000-800\"]}", 201);
+                "{\"user-id\":\"nightshift\",\"password\":\"pw\",\"duty-schedule\":[\"MoTu2000-800\"]}", 400);
+        sendRequest(GET, "/users/nightshift", 404);
+    }
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/nightshift",
-                "{\"user-id\":\"nightshift\",\"full-name\":\"Night Shift\",\"duty-schedule\":[\"MoTu2000-800\"]}", 204);
+    @Test
+    public void testPreExistingOddDutyScheduleStaysEditable() throws Exception {
+        // a hand-edited users.xml may already carry an overnight string; the
+        // record must remain editable when the UI round-trips it unchanged
+        final User user = new User();
+        user.setUserId("legacynight");
+        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
+        user.getDutySchedules().add("MoTu2000-800");
+        m_userManager.saveUser("legacynight", user);
 
-        final JSONObject after = new JSONObject(getJson("/users/nightshift", 200));
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacynight",
+                "{\"user-id\":\"legacynight\",\"full-name\":\"Night Shift\",\"duty-schedule\":[\"MoTu2000-800\"]}", 204);
+        final JSONObject after = new JSONObject(getJson("/users/legacynight", 200));
         assertEquals("MoTu2000-800", after.getJSONArray("duty-schedule").getString(0));
 
-        sendRequest(DELETE, "/users/nightshift", 204);
+        // but ADDING another overnight entry is still rejected
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacynight",
+                "{\"user-id\":\"legacynight\",\"duty-schedule\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", 400);
+
+        sendRequest(DELETE, "/users/legacynight", 204);
+    }
+
+    @Test
+    public void testDotSegmentIdsRejected() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"user-id\":\".\",\"password\":\"x\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"user-id\":\"..\",\"password\":\"x\"}", 400);
+    }
+
+    @Test
+    public void testFieldsCanBeCleared() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"user-id\":\"clearme\",\"password\":\"pw\",\"full-name\":\"Full\",\"email\":\"c@example.com\"}", 201);
+        // explicit empty strings clear; omitted keys preserve
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/clearme",
+                "{\"user-id\":\"clearme\",\"full-name\":\"\",\"email\":\"\"}", 204);
+        final JSONObject after = new JSONObject(getJson("/users/clearme", 200));
+        assertFalse(after.has("full-name") && !after.isNull("full-name"));
+        assertFalse(after.has("email") && !after.isNull("email"));
+        sendRequest(DELETE, "/users/clearme", 204);
     }
 
     @Test
