@@ -75,4 +75,12 @@ public class TokenScopeTest {
     public void exposesNoEnumerableKeys() {
         assertTrue(new TokenScope(provider).keys().isEmpty());
     }
+
+    @Test
+    public void providerFailureResolvesEmptyInsteadOfThrowing() {
+        final TokenScope scope = new TokenScope(authName -> {
+            throw new RuntimeException("token endpoint unreachable");
+        });
+        assertFalse(scope.get(new ContextKey("token", "m365")).isPresent());
+    }
 }

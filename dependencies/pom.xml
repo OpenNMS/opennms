@@ -12,6 +12,7 @@
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>
+    <module>angus-mail-shaded</module>
     <module>asterisk</module>
     <module>atomikos</module>
     <module>camel</module>

@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
@@ -85,8 +84,6 @@ public class JavaMailer {
     private static final String DEFAULT_TRANSPORT = "smtp";
     private static final boolean DEFAULT_MAILER_DEBUG = false;
     private static final boolean DEFAULT_USE_JMTA = false;
-
-    private static final AtomicBoolean JMTA_WARNED = new AtomicBoolean(false);
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
     private static final String DEFAULT_ENCODING = "Q"; // I think this means quoted-printable encoding, see bug 2825
@@ -135,6 +132,8 @@ public class JavaMailer {
     private String m_inputStreamContentType;
     
     private Map<String,String> m_extraHeaders = new HashMap<String,String>();
+
+    private boolean m_jmtaWarned;
 
     
     /**
@@ -801,10 +800,13 @@ public class JavaMailer {
      * @return a {@link java.lang.String} object.
      */
     public String getTransport() {
-        if (isUseJMTA() && JMTA_WARNED.compareAndSet(false, true)) {
-            LOG.warn("useJMTA is no longer supported; sending via the configured transport '{}' instead", m_transport);
+        final boolean mtaTransport = "mta".equals(m_transport);
+        if ((isUseJMTA() || mtaTransport) && !m_jmtaWarned) {
+            m_jmtaWarned = true;
+            LOG.warn("the JMTA/'mta' transport is no longer supported; sending via '{}' instead",
+                    mtaTransport ? DEFAULT_TRANSPORT : m_transport);
         }
-        return m_transport;
+        return mtaTransport ? DEFAULT_TRANSPORT : m_transport;
     }
 
     /**

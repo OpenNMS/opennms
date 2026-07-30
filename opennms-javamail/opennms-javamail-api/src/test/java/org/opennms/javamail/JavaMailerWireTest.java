@@ -32,15 +32,23 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
+import java.nio.file.Files;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailHost;
 import org.opennms.netmgt.config.javamail.ReadmailProtocol;
@@ -62,6 +70,9 @@ import jakarta.mail.Message;
  * real Angus SMTP/IMAP providers rather than mocking the session.
  */
 public class JavaMailerWireTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private GreenMail greenMail;
     private int smtpPort;
@@ -91,6 +102,15 @@ public class JavaMailerWireTest {
         if (greenMail != null) {
             greenMail.stop();
         }
+        JavaMailerConfig.setSecureCredentialsVaultScope(EmptyScope.EMPTY);
+        JavaMailerConfig.setTokenScope(EmptyScope.EMPTY);
+    }
+
+    private static JavamailProperty javamailProperty(final String name, final String value) {
+        final JavamailProperty property = new JavamailProperty();
+        property.setName(name);
+        property.setValue(value);
+        return property;
     }
 
     private Properties smtpProps() {
@@ -162,6 +182,13 @@ public class JavaMailerWireTest {
         message.setBody("sendmailer body");
         config.setSendmailMessage(message);
 
+        // fail fast instead of hanging the build on a protocol mismatch;
+        // also regression-locks <javamail-property> reaching the session
+        final List<JavamailProperty> timeouts = new ArrayList<>();
+        timeouts.add(javamailProperty("mail.smtp.connectiontimeout", "5000"));
+        timeouts.add(javamailProperty("mail.smtp.timeout", "5000"));
+        config.setJavamailProperties(timeouts);
+
         // useJmProps=false: do not overlay javamail-configuration.properties
         final JavaSendMailer sendMailer = new JavaSendMailer(config, false);
         sendMailer.send();
@@ -170,6 +197,47 @@ public class JavaMailerWireTest {
         final Message received = greenMail.getReceivedMessages()[0];
         assertEquals("sendmailer wire test", received.getSubject());
         assertEquals("sender@opennms.org", received.getFrom()[0].toString());
+    }
+
+    @Test
+    public void canSendAuthenticatedViaJavaSendMailer() throws Exception {
+        greenMail.setUser("smuser@opennms.org", "smuser", "smsecret");
+
+        final SendmailConfig config = new SendmailConfig();
+        config.setName("wire-test-auth");
+        config.setUseAuthentication(true);
+        config.setUseJmta(false);
+
+        final UserAuth auth = new UserAuth();
+        auth.setUserName("smuser");
+        auth.setPassword("smsecret");
+        config.setUserAuth(auth);
+
+        final SendmailHost host = new SendmailHost();
+        host.setHost("127.0.0.1");
+        host.setPort(smtpPort);
+        config.setSendmailHost(host);
+
+        final SendmailProtocol protocol = new SendmailProtocol();
+        protocol.setTransport("smtp");
+        config.setSendmailProtocol(protocol);
+
+        final SendmailMessage message = new SendmailMessage();
+        message.setFrom("sender@opennms.org");
+        message.setTo("smuser@opennms.org");
+        message.setSubject("sendmailer authenticated wire test");
+        message.setBody("authenticated sendmailer body");
+        config.setSendmailMessage(message);
+
+        final List<JavamailProperty> timeouts = new ArrayList<>();
+        timeouts.add(javamailProperty("mail.smtp.connectiontimeout", "5000"));
+        timeouts.add(javamailProperty("mail.smtp.timeout", "5000"));
+        config.setJavamailProperties(timeouts);
+
+        new JavaSendMailer(config, false).send();
+
+        assertTrue(greenMail.waitForIncomingEmail(5000, 1));
+        assertEquals("sendmailer authenticated wire test", greenMail.getReceivedMessages()[0].getSubject());
     }
 
     @Test
@@ -210,6 +278,8 @@ public class JavaMailerWireTest {
         final List<String> transcript = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
         try (ServerSocket server = new ServerSocket(0)) {
             final Thread fake = new Thread(() -> {
+                // daemon: a mid-test assertion failure must not leave the JVM
+                // pinned on this thread's blocking readLine()
                 try (Socket socket = server.accept();
                      BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
                      PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
@@ -244,16 +314,32 @@ public class JavaMailerWireTest {
                     // socket teardown races are fine; the assertion below decides
                 }
             });
+            fake.setDaemon(true);
             fake.start();
 
-            final Properties props = smtpProps();
-            props.setProperty("org.opennms.core.utils.smtpport", String.valueOf(server.getLocalPort()));
-            props.setProperty("org.opennms.core.utils.authenticate", "true");
-            props.setProperty("org.opennms.core.utils.authenticateUser", "svc@example.com");
-            props.setProperty("org.opennms.core.utils.authenticatePassword", "test-access-token");
-            props.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
+            // resolve the password through the token scope, with the placeholder
+            // in javamail-configuration.properties itself: interpolation only runs
+            // on the file, so this covers the full documented composition
+            // (${token:<name>} in the file -> Bearer token on the wire)
+            JavaMailerConfig.setTokenScope(MapScope.singleContext(Scope.ScopeName.GLOBAL,
+                    "token", java.util.Map.of("m365", "test-access-token")));
 
-            final JavaMailer jm = new JavaMailer(props);
+            final File home = tempFolder.newFolder("xoauth2-home");
+            final File etc = new File(home, "etc");
+            assertTrue(etc.mkdirs());
+            Files.write(new File(etc, "javamail-configuration.properties").toPath(), (""
+                    + "org.opennms.core.utils.mailHost=127.0.0.1\n"
+                    + "org.opennms.core.utils.smtpport=" + server.getLocalPort() + "\n"
+                    + "org.opennms.core.utils.useJMTA=false\n"
+                    + "org.opennms.core.utils.authenticate=true\n"
+                    + "org.opennms.core.utils.authenticateUser=svc@example.com\n"
+                    + "org.opennms.core.utils.authenticatePassword=${token:m365}\n"
+                    + "mail.smtp.auth.mechanisms=XOAUTH2\n"
+                    + "mail.smtp.connectiontimeout=5000\n"
+                    + "mail.smtp.timeout=5000\n").getBytes(StandardCharsets.UTF_8));
+            System.setProperty("opennms.home", home.getAbsolutePath());
+
+            final JavaMailer jm = new JavaMailer();
             jm.setFrom("svc@example.com");
             jm.setTo("someone@example.com");
             jm.setSubject("xoauth2 wire test");

@@ -124,7 +124,12 @@ public abstract class JavaMailerConfig {
      * @return a Properties object representing the configuration properties
      * @throws java.io.IOException if any.
      */
-    public static synchronized Properties getProperties(final Scope scope) throws IOException {
+    /**
+     * Deliberately not synchronized: interpolation may fetch an OAuth token
+     * over HTTP, and holding the class monitor would serialize every mail
+     * path in the JVM on that request. All state here is method-local.
+     */
+    public static Properties getProperties(final Scope scope) throws IOException {
         LOG.debug("JavaMailConfig: Loading javamail properties");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
@@ -134,7 +139,7 @@ public abstract class JavaMailerConfig {
         return interpolate(properties, scope);
     }
 
-    public static synchronized Properties getProperties() throws IOException {
+    public static Properties getProperties() throws IOException {
         return getProperties(getInterpolationScope());
     }
 

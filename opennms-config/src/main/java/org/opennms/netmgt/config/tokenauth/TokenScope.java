@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.mate.api.Scope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Exposes {@link TokenProvider} tokens as the {@code ${token:<name>}}
@@ -34,6 +36,8 @@ import org.opennms.core.mate.api.Scope;
  * always see a current (cache-refreshed) value.
  */
 public class TokenScope implements Scope {
+    private static final Logger LOG = LoggerFactory.getLogger(TokenScope.class);
+
     public static final String CONTEXT = "token";
 
     private final TokenProvider tokenProvider;
@@ -47,8 +51,15 @@ public class TokenScope implements Scope {
         if (!CONTEXT.equals(contextKey.context)) {
             return Optional.empty();
         }
-        return tokenProvider.getToken(contextKey.key)
-                .map(token -> new ScopeValue(ScopeName.GLOBAL, token));
+        try {
+            return tokenProvider.getToken(contextKey.key)
+                    .map(token -> new ScopeValue(ScopeName.GLOBAL, token));
+        } catch (RuntimeException e) {
+            // a transient token-endpoint failure must not abort the caller's
+            // construction path; unresolved placeholders fail at AUTH instead
+            LOG.warn("failed to resolve token '{}': {}", contextKey.key, e.getMessage());
+            return Optional.empty();
+        }
     }
 
     @Override

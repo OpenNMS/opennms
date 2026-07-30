@@ -37,10 +37,13 @@
       <groupId>jakarta.activation</groupId>
       <artifactId>jakarta.activation-api</artifactId>
     </dependency>
-    <!-- runtime providers (SMTP/IMAP/POP3); flows transitively to every mail consumer and the assembly -->
+    <!-- runtime providers (SMTP/IMAP/POP3); flows transitively to every mail consumer
+         and the assembly. The shaded variant strips angus-mail's javax-era resource
+         names, which would otherwise poison the javax.activation/javax.mail lookup
+         tables on the flat classpath (see dependencies/angus-mail-shaded). -->
     <dependency>
-      <groupId>org.eclipse.angus</groupId>
-      <artifactId>angus-mail</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>angus-mail-shaded</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>

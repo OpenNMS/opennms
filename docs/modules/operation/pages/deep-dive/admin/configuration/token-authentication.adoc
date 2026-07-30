@@ -258,7 +258,7 @@ When the entire response body is the token (some APIs return a JSON-encoded bare
 Notification mail sent through providers that have disabled basic SMTP authentication (Microsoft 365, Gmail) can authenticate with an OAuth2 access token via the SASL XOAUTH2 mechanism.
 A token-auth definition acquires and caches the token; the mail configuration references it with `${token:<name>}` in the password field and selects the XOAUTH2 mechanism.
 
-For Microsoft 365, the client-credentials flow requires an Entra application with the `SMTP.SendAsApp` application permission, tenant admin consent, and a service principal registered in Exchange Online (see Microsoft's documentation on https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth[SMTP OAuth]).
+For Microsoft 365, the client-credentials flow requires an Entra application with the `SMTP.SendAsApp` application permission, tenant admin consent, a service principal registered in Exchange Online, and mailbox permissions granted to that service principal (see Microsoft's documentation on https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth[SMTP OAuth]; a missing mailbox grant typically surfaces as a 535 error with an otherwise correct configuration).
 The token request must use the scope `https://outlook.office365.com/.default`.
 
 .token-auth-configuration.xml
@@ -286,7 +286,7 @@ org.opennms.core.utils.authenticatePassword=${token:m365-smtp}
 mail.smtp.auth.mechanisms=XOAUTH2
 ----
 
-The raw `mail.smtp.auth.mechanisms` line passes through to the mail session unchanged and restricts authentication to XOAUTH2; without it, the client may attempt other mechanisms first and fail.
+The raw `mail.smtp.auth.mechanisms` line passes through to the mail session unchanged and is required: the mail client never attempts XOAUTH2 unless the mechanism is selected explicitly.
 The token is fetched at connection time, so a cached token that has been refreshed is picked up automatically.
 
 For mail paths driven by `javamail-configuration.xml` (reportd, the email northbounder), the equivalent configuration on a `sendmail-config` with `use-authentication="true"` is (element order matters; `javamail-property` precedes the host and auth elements):

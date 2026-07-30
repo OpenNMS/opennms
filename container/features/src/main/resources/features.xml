@@ -680,6 +680,7 @@
     </feature>
     <feature name="opennms-javamail" version="${project.version}" description="OpenNMS :: Javamail">
         <feature>commons-lang</feature>
+        <feature>guava</feature>
         <feature>jakarta.mail</feature>
         <feature>opennms-core</feature>
         <feature>opennms-config-api</feature>

@@ -83,7 +83,11 @@ Set `mail.smtp.auth.mechanisms=XOAUTH2` and use a `${token:<name>}` metadata exp
 * SSL/TLS connections now verify that the server certificate matches the configured host name (`mail.smtp.ssl.checkserveridentity` defaults to `true` in Angus Mail).
 Connections to mail servers with self-signed or mismatched certificates that previously worked will fail until the certificate is fixed or the property is explicitly set to `false`.
 * The JMTA local-MTA transport has been removed; it cannot work with Jakarta Mail.
-The `use-jmta` attribute and the `org.opennms.core.utils.useJMTA` property are still accepted so existing files keep loading, but they log a warning and mail is sent over SMTP to the configured mail host (default `127.0.0.1:25`) instead.
+The `use-jmta` attribute and the `org.opennms.core.utils.useJMTA` property are still accepted so existing files keep loading.
+Setting `useJMTA=true` in the properties file logs a warning and sends over SMTP to the configured mail host (default `127.0.0.1:25`) instead; the `javamail-configuration.xml` attribute never selected the transport on that path, so its behavior is unchanged.
+MailTransportMonitor `sendmail-test` definitions that relied on `use-jmta` (its default is `true`) now also deliver through the configured sendmail-host; if no SMTP listener runs there, the test - correctly - reports the service down.
+* The `javax.mail` API remains on the classpath for internal use, but without SMTP/IMAP/POP3 providers or `com.sun.mail.*` classes.
+Third-party plugins that send mail through `javax.mail.Session` need to move to `jakarta.mail` or bundle their own provider.
 * `<javamail-property>` entries in `javamail-configuration.xml` now take effect on the sendmail path; previously they were silently ignored.
 If your configuration contains such entries that were added but never worked, they will start applying after the upgrade.
 

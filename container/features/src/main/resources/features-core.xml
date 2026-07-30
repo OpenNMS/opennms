@@ -194,8 +194,10 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
     </feature>
 
-    <!-- javax.mail-namespace API only (no providers), kept for EclipseLink MOXy 2.5.1; the bundle
-         matches the copy CXF's cxf-specs feature installs so only one exporter ends up resolved.
+    <!-- javax.mail-namespace API only (no transport providers and no com.sun.mail.* exports),
+         kept for EclipseLink MOXy 2.5.1. CXF's cxf-specs feature installs the same bundle
+         coordinates (at start-level 10), so only one bundle ends up installed and the last
+         deployer's start level wins - harmless for an API-only bundle.
          Actual mail transport lives in the jakarta.mail feature. -->
     <feature name="javax.mail" version="${javaxMailApiShimVersion}" description="javax.mail API (MOXy shim)">
         <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.mail/jakarta.mail-api/${javaxMailApiShimVersion}</bundle>

@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
+import jakarta.activation.MimetypesFileTypeMap;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Part;
@@ -112,7 +113,17 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
                 }
 
                 final MimeBodyPart attachmentPart = new MimeBodyPart();
-                attachmentPart.setDataHandler(new DataHandler(new FileDataSource(new File(fileName))));
+                final FileDataSource dataSource = new FileDataSource(new File(fileName));
+                // the default mime table lacks the report formats and would
+                // label everything application/octet-stream
+                final MimetypesFileTypeMap typeMap = new MimetypesFileTypeMap();
+                typeMap.addMimeTypes("application/pdf pdf PDF");
+                typeMap.addMimeTypes("text/csv csv CSV");
+                typeMap.addMimeTypes("text/html html htm HTML HTM");
+                typeMap.addMimeTypes("application/vnd.ms-excel xls XLS");
+                typeMap.addMimeTypes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx XLSX");
+                dataSource.setFileTypeMap(typeMap);
+                attachmentPart.setDataHandler(new DataHandler(dataSource));
                 attachmentPart.setFileName(fileName);
                 attachmentPart.setDisposition(Part.ATTACHMENT);
 

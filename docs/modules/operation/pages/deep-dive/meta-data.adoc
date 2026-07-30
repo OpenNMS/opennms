@@ -285,8 +285,9 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 * xref:reference:service-assurance/monitors/JmxMonitor.adoc[JMX monitor], xref:reference:performance-data-collection/collectors/jmx.adoc[JMX collector]: jmx-config.xml, jmx-datacollection-config.xml, jmx-datacollection-config/*.xml
 * xref:operation:deep-dive/notifications/introduction.adoc[Notification configuration]: javamail-configuration.xml, javamail-configuration.properties, microblog-configuration.xml, xmpp-configuration.xml
 +
-The mail credential fields (`user-auth` in the XML, `authenticateUser`/`authenticatePassword` in the properties file) additionally resolve the `token` context (`${token:<name>}`), which supplies an access token from a xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] definition.
+The outbound mail credential fields (`user-auth` on a `sendmail-config` in the XML, `authenticateUser`/`authenticatePassword` in the properties file) additionally resolve the `token` context (`${token:<name>}`), which supplies an access token from a xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] definition.
 This is mainly useful for OAuth2 (XOAUTH2) SMTP authentication.
+Note that `readmail-config` credentials (the ackd mail reader) do not currently support metadata expressions.
 * xref:reference:performance-data-collection/collectors/nsclient.adoc[NSClient collector]: nsclient-config.xml
 * xref:operation:deep-dive/database-reports/template-introduction.adoc[Remote Repository configuration]: remote-repository.xml
 * xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml

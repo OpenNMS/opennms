@@ -93,6 +93,8 @@ public class JavaMailerConfigTokenTest {
         JavaMailerConfig.setTokenScope(EmptyScope.EMPTY);
         if (previousOpennmsHome != null) {
             System.setProperty("opennms.home", previousOpennmsHome);
+        } else {
+            System.clearProperty("opennms.home");
         }
     }
 

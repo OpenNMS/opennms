@@ -4743,6 +4743,12 @@
         <artifactId>angus-mail</artifactId>
         <version>${angusMailVersion}</version>
       </dependency>
+      <!-- angus-mail minus its javax-era resource names; use this on the flat classpath, see dependencies/angus-mail-shaded -->
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>angus-mail-shaded</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.eclipse.angus</groupId>
         <artifactId>angus-activation</artifactId>

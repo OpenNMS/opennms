@@ -185,7 +185,13 @@ public class JavaSendMailer extends JavaMailer2 {
         if (!props.isEmpty()) {
             LOG.info("applying javamail-property entries to the mail session: {}", props.stringPropertyNames());
         }
-        return configureProperties(props, useJmProps);
+        final Properties merged = configureProperties(props, useJmProps);
+        // these were consumed into the config above; keeping them (and any
+        // interpolated credentials) out of the session limits exposure
+        merged.stringPropertyNames().stream()
+                .filter(key -> key.startsWith("org.opennms.core.utils."))
+                .forEach(merged::remove);
+        return merged;
     }
 
     /**
@@ -271,6 +277,14 @@ public class JavaSendMailer extends JavaMailer2 {
 
         props.putAll(sendmailConfigDefinedProps);
 
+        // with no <user-auth> there are no credentials to offer; advertising
+        // mail.smtp(s).auth=true would fail the connect instead of sending
+        // unauthenticated, which is what this configuration always did
+        final boolean useAuthentication = m_config.isUseAuthentication() && m_config.getUserAuth() != null;
+        if (m_config.isUseAuthentication() && m_config.getUserAuth() == null) {
+            LOG.warn("use-authentication is enabled but no user-auth is configured; sending unauthenticated");
+        }
+
         if (m_config.getSendmailProtocol() != null) {
             final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol();
             if (!props.containsKey("mail.smtp.starttls.enable")) {
@@ -284,7 +298,7 @@ public class JavaSendMailer extends JavaMailer2 {
             }
             if (sendmailProtocol.isSslEnable()) {
                 if (!props.containsKey("mail.smtps.auth")) {
-                    props.setProperty("mail.smtps.auth", String.valueOf(m_config.isUseAuthentication()));
+                    props.setProperty("mail.smtps.auth", String.valueOf(useAuthentication));
                 }
                 if (!props.containsKey("mail.smtps.socketFactory.class")) {
                     props.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -296,7 +310,7 @@ public class JavaSendMailer extends JavaMailer2 {
         }
 
         if (!props.containsKey("mail.smtp.auth")) {
-            props.setProperty("mail.smtp.auth", String.valueOf(m_config.isUseAuthentication()));
+            props.setProperty("mail.smtp.auth", String.valueOf(useAuthentication));
         }
         if (!props.containsKey("mail.smtp.port") && m_config.getSendmailHost() != null) {
             props.setProperty("mail.smtp.port", String.valueOf(m_config.getSendmailHost().getPort()));
@@ -342,8 +356,15 @@ public class JavaSendMailer extends JavaMailer2 {
         }
         try {
             SendmailProtocol protoConfig = m_config.getSendmailProtocol();
-            t = m_session.getTransport(protoConfig.getTransport());
-            LOG.debug("for transport name '{}' got: {}@{}", protoConfig.getTransport(), t.getClass().getName(), Integer.toHexString(t.hashCode()));
+            String transport = protoConfig.getTransport();
+            if ("mta".equals(transport)) {
+                // the schema restricts the XML attribute to smtp|smtps, but the
+                // (unvalidated) properties-file override can still say mta
+                LOG.warn("the JMTA/'mta' transport is no longer supported; sending via 'smtp' instead");
+                transport = "smtp";
+            }
+            t = m_session.getTransport(transport);
+            LOG.debug("for transport name '{}' got: {}@{}", transport, t.getClass().getName(), Integer.toHexString(t.hashCode()));
 
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
