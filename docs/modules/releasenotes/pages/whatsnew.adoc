@@ -73,6 +73,20 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 == Breaking changes
 
+=== Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
+Outbound and inbound mail (notifd email notifications, reportd report delivery, the email alarm northbounder, the ackd mail reader, and the MailTransportMonitor) now uses Jakarta Mail 2.1 with the Eclipse Angus implementation instead of JavaMail 1.4.
+
+Existing `javamail-configuration.xml` and `javamail-configuration.properties` files continue to load unchanged. Points to review after upgrading:
+
+* Mail servers can now be authenticated against with OAuth2 access tokens via the SASL XOAUTH2 mechanism, which Microsoft 365 and Gmail require now that they have retired basic SMTP authentication for most tenants.
+Set `mail.smtp.auth.mechanisms=XOAUTH2` and use a `${token:<name>}` metadata expression as the password; see the xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] documentation for a worked Microsoft 365 client-credentials example.
+* SSL/TLS connections now verify that the server certificate matches the configured host name (`mail.smtp.ssl.checkserveridentity` defaults to `true` in Angus Mail).
+Connections to mail servers with self-signed or mismatched certificates that previously worked will fail until the certificate is fixed or the property is explicitly set to `false`.
+* The JMTA local-MTA transport has been removed; it cannot work with Jakarta Mail.
+The `use-jmta` attribute and the `org.opennms.core.utils.useJMTA` property are still accepted so existing files keep loading, but they log a warning and mail is sent over SMTP to the configured mail host (default `127.0.0.1:25`) instead.
+* `<javamail-property>` entries in `javamail-configuration.xml` now take effect on the sendmail path; previously they were silently ignored.
+If your configuration contains such entries that were added but never worked, they will start applying after the upgrade.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
