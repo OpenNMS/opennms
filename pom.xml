@@ -1858,6 +1858,7 @@
     <angusActivationVersion>2.0.3</angusActivationVersion>
     <!-- javax.mail-namespace API only, kept solely for EclipseLink MOXy 2.5.1; see dependencies/jaxb -->
     <javaxMailApiShimVersion>1.6.7</javaxMailApiShimVersion>
+    <greenmailVersion>2.1.9</greenmailVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
@@ -4752,6 +4753,19 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>mailapi</artifactId>
         <version>${javaxMailApiShimVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.icegreen</groupId>
+        <artifactId>greenmail</artifactId>
+        <version>${greenmailVersion}</version>
+        <scope>test</scope>
+        <exclusions>
+          <!-- merged API+impl jar is banned; the split jakarta.mail-api + angus-mail provide the same classes -->
+          <exclusion>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
