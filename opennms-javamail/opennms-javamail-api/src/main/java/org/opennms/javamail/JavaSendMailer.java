@@ -86,6 +86,8 @@ public class JavaSendMailer extends JavaMailer2 {
         m_config = config;
         try {
             m_session = Session.getInstance(createProps(useJmProps), createAuthenticator());
+            // JavaMailer2.getSession() callers (reportd) otherwise see a null session
+            setSession(m_session);
             if (config.getSendmailMessage() != null) {
                 m_message = buildMimeMessage(config.getSendmailMessage());
             } else {
@@ -179,12 +181,11 @@ public class JavaSendMailer extends JavaMailer2 {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private Properties createProps(boolean useJmProps) throws IOException {
-
-        Properties props = generatePropsFromConfig(m_config.getJavamailProperties());
-        configureProperties(props, useJmProps);
-
-        //get rid of this
-        return Session.getDefaultInstance(new Properties()).getProperties();
+        final Properties props = generatePropsFromConfig(m_config.getJavamailProperties());
+        if (!props.isEmpty()) {
+            LOG.info("applying javamail-property entries to the mail session: {}", props.stringPropertyNames());
+        }
+        return configureProperties(props, useJmProps);
     }
 
     /**
@@ -211,19 +212,19 @@ public class JavaSendMailer extends JavaMailer2 {
      * @param sendmailConfigDefinedProps the sendmail configuration defined properties
      * @param useJmProps a boolean representing the handling of the deprecated javamail-configuration.properties file.
      */
-    private void configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
+    private Properties configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
 
         //this loads the properties from the old style javamail-configuration.properties
         //TODO: deprecate this
         Properties props = null;
         try {
-            props = JavaMailerConfig.getProperties();
-
-            /* These strange properties from javamail-configuration.properties need to be translated into actual javax.mail properties
-             * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
-             * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
-             */
             if (useJmProps) {
+                props = JavaMailerConfig.getProperties();
+
+                /* These strange properties from javamail-configuration.properties need to be translated into actual jakarta.mail properties
+                 * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
+                 * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
+                 */
                 m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.isDebug()));
                 if (m_config.getSendmailHost() != null) {
                     final SendmailHost sendmailHost = m_config.getSendmailHost();
@@ -301,7 +302,7 @@ public class JavaSendMailer extends JavaMailer2 {
             props.setProperty("mail.smtp.port", String.valueOf(m_config.getSendmailHost().getPort()));
         }
 
-
+        return props;
     }
 
     /**
