@@ -57,6 +57,10 @@ public class OnCallRoleDto {
     @XmlElement(name = "currently-on-call")
     private List<String> currentlyOnCall;
 
+    /** Set when the runtime cannot evaluate the stored schedule; read-only. */
+    @XmlElement(name = "schedule-error")
+    private String scheduleError;
+
     public String getName() {
         return name;
     }
@@ -103,6 +107,14 @@ public class OnCallRoleDto {
 
     public void setCurrentlyOnCall(final List<String> currentlyOnCall) {
         this.currentlyOnCall = currentlyOnCall;
+    }
+
+    public String getScheduleError() {
+        return scheduleError;
+    }
+
+    public void setScheduleError(final String scheduleError) {
+        this.scheduleError = scheduleError;
     }
 
     @XmlRootElement(name = "on-call-schedule")

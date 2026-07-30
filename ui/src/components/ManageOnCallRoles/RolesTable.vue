@@ -28,8 +28,15 @@
       />
       <Column header="Currently On Call">
         <template #body="{ data }">
+          <Tag
+            v-if="data['schedule-error']"
+            severity="warn"
+            value="schedule error"
+            v-tooltip.top="data['schedule-error']"
+            data-test="schedule-error-tag"
+          />
           <span
-            v-if="(data['currently-on-call'] ?? []).length"
+            v-else-if="(data['currently-on-call'] ?? []).length"
             class="on-call"
           >{{ data['currently-on-call'].join(', ') }}</span>
           <span
@@ -141,6 +148,7 @@ import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import Tag from 'primevue/tag'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'

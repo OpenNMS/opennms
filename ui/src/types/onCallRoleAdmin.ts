@@ -47,6 +47,7 @@ export interface OnCallRole {
   description?: string | null
   schedule?: OnCallSchedule[]
   'currently-on-call'?: string[]
+  'schedule-error'?: string
 }
 
 export interface OnCallCalendarEntry {

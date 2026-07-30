@@ -82,7 +82,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     // so all v2 services touching it share one monitor.
 
     /** Markup per the legacy servlets, plus URL-path-segment safety. */
-    private static final Pattern INVALID_NAME = Pattern.compile(".*[&<>\"`':/\\\\%?#\\s]+.*");
+    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
 
     private static final Set<String> SCHEDULE_TYPES = Set.of("specific", "daily", "weekly", "monthly");
 
@@ -310,6 +310,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             onCallUsers = onCall == null ? List.of() : List.of(onCall);
         } catch (final Exception e) {
             LOG.warn("Can't evaluate the schedule of on-call role {}: {}", role.getName(), e.toString());
+            // an unevaluable schedule must be distinguishable from an idle
+            // one: notifd cannot resolve this rota either
+            dto.setScheduleError("The schedule cannot be evaluated; check this role's entries in groups.xml.");
         }
         dto.setCurrentlyOnCall(onCallUsers);
         if (includeSchedules) {
@@ -569,7 +572,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     }
 
     private static String validateName(final String name) {
-        if (INVALID_NAME.matcher(name).matches()) {
+        if (INVALID_NAME.matcher(name).find()) {
             return "The role name must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
         if (".".equals(name) || "..".equals(name)) {

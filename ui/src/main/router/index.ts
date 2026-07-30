@@ -176,6 +176,8 @@ const router = createRouter({
           whenever(rolesAreLoaded, () => checkRoles())
         }
       }
+    },
+    {
       path: '/map',
       name: 'Map',
       component: () => import('@/containers/Map.vue'),
