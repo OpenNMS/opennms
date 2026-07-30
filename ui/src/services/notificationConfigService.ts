@@ -22,8 +22,8 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
-import { rest } from './axiosInstances'
+import { DestinationPath, EventNotification, NotifdStatus, UeiSuggestion } from '@/types/notificationConfig'
+import { rest, v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -56,6 +56,91 @@ const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolea
   }
 }
 
+const getEventNotifications = async (): Promise<EventNotification[]> => {
+  try {
+    startSpinner()
+    const resp = await rest.get(`${endpoint}/event-notifications`)
+    return resp.data?.notification ?? []
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load event notifications.' })
+    return []
+  } finally {
+    stopSpinner()
+  }
+}
+
+const setEventNotificationStatus = async (name: string, status: NotifdStatus): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.put(`${endpoint}/event-notifications/${encodeURIComponent(name)}/status`, { status })
+    showSnackBar({ msg: `Event notification '${name}' turned ${status}.` })
+    return true
+  } catch (_err) {
+    showSnackBar({ msg: `Failed to update event notification '${name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const addEventNotification = async (notification: EventNotification): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.post(`${endpoint}/event-notifications`, notification)
+    showSnackBar({ msg: `Event notification '${notification.name}' added.` })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to add event notification '${notification.name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const updateEventNotification = async (originalName: string, notification: EventNotification): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.put(`${endpoint}/event-notifications/${encodeURIComponent(originalName)}`, notification)
+    showSnackBar({ msg: `Event notification '${notification.name}' updated.` })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to update event notification '${notification.name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+// Type-ahead UEI suggestions from the event configuration (DB-backed eventconf REST).
+const searchEventConfUeis = async (query: string): Promise<UeiSuggestion[]> => {
+  try {
+    const resp = await v2.get(`/eventconf/filter?uei=${encodeURIComponent(query)}&limit=25&offset=0`)
+    const items = Array.isArray(resp.data) ? resp.data : []
+    return items
+      .filter((item: any) => !!item?.uei)
+      .map((item: any) => ({ uei: item.uei, eventLabel: item.eventLabel ?? '' }))
+  } catch (_err) {
+    // suggestions are best-effort; free-text UEIs remain valid
+    return []
+  }
+}
+
+const deleteEventNotification = async (name: string): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.delete(`${endpoint}/event-notifications/${encodeURIComponent(name)}`)
+    showSnackBar({ msg: `Event notification '${name}' deleted.` })
+    return true
+  } catch (_err) {
+    showSnackBar({ msg: `Failed to delete event notification '${name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
 const getDestinationPaths = async (): Promise<DestinationPath[]> => {
   try {
     startSpinner()
@@ -71,7 +156,13 @@ const getDestinationPaths = async (): Promise<DestinationPath[]> => {
 
 
 export {
+  addEventNotification,
+  deleteEventNotification,
   getDestinationPaths,
+  getEventNotifications,
   getNotificationConfigStatus,
-  setNotificationConfigStatus
+  searchEventConfUeis,
+  setEventNotificationStatus,
+  setNotificationConfigStatus,
+  updateEventNotification
 }

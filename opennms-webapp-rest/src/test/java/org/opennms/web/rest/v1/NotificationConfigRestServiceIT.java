@@ -146,6 +146,54 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testEventNotificationLifecycle() throws Exception {
+        JSONObject list = new JSONObject(getJson("/notification-config/event-notifications"));
+        Assert.assertEquals(1, list.getJSONArray("notification").length());
+
+        final String newNotification = "{\"name\":\"junit-added\",\"status\":\"off\","
+                + "\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},"
+                + "\"destinationPath\":\"Email-Admin\","
+                + "\"text-message\":\"node up\"}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", newNotification, 204);
+
+        JSONObject added = new JSONObject(getJson("/notification-config/event-notifications/junit-added"));
+        Assert.assertEquals("uei.opennms.org/nodes/nodeUp", added.getString("uei"));
+
+        // duplicate name is rejected
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", newNotification, 400);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/event-notifications/junit-added/status", "{\"status\":\"on\"}", 204);
+        added = new JSONObject(getJson("/notification-config/event-notifications/junit-added"));
+        Assert.assertEquals("on", added.getString("status"));
+
+        sendRequest(DELETE, "/notification-config/event-notifications/junit-added", 204);
+        sendRequest(GET, "/notification-config/event-notifications/junit-added", 404);
+    }
+
+    @Test
+    public void testEventNotificationValidation() throws Exception {
+        // missing text-message must be rejected before it can poison the config
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications",
+                "{\"name\":\"junit-invalid\",\"status\":\"on\",\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                        + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},\"destinationPath\":\"Email-Admin\"}", 400);
+        sendRequest(GET, "/notification-config/event-notifications/junit-invalid", 404);
+    }
+
+    @Test
+    public void testEventNotificationRenameCollisionRejected() throws Exception {
+        final String other = "{\"name\":\"junit-other\",\"status\":\"off\",\"uei\":\"uei.opennms.org/nodes/nodeUp\","
+                + "\"rule\":{\"value\":\"IPADDR IPLIKE *.*.*.*\"},\"destinationPath\":\"Email-Admin\",\"text-message\":\"x\"}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/event-notifications", other, 204);
+
+        // renaming junitNotification onto the existing junit-other must not create a duplicate name
+        final String renamed = "{\"name\":\"junit-other\",\"status\":\"on\",\"uei\":\"uei.opennms.org/nodes/nodeDown\","
+                + "\"rule\":{\"value\":\"IPADDR != '0.0.0.0'\"},\"destinationPath\":\"Email-Admin\",\"text-message\":\"node down\"}";
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/event-notifications/junitNotification", renamed, 400);
+        sendRequest(GET, "/notification-config/event-notifications/junitNotification", 200);
+    }
+
+    @Test
     public void testDestinationPathsReadable() throws Exception {
         // the read side ships in the base PR: the event-notification editor
         // needs the path list for its destination picker
@@ -163,6 +211,7 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {
             sendRequest(GET, "/notification-config/status", 403);
+            sendRequest(GET, "/notification-config/event-notifications", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/status", "{\"status\":\"on\"}", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });

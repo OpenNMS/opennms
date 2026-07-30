@@ -21,12 +21,13 @@
 ///
 
 import API from '@/services'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
+import { DestinationPath, EventNotification, NotifdStatus } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
+  const eventNotifications = ref([] as EventNotification[])
   const destinationPaths = ref([] as DestinationPath[])
 
   const getStatus = async () => {
@@ -41,19 +42,64 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
+  const getEventNotifications = async () => {
+    eventNotifications.value = await API.getEventNotifications()
+  }
+
+  const setEventNotificationStatus = async (name: string, status: NotifdStatus) => {
+    const ok = await API.setEventNotificationStatus(name, status)
+    if (ok) {
+      const notification = eventNotifications.value.find((n) => n.name === name)
+      if (notification) {
+        notification.status = status
+      }
+    }
+    return ok
+  }
+
+  const addEventNotification = async (notification: EventNotification) => {
+    const ok = await API.addEventNotification(notification)
+    if (ok) {
+      await getEventNotifications()
+    }
+    return ok
+  }
+
+  const updateEventNotification = async (originalName: string, notification: EventNotification) => {
+    const ok = await API.updateEventNotification(originalName, notification)
+    if (ok) {
+      await getEventNotifications()
+    }
+    return ok
+  }
+
+  const deleteEventNotification = async (name: string) => {
+    const ok = await API.deleteEventNotification(name)
+    if (ok) {
+      await getEventNotifications()
+    }
+    return ok
+  }
+
   const getDestinationPaths = async () => {
     destinationPaths.value = await API.getDestinationPaths()
   }
 
   const populate = async () => {
-    await Promise.all([getStatus(), getDestinationPaths()])
+    await Promise.all([getStatus(), getEventNotifications(), getDestinationPaths()])
   }
 
   return {
     notifdStatus,
+    eventNotifications,
     destinationPaths,
     getStatus,
     setStatus,
+    getEventNotifications,
+    setEventNotificationStatus,
+    addEventNotification,
+    updateEventNotification,
+    deleteEventNotification,
     getDestinationPaths,
     populate
   }

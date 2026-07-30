@@ -75,9 +75,15 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import {
+  addEventNotification,
+  deleteEventNotification,
   getDestinationPaths,
+  getEventNotifications,
   getNotificationConfigStatus,
-  setNotificationConfigStatus
+  searchEventConfUeis,
+  setEventNotificationStatus,
+  setNotificationConfigStatus,
+  updateEventNotification
 } from './notificationConfigService'
 import { acknowledgeNotice, browseNotices } from './noticesService'
 
@@ -143,8 +149,14 @@ export default {
   getZenithRegistrations,
   performLogout,
   acknowledgeNotice,
+  addEventNotification,
   browseNotices,
+  searchEventConfUeis,
+  updateEventNotification,
+  deleteEventNotification,
   getDestinationPaths,
+  getEventNotifications,
   getNotificationConfigStatus,
+  setEventNotificationStatus,
   setNotificationConfigStatus
 }

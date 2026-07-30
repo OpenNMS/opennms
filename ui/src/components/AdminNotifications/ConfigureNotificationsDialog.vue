@@ -11,9 +11,13 @@
   >
     <Tabs v-model:value="activeTab">
       <TabList>
+        <Tab value="event-notifications" data-test="tab-event-notifications">Event Notifications</Tab>
         <Tab value="general" data-test="tab-general">General</Tab>
       </TabList>
       <TabPanels>
+        <TabPanel value="event-notifications">
+          <EventNotificationsTable />
+        </TabPanel>
         <TabPanel value="general">
           <div class="general-tab">
             <div class="status-toggle">
@@ -48,6 +52,7 @@ import TabPanels from 'primevue/tabpanels'
 import Tabs from 'primevue/tabs'
 import ToggleSwitch from 'primevue/toggleswitch'
 
+import EventNotificationsTable from '@/components/AdminNotifications/EventNotificationsTable.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 
@@ -61,7 +66,7 @@ const emit = defineEmits(['update:visible'])
 
 const store = useNotificationConfigStore()
 
-const activeTab = ref('general')
+const activeTab = ref('event-notifications')
 const statusPending = ref(false)
 const populated = ref(false)
 

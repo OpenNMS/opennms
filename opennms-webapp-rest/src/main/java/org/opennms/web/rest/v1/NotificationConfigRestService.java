@@ -43,7 +43,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
+import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Authentication;
@@ -66,6 +69,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * <ul>
  * <li><b>GET /notification-config/status</b> global notifd on/off status</li>
  * <li><b>PUT /notification-config/status</b> turn notifd on or off</li>
+ * <li><b>GET /notification-config/event-notifications</b> all event notifications</li>
+ * <li><b>GET/POST/PUT/DELETE /notification-config/event-notifications/{name}</b> CRUD for one event notification</li>
+ * <li><b>PUT /notification-config/event-notifications/{name}/status</b> toggle one event notification on/off</li>
  * <li><b>GET /notification-config/destination-paths</b> all destination paths</li>
  * </ul>
  */
@@ -140,6 +146,138 @@ public class NotificationConfigRestService extends OnmsRestService {
     }
 
     @GET
+    @Path("event-notifications")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Notifications getEventNotifications(@Context final SecurityContext securityContext) {
+        assertAdmin(securityContext, "read event notifications");
+        readLock();
+        try {
+            final Notifications notifications = new Notifications();
+            final List<Notification> list = new ArrayList<>(getNotificationFactory().getNotifications().values());
+            list.sort(Comparator.comparing(Notification::getName, String.CASE_INSENSITIVE_ORDER));
+            notifications.setNotifications(list);
+            return notifications;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read event notifications: {}", e.getMessage());
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("event-notifications/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Notification getEventNotification(@Context final SecurityContext securityContext, @PathParam("name") final String name) {
+        assertAdmin(securityContext, "read event notifications");
+        readLock();
+        try {
+            final Notification notification = getNotificationFactory().getNotification(name);
+            if (notification == null) {
+                throw getException(Status.NOT_FOUND, "Event notification {} was not found.", name);
+            }
+            return notification;
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read event notification {}: {}", name, e.getMessage());
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @POST
+    @Path("event-notifications")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addEventNotification(@Context final SecurityContext securityContext, final Notification notification) {
+        assertAdmin(securityContext, "add event notifications");
+        validateEventNotification(notification);
+        writeLock();
+        try {
+            final boolean exists = getNotificationFactory().getNotification(notification.getName()) != null;
+            if (exists) {
+                throw getException(Status.BAD_REQUEST, "Event notification {} already exists.", notification.getName());
+            }
+            getNotificationFactory().addNotification(notification);
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't add event notification {}: {}", notification.getName(), e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("event-notifications/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateEventNotification(@Context final SecurityContext securityContext, @PathParam("name") final String name, final Notification notification) {
+        assertAdmin(securityContext, "update event notifications");
+        validateEventNotification(notification);
+        writeLock();
+        try {
+            if (getNotificationFactory().getNotification(name) == null) {
+                throw getException(Status.NOT_FOUND, "Event notification {} was not found.", name);
+            }
+            if (!name.equals(notification.getName()) && getNotificationFactory().getNotification(notification.getName()) != null) {
+                throw getException(Status.BAD_REQUEST, "Event notification {} already exists.", notification.getName());
+            }
+            getNotificationFactory().replaceNotification(name, notification);
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update event notification {}: {}", name, e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("event-notifications/{name}/status")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateEventNotificationStatus(@Context final SecurityContext securityContext, @PathParam("name") final String name, final NotificationStatus status) {
+        assertAdmin(securityContext, "toggle event notifications");
+        if (status == null || !("on".equals(status.getStatus()) || "off".equals(status.getStatus()))) {
+            throw getException(Status.BAD_REQUEST, "Status must be 'on' or 'off'");
+        }
+        writeLock();
+        try {
+            if (getNotificationFactory().getNotification(name) == null) {
+                throw getException(Status.NOT_FOUND, "Event notification {} was not found.", name);
+            }
+            getNotificationFactory().updateStatus(name, status.getStatus());
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update status of event notification {}: {}", name, e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("event-notifications/{name}")
+    public Response deleteEventNotification(@Context final SecurityContext securityContext, @PathParam("name") final String name) {
+        assertAdmin(securityContext, "delete event notifications");
+        writeLock();
+        try {
+            if (getNotificationFactory().getNotification(name) == null) {
+                throw getException(Status.NOT_FOUND, "Event notification {} was not found.", name);
+            }
+            getNotificationFactory().removeNotification(name);
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete event notification {}: {}", name, e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @GET
     @Path("destination-paths")
     @Produces(MediaType.APPLICATION_JSON)
     public DestinationPaths getDestinationPaths(@Context final SecurityContext securityContext) {
@@ -198,6 +336,37 @@ public class NotificationConfigRestService extends OnmsRestService {
     private static NotifdConfigFactory getNotifdConfigFactory() throws Exception {
         NotifdConfigFactory.init();
         return NotifdConfigFactory.getInstance();
+    }
+
+    private static NotificationFactory getNotificationFactory() throws Exception {
+        // NotificationFactory's constructor requires an initialized NotifdConfigFactory
+        NotifdConfigFactory.init();
+        NotificationFactory.init();
+        return NotificationFactory.getInstance();
+    }
+
+    /**
+     * Rejects payloads that would fail the schema-validated marshal inside the
+     * factories: the managers remove the old entry from the in-memory config
+     * BEFORE saving, so letting an invalid payload through destroys the
+     * existing entry (the save throws, but the removal already happened).
+     */
+    private static void validateEventNotification(final Notification notification) {
+        if (notification == null || isBlank(notification.getName())) {
+            throw getException(Status.BAD_REQUEST, "The event notification and its name are required");
+        }
+        if (isBlank(notification.getUei())) {
+            throw getException(Status.BAD_REQUEST, "The event notification requires a uei");
+        }
+        if (notification.getRule() == null || isBlank(notification.getRule().getContent())) {
+            throw getException(Status.BAD_REQUEST, "The event notification requires a rule");
+        }
+        if (isBlank(notification.getDestinationPath())) {
+            throw getException(Status.BAD_REQUEST, "The event notification requires a destinationPath");
+        }
+        if (isBlank(notification.getTextMessage())) {
+            throw getException(Status.BAD_REQUEST, "The event notification requires a text-message");
+        }
     }
 
     private static boolean isBlank(final String value) {
