@@ -1,0 +1,49 @@
+
+= Status API
+
+The `/status` endpoint provides alarm/outage-based status summaries and status-annotated lists for nodes, applications, and business services. It is mounted under `/opennms/api/v2/status`, is read-only, and produces `application/xml` and `application/json`.
+
+NOTE: This is distinct from the xref:rest/health_rest.adoc[Health API] (`/health`), which reports the health of internal subsystems.
+
+The `\{type}` path element selects the status-calculation strategy and is one of `None`, `Alarms`, or `Outages` (case-insensitive); an invalid value returns `400 Bad Request`.
+
+The list endpoints accept the query parameters `limit`, `offset`, `orderBy`, `order` (`asc`/`desc`), and `severityFilter` (may be repeated; values are severity labels such as `Normal`, `Warning`, `Minor`, `Major`, `Critical`). They return `204 No Content` when empty, otherwise `200 OK` with a `Content-Range` header.
+
+== GETs (reading data)
+
+[caption=]
+.Status API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/api/v2/status/summary/nodes/\{type}`         | Returns a severity-count summary of nodes, computed by the given strategy.
+| `/api/v2/status/summary/applications`          | Returns a severity-count summary of all applications.
+| `/api/v2/status/summary/business-services`     | Returns a severity-count summary of all business services.
+| `/api/v2/status/nodes/\{type}`                 | Returns a paginated, severity-filterable list of nodes with status computed by the given strategy.
+| `/api/v2/status/applications`                  | Returns a paginated, severity-filterable list of applications with their computed status.
+| `/api/v2/status/business-services`             | Returns a paginated, severity-filterable list of business services with their computed status.
+
+|===
+
+== Examples using cURL
+
+NOTE: The `summary/*` endpoints return a plain JSON array; request them with `Accept: application/json` (the default XML representation is not available for these endpoints).
+
+.Severity summary of nodes (by alarms)
+[source,bash]
+----
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/summary/nodes/Alarms"
+----
+
+.List nodes with a severity filter
+[source,bash]
+----
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/nodes/Alarms?limit=10&severityFilter=Major&severityFilter=Critical"
+----
+
+.List applications by status
+[source,bash]
+----
+curl -u admin:admin -H "Accept: application/json" "http://127.0.0.1:8980/opennms/api/v2/status/applications?limit=10&offset=0"
+----

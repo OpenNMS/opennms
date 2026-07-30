@@ -24,7 +24,6 @@ package org.opennms.netmgt.bsm.persistence.api;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -40,7 +39,6 @@ import com.google.common.base.MoreObjects;
 @Entity
 @Table(name = "bsm_service_applications")
 @PrimaryKeyJoinColumn(name="id")
-@DiscriminatorValue("applications")
 public class ApplicationEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsApplication m_application;

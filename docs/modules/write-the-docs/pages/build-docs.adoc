@@ -42,6 +42,6 @@ To do so, run the following command in the repository's root folder:
 
 .Generate `antora-playbook-local.yml` file
 [source, console]
-docker run --rm -v $(pwd):/antora opennms/antora:3.1.1-b8850 --stacktrace generate antora-playbook-local.yml
+docker run --rm -v $(pwd):/antora opennms/antora:3.1.4-b10433 --stacktrace generate antora-playbook-local.yml
 
 NOTE: You must have Docker installed to build the documentation using this method.

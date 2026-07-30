@@ -1,34 +1,36 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 container">
+  <div class="onms-row">
+    <div class="onms-col-12 container">
       <router-link
         v-if="!isSingleGraph"
         :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
         target="_blank"
       >
-        <FeatherButton secondary class="single-graph-btn">Open</FeatherButton>
+        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
       </router-link>
-      <FeatherTabContainer class="graph-data-tabs">
-        <template v-slot:tabs>
-          <FeatherTab>Graph</FeatherTab>
-          <FeatherTab>Data</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper">
-            <canvas :id="`${label}-${definition}`"></canvas>
-            <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
-          </div>
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <div class="canvas-wrapper" v-if="graphData">
-            <GraphDataTable
-              :id="`${label}-${definition}`"
-              :convertedGraphData="convertedGraphDataRef"
-              :graphData="graphData"
-            />
-          </div>
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <OnmsTabs value="0" class="graph-data-tabs">
+        <OnmsTabList>
+          <OnmsTab value="0">Graph</OnmsTab>
+          <OnmsTab value="1">Data</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel value="0">
+            <div class="canvas-wrapper">
+              <canvas :id="`${label}-${definition}`"></canvas>
+              <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
+            </div>
+          </OnmsTabPanel>
+          <OnmsTabPanel value="1">
+            <div class="canvas-wrapper" v-if="graphData">
+              <GraphDataTable
+                :id="`${label}-${definition}`"
+                :convertedGraphData="convertedGraphDataRef"
+                :graphData="graphData"
+              />
+            </div>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -45,13 +47,9 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { FeatherButton } from '@featherds/button'
-import {
-  FeatherTab,
-  FeatherTabContainer,
-  FeatherTabPanel
-} from '@featherds/tabs'
-import { PropType, computed, onMounted, ref, watch } from 'vue'
+import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -91,7 +89,7 @@ const convertedGraphDataRef = ref<ConvertedGraphData>({
   printStatements: [],
   properties: {}
 })
-let chart: any = {}
+let chart: any = null
 const legendRef = ref()
 const { height } = useElementSize(legendRef)
 const yAxisFormatter = format('.3s')
@@ -279,11 +277,17 @@ const render = async (update?: boolean) => {
     formattedGraphData = getFormattedLegendStatements(graphMetrics, rrdGraphConverterModel)
     graphData.value = formattedGraphData
 
-    if (update) {
+    if (update && chart) {
       chart.data = chartData.value
       chart.update()
     } else {
       const ctx: any = document.getElementById(`${props.label}-${props.definition}`)
+      // Chart.js throws "Canvas is already in use" if a chart still owns this
+      // canvas — e.g. a stale instance left on a reused canvas after navigating
+      // away and back. Destroy any prior chart on it before creating the new one.
+      if (ctx) {
+        Chart.getChart(ctx)?.destroy()
+      }
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -301,10 +305,20 @@ const render = async (update?: boolean) => {
 watch(props.time, () => render(true))
 
 onMounted(() => render())
+
+// Release the canvas when the graph is torn down (navigation away, infinite-
+// scroll replacement) so Chart.js doesn't report it "already in use" on the
+// next render.
+onBeforeUnmount(() => {
+  if (chart && typeof chart.destroy === 'function') {
+    chart.destroy()
+    chart = null
+  }
+})
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .container {
   position: relative;
 }
@@ -323,14 +337,11 @@ onMounted(() => render())
   z-index: 1;
 }
 .lc {
-  @include body-small;
+  @include onms-body-small;
 }
-</style>
-
-<style lang="scss">
 .graph-data-tabs {
-  ul {
-    margin-left: 37px !important;
+  :deep(.p-tablist-tab-list) {
+    margin-left: 37px;
   }
 }
 </style>

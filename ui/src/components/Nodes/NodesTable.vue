@@ -1,45 +1,44 @@
 <template>
   <div class="card">
     <div>
-      <div class="feather-row title-bar">
-        <span class="title">Nodes</span>
-        <div class="action-buttons-container">
+      <div class="onms-row title-bar">
+        <span class="title onms-col-4">Nodes</span>
+        <div class="action-buttons-container onms-col-8">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"
             :onJsonDownload="onJsonDownload"
           />
-          <FeatherButton
-            primary
-            @click="() => nodeStructureStore.openColumnsDrawerModal()"
-          >
-            Customize Columns
-          </FeatherButton>
-          <FeatherButton
-            secondary
-            @click="() => nodeStructureStore.clearAllFiltersAndSelections()"
-          >
-            Clear Filters
-          </FeatherButton>
+          <OnmsButton
+            label="Customize Columns"
+            data-test="customize-columns-button"
+            @click="nodeStructureStore.openColumnsDrawerModal()"
+          />
+          <OnmsButton
+            label="Clear Filters"
+            variant="outlined"
+            data-test="clear-filters-button"
+            @click="nodeStructureStore.clearAllFiltersAndSelections()"
+          />
         </div>
       </div>
       <div class="spacer-large"></div>
       <div class="spacer-large"></div>
-      <div class="search-container feather-col-12">
-        <div class="feather-row">
+      <div class="search-container">
+        <div class="search-row">
           <div class="filter">
             <div class="search-filter-column">
-              <FeatherInput
-                v-model="currentSearch"
-                @update:modelValue="searchFilterHandler"
-                label="Search node label or full IP address"
-              >
-                <template #pre>
-                  <FeatherIcon :icon="Search" />
-                </template>
-              </FeatherInput>
+              <FormField class="search-field">
+                <OnmsSearchInput
+                  v-model="currentSearch"
+                  @update:modelValue="searchFilterHandler"
+                  placeholder="Search node label or full IP address"
+                  aria-label="Search node label or full IP address"
+                  data-test="search-input"
+                />
+              </FormField>
             </div>
             <div>
-              <FeatherIcon
+              <OnmsIcon
                 :icon="InfoIcon"
                 class="info-icon"
                 title="Node Search Help"
@@ -48,364 +47,196 @@
               />
             </div>
             <div>
-              <FeatherButton
-                icon="Advanced Filters"
-                @click="() => nodeStructureStore.openInstancesDrawerModal()"
-              >
-                <FeatherIcon :icon="FilterAlt" />
-              </FeatherButton>
+              <OnmsIconButton
+                title="Advanced Filters"
+                data-test="advanced-filters-button"
+                :icon="FilterAlt"
+                @click="nodeStructureStore.openInstancesDrawerModal()"
+              />
             </div>
           </div>
           <div class="chip-container">
-            <FeatherChipList label="SearchParams">
-              <FeatherChip
-                v-for="cat in nodeStructureStore.selectedCategories"
-                :key="`cat-${cat._value}`"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="removeItem(cat, FilterTypeEnum.Category)"
-                  />
-                </template>
-                {{ `Category: ${cat._text}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="cat in nodeStructureStore.selectedCategories2"
-                :key="`cat2-${cat._value}`"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="removeItem(cat, FilterTypeEnum.Category2)"
-                  />
-                </template>
-                {{ `Category (2): ${cat._text}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="flow in nodeStructureStore.selectedFlows"
-                :key="`flow-${flow._value}`"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="removeItem(flow, FilterTypeEnum.Flow)"
-                  />
-                </template>
-                {{ `Flows: ${flow._text}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
-                :key="loc.name"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
-                  />
-                </template>
-                {{ `Location: ${loc.name}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="svc in nodeStructureStore.selectedServices"
-                :key="`svc-${svc._value}`"
-              >
-                <template #icon>
-                  <FeatherIcon :icon="cancelIcon" class="icon"
-                    @click="removeItem(svc, FilterTypeEnum.MonitoredService)" />
-                </template>
-                {{ `Service: ${svc._text}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="value in extendedSearchValues"
-                :key="`extended-${value.key}`"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="removeExtendedSearchItem(value)"
-                  />
-                </template>
-                {{ `${value.name} ${value.value}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-if="nodeStructureStore.queryFilter.ipAddress"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeIpAddress()"
-                  />
-                </template>
-                {{ `IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-if="nodeStructureStore.queryFilter.macAddress"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeMacAddress()"
-                  />
-                </template>
-                {{ `MAC Address: ${nodeStructureStore.queryFilter.macAddress}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-if="hasTopologySearch"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeTopology()"
-                  />
-                </template>
-                {{ `Topology: ${topologyTerm}` }}
-              </FeatherChip>
-
-              <FeatherChip
-                v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeDownAggregateStatus()"
-                  />
-                </template>
-                Down nodes only
-              </FeatherChip>
-
-              <FeatherChip
-                v-if="nodeStructureStore.queryFilter.nodesWithAssets"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeNodesWithAssets()"
-                  />
-                </template>
-                Nodes with asset info
-              </FeatherChip>
-
-              <FeatherChip
-                v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
-                :key="assetFilter.column"
-              >
-                <template #icon>
-                  <FeatherIcon
-                    :icon="cancelIcon"
-                    class="icon"
-                    @click="nodeStructureStore.removeAssetFilter(assetFilter.column)"
-                  />
-                </template>
-                {{ `Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}` }}
-              </FeatherChip>
-            </FeatherChipList>
+            <OnmsChip
+              v-for="cat in nodeStructureStore.selectedCategories"
+              :key="`cat-${cat._value}`"
+              :label="`Category: ${cat._text}`"
+              removable
+              @remove="removeItem(cat, FilterTypeEnum.Category)"
+            />
+            <OnmsChip
+              v-for="cat in nodeStructureStore.selectedCategories2"
+              :key="`cat2-${cat._value}`"
+              :label="`Category (2): ${cat._text}`"
+              removable
+              @remove="removeItem(cat, FilterTypeEnum.Category2)"
+            />
+            <OnmsChip
+              v-for="flow in nodeStructureStore.selectedFlows"
+              :key="`flow-${flow._value}`"
+              :label="`Flows: ${flow._text}`"
+              removable
+              @remove="removeItem(flow, FilterTypeEnum.Flow)"
+            />
+            <OnmsChip
+              v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
+              :key="loc.name"
+              :label="`Location: ${loc.name}`"
+              removable
+              @remove="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
+            />
+            <OnmsChip
+              v-for="svc in nodeStructureStore.selectedServices"
+              :key="`svc-${svc._value}`"
+              :label="`Service: ${svc._text}`"
+              removable
+              @remove="removeItem(svc, FilterTypeEnum.MonitoredService)"
+            />
+            <OnmsChip
+              v-for="value in extendedSearchValues"
+              :key="`extended-${value.key}`"
+              :label="`${value.name} ${value.value}`"
+              removable
+              @remove="removeExtendedSearchItem(value)"
+            />
+            <OnmsChip
+              v-if="nodeStructureStore.queryFilter.ipAddress"
+              :label="`IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}`"
+              removable
+              @remove="nodeStructureStore.removeIpAddress()"
+            />
+            <OnmsChip
+              v-if="nodeStructureStore.queryFilter.macAddress"
+              :label="`MAC Address: ${nodeStructureStore.queryFilter.macAddress}`"
+              removable
+              @remove="nodeStructureStore.removeMacAddress()"
+            />
+            <OnmsChip
+              v-if="hasTopologySearch"
+              :label="`Topology: ${topologyTerm}`"
+              removable
+              @remove="nodeStructureStore.removeTopology()"
+            />
+            <OnmsChip
+              v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
+              label="Down nodes only"
+              removable
+              @remove="nodeStructureStore.removeDownAggregateStatus()"
+            />
+            <OnmsChip
+              v-if="nodeStructureStore.queryFilter.nodesWithAssets"
+              label="Nodes with asset info"
+              removable
+              @remove="nodeStructureStore.removeNodesWithAssets()"
+            />
+            <OnmsChip
+              v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
+              :key="assetFilter.column"
+              :label="`Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}`"
+              removable
+              @remove="nodeStructureStore.removeAssetFilter(assetFilter.column)"
+            />
           </div>
         </div>
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
-        <div
-          id="wrap"
+
+    <div class="onms-row">
+      <div class="onms-col-12">
+        <OnmsTable
+          lazy
+          scrollable
+          size="small"
+          dataKey="id"
+          :value="nodes"
+          paginator
+          :rows="pageSize"
+          :first="first"
+          :totalRecords="nodeStore.totalCount"
+          :rowsPerPageOptions="[10, 20, 50, 100, 200]"
+          :sortField="sortField"
+          :sortOrder="sortOrder"
           class="node-table"
+          data-test="nodes-table"
+          @page="onPage"
+          @sort="onSort"
         >
-          <table
-            :class="tableCssClasses"
-            summary="Nodes"
-            v-if="nodes.length > 0"
+          <OnmsColumn
+            v-for="col in orderedSelectedColumns"
+            :key="col.id"
+            :field="col.id"
+            :header="col.label"
+            :sortable="col.id !== 'ipaddress'"
           >
-            <thead>
-              <tr>
-                <th
-                  v-if="canNavigateLeft"
-                  class="navigation-cell"
-                >
-                  <div @click="navigateColumns(Direction.Left)">
-                    <FeatherButton icon="Shift Left">
-                      <FeatherIcon
-                        :icon="ChevronLeft"
-                        class="navigation-icon"
-                      />
-                    </FeatherButton>
-                  </div>
-                </th>
-
-                <template
-                  v-for="column in visibleColumns.sort((a: NodeColumnSelectionItem, b: NodeColumnSelectionItem) => a.order - b.order)"
-                  :key="column.id"
-                >
-                  <FeatherSortHeader
-                    v-if="column.id !== 'ipaddress'"
-                    scope="col"
-                    :property="column.id"
-                    :sort="sortStateForId(column.id)"
-                    @sort-changed="sortChanged"
-                  >
-                    {{ column.label }}
-                  </FeatherSortHeader>
-                  <th v-else>{{ column.label }}</th>
-                </template>
-                <th
-                  v-if="canNavigateRight"
-                  class="navigation-cell"
-                >
-                  <div
-                    class="icon-container"
-                    @click="navigateColumns(Direction.Right)"
-                  >
-                    <FeatherButton icon="Shift Right">
-                      <FeatherIcon
-                        :icon="ChevronRight"
-                        class="navigation-icon"
-                      />
-                    </FeatherButton>
-                  </div>
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="node in nodes"
-                :key="node.id"
-              >
-                <td
-                  v-if="canNavigateLeft"
-                  class="navigation-cell"
-                ></td>
-                <template
-                  v-for="column in visibleColumns.sort((a: NodeColumnSelectionItem, b: NodeColumnSelectionItem) => a.order - b.order)"
-                  :key="column.id"
-                >
-                  <td v-if="isSelectedColumn(column, 'id')">
-                    <a
-                      :href="computeNodeLink(node.id)"
-                      @click="onNodeLinkClick(node.id)"
-                      target="_blank"
-                    >
-                      {{ node.id }}
-                    </a>
-                  </td>
-                  <td v-if="isSelectedColumn(column, 'label')">
-                    <a
-                      :href="computeNodeLink(node.id)"
-                      @click="onNodeLinkClick(node.id)"
-                      target="_blank"
-                    >
-                      {{ node.label }}
-                    </a>
-                  </td>
-
-                  <ManagementIPTooltipCell
-                    v-if="isSelectedColumn(column, 'ipaddress')"
-                    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
-                    :node="node"
-                    :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
-                  />
-
-                  <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
-
-                  <NodeTooltipCell
-                    v-if="isSelectedColumn(column, 'foreignSource')"
-                    :text="node.foreignSource"
-                  />
-                  <NodeTooltipCell
-                    v-if="isSelectedColumn(column, 'foreignId')"
-                    :text="node.foreignId"
-                  />
-                  <NodeTooltipCell
-                    v-if="isSelectedColumn(column, 'sysContact')"
-                    :text="node.sysContact"
-                  />
-                  <NodeTooltipCell
-                    v-if="isSelectedColumn(column, 'sysLocation')"
-                    :text="node.sysLocation"
-                  />
-                  <NodeTooltipCell
-                    v-if="isSelectedColumn(column, 'sysDescription')"
-                    :text="node.sysDescription"
-                  />
-
-                  <td v-if="isSelectedColumn(column, 'flows')">
-                    <FlowTooltipCell :node="node" />
-                  </td>
-                </template>
-
-                <td
-                  v-if="canNavigateRight"
-                  class="navigation-cell"
-                ></td>
-                <td class="actions-cell">
-                  <FeatherButton
-                    icon="View Details"
-                    class="view-details-icon"
-                    @click="() => onNodeLinkClick(node.id)"
-                  >
-                    <FeatherIcon
-                      :icon="ViewDetails"
-                      title="View Details"
-                    />
-                  </FeatherButton>
-
-                  <NodeActionsDropdown
-                    :baseHref="mainMenu.baseHref"
-                    :node="node"
-                    :triggerNodeInfo="onNodeInfo"
-                    class="triple-icon"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <EmptyList
-            v-else
-            :content="emptyListContent"
-            data-test="empty-list"
-          />
-        </div>
+            <template #body="{ data }">
+              <a
+                v-if="col.id === 'id' || col.id === 'label'"
+                :href="computeNodeLink(data.id)"
+                target="_blank"
+                @click="onNodeLinkClick(data.id)"
+              >{{ col.id === 'id' ? data.id : data.label }}</a>
+              <ManagementIPTooltipCell
+                v-else-if="col.id === 'ipaddress'"
+                :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
+                :node="data"
+                :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
+              />
+              <span v-else-if="col.id === 'location'">{{ data.location }}</span>
+              <FlowTooltipCell
+                v-else-if="col.id === 'flows'"
+                :node="data"
+              />
+              <NodeTooltipCell
+                v-else
+                :text="data[col.id]"
+              />
+            </template>
+          </OnmsColumn>
+          <OnmsColumn
+            header="Actions"
+            class="actions-cell"
+            style="min-width: 8rem"
+            frozen
+            alignFrozen="right"
+          >
+            <template #body="{ data }">
+              <div class="actions-cell-buttons">
+                <OnmsIconButton
+                  title="View Details"
+                  data-test="view-details-button"
+                  :icon="ViewDetails"
+                  @click="onNodeLinkClick(data.id)"
+                />
+                <NodeActionsDropdown
+                  :baseHref="mainMenu.baseHref"
+                  :node="data"
+                  :triggerNodeInfo="onNodeInfo"
+                  class="triple-icon"
+                />
+              </div>
+            </template>
+          </OnmsColumn>
+          <template #empty>
+            <EmptyList
+              :content="emptyListContent"
+              data-test="empty-list"
+            />
+          </template>
+        </OnmsTable>
       </div>
     </div>
-    <FeatherPagination
-      v-if="nodeStore.totalCount > 0"
-      v-model="pageNumber"
-      :pageSize="pageSize"
-      :pageSizes="[10, 20, 50, 100, 200]"
-      :total="nodeStore.totalCount"
-      @update:modelValue="updatePageNumber"
-      @update:pageSize="updatePageSize"
-    />
   </div>
+
   <NodeDetailsDialog
     :computeNodeLink="computeNodeLink"
     :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
-    @close="dialogVisible = false"
     :visible="dialogVisible"
     :node="dialogNode"
-  >
-  </NodeDetailsDialog>
+    @close="dialogVisible = false"
+  />
   <NodeAdvancedFiltersDrawer />
   <ColumnSelectionDrawer />
 
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="isHelpMessageDialogVisible"
     :relative="true"
     maxHeight="22em"
@@ -421,7 +252,7 @@
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -430,9 +261,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
-  Direction,
   ExtendedSearchValue,
-  FeatherSortObject,
   FilterTypeEnum,
   Node,
   NodeColumnSelectionItem,
@@ -440,22 +269,24 @@ import {
   UpdateModelFunction
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import { FeatherIcon } from '@featherds/icon'
-import FilterAlt from '@featherds/icon/action/FilterAlt'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Cancel from '@featherds/icon/navigation/Cancel'
-import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import InfoIcon from '@featherds/icon/action/Info'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
-import MessageDialog from '../Common/MessageDialog.vue'
-import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { IAutocompleteItemType } from '@/types'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsMessageDialog,
+  OnmsSearchInput,
+  OnmsTable,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
+import FilterAlt from '@/components/icons/action/FilterAlt.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { SORT } from '@/types'
+import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
@@ -467,8 +298,8 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getAssetColumnLabel } from './hooks/queryStringParser'
-import { getTableCssClasses } from './utils'
 import EmptyList from '../Common/EmptyList.vue'
+import FormField from '../Common/FormField.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -476,61 +307,10 @@ const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
 const { buildUpdatedNodeStructureQueryParameters, getExtendedSearchValues } = useNodeQuery()
-const visibleColumnStart = ref(0)
-const visibleColumnsCount = 5
 const isHelpMessageDialogVisible = ref(false)
 
-const visibleColumns = computed(() => {
-  return nodeStructureStore.columns
-    .filter(col => col.selected)
-    .slice(visibleColumnStart.value, visibleColumnStart.value + visibleColumnsCount)
-})
-
-const canNavigateLeft = computed(() => visibleColumnStart.value > 0)
-const canNavigateRight = computed(() =>
-  visibleColumnStart.value + visibleColumnsCount <
-  nodeStructureStore.columns.filter(col => col.selected).length
-)
-
-const navigateColumns = (direction: Direction) => {
-  if (direction === Direction.Left && canNavigateLeft.value) {
-    visibleColumnStart.value -= visibleColumnsCount
-  } else if (direction === Direction.Right && canNavigateRight.value) {
-    visibleColumnStart.value += visibleColumnsCount
-  }
-}
-
-const sortStates: any = reactive({
-  id: SORT.NONE,
-  label: SORT.ASCENDING,
-  ipaddress: SORT.NONE, // note, cannot sort by this at the moment
-  location: SORT.NONE,
-  foreignSource: SORT.NONE,
-  foreignId: SORT.NONE,
-  sysContact: SORT.NONE,
-  sysLocation: SORT.NONE,
-  sysDescription: SORT.NONE,
-  flows: SORT.NONE
-})
-
-const sortStateForId = (label: string) => {
-  switch (label) {
-    case 'id': return sortStates.id
-    case 'label': return sortStates.label
-    case 'ipaddress': return sortStates.ipaddress
-    case 'location': return sortStates.location
-    case 'foreignSource': return sortStates.foreignSource
-    case 'foreignId': return sortStates.foreignId
-    case 'sysContact': return sortStates.sysContact
-    case 'sysLocation': return sortStates.sysLocation
-    case 'sysDescription': return sortStates.sysDescription
-    case 'flows': return sortStates.flows
-  }
-
-  return SORT.NONE
-}
-
-const cancelIcon = computed(() => Cancel)
+const sortField = ref('label')
+const sortOrder = ref(1) // 1 = ascending, -1 = descending
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
@@ -538,19 +318,42 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
-const tableCssClasses = computed<string[]>(() => [...getTableCssClasses(nodeStructureStore.columns), 'condensed'])
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
 const pageSize = ref(nodeStore.nodeQueryParameters.limit || 50)
 
-const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
-  return column.selected && column.id === id
+const first = computed(() => (pageNumber.value - 1) * pageSize.value)
+
+const orderedSelectedColumns = computed<NodeColumnSelectionItem[]>(() =>
+  nodeStructureStore.columns
+    .filter(col => col.selected)
+    .sort((a, b) => a.order - b.order)
+)
+
+const onSort = (event: OnmsTableSortEvent) => {
+  const field = (event.sortField as string) || 'label'
+  if (field === 'ipaddress') {
+    return
+  }
+  sortField.value = field
+  sortOrder.value = (event.sortOrder as number) ?? 1
+  const order = sortOrder.value === 1 ? SORT.ASCENDING : SORT.DESCENDING
+  queryParameters.value = { ...queryParameters.value, orderBy: field, order }
+  updateQuery({ orderBy: field, order })
+}
+
+const onPage = (event: OnmsTablePageEvent) => {
+  if (event.rows !== pageSize.value) {
+    updatePageSize(event.rows)
+  } else {
+    updatePageNumber(event.page + 1)
+  }
 }
 
 const updatePageNumber = (page: number) => {
   pageNumber.value = page
-  const pageSize = queryParameters.value.limit || 0
-  queryParameters.value = { ...queryParameters.value, offset: Math.max((page - 1) * pageSize, 0) }
+  const size = queryParameters.value.limit || 0
+  queryParameters.value = { ...queryParameters.value, offset: Math.max((page - 1) * size, 0) }
   nodeStore.setNodeQueryParameters(queryParameters.value)
 
   updateQuery()
@@ -563,26 +366,6 @@ const updatePageSize = (size: number) => {
   nodeStore.setNodeQueryParameters(queryParameters.value)
 
   updateQuery()
-}
-
-const sortChanged = (sortObj: FeatherSortObject) => {
-  if (sortObj.property === 'ipaddress') {
-    return
-  }
-
-  for (const key in sortStates) {
-    sortStates[key] = SORT.NONE
-  }
-
-  sortStates[`${sortObj.property}`] = sortObj.value
-
-  queryParameters.value = {
-    ...queryParameters.value,
-    orderBy: sortObj.property,
-    order: sortObj.value
-  }
-
-  updateQuery({ orderBy: sortObj.property, order: sortObj.value })
 }
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
@@ -704,46 +487,27 @@ watch([() => nodeStructureStore.queryFilter], () => {
 },
 { deep: true }
 )
+
+defineExpose({ onSort, onPage, removeItem })
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/table/scss/table" as table;
-@use "@featherds/styles/mixins/elevation" as elevation;
-@use "@featherds/styles/mixins/typography" as typography;
-@use "@featherds/styles/themes/variables" as variables;
+@use '@/styles/onms-elevation' as *;
+@use '@/styles/onms-typography' as *;
+@use "@/styles/onms-tokens" as variables;
 
 .node-table {
   margin-top: 1rem;
 }
 
-#wrap {
-  overflow: auto;
-  white-space: nowrap;
-}
-
 .card {
-  @include elevation.elevation(2);
+  @include onms-elevation(2);
   background: var(variables.$surface);
   padding: 30px;
 }
 
-table {
-  @include table.table;
-  @include table.table-condensed;
-  @include table.row-select();
-  @include table.row-hover();
-
-  tbody {
-    tr {
-      td {
-        padding: 12px 1rem;
-      }
-    }
-  }
-}
-
 .title {
-  @include typography.headline1;
+  @include onms-headline1;
   display: block;
 }
 
@@ -757,12 +521,20 @@ table {
   gap: 10px;
 
   .search-filter-column {
-    :deep(.feather-input-sub-text) {
-      display: none !important;
-    }
+    // Match the SNMP Configuration Definitions search box: right-aligned,
+    // enlarged search glyph inside a full-width input.
+    .search-field {
+      width: 450px;
 
-    .feather-input-container {
-      width: 450px !important;
+      :deep(.p-iconfield) {
+        display: block;
+        width: 100%;
+      }
+
+      :deep(.p-inputtext) {
+        width: 100%;
+        padding-right: 2.75rem;
+      }
     }
   }
 
@@ -776,15 +548,11 @@ table {
 }
 
 .chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
   padding-left: 10px;
-
-  :deep(.chip) {
-    margin-bottom: 0 !important;
-  }
-
-  :deep(.chip-list) {
-    margin-top: 0.25rem !important;
-  }
 }
 
 .spacer-large {
@@ -792,10 +560,16 @@ table {
 }
 
 .title-bar {
-  justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+// Lay the search filter and the chip list out side by side, content-sized.
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .search-container {
@@ -814,28 +588,19 @@ table {
 .action-buttons-container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
-.actions-cell {
-  .view-details-icon {
-    svg {
-      font-size: 1.5rem !important;
-    }
-  }
+// Keep the View Details + Node Actions buttons on a single line; never wrap
+// when the column/viewport narrows (the column reserves min-width above).
+.actions-cell-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .triple-icon {
   margin-left: 7px;
-}
-
-.navigation-cell {
-  width: 10px;
-
-  .btn.btn-icon-table {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 100%;
-  }
 }
 </style>

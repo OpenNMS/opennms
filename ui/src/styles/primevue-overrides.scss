@@ -42,6 +42,42 @@
   text-transform: uppercase;
 }
 
+// Standard field height across the app. Height is not a PrimeVue theme token,
+// so it lives here. Applies to InputText and the inner input of InputNumber
+// (both render .p-inputtext). Formerly 3.75rem with FormField overriding to
+// 3rem; promoted to 3rem here so controls in and out of FormField match.
+.p-inputtext {
+  height: 3rem;
+}
+
+// Match Select height to the inputs so they line up in shared rows. The root is
+// inline-flex with the default `align-items: stretch`, so the label otherwise
+// stretches full-height and its text pins to the top; center it so the
+// value/placeholder sits vertically centered (same fix as .p-multiselect).
+.p-select {
+  height: 3rem;
+  align-items: center;
+}
+
+// Exception: the rows-per-page dropdown inside a DataTable/Paginator is a
+// .p-select, so it inherits the roomy 3.75rem above and towers over the
+// paginator nav buttons. Pin it to the paginator's own nav-button height so the
+// pager row lines up. Applies to every PrimeVue Paginator app-wide.
+.p-paginator-rpp-dropdown {
+  height: var(--p-paginator-nav-button-height);
+}
+
+// Match MultiSelect to the taller inputs/selects when empty; min-height (not a
+// fixed height) so its chip display can still grow as items are selected.
+// The root is inline-flex with the default `align-items: stretch`, which lets
+// the label-container fill the taller control but leaves the label text pinned
+// to the top; center it so the value/placeholder sits vertically centered (the
+// same way .p-select renders).
+.p-multiselect {
+  min-height: 3.75rem;
+  align-items: center;
+}
+
 // FeatherDS buttons use uppercase, bold, slightly spaced label text. Match it
 // (these are FeatherDS button typography token values; text-transform and
 // letter-spacing are not expressible as PrimeVue theme tokens).
@@ -54,4 +90,46 @@
   .p-button-label {
     font-weight: 700;
   }
+}
+
+// Outlined buttons read better with a slightly heavier border given the button
+// border-radius (border color comes from the preset). Not a PrimeVue token, so
+// it lives here.
+.p-button-outlined {
+  border-width: 2px;
+}
+
+// A Button given both `outlined` and `text` (e.g. the text-variant Cancel
+// buttons) shows no visible border on its own: both p-button-outlined and
+// p-button-text classes are applied, and .p-button-text sets a transparent
+// border-color that wins over the outlined border — leaving the 2px border
+// above invisible. Reassert a visible border color for that combination (this
+// two-class selector outranks .p-button-text). currentColor matches the
+// preset's intent that an outlined border use the button's own text color.
+.p-button-outlined.p-button-text {
+  border-color: currentColor;
+}
+
+// Search-input (IconField / InputIcon) glyph. The icon is an OnmsIcon whose SVG
+// is 1em, so its size tracks the .p-inputicon font-size. PrimeVue's default is
+// too small and several screens overrode it inconsistently (1.75rem). Normalize
+// to 1.5rem everywhere. PrimeVue positions .p-inputicon at top: 50%, so the icon
+// is centered on the input mid-line with a margin-top of -½ its height.
+.p-inputicon {
+  font-size: 1.5rem;
+  margin-top: -0.75rem;
+}
+
+// Helper/hint text shown under a form field (the small sibling of an
+// IftaLabel/FloatLabel input). Global so every converted field is consistent:
+// indent to line up with the IftaLabel label/value text (the input's left
+// padding) and use a slightly larger, readable size.
+.field-hint {
+  // block so the left padding indents every line (an inline <small> would only
+  // offset the first line, leaving wrapped lines flush against the edge)
+  display: block;
+  margin-top: 0.25em;
+  padding-left: var(--p-iftalabel-position-x, 0.75rem);
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
 }

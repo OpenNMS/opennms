@@ -1,19 +1,17 @@
 <template>
-  <FeatherDrawer
-    id="left-drawer"
-    data-test="left-drawer"
-    @hidden="nodeStructureStore.closeInstancesDrawerModal()"
-    v-model="nodeStructureStore.drawerState.visible"
-    :labels="{ close: 'close', title: 'Advanced Node Filters' }"
+  <OnmsDrawer
+    v-model:visible="drawerVisible"
+    header="Advanced Node Filters"
     width="60em"
+    data-test="left-drawer"
   >
-    <div class="feather-drawer-custom-padding">
+    <div class="node-filters-drawer-custom-padding">
       <section>
         <h3>Advanced Filters</h3>
       </section>
       <div class="info-section">
         <span>Choose one or more attributes to find matching nodes.</span>
-        <FeatherIcon
+        <OnmsIcon
           :icon="InfoIcon"
           class="info-icon"
           @click="isMessageDialogVisible = true"
@@ -22,133 +20,153 @@
       </div>
       <h4 class="title">Categories</h4>
       <div class="category-row">
-        <FeatherAutocomplete
-          class="category-autocomplete"
+        <FormField
           label="Categories"
-          type="multi"
-          v-model="selectedFilters.categories"
-          :loading="categoriesLoading"
-          :results="categoryResults"
-          @search="handleCategorySearch"
-          :allow-new="false"
-          text-prop="_text"
           hint="You may select up to two category groups to filter nodes by"
-          @update:modelValue="(items: any) => updateFilter('categories', items)"
-        ></FeatherAutocomplete>
-        <FeatherButton
-          v-if="!showSecondCategories"
-          icon="Add category group"
-          class="category-add-btn"
-          @click="showSecondCategories = true"
+          class="category-field"
+          data-test="categories-multiselect"
         >
-          <FeatherIcon :icon="AddIcon" />
-        </FeatherButton>
+          <OnmsMultiSelect
+            v-model="selectedFilters.categories"
+            :options="categoryOptions"
+            optionLabel="_text"
+            dataKey="_value"
+            filter
+            display="chip"
+            placeholder="Select categories"
+            @update:modelValue="(items) => updateFilter('categories', items as IAutocompleteItemType[])"
+          />
+        </FormField>
+        <OnmsIconButton
+          v-if="!showSecondCategories"
+          class="category-add-btn"
+          :icon="AddIcon"
+          aria-label="Add category group"
+          @click="showSecondCategories = true"
+        />
       </div>
       <div v-if="showSecondCategories" class="category-row">
-        <FeatherAutocomplete
-          class="category-autocomplete"
+        <FormField
           label="Additional Categories"
-          type="multi"
-          v-model="selectedFilters.categories2"
-          :loading="categories2Loading"
-          :results="category2Results"
-          @search="handleCategory2Search"
-          :allow-new="false"
-          text-prop="_text"
-          @update:modelValue="(items: any) => updateFilter('categories2', items)"
-        ></FeatherAutocomplete>
-        <FeatherButton
-          icon="Remove category group"
-          class="category-add-btn"
-          @click="removeSecondCategories"
+          class="category-field"
+          data-test="categories2-multiselect"
         >
-          <FeatherIcon :icon="DeleteIcon" />
-        </FeatherButton>
+          <OnmsMultiSelect
+            v-model="selectedFilters.categories2"
+            :options="categoryOptions"
+            optionLabel="_text"
+            dataKey="_value"
+            filter
+            display="chip"
+            placeholder="Select categories"
+            @update:modelValue="(items) => updateFilter('categories2', items as IAutocompleteItemType[])"
+          />
+        </FormField>
+        <OnmsIconButton
+          class="category-add-btn"
+          :icon="DeleteIcon"
+          aria-label="Remove category group"
+          @click="removeSecondCategories"
+        />
       </div>
       <hr />
       <div class="spacer-large"></div>
-      <div class="feather-row">
-        <div class="feather-col-6">
-          <FeatherAutocomplete
-            class="filter-autocomplete"
-            label="Monitoring Locations"
-            type="multi"
-            v-model="selectedFilters.locations"
-            :loading="locationsLoading"
-            :results="locationResults"
-            @search="handleLocationSearch"
-            @update:modelValue="(items: any) => updateFilter('locations', items)"
-          >
-          </FeatherAutocomplete>
+      <div class="onms-row">
+        <div class="onms-col-6">
+          <FormField label="Monitoring Locations" data-test="locations-multiselect">
+            <OnmsMultiSelect
+              v-model="selectedFilters.locations"
+              :options="locationOptions"
+              optionLabel="_text"
+              dataKey="_value"
+              filter
+              display="chip"
+              placeholder="Select locations"
+              @update:modelValue="(items) => updateFilter('locations', items as IAutocompleteItemType[])"
+            />
+          </FormField>
         </div>
-        <div class="feather-col-6">
-          <FeatherAutocomplete
-            class="filter-autocomplete"
-            label="Monitored Services"
-            type="multi"
-            v-model="selectedFilters.services"
-            :results="serviceResults"
-            @search="handleServiceSearch"
-            @update:modelValue="(items: any) => updateFilter('services', items)"
-            text-prop="_text"
-          ></FeatherAutocomplete>
+        <div class="onms-col-6">
+          <FormField label="Monitored Services" data-test="services-multiselect">
+            <OnmsMultiSelect
+              v-model="selectedFilters.services"
+              :options="serviceOptions"
+              optionLabel="_text"
+              dataKey="_value"
+              filter
+              display="chip"
+              placeholder="Select services"
+              @update:modelValue="(items) => updateFilter('services', items as IAutocompleteItemType[])"
+            />
+          </FormField>
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-6">
-          <FeatherInput
-            class="filter-input"
+      <div class="onms-row">
+        <div class="onms-col-6">
+          <FormField
             label="IP Address / Pattern"
-            v-model="selectedFilters.ipAddress"
             :error="errors.ipAddress"
-          />
+            data-test="ip-field"
+          >
+            <OnmsInputText
+              class="filter-input"
+              v-model="selectedFilters.ipAddress"
+              :invalid="!!errors.ipAddress"
+              data-test="ip-input"
+            />
+          </FormField>
         </div>
-        <div class="feather-col-6">
-          <FeatherInput
-            class="filter-input last-filter-input"
-            label="MAC Address"
-            v-model="selectedFilters.macAddress"
-          />
+        <div class="onms-col-6">
+          <FormField label="MAC Address" data-test="mac-field">
+            <OnmsInputText
+              class="filter-input"
+              v-model="selectedFilters.macAddress"
+              data-test="mac-input"
+            />
+          </FormField>
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-6">
-          <FeatherInput
-            class="filter-input last-filter-input"
-            label="Topology (CDP/LLDP)"
-            v-model="selectedFilters.topology"
-          />
+      <div class="onms-row">
+        <div class="onms-col-6">
+          <FormField label="Topology (CDP/LLDP)" data-test="topology-field">
+            <OnmsInputText
+              class="filter-input"
+              v-model="selectedFilters.topology"
+              data-test="topology-input"
+            />
+          </FormField>
         </div>
       </div>
       <div class="spacer-large"></div>
-      <FeatherAutocomplete
-        class="filter-autocomplete"
-        label="Flows"
-        type="multi"
-        v-model="selectedFilters.flows"
-        :loading="flowsLoading"
-        :results="flowResults"
-        @search="handleFlowSearch"
-        @update:modelValue="(items: any) => updateFilter('flows', items)"
-        text-prop="_text"
-      ></FeatherAutocomplete>
+      <FormField label="Flows" data-test="flows-multiselect">
+        <OnmsMultiSelect
+          v-model="selectedFilters.flows"
+          :options="flowOptions"
+          optionLabel="_text"
+          dataKey="_value"
+          filter
+          display="chip"
+          placeholder="Select flows"
+          @update:modelValue="(items) => updateFilter('flows', items as IAutocompleteItemType[])"
+        />
+      </FormField>
       <div class="spacer-medium"></div>
-      <div class="feather-row">
-        <div class="feather-col-12">
-          <FeatherCheckbox
+      <div class="onms-row">
+        <div class="onms-col-12 toggle-row" data-test="down-only">
+          <label for="down-only">Down nodes only (nodes with a down aggregate status)</label>
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithDownAggregateStatus"
-          >
-            Down nodes only (nodes with a down aggregate status)
-          </FeatherCheckbox>
+            inputId="down-only"
+          />
         </div>
       </div>
-      <div class="feather-row">
-        <div class="feather-col-12">
-          <FeatherCheckbox
+      <div class="onms-row">
+        <div class="onms-col-12 toggle-row" data-test="with-assets">
+          <label for="with-assets">Nodes with asset info only</label>
+          <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithAssets"
-          >
-            Nodes with asset info only
-          </FeatherCheckbox>
+            inputId="with-assets"
+          />
         </div>
       </div>
       <div class="spacer-medium"></div>
@@ -167,28 +185,7 @@
         <div class="spacer-medium"></div>
         <ExtendedSearchPanel ref="extendedSearchPanelRef" />
       </div>
-      <div class="footer">
-        <FeatherButton
-          primary
-          :disabled="isApplyDisabled"
-          @click="applySelectedFilters"
-        >
-          Apply Filters
-        </FeatherButton>
-        <FeatherButton
-          secondary
-          @click="clearDrawerFilters"
-        >
-          Clear Filters
-        </FeatherButton>
-        <FeatherButton
-          secondary
-          @click="nodeStructureStore.closeInstancesDrawerModal()"
-        >
-          Close
-        </FeatherButton>
-      </div>
-      <MessageDialog
+      <OnmsMessageDialog
         :visible="isMessageDialogVisible"
         :relative="true"
         maxHeight="22em"
@@ -249,25 +246,43 @@
             <p>This is a case-insensitive partial string match against the selected field.</p>
           </div>
         </template>
-      </MessageDialog>
+      </OnmsMessageDialog>
     </div>
-  </FeatherDrawer>
+    <template #footer>
+      <div class="footer">
+        <OnmsButton
+          :disabled="isApplyDisabled"
+          @click="applySelectedFilters"
+        >
+          Apply Filters
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
+          @click="clearDrawerFilters"
+        >
+          Clear Filters
+        </OnmsButton>
+        <OnmsButton
+          variant="outlined"
+          @click="nodeStructureStore.closeInstancesDrawerModal()"
+        >
+          Close
+        </OnmsButton>
+      </div>
+    </template>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, watchEffect } from 'vue'
+import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/hooks/queryStringParser'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherDrawer } from '@featherds/drawer'
-import { FeatherButton } from '@featherds/button'
-import { FeatherCheckbox } from '@featherds/checkbox'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherInput } from '@featherds/input'
-import AddIcon from '@featherds/icon/action/Add'
-import DeleteIcon from '@featherds/icon/action/Delete'
-import InfoIcon from '@featherds/icon/action/Info'
-import MessageDialog from '../Common/MessageDialog.vue'
+import { IAutocompleteItemType } from '@/types'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
+import AddIcon from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import FormField from '@/components/Common/FormField.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
@@ -279,23 +294,9 @@ interface DrawerErrors {
 type ExtendedSearchPanelInstance = InstanceType<typeof ExtendedSearchPanel>
 type AssetFilterPanelInstance = InstanceType<typeof AssetFilterPanel>
 
-const searchTimeout = ref<number>(-1)
-const category2SearchTimeout = ref<number>(-1)
-const categoriesLoading = ref(false)
-const categoryResults = ref([] as IAutocompleteItemType[])
-const categories2Loading = ref(false)
-const category2Results = ref<IAutocompleteItemType[]>([])
-const flowsLoading = ref(false)
-const flowResults = ref<IAutocompleteItemType[]>([])
-const locationsLoading = ref(false)
-const locationResults = ref<IAutocompleteItemType[]>([])
-const serviceResults = ref<IAutocompleteItemType[]>([])
 const isMessageDialogVisible = ref(false)
 const errors = ref<DrawerErrors>({})
 const isApplyDisabled = ref(false)
-// we already have items in memory, don't really need to use setTimeout at all,
-// but will keep it just to have the pattern. Timeout can be minimal (5ms)
-const TIMEOUT = 5
 
 const nodeStructureStore = useNodeStructureStore()
 const extendedSearchPanelRef = ref<ExtendedSearchPanelInstance | null>(null)
@@ -314,70 +315,41 @@ const selectedFilters = reactive({
   nodesWithAssets: false
 })
 
-const filterCategoryItems = (query: string): IAutocompleteItemType[] => {
+const drawerVisible = computed({
+  get: () => nodeStructureStore.drawerState.visible,
+  set: (val: boolean) => {
+    if (!val) {
+      nodeStructureStore.closeInstancesDrawerModal()
+    }
+  }
+})
+
+// Full option lists for each MultiSelect (the same lists the old @search
+// handlers filtered over). MultiSelect performs its own client-side filtering.
+const categoryOptions = computed<IAutocompleteItemType[]>(() => {
   const categoriesArray = Array.isArray(nodeStructureStore.categories)
     ? nodeStructureStore.categories
     : []
-  return categoriesArray
-    .filter(c => c.name && c.name.toLowerCase().includes(query.toLowerCase()))
-    .map(c => ({ _text: c.name, _value: c.id } as IAutocompleteItemType))
-}
+  return categoriesArray.map(c => ({ _text: c.name, _value: c.id } as IAutocompleteItemType))
+})
 
-const handleCategorySearch = (query: string) => {
-  categoriesLoading.value = true
-  clearTimeout(searchTimeout.value)
-  searchTimeout.value = window.setTimeout(() => {
-    categoryResults.value = filterCategoryItems(query)
-    categoriesLoading.value = false
-  }, TIMEOUT)
-}
+const locationOptions = computed<IAutocompleteItemType[]>(() =>
+  nodeStructureStore.monitoringLocations.map(location => ({
+    _text: location.name,
+    _value: location.name,
+    name: location.name
+  } as IAutocompleteItemType))
+)
 
-const handleCategory2Search = (query: string) => {
-  categories2Loading.value = true
-  clearTimeout(category2SearchTimeout.value)
-  category2SearchTimeout.value = window.setTimeout(() => {
-    category2Results.value = filterCategoryItems(query)
-    categories2Loading.value = false
-  }, TIMEOUT)
-}
+const serviceOptions = computed<IAutocompleteItemType[]>(() =>
+  nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
+)
 
-const handleFlowSearch = (query: string) => {
-  flowsLoading.value = true
-  clearTimeout(searchTimeout.value)
-
-  searchTimeout.value = window.setTimeout(() => {
-    flowResults.value = [
-      { _text: 'Egress', _value: 'lastEgressFlow' },
-      { _text: 'Ingress', _value: 'lastIngressFlow' },
-      { _text: 'No Flows', _value: 'noFlows' }
-    ].filter(flow => flow._text.toLowerCase().includes(query.toLowerCase()))
-    flowsLoading.value = false
-  }, TIMEOUT)
-}
-
-const handleLocationSearch = (query: string) => {
-  locationsLoading.value = true
-  clearTimeout(searchTimeout.value)
-
-  searchTimeout.value = window.setTimeout(() => {
-    locationResults.value = nodeStructureStore.monitoringLocations
-      .filter(location => location.name.toLowerCase().includes(query.toLowerCase()))
-      .map(location => ({
-        _text: location.name,
-        _value: location.name,
-        name: location.name
-      }))
-
-    locationsLoading.value = false
-  }, TIMEOUT)
-}
-
-const handleServiceSearch = (query: string) => {
-  const lower = query.toLowerCase()
-  serviceResults.value = nodeStructureStore.allServiceTypes
-    .filter(s => s.name.toLowerCase().includes(lower))
-    .map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
-}
+const flowOptions = computed<IAutocompleteItemType[]>(() => [
+  { _text: 'Egress', _value: 'lastEgressFlow' } as IAutocompleteItemType,
+  { _text: 'Ingress', _value: 'lastIngressFlow' } as IAutocompleteItemType,
+  { _text: 'No Flows', _value: 'noFlows' } as IAutocompleteItemType
+])
 
 const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteItemType[]) => {
   selectedFilters[key as 'categories' | 'categories2' | 'flows' | 'locations' | 'services'] = items
@@ -448,23 +420,34 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
     selectedFilters.nodesWithDownAggregateStatus = nodeStructureStore.queryFilter.nodesWithDownAggregateStatus ?? false
     selectedFilters.nodesWithAssets = nodeStructureStore.queryFilter.nodesWithAssets ?? false
-    serviceResults.value = nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
     assetFilterPanelRef.value?.resetFromStore()
     extendedSearchPanelRef.value?.resetFromStore()
   }
 })
+
+defineExpose({
+  selectedFilters,
+  isApplyDisabled,
+  drawerVisible,
+  showSecondCategories
+})
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/styles/mixins/elevation';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 
-.feather-drawer-custom-padding {
+.node-filters-drawer-custom-padding {
   padding: 20px;
   height: 100%;
   overflow: auto;
+
+  // The onms grid `gap` only spaces columns, so consecutive filter rows were
+  // cramped vertically. Give each stacked row/group breathing room.
+  .onms-row,
+  .category-row {
+    margin-bottom: 1.5rem;
+  }
 }
 
 .spacer-large {
@@ -472,30 +455,13 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
 }
 
 .spacer-medium {
-  margin-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .footer {
   display: flex;
+  gap: 0.5rem;
   padding-top: 20px;
-}
-
-.inventory-auto {
-  min-width: 400px;
-
-  :deep(.feather-autocomplete-input) {
-    min-width: 100px;
-  }
-
-  :deep(.feather-autocomplete-content) {
-    display: block;
-  }
-}
-
-.last-filter-autocomplete{
-  :deep(.feather-input-sub-text) {
-    display: none !important;
-  }
 }
 
 .filter-input {
@@ -503,10 +469,12 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
   width: 100%;
 }
 
-.last-filter-input {
-  :deep(.feather-input-sub-text) {
-    display: none !important;
-  }
+// Label on the left, ToggleSwitch pushed to the right edge. Both rows are
+// full-width (onms-col-12), so the switches line up vertically across rows.
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .category-row {
@@ -515,12 +483,17 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
   gap: 0.5rem;
 }
 
-.category-autocomplete {
+.category-field {
   flex: 1;
 }
 
 .category-add-btn {
   flex-shrink: 0;
+  // Line the icon button up with the MultiSelect (drop it below the FormField
+  // label) and size it to match the control rather than the tiny default glyph.
+  margin-top: 1.25rem;
+  height: 3rem;
+  width: 3rem;
 }
 
 .info-section {

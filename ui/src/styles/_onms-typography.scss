@@ -1,0 +1,175 @@
+// Vendored typography mixins (NMS-19981, Phase 6) — local replacement for
+// @featherds/styles/mixins/typography. Values copied verbatim from FeatherDS
+// (open-light theme; typography metrics are theme-independent). Self-contained:
+// concrete literals instead of var(--onms-*) tokens. `color` uses the
+// PrimeVue text token (theme-aware, replaces --feather-primary-text-on-surface).
+// Font families (Inter / OpenSans) match the app's existing @font-face delivery.
+
+@mixin onms-typography-rendering {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Header face (Inter) — shared by headline*/subtitle*/display*/title/overline/button.
+@mixin onms-typography-header {
+  font-family: Inter, Helvetica, Arial, sans-serif;
+  color: var(--p-text-color);
+  @include onms-typography-rendering;
+}
+
+@mixin onms-headline1 {
+  @include onms-typography-header;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  letter-spacing: normal;
+  font-weight: 600;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-headline2 {
+  @include onms-typography-header;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: normal;
+  font-weight: 500;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-headline3 {
+  @include onms-typography-header;
+  font-size: 1.1875rem;
+  line-height: 2rem;
+  letter-spacing: 0.012em;
+  font-weight: 700;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-headline4 {
+  @include onms-typography-header;
+  font-size: 1rem;
+  line-height: 2rem;
+  letter-spacing: 0.0125em;
+  font-weight: 600;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-subtitle1 {
+  @include onms-typography-header;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  letter-spacing: 0.00714em;
+  font-weight: 700;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-subtitle2 {
+  @include onms-typography-header;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.00714em;
+  font-weight: 700;
+  text-transform: none;
+  font-style: normal;
+}
+
+@mixin onms-body-large {
+  font-family: OpenSans, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.75rem;
+  letter-spacing: 0.03125em;
+  font-weight: normal;
+  text-transform: none;
+  font-style: normal;
+  color: var(--p-text-color);
+  @include onms-typography-rendering;
+}
+
+@mixin onms-body-small {
+  font-family: OpenSans, Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  letter-spacing: 0.01786em;
+  font-weight: normal;
+  text-transform: none;
+  font-style: normal;
+  color: var(--p-text-color);
+  @include onms-typography-rendering;
+}
+
+@mixin onms-caption {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: normal;
+  font-weight: normal;
+  text-transform: none;
+  font-style: normal;
+  color: var(--p-text-color);
+  @include onms-typography-rendering;
+}
+
+// Note: FeatherDS's `button` mixin overrides the header face with the body
+// (OpenSans) family, so this uses OpenSans.
+@mixin onms-button {
+  font-family: OpenSans, Helvetica, Arial, sans-serif;
+  color: var(--p-text-color);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.08929em;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-style: normal;
+  @include onms-typography-rendering;
+}
+
+@mixin onms-overline {
+  @include onms-typography-header;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.105em;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+// --- Unused by the app today, vendored for completeness/future use. ---
+@mixin onms-title {
+  @include onms-typography-header;
+  font-size: 2.125rem;
+  line-height: 2.5rem;
+  letter-spacing: normal;
+  font-weight: 300;
+  text-transform: none;
+}
+
+@mixin onms-display1 {
+  @include onms-typography-header;
+  font-size: 5rem;
+  line-height: 6rem;
+  letter-spacing: -0.015625em;
+  font-weight: normal;
+  text-transform: none;
+}
+
+@mixin onms-display2 {
+  @include onms-typography-header;
+  font-size: 3.75rem;
+  line-height: 4.5rem;
+  letter-spacing: -0.0083em;
+  font-weight: normal;
+  text-transform: none;
+}
+
+@mixin onms-display3 {
+  @include onms-typography-header;
+  font-size: 3rem;
+  line-height: 3.75rem;
+  letter-spacing: -0.005em;
+  font-weight: 500;
+  text-transform: none;
+}

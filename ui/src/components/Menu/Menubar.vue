@@ -1,32 +1,34 @@
 <template>
-  <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
-    <template v-slot:left>
+  <header class="onms-menubar" ref="outsideClick" @mouseleave="resetMenuItems">
+    <div class="onms-menubar__left">
       <div class="center-flex">
-        <FeatherAppBarLink :icon="IconLogo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
+        <a class="logo-link home" title="Home" :href="mainMenu.homeUrl || '/'">
+          <IconLogo class="onms-menubar__logo" />
+        </a>
       </div>
-    </template>
+    </div>
 
-    <template v-slot:center>
-        <Search class="search-left-margin" id="onms-central-search-control" />
+    <div class="onms-menubar__center">
+      <Search class="search-left-margin" id="onms-central-search-control" />
 
-        <!-- Provision/Quick add node menu -->
-        <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
-          <FeatherButton
-            primary
-            v-if="mainMenu.provisionMenu"
-            @click="onAddNode"
-          >Add a Node</FeatherButton>
-        </div>
-    </template>
+      <!-- Provision/Quick add node menu -->
+      <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
+        <OnmsButton
+          v-if="mainMenu.provisionMenu"
+          label="Add a Node"
+          @click="onAddNode"
+        />
+      </div>
+    </div>
 
-    <template v-slot:right>
+    <div class="onms-menubar__right">
       <div class="date-wrapper">
         <div class="date-formatted-time">{{ formattedTime }}</div>
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
 
        <span title="Toggle Light/Dark Mode">
-        <FeatherIcon
+        <OnmsIcon
             :icon="LightDarkMode"
             title="Toggle Light/Dark Mode"
             class="light-dark"
@@ -49,18 +51,16 @@
           @menuHide="() => onMenuHide(DropdownMenuType.SelfService)"
         />
       </template>
-    </template>
-  </FeatherAppBar>
+    </div>
+  </header>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 
-import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
-import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import { useOutsideClick } from '@/composables/useOutsideClick'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -173,35 +173,83 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/mixins/typography" as typo;
-@import "@featherds/dropdown/scss/mixins";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Fixed top menu bar. Replaces FeatherAppBar, which was used only as a fixed
+// 3-column flex bar (its skip-link, responsive hamburger, scroll-hide and
+// full-width features were all inactive/hidden here).
+.onms-menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--onms-zindex-fixed, 1030);
+  display: flex;
+  align-items: center;
+  height: var(--onms-header-height, 3.75rem);
+  padding: 0 1rem;
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
+}
+
+.onms-menubar__left {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.onms-menubar__center {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.onms-menubar__right {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.logo-link.home {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+// The logo is a wide wordmark SVG (viewBox 624x69). Size by height and let
+// width follow; override the SVG's own max-width so it isn't clamped/distorted.
+.onms-menubar__logo {
+  height: 1.75rem;
+  width: auto;
+  max-width: none;
+}
+
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 
@@ -216,17 +264,6 @@ onUnmounted(() => {
 .quick-add-node-wrapper {
   margin-left: 1em;
   margin-right: 1em;
-
-  .btn {
-    :deep(.btn-content) {
-      @include typo.button();
-      color: var(--feather-primary-text-on-color);
-      font-family: var(--feather-header-font-family);
-      font-size: var(--feather-button-font-size);
-      font-weight: var(--feather-button-font-weight);
-      letter-spacing: var(--feather-button-letter-spacing);
-    }
-  }
 }
 
 .notice-status-display {
@@ -238,7 +275,7 @@ onUnmounted(() => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
-  font-family: var(--feather-header-font-family);
+  font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
   margin-right: 1em;
 
@@ -256,11 +293,16 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss">
+// Shared header height, consumed by both the top menu bar and the side menu rail.
+:root {
+  --onms-header-height: 3.75rem;
+}
+
 .light-dark {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 0.5rem;
-  color: var(--feather-state-text-color-on-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   cursor: pointer;
   outline: none;
 
@@ -269,50 +311,15 @@ onUnmounted(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: 2px;
     border-radius: 4px;
   }
-}
-
-.header .header-content {
-  padding-left: 1rem;
-  padding-right: 1rem;
-  max-width: 100%;
-}
-
-.banner .header {
-  .logo-link.home {
-    padding-left: 0;
-    margin-right: 1rem;
-    padding-top: 2px;
-    padding-bottom: 0;
-    padding-right: 0;
-  }
-}
-
-// remove elevation from menubar
-.header-wrapper.feather-app-bar-wrapper .header {
-  box-shadow: none;
-}
-
-.header-wrapper.feather-app-bar-wrapper a.skip {
-  display: none;
 }
 
 .center-flex {
   display: flex;
   align-items: center;
   padding-top: 3px;
-}
-
-.header-content {
-  .right.center-horiz {
-    margin-right:2px;
-  }
-
-  .top-menu-search {
-    margin-right:5px;
-  }
 }
 </style>

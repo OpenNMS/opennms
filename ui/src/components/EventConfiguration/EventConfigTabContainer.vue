@@ -1,30 +1,35 @@
 <template>
   <div class="event-config-tab-container">
-    <FeatherTabContainer
+    <OnmsTabs
       class="tabs"
-      v-model="store.activeTab"
+      :value="store.activeTab"
+      @update:value="onTabChange"
     >
-      <template v-slot:tabs>
-        <FeatherTab>View</FeatherTab>
-        <FeatherTab>Upload Files</FeatherTab>
-      </template>
-      <FeatherTabPanel>
-        <EventConfigSourceTable />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <EventConfigUploadFilesTab />
-      </FeatherTabPanel>
-    </FeatherTabContainer>
+      <OnmsTabList>
+        <OnmsTab :value="0">View</OnmsTab>
+        <OnmsTab :value="1">Upload Files</OnmsTab>
+      </OnmsTabList>
+      <OnmsTabPanels>
+        <OnmsTabPanel :value="0">
+          <EventConfigSourceTable />
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="1">
+          <EventConfigUploadFilesTab />
+        </OnmsTabPanel>
+      </OnmsTabPanels>
+    </OnmsTabs>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import EventConfigSourceTable from './EventConfigSourceTable.vue'
 import EventConfigUploadFilesTab from './EventConfigUploadFilesTab.vue'
 
 const store = useEventConfigStore()
-</script>
 
-<style lang="scss" scoped></style>
+const onTabChange = (value: string | number) => {
+  store.activeTab = Number(value)
+}
+</script>

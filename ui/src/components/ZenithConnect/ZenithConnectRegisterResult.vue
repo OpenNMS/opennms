@@ -1,11 +1,11 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <div class="zc-container">
         <div class="content-container">
           <div class="title-search">
@@ -20,63 +20,58 @@
               <h3>Registration Results</h3>
             </div>
             <div class="results-container">
-              <table>
-                <thead>
-                  <th>Result</th>
-                  <th>System ID</th>
-                  <th>Display Name</th>
-                  <th>Access Token</th>
-                  <th>Refresh Token</th>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div v-if="zenithConnectStore.registerResponse?.success === true">
-                        <div class="register-success">Success</div>
-                      </div>
-                      <div v-else>
-                        <div class="register-failed">Failed</div>
-                      </div>
-                    </td>
-                    <td>{{ zenithConnectStore.currentRegistration?.systemId }}</td>
-                    <td>{{ zenithConnectStore.currentRegistration?.displayName }}</td>
-                    <td>
-                      <div>
-                        {{ ellipsify(zenithConnectStore.currentRegistration?.accessToken ?? '', 30) }}
-                        <FeatherButton
-                          primary
-                          icon="Copy Access Token"
-                          @click.prevent="() => onCopyToken(true)"
-                        >
-                          <FeatherIcon :icon="icons.ContentCopy"/>
-                        </FeatherButton>
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        {{ ellipsify(zenithConnectStore.currentRegistration?.refreshToken ?? '', 30) }}
-                        <FeatherButton
-                          primary
-                          icon="Copy Refresh Token"
-                          @click.prevent="() => onCopyToken(false)"
-                        >
-                          <FeatherIcon :icon="icons.ContentCopy"/>
-                        </FeatherButton>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <OnmsTable :value="resultRows">
+                <OnmsColumn header="Result">
+                  <template #body>
+                    <div
+                      v-if="zenithConnectStore.registerResponse?.success === true"
+                      class="register-success"
+                    >Success</div>
+                    <div
+                      v-else
+                      class="register-failed"
+                    >Failed</div>
+                  </template>
+                </OnmsColumn>
+                <OnmsColumn
+                  field="systemId"
+                  header="System ID"
+                />
+                <OnmsColumn
+                  field="displayName"
+                  header="Display Name"
+                />
+                <OnmsColumn header="Access Token">
+                  <template #body="{ data }">
+                    {{ ellipsify(data.accessToken ?? '', 30) }}
+                    <OnmsIconButton
+                      variant="filled"
+                      aria-label="Copy Access Token"
+                      :icon="icons.ContentCopy"
+                      @click.prevent="() => onCopyToken(true)"
+                    />
+                  </template>
+                </OnmsColumn>
+                <OnmsColumn header="Refresh Token">
+                  <template #body="{ data }">
+                    {{ ellipsify(data.refreshToken ?? '', 30) }}
+                    <OnmsIconButton
+                      variant="filled"
+                      aria-label="Copy Refresh Token"
+                      :icon="icons.ContentCopy"
+                      @click.prevent="() => onCopyToken(false)"
+                    />
+                  </template>
+                </OnmsColumn>
+              </OnmsTable>
             </div>
           </div>
           <div>
             <div class="spacer"></div>
-            <FeatherButton
-              primary
+            <OnmsButton
+              label="View Zenith Connections"
               @click="gotoView"
-            >
-                View Zenith Connections
-            </FeatherButton>
+            />
           </div>
         </div>
       </div>
@@ -87,9 +82,8 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, ref } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -110,6 +104,8 @@ const isProcessing = ref(false)
 const processingStatus = ref('')
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const { showSnackBar } = useSnackbar()
+
+const resultRows = computed(() => [zenithConnectStore.currentRegistration ?? {} as ZenithConnectRegistration])
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -238,9 +234,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-@import "@featherds/table/scss/table";
+@import '@/styles/onms-typography';
 
 .zc-container {
   display: flex;
@@ -254,7 +248,7 @@ onMounted(async () => {
       justify-content: space-between;
 
       .title {
-        @include headline1;
+        @include onms-headline1;
         margin: 16px 0px 16px 19px;
         display: block;
       }
@@ -266,27 +260,19 @@ onMounted(async () => {
   }
 
   .register-success {
-    background-color: var($success);
+    background-color: var(--p-success-color);
     color: white;
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
   }
 
-  .register-failure {
-    background-color: var($error);
+  .register-failed {
+    background-color: var(--p-error-color);
     color: white;
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
-  }
-
-  table {
-    @include table();
-    &.condensed {
-      @include table-condensed();
-    }
-    margin-top: 0px;
   }
 
   .spacer {

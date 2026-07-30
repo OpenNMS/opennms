@@ -1,6 +1,6 @@
 <template>
   <div
-    class="feather-drawer-custom-padding"
+    class="event-config-drawer-custom-padding"
     v-if="store.eventModificationState.isEditMode !== CreateEditMode.None"
   >
     <BasicInformation />
@@ -10,12 +10,10 @@
     class="not-found-container"
   >
     <p>No event configuration found.</p>
-    <FeatherButton
-      primary
+    <OnmsButton
+      label="Go Back"
       @click="goBack()"
-    >
-      Go Back
-    </FeatherButton>
+    />
   </div>
 </template>
 
@@ -25,7 +23,7 @@ import { useRouter } from 'vue-router'
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
-import { FeatherButton } from '@featherds/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 const router = useRouter()
 const store = useEventModificationStore()
@@ -40,8 +38,7 @@ const goBack = () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .not-found-container {
   display: flex;
@@ -52,7 +49,7 @@ const goBack = () => {
   padding: 25px;
 
   p {
-    @include typography.headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }

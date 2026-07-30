@@ -1,0 +1,101 @@
+[[spring-hibernate-upgrade]]
+
+= Spring, Hibernate, and Camel Platform Upgrade
+
+OpenNMS {page-component-title} upgrades its core application frameworks to currently supported versions and removes the OpenNMS-patched forks of Spring, Spring Security, and Hibernate that previous releases shipped.
+
+[options="header"]
+[cols="2,2,2"]
+|===
+| Component | Before | After
+
+| Spring Framework
+| 4.2.9 (OpenNMS-patched)
+| 5.3.39 (stock)
+
+| Spring Security
+| 4.2.21 (OpenNMS-patched)
+| 5.8.16 (stock)
+
+| Hibernate ORM
+| 3.6.11 (OpenNMS-patched)
+| 5.6.15.Final (stock)
+
+| Hibernate Validator
+| 4.3.2
+| 6.2.5.Final
+
+| Apache Camel
+| 2.21.5
+| 3.22.4
+
+| Eclipse Gemini Blueprint
+| 2.1.0
+| Removed (replaced by an OpenNMS Spring OSGi extender)
+
+| JMS API
+| JMS 1.1 (`geronimo-jms_1.1_spec`)
+| JMS 2.0 (`javax.jms-api` 2.0.1)
+|===
+
+The security fixes that the OpenNMS-patched Spring Security fork carried (CVE-2022-22976, CVE-2022-22978) are included upstream in Spring Security 5.8.16.
+
+Most installations require no action.
+Review the sections below if you run custom Spring Security configuration (LDAP, SSO, pre-authentication), custom Camel routes, or plugins/integrations that use the OpenNMS persistence APIs.
+
+== Changes that affect operators
+
+=== SAML and OpenID SSO support removed
+
+WARNING: If your installation enables single sign-on through a custom `spring-security.d/*.xml` file that references `org.springframework.security.saml.\*` or OpenID classes, the web application fails to start after the upgrade — this breaks *all* logins, not just SSO. Remove or migrate such configuration before upgrading.
+
+Spring Security 5.8 has no compatible releases of `spring-security-saml2-core` or `spring-security-openid`, so these libraries (and `openid4java`) are no longer shipped, and the Karaf container no longer exports the `org.openid4java.*` packages.
+
+=== Custom Spring Security configuration must use the 5.8 schema
+
+Custom files in `spring-security.d/` that use security-namespace elements (`<http>`, `<authentication-provider>`, and so on) must reference the 5.8 XSD (or the unversioned schema location) instead of `spring-security-4.2.xsd`.
+Files that contain only plain `beans:` elements — such as the shipped LDAP and Active Directory examples — continue to parse without change.
+
+The `UpperCaseMd5PasswordEncoder` class now implements the current `org.springframework.security.crypto.password.PasswordEncoder` interface, so wiring it as the `passwordEncoder` of a `DaoAuthenticationProvider` continues to work.
+
+=== Authentication failure responses are generic
+
+Failed authentication now returns the generic reason `Unauthorized` in the HTTP 401 response.
+Spring Security no longer echoes the failure detail (for example `Bad credentials` or `User is disabled`) to the client.
+Scripts or API clients must rely on the status code rather than parsing the response body.
+
+=== Miscellaneous behavior changes
+
+* Requests to nonexistent actions under the legacy web controllers (for example `/alarm/doesNotExist.htm`) return HTTP 500 instead of HTTP 404.
+* Camel routes that use the OpenNMS `CustomHttpClientConfigurer` now perform challenge-based (non-preemptive) Basic authentication: credentials are sent only after the server responds with a `401` challenge.
+
+== Changes that affect plugin and integration developers
+
+=== Apache Camel 3 API
+
+The Karaf container ships Camel 3.22.
+Custom Camel routes and plugins built against the Camel 2 API must be migrated; see the https://camel.apache.org/manual/camel-3-migration-guide.html[Apache Camel 3 migration guide].
+
+=== HQL positional parameters use JPA ordinal style
+
+Hibernate 5 removes support for legacy JDBC-style `?` positional parameters in HQL.
+Code that passes HQL to the public OpenNMS persistence APIs (`AbstractDaoHibernate.find()`, `findObjects()`, `findUnique()`, `queryInt()`, `bulkDelete()`, and `GenericPersistenceAccessor`) must use JPA ordinal parameters (`?1`, `?2`, ...) instead:
+
+[source,java]
+----
+// before
+dao.find("from OnmsNode n where n.label = ?", label);
+// after
+dao.find("from OnmsNode n where n.label = ?1", label);
+----
+
+=== DAO write operations require an active transaction
+
+With Spring 5, Hibernate sessions opened outside a transaction use `FlushMode.MANUAL`, and write operations (`save`, `update`, `saveOrUpdate`, `delete`) throw `InvalidDataAccessApiUsageException` ("Write operations are not allowed in read-only mode").
+Integrations that call OpenNMS DAOs must run writes inside a transaction, for example via `SessionUtils.withTransaction()`, a `TransactionTemplate`, or a `@Transactional` method invoked through a Spring proxy.
+
+=== Gemini Blueprint replaced by the OpenNMS Spring extender
+
+Bundles that declare a `Spring-Context` manifest header get their Spring application context from a new OpenNMS extender instead of Eclipse Gemini Blueprint.
+The compatibility namespace supports only `<osgi:reference>` (with `interface` and `filter` attributes).
+The `<osgi:service>`, `<osgi:list>`, and `<osgi:set>` elements and the `cardinality`/`timeout` reference attributes are *not* supported; export services with the `onmsgi` namespace or an Aries Blueprint descriptor instead.

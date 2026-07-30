@@ -6,92 +6,94 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <FeatherBackButton
+          <OnmsButton
+            variant="text"
+            class="back-button"
             data-test="back-button"
             @click="goBack"
           >
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </FeatherBackButton>
+          </OnmsButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Profile' : `Profile details for: ${store.selectedProfile.name}` }}</h1>
         </div>
         <div class="tag">
-          <FeatherChip
+          <OnmsTag
             v-if="store.selectedProfile.enabled"
             class="enabled-tag"
+            value="Enabled"
             data-test="status-tag"
-          >
-            Enabled
-          </FeatherChip>
-          <FeatherChip
+          />
+          <OnmsTag
             v-if="!store.selectedProfile.enabled"
             class="disabled-tag"
+            value="Disabled"
             data-test="status-tag"
-          >
-            Disabled
-          </FeatherChip>
+          />
         </div>
       </div>
     </div>
     <TableCard class="content">
-      <FeatherTabContainer>
-        <template v-slot:tabs>
-          <FeatherTab>Profile Details</FeatherTab>
-          <FeatherTab>Sources</FeatherTab>
-          <FeatherTab>RRD Settings</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <ProfileDetailsTab
-            :configDetails="configDetailsModel"
-            @update:configDetails="onConfigDetailsUpdate"
-            :isCreateMode="isCreateMode"
-            :errors="errors"
-          />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <ProfileSourcesTab
-            :sources="localSourceNames"
-            @update:sources="localSourceNames = $event"
-          />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <ProfileRrdSettingsTab
-            :rrdSettings="rrdSettingsModel"
-            @update:rrdSettings="onRrdSettingsUpdate"
-            :errors="errors"
-          />
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <OnmsTabs v-model:value="activeTab" class="tabs">
+        <OnmsTabList>
+          <OnmsTab :value="0">Profile Details</OnmsTab>
+          <OnmsTab :value="1">Sources</OnmsTab>
+          <OnmsTab :value="2">RRD Settings</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel :value="0">
+            <ProfileDetailsTab
+              :configDetails="configDetailsModel"
+              @update:configDetails="onConfigDetailsUpdate"
+              :isCreateMode="isCreateMode"
+              :errors="errors"
+            />
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="1">
+            <ProfileSourcesTab
+              :sources="localSourceNames"
+              @update:sources="localSourceNames = $event"
+            />
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="2">
+            <ProfileRrdSettingsTab
+              :rrdSettings="rrdSettingsModel"
+              @update:rrdSettings="onRrdSettingsUpdate"
+              :errors="errors"
+            />
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
 
       <div class="action-row">
-        <FeatherButton
-          secondary
+        <OnmsButton
+          variant="outlined"
           data-test="cancel-button"
           @click="goBack"
         >
           Cancel
-        </FeatherButton>
-        <FeatherButton
+        </OnmsButton>
+        <OnmsButton
           v-if="!isCreateMode"
-          secondary
+          variant="outlined"
           data-test="delete-button"
           @click="openDeleteCollectionProfileDialog"
         >
           Delete Profile
-        </FeatherButton>
-        <FeatherButton
-          primary
+        </OnmsButton>
+        <OnmsButton
           data-test="save-button"
           :disabled="isSaveDisabled"
           @click="saveProfile"
         >
           {{ isCreateMode ? 'Create Profile' : 'Save Profile' }}
-        </FeatherButton>
+        </OnmsButton>
       </div>
     </TableCard>
   </div>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Profile"
     actionButtonText="Delete"
@@ -101,19 +103,16 @@
     <template #content>
       <p>Are you sure you want to delete the profile <strong>{{ store.selectedProfile?.name }}</strong>? This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
   </template>
   <div
     v-else
     class="not-found-container"
   >
     <p>No data found.</p>
-    <FeatherButton
-      primary
-      @click="goBack"
-    >
+    <OnmsButton @click="goBack">
       Go Back
-    </FeatherButton>
+    </OnmsButton>
   </div>
 </template>
 
@@ -121,7 +120,6 @@
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ProfileDetailsTab from './ProfileDetailsTab.vue'
 import ProfileSourcesTab from './ProfileSourcesTab.vue'
@@ -133,10 +131,8 @@ import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { CreateEditMode } from '@/types'
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherButton } from '@featherds/button'
-import { FeatherChip } from '@featherds/chips'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -145,6 +141,8 @@ const snackbar = useSnackbar()
 
 const mode = ref<CreateEditMode>(CreateEditMode.Edit)
 const isCreateMode = computed(() => mode.value === CreateEditMode.Create)
+
+const activeTab = ref(0)
 
 const localName = ref('')
 const localEnabled = ref(false)
@@ -346,18 +344,18 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-profile-details {
   margin: 0 auto;
-  padding: 45px;
+  padding: 0.5rem;
 
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 0px;
+    margin: 1.25rem 0;
 
     .title-container {
       display: flex;
@@ -366,7 +364,7 @@ onMounted(async () => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -378,10 +376,9 @@ onMounted(async () => {
       margin: 0 !important;
       border-radius: 1em;
       background-color: #0B720C1F;
-      border-color: #0B720C;
-      border-width: 2px;
+      border: 2px solid #0B720C;
 
-      :deep(span) {
+      :deep(.p-tag-label) {
         color: #0B720C !important;
       }
     }
@@ -390,10 +387,9 @@ onMounted(async () => {
       margin: 0 !important;
       border-radius: 1em;
       background-color: #7575751F;
-      border-color: #757575;
-      border-width: 2px;
+      border: 2px solid #757575;
 
-      :deep(span) {
+      :deep(.p-tag-label) {
         color: #757575 !important;
       }
     }
@@ -402,15 +398,15 @@ onMounted(async () => {
   .content {
     margin-top: 10px;
     padding: 25px;
-    border: 1px solid var(--feather-border-on-surface);
+    border: 1px solid var(--p-content-border-color);
 
     .action-row {
       display: flex;
       justify-content: flex-end;
-      gap: 0;
+      gap: 0.5rem;
       margin-top: 0;
       padding-top: 20px;
-      border-top: 1px solid var(--feather-border-on-surface);
+      border-top: 1px solid var(--p-content-border-color);
     }
   }
 }
@@ -424,17 +420,17 @@ onMounted(async () => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }
 </style>
 
 <style lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-tokens' as variables;
 
 .p-select-overlay {
-  font-family: var(--feather-font-family);
+  font-family: var(--onms-font-family);
 }
 
 // The Select overlay is teleported to body, so :deep() can't reach it.

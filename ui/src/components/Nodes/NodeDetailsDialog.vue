@@ -1,22 +1,29 @@
 <template>
-  <FeatherDialog :modelValue="visible" relative :labels="labels" @update:modelValue="$emit('close')">
+  <OnmsDialog
+    :visible="visible"
+    modal
+    header="Node Details"
+    width="40rem"
+    draggable
+    @update:visible="onUpdateVisible"
+  >
     <div class="node-details-content">
-      <div class="feather-row" v-for="item in nodeItems" :key="item.label">
-        <div class="feather-col-4">
+      <div class="onms-row" v-for="item in nodeItems" :key="item.label">
+        <div class="onms-col-4">
           <span class="label">{{ item.label }}</span>
         </div>
-        <div class="feather-col-8">
+        <div class="onms-col-8">
           <a v-if="item.link" :href="item.link">{{ item.text }}</a>
           <span v-else>{{ item.text }}</span>
         </div>
       </div>
     </div>
-  </FeatherDialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, reactive } from 'vue'
-import { FeatherDialog } from '@featherds/dialog'
+import { PropType, computed } from 'vue'
+import { OnmsDialog } from '@opennms/onms-ui'
 import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
 import { useNodeStore } from '@/stores/nodeStore'
@@ -41,12 +48,13 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close'])
+const emit = defineEmits(['close'])
 
-const labels = reactive({
-  title: 'Node Details',
-  close: 'Close'
-})
+const onUpdateVisible = (value: boolean) => {
+  if (!value) {
+    emit('close')
+  }
+}
 
 const EMPTY = '--'
 const nodeStore = useNodeStore()

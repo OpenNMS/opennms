@@ -2,86 +2,83 @@
   <div class="trapd-config-upload-download-tab">
     <div class="main-section">
         <h3>Trap Configuration Upload/Download</h3>
-        <div class="feather-row">
-          <div class="feather-col-12">
+        <div class="onms-row">
+          <div class="onms-col-12">
             <span class="label">You can both download and upload the entire Trap configuration in both XML and JSON formats.
               <strong>Use caution</strong> when uploading Trap configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-6">
+        <div class="onms-row" v-if="!adminRole">
+          <div class="onms-col-12">
+            <span class="label">You need Admin access to upload/download Trap configuration files.</span>
+          </div>
+        </div>
+        <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Download file in XML format:</label>
           </div>
-          <div class="feather-col-6">
-            <FeatherButton
-              primary
+          <div class="onms-col-6">
+            <OnmsButton
               data-test="download-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(true)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Download XML
-              </template>
-            </FeatherButton>
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Download XML
+            </OnmsButton>
            </div>
         </div>
-        <div class="feather-row">
-          <div class="feather-col-6">
+        <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Download file in JSON format:</label>
           </div>
-          <div class="feather-col-6">
-            <FeatherButton
-              primary
+          <div class="onms-col-6">
+            <OnmsButton
               data-test="download-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(false)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Download JSON
-              </template>
-            </FeatherButton>
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Download JSON
+            </OnmsButton>
            </div>
         </div>
-         <div class="feather-row">
-          <div class="feather-col-6">
+         <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Upload file in XML format:</label>
           </div>
-          <div class="feather-col-6">
-            <FeatherButton
-              primary
+          <div class="onms-col-6">
+            <OnmsButton
               data-test="upload-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(true)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Upload XML
-              </template>
-            </FeatherButton>
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Upload XML
+            </OnmsButton>
            </div>
         </div>
-         <div class="feather-row">
-          <div class="feather-col-6">
+         <div class="onms-row">
+          <div class="onms-col-6">
             <label class="label">Upload file in JSON format:</label>
           </div>
-          <div class="feather-col-6">
-            <FeatherButton
-              primary
+          <div class="onms-col-6">
+            <OnmsButton
               data-test="upload-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(false)"
             >
-              <template v-slot:icon>
-                <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
-                Upload JSON
-              </template>
-            </FeatherButton>
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              Upload JSON
+            </OnmsButton>
            </div>
         </div>
     </div>
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="confirmationDialogVisible"
       title="Upload Trap Configuration"
       actionButtonText="Upload"
@@ -91,26 +88,26 @@
       <template v-slot:content>
         <p>Are you sure you want to upload the Trap configuration? This will overwrite any existing configuration.</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import IconDownload from '@featherds/icon/action/DownloadFile'
-import IconUpload from '@featherds/icon/action/UploadFile'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
+import IconDownload from '@/components/icons/action/DownloadFile.vue'
+import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
+import useRole from '@/composables/useRole'
 import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 
 const { downloadFile } = useDownload()
+const { adminRole } = useRole()
 const snackbar = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const trapdConfigStore = useTrapdConfigStore()
@@ -119,6 +116,10 @@ const uploadType = ref<'xml' | 'json' | null>(null)
 const uploadFile = ref<File | null>(null)
 
 const onDownload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   try {
     startSpinner()
     const response = await downloadTrapdConfig(isXml)
@@ -137,9 +138,14 @@ const onDownload = async (isXml: boolean) => {
 }
 
 const initiateUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   uploadType.value = isXml ? 'xml' : 'json'
 
   const file = await new Promise<File | null>((resolve) => {
+
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = isXml ? '.xml' : '.json'
@@ -189,6 +195,10 @@ const onUploadConfirm = async () => {
 }
 
 const performUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   if (!uploadFile.value) {
     return
   }
@@ -242,18 +252,13 @@ const performUpload = async (isXml: boolean) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/vars.scss';
-
 .trapd-config-upload-download-tab {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 80%;
   padding: 0;
   border-radius: 5px;
   margin-top: 0;
-  border: 1px solid var(variables.$border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .main-section {
     display: flex;
@@ -266,12 +271,13 @@ const performUpload = async (isXml: boolean) => {
       width: 15em;
     }
 
-    .feather-row {
+    .onms-row {
       margin-bottom: 0.5rem;
     }
 
-    button.btn.btn-icon .upload-download-icon {
+    .upload-download-icon {
       font-size: 1.1rem;
+      margin-right: 0.5em;
     }
   }
 }

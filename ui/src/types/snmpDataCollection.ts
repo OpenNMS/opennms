@@ -31,9 +31,7 @@ export interface SnmpDataCollectionStoreState {
   sourcesSorting: Sorting
   profiles: SnmpCollectionProfile[]
   selectedProfile: SnmpCollectionProfile | null
-  profilesPagination: Pagination
   profilesSearchTerm: string
-  profilesSorting: Sorting
   isLoading: boolean
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
   activeTab: number

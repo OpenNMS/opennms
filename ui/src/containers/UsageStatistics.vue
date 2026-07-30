@@ -1,19 +1,19 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <div class="usage-stats-container">
           <div class="table-container">
             <div class="title-container">
               <span class="title">Usage Statistics Sharing</span>
             </div>
             <UsageStatisticsHeader />
-            <div class="spacer-medium"></div>
+            <div class="spacer-large"></div>
             <UsageStatisticsTable />
           </div>
         </div>
@@ -53,12 +53,10 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
 
 .card {
-  background: var($surface);
+  background: var(--p-content-background);
   padding: 0px 20px 20px 20px;
 
   .usage-stats-container {
@@ -73,7 +71,7 @@ onMounted(async () => {
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }
@@ -81,7 +79,7 @@ onMounted(async () => {
     }
   }
 }
-.spacer-medium {
-  margin-bottom: 0.25rem;
+.spacer-large {
+  margin-bottom: 0.75rem;
 }
 </style>

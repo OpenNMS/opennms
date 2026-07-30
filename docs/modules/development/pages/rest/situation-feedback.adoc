@@ -15,6 +15,9 @@ It is a simple API for the submission and retrieval of correlation feedback.
 
 | /situation-feedback/\{situationid}
 | Get situation feedback for the situation with `AlarmId` = `\{situationid}`.
+
+| /situation-feedback/tags?prefix=\{prefix}
+| Get the collection of feedback tags. The optional `prefix` query parameter filters the results to tags beginning with the given string.
 |===
 
 NOTE: `situationId` is the same as the `AlarmId` for the situation.

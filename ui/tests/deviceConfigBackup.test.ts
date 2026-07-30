@@ -22,6 +22,9 @@
 
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
+import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip'
+import { nextTick } from 'vue'
 import dateFormatDirective from '@/directives/v-date'
 import DCB from '@/containers/DeviceConfigBackup.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
@@ -85,71 +88,86 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
 
 const wrapper = mount(DCB, {
   global: {
-    plugins: [createTestingPinia()],
+    plugins: [createTestingPinia(), PrimeVue],
     directives: {
-      date: dateFormatDirective
+      date: dateFormatDirective,
+      tooltip: Tooltip
     },
     stubs: {
-      RouterLink: RouterLinkStub,
-      'FeatherRipple': true
+      RouterLink: RouterLinkStub
     }
   }
 })
+
+// PrimeVue Button forwards attrs to its root <button>; a disabled Button renders
+// the native `disabled` attribute (there is no more FeatherDS `aria-disabled`).
+const isBtnDisabled = (dataTest: string) =>
+  (wrapper.get(`[data-test="${dataTest}"]`).element as HTMLButtonElement).disabled
 
 describe('deviceConfigBackup test', () => {
   beforeAll(() => {
     const deviceStore = useDeviceStore()
     deviceStore.deviceConfigBackups = mockDeviceConfigBackups
+    deviceStore.deviceConfigTotal = mockDeviceConfigBackups.length
   })
 
   test('action btns enable and disable correctly', async () => {
-    const viewHistoryBtn = wrapper.get('[data-test="view-history-btn"]')
-    const downloadBtn = wrapper.get('[data-test="download-btn"]')
-    const backupNowBtn = wrapper.get('[data-test="backup-now-btn"]')
-    const checkboxes = wrapper.findAll('.dcb-config-checkbox')
-    const firstDeviceConfig = wrapper.find('.dcb-config-checkbox > .feather-checkbox')
-    const checkboxArray = wrapper.findAll('.dcb-config-checkbox > .feather-checkbox')
-    const allCheckbox = wrapper.find('[data-test="all-checkbox"] > .feather-checkbox')
+    await nextTick()
+
+    // one PrimeVue checkbox per mock record (binary checkboxes render an <input>)
+    const rowCheckboxes = wrapper.findAll('.dcb-config-checkbox input')
+    const firstConfigCheckbox = rowCheckboxes[0]
+    const secondConfigCheckbox = rowCheckboxes[1]
+    const allCheckbox = wrapper.get('[data-test="all-checkbox"] input')
 
     // two DCB mock records
-    expect(checkboxes.length).toBe(2)
+    expect(rowCheckboxes.length).toBe(2)
 
     // all actions init disabled
-    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-    expect(downloadBtn.attributes('aria-disabled')).toBe('true')
-    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-    expect(allCheckbox.attributes('aria-checked')).toBe('false')
+    expect(isBtnDisabled('view-history-btn')).toBe(true)
+    expect(isBtnDisabled('download-btn')).toBe(true)
+    expect(isBtnDisabled('backup-now-btn')).toBe(true)
+    expect((allCheckbox.element as HTMLInputElement).checked).toBe(false)
 
     // select first config
-    await firstDeviceConfig.trigger('click')
+    await firstConfigCheckbox.setValue(true)
+    await nextTick()
     // all btns should be enabled
-    expect(viewHistoryBtn.attributes('aria-disabled')).toBeUndefined()
-    expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    expect(isBtnDisabled('view-history-btn')).toBe(false)
+    expect(isBtnDisabled('download-btn')).toBe(false)
+    expect(isBtnDisabled('backup-now-btn')).toBe(false)
 
-    // select 'all devices' checkbox
-    await allCheckbox.trigger('click')
-    // the view history and backup btns should be disabled. Dwnld btn enabled
-    expect(allCheckbox.attributes('aria-checked')).toBe('true')
-    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-    expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    // deselect first config
+    await firstConfigCheckbox.setValue(false)
+    await nextTick()
 
-    // change 'all devices' to false
-    await allCheckbox.trigger('click')
+    // select 'all devices'
+    await allCheckbox.setValue(true)
+    await nextTick()
+    // view history + backup disabled (multi-select); download enabled
+    expect(isBtnDisabled('view-history-btn')).toBe(true)
+    expect(isBtnDisabled('download-btn')).toBe(false)
+    expect(isBtnDisabled('backup-now-btn')).toBe(false)
+
+    // change 'all devices' back to false
+    await allCheckbox.setValue(false)
+    await nextTick()
     // all actions back to disabled
-    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-    expect(downloadBtn.attributes('aria-disabled')).toBe('true')
-    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-    expect(allCheckbox.attributes('aria-checked')).toBe('false')
+    expect(isBtnDisabled('view-history-btn')).toBe(true)
+    expect(isBtnDisabled('download-btn')).toBe(true)
+    expect(isBtnDisabled('backup-now-btn')).toBe(true)
 
-    // select second config checkbox
-    await checkboxArray[1]?.trigger('click')
-    // expect backup btn to be disabled because the only one selected has no service name
-    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-    // select first checkbox again
-    await firstDeviceConfig.trigger('click')
-    // expect backup btn enabled because at least one selected has a service name
-    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    // select second config (its service name is empty)
+    await secondConfigCheckbox.setValue(true)
+    await nextTick()
+    // backup btn disabled because the only selected config has no service name
+    expect(isBtnDisabled('backup-now-btn')).toBe(true)
+
+    // also select first config (which has a service name)
+    await firstConfigCheckbox.setValue(true)
+    await nextTick()
+    // backup btn enabled: more than one selected, so the single-no-service-name
+    // guard no longer applies
+    expect(isBtnDisabled('backup-now-btn')).toBe(false)
   })
 })

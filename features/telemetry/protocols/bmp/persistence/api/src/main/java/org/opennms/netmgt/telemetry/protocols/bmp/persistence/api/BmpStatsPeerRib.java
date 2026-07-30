@@ -43,7 +43,7 @@ public class BmpStatsPeerRib implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpStatsPeerRibSequence")
-    @SequenceGenerator(name = "bmpStatsPeerRibSequence", sequenceName = "bmpstatspeerribnxtid")
+    @SequenceGenerator(name = "bmpStatsPeerRibSequence", sequenceName = "bmpstatspeerribnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

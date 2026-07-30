@@ -1,24 +1,26 @@
 <template>
   <div class="snmp-config-tab-container">
-    <FeatherTabContainer
+    <OnmsTabs
       class="tabs"
-      v-model="activeTab"
+      v-model:value="activeTab"
     >
-      <template v-slot:tabs>
-        <FeatherTab>Lookup</FeatherTab>
-        <FeatherTab>Browse Definitions</FeatherTab>
-        <FeatherTab>Advanced</FeatherTab>
-      </template>
-      <FeatherTabPanel>
-        <SnmpConfigLookupTab />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigDefinitionsTab />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigAdvancedTab />
-      </FeatherTabPanel>
-    </FeatherTabContainer>
+      <OnmsTabList>
+        <OnmsTab :value="0">Lookup</OnmsTab>
+        <OnmsTab :value="1">Browse Definitions</OnmsTab>
+        <OnmsTab :value="2">Advanced</OnmsTab>
+      </OnmsTabList>
+      <OnmsTabPanels>
+        <OnmsTabPanel :value="0">
+          <SnmpConfigLookupTab />
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="1">
+          <SnmpConfigDefinitionsTab />
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="2">
+          <SnmpConfigAdvancedTab />
+        </OnmsTabPanel>
+      </OnmsTabPanels>
+    </OnmsTabs>
   </div>
 </template>
 
@@ -26,7 +28,7 @@
 import { computed } from 'vue'
 
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
 import SnmpConfigAdvancedTab from './SnmpConfigAdvancedTab.vue'
 import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
@@ -38,6 +40,3 @@ const activeTab = computed({
   set: val => store.setActiveTab(val)
 })
 </script>
-
-<style lang="scss" scoped>
-</style>

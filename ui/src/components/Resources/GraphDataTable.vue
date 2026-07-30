@@ -1,11 +1,13 @@
 <template>
   <div id="wrap">
-    <FeatherCheckbox
-      :modelValue="displayRawValues"
-      @update:modelValue="valueDisplayHandler"
-      class="raw-checkbox"
-      >Raw values</FeatherCheckbox
-    >
+    <div class="raw-checkbox">
+      <OnmsCheckbox
+        :inputId="`${id}-raw-values`"
+        :modelValue="displayRawValues"
+        @update:modelValue="valueDisplayHandler"
+      />
+      <label :for="`${id}-raw-values`">Raw values</label>
+    </div>
     <table
       summary="Graph values"
       :id="`${id}-table`"
@@ -55,7 +57,7 @@
   lang="ts"
 >
 import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
-import { FeatherCheckbox } from '@featherds/checkbox'
+import { OnmsCheckbox } from '@opennms/onms-ui'
 import { format } from 'd3'
 import { PropType, ref } from 'vue'
 
@@ -122,15 +124,15 @@ const highlightTableText = () => {
   scoped
   lang="scss"
 >
-@import "@featherds/table/scss/table";
+@import "@/styles/onms-table";
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
 
   table {
-    @include table();
+    @include onms-table();
     &.condensed {
-      @include table-condensed();
+      @include onms-table-condensed();
     }
     margin-top: 0px;
 
@@ -140,7 +142,14 @@ const highlightTableText = () => {
   }
 
   .raw-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 10px 0px -4px 18px;
+
+    label {
+      cursor: pointer;
+    }
   }
 }
 </style>

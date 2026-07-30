@@ -15,11 +15,11 @@
 | /config/snmptrap-nbi/status
 | Gets the status of the SNMP Trap NBI (returns either `true` or `false`).
 
-| /config/snmptrap-nbi/destinations
-| Gets the name of all the existing destinations.
+| /config/snmptrap-nbi/trapsinks
+| Gets the name of all the existing trapsinks.
 
-| /config/snmptrap-nbi/destinations/\{name}
-| Gets the content of the destination named `\{name}`.
+| /config/snmptrap-nbi/trapsinks/\{name}
+| Gets the content of the trapsink named `\{name}`.
 |===
 
 == PUT (update defaults)
@@ -51,8 +51,8 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 | /config/snmptrap-nbi
 | Updates the full content of the configuration.
 
-| /config/snmptrap-nbi/destinations
-| Adds a new or overrides an existing destination.
+| /config/snmptrap-nbi/trapsinks
+| Adds a new or overrides an existing trapsink.
 |===
 
 == PUT (modifying data)
@@ -67,8 +67,8 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 |===
 | Resource  | Description
 
-| /config/snmptrap-nbi/destinations/\{name}
-| Updates the content of the destination named `\{name}`.
+| /config/snmptrap-nbi/trapsinks/\{name}
+| Updates the content of the trapsink named `\{name}`.
 |===
 
 == DELETE (remove data)
@@ -81,6 +81,6 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 |===
 | Resource  | Description
 
-| /config/snmptrap-nbi/destinations/\{name}
-| Updates the content of the destination named `\{name}`.
+| /config/snmptrap-nbi/trapsinks/\{name}
+| Removes the trapsink named `\{name}`.
 |===

@@ -1,28 +1,39 @@
 <template>
-  <FeatherDialog
-    v-model="store.createEventConfigSourceDialogState.visible"
-    :labels="labels"
-    hide-close
-    @hidden="handleCancel"
+  <OnmsDialog
+    v-model:visible="store.createEventConfigSourceDialogState.visible"
+    :header="labels.title"
+    :modal="true"
+    :closable="false"
+    :closeOnEscape="false"
   >
     <div
       v-if="!successMessage"
       class="modal-body-form"
     >
-      <div>
-        <FeatherInput
-          label="Event Configuration Source Name"
+      <FormField
+        label="Event Configuration Source Name"
+        :for="nameInputId"
+        :error="error?.name"
+      >
+        <OnmsInputText
+          :id="nameInputId"
           v-model="configName"
-          :error="error?.name"
+          :invalid="!!error?.name"
+          fluid
         />
-      </div>
-      <div>
-        <FeatherInput
-          label="Vendor"
+      </FormField>
+      <FormField
+        label="Vendor"
+        :for="vendorInputId"
+        :error="error?.vendor"
+      >
+        <OnmsInputText
+          :id="vendorInputId"
           v-model="vendor"
-          :error="error?.vendor"
+          :invalid="!!error?.vendor"
+          fluid
         />
-      </div>
+      </FormField>
       <div>
         <p>
           Please note that this source will be created with 0 event configurations. You can add event configurations
@@ -36,37 +47,36 @@
     >
       <p>The event configuration source has been created successfully.</p>
     </div>
-    <template v-slot:footer>
-      <FeatherButton @click="handleCancel"> Cancel </FeatherButton>
-      <FeatherButton
+    <template #footer>
+      <OnmsButton
+        variant="ghost"
+        label="Cancel"
+        @click="handleCancel"
+      />
+      <OnmsButton
         v-if="!successMessage"
-        primary
+        label="Create"
         @click="handleSave"
         :disabled="Object.keys(error || {}).length > 0"
-      >
-        Create
-      </FeatherButton>
-      <FeatherButton
+      />
+      <OnmsButton
         v-else
-        primary
+        label="View Source"
         @click="visitCreatedEventConfigSource"
-      >
-        View Source
-      </FeatherButton>
+      />
     </template>
-  </FeatherDialog>
+  </OnmsDialog>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, Ref } from 'vue'
+import { computed, ref, Ref, useId } from 'vue'
 import { useRouter } from 'vue-router'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
-import { FeatherInput } from '@featherds/input'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
+import FormField from '@/components/Common/FormField.vue'
 
 const router = useRouter()
 const configName = ref('')
@@ -76,6 +86,8 @@ const successMessage = ref(false)
 const snackbar = useSnackbar()
 const store = useEventConfigStore()
 const newId: Ref<number> = ref(0)
+const nameInputId = useId()
+const vendorInputId = useId()
 const labels = {
   title: 'Create New Event Source'
 }
@@ -162,4 +174,10 @@ const visitCreatedEventConfigSource = () => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.modal-body-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+</style>

@@ -6,7 +6,7 @@
 
     <div class="info-section">
       <span>Find the SNMP configuration that exists for a particular IP address.</span>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         @click="isMessageDialogVisible = true"
@@ -17,52 +17,49 @@
 
     <div class="section">
       <div class="section-content">
-        <div class="feather-row">
-          <div class="feather-col-4">
-            <label class="label">IP Address:</label>
-          </div>
-          <div class="feather-col-8">
-            <FeatherInput
-              label=""
-              data-test="lookup-ip-address-input"
-              v-model.trim="lookupIpAddress"
-              hint="Enter IP Address"
-            >
-            </FeatherInput>
-          </div>
-        </div>
-        <div class="feather-row">
-          <div class="feather-col-4">
-            <label class="label">Location:</label>
-          </div>
-          <div class="feather-col-8">
-            <FeatherSelect
-              label="Location"
-              data-test="snmp-monitoring-location-select"
-              hint="Select a monitoring location"
-              :options="monitoringLocations"
-              :modelValue="lookupMonitoringLocation"
-              @update:modelValue="(val: any) => lookupMonitoringLocation = val"
-            >
-            </FeatherSelect>
-          </div>
-        </div>
+        <FormField
+          class="lookup-field"
+          label="IP Address"
+          for="snmp-lookup-ip-address"
+          hint="Enter IP Address"
+        >
+          <OnmsInputText
+            id="snmp-lookup-ip-address"
+            class="lookup-input"
+            data-test="lookup-ip-address-input"
+            v-model.trim="lookupIpAddress"
+          />
+        </FormField>
+        <FormField
+          class="lookup-field"
+          label="Location"
+          for="snmp-lookup-location"
+          hint="Select a monitoring location"
+        >
+          <OnmsSelect
+            inputId="snmp-lookup-location"
+            class="lookup-input"
+            data-test="snmp-monitoring-location-select"
+            optionLabel="_text"
+            :options="monitoringLocations"
+            :modelValue="lookupMonitoringLocation"
+            @update:modelValue="(val: any) => lookupMonitoringLocation = val"
+          />
+        </FormField>
 
-        <div class="feather-row">
-          <div class="feather-col-12">
-            <FeatherButton
-              primary
+        <div class="onms-row">
+          <div class="onms-col-12">
+            <OnmsButton
+              label="Lookup"
               data-test="refresh-button"
               :disabled="isLoading"
               @click="onLookup"
-            >
-              Lookup
-            </FeatherButton>
+            />
           </div>
         </div>
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -77,19 +74,17 @@
           <p>The SNMP configuration that applies to that IP address will then be displayed.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import MessageDialog from '../Common/MessageDialog.vue'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { ISelectItemType } from '@/types'
+import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
@@ -207,12 +202,8 @@ watch(() => props.autoLookupIpAddress, (ip) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-
 .snmp-config-lookup-panel {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 100%;
   padding: 1.5em;
   border-radius: 5px;
@@ -220,24 +211,16 @@ watch(() => props.autoLookupIpAddress, (ip) => {
   .title-container {
     display: flex;
     align-items: center;
-
-    .title {
-      @include typography.headline3;
-    }
   }
 
   .info-section {
     margin-bottom: 1em;
 
-    .label {
-      color: var(variables.$primary-text-on-surface);
-    }
-
     .info-icon {
       cursor: pointer;
       font-size: 1.5em;
       margin-left: 0.5em;
-      color: var(variables.$primary);
+      color: var(--p-primary-color);
 
       &:hover {
         opacity: 0.8;
@@ -245,8 +228,16 @@ watch(() => props.autoLookupIpAddress, (ip) => {
     }
   }
 
-  .feather-row {
+  .onms-row {
     margin-bottom: 0.5rem;
+  }
+
+  .lookup-field {
+    margin-bottom: 1rem;
+  }
+
+  .lookup-input {
+    width: 100%;
   }
 
   .large-spacer {

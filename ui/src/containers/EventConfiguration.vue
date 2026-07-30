@@ -1,7 +1,7 @@
 <template>
   <div class="event-config">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
@@ -10,18 +10,14 @@
         <h1>Manage Event Configurations</h1>
       </div>
       <div class="action">
-        <FeatherButton
-          primary
+        <OnmsButton
+          label="Create New Event Source"
           @click="store.showCreateEventConfigSourceDialog"
-        >
-          Create New Event Source
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <OnmsButton
+          label="Create New Event Config"
           @click="goToCreateEventConfig()"
-        >
-          Create New Event Config
-        </FeatherButton>
+        />
       </div>
     </div>
     <div class="tabs">
@@ -43,7 +39,7 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, CreateEditMode } from '@/types'
-import { FeatherButton } from '@featherds/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 const store = useEventConfigStore()
 const router = useRouter()
@@ -73,6 +69,12 @@ const goToCreateEventConfig = () => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+
+    .action {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
   }
 }
 </style>

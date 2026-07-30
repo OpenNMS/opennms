@@ -4,12 +4,12 @@ import { createTestingPinia } from '@pinia/testing'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration/Dialog/ChangeEventConfigSourceStatusDialog.vue'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events),
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
-  template: `<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit('ok')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit('cancel')">{{ cancelButtonText || 'Cancel' }}</button></div>`,
+  name: 'OnmsConfirmationDialog',
+  template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
 
@@ -41,7 +41,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          ConfirmationDialog: ConfirmationDialogStub
+          OnmsConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -53,7 +53,7 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
   })
 
   it('renders dialog correctly with title and message', () => {
-    const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+    const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
     expect(dialog.exists()).toBe(true)
     expect(dialog.props('title')).toBe('Change Event Configuration Source Status')
   })
@@ -108,8 +108,8 @@ describe('ChangeEventConfigSourceStatusDialog.vue', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders ConfirmationDialog with visible prop true', () => {
-    const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+  it('renders OnmsConfirmationDialog with visible prop true', () => {
+    const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
     expect(dialog.props('visible')).toBe(true)
   })
 })

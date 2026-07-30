@@ -30,17 +30,11 @@ import Aura from '@primevue/themes/aura'
  * dark mode out-of-the-box, so individual components do not need per-component
  * `:deep(.p-*)` overrides.
  *
- * The surface / content / text / form-field / overlay token values below are the
- * literal FeatherDS theme colors (from @featherds/styles/themes/open-light.css and
- * open-dark.css). They are intentionally NOT expressed as `var(--feather-*)`:
- * PrimeVue declares its `--p-*` variables on `:root` (html), whereas FeatherDS
- * declares `--feather-*` on the `body.open-light` / `body.open-dark` class. A
- * `var(--feather-*)` referenced from a `:root` declaration cannot resolve (the
- * variable is defined on a descendant), so the token would compute to empty.
- * Literal values avoid that and let PrimeVue's `darkModeSelector` switch schemes.
- *
- * When FeatherDS is removed (migration Phase 6) these values become the canonical
- * OpenNMS palette — no further change required here.
+ * The surface / content / text / form-field / overlay token values below are
+ * literal colors (originally the FeatherDS palette). They are expressed as
+ * literals — not variable references — so PrimeVue can substitute them on
+ * `:root` and let its `darkModeSelector` switch light/dark schemes. These
+ * values are now the canonical OpenNMS palette (FeatherDS has been removed).
  */
 
 // FeatherDS primary brand color, referenced for form-field focus rings etc.
@@ -62,6 +56,16 @@ const OpenNMSPreset = definePreset(Aura, {
       800: '#131736',
       900: '#0a0c1b'
     },
+    // Semantic status colors. Components must reference these (var(--p-success-color)
+    // etc.) for anything with status meaning, rather than the raw palette primitives
+    // (--p-green-500 …), so a theme can remap status colors in one place. Names mirror
+    // PrimeVue's Toast/Message severities (success / info / warn / error) so the same
+    // vocabulary applies to component CSS and to severity props. These replace the old
+    // FeatherDS $success / $error / $warning vars.
+    success: { color: '{green.500}' },
+    info: { color: '{blue.500}' },
+    warn: { color: '{yellow.500}' },
+    error: { color: '{red.500}' },
     colorScheme: {
       light: {
         primary: {
@@ -160,6 +164,13 @@ const OpenNMSPreset = definePreset(Aura, {
     }
   },
   components: {
+    // IftaLabel (in-field top-aligned label). Aura's label font is 0.75rem which
+    // reads too small next to the input value; bump to 1rem and add a little more
+    // input top padding so the value clears the larger label.
+    iftalabel: {
+      root: { fontSize: '0.9rem' },
+      input: { paddingTop: '1.75rem' }
+    },
     // DataTable rows/body inherit the bridged `content.*` tokens. Headers in the
     // FeatherDS look use the (muted) background + secondary text, and the border
     // color is set explicitly because Aura's dark scheme hardcodes it to a
@@ -168,11 +179,24 @@ const OpenNMSPreset = definePreset(Aura, {
       colorScheme: {
         light: {
           root: { borderColor: 'rgba(10, 12, 27, 0.12)' },
-          headerCell: { background: '#f4f7fc', color: 'rgba(10, 12, 27, 0.7)' }
+          // selected* pins the sorted-column header to the normal header look;
+          // Aura defaults headerCell.selectedBackground to {highlight.background}
+          // (a light primary.50 tint), which reads wrong on the dark header.
+          headerCell: {
+            background: '#f4f7fc',
+            color: 'rgba(10, 12, 27, 0.7)',
+            selectedBackground: '#f4f7fc',
+            selectedColor: 'rgba(10, 12, 27, 0.7)'
+          }
         },
         dark: {
           root: { borderColor: 'rgba(255, 255, 255, 0.24)' },
-          headerCell: { background: '#0a0c1b', color: 'rgba(255, 255, 255, 0.78)' }
+          headerCell: {
+            background: '#0a0c1b',
+            color: 'rgba(255, 255, 255, 0.78)',
+            selectedBackground: '#0a0c1b',
+            selectedColor: 'rgba(255, 255, 255, 0.78)'
+          }
         }
       }
     },
@@ -205,6 +229,25 @@ const OpenNMSPreset = definePreset(Aura, {
           secondary: { detailColor: 'rgba(255, 255, 255, 0.9)' },
           contrast: { detailColor: 'rgba(255, 255, 255, 0.9)' }
         }
+      }
+    },
+    // Tooltip. Aura's dark scheme sets the tooltip text color to {surface.0},
+    // expecting a light surface — but our preset maps surface.0 to the dark navy
+    // (#15182B), which is unreadable on the dark-gray tooltip background. Force a
+    // light color in dark mode.
+    tooltip: {
+      colorScheme: {
+        dark: { root: { color: 'rgba(255, 255, 255, 0.9)' }}
+      }
+    },
+    // Outlined buttons: Aura draws the border from a faint primary shade
+    // (primary.200 in light, primary.700 in dark) which is low-contrast against
+    // the surface. Use the button's own (primary) text color so the outline is as
+    // distinct as the label. Border width is bumped to 2px in primevue-overrides.scss.
+    button: {
+      colorScheme: {
+        light: { outlined: { primary: { borderColor: '{primary.color}' }}},
+        dark: { outlined: { primary: { borderColor: '{primary.color}' }}}
       }
     }
   }

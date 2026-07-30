@@ -35,8 +35,8 @@
     }
 */
 
-@use '@featherds/styles/themes/utils';
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-color-utils' as utils;
+@use '@/styles/onms-tokens' as variables;
 
 $opacity: 0.2;
 $solid: 1;

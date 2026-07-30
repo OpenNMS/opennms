@@ -1,7 +1,7 @@
 <template>
   <div class="trap-configuration-container">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
@@ -11,23 +11,25 @@
       </div>
     </div>
     <div class="tab-container">
-      <FeatherTabContainer v-model="store.activeTab">
-        <template v-slot:tabs>
-          <FeatherTab>General Configuration</FeatherTab>
-          <FeatherTab>SNMPv3 User Management</FeatherTab>
-          <FeatherTab>Advanced</FeatherTab>
-        </template>
-        <FeatherTabPanel>
-          <GeneralConfiguration />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <SnmpV3UserManagement />
-          <CreateSnmpV3User />
-        </FeatherTabPanel>
-        <FeatherTabPanel>
-          <TrapdAdvancedConfiguration />
-        </FeatherTabPanel>
-      </FeatherTabContainer>
+      <OnmsTabs v-model:value="store.activeTab">
+        <OnmsTabList>
+          <OnmsTab :value="0">General Configuration</OnmsTab>
+          <OnmsTab :value="1">SNMPv3 User Management</OnmsTab>
+          <OnmsTab :value="2">Advanced</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel :value="0">
+            <GeneralConfiguration />
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="1">
+            <SnmpV3UserManagement />
+            <CreateSnmpV3User />
+          </OnmsTabPanel>
+          <OnmsTabPanel :value="2">
+            <TrapdAdvancedConfiguration />
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -44,7 +46,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { BreadCrumb } from '@/types'
-import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
+import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 
 const menuStore = useMenuStore()
 const store = useTrapdConfigStore()

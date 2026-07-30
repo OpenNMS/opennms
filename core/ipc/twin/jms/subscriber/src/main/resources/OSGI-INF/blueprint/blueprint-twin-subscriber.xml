@@ -32,6 +32,8 @@
         <argument ref="tracerRegistry"/>
         <argument ref="metricRegistry"/>
         <argument value="${body.debug}"/>
+        <argument ref="twinRpcClient"/>
+        <argument ref="blueprintBundleContext"/>
     </bean>
 
     <service ref="jmsTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
@@ -40,9 +42,9 @@
 
     <camelContext id="twinRpcClient" xmlns="http://camel.apache.org/schema/blueprint">
         <!-- Exchanges contain credentials, so avoid logging them -->
-        <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
-        </properties>
+        <globalOptions>
+            <globalOption key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
+        </globalOptions>
 
         <route id="twinRpcClient">
             <from uri="direct:twinRpc" />

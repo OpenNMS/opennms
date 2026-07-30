@@ -7,34 +7,46 @@
     <div class="header">
       <div class="section-left">
         <div class="title">
-          <FeatherButton
-            icon="Back"
+          <OnmsIconButton
+            aria-label="Back"
             data-test="text-button"
+            :icon="ChevronLeft"
             @click="store.closeCreateUserDrawer"
-          >
-            <FeatherIcon :icon="ChevronLeft"> </FeatherIcon>
-          </FeatherButton>
-          <h3>New SNMPv3 User</h3>
+          />
+          <h3 v-if="store.createUserDrawerState.mode === CreateEditMode.Create">New SNMPv3 User</h3>
+          <h3 v-else-if="store.createUserDrawerState.mode === CreateEditMode.Edit">Edit SNMPv3 User {{ securityName }}</h3>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="username-version-row">
         <div class="left">
-          <FeatherInput
+          <FormField
             label="Security Name"
-            data-test="security-name-input"
-            v-model="securityName"
-            :error="error.securityName"
-          />
+            for="security-name"
+            :error="formError.securityName"
+          >
+            <OnmsInputText
+              id="security-name"
+              data-test="security-name-input"
+              v-model="securityName"
+              :invalid="!!formError.securityName"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <FeatherInput
+          <FormField
             label="Engine ID"
-            data-test="engine-id-input"
-            v-model="engineId"
-            :error="error.engineId"
-          />
+            for="engine-id"
+            :error="formError.engineId"
+          >
+            <OnmsInputText
+              id="engine-id"
+              data-test="engine-id-input"
+              v-model="engineId"
+              :invalid="!!formError.engineId"
+            />
+          </FormField>
         </div>
       </div>
       <div class="row">
@@ -42,14 +54,21 @@
       </div>
       <div class="properties-row">
         <div class="left">
-          <FeatherSelect
+          <FormField
             label="Security Level"
-            v-model="securityLevel"
-            @update:model-value="onSecurityLevelChange"
-            :clear="'true'"
-            :options="SECURITY_LEVEL_OPTIONS"
-            :error="error.securityLevel"
-          />
+            for="security-level"
+            :error="formError.securityLevel"
+          >
+            <OnmsSelect
+              inputId="security-level"
+              v-model="securityLevel"
+              @update:modelValue="onSecurityLevelChange"
+              showClear
+              optionLabel="_text"
+              :options="SECURITY_LEVEL_OPTIONS"
+              :invalid="!!formError.securityLevel"
+            />
+          </FormField>
         </div>
         <div class="right"></div>
       </div>
@@ -58,26 +77,41 @@
         v-if="authProtocolVisible"
       >
         <div class="left">
-          <FeatherSelect
+          <FormField
             label="Auth Protocol"
-            v-model="authProtocol"
-            :clear="'true'"
-            :options="AUTH_PROTOCOL_OPTIONS"
-            :error="error.authProtocol"
-          />
+            for="auth-protocol"
+            :error="formError.authProtocol"
+          >
+            <OnmsSelect
+              inputId="auth-protocol"
+              v-model="authProtocol"
+              showClear
+              optionLabel="_text"
+              :options="AUTH_PROTOCOL_OPTIONS"
+              :invalid="!!formError.authProtocol"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <FeatherInput
+          <FormField
             label="Auth Passphrase"
-            type="password"
-            data-test="auth-passphrase-input"
-            v-model="authPassphrase"
-            :error="error.authPassphrase"
-          />
-          <ScvInputIcon
-            data-test="auth-passphrase-save-button"
-            @click="store.openCredentialDrawer('auth')"
-          />
+            for="auth-passphrase"
+            :error="formError.authPassphrase"
+          >
+            <div class="input-with-icon">
+              <OnmsPassword
+                inputId="auth-passphrase"
+                data-test="auth-passphrase-input"
+                v-model="authPassphrase"
+                :invalid="!!formError.authPassphrase"
+                fluid
+              />
+              <ScvInputIcon
+                data-test="auth-passphrase-save-button"
+                @click="store.openCredentialDrawer('auth')"
+              />
+            </div>
+          </FormField>
         </div>
       </div>
       <div
@@ -85,45 +119,57 @@
         v-if="privacyProtocolVisible"
       >
         <div class="left">
-          <FeatherSelect
+          <FormField
             label="Privacy Protocol"
-            v-model="privacyProtocol"
-            :clear="'true'"
-            :options="PRIVACY_PROTOCOL_OPTIONS"
-            :error="error.privacyProtocol"
-          />
+            for="privacy-protocol"
+            :error="formError.privacyProtocol"
+          >
+            <OnmsSelect
+              inputId="privacy-protocol"
+              v-model="privacyProtocol"
+              showClear
+              optionLabel="_text"
+              :options="PRIVACY_PROTOCOL_OPTIONS"
+              :invalid="!!formError.privacyProtocol"
+            />
+          </FormField>
         </div>
         <div class="right">
-          <FeatherInput
+          <FormField
             label="Privacy Passphrase"
-            type="password"
-            data-test="privacy-passphrase-input"
-            v-model="privacyPassphrase"
-            :error="error.privacyPassphrase"
-          />
-          <ScvInputIcon
-            data-test="privacy-passphrase-save-button"
-            @click="store.openCredentialDrawer('privacy')"
-          />
+            for="privacy-passphrase"
+            :error="formError.privacyPassphrase"
+          >
+            <div class="input-with-icon">
+              <OnmsPassword
+                inputId="privacy-passphrase"
+                data-test="privacy-passphrase-input"
+                v-model="privacyPassphrase"
+                :invalid="!!formError.privacyPassphrase"
+                fluid
+              />
+              <ScvInputIcon
+                data-test="privacy-passphrase-save-button"
+                @click="store.openCredentialDrawer('privacy')"
+              />
+            </div>
+          </FormField>
         </div>
       </div>
     </div>
     <div class="footer">
-      <FeatherButton
-        secondary
+      <OnmsButton
+        variant="ghost"
         data-test="cancel-button"
+        label="Cancel"
         @click="store.closeCreateUserDrawer"
-      >
-        Cancel
-      </FeatherButton>
-      <FeatherButton
-        primary
+      />
+      <OnmsButton
         data-test="create-user-button"
-        @click="saveUser"
+        :label="store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User'"
         :disabled="isSaveDisabled || isSaving"
-      >
-        {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
-      </FeatherButton>
+        @click="saveUser"
+      />
     </div>
     <ScvSearchDrawer
       :isOpen="store.credentialDrawerState.visible"
@@ -138,18 +184,23 @@ import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL } from '@/lib/constants'
-import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_CHARACTERS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
+import {
+  AUTH_PROTOCOL_OPTIONS,
+  PRIVACY_PROTOCOL_OPTIONS,
+  SECURITY_LEVEL_OPTIONS,
+  SecurityLevel,
+  validateSnmpV3UserForm }
+  from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
+import FormField from '../Common/FormField.vue'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
+import { ISelectItemType } from '@/types'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
@@ -157,6 +208,7 @@ import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
 const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as ISelectItemType)
+const id = ref<string | undefined>(undefined)
 const securityName = ref<string>('')
 const engineId = ref<string>('')
 const securityLevel = ref<ISelectItemType>(createEmptySelectItem())
@@ -166,7 +218,7 @@ const authPassphrase = ref<string>('')
 const privacyPassphrase = ref<string>('')
 const isSaveDisabled = ref<boolean>(true)
 const isSaving = ref<boolean>(false)
-const error = ref<SnmpV3UserError>({})
+const formError = ref<SnmpV3UserError>({})
 const scvStore = useScvStore()
 
 const authProtocolVisible = computed(() => {
@@ -180,7 +232,7 @@ const privacyProtocolVisible = computed(() => {
 })
 
 const saveUser = async () => {
-  const validationError = validateInputs()
+  const validationError = validateSnmpV3UserForm(securityName.value, securityLevel.value, authProtocol.value, authPassphrase.value, privacyProtocol.value, privacyPassphrase.value)
   if (Object.keys(validationError).length > 0) {
     showSnackBar({ msg: 'Please fix validation errors before saving.', error: true })
     return
@@ -191,6 +243,7 @@ const saveUser = async () => {
   }
 
   const payload = mapUserToServer({
+    id: id.value,
     securityName: securityName.value,
     engineId: engineId.value,
     securityLevel: Number(securityLevel.value?._value),
@@ -271,52 +324,6 @@ const onSecurityLevelChange = async () => {
   }
 }
 
-const validateInputs = () => {
-  const newError: SnmpV3UserError = {}
-  const levelValue = Number(securityLevel.value?._value)
-
-  if (!securityName.value) {
-    newError.securityName = 'Security Name is required'
-  }
-
-  // Level 1 (NoAuthNoPriv) must not carry auth or privacy credentials (backend rule)
-  if (levelValue === SecurityLevel.NoAuthNoPriv && (authProtocol.value || privacyProtocol.value)) {
-    newError.securityLevel = 'Security level 1 does not allow auth or privacy credentials'
-  }
-
-  // Level 2 (AuthNoPriv) must not carry privacy credentials (backend rule)
-  if (levelValue === SecurityLevel.AuthNoPriv && privacyProtocol.value) {
-    newError.privacyProtocol = 'Security level 2 does not allow privacy credentials'
-  }
-
-  // authProtocol and authPassphrase must be provided together (backend rule)
-  if (authProtocolVisible.value && !authProtocol.value) {
-    newError.authProtocol = authPassphrase.value
-      ? 'Auth Passphrase requires an Auth Protocol to be selected'
-      : 'Auth Protocol is required for selected security level'
-  }
-
-  if (authProtocolVisible.value && authProtocol.value && !authPassphrase.value) {
-    newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
-  } else if (authPassphrase.value && passphraseByteLength(authPassphrase.value) < MIN_PASSPHRASE_CHARACTERS) {
-    newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
-  }
-
-  // privacyProtocol and privacyPassphrase must be provided together (backend rule)
-  if (privacyProtocolVisible.value && !privacyProtocol.value) {
-    newError.privacyProtocol = privacyPassphrase.value
-      ? 'Privacy Passphrase requires a Privacy Protocol to be selected'
-      : 'Privacy Protocol is required for selected security level'
-  }
-
-  if (privacyProtocolVisible.value && privacyProtocol.value && !privacyPassphrase.value) {
-    newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
-  } else if (privacyPassphrase.value && passphraseByteLength(privacyPassphrase.value) < MIN_PASSPHRASE_CHARACTERS) {
-    newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
-  }
-  return newError
-}
-
 const loadUserData = async (drawerState: typeof store.createUserDrawerState) => {
   if (drawerState.mode === CreateEditMode.Edit && drawerState.selectedUserIndex > -1) {
     const selectedUser = store.snmpV3Users ? store.snmpV3Users[drawerState.selectedUserIndex] : null
@@ -331,6 +338,7 @@ const loadUserData = async (drawerState: typeof store.createUserDrawerState) => 
       privacyProtocol.value = selectedSecurityLevel === SecurityLevel.AuthPriv
         ? PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) ?? createEmptySelectItem()
         : createEmptySelectItem()
+      id.value = selectedUser.id
       securityName.value = selectedUser.securityName
       engineId.value = selectedUser.engineId || ''
       authPassphrase.value = selectedUser.authPassphrase || ''
@@ -340,6 +348,7 @@ const loadUserData = async (drawerState: typeof store.createUserDrawerState) => 
     securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(SecurityLevel.NoAuthNoPriv)) ?? createEmptySelectItem()
     authProtocol.value = createEmptySelectItem()
     privacyProtocol.value = createEmptySelectItem()
+    id.value = undefined
     securityName.value = ''
     engineId.value = ''
     authPassphrase.value = ''
@@ -362,13 +371,13 @@ watch(securityLevel, (selectedSecurityLevel) => {
     privacyPassphrase.value = ''
   }
 
-  error.value = validateInputs()
-  isSaveDisabled.value = Object.keys(error.value).length > 0
+  formError.value = validateSnmpV3UserForm(securityName.value, securityLevel.value, authProtocol.value, authPassphrase.value, privacyProtocol.value, privacyPassphrase.value)
+  isSaveDisabled.value = Object.keys(formError.value).length > 0
 })
 
 watchEffect(() => {
-  error.value = validateInputs()
-  isSaveDisabled.value = Object.keys(error.value).length > 0
+  formError.value = validateSnmpV3UserForm(securityName.value, securityLevel.value, authProtocol.value, authPassphrase.value, privacyProtocol.value, privacyPassphrase.value)
+  isSaveDisabled.value = Object.keys(formError.value).length > 0
 })
 
 watch(
@@ -383,13 +392,12 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .snmpv3-user-management-container {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -403,8 +411,8 @@ onMounted(() => {
         gap: 10px;
 
         h3 {
-          @include typography.headline3;
-          color: var(--feather-text-primary);
+          @include onms-headline3;
+          color: var(--p-text-color);
         }
       }
     }
@@ -433,18 +441,24 @@ onMounted(() => {
       width: 50%;
 
       h1 {
-        @include typography.headline4;
-        color: var(--feather-text-primary);
+        @include onms-headline4;
+        color: var(--p-text-color);
       }
 
-      div {
+      &>div {
         flex: 1;
       }
 
       .right {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
+        .input-with-icon {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          :deep(.p-password) {
+            flex: 1;
+          }
+        }
       }
     }
 
@@ -454,7 +468,7 @@ onMounted(() => {
       margin-bottom: 20px;
       width: 50%;
 
-      div {
+      &>div {
         flex: 1;
       }
     }
@@ -462,7 +476,7 @@ onMounted(() => {
 
   .footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 10px;
   }
 }
