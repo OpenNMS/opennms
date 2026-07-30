@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
@@ -131,6 +132,95 @@ public class TicketNotificationStrategyTest {
         assertEquals(0, m_ticketNotificationStrategy.send(arguments));
 	    assertTrue("Expected events not forthcoming", m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
 	    assertEquals("Received unexpected events", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
+    public void testNoticeWithOpenTicketDoesNotCreateAnother() {
+    	assertTicketStateBlocksCreate(TroubleTicketState.OPEN);
+    }
+
+    @Test
+    public void testNoticeWithCreatePendingTicketDoesNotCreateAnother() {
+    	assertTicketStateBlocksCreate(TroubleTicketState.CREATE_PENDING);
+    }
+
+    @Test
+    public void testNoticeWithUpdatePendingTicketDoesNotCreateAnother() {
+    	assertTicketStateBlocksCreate(TroubleTicketState.UPDATE_PENDING);
+    }
+
+    @Test
+    public void testNoticeWithClosedTicketCreatesNewTicket() {
+    	assertTicketStateAllowsCreate(TroubleTicketState.CLOSED);
+    }
+
+    @Test
+    public void testNoticeWithCancelledTicketCreatesNewTicket() {
+    	assertTicketStateAllowsCreate(TroubleTicketState.CANCELLED);
+    }
+
+    @Test
+    public void testNoticeWithCreateFailedTicketCreatesNewTicket() {
+    	assertTicketStateAllowsCreate(TroubleTicketState.CREATE_FAILED);
+    }
+
+    private void assertTicketStateBlocksCreate(TroubleTicketState state) {
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1, "TICKET-1", state.getValue()));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	assertEquals("Strategy should succeed without sending an event for ticket state " + state, 0, m_ticketNotificationStrategy.send(arguments));
+    	assertEquals("Strategy should not send a create-ticket event for ticket state " + state, 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    private void assertTicketStateAllowsCreate(TroubleTicketState state) {
+    	EventBuilder createTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, m_ticketNotificationStrategy.getName());
+    	createTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");
+    	createTicketBuilder.setParam(EventConstants.PARM_ALARM_UEI, EventConstants.NODE_DOWN_EVENT_UEI);
+    	createTicketBuilder.setParam(EventConstants.PARM_USER, TicketNotificationStrategy.DEFAULT_TICKET_USER);
+    	m_eventIpcManager.getEventAnticipator().anticipateEvent(createTicketBuilder.getEvent());
+
+    	when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+    	m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1, "TICKET-1", state.getValue()));
+    	List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+    	assertEquals("Strategy should succeed for ticket state " + state, 0, m_ticketNotificationStrategy.send(arguments));
+    	assertTrue("Strategy should send a create-ticket event for ticket state " + state, m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
+    	assertEquals("Received unexpected events for ticket state " + state, 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
+    public void testCreateTicketWithCustomUser() {
+        EventBuilder createTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, m_ticketNotificationStrategy.getName());
+        createTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");
+        createTicketBuilder.setParam(EventConstants.PARM_ALARM_UEI, EventConstants.NODE_DOWN_EVENT_UEI);
+        createTicketBuilder.setParam(EventConstants.PARM_USER, "noc");
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(createTicketBuilder.getEvent());
+
+        when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+        m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1));
+        List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+        arguments.add(new Argument("ticketUser", null, "noc", false));
+
+        assertEquals(0, m_ticketNotificationStrategy.send(arguments));
+        assertTrue("Expected events not forthcoming", m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
+        assertEquals("Received unexpected events", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
+    }
+
+    @Test
+    public void testCreateTicketWithBlankUserFallsBackToDefault() {
+        EventBuilder createTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, m_ticketNotificationStrategy.getName());
+        createTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");
+        createTicketBuilder.setParam(EventConstants.PARM_ALARM_UEI, EventConstants.NODE_DOWN_EVENT_UEI);
+        createTicketBuilder.setParam(EventConstants.PARM_USER, TicketNotificationStrategy.DEFAULT_TICKET_USER);
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(createTicketBuilder.getEvent());
+
+        when(m_eventConfDao.findByUei(EventConstants.NODE_DOWN_EVENT_UEI)).thenReturn(buildAlarmEvent(1));
+        m_ticketNotificationStrategy.setAlarmState(new TicketNotificationStrategy.AlarmState(1));
+        List<Argument> arguments = buildArguments("1", EventConstants.NODE_DOWN_EVENT_UEI);
+        arguments.add(new Argument("ticketUser", null, "", false));
+
+        assertEquals(0, m_ticketNotificationStrategy.send(arguments));
+        assertTrue("Expected events not forthcoming", m_eventIpcManager.getEventAnticipator().waitForAnticipated(0).isEmpty());
+        assertEquals("Received unexpected events", 0, m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().size());
     }
 
     protected Event buildAlarmEvent(int alarmType) {
