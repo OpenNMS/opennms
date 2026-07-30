@@ -47,13 +47,6 @@ Implemented as an external command using the `qpage` utility.
 | Sends a notice to a user's alphanumeric pager. +
 Implemented as an external command using the `qpage` utility.
 
-| xmppGroupMessage
-| Sends a message to an XMPP group. +
-Uses the in-process XMPP notification strategy.
-
-| xmppMessage
-| Sends a message to an XMPP user. +
-Uses the in-process XMPP notification strategy.
 |===
 
 == Custom notification commands
@@ -175,10 +168,6 @@ The `NotificationManager` class defines some special switches, providing data fo
 
 | PARAM_WORK_PHONE
 | -wphone
-| From user profile
-
-| PARAM_XMPP_ADDRESS
-| -xmpp
 | From user profile
 |===
 

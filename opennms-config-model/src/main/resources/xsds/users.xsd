@@ -111,7 +111,7 @@
       <attribute name="type" use="required">
         <simpleType>
           <restriction base="string">
-            <!-- "microblog" is no longer used for notifications; it remains valid so existing users.xml files still validate. -->
+            <!-- "microblog" and "xmppAddress" are no longer used for notifications; they remain valid so existing users.xml files still validate. -->
             <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap|workPhone|homePhone|mobilePhone|microblog)"/>
           </restriction>
         </simpleType>

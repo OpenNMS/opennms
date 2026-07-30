@@ -233,7 +233,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) s_bsfManager.declareBean("subject", arg.getValue(), String.class);
             if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) s_bsfManager.declareBean("email", arg.getValue(), String.class);
             if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) s_bsfManager.declareBean("pager_email", arg.getValue(), String.class);
-            if (NotificationManager.PARAM_XMPP_ADDRESS.equals(arg.getSwitch())) s_bsfManager.declareBean("xmpp_address", arg.getValue(), String.class);
             if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("text_pin", arg.getValue(), String.class);
             if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(arg.getSwitch())) s_bsfManager.declareBean("numeric_pin", arg.getValue(), String.class);
             if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) s_bsfManager.declareBean("work_phone", arg.getValue(), String.class);
@@ -269,7 +268,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) undeclareBean("subject");
             if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) undeclareBean("email");
             if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) undeclareBean("pager_email");
-            if (NotificationManager.PARAM_XMPP_ADDRESS.equals(arg.getSwitch())) undeclareBean("xmpp_address");
             if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(arg.getSwitch())) undeclareBean("text_pin");
             if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(arg.getSwitch())) undeclareBean("numeric_pin");
             if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) undeclareBean("work_phone");

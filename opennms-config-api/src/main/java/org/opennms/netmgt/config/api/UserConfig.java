@@ -45,6 +45,7 @@ public interface UserConfig {
 	public enum ContactType {
         email,
         pagerEmail,
+        /** No longer used for notifications; retained so existing users.xml contact entries stay valid. */
         xmppAddress,
         /** No longer used for notifications; retained so existing users.xml contact entries stay valid. */
         microblog,
@@ -271,25 +272,7 @@ public interface UserConfig {
 	 * @throws IOException
 	 */
 	String getNumericPin(final User user) throws IOException;
-	
-	/**
-	 * <p>getXMPPAddress</p>
-	 * 
-	 * @param a String
-	 * @return a String
-	 * @throws IOException
-	 */
-	String getXMPPAddress(final String userID) throws IOException;
-	
-	/**
-	 * <p>getXMPPAddress</p>
-	 * 
-	 * @param a User
-	 * @return a String
-	 * @throws IOException
-	 */
-	String getXMPPAddress(final User user) throws IOException;
-	
+
 	/**
 	 * <p>getNumericPage</p>
 	 * 

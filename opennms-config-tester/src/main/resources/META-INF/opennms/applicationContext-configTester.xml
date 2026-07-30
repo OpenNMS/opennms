@@ -101,7 +101,6 @@
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
 
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
