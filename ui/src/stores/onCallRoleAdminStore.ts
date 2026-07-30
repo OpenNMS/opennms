@@ -52,35 +52,35 @@ export const useOnCallRoleAdminStore = defineStore('onCallRoleAdminStore', () =>
   }
 
   const createRole = async (role: OnCallRole) => {
-    const ok = await API.createOnCallRole(role)
-    if (ok) {
+    const error = await API.createOnCallRole(role)
+    if (error === null) {
       await getRoles()
     }
-    return ok
+    return error
   }
 
   const updateRole = async (role: OnCallRole) => {
-    const ok = await API.updateOnCallRole(role)
-    if (ok) {
+    const error = await API.updateOnCallRole(role)
+    if (error === null) {
       await getRoles()
     }
-    return ok
+    return error
   }
 
   const renameRole = async (name: string, newName: string) => {
-    const ok = await API.renameOnCallRole(name, newName)
-    if (ok) {
+    const error = await API.renameOnCallRole(name, newName)
+    if (error === null) {
       await getRoles()
     }
-    return ok
+    return error
   }
 
   const deleteRole = async (name: string) => {
-    const ok = await API.deleteOnCallRole(name)
-    if (ok) {
+    const error = await API.deleteOnCallRole(name)
+    if (error === null) {
       await getRoles()
     }
-    return ok
+    return error
   }
 
   const populate = async () => {

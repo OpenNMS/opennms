@@ -343,6 +343,121 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testScheduleTimesNormalizedToRuntimeWidths() throws Exception {
+        // BasicScheduleUtils.setOutCalTime dispatches on exact string length,
+        // so loosely formatted input must be stored zero-padded
+        ensureGroup("norm-team", "normuser");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"norm-role\",\"membership-group\":\"norm-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"normuser\",\"type\":\"specific\",\"time\":[{\"begins\":\"5-Jun-2093 8:00:00\",\"ends\":\"5-Jun-2093 17:00:00\"}]},"
+                + "{\"user\":\"normuser\",\"type\":\"daily\",\"time\":[{\"begins\":\"8:00:00\",\"ends\":\"9:05:00\"}]}]}", 201);
+        final JSONObject role = new JSONObject(getJson("/on-call-roles/norm-role", 200));
+        final JSONArray schedules = role.getJSONArray("schedule");
+        for (int i = 0; i < schedules.length(); i++) {
+            final JSONObject schedule = schedules.getJSONObject(i);
+            final JSONObject time = schedule.getJSONArray("time").getJSONObject(0);
+            if ("specific".equals(schedule.getString("type"))) {
+                assertEquals("05-Jun-2093 08:00:00", time.getString("begins"));
+            } else {
+                assertEquals("08:00:00", time.getString("begins"));
+            }
+        }
+        sendRequest(DELETE, "/on-call-roles/norm-role", 204);
+    }
+
+    @Test
+    public void testWeeklyDayCaseAndMonthlyZeroPaddingAccepted() throws Exception {
+        // the runtime lowercases weekday lookups and parses 01 as 1; the API
+        // must not be stricter than the scheduler it feeds
+        ensureGroup("case-team", "caseuser");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"case-role\",\"membership-group\":\"case-team\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"caseuser\",\"type\":\"weekly\",\"time\":[{\"day\":\"Monday\",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]},"
+                + "{\"user\":\"caseuser\",\"type\":\"monthly\",\"time\":[{\"day\":\"01\",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}]}", 201);
+        final JSONObject role = new JSONObject(getJson("/on-call-roles/case-role", 200));
+        final JSONArray schedules = role.getJSONArray("schedule");
+        for (int i = 0; i < schedules.length(); i++) {
+            final JSONObject schedule = schedules.getJSONObject(i);
+            if ("weekly".equals(schedule.getString("type"))) {
+                assertEquals("monday", schedule.getJSONArray("time").getJSONObject(0).getString("day"));
+            }
+        }
+        sendRequest(DELETE, "/on-call-roles/case-role", 204);
+    }
+
+    @Test
+    public void testPartialIdentityUpdates() throws Exception {
+        ensureGroup("pid-team");
+        ensureGroup("pid-other");
+        ensureUser("pidsuper");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"pid-role\",\"membership-group\":\"pid-team\",\"supervisor\":\"admin\"}", 201);
+
+        // each identity field is updatable on its own
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/pid-role",
+                "{\"name\":\"pid-role\",\"supervisor\":\"pidsuper\"}", 204);
+        JSONObject after = new JSONObject(getJson("/on-call-roles/pid-role", 200));
+        assertEquals("pidsuper", after.getString("supervisor"));
+        assertEquals("pid-team", after.getString("membership-group"));
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/pid-role",
+                "{\"name\":\"pid-role\",\"membership-group\":\"pid-other\"}", 204);
+        after = new JSONObject(getJson("/on-call-roles/pid-role", 200));
+        assertEquals("pidsuper", after.getString("supervisor"));
+        assertEquals("pid-other", after.getString("membership-group"));
+
+        // but a provided value must still be valid
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/pid-role",
+                "{\"name\":\"pid-role\",\"supervisor\":\"nosuchuser\"}", 400);
+
+        sendRequest(DELETE, "/on-call-roles/pid-role", 204);
+    }
+
+    @Test
+    public void testHandEditedTimeIdRoundTrips() throws Exception {
+        ensureGroup("id-team", "iduser");
+        final Role role = new Role();
+        role.setName("id-role");
+        role.setMembershipGroup("id-team");
+        role.setSupervisor("admin");
+        final Schedule schedule = new Schedule();
+        schedule.setName("iduser");
+        schedule.setType("weekly");
+        final Time time = new Time();
+        time.setId("hand-made-id");
+        time.setDay("friday");
+        time.setBegins("08:00:00");
+        time.setEnds("17:00:00");
+        schedule.getTimes().add(time);
+        role.getSchedules().add(schedule);
+        m_groupManager.saveRole(role);
+
+        // the id is exposed on read and survives a schedule-list update that
+        // sends the entry back plus a new one
+        final JSONObject read = new JSONObject(getJson("/on-call-roles/id-role", 200));
+        assertEquals("hand-made-id",
+                read.getJSONArray("schedule").getJSONObject(0).getJSONArray("time").getJSONObject(0).getString("id"));
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/id-role",
+                "{\"name\":\"id-role\",\"schedule\":["
+                + "{\"user\":\"iduser\",\"type\":\"weekly\",\"time\":[{\"id\":\"hand-made-id\",\"day\":\"friday\",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]},"
+                + "{\"user\":\"iduser\",\"type\":\"daily\",\"time\":[{\"begins\":\"18:00:00\",\"ends\":\"19:00:00\"}]}]}", 204);
+        assertEquals("hand-made-id",
+                m_groupManager.getRole("id-role").getSchedules().get(0).getTimes().get(0).getId().orElse(null));
+
+        sendRequest(DELETE, "/on-call-roles/id-role", 204);
+    }
+
+    @Test
+    public void testCalendarReportsServerTimeZone() throws Exception {
+        ensureGroup("tz-team");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"tz-role\",\"membership-group\":\"tz-team\",\"supervisor\":\"admin\"}", 201);
+        final JSONObject calendar = new JSONObject(getJson("/on-call-roles/tz-role/calendar?year=2093&month=6", 200));
+        assertEquals(java.time.ZoneId.systemDefault().getId(), calendar.getString("time-zone"));
+        sendRequest(DELETE, "/on-call-roles/tz-role", 204);
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {

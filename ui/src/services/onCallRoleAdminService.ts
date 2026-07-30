@@ -74,57 +74,61 @@ const getOnCallCalendar = async (name: string, year: number, month: number): Pro
   }
 }
 
-const createOnCallRole = async (role: OnCallRole): Promise<boolean> => {
+const createOnCallRole = async (role: OnCallRole): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(endpoint, role)
     showSnackBar({ msg: `On-call role '${role.name}' created.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to create on-call role '${role.name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to create on-call role '${role.name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const updateOnCallRole = async (role: OnCallRole): Promise<boolean> => {
+const updateOnCallRole = async (role: OnCallRole): Promise<string | null> => {
   try {
     startSpinner()
     await v2.put(`${endpoint}/${encodeURIComponent(role.name)}`, role)
     showSnackBar({ msg: `On-call role '${role.name}' updated.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to update on-call role '${role.name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to update on-call role '${role.name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const renameOnCallRole = async (name: string, newName: string): Promise<boolean> => {
+const renameOnCallRole = async (name: string, newName: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { 'new-name': newName })
     showSnackBar({ msg: `On-call role '${name}' renamed to '${newName}'.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to rename on-call role '${name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to rename on-call role '${name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }
 }
 
-const deleteOnCallRole = async (name: string): Promise<boolean> => {
+const deleteOnCallRole = async (name: string): Promise<string | null> => {
   try {
     startSpinner()
     await v2.delete(`${endpoint}/${encodeURIComponent(name)}`)
     showSnackBar({ msg: `On-call role '${name}' deleted.` })
-    return true
+    return null
   } catch (err: any) {
-    showSnackBar({ msg: errorMessage(err, `Failed to delete on-call role '${name}'.`) })
-    return false
+    const msg = errorMessage(err, `Failed to delete on-call role '${name}'.`)
+    showSnackBar({ msg, error: true })
+    return msg
   } finally {
     stopSpinner()
   }

@@ -28,6 +28,7 @@
 export type OnCallScheduleType = 'specific' | 'daily' | 'weekly' | 'monthly'
 
 export interface OnCallTime {
+  id?: string
   day?: string | null
   begins: string
   ends: string
@@ -64,6 +65,7 @@ export interface OnCallCalendar {
   role: string
   year: number
   month: number
+  'time-zone'?: string
   day: OnCallCalendarDay[]
 }
 

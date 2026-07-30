@@ -47,6 +47,10 @@ public class OnCallCalendarDto {
     @XmlElement(name = "month")
     private int month;
 
+    /** IANA id of the zone the server evaluates schedules in; clients should render and enter times in it. */
+    @XmlElement(name = "time-zone")
+    private String timeZone;
+
     @XmlElement(name = "day")
     private List<CalendarDayDto> days = new ArrayList<>();
 
@@ -72,6 +76,14 @@ public class OnCallCalendarDto {
 
     public void setMonth(final int month) {
         this.month = month;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(final String timeZone) {
+        this.timeZone = timeZone;
     }
 
     public List<CalendarDayDto> getDays() {

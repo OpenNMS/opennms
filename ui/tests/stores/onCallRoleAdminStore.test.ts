@@ -65,19 +65,19 @@ describe('useOnCallRoleAdminStore', () => {
   })
 
   it('createRole should refresh on success and not on failure', async () => {
-    vi.mocked(API.createOnCallRole).mockResolvedValue(true)
+    vi.mocked(API.createOnCallRole).mockResolvedValue(null)
     vi.mocked(API.listOnCallRoles).mockResolvedValue(mockRoles)
-    expect(await store.createRole({ name: 'NOC-Duty' })).toBe(true)
+    expect(await store.createRole({ name: 'NOC-Duty' })).toBe(null)
     expect(API.listOnCallRoles).toHaveBeenCalledTimes(1)
 
     vi.clearAllMocks()
-    vi.mocked(API.createOnCallRole).mockResolvedValue(false)
-    expect(await store.createRole({ name: 'NOC-Duty' })).toBe(false)
+    vi.mocked(API.createOnCallRole).mockResolvedValue('it failed')
+    expect(await store.createRole({ name: 'NOC-Duty' })).toBe('it failed')
     expect(API.listOnCallRoles).not.toHaveBeenCalled()
   })
 
   it('updateRole should pass the payload through and refresh', async () => {
-    vi.mocked(API.updateOnCallRole).mockResolvedValue(true)
+    vi.mocked(API.updateOnCallRole).mockResolvedValue(null)
     vi.mocked(API.listOnCallRoles).mockResolvedValue(mockRoles)
 
     const payload: OnCallRole = { name: 'NOC-Duty', schedule: [{ user: 'first', type: 'specific', time: [{ begins: 'a', ends: 'b' }] }] }
@@ -88,7 +88,7 @@ describe('useOnCallRoleAdminStore', () => {
   })
 
   it('renameRole should pass old and new names and refresh', async () => {
-    vi.mocked(API.renameOnCallRole).mockResolvedValue(true)
+    vi.mocked(API.renameOnCallRole).mockResolvedValue(null)
     vi.mocked(API.listOnCallRoles).mockResolvedValue(mockRoles)
 
     await store.renameRole('NOC-Duty', 'NOC-Rota')
@@ -97,7 +97,7 @@ describe('useOnCallRoleAdminStore', () => {
   })
 
   it('deleteRole should refresh on success', async () => {
-    vi.mocked(API.deleteOnCallRole).mockResolvedValue(true)
+    vi.mocked(API.deleteOnCallRole).mockResolvedValue(null)
     vi.mocked(API.listOnCallRoles).mockResolvedValue([])
 
     await store.deleteRole('NOC-Duty')

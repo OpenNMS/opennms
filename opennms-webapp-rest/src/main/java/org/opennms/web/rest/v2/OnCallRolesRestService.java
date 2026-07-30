@@ -153,6 +153,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 calendar.setMonth(month);
                 final YearMonth yearMonth = YearMonth.of(year, month);
                 final ZoneId zone = ZoneId.systemDefault();
+                calendar.setTimeZone(zone.getId());
                 for (int dayOfMonth = 1; dayOfMonth <= yearMonth.lengthOfMonth(); dayOfMonth++) {
                     final LocalDate date = yearMonth.atDay(dayOfMonth);
                     final Date dayStart = Date.from(date.atStartOfDay(zone).toInstant());
@@ -201,7 +202,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (m_groupManager.getRole(name) != null) {
                     return Response.status(Status.BAD_REQUEST).entity("On-call role " + name + " already exists.").build();
                 }
-                validateDtoFields(dto, null, true);
+                validateDtoFields(dto, null);
                 final Role role = new Role();
                 role.setName(name);
                 applyDto(role, dto);
@@ -231,7 +232,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (existing == null) {
                     return Response.status(Status.NOT_FOUND).entity("On-call role " + name + " was not found.").build();
                 }
-                validateDtoFields(dto, existing, dto.getSupervisor() != null || dto.getMembershipGroup() != null);
+                validateDtoFields(dto, existing);
                 final Role updated = copyOf(existing);
                 applyDto(updated, dto);
                 m_groupManager.saveRole(updated);
@@ -301,8 +302,16 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         dto.setMembershipGroup(role.getMembershipGroup());
         dto.setSupervisor(role.getSupervisor());
         dto.setDescription(role.getDescription().orElse(null));
-        final String[] onCall = m_userManager.getUsersScheduledForRole(role.getName(), new Date());
-        dto.setCurrentlyOnCall(onCall == null ? List.of() : List.of(onCall));
+        // hand-edited day values the runtime can't resolve (e.g. day="mon")
+        // make schedule evaluation throw; one bad role must not 500 the list
+        List<String> onCallUsers = List.of();
+        try {
+            final String[] onCall = m_userManager.getUsersScheduledForRole(role.getName(), new Date());
+            onCallUsers = onCall == null ? List.of() : List.of(onCall);
+        } catch (final Exception e) {
+            LOG.warn("Can't evaluate the schedule of on-call role {}: {}", role.getName(), e.toString());
+        }
+        dto.setCurrentlyOnCall(onCallUsers);
         if (includeSchedules) {
             final List<OnCallScheduleDto> schedules = new ArrayList<>();
             for (final Schedule schedule : role.getSchedules()) {
@@ -320,6 +329,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         final List<OnCallTimeDto> times = new ArrayList<>();
         for (final Time time : schedule.getTimes()) {
             final OnCallTimeDto timeDto = new OnCallTimeDto();
+            timeDto.setId(time.getId().orElse(null));
             timeDto.setDay(time.getDay().orElse(null));
             timeDto.setBegins(time.getBegins());
             timeDto.setEnds(time.getEnds());
@@ -364,22 +374,26 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
      * request must pass the schema and legacy-editor rules. On create, and
      * whenever supervisor/membership-group are being set, those must exist.
      */
-    private void validateDtoFields(final OnCallRoleDto dto, final Role existing, final boolean requireIdentity) throws Exception {
-        if (requireIdentity) {
-            final String supervisor = trimToNull(dto.getSupervisor());
+    private void validateDtoFields(final OnCallRoleDto dto, final Role existing) throws Exception {
+        // on create both identity fields are required; on update each is
+        // validated independently so one can be changed without the other
+        final String supervisor = trimToNull(dto.getSupervisor());
+        if (existing == null || dto.getSupervisor() != null) {
             if (supervisor == null || !m_userManager.hasUser(supervisor)) {
                 throw new IllegalArgumentException("A supervisor is required and must be an existing user.");
             }
-            final String membershipGroup = trimToNull(dto.getMembershipGroup());
+        }
+        final String membershipGroup = trimToNull(dto.getMembershipGroup());
+        if (existing == null || dto.getMembershipGroup() != null) {
             if (membershipGroup == null || !m_groupManager.hasGroup(membershipGroup)) {
                 throw new IllegalArgumentException("A membership-group is required and must be an existing group.");
             }
         }
         if (dto.getSchedules() != null) {
-            final String membershipGroup = trimToNull(dto.getMembershipGroup()) != null
-                    ? dto.getMembershipGroup().trim()
+            final String scheduleGroup = membershipGroup != null
+                    ? membershipGroup
                     : existing == null ? null : existing.getMembershipGroup();
-            final Group group = membershipGroup == null ? null : m_groupManager.getGroup(membershipGroup);
+            final Group group = scheduleGroup == null ? null : m_groupManager.getGroup(scheduleGroup);
             final Set<String> members = group == null ? Set.of() : new LinkedHashSet<>(group.getUsers());
             final Set<String> preExisting = existing == null ? Set.of()
                     : existing.getSchedules().stream().map(OnCallRolesRestService::canonical).collect(Collectors.toSet());
@@ -411,6 +425,13 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         }
     }
 
+    /**
+     * Validates AND canonicalizes: begins/ends are rewritten into the exact
+     * zero-padded form the runtime dispatches on (setOutCalTime switches on
+     * string length 20/8 and parses with the JVM default locale), and weekly
+     * days are lowercased. Accepting anything looser would store entries
+     * notifd silently ignores.
+     */
     private void validateTime(final String type, final OnCallTimeDto time) {
         final String day = trimToNull(time.getDay());
         switch (type) {
@@ -423,6 +444,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (!begins.before(ends)) {
                     throw new IllegalArgumentException("The start time must be before the end time.");
                 }
+                time.setBegins(runtimeDateTimeString(begins));
+                time.setEnds(runtimeDateTimeString(ends));
                 return;
             case "daily":
                 if (day != null) {
@@ -430,14 +453,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 }
                 break;
             case "weekly":
-                if (day == null || !WEEKDAYS.contains(day)) {
-                    throw new IllegalArgumentException("A weekly schedule requires a lowercase weekday name as its day.");
+                if (day == null || !WEEKDAYS.contains(day.toLowerCase(Locale.ROOT))) {
+                    throw new IllegalArgumentException("A weekly schedule requires a weekday name as its day.");
                 }
+                time.setDay(day.toLowerCase(Locale.ROOT));
                 break;
             case "monthly":
-                if (day == null || !day.matches("[1-9]|[1-2][0-9]|3[0-1]")) {
+                if (day == null || !day.matches("0?[1-9]|[1-2][0-9]|3[0-1]")) {
                     throw new IllegalArgumentException("A monthly schedule requires a day of month (1-31).");
                 }
+                // the groups.xsd day pattern forbids leading zeros
+                time.setDay(String.valueOf(Integer.parseInt(day)));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported schedule type: " + type);
@@ -447,19 +473,40 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         if (!start.before(end)) {
             throw new IllegalArgumentException("The start time must be before the end time.");
         }
+        time.setBegins(strictFormat(TIME_FORMAT, Locale.ROOT).format(start));
+        time.setEnds(strictFormat(TIME_FORMAT, Locale.ROOT).format(end));
     }
 
     private static Date parseDate(final String format, final String value) {
         if (value == null) {
             throw new IllegalArgumentException("Schedule times require begins and ends values.");
         }
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ROOT);
-        dateFormat.setLenient(false);
         try {
-            return dateFormat.parse(value.trim());
+            return strictFormat(format, Locale.ROOT).parse(value.trim());
         } catch (final ParseException e) {
             throw new IllegalArgumentException("Invalid schedule time '" + value + "': expected the format " + format);
         }
+    }
+
+    /**
+     * The runtime (BasicScheduleUtils.setOutCalTime) parses stored dd-MMM-yyyy
+     * strings with the JVM default locale, so that is what must be written. A
+     * locale whose month abbreviations break the 20-character width cannot be
+     * represented at all — reject rather than store an entry notifd ignores.
+     */
+    private static String runtimeDateTimeString(final Date date) {
+        final String stored = strictFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(date);
+        if (stored.length() != DATE_TIME_FORMAT.length()) {
+            throw new IllegalArgumentException("The server locale " + Locale.getDefault()
+                    + " cannot represent schedule dates in the dd-MMM-yyyy format the scheduler requires.");
+        }
+        return stored;
+    }
+
+    private static SimpleDateFormat strictFormat(final String format, final Locale locale) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, locale);
+        dateFormat.setLenient(false);
+        return dateFormat;
     }
 
     /** Canonical form used to recognize schedules that were already stored. */
@@ -500,6 +547,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 schedule.setType(scheduleDto.getType().trim());
                 for (final OnCallTimeDto timeDto : scheduleDto.getTimes()) {
                     final Time time = new Time();
+                    if (trimToNull(timeDto.getId()) != null) {
+                        time.setId(timeDto.getId().trim());
+                    }
                     if (trimToNull(timeDto.getDay()) != null) {
                         time.setDay(timeDto.getDay().trim());
                     }

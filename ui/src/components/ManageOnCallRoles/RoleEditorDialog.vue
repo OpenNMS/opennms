@@ -9,15 +9,27 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
+      <Message
+        v-if="errorText"
+        severity="error"
+        :closable="false"
+        data-test="dialog-error"
+      >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
           <InputText
             id="role-editor-name"
             v-model="name"
+            :invalid="!!nameProblem"
             data-test="role-name-input"
           />
           <label for="role-editor-name">Role Name *</label>
         </IftaLabel>
+        <small
+          v-if="nameProblem"
+          class="field-error"
+          data-test="name-error"
+        >{{ nameProblem }}</small>
       </FormField>
       <FormField>
         <IftaLabel>
@@ -81,9 +93,11 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
 import InputText from 'primevue/inputtext'
+import Message from 'primevue/message'
 import Select from 'primevue/select'
 
 import FormField from '@/components/Common/FormField.vue'
+import { validateAdminName } from '@/lib/adminValidation'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { OnCallRole } from '@/types/onCallRoleAdmin'
 
@@ -101,14 +115,17 @@ const membershipGroup = ref<string | null>(null)
 const supervisor = ref<string | null>(null)
 const description = ref('')
 const saving = ref(false)
+const errorText = ref('')
 
 const isEditing = computed(() => props.role !== null)
 const originalName = computed(() => props.role?.name ?? '')
 
 const groupOptions = computed(() => Object.keys(store.groupMembers))
 
+const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'role name')))
+
 const isValid = computed(() =>
-  (isEditing.value || !!name.value.trim()) && !!membershipGroup.value && !!supervisor.value)
+  (isEditing.value || !!name.value.trim()) && !nameProblem.value && !!membershipGroup.value && !!supervisor.value)
 
 watch(
   () => props.visible,
@@ -116,6 +133,7 @@ watch(
     if (!isVisible) {
       return
     }
+    errorText.value = ''
     if (props.role) {
       name.value = props.role.name
       membershipGroup.value = props.role['membership-group'] ?? null
@@ -140,9 +158,11 @@ const save = async () => {
       supervisor: supervisor.value ?? undefined,
       description: description.value.trim()
     }
-    const ok = isEditing.value ? await store.updateRole(payload) : await store.createRole(payload)
-    if (ok) {
+    const error = isEditing.value ? await store.updateRole(payload) : await store.createRole(payload)
+    if (error === null) {
       emit('update:visible', false)
+    } else {
+      errorText.value = error
     }
   } finally {
     saving.value = false
@@ -161,6 +181,12 @@ const save = async () => {
   :deep(.p-select) {
     width: 100%;
   }
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-red-500, #e24c4c);
 }
 
 .hint {

@@ -55,7 +55,13 @@
       />
       <Column header="Actions">
         <template #body="{ data }">
-          <div class="action-container">
+          <span
+            v-if="!isPathAddressable(data.name)"
+            class="unaddressable"
+            v-tooltip.top="'This role name contains / \\ or %, which the API cannot address; manage it by editing groups.xml.'"
+            data-test="unaddressable-note"
+          >file-managed</span>
+          <div v-else class="action-container">
             <Button
               text
               label="Schedule"
@@ -141,6 +147,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import RoleCalendarDialog from '@/components/ManageOnCallRoles/RoleCalendarDialog.vue'
 import RoleEditorDialog from '@/components/ManageOnCallRoles/RoleEditorDialog.vue'
 import RoleRenameDialog from '@/components/ManageOnCallRoles/RoleRenameDialog.vue'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { OnCallRole } from '@/types/onCallRoleAdmin'
 
@@ -216,6 +223,11 @@ const cancelDelete = () => {
     color: var(--p-text-muted-color);
     font-weight: 400;
   }
+}
+
+.unaddressable {
+  color: var(--p-text-muted-color);
+  font-style: italic;
 }
 
 .action-container {

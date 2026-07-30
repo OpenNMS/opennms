@@ -147,6 +147,10 @@ public class OnCallRoleDto {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class OnCallTimeDto {
 
+        /** Optional id attribute some hand-edited files carry; round-trips untouched. */
+        @XmlElement(name = "id")
+        private String id;
+
         @XmlElement(name = "day")
         private String day;
 
@@ -155,6 +159,14 @@ public class OnCallRoleDto {
 
         @XmlElement(name = "ends")
         private String ends;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(final String id) {
+            this.id = id;
+        }
 
         public String getDay() {
             return day;
