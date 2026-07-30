@@ -137,7 +137,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory targetObject, MultivaluedMapImpl params) {
-        if (params.getFirst("name") != null) {
+        if (RestUtils.containsProperty(params, "name")) {
             throw getException(Status.BAD_REQUEST, "Cannot rename category.");
         }
         RestUtils.setBeanProperties(targetObject, params);

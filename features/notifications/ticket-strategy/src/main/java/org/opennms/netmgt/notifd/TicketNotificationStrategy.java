@@ -27,7 +27,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -51,7 +52,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TicketNotificationStrategy.class);
 	private EventIpcManager m_eventManager;
-	private DefaultEventConfDao m_eventConfDao;
+	private EventConfDao m_eventConfDao;
 	
 	enum AlarmType {
 		NOT_AN_ALARM,
@@ -182,7 +183,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      * @return 0 if alarmid is null
      */
 	protected AlarmType getAlarmTypeFromUEI(final String eventUEI) {
-	    final Event event = m_eventConfDao.findByUei(eventUEI);
+	    final Event event = getEventConfDao().findByUei(eventUEI);
 	    if( event == null ) {
 	        return AlarmType.NOT_AN_ALARM;
 	    }
@@ -197,6 +198,17 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 	    return AlarmType.NOT_AN_ALARM;
 	}
 	
+	protected EventConfDao getEventConfDao() {
+		if (m_eventConfDao == null) {
+			m_eventConfDao = BeanUtils.getBean("notifdContext", "eventConfDao", EventConfDao.class);
+		}
+		return m_eventConfDao;
+	}
+
+	public void setEventConfDao(EventConfDao eventConfDao) {
+		m_eventConfDao = eventConfDao;
+	}
+
     /**
      * <p>Helper function that sends the create ticket event</p>
      *
