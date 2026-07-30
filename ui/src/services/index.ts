@@ -75,9 +75,17 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import {
+  addDestinationPath,
+  deleteDestinationPath,
   getDestinationPaths,
+  getNotificationCommands,
   getNotificationConfigStatus,
-  setNotificationConfigStatus
+  getNotificationGroups,
+  getNotificationUsers,
+  getOnCallRoles,
+  setNotificationConfigStatus,
+  testDestinationPath,
+  updateDestinationPath
 } from './notificationConfigService'
 import { acknowledgeNotice, browseNotices } from './noticesService'
 
@@ -143,8 +151,16 @@ export default {
   getZenithRegistrations,
   performLogout,
   acknowledgeNotice,
+  addDestinationPath,
   browseNotices,
+  getNotificationGroups,
+  getNotificationUsers,
+  getOnCallRoles,
+  updateDestinationPath,
+  deleteDestinationPath,
   getDestinationPaths,
+  getNotificationCommands,
   getNotificationConfigStatus,
-  setNotificationConfigStatus
+  setNotificationConfigStatus,
+  testDestinationPath
 }

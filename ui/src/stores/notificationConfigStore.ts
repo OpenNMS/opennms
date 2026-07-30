@@ -21,13 +21,17 @@
 ///
 
 import API from '@/services'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
+import { DestinationPath, NotifdStatus, NotificationCommand } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
   const destinationPaths = ref([] as DestinationPath[])
+  const commands = ref([] as NotificationCommand[])
+  const users = ref([] as string[])
+  const groups = ref([] as string[])
+  const roles = ref([] as string[])
 
   const getStatus = async () => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -45,16 +49,65 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     destinationPaths.value = await API.getDestinationPaths()
   }
 
+  const addDestinationPath = async (path: DestinationPath) => {
+    const ok = await API.addDestinationPath(path)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const updateDestinationPath = async (originalName: string, path: DestinationPath) => {
+    const ok = await API.updateDestinationPath(originalName, path)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const getUsersAndGroups = async () => {
+    const [u, g, r] = await Promise.all([API.getNotificationUsers(), API.getNotificationGroups(), API.getOnCallRoles()])
+    users.value = u
+    groups.value = g
+    roles.value = r
+  }
+
+  const deleteDestinationPath = async (name: string) => {
+    const ok = await API.deleteDestinationPath(name)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const testDestinationPath = async (name: string) => {
+    return await API.testDestinationPath(name)
+  }
+
+  const getCommands = async () => {
+    commands.value = await API.getNotificationCommands()
+  }
+
   const populate = async () => {
-    await Promise.all([getStatus(), getDestinationPaths()])
+    await Promise.all([getStatus(), getDestinationPaths(), getCommands(), getUsersAndGroups()])
   }
 
   return {
     notifdStatus,
     destinationPaths,
+    commands,
     getStatus,
     setStatus,
     getDestinationPaths,
+    addDestinationPath,
+    updateDestinationPath,
+    deleteDestinationPath,
+    testDestinationPath,
+    getCommands,
+    users,
+    groups,
+    roles,
+    getUsersAndGroups,
     populate
   }
 })
