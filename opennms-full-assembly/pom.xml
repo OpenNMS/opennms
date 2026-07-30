@@ -724,6 +724,23 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
             <phase>verify</phase>
             <goals>
               <goal>run</goal>
