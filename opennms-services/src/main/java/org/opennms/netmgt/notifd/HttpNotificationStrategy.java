@@ -198,8 +198,6 @@ public class HttpNotificationStrategy implements NotificationStrategy {
             return getNotificationValue(NotificationManager.PARAM_TYPE);
         if (argValue.equals(NotificationManager.PARAM_WORK_PHONE))
             return getNotificationValue(NotificationManager.PARAM_WORK_PHONE);
-        if (argValue.equals(NotificationManager.PARAM_XMPP_ADDRESS))
-            return getNotificationValue(NotificationManager.PARAM_XMPP_ADDRESS);
 
         return argValue;
     }

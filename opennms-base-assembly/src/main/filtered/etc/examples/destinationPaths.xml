@@ -204,12 +204,6 @@
                 <command>javaEmail</command>
         </target>
     </path>
-    <path name="XMPP-Admin">
-        <target>
-                <name>Admin</name>
-                <command>xmppMessage</command>
-        </target>
-    </path>
     <path name="Growl-Admin">
         <target>
                 <name>Admin</name>
