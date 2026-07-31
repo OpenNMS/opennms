@@ -37,6 +37,7 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.web.rest.v2.api.DashboardRestApi;
 import org.slf4j.Logger;
+import org.opennms.web.api.Authentication;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,11 @@ public class DashboardRestService implements DashboardRestApi {
     }
 
     @Override
-    public Response updateSystemLayout(final Map<String, Object> layout) {
+    public Response updateSystemLayout(final javax.ws.rs.core.SecurityContext securityContext, final Map<String, Object> layout) {
+        // the layout is system-wide: every user reads it, only admins write it
+        if (securityContext == null || !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return Response.status(Status.FORBIDDEN).entity("Saving the system dashboard requires the admin role.").build();
+        }
         if (layout == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }

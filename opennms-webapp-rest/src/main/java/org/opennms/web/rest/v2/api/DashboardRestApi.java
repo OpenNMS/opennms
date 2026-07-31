@@ -28,8 +28,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,7 +65,7 @@ public interface DashboardRestApi {
             description = "Replaces the stored system-wide dashboard layout document.",
             operationId = "updateSystemDashboardLayout"
     )
-    Response updateSystemLayout(Map<String, Object> layout);
+    Response updateSystemLayout(@Context SecurityContext securityContext, Map<String, Object> layout);
 
     @GET
     @Path("service-types")
