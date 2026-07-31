@@ -17,7 +17,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -43,6 +43,44 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 // Holds query params that arrived before categories/locations had loaded.
 // Cleared once the deferred filter is applied.
 const pendingRouteQuery = ref<LocationQuery | null>(null)
+
+// Holds a legacy `?nodeId=<n>` id that arrived before menuStore.mainMenu (source of
+// baseHref/baseNodeUrl) had loaded. Cleared once the deferred redirect fires.
+const pendingNodeIdRedirect = ref<number | null>(null)
+
+// Legacy bookmarks like `#/nodes?nodeId=42` should land on the node detail page — the same
+// place the node-label column links to (see computeNodeLink in NodesTable.vue) — rather than
+// being treated as a node-list filter. Returns true if the query was handled here (either
+// redirected immediately or deferred), meaning normal query handling should be skipped.
+const handleNodeIdRedirect = (query: LocationQuery): boolean => {
+  const id = parseNodeIdQueryParam(query)
+  if (id === null) {
+    return false
+  }
+
+  const url = buildNodeDetailUrl(menuStore.mainMenu, id)
+  if (url) {
+    window.location.assign(url)
+  } else {
+    // mainMenu hasn't loaded yet — defer until the watch below sees it arrive.
+    pendingNodeIdRedirect.value = id
+  }
+  return true
+}
+
+// Completes a deferred nodeId redirect once menuStore.mainMenu (baseHref/baseNodeUrl) loads.
+watch(
+  () => menuStore.mainMenu?.baseHref,
+  () => {
+    if (pendingNodeIdRedirect.value !== null) {
+      const url = buildNodeDetailUrl(menuStore.mainMenu, pendingNodeIdRedirect.value)
+      if (url) {
+        pendingNodeIdRedirect.value = null
+        window.location.assign(url)
+      }
+    }
+  }
+)
 
 const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) => {
   const nodeFilter = buildNodeQueryFilterFromQueryString(
@@ -108,6 +146,9 @@ watch(
 )
 
 onMounted(() => {
+  if (handleNodeIdRedirect(route.query)) {
+    return
+  }
   const prefs = loadNodePreferences()
   if (handleQuery(prefs)) {
     return
@@ -118,6 +159,9 @@ onMounted(() => {
 })
 
 watch(() => route.query, () => {
+  if (handleNodeIdRedirect(route.query)) {
+    return
+  }
   handleQuery(loadNodePreferences())
 })
 </script>

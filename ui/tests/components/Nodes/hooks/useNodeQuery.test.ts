@@ -22,9 +22,10 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { buildNodeDetailUrl, getNodeIdRedirect, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
+import { MainMenu } from '@/types/mainMenu'
 
 const {
   buildNodeQueryFilterFromQueryString,
@@ -883,6 +884,66 @@ describe('Nodes useNodeQuery test', () => {
 
         expect(queryStringHasTrackedValues(queryObject)).toBe(true)
       }
+    })
+  })
+
+  describe('legacy nodeId redirect', () => {
+    const loadedMainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as MainMenu
+
+    describe('parseNodeIdQueryParam', () => {
+      test.each([
+        [ 'positive integer string', { nodeId: '42' }, 42 ],
+        [ 'single digit', { nodeId: '1' }, 1 ],
+        [ 'missing', {}, null ],
+        [ 'non-numeric', { nodeId: 'abc' }, null ],
+        [ 'zero', { nodeId: '0' }, null ],
+        [ 'negative', { nodeId: '-5' }, null ],
+        [ 'decimal', { nodeId: '3.5' }, null ],
+        [ 'empty string', { nodeId: '' }, null ],
+        [ 'array value', { nodeId: [ '1', '2' ] }, null ],
+        [ 'whitespace', { nodeId: '  ' }, null ]
+      ])('%s -> %s', (_title, query, expected) => {
+        expect(parseNodeIdQueryParam(query as any)).toBe(expected)
+      })
+    })
+
+    describe('buildNodeDetailUrl', () => {
+      test('builds the node detail url when mainMenu has loaded', () => {
+        expect(buildNodeDetailUrl(loadedMainMenu, 42)).toBe('/opennms/element/node.jsp?node=42')
+      })
+
+      test.each([
+        [ 'undefined mainMenu', undefined ],
+        [ 'null mainMenu', null ],
+        [ 'empty mainMenu', {} as MainMenu ],
+        [ 'missing baseNodeUrl', { baseHref: '/opennms/' } as MainMenu ],
+        [ 'missing baseHref', { baseNodeUrl: 'element/node.jsp?node=' } as MainMenu ]
+      ])('returns null when mainMenu is not loaded: %s', (_title, mainMenu) => {
+        expect(buildNodeDetailUrl(mainMenu, 42)).toBe(null)
+      })
+    })
+
+    describe('getNodeIdRedirect', () => {
+      test('returns the node detail url for a valid positive integer nodeId', () => {
+        expect(getNodeIdRedirect({ nodeId: '42' } as any, loadedMainMenu)).toBe('/opennms/element/node.jsp?node=42')
+      })
+
+      test('returns null when nodeId is non-numeric', () => {
+        expect(getNodeIdRedirect({ nodeId: 'abc' } as any, loadedMainMenu)).toBe(null)
+      })
+
+      test('returns null when nodeId is zero or negative', () => {
+        expect(getNodeIdRedirect({ nodeId: '0' } as any, loadedMainMenu)).toBe(null)
+        expect(getNodeIdRedirect({ nodeId: '-1' } as any, loadedMainMenu)).toBe(null)
+      })
+
+      test('returns null when nodeId is absent', () => {
+        expect(getNodeIdRedirect({} as any, loadedMainMenu)).toBe(null)
+      })
+
+      test('returns null when mainMenu has not loaded yet, even with a valid nodeId', () => {
+        expect(getNodeIdRedirect({ nodeId: '42' } as any, {} as MainMenu)).toBe(null)
+      })
     })
   })
 })

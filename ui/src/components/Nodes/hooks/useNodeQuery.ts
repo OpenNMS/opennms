@@ -21,6 +21,8 @@
 ///
 
 import { isConvertibleToInteger } from '@/lib/utils'
+import { MainMenu } from '@/types/mainMenu'
+import { LocationQuery } from 'vue-router'
 import {
   AssetFilter,
   Category,
@@ -347,8 +349,9 @@ export const useNodeQuery = () => {
     // listInterfaces: not handled here — it's a display flag, not a filter, so it's applied directly
     // in Nodes.vue (nodeStructureStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
-    // NOTE nodeId: not handled here. Once Vue Node Details (/node/:id) has parity with element/node.jsp,
-    //   update quicksearch-box.jsp to link to the Vue route instead of element/node.jsp?node={id}.
+    // NOTE nodeId: not handled here. Legacy `?nodeId=<n>` bookmarks are redirected to the node
+    //   detail page (element/node.jsp?node={id}) directly in Nodes.vue before the query filter is
+    //   ever built — see getNodeIdRedirect() below and the redirect handling in Nodes.vue.
 
     return filter
   }
@@ -717,4 +720,42 @@ export const sanitizeSearchTerm = (s?: string) => {
 
 export const getFiqlSetOperator = (op: SetOperator) => {
   return op === SetOperator.Union ? ',' : ';'
+}
+
+/**
+ * Parses the legacy `?nodeId=<n>` bookmark query param.
+ * Returns the id as a positive integer, or null if the param is absent, non-numeric,
+ * not an integer, zero, or negative (in which case the caller should ignore it).
+ */
+export const parseNodeIdQueryParam = (query: LocationQuery): number | null => {
+  const raw = query.nodeId
+  if (raw === undefined || Array.isArray(raw)) {
+    return null
+  }
+  if (!isConvertibleToInteger(raw)) {
+    return null
+  }
+  const id = Number(raw)
+  return Number.isInteger(id) && id > 0 ? id : null
+}
+
+/**
+ * Builds the node detail page URL, mirroring computeNodeLink() in NodesTable.vue.
+ * Returns null until menuStore.mainMenu (source of baseHref/baseNodeUrl) has loaded.
+ */
+export const buildNodeDetailUrl = (mainMenu: MainMenu | null | undefined, id: number): string | null => {
+  if (!mainMenu?.baseHref || !mainMenu?.baseNodeUrl) {
+    return null
+  }
+  return `${mainMenu.baseHref}${mainMenu.baseNodeUrl}${id}`
+}
+
+/**
+ * Combines parseNodeIdQueryParam() and buildNodeDetailUrl(): given a route query and the
+ * current mainMenu, returns the node detail URL to redirect a legacy `?nodeId=<n>` bookmark
+ * to, or null if there is no valid nodeId to redirect, or mainMenu hasn't loaded yet.
+ */
+export const getNodeIdRedirect = (query: LocationQuery, mainMenu: MainMenu | null | undefined): string | null => {
+  const id = parseNodeIdQueryParam(query)
+  return id === null ? null : buildNodeDetailUrl(mainMenu, id)
 }

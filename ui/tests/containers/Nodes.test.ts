@@ -1,8 +1,9 @@
 // ui/tests/containers/Nodes.test.ts
 //
-// NOTE: this file only covers the listInterfaces=true -> nodeStructureStore.setShowInterfaces
-// wiring added for NMS-20125 (Task 4). A fuller container test suite for Nodes.vue is expected
-// to land separately (Task 6); please extend this file rather than creating a second one.
+// NOTE: originally this file only covered the listInterfaces=true -> nodeStructureStore.setShowInterfaces
+// wiring added for NMS-20125 (Task 4). It has since been extended (Task 6) with coverage for the
+// legacy `?nodeId=<n>` bookmark redirect. Please extend this file further rather than creating a
+// second one.
 import Nodes from '@/containers/Nodes.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
@@ -10,7 +11,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 let routeQuery: Record<string, unknown> = {}
 const routerReplaceMock = vi.fn()
@@ -33,7 +34,9 @@ vi.mock('@/services/localStorageService', () => ({
 }))
 
 describe('Nodes.vue container', () => {
-  const mountComponent = () => {
+  let assignSpy: ReturnType<typeof vi.spyOn>
+
+  const mountComponent = (mainMenu: Record<string, unknown> = { homeUrl: '/home' }) => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     setActivePinia(pinia)
 
@@ -44,7 +47,7 @@ describe('Nodes.vue container', () => {
     structure.serviceTypesLoaded = true
 
     const menuStore = useMenuStore()
-    menuStore.mainMenu = { homeUrl: '/home' } as any
+    menuStore.mainMenu = mainMenu as any
 
     const wrapper = mount(Nodes, {
       global: {
@@ -56,12 +59,17 @@ describe('Nodes.vue container', () => {
       }
     })
 
-    return { wrapper, structure }
+    return { wrapper, structure, menuStore }
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
     routeQuery = {}
+    assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => { /* no-op: prevent jsdom navigation */ })
+  })
+
+  afterEach(() => {
+    assignSpy.mockRestore()
   })
 
   it('sets showInterfaces when the route query has listInterfaces=true', async () => {
@@ -98,5 +106,62 @@ describe('Nodes.vue container', () => {
     await flushPromises()
 
     expect(structure.showInterfaces).toBe(false)
+  })
+
+  describe('legacy nodeId redirect', () => {
+    const loadedMainMenu = { homeUrl: '/home', baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' }
+
+    it('redirects to the node detail page when nodeId is a positive integer', async () => {
+      routeQuery = { nodeId: '42' }
+
+      mountComponent(loadedMainMenu)
+      await flushPromises()
+
+      expect(assignSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=42')
+      // The redirect bypasses normal query handling entirely — the URL should not be cleared.
+      expect(routerReplaceMock).not.toHaveBeenCalled()
+    })
+
+    it('defers the redirect until menuStore.mainMenu finishes loading', async () => {
+      routeQuery = { nodeId: '7' }
+
+      // mainMenu has not loaded yet (no baseHref/baseNodeUrl).
+      const { menuStore } = mountComponent({})
+      await flushPromises()
+
+      expect(assignSpy).not.toHaveBeenCalled()
+
+      menuStore.mainMenu = loadedMainMenu as any
+      await flushPromises()
+
+      expect(assignSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=7')
+    })
+
+    it('does not redirect when nodeId is non-numeric, and normal query handling proceeds', async () => {
+      routeQuery = { nodeId: 'abc' }
+
+      mountComponent(loadedMainMenu)
+      await flushPromises()
+
+      expect(assignSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not redirect when nodeId is zero or negative', async () => {
+      routeQuery = { nodeId: '-1' }
+
+      mountComponent(loadedMainMenu)
+      await flushPromises()
+
+      expect(assignSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not redirect when nodeId is absent from the route query', async () => {
+      routeQuery = {}
+
+      mountComponent(loadedMainMenu)
+      await flushPromises()
+
+      expect(assignSpy).not.toHaveBeenCalled()
+    })
   })
 })
