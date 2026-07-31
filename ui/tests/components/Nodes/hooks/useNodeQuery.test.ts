@@ -407,7 +407,7 @@ describe('Nodes useNodeQuery test', () => {
   describe('test buildUpdatedNodeStructureQueryParameters', () => {
     test.each([
       [
-        'empty, _s is removed',
+        'empty filter, _s is the node.type!=D guard alone',
         {
           limit: 10,
           offset: 20,
@@ -418,7 +418,8 @@ describe('Nodes useNodeQuery test', () => {
         },
         {
           limit: 10,
-          offset: 20
+          offset: 20,
+          _s: 'node.type!=D'
         }
       ],
       [
@@ -435,7 +436,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           limit: 10,
           offset: 20,
-          _s: 'label==*Node1*'
+          _s: '(label==*Node1*);node.type!=D'
         }
       ]
     ]) (
@@ -459,7 +460,7 @@ describe('Nodes useNodeQuery test', () => {
         sysMatchType: MatchType.Contains
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('node.sysDescription==*Linux*')
+      expect(params._s).toBe('(node.sysDescription==*Linux*);node.type!=D')
     })
 
     test('sysMatchType Equals uses no wildcards', () => {
@@ -473,7 +474,7 @@ describe('Nodes useNodeQuery test', () => {
         sysMatchType: MatchType.Equals
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('node.sysDescription==Linux')
+      expect(params._s).toBe('(node.sysDescription==Linux);node.type!=D')
     })
 
     test('sysMatchType undefined defaults to wildcard (Contains)', () => {
@@ -486,7 +487,7 @@ describe('Nodes useNodeQuery test', () => {
         sysObjectId: ''
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('node.sysDescription==*Linux*')
+      expect(params._s).toBe('(node.sysDescription==*Linux*);node.type!=D')
     })
   })
 
@@ -502,7 +503,7 @@ describe('Nodes useNodeQuery test', () => {
         snmpMatchType: MatchType.Contains
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('snmpInterface.ifAlias==*Uplink*')
+      expect(params._s).toBe('(snmpInterface.ifAlias==*Uplink*);node.type!=D')
     })
 
     test('snmpMatchType Equals uses no wildcards', () => {
@@ -516,7 +517,7 @@ describe('Nodes useNodeQuery test', () => {
         snmpMatchType: MatchType.Equals
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('snmpInterface.ifAlias==Uplink')
+      expect(params._s).toBe('(snmpInterface.ifAlias==Uplink);node.type!=D')
     })
 
     test('snmpMatchType undefined defaults to Equals (no wildcards)', () => {
@@ -529,7 +530,7 @@ describe('Nodes useNodeQuery test', () => {
         snmpIfType: ''
       } as any
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('snmpInterface.ifAlias==Uplink')
+      expect(params._s).toBe('(snmpInterface.ifAlias==Uplink);node.type!=D')
     })
   })
 
@@ -538,7 +539,7 @@ describe('Nodes useNodeQuery test', () => {
       const filter = getDefaultNodeQueryFilter()
       filter.extendedSearch.snmpParams = { ...getDefaultNodeQuerySnmpParams(), physAddr: 'aabbccddeeff' }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('snmpInterface.physAddr==*aabbccddeeff*')
+      expect(params._s).toBe('(snmpInterface.physAddr==*aabbccddeeff*);node.type!=D')
     })
 
     test('physAddr combined with ifAlias produces semicolon-joined query', () => {
@@ -553,7 +554,7 @@ describe('Nodes useNodeQuery test', () => {
         physAddr: 'aabbcc'
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('snmpInterface.ifAlias==Uplink;snmpInterface.physAddr==*aabbcc*')
+      expect(params._s).toBe('(snmpInterface.ifAlias==Uplink;snmpInterface.physAddr==*aabbcc*);node.type!=D')
     })
   })
 
@@ -561,19 +562,19 @@ describe('Nodes useNodeQuery test', () => {
     test('emits maclike== for a MAC with colons (stripped, lowercase)', () => {
       const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC:DD:EE:FF' }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('maclike==aabbccddeeff')
+      expect(params._s).toBe('(maclike==aabbccddeeff);node.type!=D')
     })
 
     test('emits maclike== for a MAC with dashes', () => {
       const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA-BB-CC-DD-EE-FF' }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('maclike==aabbccddeeff')
+      expect(params._s).toBe('(maclike==aabbccddeeff);node.type!=D')
     })
 
     test('emits maclike== for a partial MAC (manufacturer prefix)', () => {
       const filter = { ...getDefaultNodeQueryFilter(), macAddress: 'AA:BB:CC' }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('maclike==aabbcc')
+      expect(params._s).toBe('(maclike==aabbcc);node.type!=D')
     })
 
     test('omits maclike query when macAddress is empty', () => {
@@ -593,7 +594,7 @@ describe('Nodes useNodeQuery test', () => {
     test('emits nodesWithDownAggregateStatus==true when set', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: true }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('nodesWithDownAggregateStatus==true')
+      expect(params._s).toBe('(nodesWithDownAggregateStatus==true);node.type!=D')
     })
 
     test('omits the down filter when false', () => {
@@ -607,7 +608,7 @@ describe('Nodes useNodeQuery test', () => {
     test('emits nodesWithAssets==true when set', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: true }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('nodesWithAssets==true')
+      expect(params._s).toBe('(nodesWithAssets==true);node.type!=D')
     })
 
     test('omits the filter when false', () => {
@@ -628,7 +629,7 @@ describe('Nodes useNodeQuery test', () => {
     test('emits nodesWithOutages==true when set', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithOutages: true }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('nodesWithOutages==true')
+      expect(params._s).toBe('(nodesWithOutages==true);node.type!=D')
     })
 
     test('omits the filter when false', () => {
@@ -647,7 +648,7 @@ describe('Nodes useNodeQuery test', () => {
     test('combines with another filter using a semicolon', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: true, nodesWithOutages: true }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('nodesWithAssets==true;nodesWithOutages==true')
+      expect(params._s).toBe('(nodesWithAssets==true;nodesWithOutages==true);node.type!=D')
     })
   })
 
@@ -655,7 +656,7 @@ describe('Nodes useNodeQuery test', () => {
     test('emits assetRecord.<col>== for a single allowed column', () => {
       const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: 'HQ' }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('assetRecord.building==HQ')
+      expect(params._s).toBe('(assetRecord.building==HQ);node.type!=D')
     })
 
     test('intersects multiple asset filters', () => {
@@ -664,11 +665,17 @@ describe('Nodes useNodeQuery test', () => {
         assetFilters: [{ column: 'building', value: 'HQ' }, { column: 'region', value: 'East' }]
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('assetRecord.building==HQ;assetRecord.region==East')
+      expect(params._s).toBe('(assetRecord.building==HQ;assetRecord.region==East);node.type!=D')
     })
 
-    test('omits disallowed columns', () => {
+    test('emits assetRecord.geolocation.<field>== for a geolocation-backed column', () => {
       const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'city', value: 'Pittsburgh' }] }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(assetRecord.geolocation.city==Pittsburgh);node.type!=D')
+    })
+
+    test('omits disallowed (unknown) columns', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'bogusColumn', value: 'Whatever' }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
       expect(params._s ?? '').not.toContain('assetRecord')
     })
@@ -695,14 +702,14 @@ describe('Nodes useNodeQuery test', () => {
     // the two URL-decodes (servlet container + CXF search.decode.values) and reach the backend as the
     // exact literal, without corrupting the FIQL expression. See encodeFiqlValue.
     test.each([
-      ['comma', 'A,B', 'assetRecord.building==A%252CB'],
-      ['semicolon', 'A;B', 'assetRecord.building==A%253BB'],
-      ['parentheses', '(A)', 'assetRecord.building==%2528A%2529'],
-      ['ampersand', 'A&B', 'assetRecord.building==A%2526B'],
-      ['percent', '50%', 'assetRecord.building==50%2525'],
-      ['asterisk (literal, not wildcard)', 'A*', 'assetRecord.building==A%252A'],
-      ['space', 'Data Center', 'assetRecord.building==Data%2520Center'],
-      ['mixed', 'Bldg 1, Floor (2)', 'assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529']
+      ['comma', 'A,B', '(assetRecord.building==A%252CB);node.type!=D'],
+      ['semicolon', 'A;B', '(assetRecord.building==A%253BB);node.type!=D'],
+      ['parentheses', '(A)', '(assetRecord.building==%2528A%2529);node.type!=D'],
+      ['ampersand', 'A&B', '(assetRecord.building==A%2526B);node.type!=D'],
+      ['percent', '50%', '(assetRecord.building==50%2525);node.type!=D'],
+      ['asterisk (literal, not wildcard)', 'A*', '(assetRecord.building==A%252A);node.type!=D'],
+      ['space', 'Data Center', '(assetRecord.building==Data%2520Center);node.type!=D'],
+      ['mixed', 'Bldg 1, Floor (2)', '(assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529);node.type!=D']
     ])('double-encodes a value with %s', (title, value, expected) => {
       const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
@@ -713,7 +720,9 @@ describe('Nodes useNodeQuery test', () => {
       const value = 'Bldg 1, Floor (2) & A;B 50%'
       const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value }] }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      const encoded = (params._s as string).replace('assetRecord.building==', '')
+      // params._s is now wrapped as `(assetRecord.building==<encoded>);node.type!=D`
+      const match = (params._s as string).match(/assetRecord\.building==([^)]*)\)/)
+      const encoded = match ? match[1] : ''
       // container decode, then CXF search.decode.values decode
       expect(decodeURIComponent(decodeURIComponent(encoded))).toBe(value)
     })
@@ -729,12 +738,28 @@ describe('Nodes useNodeQuery test', () => {
       expect(filter.assetFilters).toEqual([{ column: 'building', value: 'HQ' }])
     })
 
-    test('ignores a disallowed asset column', () => {
+    test('ignores a disallowed (unknown) asset column', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { assetColumn: 'bogusColumn', assetValue: 'Pittsburgh' },
+        categories, monitoringLocations
+      )
+      expect(filter.assetFilters).toEqual([])
+    })
+
+    test('accepts a formerly-rejected geolocation column (city)', () => {
       const filter = buildNodeQueryFilterFromQueryString(
         { assetColumn: 'city', assetValue: 'Pittsburgh' },
         categories, monitoringLocations
       )
-      expect(filter.assetFilters).toEqual([])
+      expect(filter.assetFilters).toEqual([{ column: 'city', value: 'Pittsburgh' }])
+    })
+
+    test('accepts assetNumber (a non-curated but valid asset column)', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { assetColumn: 'assetNumber', assetValue: 'A-123' },
+        categories, monitoringLocations
+      )
+      expect(filter.assetFilters).toEqual([{ column: 'assetNumber', value: 'A-123' }])
     })
   })
 
@@ -743,21 +768,21 @@ describe('Nodes useNodeQuery test', () => {
       const filter = getDefaultNodeQueryFilter()
       filter.selectedServices = ['HTTP']
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('serviceType.name==HTTP')
+      expect(params._s).toBe('(serviceType.name==HTTP);node.type!=D')
     })
 
     test('two selectedServices generates OR FIQL query', () => {
       const filter = getDefaultNodeQueryFilter()
       filter.selectedServices = ['HTTP', 'HTTPS']
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('(serviceType.name==HTTP,serviceType.name==HTTPS)')
+      expect(params._s).toBe('((serviceType.name==HTTP,serviceType.name==HTTPS));node.type!=D')
     })
 
-    test('empty selectedServices produces no FIQL query', () => {
+    test('empty selectedServices still emits the node.type!=D guard', () => {
       const filter = getDefaultNodeQueryFilter()
       filter.selectedServices = []
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBeUndefined()
+      expect(params._s).toBe('node.type!=D')
     })
   })
 

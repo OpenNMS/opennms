@@ -329,10 +329,9 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
- * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL,
- * with human-readable labels for the asset-filter dropdown. Geolocation-backed fields
- * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties,
- * so an `assetRecord.city` query would be invalid.
+ * OnmsAssetRecord string columns curated for the Asset Filter panel dropdown UI, with
+ * human-readable labels. This is intentionally a small subset of ASSET_COLUMN_FIQL_MAP (below) —
+ * every value here must also be a key in ASSET_COLUMN_FIQL_MAP.
  */
 export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
   { value: 'building', label: 'Building' },
@@ -347,12 +346,98 @@ export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
   { value: 'circuitId', label: 'Circuit ID' }
 ]
 
+/**
+ * Maps every filterable OnmsAssetRecord string column (i.e. every STRING-typed property under
+ * `assetRecord.` in SearchProperties.java's ASSET_RECORD_PROPERTIES) to the FIQL property name
+ * used in an `assetRecord.<property>` query. This is the full whitelist of columns accepted from
+ * inbound `assetColumn`/`assetValue` query params (e.g. site-status-view drill-down links), which
+ * can reference any OnmsAssetRecord column, not just the curated ASSET_COLUMN_OPTIONS dropdown
+ * list above.
+ *
+ * Most entries are identity mappings — the column name is already the FIQL property name.
+ * The geolocation-backed columns (address1, address2, city, state, zip, country) are exceptions:
+ * they map to their nested `geolocation.<field>` FIQL property, matching the legacy OnmsAssetRecord
+ * bean property names used by legacy site-status filtering.
+ *
+ * Excluded (non-STRING search properties per SearchProperties.java): `id` (INTEGER) and
+ * `lastModifiedDate` (TIMESTAMP). Everything else STRING-typed is included, including
+ * `password`/`enable`/`connection` — no precedent was found in this codebase for excluding
+ * "secret-like" asset columns from search/filtering (they're already readable/writable via the
+ * Asset page and the v2 REST API), so they're included like any other string column.
+ */
+export const ASSET_COLUMN_FIQL_MAP: Record<string, string> = {
+  additionalhardware: 'additionalhardware',
+  address1: 'geolocation.address1',
+  address2: 'geolocation.address2',
+  admin: 'admin',
+  assetNumber: 'assetNumber',
+  autoenable: 'autoenable',
+  building: 'building',
+  category: 'category',
+  circuitId: 'circuitId',
+  city: 'geolocation.city',
+  comment: 'comment',
+  connection: 'connection',
+  country: 'geolocation.country',
+  cpu: 'cpu',
+  dateInstalled: 'dateInstalled',
+  department: 'department',
+  description: 'description',
+  displayCategory: 'displayCategory',
+  division: 'division',
+  enable: 'enable',
+  floor: 'floor',
+  hdd1: 'hdd1',
+  hdd2: 'hdd2',
+  hdd3: 'hdd3',
+  hdd4: 'hdd4',
+  hdd5: 'hdd5',
+  hdd6: 'hdd6',
+  inputpower: 'inputpower',
+  lastModifiedBy: 'lastModifiedBy',
+  lease: 'lease',
+  leaseExpires: 'leaseExpires',
+  maintcontract: 'maintcontract',
+  maintContractExpiration: 'maintContractExpiration',
+  managedObjectInstance: 'managedObjectInstance',
+  managedObjectType: 'managedObjectType',
+  manufacturer: 'manufacturer',
+  modelNumber: 'modelNumber',
+  notifyCategory: 'notifyCategory',
+  numpowersupplies: 'numpowersupplies',
+  operatingSystem: 'operatingSystem',
+  password: 'password',
+  pollerCategory: 'pollerCategory',
+  port: 'port',
+  rack: 'rack',
+  rackunitheight: 'rackunitheight',
+  ram: 'ram',
+  region: 'region',
+  room: 'room',
+  serialNumber: 'serialNumber',
+  slot: 'slot',
+  snmpcommunity: 'snmpcommunity',
+  state: 'geolocation.state',
+  storagectrl: 'storagectrl',
+  supportPhone: 'supportPhone',
+  thresholdCategory: 'thresholdCategory',
+  username: 'username',
+  vendor: 'vendor',
+  vendorAssetNumber: 'vendorAssetNumber',
+  vendorFax: 'vendorFax',
+  vendorPhone: 'vendorPhone',
+  zip: 'geolocation.zip'
+}
+
 /** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
-export const ALLOWED_ASSET_COLUMNS = new Set(ASSET_COLUMN_OPTIONS.map(o => o.value))
+export const ALLOWED_ASSET_COLUMNS = new Set(Object.keys(ASSET_COLUMN_FIQL_MAP))
 
 /** Display label for an asset column key (falls back to the key itself). */
 export const getAssetColumnLabel = (column: string): string =>
   ASSET_COLUMN_OPTIONS.find(o => o.value === column)?.label ?? column
+
+/** Maps an asset column key to its FIQL property under `assetRecord.` (identity if not in the map). */
+export const getAssetColumnFiqlProperty = (column: string): string => ASSET_COLUMN_FIQL_MAP[column] ?? column
 
 /**
  * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.

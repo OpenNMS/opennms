@@ -40,6 +40,7 @@ import {
 } from '@/types'
 import {
   ALLOWED_ASSET_COLUMNS,
+  getAssetColumnFiqlProperty,
   parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
@@ -187,12 +188,6 @@ export const useNodeQuery = () => {
     const searchQuery = buildNodeStructureQuery(filter)
     const searchQueryParam: QueryParameters = { _s: searchQuery }
     const updatedParams = { ...queryParameters, ...searchQueryParam }
-
-    // if there is no search query, remove the '_s' property entirely so it doesn't
-    // get put into the API request query string
-    if (!searchQuery) {
-      delete updatedParams._s
-    }
 
     return updatedParams as QueryParameters
   }
@@ -402,14 +397,19 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
   // for now, just ipAddress - but only if user does not specify ipAddress in extended search
+  let finalQuery = query
   if (!ipAddress && isIP(searchTerm)) {
     const ipQuery = buildIpAddressQuery(searchTerm)
     const separator = getFiqlSetOperator(SetOperator.Union)
 
-    return `${query}${separator}${ipQuery}`
+    finalQuery = `${query}${separator}${ipQuery}`
   }
 
-  return query
+  // Always exclude deleted nodes, mirroring the legacy node list's node.type != 'D' filter.
+  // `!=` (not `==A`) so nodes with an unknown/null type still show up (server maps != to or(ne, isNull)).
+  // The parenthesized group is mandatory: FIQL ';' (AND) binds tighter than ',' (OR), so without
+  // grouping an OR branch (e.g. the searchTerm-as-IP union above) would escape the type guard.
+  return finalQuery ? `(${finalQuery});node.type!=D` : 'node.type!=D'
 }
 
 const buildSearchQuery = (searchTerm: string) => {
@@ -696,7 +696,7 @@ const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   // Multiple filters are intersected (a node must match every one).
   return assetFilters
     .filter(f => f.column && f.value && ALLOWED_ASSET_COLUMNS.has(f.column))
-    .map(f => `assetRecord.${f.column}==${encodeFiqlValue(f.value)}`)
+    .map(f => `assetRecord.${getAssetColumnFiqlProperty(f.column)}==${encodeFiqlValue(f.value)}`)
     .join(getFiqlSetOperator(SetOperator.Intersection))
 }
 

@@ -22,6 +22,9 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  ASSET_COLUMN_FIQL_MAP,
+  ASSET_COLUMN_OPTIONS,
+  getAssetColumnFiqlProperty,
   parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
@@ -472,7 +475,8 @@ describe('Nodes queryStringParser test', () => {
       ['value only', { assetValue: 'HQ' }, []],
       ['single valid building', { assetColumn: 'building', assetValue: 'HQ' }, [{ column: 'building', value: 'HQ' }]],
       ['single valid region', { assetColumn: 'region', assetValue: 'East' }, [{ column: 'region', value: 'East' }]],
-      ['disallowed column (geolocation) skipped', { assetColumn: 'city', assetValue: 'Pittsburgh' }, []],
+      ['formerly-rejected geolocation column (city) now accepted', { assetColumn: 'city', assetValue: 'Pittsburgh' }, [{ column: 'city', value: 'Pittsburgh' }]],
+      ['formerly-rejected non-curated column (assetNumber) now accepted', { assetColumn: 'assetNumber', assetValue: 'A-123' }, [{ column: 'assetNumber', value: 'A-123' }]],
       ['unknown column skipped', { assetColumn: 'bogus', assetValue: 'X' }, []]
     ]) ('parseAssetFilters: %s', (title, queryObject, expected) => {
       expect(parseAssetFilters(queryObject)).toEqual(expected)
@@ -489,10 +493,10 @@ describe('Nodes queryStringParser test', () => {
       ])
     })
 
-    test('skips disallowed columns within a repeated set', () => {
+    test('skips disallowed (unknown) columns within a repeated set', () => {
       const result = parseAssetFilters({
-        assetColumn: ['building', 'city', 'rack'],
-        assetValue: ['HQ', 'Pittsburgh', 'R1']
+        assetColumn: ['building', 'bogus', 'rack'],
+        assetValue: ['HQ', 'Whatever', 'R1']
       })
       expect(result).toEqual([
         { column: 'building', value: 'HQ' },
@@ -506,6 +510,32 @@ describe('Nodes queryStringParser test', () => {
         assetValue: ['HQ', 'DC2']
       })
       expect(result).toEqual([{ column: 'building', value: 'DC2' }])
+    })
+  })
+
+  describe('ASSET_COLUMN_FIQL_MAP / getAssetColumnFiqlProperty', () => {
+    test('getAssetColumnFiqlProperty maps geolocation-backed columns to nested properties', () => {
+      expect(getAssetColumnFiqlProperty('city')).toBe('geolocation.city')
+      expect(getAssetColumnFiqlProperty('state')).toBe('geolocation.state')
+      expect(getAssetColumnFiqlProperty('zip')).toBe('geolocation.zip')
+      expect(getAssetColumnFiqlProperty('country')).toBe('geolocation.country')
+      expect(getAssetColumnFiqlProperty('address1')).toBe('geolocation.address1')
+      expect(getAssetColumnFiqlProperty('address2')).toBe('geolocation.address2')
+    })
+
+    test('getAssetColumnFiqlProperty is identity for direct columns', () => {
+      expect(getAssetColumnFiqlProperty('building')).toBe('building')
+      expect(getAssetColumnFiqlProperty('assetNumber')).toBe('assetNumber')
+    })
+
+    test('getAssetColumnFiqlProperty falls back to identity for an unmapped column', () => {
+      expect(getAssetColumnFiqlProperty('notARealColumn')).toBe('notARealColumn')
+    })
+
+    test('every ASSET_COLUMN_OPTIONS dropdown value is a key in ASSET_COLUMN_FIQL_MAP (identity)', () => {
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(ASSET_COLUMN_FIQL_MAP[option.value]).toBe(option.value)
+      }
     })
   })
 
