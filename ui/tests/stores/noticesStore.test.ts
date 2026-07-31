@@ -143,6 +143,21 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledTimes(1)
     })
 
+    it('should rewind a page when the ack empties the current page', async () => {
+      // land on page 2 (offset 10) with one row, then ack it away
+      vi.mocked(API.browseNotices).mockResolvedValue({ notices: mockNotices, totalCount: 11 })
+      await store.onPage(10, 10)
+      vi.mocked(API.acknowledgeNotice).mockResolvedValue(true)
+      vi.mocked(API.browseNotices)
+        .mockResolvedValueOnce({ notices: [], totalCount: 10 })
+        .mockResolvedValueOnce({ notices: mockNotices, totalCount: 10 })
+
+      await store.acknowledge(mockNotices[0])
+
+      expect(store.first).toBe(0)
+      expect(store.notices).toEqual(mockNotices)
+    })
+
     it('should not reload when acknowledging fails', async () => {
       vi.mocked(API.acknowledgeNotice).mockResolvedValue(false)
 

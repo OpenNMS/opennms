@@ -68,9 +68,11 @@ const populated = ref(false)
 watch(
   () => props.visible,
   async (isVisible) => {
-    if (isVisible && !populated.value) {
+    if (isVisible && (!populated.value || store.notifdStatus === null)) {
       await store.populate()
-      populated.value = true
+      // only latch on success so a transient failure (restart, 500) retries
+      // on the next open instead of leaving the toggle disabled forever
+      populated.value = store.notifdStatus !== null
     }
   }
 )

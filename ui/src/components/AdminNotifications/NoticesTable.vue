@@ -149,10 +149,13 @@ import TableCard from '@/components/Common/TableCard.vue'
 import DownloadFileIcon from '@/components/icons/action/DownloadFile.vue'
 import PrintIcon from '@/components/icons/action/Print.vue'
 import API from '@/services'
+import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
+import { MessageSeverity } from '@/types'
 import { useNoticesStore } from '@/stores/noticesStore'
 import { OnmsNotice } from '@/types/notices'
 
+const { showSnackBar } = useSnackbar()
 const menuStore = useMenuStore()
 const store = useNoticesStore()
 
@@ -192,14 +195,20 @@ const onPage = (event: DataTablePageEvent) => {
   store.onPage(event.first, event.rows)
 }
 
-const fetchAllForExport = async (): Promise<OnmsNotice[]> => {
+const fetchAllForExport = async (): Promise<{ notices: OnmsNotice[], totalCount: number }> => {
   const result = await API.browseNotices({
     acktype: store.preset === 'allAcknowledged' ? 'ack' : 'unack',
     user: store.preset === 'yourOutstanding' ? store.currentUser : store.preset === 'userSearch' ? store.userFilter : null,
     limit: EXPORT_LIMIT,
     offset: 0
   })
-  return result.notices
+  if (result.totalCount > result.notices.length) {
+    showSnackBar({
+      msg: `Only the first ${result.notices.length} of ${result.totalCount} notices were exported.`,
+      severity: MessageSeverity.Warn
+    })
+  }
+  return { notices: result.notices, totalCount: result.totalCount }
 }
 
 const exportColumns = (notice: OnmsNotice): Record<string, string> => ({
@@ -216,13 +225,19 @@ const exportColumns = (notice: OnmsNotice): Record<string, string> => ({
 })
 
 const downloadCsv = async () => {
-  const notices = await fetchAllForExport()
+  const { notices } = await fetchAllForExport()
   if (!notices.length) {
     return
   }
   const rows = notices.map(exportColumns)
   const headers = Object.keys(rows[0])
-  const escapeCell = (value: string) => `"${value.replaceAll('"', '""')}"`
+  // a leading = + - @ or tab would execute as a formula when the CSV is
+  // opened in a spreadsheet; notice text derives from event data, which can
+  // be externally influenced (traps), so neutralise it
+  const escapeCell = (value: string) => {
+    const guarded = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+    return `"${guarded.replaceAll('"', '""')}"`
+  }
   const csv = [
     headers.map(escapeCell).join(','),
     ...rows.map((row) => headers.map((h) => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
@@ -236,7 +251,7 @@ const downloadCsv = async () => {
 }
 
 const printNotices = async () => {
-  const notices = await fetchAllForExport()
+  const { notices, totalCount } = await fetchAllForExport()
   if (!notices.length) {
     return
   }
@@ -260,7 +275,7 @@ const printNotices = async () => {
 </head>
 <body>
 <h1>${escapeHtml(store.title)}</h1>
-<div class="meta">OpenNMS Horizon — generated ${escapeHtml(new Date().toLocaleString())} — ${rows.length} notice${rows.length === 1 ? '' : 's'}</div>
+<div class="meta">OpenNMS Horizon — generated ${escapeHtml(new Date().toLocaleString())} — ${rows.length < totalCount ? `first ${rows.length} of ${totalCount}` : rows.length} notice${totalCount === 1 ? '' : 's'}</div>
 <table>
 <thead><tr>${headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
 <tbody>${rows.map((row) => `<tr>${headers.map((h) => `<td>${escapeHtml(row[h])}</td>`).join('')}</tr>`).join('')}</tbody>

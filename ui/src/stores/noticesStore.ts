@@ -98,6 +98,12 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     const ok = await API.acknowledgeNotice(notice.id, true)
     if (ok) {
       await load()
+      // acknowledging the last row of the last page leaves the offset past
+      // the end; rewind a page instead of stranding the user on an empty one
+      if (!notices.value.length && first.value > 0) {
+        first.value = Math.max(0, first.value - rows.value)
+        await load()
+      }
     }
     return ok
   }
