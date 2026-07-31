@@ -144,7 +144,7 @@ If you relied on autoactions to run shell commands in response to events, migrat
 
 The `CORE_SERVICE_ACTIOND_ENABLED` environment variable no longer has any effect.
 No action is required in `service-configuration.xml`: a leftover `<service><name>OpenNMS:Name=Actiond</name></service>` entry is ignored on startup and logs a warning, because that file is an enable/disable overlay on the shipped service catalog rather than the catalog itself.
-An unmodified `etc/actiond-configuration.xml` is removed on upgrade; if you customized it, your copy is left behind as `actiond-configuration.xml.rpmsave` and can be deleted.
+An unmodified `etc/actiond-configuration.xml` is removed on upgrade; if you customized it, your copy is left behind by the package manager and can be deleted.
 
 === KSC Reports renamed to Graph Collections
 
