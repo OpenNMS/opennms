@@ -254,4 +254,5 @@
 **** xref:deep-dive/admin/logging/log-reader.adoc[]
 **** xref:deep-dive/admin/logging/log-file-viewer.adoc[]
 *** xref:deep-dive/admin/restart.adoc[]
+*** xref:deep-dive/admin/high-availability.adoc[]
 *** xref:deep-dive/admin/mib.adoc[]
