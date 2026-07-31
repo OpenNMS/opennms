@@ -5,7 +5,7 @@
       <div class="header-right">
         <div class="count" data-test="notices-count">{{ store.totalCount }} notice{{ store.totalCount === 1 ? '' : 's' }}</div>
         <OnmsIconButton
-          text
+          variant="text"
           :icon="DownloadFileIcon"
           iconSize="1.2rem"
           title="Download as CSV"
@@ -15,7 +15,7 @@
           @click="downloadCsv"
         />
         <OnmsIconButton
-          text
+          variant="text"
           :icon="PrintIcon"
           iconSize="1.2rem"
           title="Print / save as PDF"

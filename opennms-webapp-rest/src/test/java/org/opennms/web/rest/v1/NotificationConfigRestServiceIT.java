@@ -67,6 +67,8 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
 
     private String m_onmsHome;
 
+    private static String s_previousOpennmsHome;
+
 
     @Override
     protected void beforeServletStart() throws Exception {
@@ -74,6 +76,9 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         File etc = new File("target/test-work-dir/etc");
         etc.mkdirs();
         m_onmsHome = etc.getParent();
+        if (s_previousOpennmsHome == null) {
+            s_previousOpennmsHome = System.getProperty("opennms.home", "");
+        }
         System.setProperty("opennms.home", m_onmsHome);
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
 
@@ -83,8 +88,8 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
                 + "<handler-class><name>org.opennms.netmgt.notifd.DefaultQueueHandler</name></handler-class>"
                 + "</queue>"
                 + "</notifd-configuration>", Charset.defaultCharset());
-        // deliberately NOT calling NotifdConfigFactory.init() here: the service
-        // must initialize it itself (cold-start ordering regression guard)
+        // NotifdConfigFactory.init() is deliberately not called here; the
+        // service initializes the factories itself
 
         FileUtils.writeStringToFile(new File(etc, "notifications.xml"), "<?xml version=\"1.0\"?>"
                 + "<notifications xmlns=\"http://xmlns.opennms.org/xsd/notifications\">"
@@ -132,6 +137,17 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
     }
 
+    @org.junit.AfterClass
+    public static void restoreOpennmsHome() {
+        if (s_previousOpennmsHome != null) {
+            if (s_previousOpennmsHome.isEmpty()) {
+                System.clearProperty("opennms.home");
+            } else {
+                System.setProperty("opennms.home", s_previousOpennmsHome);
+            }
+        }
+    }
+
     @Test
     public void testNotifdStatus() throws Exception {
         JSONObject status = new JSONObject(getJson("/notification-config/status"));
@@ -149,7 +165,7 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     public void testDestinationPathsReadable() throws Exception {
         // the read side ships in the base PR: the event-notification editor
         // needs the path list for its destination picker
-        // order-independent: sibling tests may add or rename paths
+        // no assumptions about what other suites left in the shared config
         JSONObject list = new JSONObject(getJson("/notification-config/destination-paths"));
         Assert.assertTrue(list.getJSONArray("path").length() >= 1);
         final String firstName = list.getJSONArray("path").getJSONObject(0).getString("name");

@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -56,17 +56,17 @@ import org.springframework.stereotype.Component;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * REST access to the notification configuration that has historically only been
- * reachable through the admin JSP wizards. All operations delegate to the same
- * file-backed config factories the legacy servlets use, so the XML files
- * (notifications.xml, destinationPaths.xml, notificationCommands.xml,
- * notifd-configuration.xml) remain the system of record and stay fully
- * editable by hand.
+ * REST access to the notifd on/off status and the read side of the
+ * destination path configuration, delegating to the same file-backed config
+ * factories the legacy servlets use — notifd-configuration.xml and
+ * destinationPaths.xml remain the system of record and stay fully editable
+ * by hand.
  *
  * <ul>
  * <li><b>GET /notification-config/status</b> global notifd on/off status</li>
  * <li><b>PUT /notification-config/status</b> turn notifd on or off</li>
  * <li><b>GET /notification-config/destination-paths</b> all destination paths</li>
+ * <li><b>GET /notification-config/destination-paths/{name}</b> one destination path</li>
  * </ul>
  */
 @Component("notificationConfigRestService")
@@ -116,7 +116,7 @@ public class NotificationConfigRestService extends OnmsRestService {
     @PUT
     @Path("status")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setStatus(@Context final SecurityContext securityContext, final NotificationStatus status) {
+    public Response setStatus(@Context final SecurityContext securityContext, @Context final HttpServletRequest request, final NotificationStatus status) {
         assertAdmin(securityContext, "change the notification status");
         if (status == null || !("on".equals(status.getStatus()) || "off".equals(status.getStatus()))) {
             throw getException(Status.BAD_REQUEST, "Status must be 'on' or 'off'");
@@ -126,10 +126,10 @@ public class NotificationConfigRestService extends OnmsRestService {
             LOG.info("Setting notifd status to {} for user {}", status.getStatus(), securityContext.getUserPrincipal().getName());
             if ("on".equals(status.getStatus())) {
                 getNotifdConfigFactory().turnNotifdOn();
-                sendStatusEvent("uei.opennms.org/internal/notificationsTurnedOn", securityContext);
+                sendStatusEvent("uei.opennms.org/internal/notificationsTurnedOn", securityContext, request);
             } else {
                 getNotifdConfigFactory().turnNotifdOff();
-                sendStatusEvent("uei.opennms.org/internal/notificationsTurnedOff", securityContext);
+                sendStatusEvent("uei.opennms.org/internal/notificationsTurnedOff", securityContext, request);
             }
             return Response.noContent().build();
         } catch (final Exception e) {
@@ -185,9 +185,12 @@ public class NotificationConfigRestService extends OnmsRestService {
         }
     }
 
-    private void sendStatusEvent(final String uei, final SecurityContext securityContext) {
+    private void sendStatusEvent(final String uei, final SecurityContext securityContext, final HttpServletRequest request) {
+        // same parameters the legacy UpdateNotifdStatusServlet put on the event
         final EventBuilder bldr = new EventBuilder(uei, "ReST");
         bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
+        bldr.addParam("remoteHost", request.getRemoteHost());
+        bldr.addParam("remoteAddr", request.getRemoteAddr());
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (final Exception e) {
@@ -200,16 +203,10 @@ public class NotificationConfigRestService extends OnmsRestService {
         return NotifdConfigFactory.getInstance();
     }
 
-    private static boolean isBlank(final String value) {
-        return value == null || value.isBlank();
-    }
-
     private static DestinationPathFactory getDestinationPathFactory() throws Exception {
         DestinationPathFactory.init();
         return DestinationPathFactory.getInstance();
     }
-
-
 
 
 }

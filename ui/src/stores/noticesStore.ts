@@ -21,6 +21,7 @@
 ///
 
 import API from '@/services'
+import useSnackbar from '@/composables/useSnackbar'
 import { useAuthStore } from '@/stores/authStore'
 import { NoticeQueryPreset, OnmsNotice } from '@/types/notices'
 import { defineStore } from 'pinia'
@@ -65,7 +66,18 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     return 'Notices'
   })
 
+  const { showSnackBar } = useSnackbar()
+
   const load = async () => {
+    // a failed whoami leaves no user id; widening a user-scoped query to
+    // everyone's notices would be silently wrong, so refuse instead
+    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch'
+    if (needsUser && !effectiveUser.value) {
+      notices.value = []
+      totalCount.value = 0
+      showSnackBar({ msg: 'Cannot determine the current user; showing no notices. Reload the page to retry.', error: true })
+      return
+    }
     loading.value = true
     try {
       const result = await API.browseNotices({
@@ -99,9 +111,9 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     if (ok) {
       await load()
       // acknowledging the last row of the last page leaves the offset past
-      // the end; rewind a page instead of stranding the user on an empty one
+      // the end; clamp to the last valid page instead of stranding the user
       if (!notices.value.length && first.value > 0) {
-        first.value = Math.max(0, first.value - rows.value)
+        first.value = totalCount.value > 0 ? Math.floor((totalCount.value - 1) / rows.value) * rows.value : 0
         await load()
       }
     }

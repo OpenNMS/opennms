@@ -161,7 +161,7 @@ const router = createRouter({
     {
       path: '/admin/notifications',
       name: 'Notifications',
-      component: () => import('@/containers/AdminNotifications.vue')
+      component: () => import('@/containers/Notifications.vue')
     },
     {
       path: '/map',

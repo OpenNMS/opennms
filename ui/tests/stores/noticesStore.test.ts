@@ -12,6 +12,11 @@ vi.mock('@/services', () => ({
   }
 }))
 
+const showSnackBar = vi.fn()
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar })
+}))
+
 describe('useNoticesStore', () => {
   let store: ReturnType<typeof useNoticesStore>
 
@@ -141,6 +146,33 @@ describe('useNoticesStore', () => {
       expect(ok).toBe(true)
       expect(API.acknowledgeNotice).toHaveBeenCalledWith(1, true)
       expect(API.browseNotices).toHaveBeenCalledTimes(1)
+    })
+
+    it('should refuse user-scoped queries without a user id', async () => {
+      const authStore = useAuthStore()
+      authStore.whoAmI = { id: '', fullName: '', internal: true, roles: [] }
+
+      await store.load()
+
+      expect(API.browseNotices).not.toHaveBeenCalled()
+      expect(store.notices).toEqual([])
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    })
+
+    it('should clamp to the last valid page when the ack empties the current page', async () => {
+      // land far past the end (offset 40), then ack away the last row there;
+      // 25 remaining rows at 10/page puts the last valid page at offset 20
+      vi.mocked(API.browseNotices).mockResolvedValue({ notices: mockNotices, totalCount: 41 })
+      await store.onPage(40, 10)
+      vi.mocked(API.acknowledgeNotice).mockResolvedValue(true)
+      vi.mocked(API.browseNotices)
+        .mockResolvedValueOnce({ notices: [], totalCount: 25 })
+        .mockResolvedValueOnce({ notices: mockNotices, totalCount: 25 })
+
+      await store.acknowledge(mockNotices[0])
+
+      expect(store.first).toBe(20)
+      expect(store.notices).toEqual(mockNotices)
     })
 
     it('should rewind a page when the ack empties the current page', async () => {
