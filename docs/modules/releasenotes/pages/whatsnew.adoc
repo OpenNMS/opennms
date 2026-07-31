@@ -133,18 +133,7 @@ There is no drop-in replacement.
 
 === Actiond removed
 
-The `Actiond` daemon has been removed, along with its configuration file `etc/actiond-configuration.xml` and schema.
-Actiond subscribed to all events and launched an external process for each `<autoaction>` and `<tticket>` element attached to them.
-
-The `<autoaction>`, `<tticket>`, and `<operaction>` elements remain valid in event configuration, so existing customized event definitions continue to validate and require no changes.
-However, they are no longer executed — they are retained as event data only.
-(`<operaction>` has not been executed by any daemon for several major releases.)
-
-If you relied on autoactions to run shell commands in response to events, migrate that logic to Scriptd (`etc/scriptd-configuration.xml`), which executes BSF/Groovy scripts on event receipt, or to a notification command via `etc/notificationCommands.xml`.
-
-The `CORE_SERVICE_ACTIOND_ENABLED` environment variable no longer has any effect.
-No action is required in `service-configuration.xml`: a leftover `<service><name>OpenNMS:Name=Actiond</name></service>` entry is ignored on startup and logs a warning, because that file is an enable/disable overlay on the shipped service catalog rather than the catalog itself.
-An unmodified `etc/actiond-configuration.xml` is removed on upgrade; if you customized it, your copy is left behind by the package manager and can be deleted.
+The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have been removed. Actiond-related event fields will still validate but are ignored.
 
 === KSC Reports renamed to Graph Collections
 
