@@ -255,6 +255,7 @@ export interface SnmpInterface {
   lastEgressFlow: any
   lastIngressFlow: any
   lastSnmpPoll: number
+  nodeId: number
   physAddr: any
   poll: boolean
 }

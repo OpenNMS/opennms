@@ -24,6 +24,7 @@ import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
 import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
+import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
 
 export const useNodeStore = defineStore('nodeStore', () => {
@@ -41,6 +42,9 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
   // map of nodeId to IpInterfaces associated with that node
   const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
+
+  // map of nodeId to SnmpInterfaces associated with that node
+  const nodeToSnmpInterfaceMap = ref<Map<string, SnmpInterface[]>>(new Map<string, SnmpInterface[]>())
 
   const getNodes = async (queryParameters?: QueryParameters, includeIpInterfaces?: boolean) => {
     const resp = await API.getNodes(queryParameters)
@@ -107,6 +111,38 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  /**
+   * Get the SnmpInterfaces for the given nodes, then replace nodeToSnmpInterfaceMap with the
+   * newly grouped result (grouped by String(nodeId)).
+   */
+  const getSnmpInterfacesForNodes = async (nodeIds: string[], narrowing?: string) => {
+    if (nodeIds.length === 0) {
+      nodeToSnmpInterfaceMap.value = new Map<string, SnmpInterface[]>()
+      return
+    }
+
+    const query = getNodeSnmpInterfaceQuery(nodeIds, narrowing)
+    const queryParameters = {
+      limit: 0,
+      _s: query
+    } as QueryParameters
+
+    const resp = await API.getSnmpInterfaces(queryParameters)
+
+    const grouped = new Map<string, SnmpInterface[]>()
+
+    if (resp) {
+      for (const snmp of resp.snmpInterface) {
+        const key = String(snmp.nodeId)
+        const snmpsThisNode = grouped.get(key) ?? []
+        snmpsThisNode.push(snmp)
+        grouped.set(key, snmpsThisNode)
+      }
+    }
+
+    nodeToSnmpInterfaceMap.value = grouped
+  }
+
   const getNodeAvailabilityPercentage = async (id: string) => {
     const av = await API.getNodeAvailabilityPercentage(id)
 
@@ -140,10 +176,12 @@ export const useNodeStore = defineStore('nodeStore', () => {
     ipInterfacesTotalCount,
     availability,
     nodeToIpInterfaceMap,
+    nodeToSnmpInterfaceMap,
     nodeQueryParameters,
     outages,
     outagesTotalCount,
     getIpInterfacesForNodes,
+    getSnmpInterfacesForNodes,
     getNodes,
     getNodeById,
     getNodeSnmpInterfaces,
