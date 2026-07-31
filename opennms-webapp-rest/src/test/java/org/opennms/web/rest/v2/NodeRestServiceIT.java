@@ -430,6 +430,52 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearch() throws Exception {
+        // DatabasePopulator seeds node1's SNMP service with a resolved outage, an unresolved outage
+        // with null perspective and null suppressTime (a current outage), and a resolved + unresolved
+        // perspective outage pair (excluded by "perspective is null"). Only the unresolved,
+        // non-perspective outage should make node1 match nodesWithOutages.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Has-outages: at least node1 matches
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true"), 200);
+
+        // Precise: node1 HAS a current outage, node2 does NOT
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true;node.label==node1"), 200);
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true;node.label==node2"), 204);
+
+        // Excluding nodes with outages: node1 drops out, node2 remains
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==false;node.label==node1"), 204);
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==false;node.label==node2"), 200);
+
+        // NOT_EQUALS true is equivalent to ==false (exclude nodes with outages)
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages!=true;node.label==node1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodeTypeSearch() throws Exception {
+        // DatabasePopulator's nodes are all type "A" (active), which suffices to exercise both
+        // branches of the node.type filter. This locks in the FIQL "type" filtering used by the
+        // Vue node-list page.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Active nodes: the populator's nodes match
+        sendRequest(GET, url, parseParamData("_s=node.type==A"), 200);
+
+        // Deleted nodes: none of the populator's nodes are type D
+        sendRequest(GET, url, parseParamData("_s=node.type==D"), 204);
+
+        // NOT_EQUALS: excluding deleted nodes still returns the active ones
+        sendRequest(GET, url, parseParamData("_s=node.type!=D"), 200);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testNodesWithAssetsSearch() throws Exception {
         // DatabasePopulator seeds alternate-node1 with asset info (assetNumber, plus building "HQ"
         // carried over by NetworkBuilder). A bare node created via REST has no asset fields set
