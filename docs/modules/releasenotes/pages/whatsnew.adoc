@@ -90,8 +90,9 @@ Existing `javamail-configuration.xml` and `javamail-configuration.properties` fi
 
 * Mail servers can now be authenticated against with OAuth2 access tokens via the SASL XOAUTH2 mechanism, which Microsoft 365 and Gmail require now that they have retired basic SMTP authentication for most tenants.
 Set `mail.smtp.auth.mechanisms=XOAUTH2` and use a `${token:<name>}` metadata expression as the password; see the xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] documentation for a worked Microsoft 365 client-credentials example.
-* SSL/TLS connections now verify that the server certificate matches the configured host name (`mail.smtp.ssl.checkserveridentity` defaults to `true` in Angus Mail).
-Connections to mail servers with self-signed or mismatched certificates that previously worked will fail until the certificate is fixed or the property is explicitly set to `false`.
+* SSL/TLS connections now verify that the server certificate covers the configured mail host (`mail.smtp.ssl.checkserveridentity` defaults to `true` in Angus Mail).
+Connections that previously worked may fail with `No subject alternative names matching ...`, including where `mail.smtp.ssl.trust` is already set, since that property affects only whether the certificate chain is trusted.
+See xref:operation:deep-dive/notifications/configuration.adoc#mail-tls[Mail server TLS] for the properties involved.
 * The JMTA local-MTA transport has been removed; it cannot work with Jakarta Mail.
 The `use-jmta` attribute and the `org.opennms.core.utils.useJMTA` property are still accepted so existing files keep loading.
 Setting `useJMTA=true` in the properties file logs a warning and sends over SMTP to the configured mail host (default `127.0.0.1:25`) instead; the `javamail-configuration.xml` attribute never selected the transport on that path, so its behavior is unchanged.
