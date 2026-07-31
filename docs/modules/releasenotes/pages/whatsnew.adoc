@@ -135,6 +135,10 @@ These provided auto-rotating, dashlet-composed displays intended for wall-mounte
 The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
 There is no drop-in replacement.
 
+=== Actiond removed
+
+The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have been removed. Actiond-related event fields will still validate but are ignored.
+
 === KSC Reports renamed to Graph Collections
 
 The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
