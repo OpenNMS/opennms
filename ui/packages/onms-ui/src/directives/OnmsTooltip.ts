@@ -20,35 +20,12 @@
 /// License.
 ///
 
-import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
-import OpenNMSPreset from './opennms-preset'
-import 'primeicons/primeicons.css'
-import '@/styles/primevue-overrides.scss'
-import '@/styles/onms-grid.scss'
+import Tooltip from 'primevue/tooltip'
 
-import type { App } from 'vue'
-
-export const setupPrimeVue = (app: App) => {
-  app.use(PrimeVue, {
-    theme: {
-      preset: OpenNMSPreset,
-      options: {
-        prefix: 'p',
-        darkModeSelector: '.open-dark',
-        cssLayer: {
-          name: 'primevue',
-          order: 'primevue'
-        }
-      }
-    },
-    zIndex: {
-      overlay: 1060,
-      menu: 1060,
-      modal: 1100,
-      tooltip: 1110
-    }
-  })
-
-  app.directive('onms-tooltip', OnmsTooltip)
-}
+// Seam re-export (NMS-20054) of PrimeVue's Tooltip directive. The host app
+// registers it as `v-onms-tooltip` (ui/src/theme/primevue-setup.ts), so app
+// and plugin templates carry OpenNMS vocabulary instead of PrimeVue's.
+// PrimeVue keys the directive's internals (pt name, data-pc-name, z-index
+// bucket) off BaseTooltip.extend('tooltip', ...), not the registration name,
+// so the rename is behavior-neutral (verified against primevue@4.5.5).
+export default Tooltip

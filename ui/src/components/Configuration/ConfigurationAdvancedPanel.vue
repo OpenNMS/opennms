@@ -33,7 +33,7 @@
         <OnmsIconButton
           class="delete-icon"
           aria-label="Delete"
-          v-tooltip="'Delete'"
+          v-onms-tooltip="'Delete'"
           :icon="Delete"
           @click="() => deleteAdvancedOption(index)"
         />
