@@ -130,7 +130,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Distributed Monitoring
         clickMenuItem("Distributed Monitoring", "Manage Minions");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage Minions')]")));
+        // now a /ui (Vue) page rather than the legacy JSP breadcrumb
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Minions']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Applications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));

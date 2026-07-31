@@ -74,8 +74,13 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from './minionAdminService'
 
 export default {
+  getMinionNodeIds,
+  listMinions,
+  updateMinion,
+  deleteMinion,
   search,
   getInfo,
   getNodes,
