@@ -248,16 +248,17 @@
     		<switch>trapVarbind</switch>
     	</argument>
     </command>
-    <!-- Use this notificationCommand to create a trouble ticket for the alarm associated with the
-    notification's event.  Requires a configured ticketer plugin, and the event must have alarm-data.
+    <!-- Use this notificationCommand to manage the trouble ticket for the alarm associated with the
+    notification's event: it creates a ticket while the alarm is active and closes that ticket once
+    the alarm is cleared.  Requires a configured ticketer plugin, and the event must have alarm-data.
     Use a destination path with a non-zero initial-delay so alarmd has associated the event with an
     alarm before the ticket lookup runs.  The optional ticketUser argument sets the user parameter
-    on the create-ticket event (defaults to "admin"); it can be supplied per notification with a
+    on the ticket events (defaults to "admin"); it can be supplied per notification with a
     parameter named "ticketUser" in notifications.xml. -->
     <command binary="false">
-        <name>createTicket</name>
+        <name>troubleTicket</name>
         <execute>org.opennms.netmgt.notifd.TicketNotificationStrategy</execute>
-        <comment>class for creating a trouble ticket for the alarm associated with the notification's event</comment>
+        <comment>class for managing the trouble ticket for the alarm associated with the notification's event</comment>
         <argument streamed="false">
             <switch>eventID</switch>
         </argument>

@@ -34,6 +34,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
@@ -75,6 +76,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		int m_alarmID;
 		String m_tticketID;
 		int m_tticketState;
+		int m_severity;
 		
 		AlarmState(int alarmID) {
 			m_alarmID = alarmID;
@@ -88,6 +90,11 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 			m_tticketState = tticketState;
 		}
 		
+		AlarmState(int alarmID, String tticketID, int tticketState, int severity) {
+			this(alarmID, tticketID, tticketState);
+			m_severity = severity;
+		}
+		
 		public int getAlarmID() {
 			return m_alarmID;
 		}
@@ -99,6 +106,10 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		public int getTticketState() {
 			return m_tticketState;
 		}
+		
+		public int getSeverity() {
+			return m_severity;
+		}
 	}
 	
 	protected static class AlarmStateRowCallbackHandler implements RowCallbackHandler {
@@ -108,7 +119,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		}
                 @Override
         public void processRow(ResultSet rs) throws SQLException {
-        	m_alarmState = new AlarmState(rs.getInt(1), rs.getString(2), rs.getInt(3));
+        	m_alarmState = new AlarmState(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getInt(4));
         }
         public AlarmState getAlarmState() {
         	return m_alarmState;
@@ -171,6 +182,23 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         	return 1;
         }
 
+        // Log everything we know so far.
+        LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', severity='{}', tticket-id='{}' and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getSeverity(), alarmState.getTticketID(), alarmState.getTticketState());
+
+        /* Notifd delivers this command for resolutions as well as problems: an
+         * auto-acknowledge re-runs the original notification's commands with the
+         * problem event's parameters, so eventUEI cannot tell the two apart. The
+         * alarm's severity can, and it is also what the ticketer gates a close on.
+         */
+        if( isCleared(alarmState.getSeverity()) ) {
+            if( hasActiveTicket(alarmState) ) {
+                sendCloseTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser, alarmState.getTticketID());
+            } else {
+		LOG.info("Alarm-id='{}' is cleared but has no active ticket (tticket-id='{}', state='{}'). Nothing to close.", alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
+            }
+            return 0;
+        }
+
         /* Guard against duplicate tickets: a previous notification, an escalation,
          * or another member of a group target may already have created one.
          * Tickets in a terminal state (or whose creation failed) do not block a
@@ -178,14 +206,15 @@ public class TicketNotificationStrategy implements NotificationStrategy {
          * Near-simultaneous deliveries can still race the asynchronous ticket
          * creation, so single-user targets remain the recommended configuration.
          */
-        if( StringUtils.isNotBlank(alarmState.getTticketID()) && isTicketActive(alarmState.getTticketState()) ) {
+        if( hasActiveTicket(alarmState) ) {
 		LOG.info("Alarm-id='{}' already has an active ticket-id='{}' in state '{}'. Will not create another ticket.", alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         	return 0;
         }
+        if( isTicketCreationPending(alarmState) ) {
+		LOG.info("Alarm-id='{}' has a ticket creation in flight. Will not create another ticket.", alarmState.getAlarmID());
+        	return 0;
+        }
 
-        // Log everything we know so far.
-        LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}' and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
-        
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser);
 
         return 0;
@@ -206,6 +235,30 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		return true;
 	}
 
+	private static boolean hasActiveTicket(final AlarmState alarmState) {
+		return StringUtils.isNotBlank(alarmState.getTticketID()) && isTicketActive(alarmState.getTticketState());
+	}
+
+    /**
+     * A create requested through the web UI or REST marks the alarm CREATE_PENDING
+     * before ticketd assigns an id, so an alarm can have a ticket on the way with
+     * nothing to point at yet. A NULL tticketstate reads as 0 (OPEN) rather than
+     * CREATE_PENDING, so a fresh alarm still gets its first ticket.
+     */
+	private static boolean isTicketCreationPending(final AlarmState alarmState) {
+		return StringUtils.isBlank(alarmState.getTticketID())
+				&& alarmState.getTticketState() == TroubleTicketState.CREATE_PENDING.getValue();
+	}
+
+    /**
+     * An alarm is cleared once its resolving event has been reduced onto it. The
+     * ticketer refuses to close a ticket whose alarm is not cleared, so this is
+     * the same condition it applies.
+     */
+	private static boolean isCleared(int severity) {
+		return severity == OnmsSeverity.CLEARED.getId();
+	}
+
     /**
      * <p>Helper function that gets the alarmid from the eventid</p>
      *
@@ -215,7 +268,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		AlarmStateRowCallbackHandler callbackHandler = new AlarmStateRowCallbackHandler();
 
         JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
-        template.query("SELECT a.alarmid, a.tticketid, a.tticketstate FROM events AS e " +
+        template.query("SELECT a.alarmid, a.tticketid, a.tticketstate, a.severity FROM events AS e " +
 				       "LEFT JOIN alarms AS a ON a.alarmid = e.alarmid " +
 				       "WHERE e.eventid = ?", new Object[] {eventID}, callbackHandler);
         
@@ -272,7 +325,20 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         ebldr.addParam(EventConstants.PARM_USER, ticketUser);
         m_eventManager.sendNow(ebldr.getEvent());
 	}
-	
+
+    /**
+     * <p>Helper function that sends the close ticket event</p>
+     */
+	public void sendCloseTicketEvent(int alarmID, String alarmUEI, String ticketUser, String ticketID) {
+        LOG.debug("Sending close ticket '{}' for alarm '{}' with id={} as user '{}'", ticketID, alarmUEI, alarmID, ticketUser);
+        EventBuilder ebldr = new EventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, getName());
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarmID);
+        ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarmUEI);
+        ebldr.addParam(EventConstants.PARM_USER, ticketUser);
+        ebldr.addParam(EventConstants.PARM_TROUBLE_TICKET, ticketID);
+        m_eventManager.sendNow(ebldr.getEvent());
+	}
+
     /**
      * <p>Return an id for this notification strategy</p>
      *

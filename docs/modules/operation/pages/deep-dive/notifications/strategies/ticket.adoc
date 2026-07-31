@@ -1,15 +1,40 @@
 
 = Trouble Ticket Notifications
-:description: How to configure {page-component-title} to create trouble tickets from notifications.
+:description: How to configure {page-component-title} to create and close trouble tickets from notifications.
 
-{page-component-title} normally creates trouble tickets from alarms, either manually from the web UI or through the automations described in xref:operation:deep-dive/ticketing/introduction.adoc[Ticketing].
-The ticket notification strategy provides a third path: it creates a ticket for the alarm associated with a notification's event.
+{page-component-title} normally manages trouble tickets from alarms, either manually from the web UI or through the automations described in xref:operation:deep-dive/ticketing/introduction.adoc[Ticketing].
+The ticket notification strategy provides a third path: it creates a ticket for the alarm associated with a notification's event, and closes that ticket once the alarm clears.
 Because it runs through notifd, it can take advantage of notification features that alarm automations do not, such as destination paths, escalation, and path outage suppression.
+
+Notifd delivers the same command for resolutions as well as problems, so the strategy reads the alarm behind the event rather than the event itself:
+
+[caption=]
+.How the strategy acts on the alarm behind the notification's event
+[cols="1,2,1"]
+|===
+| Alarm | Ticket | Action
+
+| Not cleared
+| None, or closed, resolved, cancelled, or creation failed
+| Create a ticket
+
+| Not cleared
+| Active, or a create already in flight
+| Nothing
+
+| Cleared
+| Active
+| Close the ticket
+
+| Cleared
+| None, or already settled
+| Nothing
+|===
 
 == Requirements and caveats
 
 * A ticketer plugin must be configured.
-Without one, the create-ticket events that this strategy sends are not acted on.
+Without one, the ticket events that this strategy sends are not acted on.
 * The event that triggers the notification must have `alarm-data` in its event definition.
 Events without alarm data are skipped, and the notification completes without creating a ticket.
 * The strategy looks up the alarm for the event at delivery time, but alarmd performs that association asynchronously.
@@ -21,9 +46,13 @@ The strategy reads only event parameters, so the target serves to satisfy the de
 Notifd runs each command once per member of a group target, and each run sends its own create-ticket event.
 The strategy skips the create event when the alarm already has an active ticket; tickets that are closed, resolved, or cancelled, or whose creation failed, do not block a new one.
 Near-simultaneous deliveries can race the asynchronous ticket creation, so a group target can still produce duplicate tickets.
-* The create-ticket event carries a `user` parameter that defaults to `admin`.
+* The ticket events carry a `user` parameter that defaults to `admin`.
 You can override it with the optional `ticketUser` argument described below.
 Whether the value appears on the created ticket depends on the ticketer plugin.
+* The ticketer ignores close requests for alarms that are not cleared, controlled by `opennms.ticketer.skipCloseWhenNotCleared` (default `true`).
+The strategy applies the same condition, so it sends a close only once the alarm is cleared.
+* Closing a ticket leaves its id on the alarm with the state `Closed`.
+A later occurrence of the same alarm opens a new ticket rather than reopening the closed one.
 
 == Setup
 
@@ -32,9 +61,9 @@ Add the following command to `notificationCommands.xml`:
 [source, xml]
 ----
 <command binary="false">
-    <name>createTicket</name>
+    <name>troubleTicket</name>
     <execute>org.opennms.netmgt.notifd.TicketNotificationStrategy</execute>
-    <comment>class for creating a trouble ticket for the alarm associated with the notification's event</comment>
+    <comment>class for managing the trouble ticket for the alarm associated with the notification's event</comment>
     <argument streamed="false">
         <switch>eventID</switch>
     </argument>
@@ -57,7 +86,7 @@ Add a destination path with an initial delay to `destinationPaths.xml`:
 <path name="Create-Ticket" initial-delay="30s">
     <target>
         <name>admin</name>
-        <command>createTicket</command>
+        <command>troubleTicket</command>
     </target>
 </path>
 ----
@@ -75,3 +104,13 @@ To set the ticket user for a notification, add a `ticketUser` parameter to its d
 ----
 
 If the parameter is absent, the strategy uses `admin`.
+
+== Closing tickets
+
+Closing needs no additional configuration for the standard outage events.
+When the resolving event arrives, notifd acknowledges the notice that opened the ticket and re-runs its commands, which delivers this command a second time.
+The resolving event is reduced onto the same alarm as the problem event, and alarmd has cleared that alarm by then, so the strategy closes its ticket instead of opening another.
+
+Closing therefore relies on the `auto-acknowledge` pairing for the problem UEI in `notifd-configuration.xml`, which ships configured for the node, interface, and service outage events and defaults to `notify="true"`.
+A problem UEI with no such pairing, such as a threshold or a custom alarm, opens tickets that nothing closes.
+Add an `auto-acknowledge` entry naming its resolving UEI to close them.
