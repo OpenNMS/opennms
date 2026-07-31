@@ -32,6 +32,8 @@ Add a command to `notificationCommands.xml`:
 
 Reference the command from a destination path as with any other notification command.
 
+The strategy's own switches (`file-name`, `lang-class`, `run-type`) can be set through the `<substitution>` element as shown above, or per notification with a `<parameter name="file-name" value="..."/>` entry on the `<notification>` in `notifications.xml`; a parameter value overrides the substitution.
+
 == Parameters
 
 [options="header"]
@@ -86,7 +88,7 @@ These selected a BSF engine class, which has no JSR-223 equivalent; they are ign
 These may be null when the notification has no node.
 |===
 
-When the corresponding argument switch is present on the command, its value is also available under a dedicated name: `text_message` (`-tm`), `numeric_message` (`-nm`), `node_id` (`-nodeid`), `ip_addr` (`-interface`), `svc_name` (`-service`), `subject` (`-subject`), `email` (`-email`), `pager_email` (`-pemail`), `text_pin` (`-tp`), `numeric_pin` (`-np`), `work_phone` (`-wphone`), `home_phone` (`-hphone`), `mobile_phone` (`-mphone`), and `phone_pin` (`-tuipin`).
+When the corresponding argument switch is present on the command, its value is also available under a dedicated name: `text_message` (`-tm`), `numeric_message` (`-nm`), `node_id` (`-nodeid`), `ip_addr` (`-interface`), `svc_name` (`-service`), `subject` (`-subject`), `email` (`-email`), `pager_email` (`-pemail`), `text_pin` (`-tp`), `numeric_pin` (`-np`), `work_phone` (`-wphone`), `home_phone` (`-hphone`), `mobile_phone` (`-mphone`), `phone_pin` (`-tuipin`), and `microblog_username` (`-ublog`, deprecated and scheduled for removal).
 
 == Reporting success
 

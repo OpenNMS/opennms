@@ -169,6 +169,65 @@ public class BSFNotificationStrategyIT {
     }
 
     @Test
+    public void nullVariablesStayDefinedInBeanshell() throws IOException {
+        // no -nodeid argument: node, node_label, foreign_source etc. are null;
+        // BSF defined them as null and scripts test them against null
+        File notifyBsh = tempFolder.newFile("notify-null.bsh");
+        FileUtils.write(notifyBsh, "results.put(\"status\", (node == null && foreign_source == null) ? \"OK\" : \"NOT_OK\");");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyBsh.getAbsolutePath(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void fileNameFromSubstitutionWorks() throws IOException {
+        // notifd passes "" as the value for switches without a notification
+        // parameter; the command's <substitution> must be honored then
+        File notifyBsh = tempFolder.newFile("notify-subst.bsh");
+        FileUtils.write(notifyBsh, "results.put(\"status\", node.id == " + node1Id() + " ? \"OK\" : \"NOT_OK\");");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", notifyBsh.getAbsolutePath(), "", false));
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+    }
+
+    @Test
+    public void missingFileNameArgumentReturnsFailure() {
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument(NotificationManager.PARAM_NODE, null, node1Id(), false));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "No 'file-name' argument supplied");
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void editedGroovyScriptIsRecompiled() throws IOException {
+        // exercises the compiled-script cache: reuse, then mtime invalidation
+        File notifyGroovy = tempFolder.newFile("notify-cache.groovy");
+        FileUtils.write(notifyGroovy, "results.put(\"status\", \"OK\")");
+
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new Argument("file-name", null, notifyGroovy.getAbsolutePath(), false));
+
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+        // second run served from the cache
+        assertEquals(0, bsfNotificationStrategy.send(arguments));
+
+        FileUtils.write(notifyGroovy, "results.put(\"status\", \"NOT_OK\")");
+        // mtime granularity can swallow quick successive writes; force it
+        assertEquals(true, notifyGroovy.setLastModified(notifyGroovy.lastModified() + 2000));
+
+        assertEquals(-1, bsfNotificationStrategy.send(arguments));
+        MockLogAppender.assertLogMatched(Level.WARN, "did not indicate successful notification");
+        MockLogAppender.resetState();
+    }
+
+    @Test
     public void missingScriptFileReturnsFailure() {
         List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument("file-name", null, new File(tempFolder.getRoot(), "no-such-script.bsh").getAbsolutePath(), false));

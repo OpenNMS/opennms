@@ -110,23 +110,16 @@ public class BSFNotificationStrategy implements NotificationStrategy {
     private int executeScript(String fileName) {
         warnAboutDeprecatedSwitches();
 
-        LOG.info("Loading notification script from file '{}'", fileName);
         if (fileName == null) {
             LOG.warn("No 'file-name' argument supplied for the BSF notification command. Returning failure indication.");
             return -1;
         }
+        LOG.info("Loading notification script from file '{}'", fileName);
         File scriptFile = new File(fileName);
         int ret = -1;
         try {
             if (!scriptFile.exists() || !scriptFile.canRead()) {
                 LOG.warn("Cannot locate or read script file '{}'. Returning failure indication.", fileName);
-                return -1;
-            }
-
-            final ScriptEngine engine = resolveEngine(getLangClass(), fileName);
-            if (engine == null) {
-                LOG.error("No JSR-223 script engine found for script '{}' (lang-class '{}'). BeanShell and Groovy are available by default; other engines must be on the classpath.",
-                        fileName, getLangClass());
                 return -1;
             }
 
@@ -141,14 +134,30 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             Bindings bindings = buildBindings(results);
             ScriptContext context = new SimpleScriptContext();
             context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+            // some engines (BeanShell) enumerate every scope unconditionally
+            context.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
 
             // Execute the script
             Object returnValue;
-            CompiledScript compiled = getOrCompile(engine, scriptFile);
+            CompiledScript compiled = getOrCompile(getLangClass(), scriptFile, fileName);
             if (compiled != null) {
                 returnValue = compiled.eval(context);
             } else {
-                returnValue = engine.eval(Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8), context);
+                // fresh engine per invocation: BeanShell's engine holds a
+                // mutable Interpreter, so sharing one across notifications
+                // would race; this path must stay per-invocation
+                final ScriptEngine engine = resolveEngine(getLangClass(), fileName);
+                if (engine == null) {
+                    LOG.error("No JSR-223 script engine found for script '{}' (lang-class '{}'). BeanShell and Groovy are available by default; other engines must be on the classpath.",
+                            fileName, getLangClass());
+                    return -1;
+                }
+                final String source = Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8);
+                if (engine.getClass().getName().startsWith("bsh.")) {
+                    returnValue = evalWithBeanShellInterpreter(source, bindings);
+                } else {
+                    returnValue = engine.eval(source, context);
+                }
             }
             if ("eval".equals(runType)) {
                 results.put("status", String.valueOf(returnValue));
@@ -208,36 +217,75 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
     /**
      * Returns the cached compiled form of the script, recompiling when the
-     * file changes, or null when the engine cannot compile (the script is
-     * then evaluated from source with the per-invocation engine, which keeps
-     * that path free of shared state).
+     * file changes, or null when it cannot be compiled: engines that do not
+     * support compilation latch that permanently, while a script's own
+     * compile error (or an unreadable file) is retried next time and
+     * surfaces through the source-evaluation fallback.
      */
-    private static CompiledScript getOrCompile(ScriptEngine engine, File scriptFile) throws IOException {
-        final String key = scriptFile.getAbsolutePath() + "|" + engine.getFactory().getEngineName();
+    private static CompiledScript getOrCompile(String langClass, File scriptFile, String fileName) throws IOException {
+        // keyed by what determines the engine, so a cache hit needs no engine
+        final String key = scriptFile.getAbsolutePath() + "|" + (langClass != null ? "lang:" + langClass : "ext");
         final ScriptState state = SCRIPT_CACHE.computeIfAbsent(key, k -> new ScriptState());
         synchronized (state.lock) {
             if (state.compileUnsupported) {
                 return null;
             }
             final long lastModified = scriptFile.lastModified();
-            if (lastModified > state.lastCompiled) {
-                if (!(engine instanceof Compilable)) {
-                    state.compileUnsupported = true;
+            if (lastModified != state.lastCompiled) {
+                state.compiled = null;
+                state.lastCompiled = -1;
+                final ScriptEngine engine = resolveEngine(langClass, fileName);
+                if (engine == null || !(engine instanceof Compilable)) {
+                    // no engine (reported by the caller's fallback path) or a
+                    // non-compiling engine; either way source evaluation decides
+                    state.compileUnsupported = engine != null;
                     return null;
                 }
                 try {
                     state.compiled = ((Compilable) engine).compile(Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8));
                     state.lastCompiled = lastModified;
+                } catch (ScriptException e) {
+                    // the script's fault, not the engine's: do not latch, so a
+                    // fixed script compiles again; the fallback eval surfaces it
+                    LOG.debug("Script '{}' failed to compile ({}); evaluating from source instead", scriptFile, e.toString());
                 } catch (Throwable t) {
-                    // must catch Throwable: BeanShell declares Compilable but its
-                    // compile() throws java.lang.Error("unimplemented")
+                    // BeanShell declares Compilable but its compile() throws
+                    // java.lang.Error("unimplemented"); latch engines like that
                     LOG.debug("Script engine '{}' cannot compile '{}' ({}); evaluating from source instead",
                             engine.getFactory().getEngineName(), scriptFile, t.toString());
                     state.compileUnsupported = true;
-                    return null;
                 }
             }
             return state.compiled;
+        }
+    }
+
+    /**
+     * BeanShell's JSR-223 engine cannot represent null variables: its
+     * external namespace treats a null map value as an undefined variable,
+     * breaking scripts that test node fields against null (which worked
+     * under BSF). Drive bsh.Interpreter directly like BSF did -
+     * Interpreter.set defines nulls properly. Reflective because this class
+     * compiles against javax.script only; bsh is a runtime dependency.
+     */
+    private static Object evalWithBeanShellInterpreter(String source, Bindings bindings) throws ScriptException {
+        try {
+            final Class<?> interpreterClass = Class.forName("bsh.Interpreter");
+            final Object interpreter = interpreterClass.getDeclaredConstructor().newInstance();
+            final java.lang.reflect.Method set = interpreterClass.getMethod("set", String.class, Object.class);
+            for (Map.Entry<String, Object> entry : bindings.entrySet()) {
+                set.invoke(interpreter, entry.getKey(), entry.getValue());
+            }
+            return interpreterClass.getMethod("eval", String.class).invoke(interpreter, source);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            final Throwable cause = e.getCause() != null ? e.getCause() : e;
+            final ScriptException scriptException = new ScriptException(cause.getMessage());
+            scriptException.initCause(cause);
+            throw scriptException;
+        } catch (ReflectiveOperationException e) {
+            final ScriptException scriptException = new ScriptException("BeanShell interpreter not available: " + e);
+            scriptException.initCause(e);
+            throw scriptException;
         }
     }
 
@@ -334,24 +382,21 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         return bindings;
     }
 
+    /**
+     * The argument value wins; when it is empty (notifd passes "" for
+     * switches it has no notification parameter for) the command's
+     * &lt;substitution&gt; is used, so the strategy's own switches like
+     * file-name can be configured entirely in notificationCommands.xml,
+     * as with the Slack/Mattermost strategies.
+     */
     private String getSwitchValue(String argSwitch) {
         String value = null;
         for (Argument arg : m_arguments) {
             if (arg.getSwitch().equals(argSwitch)) {
                 value = arg.getValue();
-            }
-        }
-        if (value != null && value.equals("")) value = null;
-
-        return value;
-    }
-
-    @SuppressWarnings("unused")
-    private String getSwitchSubstitution(String argSwitch) {
-        String value = null;
-        for (Argument arg : m_arguments) {
-            if (arg.getSwitch().equals(argSwitch)) {
-                value = arg.getSubstitution();
+                if (value == null || value.equals("")) {
+                    value = arg.getSubstitution();
+                }
             }
         }
         if (value != null && value.equals("")) value = null;

@@ -95,7 +95,8 @@ Points to review:
 
 * The `bsf-engine` and `file-extensions` switches are ignored (a warning is logged); the engine is chosen by `lang-class` or the script file extension.
 * The implicit `bsf` helper object BSF injected into scripts no longer exists.
-* Interpreter state no longer persists between notifications; each notification runs with fresh variables.
+* Each notification runs with fresh script variables; do not rely on state carried over from earlier notifications.
+* Script files must be valid UTF-8; malformed bytes that were previously replaced now fail the notification.
 * BeanShell and Groovy are supported. Python and JavaScript scripts already required interpreters that were not shipped, so they were non-functional before this change.
 
 See xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications] for the full parameter and variable reference.
