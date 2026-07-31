@@ -546,16 +546,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Configuration code is not in its own class.
-     * 
-     * It's embedded in XMPPNotificationManager's constructor.
-     */
-    public void testXmppConfiguration() {
-        ignoreConfigFile("xmpp-configuration.properties");
-    }
-
-    @Test
     public void testRemoteRepositoyConfig() {
         ignoreConfigFile("remote-repository.xml");
     }

@@ -269,7 +269,6 @@
 	<%
         String email = null;
         String pagerEmail = null;
-        String xmppAddress = null;
         String numericPage = null;
         String numericPin = null;
         String textPage = null;
@@ -289,7 +288,6 @@
             if (usertemp != null) {
                     email = userFactory.getEmail(userid);
                     pagerEmail = userFactory.getPagerEmail(userid);
-                    xmppAddress = userFactory.getXMPPAddress(userid);
                     numericPage = userFactory.getNumericPage(userid);
                     numericPin = userFactory.getNumericPin(userid);
                     textPage = userFactory.getTextPage(userid);
@@ -305,8 +303,6 @@
                                     email = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("pagerEmail")) {
                                     pagerEmail = contacts.get(i).getInfo().orElse(null);
-                            } else if (contacts.get(i).getType().equals("xmppAddress")) {
-                                    xmppAddress = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("numericPage")) {
                                     numericPage = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("textPage")) {
@@ -380,13 +376,6 @@
           <label for="pemail" class="col-sm-2 col-form-label">Pager Email</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>' ng-non-bindable/>
-          </div>
-        </div>
-
-	<div class="form-row form-group">
-          <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address</label>
-          <div class="col-sm-10">
-            <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>' ng-non-bindable/>
           </div>
         </div>
 
@@ -495,8 +484,7 @@
           <b>Notification Information</b> provides the ability for you to configure
           contact information for each user, including any of <em>email</em>
           address, <em>pager email</em> (in the case that the pager can be reached
-          as an email destination), <em>XMPP address</em> (for instant messages
-          using the Jabber XMPP protocol), <em>numeric service</em> (for pagers
+          as an email destination), <em>numeric service</em> (for pagers
           that cannot display text messages), <em>text service</em> (for
           alphanumeric pagers), and <em>work phone</em>, <em>mobile phone</em>, and
           <em>home phone</em> for notifications by telephone. The <em>Telephone

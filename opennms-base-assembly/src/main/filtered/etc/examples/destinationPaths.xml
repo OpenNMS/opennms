@@ -204,16 +204,22 @@
                 <command>javaEmail</command>
         </target>
     </path>
-    <path name="XMPP-Admin">
-        <target>
-                <name>Admin</name>
-                <command>xmppMessage</command>
-        </target>
-    </path>
     <path name="Growl-Admin">
         <target>
                 <name>Admin</name>
                 <command>growlMessage</command>
+        </target>
+    </path>
+    <!-- Creates a trouble ticket for the alarm associated with the notification's event.
+    The createTicket command is defined in the notificationCommands.xml example.  The
+    initial-delay gives alarmd time to associate the event with an alarm; with 0s the
+    ticket lookup can run before the alarm exists and the notification fails.  The target's
+    contact information is not used.  Target a single user rather than a group: a group
+    target runs the command once per member, which can create duplicate tickets. -->
+    <path name="Create-Ticket" initial-delay="30s">
+        <target>
+                <name>admin</name>
+                <command>createTicket</command>
         </target>
     </path>
 </destinationPaths>
