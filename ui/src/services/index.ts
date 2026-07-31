@@ -29,6 +29,16 @@ import {
   getNodeAvailabilityPercentage
 } from './nodeService'
 import { getCategories } from './categoryService'
+import {
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listAllNodes,
+  listCategories,
+  listCategoryNodes,
+  removeNodeFromCategory,
+  updateCategoryDescription
+} from './categoryAdminService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
@@ -92,6 +102,14 @@ export default {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
   getCategories,
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listAllNodes,
+  listCategories,
+  listCategoryNodes,
+  removeNodeFromCategory,
+  updateCategoryDescription,
   getMonitoringLocations,
   getLog,
   getLogs,
