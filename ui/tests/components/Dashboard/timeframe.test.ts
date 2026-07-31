@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { timeframeRange } from '@/services/topnService'
+import { timeframeRange } from '@/components/Dashboard/timeframe'
 import { timeframeOptions, refreshOptions } from '@/components/Dashboard/timeframe'
 import { TimeframePreset } from '@/types/dashboard'
 

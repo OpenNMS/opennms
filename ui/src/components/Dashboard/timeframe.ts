@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { TimeframePreset } from '@/types/dashboard'
+import { TimeframePreset, type Timeframe } from '@/types/dashboard'
 
 export const timeframeOptions: { label: string; value: TimeframePreset }[] = [
   { label: 'Last 24 hours', value: TimeframePreset.Last24h },
@@ -42,3 +42,36 @@ export const refreshOptions: { label: string; value: number }[] = [
   { label: 'Every 2 minutes', value: 120 },
   { label: 'Every 5 minutes', value: 300 }
 ]
+
+export const timeframeRange = (tf: Timeframe): { start: number; end: number } => {
+  const now = Date.now()
+  const hour = 3_600_000
+  const day = 24 * hour
+  const startOfDay = () => {
+    const d = new Date()
+    d.setHours(0, 0, 0, 0)
+    return d.getTime()
+  }
+  switch (tf.preset) {
+    case TimeframePreset.Today:
+      return { start: startOfDay(), end: now }
+    case TimeframePreset.Yesterday:
+      return { start: startOfDay() - day, end: startOfDay() }
+    case TimeframePreset.ThisWeek:
+      return { start: now - 7 * day, end: now }
+    case TimeframePreset.LastWeek:
+      return { start: now - 14 * day, end: now - 7 * day }
+    case TimeframePreset.Last7Days:
+      return { start: now - 7 * day, end: now }
+    case TimeframePreset.Last30Days:
+    case TimeframePreset.ThisMonth:
+      return { start: now - 30 * day, end: now }
+    case TimeframePreset.LastMonth:
+      return { start: now - 60 * day, end: now - 30 * day }
+    case TimeframePreset.Custom:
+      return { start: tf.from ? Date.parse(tf.from) : now - day, end: tf.to ? Date.parse(tf.to) : now }
+    case TimeframePreset.Last24h:
+    default:
+      return { start: now - day, end: now }
+  }
+}
