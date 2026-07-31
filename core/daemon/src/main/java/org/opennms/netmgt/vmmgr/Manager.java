@@ -29,6 +29,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
@@ -93,15 +95,15 @@ public class Manager implements ManagerMBean {
         }
         stopInitiated.set(true);
 
-        // Signal the HA coordinator first so it can unblock the Starter thread
-        // if the process is stopping while a SECONDARY instance is waiting to promote.
+        // Signal lifecycle hooks first so e.g. the HA coordinator can unblock the
+        // Starter thread if the process is stopping while a standby waits to promote.
         try {
-            Class<?> coordClass = Class.forName("org.opennms.netmgt.ha.HaStartupCoordinator");
-            coordClass.getMethod("shutdown").invoke(null);
-        } catch (ClassNotFoundException e) {
-            // HA module not present; nothing to do
-        } catch (Exception e) {
-            LOG.warn("Failed to signal HA coordinator during shutdown", e);
+            for (StartupLifecycleHook hook : ServiceLoader.load(StartupLifecycleHook.class,
+                    StartupLifecycleHook.class.getClassLoader())) {
+                hook.onShutdownRequested();
+            }
+        } catch (Exception | ServiceConfigurationError e) {
+            LOG.warn("Failed to signal lifecycle hooks during shutdown", e);
         }
 
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
@@ -109,6 +111,26 @@ public class Manager implements ManagerMBean {
                 stop(server);
             }
         });
+
+        // Fallback for stop paths that never reach doSystemExit; the hooks are
+        // idempotent, so running after the doSystemExit-time invocation is safe.
+        notifyServicesStopped();
+    }
+
+    /**
+     * Notifies lifecycle hooks that the services have drained — for HA this
+     * publishes the terminal state, so the partner cannot promote while this
+     * node is still stopping. Must run before process exit is scheduled.
+     */
+    private void notifyServicesStopped() {
+        try {
+            for (StartupLifecycleHook hook : ServiceLoader.load(StartupLifecycleHook.class,
+                    StartupLifecycleHook.class.getClassLoader())) {
+                hook.onServicesStopped();
+            }
+        } catch (Exception | ServiceConfigurationError e) {
+            LOG.warn("Failed to notify lifecycle hooks after service shutdown", e);
+        }
     }
 
     public synchronized void stop(int processExitCode) {
@@ -189,6 +211,11 @@ public class Manager implements ManagerMBean {
      */
     @Override
     public void doSystemExit() {
+        // Runs as the last stop pass, after every service has drained — publish
+        // the terminal HA state now, before the exit timer below is armed, or a
+        // slow database write can lose the race against the process exit.
+        notifyServicesStopped();
+
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
             LOG.debug("doSystemExit called");
 

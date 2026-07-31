@@ -382,6 +382,37 @@ public class HaStartupCoordinatorTest {
     }
 
     @Test
+    public void splitBrainDoesNotYieldToDeadPartner() throws Exception {
+        // Partner row reads ACTIVE with a later active_since (we would lose the
+        // arbitration) but its heartbeat is long stale: the partner died while
+        // holding the role. Halting in deference to a corpse would leave zero
+        // live nodes — we must continue as the sole active instance.
+        HaConfiguration cfg = primaryConfig(); // failover threshold 5s
+        HaStartupCoordinator coord = spy(createCoordinator(cfg, mockDbFactory));
+        doNothing().when(coord).terminateJvm(anyInt());
+        setStaticInstance(coord);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        when(mockRs.next()).thenReturn(true, true, false);
+        when(mockRs.getString(1))
+                .thenReturn("opennms-primary")
+                .thenReturn("opennms-secondary");
+        when(mockRs.getString(2))
+                .thenReturn(HaInstanceState.ACTIVE.name())
+                .thenReturn(HaInstanceState.ACTIVE.name());
+        when(mockRs.getDouble(3))
+                .thenReturn(1000.0)  // our active_since: earlier — would yield if partner were alive
+                .thenReturn(2000.0);
+        when(mockRs.getLong(4)).thenReturn(600L); // partner heartbeat: dead
+
+        coord.checkForSplitBrain();
+
+        assertEquals("must stay ACTIVE when the rival row belongs to a dead partner",
+                HaInstanceState.ACTIVE, coord.getCurrentState());
+        verify(coord, never()).terminateJvm(anyInt());
+    }
+
+    @Test
     public void splitBrainNoActionWhenPartnerIsStandby() throws Exception {
         HaConfiguration cfg = primaryConfig();
         HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
@@ -919,6 +950,94 @@ public class HaStartupCoordinatorTest {
         assertEquals("gate must stay closed when the ACTIVE write matched no row",
                 1, ((CountDownLatch) gate.get(coord)).getCount());
         assertEquals(HaInstanceState.STANDBY, coord.getCurrentState());
+    }
+
+    // -------------------------------------------------------------------------
+    // Deferred state publication: promotable states are written post-drain only
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void failoverPublishesStandbyOnlyAfterServicesStop() throws Exception {
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        coord.initiateFailover();
+        verify(mockPs, never()).setString(eq(1), eq(HaInstanceState.STANDBY.name()));
+
+        coord.doMarkServicesStopped();
+        verify(mockPs).setString(1, HaInstanceState.STANDBY.name());
+        verify(mockPs, never()).setString(eq(1), eq(HaInstanceState.FAILED.name()));
+    }
+
+    @Test
+    public void normalStopPublishesFailedOnlyAfterServicesStop() throws Exception {
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        coord.doShutdown();
+        verify(mockPs, never()).setString(eq(1), eq(HaInstanceState.FAILED.name()));
+
+        coord.doMarkServicesStopped();
+        verify(mockPs).setString(1, HaInstanceState.FAILED.name());
+    }
+
+    @Test
+    public void gatedStandbyStopPublishesNothing() throws Exception {
+        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
+
+        coord.doShutdown();
+        coord.doMarkServicesStopped();
+
+        verify(mockConn, never()).prepareStatement(contains("UPDATE ha_instance_status SET current_state"));
+    }
+
+    @Test
+    public void interruptDoesNotOpenTheStartupGate() throws Exception {
+        HaConfiguration cfg = secondaryConfig();
+        // PRIMARY healthy: fresh heartbeat, so the gate stays shut
+        when(mockRs.next()).thenReturn(true);
+        when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
+        when(mockRs.getLong(2)).thenReturn(0L);
+
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+
+        AtomicReference<Boolean> result = new AtomicReference<>();
+        Thread starter = new Thread(() -> result.set(coord.doAwaitReadyToStart()));
+        starter.setDaemon(true);
+        starter.start();
+
+        Thread.sleep(300);   // reach the gate
+        starter.interrupt(); // spurious interrupt must not release it
+        Thread.sleep(300);
+        assertNull("an interrupt must not authorize startup", result.get());
+
+        coord.doShutdown();
+        starter.join(5000);
+        assertEquals("shutdown after the interrupt must exit cleanly", Boolean.FALSE, result.get());
+    }
+
+    @Test
+    public void markServicesStoppedPublishesTerminalStateOnlyOnce() throws Exception {
+        HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        coord.doMarkServicesStopped();
+        coord.doMarkServicesStopped(); // doSystemExit path + Manager.stop fallback
+
+        verify(mockPs, times(1)).setString(eq(1), eq(HaInstanceState.FAILED.name()));
+    }
+
+    @Test
+    public void markServicesStoppedNeverWritesInHeartbeatOnlyMode() throws Exception {
+        HaConfiguration cfg = primaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setCurrentState(coord, HaInstanceState.ACTIVE);
+
+        coord.doMarkServicesStopped();
+
+        verify(mockConn, never()).prepareStatement(contains("UPDATE ha_instance_status SET current_state"));
     }
 
     // -------------------------------------------------------------------------

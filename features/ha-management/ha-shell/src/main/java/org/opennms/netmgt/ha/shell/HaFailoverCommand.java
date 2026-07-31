@@ -101,15 +101,18 @@ public class HaFailoverCommand implements Action {
 
         LOG.warn("HA failover initiated via Karaf shell on {} ({})", cfg.getInstanceId(), cfg.getRole());
 
-        // 1. Write STANDBY to DB and stop the heartbeat scheduler so the partner detects immediately.
+        // 1. Stop the heartbeat and mark the step-down; STANDBY is published to the
+        // DB only after the services below have finished stopping, so the partner
+        // never promotes alongside a node that is still draining.
         coord.initiateFailover();
-        System.out.printf("Failover initiated: %s (%s) is now STANDBY.%n",
+        System.out.printf("Failover initiated: %s (%s) is stepping down.%n",
                 cfg.getInstanceId(), cfg.getRole());
-        System.out.println("Stopping OpenNMS services...");
+        System.out.println("Stopping OpenNMS services; STANDBY is published when the stop completes...");
 
-        // 2. Stop all services via MBean on a short delay to allow this output to flush.
-        // The STANDBY row is already written and the partner is promoting on it — if the
-        // stop cannot run, halt rather than leave an undetectable active-active pair.
+        // 2. Stop all services via MBean on a short delay to allow this output to flush;
+        // its completion publishes STANDBY. The heartbeat is already silenced, so if the
+        // stop cannot run, this node would keep serving as an ACTIVE row with a dead
+        // heartbeat until the partner staleness-promotes next to it — halt instead.
         Thread stopThread = new Thread(() -> {
             try {
                 Thread.sleep(500);

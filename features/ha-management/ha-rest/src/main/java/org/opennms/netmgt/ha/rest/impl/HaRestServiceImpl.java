@@ -222,13 +222,15 @@ public class HaRestServiceImpl implements HaRestService {
                 return;
             }
 
-            // 1. Write STANDBY to DB and stop the heartbeat — partner monitor sees this immediately
+            // 1. Stop the heartbeat and mark the step-down. STANDBY is published only
+            // after Manager.stop() below finishes draining the services, so the
+            // partner never promotes alongside a node that is still processing.
             coord.initiateFailover();
 
-            // 2. Stop all OpenNMS services via the in-process Manager MBean. From here the
-            // partner is already promoting on the STANDBY row, and this node's heartbeat and
-            // split-brain check are silenced — if the stop cannot run, the only safe outcome
-            // is to halt, or both nodes run with no way to detect it.
+            // 2. Stop all OpenNMS services via the in-process Manager MBean; its completion
+            // publishes STANDBY. The heartbeat is already silenced, so if the stop cannot
+            // run, this node would keep serving as an ACTIVE row with a dead heartbeat until
+            // the partner staleness-promotes next to it — halting is the only safe outcome.
             try {
                 List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
                 if (servers.isEmpty()) {

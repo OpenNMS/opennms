@@ -46,6 +46,13 @@
             <artifactId>org.opennms.core.db</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- StartupLifecycleHook SPI; always present in lib/ at runtime -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.daemon</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Test -->
         <dependency>

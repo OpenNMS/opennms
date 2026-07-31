@@ -63,9 +63,12 @@
 
   <!--
     Per-node files sync must never overwrite or delete, relative to etc/
-    (a trailing "/" excludes a subtree):
+    (a trailing "/" excludes a subtree). ha-configuration.xml and examples/
+    are always excluded. On identically-installed nodes leave this empty —
+    exclude only files that genuinely differ per node:
   <sync-excludes>
-    <exclude>examples/</exclude>
+    <exclude>node-certificates/</exclude>
+    <exclude>host-tuning.properties</exclude>
   </sync-excludes>
   -->
 

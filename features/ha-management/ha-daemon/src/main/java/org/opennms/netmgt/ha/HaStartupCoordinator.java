@@ -99,6 +99,8 @@ public class HaStartupCoordinator {
     private final CountDownLatch startupGate = new CountDownLatch(1);
     private final AtomicBoolean stopRequested = new AtomicBoolean(false);
     private final AtomicBoolean heartbeatOnlyRegistered = new AtomicBoolean(false);
+    private final AtomicBoolean steppingDown = new AtomicBoolean(false);
+    private final AtomicBoolean terminalStatePublished = new AtomicBoolean(false);
     private final AtomicReference<HaInstanceState> currentState = new AtomicReference<>(HaInstanceState.STANDBY);
     private ScheduledExecutorService scheduler;
 
@@ -537,11 +539,7 @@ public class HaStartupCoordinator {
                 failbackMonitorFuture = scheduler.scheduleAtFixedRate(this::monitorForFailback,
                         config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
-                try {
-                    startupGate.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                awaitGate();
 
                 if (stopRequested.get()) {
                     LOG.info("HA: shutdown requested while PRIMARY in DEGRADED state; exiting without starting services");
@@ -574,11 +572,7 @@ public class HaStartupCoordinator {
         standbyMonitorFuture = scheduler.scheduleAtFixedRate(this::checkPrimaryHeartbeat,
                 config.getHeartbeatIntervalSeconds(), config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
-        try {
-            startupGate.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        awaitGate();
 
         if (stopRequested.get()) {
             LOG.info("HA: shutdown requested while in SECONDARY standby; exiting without starting services");
@@ -588,6 +582,26 @@ public class HaStartupCoordinator {
         LOG.info("HA: SECONDARY promoted to ACTIVE — proceeding with service startup");
         // heartbeat task already running; promote() has already written ACTIVE.
         return true;
+    }
+
+    /**
+     * Blocks until the startup gate opens. The gate opens only on a persisted
+     * promotion or on shutdown — an interrupt does neither, so waiting resumes
+     * (fail closed) instead of falling through to an unauthorized startup.
+     */
+    private void awaitGate() {
+        boolean interrupted = false;
+        while (startupGate.getCount() > 0) {
+            try {
+                startupGate.await();
+            } catch (InterruptedException e) {
+                interrupted = true;
+                LOG.warn("HA: startup gate wait interrupted; continuing to wait (the gate opens only on promotion or shutdown)");
+            }
+        }
+        if (interrupted && stopRequested.get()) {
+            Thread.currentThread().interrupt(); // exiting anyway; preserve the status
+        }
     }
 
     /**
@@ -730,35 +744,69 @@ public class HaStartupCoordinator {
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
-        // Don't overwrite STANDBY with FAILED — failback already set the correct state.
-        // In heartbeat-only mode current_state belongs to the external agent: never write it.
-        if (config.getMode() == HaMode.COORDINATOR
-                && currentState.get() != HaInstanceState.STANDBY) {
-            updateState(HaInstanceState.FAILED);
-        }
+        // No state write here: publishing FAILED/STANDBY before the services
+        // have drained would let the partner promote alongside a node that is
+        // still processing. markServicesStopped() publishes it post-drain.
         startupGate.countDown(); // unblock Starter if waiting
         LOG.info("HA coordinator shut down");
     }
 
     /**
-     * Transitions this ACTIVE instance to STANDBY so the partner can take over.
-     * Updates the DB immediately so the partner's monitor loop sees the change,
-     * then stops the heartbeat scheduler so the heartbeat also goes stale as a
-     * belt-and-suspenders signal. Does NOT stop OpenNMS services — the caller is
-     * responsible for triggering the service shutdown after this returns.
+     * Begins stepping this ACTIVE instance down to STANDBY: stops the heartbeat
+     * scheduler (the staleness clock starts now) and marks the step-down, but
+     * deliberately does NOT publish STANDBY yet — the partner promotes the
+     * moment it sees a non-ACTIVE state, and that must not happen while this
+     * node's services are still draining. {@link #markServicesStopped()} writes
+     * the STANDBY row once the drain completes. Does NOT stop OpenNMS services —
+     * the caller triggers the service shutdown after this returns.
      */
     public void initiateFailover() {
         if (config.getMode() == HaMode.HEARTBEAT_ONLY) {
             throw new IllegalStateException(
                     "HA is in heartbeat-only mode; failover is controlled by the external HA agent");
         }
-        LOG.warn("HA failover: {} ({}) stepping down ACTIVE → STANDBY",
+        LOG.warn("HA failover: {} ({}) stepping down ACTIVE → STANDBY (published after services stop)",
                 config.getInstanceId(), config.getRole());
+        steppingDown.set(true);
         currentState.set(HaInstanceState.STANDBY);
-        updateState(HaInstanceState.STANDBY);
         stopRequested.set(true);
         if (scheduler != null) {
             scheduler.shutdown(); // graceful: let any in-flight heartbeat write finish
+        }
+    }
+
+    /**
+     * Called by {@code Manager.stop()} (reflectively) after the service Invoker
+     * has finished: only now is a promotable state published — STANDBY for a
+     * step-down, FAILED for a plain stop of an ACTIVE/DEGRADED node — so the
+     * partner can never promote while this node is still draining. A drain that
+     * outlives the failover threshold is covered by heartbeat staleness instead
+     * (the heartbeat stopped when the shutdown began).
+     */
+    public static void markServicesStopped() {
+        HaStartupCoordinator coord = INSTANCE;
+        if (coord != null) {
+            coord.doMarkServicesStopped();
+        }
+    }
+
+    void doMarkServicesStopped() {
+        // In heartbeat-only mode current_state belongs to the external agent.
+        if (config.getMode() != HaMode.COORDINATOR) {
+            return;
+        }
+        // Invoked from both doSystemExit (before the exit timer is armed) and
+        // the end of Manager.stop (paths without a scheduled exit) — publish once.
+        if (!terminalStatePublished.compareAndSet(false, true)) {
+            return;
+        }
+        if (steppingDown.get()) {
+            updateState(HaInstanceState.STANDBY);
+            return;
+        }
+        // A gated standby never advertised anything that needs retracting.
+        if (currentState.get() != HaInstanceState.STANDBY) {
+            updateState(HaInstanceState.FAILED);
         }
     }
 
@@ -831,12 +879,14 @@ public class HaStartupCoordinator {
         double partnerActiveSince = Double.NaN;
         boolean ourStateActive = false;
         boolean partnerStateActive = false;
+        long partnerHeartbeatAge = 0;
 
         try (Connection conn = dbFactory.getConnection()) {
             // active_since is read as an absolute epoch (seconds) from the DB clock — a stable
             // value that does not move between the two nodes' independent check cycles.
             String sql = "SELECT instance_id, current_state, " +
-                         "EXTRACT(EPOCH FROM active_since) AS active_since_epoch " +
+                         "EXTRACT(EPOCH FROM active_since) AS active_since_epoch, " +
+                         "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS heartbeat_age " +
                          "FROM ha_instance_status WHERE instance_id IN (?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
@@ -854,6 +904,7 @@ public class HaStartupCoordinator {
                         } else if (config.getPartnerInstanceId().equals(id)) {
                             partnerStateActive  = HaInstanceState.ACTIVE.name().equals(state);
                             partnerActiveSince  = activeSinceNull ? Double.NaN : activeSince;
+                            partnerHeartbeatAge = rs.getLong(4);
                         }
                     }
                 }
@@ -864,6 +915,18 @@ public class HaStartupCoordinator {
         }
 
         if (!ourStateActive || !partnerStateActive) {
+            return;
+        }
+
+        // Arbitrate only against a live rival. An ACTIVE row with a heartbeat
+        // stale beyond the threshold belongs to a partner that stopped (or is
+        // draining) while holding the role — yielding to it would leave zero
+        // live nodes. If it is actually alive and reconnects, its heartbeat
+        // freshens and arbitration resumes on the next cycle.
+        if (partnerHeartbeatAge > config.getFailoverThresholdSeconds()) {
+            LOG.warn("HA: partner '{}' row reads ACTIVE but its heartbeat is {}s old (threshold {}s) — " +
+                     "the partner appears to have stopped while ACTIVE; continuing as the sole active instance",
+                    config.getPartnerInstanceId(), partnerHeartbeatAge, config.getFailoverThresholdSeconds());
             return;
         }
 
@@ -890,9 +953,16 @@ public class HaStartupCoordinator {
                       "yielding by terminating the JVM immediately.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
                       ourActiveSince, partnerActiveSince);
-            // Flip our row to STANDBY first as an explicit signal to the partner (best-effort;
-            // connectivity is present since the split-brain read above just succeeded).
-            initiateFailover();
+            // Flip our row to STANDBY immediately as an explicit signal to the partner
+            // (best-effort; connectivity is present since the split-brain read above just
+            // succeeded). Unlike a normal step-down there is no drain to overlap with —
+            // the halt below is instantaneous — so the deferred-write rule does not apply.
+            currentState.set(HaInstanceState.STANDBY);
+            updateState(HaInstanceState.STANDBY);
+            stopRequested.set(true);
+            if (scheduler != null) {
+                scheduler.shutdown();
+            }
             // Hard-terminate rather than a graceful Manager.stop(): an orderly shutdown lets
             // pending/queued tasks from other daemons drain, which would mean a second ACTIVE
             // instance writing to the database during the split-brain window. Halting kills the

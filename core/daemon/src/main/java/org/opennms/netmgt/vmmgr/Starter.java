@@ -24,6 +24,8 @@ package org.opennms.netmgt.vmmgr;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 
 import javax.management.MBeanServer;
 
@@ -138,23 +140,22 @@ public class Starter {
     private void start() {
         LOG.info("Beginning startup");
 
-        // HA coordination: if ha-configuration.xml is present and enabled, this either
-        // returns immediately (PRIMARY) or blocks until SECONDARY is promoted.
-        // Returns false only if shutdown was requested while waiting; in that case exit cleanly.
+        // Lifecycle hooks from optionally-installed modules (e.g. HA coordination:
+        // returns quickly on a primary, blocks until promotion on a standby; false
+        // means shutdown was requested while waiting — exit cleanly).
         try {
-            Class<?> coordClass = Class.forName("org.opennms.netmgt.ha.HaStartupCoordinator");
-            coordClass.getMethod("load").invoke(null);
-            boolean proceed = (boolean) coordClass.getMethod("awaitReadyToStart").invoke(null);
-            if (!proceed) {
-                LOG.info("HA coordinator signalled clean shutdown; exiting without starting services");
-                return;
+            for (StartupLifecycleHook hook : ServiceLoader.load(StartupLifecycleHook.class,
+                    StartupLifecycleHook.class.getClassLoader())) {
+                if (!hook.awaitReadyToStart()) {
+                    LOG.info("{} signalled clean shutdown; exiting without starting services",
+                            hook.getClass().getSimpleName());
+                    return;
+                }
             }
-        } catch (ClassNotFoundException e) {
-            LOG.debug("HA module not on classpath; skipping HA coordination");
-        } catch (Exception e) {
-            // Fail closed: an unexpected error from an HA-enabled node must not
-            // bypass the standby gate — both nodes could otherwise run concurrently.
-            die("HA coordination failed; refusing to start services", e);
+        } catch (Exception | ServiceConfigurationError e) {
+            // Fail closed: an unexpected error from an installed hook must not
+            // bypass its gate — for HA, both nodes could otherwise run concurrently.
+            die("Startup lifecycle hook failed; refusing to start services", e);
         }
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
