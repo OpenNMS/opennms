@@ -48,7 +48,7 @@ export const resolveFilterNodeIds = async (filter: DashboardFilter): Promise<num
       const ids = new Set<number>()
       for (const category of categories) {
         try {
-          const resp = await v2.get(`/nodes?category=${encodeURIComponent(category)}&limit=0`)
+          const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`category.name==${category}`)}&limit=0`)
           for (const node of resp.data?.node ?? []) {
             if (node?.id != null) {
               ids.add(Number(node.id))

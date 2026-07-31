@@ -39,6 +39,11 @@ describe('dashboard filter helper', () => {
     const ids = await resolveFilterNodeIds(filter({ surveillanceCategories: ['B', 'A'] }))
     expect([...(ids ?? [])].sort()).toEqual([1, 2, 3])
 
+    // must resolve via the node search that actually filters by membership,
+    // NOT the bare ?category= param (which returns every node)
+    const url = vi.mocked(v2.get).mock.calls[0][0] as string
+    expect(url).toContain('category.name%3D%3DA')
+
     // second call for the same set is served from cache (no new request)
     const before = vi.mocked(v2.get).mock.calls.length
     await resolveFilterNodeIds(filter({ surveillanceCategories: ['A', 'B'] }))
