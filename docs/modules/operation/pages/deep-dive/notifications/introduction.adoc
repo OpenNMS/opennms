@@ -15,7 +15,6 @@ Notifications are commonly sent through email or a text/pager message, but mecha
 * IRCcat Internet Relay Chat bot
 * SNMP traps
 * Slack, Mattermost, and other API-compatible team chat platforms
-* Twitter, GNU social, and other API-compatible microblog services
 * User-provided scripts in any JSR-223 compatible language
 
 xref:reference:daemons/daemon-config-files/notifd.adoc[Notifd] creates and sends notifications according to configured rules when selected events occur in {page-component-title}.

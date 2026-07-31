@@ -288,11 +288,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testMicroblogConfiguration() {
-        testConfigFile("microblog-configuration.xml");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 

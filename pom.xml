@@ -1969,7 +1969,6 @@
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
-    <twitter4jVersion>3.0.6</twitter4jVersion>
     <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
@@ -3745,12 +3744,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>twitter4j-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
