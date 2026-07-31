@@ -1,33 +1,97 @@
 <template>
   <div class="extended-search-container">
-    <FeatherSelect
-      label="Search Type"
-      :options="searchOptions"
-      :textProp="'title'"
-      v-model="currentSelection"
-      @update:modelValue="onSearchTypeSelectionUpdated"
-    />
+    <div class="onms-row add-row">
+      <div class="onms-col-5">
+        <FormField label="Search Type">
+          <OnmsSelect
+            v-model="currentSelection"
+            :options="searchOptions"
+            optionLabel="title"
+            placeholder="Select a type"
+            data-test="search-type-select"
+          />
+        </FormField>
+      </div>
+      <div class="onms-col-5">
+        <FormField label="Search Term">
+          <OnmsInputText
+            v-model="searchTerm"
+            data-test="search-term-input"
+          />
+        </FormField>
+      </div>
+      <div class="onms-col-2 add-btn-col">
+        <OnmsButton
+          variant="outlined"
+          data-test="add-search-term-button"
+          class="add-search-term-button"
+          @click="onAddSearchTerm"
+        >
+          <OnmsIcon :icon="Add" />
+          Add
+        </OnmsButton>
+      </div>
+    </div>
 
-    <FeatherInput
-      v-model="searchTerm"
-      @update:modelValue="onCurrentSearchUpdated"
-      label="Search Term"
-    />
+    <OnmsTable
+      v-if="gridItems.length > 0"
+      :value="gridItems"
+      dataKey="key"
+      class="extended-search-table"
+    >
+      <OnmsColumn field="label" header="Search Type" style="width: 40%" />
+      <OnmsColumn field="value" header="Search Term">
+        <template #body="{ data }">
+          <OnmsInputText
+            v-model="data.value"
+            class="extended-search-input"
+          />
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
+        <template #body="{ data }">
+          <OnmsIconButton
+            :icon="DeleteIcon"
+            title="Remove search term"
+            data-test="delete-search-term-button"
+            @click="removeGridItem(data.key)"
+          />
+        </template>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
-import { isIP } from 'is-ip'
-import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
-import { NodeQueryFilter, UpdateModelFunction } from '@/types'
+import { onMounted, ref } from 'vue'
 
-const searchOptions: ISelectItemType[] = [
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { NodeQueryExtendedSearchParams } from '@/types'
+
+const {
+  getExtendedSearchValues,
+  getDefaultNodeQueryForeignSourceParams,
+  getDefaultNodeQuerySnmpParams,
+  getDefaultNodeQuerySysParams
+} = useNodeQuery()
+
+interface GridItem {
+  key: string
+  label: string
+  value: string
+}
+
+interface SearchOption { title: string; value: string }
+
+const searchOptions: SearchOption[] = [
   { title: 'Foreign Source', value: 'foreignSource' },
   { title: 'Foreign ID', value: 'foreignId' },
   { title: 'Foreign Source:Foreign ID', value: 'foreignSourceId' },
-  { title: 'IP Address', value: 'ipAddress' },
   { title: 'Sys Contact', value: 'sysContact' },
   { title: 'Sys Description', value: 'sysDescription' },
   { title: 'Sys Location', value: 'sysLocation' },
@@ -46,127 +110,102 @@ const sysKeys = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysO
 
 const nodeStructureStore = useNodeStructureStore()
 const searchTerm = ref('')
-const currentSelection = ref<ISelectItemType | undefined>(undefined)
+const currentSelection = ref<SearchOption | undefined>(undefined)
+const gridItems = ref<GridItem[]>([])
 
-const onCurrentSearchUpdated = (updatedValue: any) => {
-  const item = (updatedValue as string) ?? ''
-  const searchType = currentSelection.value?.value as string || ''
-
-  if (searchType === 'ipAddress') {
-    if ((item === '' || isIP(item)) && item !== nodeStructureStore.queryFilter.extendedSearch.ipAddress) {
-      nodeStructureStore.setFilterWithIpAddress(item)
-    }
-  } else if (searchType.startsWith('foreign')) {
-    const params = nodeStructureStore.queryFilter.extendedSearch.foreignSourceParams
-    const storeItem = (params && (params as any)[searchType]) ?? ''
-
-    if (item !== storeItem) {
-      nodeStructureStore.setFilterWithForeignSourceParams(searchType, item)
-    }
-  } else if (searchType.startsWith('snmp')) {
-    const params = nodeStructureStore.queryFilter.extendedSearch.snmpParams
-    const storeItem = (params && (params as any)[searchType]) ?? ''
-
-    if (item !== storeItem) {
-      nodeStructureStore.setFilterWithSnmpParams(searchType, item)
-    }
-  } else if (searchType.startsWith('sys')) {
-    const params = nodeStructureStore.queryFilter.extendedSearch.sysParams
-    const storeItem = (params && (params as any)[searchType]) ?? ''
-
-    if (item !== storeItem) {
-      nodeStructureStore.setFilterWithSysParams(searchType, item)
-    }
+const onAddSearchTerm = () => {
+  if (!currentSelection.value || !searchTerm.value.trim()) {
+    return
   }
-}
-
-const onSearchTypeSelectionUpdated: UpdateModelFunction = (selected: any) => {
-  if (selected.value === 'ipAddress') {
-    nodeStructureStore.setFilterWithIpAddress(searchTerm.value)
-  } else if ((selected.value as string || '').startsWith('foreign')) {
-    nodeStructureStore.setFilterWithForeignSourceParams(selected.value, searchTerm.value)
-  } else if ((selected.value as string || '').startsWith('sys')) {
-    nodeStructureStore.setFilterWithSysParams(selected.value, searchTerm.value)
-  } else if ((selected.value as string || '').startsWith('snmp')) {
-    nodeStructureStore.setFilterWithSnmpParams(selected.value, searchTerm.value)
-  }
-}
-
-// helper used in getOptionFromFilter
-const getAnySearchOptionFromObj = (obj: any, keys: string[]) => {
-  for (let key of keys) {
-    if (obj[key]) {
-      return {
-        value: obj[key],
-        searchOption: searchOptions.find(x => x.value === key)
-      }
-    }
-  }
-
-  return undefined
-}
-
-/**
- * Get an option object and search term based on the given filter.
- * This prioritizes which search item is used.
-*/
-const getOptionFromFilter = (queryFilter: NodeQueryFilter) => {
-  if (queryFilter.extendedSearch.ipAddress) {
-    return getAnySearchOptionFromObj(queryFilter.extendedSearch, ['ipAddress'])
-  }
-
-  if (queryFilter.extendedSearch.foreignSourceParams) {
-    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.foreignSourceParams, foreignSourceKeys)
-    if (o) {
-      return o
-    }
-  }
-
-  if (queryFilter.extendedSearch.snmpParams) {
-    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.snmpParams, snmpKeys)
-    if (o) {
-      return o
-    }
-  }
-
-  if (queryFilter.extendedSearch.sysParams) {
-    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.sysParams, sysKeys)
-    if (o) {
-      return o
-    }
-  }
-
-  return undefined
-}
-
-const updateFromStore = () => {
-  const option = getOptionFromFilter(nodeStructureStore.queryFilter)
-
-  if (option) {
-    if (option.value !== searchTerm.value) {
-      searchTerm.value = option.value
-    }
-
-    if (currentSelection.value !== option.searchOption) {
-      currentSelection.value = option.searchOption
-    }
+  const key = currentSelection.value.value as string
+  const label = currentSelection.value.title as string
+  const existing = gridItems.value.findIndex(i => i.key === key)
+  if (existing >= 0) {
+    gridItems.value[existing].value = searchTerm.value.trim()
   } else {
-    if (searchTerm.value !== '') {
-      searchTerm.value = ''
-    }
+    gridItems.value.push({ key, label, value: searchTerm.value.trim() })
   }
+  searchTerm.value = ''
+  currentSelection.value = undefined
 }
 
-watch([() => nodeStructureStore.queryFilter], () => {
-  updateFromStore()
-})
+const removeGridItem = (key: string) => {
+  gridItems.value = gridItems.value.filter(i => i.key !== key)
+}
+
+const applyToStore = () => {
+  const ext: NodeQueryExtendedSearchParams = {}
+  for (const item of gridItems.value) {
+    if (!item.value.trim()) {
+      continue
+    }
+    if (foreignSourceKeys.includes(item.key)) {
+      if (!ext.foreignSourceParams) {
+        ext.foreignSourceParams = getDefaultNodeQueryForeignSourceParams()
+      }
+      Object.assign(ext.foreignSourceParams, { [item.key]: item.value })
+    } else if (snmpKeys.includes(item.key)) {
+      if (!ext.snmpParams) {
+        ext.snmpParams = getDefaultNodeQuerySnmpParams()
+      }
+      Object.assign(ext.snmpParams, { [item.key]: item.value })
+    } else if (sysKeys.includes(item.key)) {
+      if (!ext.sysParams) {
+        ext.sysParams = getDefaultNodeQuerySysParams()
+      }
+      Object.assign(ext.sysParams, { [item.key]: item.value })
+    }
+  }
+  nodeStructureStore.setExtendedSearchParams(ext)
+}
+
+const resetFromStore = () => {
+  const values = getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+  gridItems.value = values.map(v => ({ key: v.key, label: v.name, value: v.value }))
+  searchTerm.value = ''
+  currentSelection.value = undefined
+}
+
+defineExpose({ applyToStore, resetFromStore, currentSelection, searchTerm, gridItems })
 
 onMounted(() => {
-  updateFromStore()
+  resetFromStore()
 })
-
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/onms-typography' as *;
+@use '@/styles/onms-tokens' as variables;
 
+.extended-search-container {
+  .add-search-term-button {
+    border-radius: 0;
+    border: 1px solid var(--onms-primary);
+    width: auto;
+    padding: 0.5em 1em;
+  }
+
+  .add-btn-col {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 0.5rem;
+  }
+
+  .extended-search-table {
+    margin-top: 1rem;
+
+    .extended-search-input {
+      width: 100%;
+    }
+
+    :deep(.p-datatable-tbody > tr > td) {
+      padding: 0.25rem 0.5rem;
+      vertical-align: middle;
+    }
+
+    :deep(.p-datatable-thead > tr > th) {
+      padding: 0.4rem 0.5rem;
+    }
+  }
+}
 </style>

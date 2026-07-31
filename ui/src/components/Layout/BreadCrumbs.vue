@@ -9,7 +9,7 @@
     </template>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { BreadCrumb } from '@/types'
 import { PropType } from 'vue'
@@ -21,26 +21,25 @@ defineProps({
   }
 })
 </script>
-  
+
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 .breadcrumbs {
   width: 100%;
   display: flex;
   margin-bottom: 15px;
-  background-color: var(--feather-surface);
-  color: var(--feather-secondary-text-on-surface);
+  background-color: var(--onms-surface);
+  color: var(--onms-secondary-text-on-surface);
 
   .link {
-    color: var(--feather-clickable-normal);
+    color: var(--onms-clickable-normal);
     a {
       font-weight:400;
-      color: var(--feather-clickable-normal);
+      color: var(--onms-clickable-normal);
     }
     a:visited {
-      color: var(--feather-clickable-normal);
+      color: var(--onms-clickable-normal);
     }
 
     padding:8px 0;

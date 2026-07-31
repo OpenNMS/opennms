@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -39,7 +38,6 @@ import com.google.common.collect.Sets;
 @Table(name = "bsm_service_reductionkeys",
         uniqueConstraints = @UniqueConstraint(columnNames = {"id", "reductionkey"}))
 @PrimaryKeyJoinColumn(name="id")
-@DiscriminatorValue("reductionkeys")
 public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
 
     private String reductionKey;

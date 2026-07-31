@@ -148,6 +148,7 @@ public class SnmpCollectionSourceDaoIT {
     }
 
     @Test
+    @Transactional
     public void testFilterDataCollectionSource_ReturnsValidRecords() {
         final var now = new Date();
         SnmpCollectionSource source1 = new SnmpCollectionSource();

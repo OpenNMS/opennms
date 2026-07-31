@@ -17,6 +17,11 @@ To get all results, use `limit=0` as a parameter on the URL (for example, `GET /
 | /events/count
 | Get the number of events (returns plaintext, rather than XML or JSON).
 
+| /events/between?column=\{column}&begin=\{begin}&end=\{end}
+| Get the events whose timestamp falls between `begin` and `end`.
+The `column` parameter selects the date field to filter on (defaults to `eventTime`); `begin` defaults to the epoch and `end` defaults to now.
+Dates must be in ISO-8601 format (for example, `2026-06-08T00:00:00`).
+
 | /events/\{id}
 | Get the event specified by the given ID.
 |===
@@ -51,5 +56,34 @@ TIP: See `$\{OPENNMS_HOME}/share/xsds/event.xsd` for the reference schema.
 | Resource  | Description
 
 | /events
-| Publish an event on the event bus.
+| Publish an event on the event bus (returns `202 Accepted`).
 |===
+
+== Version 2 (/api/v2/events)
+
+The v2 Events API supports FIQL search expressions on `GET /api/v2/events`.
+
+[caption=]
+.Events API V2 GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/events
+| Get a list of events, optionally filtered with a FIQL search expression.
+
+| /api/v2/events/count
+| Get the number of events (returns plaintext).
+
+| /api/v2/events/\{id}
+| Get the event specified by the given ID.
+
+| /api/v2/events/properties
+| Get the list of queryable event properties. Accepts an optional `q` query parameter.
+
+| /api/v2/events/properties/\{propertyId}
+| Get the set of values for the given property. Accepts optional `q` and `limit` query parameters.
+|===
+
+NOTE: `POST /api/v2/events` publishes an event and returns `204 No Content` (the v1 `POST /events` returns `202 Accepted`).
+The acknowledge/unacknowledge PUT endpoints are available only in v1; a `PUT` against the v2 Events API returns `501 Not Implemented`.

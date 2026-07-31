@@ -29,6 +29,7 @@ import {
   UsageStatisticsStatus
 } from '@/types/usageStatistics'
 import useSnackbar from '@/composables/useSnackbar'
+import { ref } from 'vue'
 
 const { showSnackBar } = useSnackbar()
 
@@ -55,7 +56,7 @@ export const useUsageStatisticsStore = defineStore('usageStatisticsStore', () =>
 
   const getStatus = async () => {
     const resp = await API.getUsageStatisticsStatus()
-    
+
     if (resp) {
       status.value = resp
     }

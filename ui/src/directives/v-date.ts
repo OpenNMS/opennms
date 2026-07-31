@@ -24,6 +24,7 @@ import { format as fnsFormat } from 'date-fns-tz'
 import { parseISO } from 'date-fns'
 import { AppInfo } from '@/types'
 import { useInfoStore } from '@/stores/infoStore'
+import { computed } from 'vue'
 
 const infoStore = computed(() => useInfoStore())
 const appInfo = computed<AppInfo>(() => infoStore.value.info)
@@ -33,8 +34,8 @@ const timeZone = computed<string>(
 )
 
 const formatString = computed<string>(
-  // eslint-disable-next-line quotes
-  () => appInfo.value.datetimeformatConfig?.datetimeformat || "yyyy-MM-dd'T'HH:mm:ssxxx"
+
+  () => appInfo.value.datetimeformatConfig?.datetimeformat || 'yyyy-MM-dd\'T\'HH:mm:ssxxx'
 )
 
 const dateFormatDirective = {

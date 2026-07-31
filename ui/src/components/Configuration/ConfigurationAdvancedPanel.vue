@@ -1,10 +1,10 @@
 <template>
-  <FeatherExpansionPanel
+  <TogglePanel
     id="advanced-panel"
     class="expansion-panel advanced-panel"
-    title="Advanced Options (optional)"
-    :modelValue="props.active"
-    @update:modelValue="props.activeUpdate"
+    header="Advanced Options (optional)"
+    :collapsed="!props.active"
+    @update:collapsed="(v) => props.activeUpdate(!v)"
   >
     <div>
       <div
@@ -12,66 +12,55 @@
         v-for="(item, index) in props.items"
         class="item-wrapper"
       >
-        <FeatherAutocomplete
-          type="single"
-          label="Key"
-          textProp="name"
-          @search="(query: string) => search(query, props.type, props.subType, index)"
-          v-model="item.key"
-          @update:modelValue="updateKey(item.key, index)"
-          :results="results.list[index]"
-          :labels="labels"
-        ></FeatherAutocomplete>
-        <!-- Blank space ' ' below is part of forceSetHint() workaround for FeatherInput.
-            If item.hint is blank on initial load, it will not render the internal element we need for forced update. So when item.hint is empty, we supply an empty space which is enough to force FeatherInput to render the help label.
-        -->
-        <FeatherInput
-          class="hint-label"
-          label="Value"
-          :hint="item.hint || ' '"
-          v-model="item.value"
-        />
-        <FeatherButton
-          icon="Delete"
+        <FormField label="Key" class="key-field">
+          <OnmsAutoComplete
+            :modelValue="item.key"
+            optionLabel="name"
+            :suggestions="results.list[index]"
+            dropdown
+            @complete="(query: string) => search(query, props.type, props.subType, index)"
+            @optionSelect="(value: unknown) => onKeySelect(value as AdvancedKey, index)"
+            @update:modelValue="(val) => onKeyInput(val, index)"
+          >
+            <template #empty>
+              <div class="autocomplete-empty">{{ labels.noResults }}</div>
+            </template>
+          </OnmsAutoComplete>
+        </FormField>
+        <FormField label="Value" class="value-field" :hint="item.hint || ' '">
+          <OnmsInputText v-model="item.value" />
+        </FormField>
+        <OnmsIconButton
+          class="delete-icon"
+          aria-label="Delete"
+          v-tooltip="'Delete'"
+          :icon="Delete"
           @click="() => deleteAdvancedOption(index)"
-        >
-          <FeatherIcon
-            class="delete-icon"
-            :icon="Delete"
-          ></FeatherIcon>
-        </FeatherButton>
+        />
       </div>
       <div class="button-wrapper">
-        <FeatherButton
+        <OnmsButton
           :disabled="buttonAddDisabled"
           @click="addAdvancedOption"
-          primary
-          >Add</FeatherButton
-        >
+        >Add</OnmsButton>
       </div>
     </div>
-  </FeatherExpansionPanel>
+  </TogglePanel>
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { PropType } from 'vue'
-
-import { FeatherExpansionPanel } from '@featherds/expansion'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherButton } from '@featherds/button'
-import { FeatherInput } from '@featherds/input'
-import { FeatherAutocomplete } from '@featherds/autocomplete'
-import Delete from '@featherds/icon/action/Delete'
-
+import { PropType, computed, reactive, ref } from 'vue'
+import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import Delete from '@/components/icons/action/Delete.vue'
+import TogglePanel from '@/components/Common/TogglePanel.vue'
+import FormField from '@/components/Common/FormField.vue'
 import { orderBy } from 'lodash'
-
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
-import { ConfigurationHelper } from './ConfigurationHelper'
 
 /**
  * Props
@@ -92,7 +81,7 @@ const props = defineProps({
  * Local State
  */
 const results = reactive({
-  list: [[{}]]
+  list: [[{}]] as AdvancedKey[][]
 })
 const defaultLabels = { noResults: LabelStrings.duplicateKey }
 const labels = ref(defaultLabels)
@@ -104,14 +93,36 @@ const labels = ref(defaultLabels)
 const buttonAddDisabled = computed(() => {
   const itemsLength = props.items.length
 
-  if (!itemsLength) return false // enabled
+  if (!itemsLength) {
+    return false
+  } // enabled
 
   const { key, value } = props.items[itemsLength - 1] // last item
   return !(key.name && value) // disabled
 })
 
-const updateKey: any = (key: { hint: string }, index: any) => {
-  ConfigurationHelper.forceSetHint(key, index)
+const onKeySelect = (key: AdvancedKey, index: number) => {
+  // The parent passes a reactive items array and expects in-place mutation here
+  // (the original used v-model="item.key" for the same effect).
+  // eslint-disable-next-line vue/no-mutating-props
+  props.items[index].key = key
+  props.advancedKeyUpdate(key, index)
+}
+
+const onKeyInput = (val: unknown, index: number) => {
+  if (val === null) {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.items[index].key = { name: '', _text: '', id: (props.items[index]?.key as any)?.id ?? index + 1 }
+    props.advancedKeyUpdate(props.items[index].key, index)
+    return
+  }
+
+  const key: AdvancedKey = typeof val === 'string'
+    ? { name: val, _text: val, id: (props.items[index]?.key as any)?.id ?? index + 1 }
+    : (val as AdvancedKey)
+
+  // eslint-disable-next-line vue/no-mutating-props
+  props.items[index].key = key
   props.advancedKeyUpdate(key, index)
 }
 
@@ -151,15 +162,16 @@ const getKeysBasedOnType = (type: string, subType: string) => {
 const search = (searchVal: string, type: string, subType: string, index: number) => {
   // prevent username/Username/password/Password key, using Advanced Options section, from adding to the URL, since they can be set in their respective input field of the form
   const vmWareFields = Object.entries(VMWareFields).map(e => e[1])
-  if(vmWareFields.includes(searchVal)) {
+  if (vmWareFields.includes(searchVal)) {
     labels.value = { noResults: LabelStrings.optionNotAvailable }
+    results.list[index] = []
     return
   }
 
   const advancedKeys = getKeysBasedOnType(type, subType)
 
   //Find keys based on search text.
-  let newResu = advancedKeys.filter((key) => key.name.includes(searchVal) || key.name === searchVal)
+  let newResu = advancedKeys.filter(key => key.name.includes(searchVal) || key.name === searchVal)
 
   //If there are no results, add one to the list. This enables custom advanced keys.
   if (newResu.length === 0) {
@@ -181,95 +193,48 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 
   results.list[index] = [...newResu]
 }
-
-/**
- * Fills in the <textarea> within the FeatherAutocomplete.
- * This is currently a gap with the component and may be removed in the future
- * if this gap is filled.
- */
-const fillAutoComplete = () => {
-  if (props.items) {
-    const inputs = document.querySelectorAll('#advanced-panel .feather-autocomplete-input')
-    props.items.forEach((item: any, index) => {
-      if (inputs[index]) {
-        inputs[index].textContent = item?.key.name
-      }
-    })
-  }
-}
-
-/**
- * When you activate the advanced section, our code waits
- * for 150 milliseconds to give FeatherExpansion panel a chance to populate the DOM
- * If FeatherAutoComplete ever includes the option to set a single value
- * by default to the textarea, then this can be removed.
- */
-watch(props, () => {
-  if (props.active) {
-    setTimeout(() => {
-      fillAutoComplete()
-    }, 150)
-  }
-})
 </script>
 
-<style lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
-
-#advanced-panel {
-  position: relative;
-  a[data-ref-id="feather-form-element-clear"] {
-    display: none;
-  }
-  .feather-expansion-header-button-text {
-    @include headline4();
-    color: var($primary);
-  }
-}
-</style>
 <style
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
 
-.icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 13px;
-  right: 60px;
-  > button {
-    margin: 0;
+.advanced-panel {
+  :deep(.p-panel-title) {
+    @include onms-headline4();
+    color: var(--p-primary-color);
   }
 }
 .item-wrapper {
   display: flex;
+  align-items: flex-start;
   > div {
     width: 100%;
   }
   > div:first-child {
     margin-right: 16px;
   }
+  // Offset past the FormField label (~1.6875rem) and center within the input's
+  // height so the delete icon lines up with the input row, not the hint below it.
   > button:last-child {
     margin-left: 8px;
+    margin-top: 1.6875rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
   }
 }
-.button-icon {
-  font-size: 24px;
-  padding-top: 2px;
-  margin-right: 8px;
+.autocomplete-empty {
+  padding: 0.5rem 0.75rem;
 }
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
+  margin-top: 1rem;
 }
 .delete-icon {
-  color: var($error);
+  color: var(--p-red-500);
 }
 </style>
-

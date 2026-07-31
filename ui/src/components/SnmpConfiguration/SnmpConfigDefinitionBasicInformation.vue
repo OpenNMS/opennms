@@ -2,19 +2,22 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <FeatherBackButton
+        <OnmsButton
+          variant="text"
+          class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
+          <OnmsIcon :icon="ArrowBack" />
           Go Back
-        </FeatherBackButton>
+        </OnmsButton>
       </div>
       <div>
         <h3>
           {{ isCreate ? 'Create New SNMP Definition' : 'Edit SNMP Definition Details' }}
         </h3>
       </div>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         @click="isMessageDialogVisible = true"
@@ -25,25 +28,16 @@
     <div class="basic-info">
       <div class="section-content">
         <h4>Configuration applies to these IP Ranges:</h4>
-        <FeatherChipList label="IP Addresses" v-if="badgeItems.length">
-          <FeatherChip
+        <div class="chip-list" v-if="badgeItems.length">
+          <OnmsChip
             v-for="item of badgeItems"
             :key="createBadgeKey(item)"
             class="definition-chip"
-            @click="removeChip(item)"
-          >
-            <template v-if="item.type === 'range'">{{ `${item.range?.begin} - ${item.range?.end}` }}</template>
-            <template v-else-if="item.type === 'specific'">{{ item.specific }}</template>
-            <template v-else>IPLIKE: {{ item.ipMatch }}</template>
-
-            <template #icon>
-              <FeatherIcon
-                :icon="IconCancel"
-                class="icon"
-              />
-            </template>
-          </FeatherChip>
-        </FeatherChipList>
+            removable
+            :label="chipLabel(item)"
+            @remove="removeChip(item)"
+          />
+        </div>
 
         <div v-if="currentDefinition?.profileLabel">
           <div class="large-spacer"></div>
@@ -69,7 +63,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -92,7 +86,7 @@
 
           <p>You may then edit all the other parameters as needed, and click <strong>Save</strong> to save the configuration, which will now apply to all the IP addresses, ranges or IPLIKE expressions specified in the badges.</p>
 
-          <p><strong>NOTE:</strong> OpenNMS will optimize the application of these configurations to the specified IP addresses, ranges, or IPLIKE expressions, for 
+          <p><strong>NOTE:</strong> OpenNMS will optimize the application of these configurations to the specified IP addresses, ranges, or IPLIKE expressions, for
           example by consolidating overlapping ranges.</p>
 
           <h4>Secure Credentials Vault (SCV) Support</h4>
@@ -102,17 +96,16 @@
           <p>Click on the SCV icon next to those fields to open the SCV drawer which allows you to select a credential from the vault. This will enter a reference to that credential in the field, which OpenNMS will resolve to the actual credential value when it needs to use it. A typical expression looks like <code>${scv:snmp-read-community}</code>, where <code>snmp-read-community</code> is the name of the credential stored in the vault. Note, you can also enter the reference expression directly into the field without using the SCV drawer, as long as you use the correct syntax.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import IconCancel from '@featherds/icon/navigation/Cancel'
-import MessageDialog from '../Common/MessageDialog.vue'
+import { computed, onMounted, ref, watch } from 'vue'
+
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
@@ -194,6 +187,15 @@ const createBadgeKey = (badge: DefinitionBadgeItem) => {
     return `specific-${badge.specific}`
   }
   return `ipmatch-${badge.ipMatch}`
+}
+
+const chipLabel = (badge: DefinitionBadgeItem) => {
+  if (badge.type === 'range') {
+    return `${badge.range?.begin} - ${badge.range?.end}`
+  } else if (badge.type === 'specific') {
+    return badge.specific ?? ''
+  }
+  return `IPLIKE: ${badge.ipMatch}`
 }
 
 const badgeItems = computed<DefinitionBadgeItem[]>(() => {
@@ -303,7 +305,7 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
 
   if (firstIp && !lastIp) {
     const duplicateError = checkForDuplicateDefinitionItems(currentDefinition.value, undefined, firstIp, undefined)
-    
+
     if (duplicateError) {
       errors.value = {
         duplicateRangeItem: duplicateError
@@ -365,7 +367,7 @@ const loadInitialValues = () => {
 
 const onDetailsValidationError = (formErrors: SnmpConfigFormErrors) => {
   isValid.value = Object.keys(formErrors).length === 0
-  errors.value = { ...formErrors}
+  errors.value = { ...formErrors }
 }
 
 const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string, ipMatch?: string) => {
@@ -418,11 +420,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables' as variables;
-@use '@featherds/styles/mixins/typography';
-@use "@featherds/table/scss/table";
-
-
 .snmp-definition-message-dialog-help-body {
   p {
     margin: 0.5em 0;
@@ -433,7 +430,7 @@ onMounted(() => {
   }
 
   code {
-    background-color: var(variables.$background);
+    background-color: var(--p-content-background);
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-family: monospace;
@@ -444,19 +441,23 @@ onMounted(() => {
   padding: 0.2em;
   margin: 0.2em;
   border-radius: 8px;
-  background-color: var(variables.$surface);
+  background-color: var(--p-content-background);
 
   .header {
     display: flex;
     align-items: center;
     gap: 20px;
+
+    .back-button {
+      gap: 0.4em;
+    }
   }
 
   .info-icon {
     cursor: pointer;
     font-size: 1.5em;
     margin-left: 0.5em;
-    color: var(variables.$primary);
+    color: var(--p-primary-color);
 
     &:hover {
       opacity: 0.8;
@@ -466,7 +467,7 @@ onMounted(() => {
   .basic-info {
     border-width: 1px;
     border-style: solid;
-    border-color: var(variables.$border-on-surface);
+    border-color: var(--p-content-border-color);
     padding: 1em;
     border-radius: 8px;
 
@@ -487,8 +488,10 @@ onMounted(() => {
     min-height: 0.5em;
   }
 
-  .definition-chip {
-    background-color: var(--feather-border-on-surface);
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 </style>

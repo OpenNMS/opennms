@@ -308,7 +308,10 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.unavailable("old reason"));
         await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
 
-        this.databasePopulator.getApplicationDao().delete(this.app1);
+        this.sessionUtils.withTransaction(() -> {
+            this.databasePopulator.getApplicationDao().delete(this.app1);
+            return null;
+        });
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
                                                  .addParam(PARM_APPLICATION_ID, this.app1.getId())
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
@@ -409,8 +412,11 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
 
-        this.databasePopulator.getMonitoredServiceDao().delete(this.node1icmp);
-        this.databasePopulator.getMonitoredServiceDao().flush();
+        this.sessionUtils.withTransaction(() -> {
+            this.databasePopulator.getMonitoredServiceDao().delete(this.node1icmp);
+            this.databasePopulator.getMonitoredServiceDao().flush();
+            return null;
+        });
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())
@@ -433,8 +439,11 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
 
-        this.databasePopulator.getIpInterfaceDao().delete(this.node1icmp.getIpInterface());
-        this.databasePopulator.getIpInterfaceDao().flush();
+        this.sessionUtils.withTransaction(() -> {
+            this.databasePopulator.getIpInterfaceDao().delete(this.node1icmp.getIpInterface());
+            this.databasePopulator.getIpInterfaceDao().flush();
+            return null;
+        });
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())
@@ -459,8 +468,11 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "Fulda"), is(notNullValue()));
 
-        this.databasePopulator.getNodeDao().delete(this.node1icmp.getIpInterface().getNode());
-        this.databasePopulator.getNodeDao().flush();
+        this.sessionUtils.withTransaction(() -> {
+            this.databasePopulator.getNodeDao().delete(this.node1icmp.getIpInterface().getNode());
+            this.databasePopulator.getNodeDao().flush();
+            return null;
+        });
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())

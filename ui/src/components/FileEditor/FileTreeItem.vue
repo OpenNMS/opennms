@@ -7,7 +7,7 @@
   >
     <div :class="{ subtitle1: isFolder, subtitle2: !isFolder }" @click="toggle">
       <span v-if="isFolder">
-        <FeatherIcon :icon="isOpen ? Open : Close" />
+        <OnmsIcon :icon="isOpen ? Open : Close" />
       </span>
 
       <span v-if="!isEditing">{{ item.name }}</span>
@@ -15,7 +15,7 @@
       <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp; +</span>
 
       <span class="remove" v-if="item.fullPath === selectedFile">
-        <FeatherIcon :icon="Remove" @click.stop="openConfirmDeleteModal(item)" />
+        <OnmsIcon :icon="Remove" @click.stop="openConfirmDeleteModal(item)" />
       </span>
 
       <NewFileInput v-if="isEditing" :item="item" />
@@ -34,13 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherIcon } from '@featherds/icon'
-import Open from '@featherds/icon/navigation/ExpandMore'
-import Close from '@featherds/icon/navigation/ChevronRight'
-import Remove from '@featherds/icon/action/Remove'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Open from '@/components/icons/navigation/ExpandMore.vue'
+import Close from '@/components/icons/navigation/ChevronRight.vue'
+import Remove from '@/components/icons/action/Remove.vue'
 import NewFileInput from './NewFileInput.vue'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
-import { PropType } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 
 const props = defineProps({
   item: {
@@ -79,7 +79,9 @@ const toggle = () => {
 }
 
 const addNewFile = (file: IFile) => {
-  if (!isOpen.value) toggle()
+  if (!isOpen.value) {
+    toggle()
+  }
   file.children?.unshift({
     name: '',
     isEditing: true,
@@ -91,7 +93,6 @@ const openConfirmDeleteModal = (file: IFile) => fileEditorStore.setFileToDelete(
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
 ul,
 li {
   list-style-type: none;
@@ -110,9 +111,9 @@ li {
   margin-left: 0px;
 }
 .selected {
-  background: var($shade-3);
+  background: var(--p-highlight-background);
   span {
-    color: var($primary);
+    color: var(--p-highlight-color);
   }
 }
 .hidden {
@@ -121,6 +122,6 @@ li {
 .remove {
   float: right;
   margin-right: 10px;
-  color: var($primary-text-on-surface) !important;
+  color: var(--p-text-color) !important;
 }
 </style>

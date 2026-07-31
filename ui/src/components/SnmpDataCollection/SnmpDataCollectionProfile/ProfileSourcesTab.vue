@@ -6,56 +6,56 @@
     <div class="section-header">Sources</div>
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
-      <FeatherAutocomplete
-        type="single"
-        label="Add Source"
-        textProp="name"
-        :modelValue="selectedAutoSource"
-        @update:modelValue="onSourceSelected"
-        @search="onSourceSearch"
-        :results="sourceSearchResults"
-        data-test="add-source-autocomplete"
-      />
+      <FormField label="Add Source">
+        <OnmsAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="sourceSearchResults"
+          optionLabel="name"
+          @complete="onSourceSearch"
+          @optionSelect="(value) => onSourceSelected(value as SourceItem)"
+          placeholder="Search sources..."
+          :forceSelection="true"
+          data-test="add-source-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
     </div>
     <div class="sources-card">
-      <PDataTable
+      <OnmsTable
         :value="sortedSources"
         scrollable
         scrollHeight="400px"
         :size="'small'"
-        :virtualScrollerOptions="{ itemSize: 44 }"
+        :virtualScrollItemSize="44"
         tableStyle="min-width: 50rem"
       >
-        <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
-        <PColumn style="width: 4rem">
+        <OnmsColumn field="name" style="width: 20%; height: 44px"></OnmsColumn>
+        <OnmsColumn style="width: 4rem">
           <template #body="{ data }">
-            <FeatherButton
-              icon="Delete"
+            <OnmsIconButton
+              title="Delete source"
               data-test="delete-source-button"
+              :icon="Delete"
               @click="removeSource(data.name)"
-            >
-              <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            />
           </template>
-        </PColumn>
-      </PDataTable>
+        </OnmsColumn>
+      </OnmsTable>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
+import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-
-interface SourceItem extends IAutocompleteItemType {
+interface SourceItem {
   name: string
   id: number
 }
@@ -69,7 +69,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useSnmpDataCollectionStore()
-const selectedAutoSource = ref<SourceItem | undefined>(undefined)
+const autocompleteQuery = ref<string | SourceItem>('')
 const sourceSearchResults = ref<SourceItem[]>([])
 
 const sortedSources = computed(() =>
@@ -84,11 +84,10 @@ const onSourceSearch = (query: string) => {
     .map(s => ({ name: s.name, id: s.id }))
 }
 
-const onSourceSelected = (item: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
-  const source = item as SourceItem | undefined
-  if (source && !Array.isArray(source)) {
+const onSourceSelected = (source: SourceItem | undefined) => {
+  if (source) {
     emit('update:sources', [...props.sources, source.name])
-    selectedAutoSource.value = undefined
+    autocompleteQuery.value = ''
     sourceSearchResults.value = []
   }
 }
@@ -99,15 +98,15 @@ const removeSource = (name: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .sources-box {
   padding: 20px 0;
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 
@@ -119,16 +118,6 @@ const removeSource = (name: string) => {
 .sources-card {
   :deep(.p-datatable-thead) {
     display: none;
-  }
-
-  :deep(.p-datatable-tbody > tr) {
-    background-color: var(--feather-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-datatable-tbody > tr > td) {
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
   }
 }
 </style>

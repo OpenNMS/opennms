@@ -36,6 +36,8 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { computed } from 'vue'
+import { whenever } from '@vueuse/core'
 
 const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())
@@ -185,8 +187,11 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      path: '/node/:id',
+      // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
+      // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
+      path: '/node/:id([1-9]\\d*)',
       name: 'Node Details',
+      props: true,
       component: () => import('@/containers/NodeDetails.vue')
     },
     {
@@ -371,11 +376,6 @@ const router = createRouter({
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
-    },
-    {
-      path: '/primevue-test',
-      name: 'PrimeVueTest',
-      component: () => import('@/components/PrimeVueTest.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

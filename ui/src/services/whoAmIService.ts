@@ -29,7 +29,7 @@ const getWhoAmI = async (): Promise<WhoAmIResponse | false> => {
   try {
     const resp = await rest.get(endpoint)
     return resp.data as WhoAmIResponse
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

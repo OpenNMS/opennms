@@ -5,31 +5,37 @@
   >
     <div class="section-header">RRD Settings</div>
     <div class="input-row">
-      <FeatherInput
+      <FormField
         label="RRD Step"
-        :modelValue="rrdSettings.rrdStep"
-        @update:modelValue="update('rrdStep', String($event))"
-        type="number"
+        :for="rrdStepId"
         :error="errors.rrdStep"
         hint="RRD step size in seconds"
-        data-test="rrd-step"
-      />
+      >
+        <OnmsInputNumber
+          :inputId="rrdStepId"
+          :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
+          @update:modelValue="update('rrdStep', $event == null ? '' : String($event))"
+          :min="1"
+          :invalid="!!errors.rrdStep"
+          data-test="rrd-step"
+          fluid
+        />
+      </FormField>
     </div>
     <div class="rra-section">
       <div class="rra-header">
         <span class="rra-title">RRAs</span>
-        <FeatherButton
-          secondary
-          icon="Add"
+        <OnmsButton
+          variant="outlined"
           data-test="add-rra-button"
           class="add-rra-button"
           @click="addRRA"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add RRA
-        </FeatherButton>
+        </OnmsButton>
       </div>
-      <PDataTable
+      <OnmsTable
         v-model:editingRows="editingRows"
         :value="rrdSettings.rras"
         editMode="row"
@@ -37,7 +43,7 @@
         @row-edit-save="onRowEditSave"
         data-test="rra-table"
       >
-        <PColumn
+        <OnmsColumn
           header="RRA"
           style="width: 4rem"
         >
@@ -47,71 +53,70 @@
           <template #editor>
             <span>RRA</span>
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="cf"
           header="Consolidation Function"
         >
           <template #editor="{ data }">
-            <PSelect
+            <OnmsSelect
               v-model="data.cf"
               :options="cfOptions"
               optionLabel="label"
               optionValue="value"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="xff"
           header="XFF"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.xff"
               :min="0"
               :maxFractionDigits="6"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="steps"
           header="Step"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.steps"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="rows"
           header="Rows"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.rows"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           header=""
           style="width: 4rem"
         >
           <template #body="{ data }">
-            <FeatherButton
-              icon="Delete"
+            <OnmsIconButton
+              title="Delete RRA"
               data-test="delete-rra-button"
+              :icon="Delete"
               @click="deleteRRA(data._id)"
-            >
-              <FeatherIcon :icon="Delete" />
-            </FeatherButton>
+            />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           :rowEditor="true"
           style="width: 8rem"
           bodyStyle="text-align: center"
@@ -121,7 +126,7 @@
             }
           }"
         />
-      </PDataTable>
+      </OnmsTable>
     </div>
     <span
       v-if="errors.rrdRras"
@@ -131,23 +136,25 @@
 </template>
 
 <script setup lang="ts">
+import { ref, useId, watch } from 'vue'
+
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
-import { FeatherInput } from '@featherds/input'
-import DataTableComponent from 'primevue/datatable'
-import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import InputNumberComponent from 'primevue/inputnumber'
-import SelectComponent from 'primevue/select'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsInputNumber,
+  OnmsSelect,
+  OnmsTable,
+  type OnmsTableRowEditSaveEvent
+} from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
 
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-const PInputNumber = InputNumberComponent
-const PSelect = SelectComponent
+const rrdStepId = useId()
 
 const props = defineProps<{
   rrdSettings: RrdSettingsModel
@@ -197,7 +204,7 @@ const deleteRRA = (id: number) => {
   })
 }
 
-const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
+const onRowEditSave = (event: OnmsTableRowEditSaveEvent) => {
   const rras = [...props.rrdSettings.rras]
   rras[event.index] = { ...event.newData } as EditableRRA
   emit('update:rrdSettings', { ...props.rrdSettings, rras })
@@ -205,15 +212,15 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .rrd-settings-box {
   padding: 20px 0;
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 
@@ -222,39 +229,14 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 }
 
 .field-error {
-  color: var(--feather-error);
+  display: block;
+  color: var(--p-red-500);
   font-size: 0.8em;
+  margin-top: 0.25em;
 }
 
 .rra-section {
   margin-top: 20px;
-
-  :deep(.p-datatable-thead > tr > th) {
-    background-color: var(--feather-background);
-    border-bottom: 1px solid var(--feather-border-on-surface);
-    color: var(--feather-secondary-text-on-surface);
-    text-transform: uppercase;
-  }
-
-  :deep(.p-datatable-tbody > tr) {
-    background-color: var(--feather-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-datatable-tbody > tr > td) {
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-select) {
-    background-color: var(--feather-surface);
-    border-color: var(--feather-border-on-surface);
-    color: var(--feather-primary-text-on-surface);
-  }
-
-  :deep(.p-select-label) {
-    color: var(--feather-primary-text-on-surface);
-  }
 
   .rra-header {
     display: flex;
@@ -263,15 +245,8 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
     margin-bottom: 12px;
 
     .rra-title {
-      @include headline4;
-      color: var(--feather-secondary-text-on-surface);
-    }
-
-    .add-rra-button {
-      border-radius: 0;
-      border: 1px solid var(--feather-primary);
-      width: auto;
-      padding: 0.5em 1em;
+      @include onms-headline4;
+      color: var(--onms-secondary-text-on-surface);
     }
   }
 }

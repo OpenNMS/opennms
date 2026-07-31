@@ -5,7 +5,7 @@
       <div class="info-section">
         <div v-if="displayTable">
           <span>SNMP definitions display how IP addresses, ranges, or patterns are currently configured.</span>
-          <FeatherIcon
+          <OnmsIcon
             :icon="InfoIcon"
             class="info-icon"
             @click="isMessageDialogVisible = true"
@@ -13,7 +13,7 @@
           />
         </div>
       </div>
- 
+
       <SnmpConfigDefinitionsTable v-if="displayTable" />
 
       <div
@@ -29,7 +29,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Definitions"
       @close="isMessageDialogVisible = false"
@@ -42,19 +42,20 @@
           <p>Note that OpenNMS also modifies and optimizes these configurations automatically.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import { computed, ref } from 'vue'
+
+import { OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
@@ -101,9 +102,8 @@ const onSave = async (definition: SnmpDefinition) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-definitions-tab {

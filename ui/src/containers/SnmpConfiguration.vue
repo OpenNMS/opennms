@@ -1,7 +1,7 @@
 <template>
   <div class="snmp-config">
-    <div class="feather-row">
-      <div class="feather-col-12">
+    <div class="onms-row">
+      <div class="onms-col-12">
         <BreadCrumbs :items="breadcrumbs" />
       </div>
     </div>
@@ -17,6 +17,8 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted } from 'vue'
+
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpConfigTabContainer from '@/components/SnmpConfiguration/SnmpConfigTabContainer.vue'
 import { useMenuStore } from '@/stores/menuStore'

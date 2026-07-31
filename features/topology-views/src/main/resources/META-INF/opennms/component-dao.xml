@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <!-- Custom topology views are persisted in the generic JSON key-value
+         store. Reuse the existing 'jsonStore' bean (the shared PostgresJsonStore
+         wired into the DAO context) rather than declaring our own: declaring a
+         second JsonStore bean makes type-based @Autowired ambiguous (e.g. in
+         ResourceRestService), and overriding the 'jsonStore' id with an
+         onmsgi:reference breaks other consumers (snmpConfigDao). Views are a
+         core-webapp feature, always backed by the OpenNMS database. -->
+    <bean id="topologyViewDao" class="org.opennms.netmgt.topology.views.impl.TopologyViewJsonStore" init-method="init">
+        <constructor-arg ref="jsonStore" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.topology.views.TopologyViewDao" ref="topologyViewDao" />
+
+    <!-- Topology image assets (view backgrounds, custom node icons): bytes in
+         the binary key-value store, metadata in the JSON key-value store. The
+         shared 'jsonStore' and 'dataSource' beans come from the kv-store
+         json/postgres context already on the DAO classpath (same reuse as the
+         topology views DAO above). The DAO builds its own PostgresBlobStore from
+         the DataSource internally: the only BlobStore registered as a shared
+         service in this context is thresholding's no-op, and exposing a second
+         BlobStore bean/service would make that lookup ambiguous. -->
+    <bean id="topologyAssetDao" class="org.opennms.netmgt.topology.assets.impl.TopologyAssetKvStore">
+        <constructor-arg ref="jsonStore" />
+        <constructor-arg ref="dataSource" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.topology.assets.TopologyAssetDao" ref="topologyAssetDao" />
+
+</beans>

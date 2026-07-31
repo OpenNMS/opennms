@@ -31,6 +31,7 @@ import {
 } from '@/types'
 import { uniq } from 'lodash'
 import { sortBy } from 'lodash'
+import { ref } from 'vue'
 
 export interface GraphDefinition {
   id: string
@@ -43,7 +44,7 @@ export const useGraphStore = defineStore('graphStore', () => {
   const definitionDataObjects = ref<PreFabGraph[]>([])
   const graphMetrics = ref<GraphMetricsResponse[]>([])
   const definitionsList = ref<string[]>([])
-  const nameOrderMap = ref(new Map<string,number>())
+  const nameOrderMap = ref(new Map<string, number>())
 
   const getGraphDefinitionsByResourceIds = async (ids: string[], nodeResources: Resource[]) => {
     let idsWithDefinitions: GraphDefinition[] = []
@@ -81,14 +82,14 @@ export const useGraphStore = defineStore('graphStore', () => {
 
       // sorts by preFabGraph order value
       const sortedDefinitions = sortBy(
-        defs.map((definition) => ({ name: definition, order: nameOrderMap.value.get(definition) })),
+        defs.map(definition => ({ name: definition, order: nameOrderMap.value.get(definition) })),
         ['order']
       ).map(definition => definition.name)
 
       idsWithDefinitions = [...idsWithDefinitions, { id, definitions: sortedDefinitions, label: getLabelFromId(id) }]
     }
 
-    const totalDefinitionsList = uniq(idsWithDefinitions.map((item) => item.definitions).flat())
+    const totalDefinitionsList = uniq(idsWithDefinitions.map(item => item.definitions).flat())
 
     definitionsList.value = totalDefinitionsList
     definitions.value = idsWithDefinitions
@@ -105,7 +106,7 @@ export const useGraphStore = defineStore('graphStore', () => {
   }
 
   const saveNameOrderMap = (graphs: PreFabGraph[]) => {
-    const newMap = new Map<string,number>()
+    const newMap = new Map<string, number>()
 
     for (const graph of graphs) {
       newMap.set(graph.name, graph.order)

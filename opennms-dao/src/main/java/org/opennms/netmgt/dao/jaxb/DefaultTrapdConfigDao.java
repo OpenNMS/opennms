@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.function.Consumer;
 
 public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfiguration> implements TrapdConfigDao {
-    public static final String CONFIG_NAME = "trapd-config";
     public static final String DAEMON_NAME = "trapd";
 
     @Autowired
@@ -45,7 +44,7 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
 
     @Override
     public String getConfigName() {
-        return CONFIG_NAME;
+        return TrapdConfiguration.CM_CONFIG_NAME;
     }
 
     @Override
@@ -65,6 +64,11 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
 
     @Override
     public void replaceConfig(TrapdConfiguration config) {
+        if (config == null) {
+            return;
+        }
+        // Stamp ids onto any new/id-less SNMPv3 users before persisting (covers PUT and uploads).
+        config.ensureSnmpv3UserIds();
         this.updateConfig(this.getDefaultConfigId(), ConfigConvertUtil.objectToJson(config), true);
     }
 }

@@ -117,11 +117,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testActiondConfiguration() {
-        testConfigFile("actiond-configuration.xml");
-    }
-
-    @Test
     public void testAmiConfig() {
         testConfigFile("ami-config.xml");
     }
@@ -543,16 +538,6 @@ public class ConfigTesterTest {
     public void testWSManConfigFiles() {
         testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Configuration code is not in its own class.
-     * 
-     * It's embedded in XMPPNotificationManager's constructor.
-     */
-    public void testXmppConfiguration() {
-        ignoreConfigFile("xmpp-configuration.properties");
     }
 
     @Test

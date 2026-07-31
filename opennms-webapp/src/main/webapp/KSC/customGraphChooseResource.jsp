@@ -29,10 +29,10 @@
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Choose Resource")
-          .headTitle("KSC")
+          .headTitle("Graph Collections")
           .headTitle("Reports")
           .breadcrumb("Reports", "report/index.jsp")
-          .breadcrumb("KSC Reports", "KSC/index.jsp")
+          .breadcrumb("Graph Collections", "KSC/index.jsp")
           .breadcrumb("Custom Graph")
           .ngApp("onms-ksc-wizard")
           .build(request);

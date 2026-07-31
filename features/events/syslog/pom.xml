@@ -11,6 +11,21 @@
   <name>OpenNMS :: Features :: Events :: Syslog Daemon</name>
   <packaging>bundle</packaging>
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <!-- the shipped blueprints live in the module root (attached artifacts below);
+           copy them onto the test classpath for the camel-test-blueprint ITs, since
+           Camel 3 no longer resolves relative file: descriptor URLs -->
+      <testResource>
+        <directory>${project.basedir}</directory>
+        <includes>
+          <include>blueprint-syslog-listener-javanet.xml</include>
+          <include>blueprint-syslog-listener-camel-netty.xml</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -59,6 +74,18 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+        <!-- OSGi-aware CamelContext for the hand-built context (factory discovery across bundles) -->
+        <groupId>org.apache.camel.karaf</groupId>
+        <artifactId>camel-core-osgi</artifactId>
+        <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
+      <!-- camel-core-osgi only pulls this in as scope=provided, which isn't transitive -->
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>

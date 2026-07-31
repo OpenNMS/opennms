@@ -45,7 +45,7 @@ ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
 * A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
-* Internet access to download the installation packages. xref:system-requirements.adoc
+* Internet access to download the installation packages (see xref:core/system-requirements.adoc[]).
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service, if necessary.
@@ -108,6 +108,17 @@ include::docker/postgresql.adoc[]
 --
 endif::[]
 ====
+
+[[set-up-java]]
+== Set up Java
+
+{page-component-title} {page-component-version} requires Java {compatible-javajdk}.
+
+Many supported distributions ship an OpenJDK {compatible-javajdk} build in their own repositories.
+Refer to your operating system's package manager to search and find a compatible version (for example, `java-{compatible-javajdk}-openjdk-devel` on RHEL-based systems, or `openjdk-{compatible-javajdk}-jdk` on Debian and Ubuntu).
+
+If your distribution does not provide OpenJDK {compatible-javajdk}, or you would rather use a vendor build, Eclipse Temurin from Adoptium is an option that we can recommend.
+See the https://adoptium.net/installation[Adoptium installation documentation] for packages and instructions for your platform.
 
 [[install-core-instance]]
 == Install the core instance

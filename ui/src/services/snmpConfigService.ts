@@ -91,7 +91,7 @@ const getSnmpConfig = async (): Promise<SnmpConfig | false> => {
     }
 
     return resp.data as SnmpConfig
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -114,7 +114,7 @@ const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<Sn
     } as SnmpAgentConfig
 
     return data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -132,8 +132,8 @@ const saveSnmpConfigDefaultOverrides = async (config: SnmpBaseConfiguration): Pr
     } else {
       return createFailureResult('Failed to save SNMP configuration defaults')
     }
-  } catch (err) {
-    console.error('Error saving SNMP config defaults:', err)
+  } catch (_err) {
+    console.error('Error saving SNMP config defaults:', _err)
     return createFailureResult('Failed to save SNMP configuration defaults')
   }
 }
@@ -151,8 +151,8 @@ const saveSnmpDefinition = async (definition: SnmpDefinition): Promise<Validatio
     } else {
       return createFailureResult('Failed to save SNMP configuration')
     }
-  } catch (err) {
-    console.error('Error saving SNMP definition:', err)
+  } catch (_err) {
+    console.error('Error saving SNMP definition:', _err)
     return createFailureResult('Failed to save SNMP configuration')
   }
 }
@@ -196,8 +196,8 @@ const deleteSnmpDefinition = async (ranges: IpAddressRange[] | null, specifics: 
     } else {
       return createFailureResult('Failed to delete SNMP definition')
     }
-  } catch (err) {
-    console.error('Error deleting SNMP definition:', err)
+  } catch (_err) {
+    console.error('Error deleting SNMP definition:', _err)
     return createFailureResult('Failed to delete SNMP definition')
   }
 }
@@ -215,8 +215,8 @@ const saveSnmpProfile = async (profile: SnmpProfile): Promise<ValidationResult> 
     } else {
       return createFailureResult('Failed to save SNMP profile')
     }
-  } catch (err) {
-    console.error('Error saving SNMP profile:', err)
+  } catch (_err) {
+    console.error('Error saving SNMP profile:', _err)
     return createFailureResult('Failed to save SNMP profile')
   }
 }
@@ -236,8 +236,8 @@ const deleteSnmpProfile = async (label: string): Promise<ValidationResult> => {
     } else {
       return createFailureResult('Failed to delete SNMP profile')
     }
-  } catch (err) {
-    console.error('Error deleting SNMP profile:', err)
+  } catch (_err) {
+    console.error('Error deleting SNMP profile:', _err)
     return createFailureResult('Failed to delete SNMP profile')
   }
 }
@@ -247,8 +247,8 @@ const downloadSnmpConfig = async (isXml: boolean) => {
 
   try {
     return await v2.get(fullEndpoint, { responseType: 'blob' })
-  } catch (err) {
-    console.error('Error downloading SNMP config file:', err)
+  } catch (_err) {
+    console.error('Error downloading SNMP config file:', _err)
     return false
   }
 }
@@ -267,8 +267,8 @@ const uploadSnmpConfig = async (file: File, isXml: boolean) => {
     }
 
     return true
-  } catch (err) {
-    console.error('Error uploading SNMP config file:', err)
+  } catch (_err) {
+    console.error('Error uploading SNMP config file:', _err)
     return false
   }
 }

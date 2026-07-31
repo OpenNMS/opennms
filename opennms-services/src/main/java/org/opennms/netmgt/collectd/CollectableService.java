@@ -127,6 +127,11 @@ public class CollectableService implements ReadyRunnable {
 
     private ThresholdingSession m_thresholdingSession;
 
+    // also honored by the poller (LatencyStoringServiceMonitorAdaptor, default false there); collectd defaults to enabled
+    private static final String THRESHOLDING_ENABLED_PARAM = "thresholding-enabled";
+
+    private boolean m_thresholdingEnabled = true;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -159,11 +164,22 @@ public class CollectableService implements ReadyRunnable {
 
         m_spec.initialize(m_agent);
 
-        try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getServiceParameters());
-        } catch (ThresholdInitializationException e) {
-            LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
+        final ServiceParameters serviceParameters = m_spec.getServiceParameters();
+        m_thresholdingEnabled = isThresholdingEnabled(serviceParameters);
+        if (m_thresholdingEnabled) {
+            try {
+                m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), serviceParameters);
+            } catch (ThresholdInitializationException e) {
+                LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
+            }
+        } else {
+            LOG.info("Thresholding is disabled for {}/{}/{} ({}=false).", m_nodeId, getHostAddress(), m_spec.getServiceName(), THRESHOLDING_ENABLED_PARAM);
         }
+    }
+
+    private static boolean isThresholdingEnabled(final ServiceParameters serviceParameters) {
+        final Object value = serviceParameters.getParameters().get(THRESHOLDING_ENABLED_PARAM);
+        return value == null || !"false".equalsIgnoreCase(value.toString().trim());
     }
     
     /**
@@ -429,7 +445,7 @@ public class CollectableService implements ReadyRunnable {
                     } catch (ThresholdInitializationException e) {
                         LOG.warn("ThresholdInitializationException for {}. Thresholding skipped.", this, e);
                     }
-                } else {
+                } else if (m_thresholdingEnabled) {
                     LOG.warn("No thresholding session for {}. Thresholding skipped.", this);
                 }
 

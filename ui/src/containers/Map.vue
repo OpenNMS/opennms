@@ -1,6 +1,6 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <splitpanes
         :dbl-click-splitter="true"
         @pane-maximize="minimizeBottomPane"
@@ -23,6 +23,8 @@
 
 <!-- used to keep map alive once loaded -->
 <script lang="ts">
+import { onMounted, ref } from 'vue'
+
 export default { name: 'MapKeepAlive' }
 </script>
 
@@ -71,15 +73,14 @@ onMounted(async () => {
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
 .default-theme {
   .splitpanes__splitter {
     height: 10px !important;
-    background: var($shade-3) !important;
+    background: var(--p-datatable-header-cell-background) !important;
   }
   .splitpanes__splitter::after,
   .splitpanes__splitter::before {
-    background: var($primary-text-on-surface) !important;
+    background: var(--p-text-color) !important;
   }
 }
 </style>

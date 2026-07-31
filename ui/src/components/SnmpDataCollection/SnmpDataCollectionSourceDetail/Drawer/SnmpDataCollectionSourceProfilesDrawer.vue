@@ -1,18 +1,17 @@
 <template>
-  <FeatherDrawer
+  <OnmsDrawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
-    v-model="isVisible"
-    :labels="{ close: 'close', title: `Edit Profiles for ${props.sourceName}` }"
-    hide-close
-    @hidden="close"
+    v-model:visible="isVisible"
+    :header="`Edit Profiles for ${props.sourceName}`"
     width="40rem"
+    @hide="close"
     class="source-profiles-drawer"
   >
     <div class="container">
       <div class="section-label">Assigned Profiles</div>
       <div class="chips-container">
-        <PChip
+        <OnmsChip
           v-for="profile in localProfiles"
           :key="profile.id"
           :label="profile.name"
@@ -25,47 +24,44 @@
         >No profiles assigned</span>
       </div>
       <div class="spacer" />
-      <div class="section-label">Add Profile</div>
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="filteredSuggestions"
-        optionLabel="name"
-        @complete="onSearch"
-        @option-select="addProfile($event.value)"
-        placeholder="Search profiles..."
-        :forceSelection="true"
-        data-test="profile-autocomplete"
-        dropdown
-        completeOnFocus
-      />
+      <FormField label="Add Profile">
+        <OnmsAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="filteredSuggestions"
+          optionLabel="name"
+          @complete="onSearch"
+          @optionSelect="(value) => addProfile(value as SnmpCollectionProfile)"
+          placeholder="Search profiles..."
+          :forceSelection="true"
+          data-test="profile-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
       <div class="button-row">
-        <FeatherButton
+        <OnmsButton
+          variant="ghost"
+          label="Cancel"
           @click="close"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <OnmsButton
           data-test="save-profiles-button"
+          label="Save"
           @click="save"
-        >
-          Save
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
+
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import ChipComponent from 'primevue/chip'
-
-const PChip = ChipComponent
-const PAutoComplete = AutoCompleteComponent
+import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsDrawer } from '@opennms/onms-ui'
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   visible: boolean
@@ -98,8 +94,8 @@ const onOpen = async () => {
   filteredSuggestions.value = [...availableProfiles.value]
 }
 
-const onSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSearch = (query: string) => {
+  const q = query.toLowerCase()
   if (q.length > 0) {
     filteredSuggestions.value = availableProfiles.value.filter(p =>
       p.name.toLowerCase().includes(q)
@@ -137,8 +133,8 @@ watch(() => props.visible, async (visible) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .container {
   padding: 20px;
@@ -148,8 +144,8 @@ watch(() => props.visible, async (visible) => {
 }
 
 .section-label {
-  @include headline4;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-headline4;
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .chips-container {
@@ -157,16 +153,11 @@ watch(() => props.visible, async (visible) => {
   flex-wrap: wrap;
   gap: 8px;
   min-height: 40px;
-
-  :deep(.p-chip-label),
-  :deep(.p-chip-remove-icon) {
-    color: var(--feather-primary-text-on-surface);
-  }
 }
 
 .empty-text {
-  @include body-large;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-body-large;
+  color: var(--onms-secondary-text-on-surface);
   font-style: italic;
 }
 
@@ -184,37 +175,4 @@ watch(() => props.visible, async (visible) => {
   }
 }
 
-:deep(.p-autocomplete-input) {
-  font-family: var(--feather-font-family);
-  background: var(--feather-background);
-  color: var(--feather-primary-text-on-surface);
-  border-color: var(--feather-border-on-surface);
-}
-</style>
-
-<style lang="scss">
-@use '@featherds/styles/themes/variables';
-
-// Overlay is teleported to body; :deep() can't reach it.
-// Un-layered global CSS wins over PrimeVue's @layer primevue styles.
-.p-autocomplete-overlay {
-  font-family: var(--feather-font-family);
-}
-
-.open-dark {
-  .p-autocomplete-overlay {
-    background: var(variables.$surface);
-    color: var(variables.$primary-text-on-surface);
-    border-color: var(variables.$border-on-surface);
-  }
-
-  .p-autocomplete-option {
-    color: var(variables.$primary-text-on-surface);
-
-    &.p-autocomplete-option-selected,
-    &:not(.p-disabled):hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-  }
-}
 </style>

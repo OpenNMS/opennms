@@ -298,10 +298,10 @@
     </action>
     <action>
         <label>Show Nodes with Flows</label>
-        <url>element/nodeList.htm?flows=true</url>
+        <url>ui/index.html#/nodes?flows=true</url>
     </action>
     <action>
         <label>Show Nodes without Flows</label>
-        <url>element/nodeList.htm?flows=false</url>
+        <url>ui/index.html#/nodes?flows=false</url>
     </action>
 </actions>

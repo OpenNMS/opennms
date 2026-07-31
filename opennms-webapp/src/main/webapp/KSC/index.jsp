@@ -47,9 +47,9 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Performance")
           .headTitle("Reports")
-          .headTitle("KSC")
+          .headTitle("Graph Collections")
           .breadcrumb("Reports", "report/index.jsp")
-          .breadcrumb("KSC Reports")
+          .breadcrumb("Graph Collections")
           .ngApp("onms-ksc-wizard")
           .build(request);
 %>
@@ -206,7 +206,7 @@
       </div>
       <c:choose>
         <c:when test="${isReadOnly == false}">
-        <button class="btn btn-secondary" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
+        <button class="btn btn-secondary" type="button" ng-click="reloadConfig()">Request a Reload of Graph Collections Configuration</button>
         </c:when>
       </c:choose>
     </div>

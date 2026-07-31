@@ -16,6 +16,7 @@
         <module>bsm</module>
         <module>graphml</module>
         <module>legacy</module>
+        <module>pathoutage</module>
         <module>persistence-test</module>
         <module>topology</module>
     </modules>

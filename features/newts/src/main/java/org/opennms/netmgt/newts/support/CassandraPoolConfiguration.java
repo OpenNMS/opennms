@@ -21,27 +21,44 @@
  */
 package org.opennms.netmgt.newts.support;
 
+import org.opennms.newts.cassandra.CassandraSession;
+import org.opennms.newts.cassandra.CassandraSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Loads the Cassandra pool configuration from system properties and exposes these as named beans.
- * Uses a value of null if no system property is set (which allows the driver to use its own defaults.)
+ * Creates the shared Cassandra session, applying the optional pool settings from
+ * system properties. A value of null is used if no system property is set (which
+ * allows the driver to use its own defaults).
+ *
+ * The pool settings used to be exposed as their own (possibly null) named beans
+ * injected into the session's constructor, but as of Spring 5 a null bean no
+ * longer qualifies as an autowire candidate for a required constructor argument,
+ * so the session is created here instead.
  */
 @Configuration
 public class CassandraPoolConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(CassandraPoolConfiguration.class);
 
-    @Bean(name="cassandra.pool.connections-per-host")
-    public Integer getCoreConnectionsPerHost() {
-        return sysPropToIntOrNull("org.opennms.newts.config.connections-per-host");
-    }
-
-    @Bean(name="cassandra.pool.max-requests-per-connection")
-    public Integer getMaxRequestsPerConnection() {
-        return sysPropToIntOrNull("org.opennms.newts.config.max-requests-per-connection");
+    @Bean(name="cassandraSession")
+    public CassandraSession cassandraSession(
+            @Qualifier("cassandra.datacenter") final String datacenter,
+            @Qualifier("cassandra.keyspace") final String keyspace,
+            @Qualifier("cassandra.hostname") final String hostname,
+            @Qualifier("cassandra.port") final Integer port,
+            @Qualifier("cassandra.compression") final String compression,
+            @Qualifier("cassandra.username") final String username,
+            @Qualifier("cassandra.password") final String password,
+            @Qualifier("cassandra.ssl") final Boolean ssl,
+            @Qualifier("cassandra.driver-settings-file") final String driverSettingsFile) {
+        return new CassandraSessionImpl(datacenter, keyspace, hostname, port, compression,
+                username, password, ssl,
+                sysPropToIntOrNull("org.opennms.newts.config.connections-per-host"),
+                sysPropToIntOrNull("org.opennms.newts.config.max-requests-per-connection"),
+                driverSettingsFile);
     }
 
     private static Integer sysPropToIntOrNull(String sysProp) {

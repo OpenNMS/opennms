@@ -23,8 +23,6 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-import AutoImport from 'unplugin-auto-import/vite'
-
 // for process.env.VITE_APP_LOGO_NAME in resolve.alias
 import dotenv from 'dotenv'
 dotenv.config()
@@ -41,7 +39,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
-      '~@featherds': '@featherds',
       './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
     },
     dedupe: ['vue', 'primevue']
@@ -50,20 +47,11 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => tag.includes('rapi-doc')
+          isCustomElement: tag => tag.includes('rapi-doc')
         }
       }
     }),
-    svgLoader(),
-
-    // https://github.com/antfu/unplugin-auto-import
-    AutoImport({
-      imports: ['vue', 'vue-router', '@vueuse/core'],
-      eslintrc: {
-        enabled: true,
-        filepath: './.eslintrc-auto-import.json'
-      }
-    })
+    svgLoader()
   ],
   test: {
     dir: './tests',
@@ -77,7 +65,6 @@ export default defineConfig({
         // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
         // https://github.com/vitest-dev/vitest/issues/3862
         inline: [
-          /@featherds\/\w+/,
           /primevue/
         ]
       }

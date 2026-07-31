@@ -41,7 +41,7 @@ const getNodeIfServices = async (queryParameters?: QueryParameters): Promise<IfS
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

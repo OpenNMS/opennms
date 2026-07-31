@@ -62,7 +62,6 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={

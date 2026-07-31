@@ -1,4 +1,3 @@
-import { IAutocompleteItemType } from '@featherds/autocomplete';
 import { CreateEditMode, Pagination, Sorting } from '.'
 import type { RRA } from './timeSeries'
 
@@ -32,9 +31,7 @@ export interface SnmpDataCollectionStoreState {
   sourcesSorting: Sorting
   profiles: SnmpCollectionProfile[]
   selectedProfile: SnmpCollectionProfile | null
-  profilesPagination: Pagination
   profilesSearchTerm: string
-  profilesSorting: Sorting
   isLoading: boolean
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
   activeTab: number

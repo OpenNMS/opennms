@@ -38,7 +38,7 @@ import org.opennms.web.svclayer.api.KscReportService;
 
 public class KscReportSearchProvider implements SearchProvider {
 
-    private final SearchContext CONTEXT = new SearchContext("KSC Report");
+    private final SearchContext CONTEXT = new SearchContext("Graph Collection");
 
     private final KscReportService kscReportService;
 

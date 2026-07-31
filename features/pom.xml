@@ -20,6 +20,9 @@
     <!-- Topologies -->
     <module>topologies</module>
 
+    <!-- Custom topology views + the image assets they reference -->
+    <module>topology-views</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
@@ -124,10 +127,6 @@
 
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
-
-    <!-- Dashboard and dashlet UI elements -->
-    <module>vaadin-dashboard</module>
-    <module>vaadin-dashlets</module>
 
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>

@@ -1,5 +1,5 @@
 <template>
-  <FeatherAppLayout content-layout="full">
+  <OnmsAppLayout content-layout="full">
     <template v-slot:header>
       <Menubar />
       <SideMenu
@@ -9,7 +9,7 @@
 
     <div class="main-content">
       <Spinner />
-      <Snackbar />
+      <OnmsToastHost />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -19,19 +19,21 @@
     <template v-slot:footer>
       <Footer />
     </template>
-  </FeatherAppLayout>
+  </OnmsAppLayout>
 </template>
 
 <script
   setup
   lang="ts"
 >
-import { FeatherAppLayout } from '@featherds/app-layout'
+import { onMounted } from 'vue'
+
+import { OnmsToastHost } from '@opennms/onms-ui'
+import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
 import Spinner from '@/components/Common/Spinner.vue'
-import Snackbar from '@/components/Common/Snackbar.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -55,18 +57,26 @@ onMounted(() => {
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
+  nodeStructureStore.getServiceTypes()
   pluginStore.getPlugins()
 })
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/lib/grid";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 html {
   overflow-x: hidden;
+}
+// Offsets for the SPA content, clearing the two fixed chrome elements:
+// - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).
+// - padding-left clears the fixed side-menu rail. SideMenu's applyPush only
+//   overrides padding-left (inline) while the rail is pinned-expanded; otherwise
+//   this base applies.
+.app-layout {
+  padding-top: var(--onms-header-height, 3.75rem);
+  padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
 }
 .main-content {
   table {
@@ -83,15 +93,15 @@ a {
 
 // global feather typography classes
 .headline3 {
-  @include headline3;
+  @include onms-headline3;
 }
 .headline4 {
-  @include headline4;
+  @include onms-headline4;
 }
 .subtitle1 {
-  @include subtitle1;
+  @include onms-subtitle1;
 }
 .subtitle2 {
-  @include subtitle2;
+  @include onms-subtitle2;
 }
 </style>

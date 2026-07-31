@@ -32,17 +32,17 @@
         {
           "id": "nodes",
           "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
         },
+        {
+          "id": "legacyNodes",
+          "name": "Nodes (Legacy)",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
+          "roles": null
+        },        
         {
           "id": "deviceConfigs",
           "name": "Device Configs",

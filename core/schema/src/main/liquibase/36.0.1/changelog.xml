@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Ledger for one-time updates to DB-resident default SNMP datacollection config.
+         Rows are written by SnmpDataCollectionDefaultsUpdate (features/config/upgrade)
+         after each shipped-default delta is applied, so deltas are never re-applied
+         (and never resurrect content an admin has deliberately deleted). -->
+    <changeSet author="mmassengill" id="36.0.1-snmp-collection-defaults-log-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_defaults_log"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_defaults_log">
+            <column name="update_id" type="varchar(128)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="applied_at" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_defaults_log"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

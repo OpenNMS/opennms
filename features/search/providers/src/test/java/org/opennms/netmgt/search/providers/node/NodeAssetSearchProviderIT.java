@@ -45,6 +45,7 @@ import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -61,6 +62,7 @@ import static org.junit.Assert.assertEquals;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
+@Transactional
 public class NodeAssetSearchProviderIT {
 
     @Autowired

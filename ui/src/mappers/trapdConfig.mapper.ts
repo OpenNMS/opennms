@@ -12,6 +12,7 @@ export const mapTrapdConfigFromServer = (data: any): TrapConfig => {
     batchInterval: data.batchInterval,
     useAddressFromVarbind: data.useAddressFromVarbind,
     snmpv3User: (data.snmpv3User || []).map((user: any) => ({
+      id: user.id,
       engineId: user.engineId,
       securityName: user.securityName,
       securityLevel: user.securityLevel,
@@ -30,19 +31,23 @@ export const mapUserToServer = (payload: any): SnmpV3User => {
     securityLevel: payload.securityLevel
   } as SnmpV3User
 
+  // Preserve the server-assigned id so existing users round-trip correctly
+  // (the server correlates masked credentials by id). New users have no id.
+  if (payload.id) {
+    user.id = payload.id
+  }
+
   if (payload.securityLevel === 1) {
     user.authProtocol = null
     user.authPassphrase = null
     user.privacyProtocol = null
     user.privacyPassphrase = null
-  }
-  else if (payload.securityLevel === 2) {
+  } else if (payload.securityLevel === 2) {
     user.authProtocol = payload.authProtocol
     user.authPassphrase = payload.authPassphrase
     user.privacyProtocol = null
     user.privacyPassphrase = null
-  }
-  else if (payload.securityLevel === 3) {
+  } else if (payload.securityLevel === 3) {
     user.authProtocol = payload.authProtocol
     user.authPassphrase = payload.authPassphrase
     user.privacyProtocol = payload.privacyProtocol

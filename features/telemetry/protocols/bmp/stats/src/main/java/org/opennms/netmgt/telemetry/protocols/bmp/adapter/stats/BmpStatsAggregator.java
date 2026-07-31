@@ -110,12 +110,27 @@ public class BmpStatsAggregator {
     private SessionUtils sessionUtils;
 
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updatePeerStats, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByAsn, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByPrefix, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updatePeerRibCountStats, 0, 15, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 60, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsIpOrigins, 0, 60, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updatePeerStats", this::updatePeerStats), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsByAsn", this::updateStatsByAsn), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsByPrefix", this::updateStatsByPrefix), 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updatePeerRibCountStats", this::updatePeerRibCountStats), 0, 15, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateGlobalRibsAndAsnInfo", this::updateGlobalRibsAndAsnInfo), 0, 60, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(guarded("updateStatsIpOrigins", this::updateStatsIpOrigins), 0, 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * An exception escaping a task permanently cancels its scheduleAtFixedRate schedule
+     * (e.g. a constraint violation surfacing at transaction commit), so catch everything
+     * and let the next interval retry.
+     */
+    private static Runnable guarded(final String taskName, final Runnable task) {
+        return () -> {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                LOG.error("BMP stats task {} failed; will retry at the next scheduled interval", taskName, t);
+            }
+        };
     }
 
     public void destroy() {
@@ -123,23 +138,26 @@ public class BmpStatsAggregator {
     }
 
     private void updateGlobalRibsAndAsnInfo() {
-        LOG.debug("Updating GlobalRibs ++");
-        setShouldDeleteForExisting();
-        List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
-        LOG.debug("Retrieved {} PrefixByAS elements", prefixByASList.size());
-        prefixByASList.forEach(prefixByAS -> {
-            BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
-            if (bmpGlobalIpRib != null) {
-                try {
-                    bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
-                } catch (Exception e) {
-                    LOG.error("Exception while persisting BMP global iprib  {}", bmpGlobalIpRib, e);
-                }
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating GlobalRibs ++");
+            setShouldDeleteForExisting();
+            List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
+            LOG.debug("Retrieved {} PrefixByAS elements", prefixByASList.size());
+            prefixByASList.forEach(prefixByAS -> {
+                BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
+                if (bmpGlobalIpRib != null) {
+                    try {
+                        bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
+                    } catch (Exception e) {
+                        LOG.error("Exception while persisting BMP global iprib  {}", bmpGlobalIpRib, e);
+                    }
 
-            }
+                }
+            });
+            deleteExpiredGlobalRibs();
+            LOG.debug("Updating GlobalRibs --");
+            return null;
         });
-        deleteExpiredGlobalRibs();
-        LOG.debug("Updating GlobalRibs --");
     }
 
     private void setShouldDeleteForExisting() {
@@ -201,16 +219,17 @@ public class BmpStatsAggregator {
     }
 
     private void updateStatsIpOrigins() {
-        LOG.debug("Updating StatsIpOrigins ++");
-        List<StatsIpOrigins> statsIpOrigins = bmpGlobalIpRibDao.getStatsIpOrigins();
-        LOG.debug("Retrieved {} StatsIpOrigins elements", statsIpOrigins.size());
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating StatsIpOrigins ++");
+            List<StatsIpOrigins> statsIpOrigins = bmpGlobalIpRibDao.getStatsIpOrigins();
+            LOG.debug("Retrieved {} StatsIpOrigins elements", statsIpOrigins.size());
 
-        statsIpOrigins.forEach(stat -> {
-            BmpStatsIpOrigins bmpStatsIpOrigins = buildBmpStatsOrigins(stat);
-            try {
-                bmpStatsIpOriginsDao.saveOrUpdate(bmpStatsIpOrigins);
-            } catch (Exception e) {
-                // Possibly unique constraint violation, query and update.
+            statsIpOrigins.forEach(stat -> {
+                BmpStatsIpOrigins bmpStatsIpOrigins = buildBmpStatsOrigins(stat);
+                // Query first: under Hibernate 5 a saveOrUpdate insert is deferred until commit
+                // (after this lambda returns), so a duplicate-key violation would be thrown outside
+                // any try here and abort the whole aggregation. Look the row up by its natural key
+                // and update it in place when it already exists, otherwise insert.
                 BmpStatsIpOrigins retrieved = bmpStatsIpOriginsDao.findByAsnAndIntervalTime(bmpStatsIpOrigins.getAsn(), bmpStatsIpOrigins.getTimestamp());
                 if (retrieved != null) {
                     retrieved.setV4prefixes(bmpStatsIpOrigins.getV4prefixes());
@@ -220,10 +239,13 @@ public class BmpStatsAggregator {
                     retrieved.setV4withirr(bmpStatsIpOrigins.getV4withirr());
                     retrieved.setV6withirr(bmpStatsIpOrigins.getV6withirr());
                     saveBmpStatsIpOrigin(retrieved);
+                } else {
+                    saveBmpStatsIpOrigin(bmpStatsIpOrigins);
                 }
-            }
+            });
+            LOG.debug("Updating StatsIpOrigins --");
+            return null;
         });
-        LOG.debug("Updating StatsIpOrigins --");
     }
 
     private void saveBmpStatsIpOrigin(BmpStatsIpOrigins bmpStatsIpOrigins) {
@@ -236,27 +258,27 @@ public class BmpStatsAggregator {
 
 
     private void updatePeerStats() {
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating StatsByPeer ++");
+            List<StatsByPeer> statsByPeer = bmpIpRibLogDao.getStatsByPeerForInterval("'5 min'");
+            LOG.debug("Retrieved {} StatsByPeer elements", statsByPeer.size());
 
-        LOG.debug("Updating StatsByPeer ++");
-        List<StatsByPeer> statsByPeer = bmpIpRibLogDao.getStatsByPeerForInterval("'5 min'");
-        LOG.debug("Retrieved {} StatsByPeer elements", statsByPeer.size());
-
-        statsByPeer.forEach(stat -> {
-            BmpStatsByPeer bmpStatsByPeer = buildBmpStatsByPeer(stat);
-            try {
-                bmpStatsByPeerDao.saveOrUpdate(bmpStatsByPeer);
-            } catch (Exception e) {
-                // // Possibly unique constraint violation, query and update.
+            statsByPeer.forEach(stat -> {
+                BmpStatsByPeer bmpStatsByPeer = buildBmpStatsByPeer(stat);
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
                 BmpStatsByPeer retrieved = bmpStatsByPeerDao.findByPeerAndIntervalTime(bmpStatsByPeer.getPeerHashId(), bmpStatsByPeer.getTimestamp());
                 if (retrieved != null) {
                     retrieved.setUpdates(bmpStatsByPeer.getUpdates());
                     retrieved.setWithdraws(bmpStatsByPeer.getWithdraws());
                     saveBmpStatsByPeer(retrieved);
+                } else {
+                    saveBmpStatsByPeer(bmpStatsByPeer);
                 }
-            }
+            });
+            LOG.debug("Updating StatsByPeer --");
+            return null;
         });
-        LOG.debug("Updating StatsByPeer --");
-
     }
 
     private void saveBmpStatsByPeer(BmpStatsByPeer bmpStatsByPeer) {
@@ -269,25 +291,27 @@ public class BmpStatsAggregator {
 
 
     private void updateStatsByAsn() {
-        LOG.debug("Updating StatsByAsn ++");
-        List<StatsByAsn> statsByAsnList = bmpIpRibLogDao.getStatsByAsnForInterval("'5 min'");
-        LOG.debug("Retrieved {} StatsByAsn elements", statsByAsnList.size());
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating StatsByAsn ++");
+            List<StatsByAsn> statsByAsnList = bmpIpRibLogDao.getStatsByAsnForInterval("'5 min'");
+            LOG.debug("Retrieved {} StatsByAsn elements", statsByAsnList.size());
 
-        statsByAsnList.forEach(stat -> {
-            BmpStatsByAsn bmpStatsByAsn = buildBmpStatsByAsn(stat);
-            try {
-                bmpStatsByAsnDao.saveOrUpdate(bmpStatsByAsn);
-            } catch (Exception e) {
-                // Possibly unique constraint violation, query and update.
+            statsByAsnList.forEach(stat -> {
+                BmpStatsByAsn bmpStatsByAsn = buildBmpStatsByAsn(stat);
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
                 BmpStatsByAsn retrieved = bmpStatsByAsnDao.findByAsnAndIntervalTime(bmpStatsByAsn.getPeerHashId(), bmpStatsByAsn.getOriginAsn(), bmpStatsByAsn.getTimestamp());
                 if (retrieved != null) {
                     retrieved.setUpdates(bmpStatsByAsn.getUpdates());
                     retrieved.setWithdraws(bmpStatsByAsn.getWithdraws());
                     saveStatsByAsn(retrieved);
+                } else {
+                    saveStatsByAsn(bmpStatsByAsn);
                 }
-            }
+            });
+            LOG.debug("Updating StatsByAsn --");
+            return null;
         });
-        LOG.debug("Updating StatsByAsn --");
     }
 
     private void saveStatsByAsn(BmpStatsByAsn bmpStatsByAsn) {
@@ -299,26 +323,28 @@ public class BmpStatsAggregator {
     }
 
     private void updateStatsByPrefix() {
-        LOG.debug("Updating StatsByPrefix ++");
-        List<StatsByPrefix> statsByPrefixList = bmpIpRibLogDao.getStatsByPrefixForInterval("'5 min'");
-        LOG.debug("Retrieved {} StatsByPrefix elements", statsByPrefixList.size());
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating StatsByPrefix ++");
+            List<StatsByPrefix> statsByPrefixList = bmpIpRibLogDao.getStatsByPrefixForInterval("'5 min'");
+            LOG.debug("Retrieved {} StatsByPrefix elements", statsByPrefixList.size());
 
-        statsByPrefixList.forEach(stat -> {
-            BmpStatsByPrefix bmpStatsByPrefix = buildBmpStatsByPrefix(stat);
-            try {
-                bmpStatsByPrefixDao.saveOrUpdate(bmpStatsByPrefix);
-            } catch (Exception e) {
-                // Possibly unique constraint violation, query and update.
+            statsByPrefixList.forEach(stat -> {
+                BmpStatsByPrefix bmpStatsByPrefix = buildBmpStatsByPrefix(stat);
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
                 BmpStatsByPrefix retrieved = bmpStatsByPrefixDao.findByPrefixAndIntervalTime(bmpStatsByPrefix.getPeerHashId(), bmpStatsByPrefix.getPrefix(),
                         bmpStatsByPrefix.getTimestamp());
                 if (retrieved != null) {
                     retrieved.setUpdates(bmpStatsByPrefix.getUpdates());
                     retrieved.setWithdraws(bmpStatsByPrefix.getWithdraws());
                     saveBmpStatsByPrefix(retrieved);
+                } else {
+                    saveBmpStatsByPrefix(bmpStatsByPrefix);
                 }
-            }
+            });
+            LOG.debug("Updating StatsByPrefix --");
+            return null;
         });
-        LOG.debug("Updating StatsByPrefix --");
     }
 
     private void saveBmpStatsByPrefix(BmpStatsByPrefix bmpStatsByPrefix) {
@@ -330,26 +356,27 @@ public class BmpStatsAggregator {
     }
 
     private void updatePeerRibCountStats() {
-        LOG.debug("Updating StatsPeerRib ++");
-        List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
-        LOG.debug("Retrieved {} StatsPeerRib elements", statsPeerRibs.size());
+        sessionUtils.withTransaction(() -> {
+            LOG.debug("Updating StatsPeerRib ++");
+            List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
+            LOG.debug("Retrieved {} StatsPeerRib elements", statsPeerRibs.size());
 
-        statsPeerRibs.forEach(statsPeerRib -> {
-            BmpStatsPeerRib bmpStatsPeerRib = buildBmpStatPeerRibCount(statsPeerRib);
-            try {
-                bmpStatsPeerRibDao.saveOrUpdate(bmpStatsPeerRib);
-            } catch (Exception e) {
-                // Possibly unique constraint violation, query and update.
+            statsPeerRibs.forEach(statsPeerRib -> {
+                BmpStatsPeerRib bmpStatsPeerRib = buildBmpStatPeerRibCount(statsPeerRib);
+                // Query first (see updateStatsIpOrigins): a deferred Hibernate 5 insert would throw a
+                // duplicate-key violation outside this lambda; look up by natural key and update in place.
                 BmpStatsPeerRib retrieved = bmpStatsPeerRibDao.findByPeerAndIntervalTime(bmpStatsPeerRib.getPeerHashId(), bmpStatsPeerRib.getTimestamp());
                 if (retrieved != null) {
                     retrieved.setV6prefixes(bmpStatsPeerRib.getV6prefixes());
                     retrieved.setV4prefixes(bmpStatsPeerRib.getV4prefixes());
                     saveStatsPeerRib(retrieved);
+                } else {
+                    saveStatsPeerRib(bmpStatsPeerRib);
                 }
-            }
+            });
+            LOG.debug("Updating StatsPeerRib --");
+            return null;
         });
-        LOG.debug("Updating StatsPeerRib --");
-
     }
 
     private void saveStatsPeerRib(BmpStatsPeerRib bmpStatsPeerRib) {

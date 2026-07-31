@@ -1,25 +1,18 @@
 <template>
-  <FeatherDrawer
+  <OnmsDrawer
     id="drawer"
     data-test="mib-group-drawer"
-    v-model="store.mibGroupDrawerState.visible"
-    :labels="{ close: 'close', title: drawerTitle }"
-    hide-close
-    @hidden="closeMibGroupDrawer"
+    v-model:visible="store.mibGroupDrawerState.visible"
+    :header="drawerTitle"
     width="80rem"
+    @hide="closeMibGroupDrawer"
     class="mib-group-drawer"
   >
     <div class="container">
-      <div class="header">
-        <div class="title-container">
-          <h2 class="title">{{ drawerTitle }}</h2>
-        </div>
-      </div>
       <div class="content">
         <div class="switch-row">
-          <SwitchRender
-            :checked="status"
-            @click="onChangeStatus"
+          <OnmsToggleSwitch
+            v-model="status"
             data-test="system-def-status-input"
           />
           <label class="switch-label">{{ status ? 'Enabled' : 'Disabled' }}</label>
@@ -27,27 +20,37 @@
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="label">General Details</div>
-        <div>
-          <FeatherInput
-            label="Name"
-            data-test="mib-group-name-input"
+        <FormField
+          label="Name"
+          :for="nameId"
+          :error="errors.name"
+        >
+          <OnmsInputText
+            :id="nameId"
             v-model.trim="name"
-            :error="errors.name"
+            :invalid="!!errors.name"
+            data-test="mib-group-name-input"
+            fluid
           />
-        </div>
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <div>
-          <FeatherSelect
-            label="Interface Type"
-            data-test="mib-group-if-type-input"
+        <FormField
+          label="Interface Type"
+          :for="ifTypeId"
+          :error="errors.ifType"
+        >
+          <OnmsSelect
+            :inputId="ifTypeId"
+            :modelValue="ifType"
+            @update:modelValue="ifType = $event as ISelectItemType"
             :options="IF_TYPE_FILTERS_OPTIONS"
-            v-model="ifType"
-            :error="errors.ifType"
-          >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
-        </div>
+            optionLabel="_text"
+            :invalid="!!errors.ifType"
+            data-test="mib-group-if-type-input"
+            fluid
+          />
+        </FormField>
         <div class="spacer"></div>
         <div class="spacer"></div>
         <div class="table-container">
@@ -56,78 +59,59 @@
               <h3>MIB Objects</h3>
             </div>
             <div class="action">
-              <FeatherButton
-                secondary
+              <OnmsButton
+                variant="outlined"
+                label="Add MIB Object"
                 data-test="add-mib-object-button"
                 @click="openMibObjectDrawer(-1, null, CreateEditMode.Create)"
-              >
-                Add MIB Object
-              </FeatherButton>
+              />
             </div>
           </div>
-          <table
-            class="data-table"
-            aria-label="MIB Objects Table"
+          <OnmsTable
+            :value="mibObjects"
+            paginator
+            :rows="5"
+            :rowsPerPageOptions="[5, 10, 15, 20]"
+            data-test="mib-objects-table"
           >
-            <thead>
-              <tr>
-                <th>OID</th>
-                <th>Instance</th>
-                <th>Alias</th>
-                <th>Type</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <TransitionGroup
-              name="data-table"
-              tag="tbody"
-            >
-              <tr
-                v-for="(mibObject, index) in tableRecords"
-                :key="index"
-              >
-                <td>{{ mibObject.oid }}</td>
-                <td>{{ mibObject.instance }}</td>
-                <td>{{ mibObject.alias }}</td>
-                <td>{{ mibObject.type }}</td>
-                <td>
-                  <div class="action-container">
-                    <FeatherButton
-                      icon="Edit MIB Object"
-                      data-test="edit-mib-object-button"
-                      @click="openMibObjectDrawer(index, mibObject, CreateEditMode.Edit)"
-                    >
-                      <FeatherIcon :icon="Edit"> </FeatherIcon>
-                    </FeatherButton>
-                    <FeatherButton
-                      icon="Delete MIB Object"
-                      data-test="delete-mib-object-button"
-                      @click="deleteMibObject(index)"
-                    >
-                      <FeatherIcon :icon="Delete"> </FeatherIcon>
-                    </FeatherButton>
-                  </div>
-                </td>
-              </tr>
-            </TransitionGroup>
-          </table>
-          <div
-            class="alerts-pagination"
-            v-if="tableRecords.length"
-          >
-            <FeatherPagination
-              :modelValue="page"
-              :pageSize="pageSize"
-              :total="total"
-              :pageSizes="[5, 10, 15, 20]"
-              @update:modelValue="onPageChange"
-              @update:pageSize="onPageSizeChange"
-              data-test="FeatherPagination"
+            <OnmsColumn
+              field="oid"
+              header="OID"
             />
-          </div>
-          <div v-if="!tableRecords.length">
-            <EmptyList :content="{ msg: 'No MIB Objects added yet.' }" />
-          </div>
+            <OnmsColumn
+              field="instance"
+              header="Instance"
+            />
+            <OnmsColumn
+              field="alias"
+              header="Alias"
+            />
+            <OnmsColumn
+              field="type"
+              header="Type"
+            />
+            <OnmsColumn header="Action">
+              <template #body="{ data }">
+                <div class="action-container">
+                  <OnmsIconButton
+                    title="Edit MIB Object"
+                    data-test="edit-mib-object-button"
+                    :icon="Edit"
+                    @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
+                  />
+                  <OnmsIconButton
+                    title="Delete MIB Object"
+                    data-test="delete-mib-object-button"
+                    :icon="Delete"
+                    @click="deleteMibObject(mibObjects.indexOf(data))"
+                  />
+                </div>
+              </template>
+            </OnmsColumn>
+            <template #empty>
+              <EmptyList :content="{ msg: 'No MIB Objects added yet.' }" />
+            </template>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -139,85 +123,111 @@
         </div>
         <div class="spacer"></div>
         <div class="content">
-          <FeatherInput
+          <FormField
             label="OID"
-            v-model.trim="oid"
-            data-test="mib-object-oid-input"
+            :for="oidId"
             :error="mibObjectErrors.oid"
-          />
+          >
+            <OnmsInputText
+              :id="oidId"
+              v-model.trim="oid"
+              :invalid="!!mibObjectErrors.oid"
+              data-test="mib-object-oid-input"
+              fluid
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherSelect
+          <FormField
             label="Instance"
-            data-test="mib-object-instance-input"
-            :options="instancesOptions"
-            v-model="instance"
+            :for="instanceId"
             :error="mibObjectErrors.instance"
           >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
+            <OnmsSelect
+              :inputId="instanceId"
+              :modelValue="instance"
+              @update:modelValue="instance = $event as ISelectItemType"
+              :options="instancesOptions"
+              optionLabel="_text"
+              :invalid="!!mibObjectErrors.instance"
+              data-test="mib-object-instance-input"
+              fluid
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherInput
+          <FormField
             label="Alias"
-            v-model.trim="alias"
-            data-test="mib-object-alias-input"
+            :for="aliasId"
             :error="mibObjectErrors.alias"
-          />
+          >
+            <OnmsInputText
+              :id="aliasId"
+              v-model.trim="alias"
+              :invalid="!!mibObjectErrors.alias"
+              data-test="mib-object-alias-input"
+              fluid
+            />
+          </FormField>
           <div class="spacer"></div>
           <div class="spacer"></div>
-          <FeatherSelect
+          <FormField
             label="Data Type"
-            data-test="mib-object-data-type-input"
-            :options="MIB_OBJECT_DATA_TYPE_OPTIONS"
-            v-model="dataType"
+            :for="dataTypeId"
             :error="mibObjectErrors.type"
           >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
+            <OnmsSelect
+              :inputId="dataTypeId"
+              :modelValue="dataType"
+              @update:modelValue="dataType = $event as ISelectItemType"
+              :options="MIB_OBJECT_DATA_TYPE_OPTIONS"
+              optionLabel="_text"
+              :invalid="!!mibObjectErrors.type"
+              data-test="mib-object-data-type-input"
+              fluid
+            />
+          </FormField>
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <FeatherButton
+          <OnmsButton
+            variant="ghost"
+            label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
-          >
-            Cancel
-          </FeatherButton>
-          <FeatherButton
-            primary
+          />
+          <OnmsButton
+            label="Save MIB Object"
             data-test="save-mib-object-button"
             @click="saveMibObject"
             :disabled="isMibObjectSaveDisabled"
-          >
-            Save MIB Object
-          </FeatherButton>
+          />
         </div>
       </div>
       <div
         class="footer"
         v-if="!mibObjectDrawerState.visible"
       >
-        <FeatherButton
+        <OnmsButton
+          variant="ghost"
+          label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"
-        >
-          Cancel
-        </FeatherButton>
-        <FeatherButton
-          primary
+        />
+        <OnmsButton
+          label="Save MIB Group"
           data-test="save-mib-group"
           :disabled="isSaveDisabled"
           @click="saveMibGroup"
-        >
-          Save MIB Group
-        </FeatherButton>
+        />
       </div>
     </div>
-  </FeatherDrawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, useId, watch, watchEffect } from 'vue'
+
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_IF_TYPE_FILTER, DEFAULT_MIB_OBJ_TYPE, DEFAULT_STATUS, IF_TYPE_FILTERS_OPTIONS, MIB_OBJECT_DATA_TYPE_OPTIONS, OID_PATTERN } from '@/lib/constants'
@@ -226,18 +236,19 @@ import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionSer
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDrawer } from '@featherds/drawer'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { SwitchRender } from '@featherds/switch'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import { ISelectItemType } from '@/types'
+import FormField from '@/components/Common/FormField.vue'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
+const nameId = useId()
+const ifTypeId = useId()
+const oidId = useId()
+const instanceId = useId()
+const aliasId = useId()
+const dataTypeId = useId()
 const name = ref('')
 const ifType = ref<ISelectItemType>(DEFAULT_IF_TYPE_FILTER)
 const mibObjects = ref<MibGroupObjectForm[]>([])
@@ -252,10 +263,6 @@ const instancesOptions = ref<ISelectItemType[]>([])
 const alias = ref('')
 const mibObjectErrors = ref<MibGroupObjectFormErrors>({})
 const isMibObjectSaveDisabled = ref(true)
-const page = ref(1)
-const pageSize = ref(5)
-const total = ref(0)
-const tableRecords = ref<MibGroupObjectForm[]>([])
 const drawerTitle = computed(() =>
   store.mibGroupDrawerState.isEditMode === CreateEditMode.Create ? 'Create MIB Group' : 'Edit MIB Group'
 )
@@ -276,21 +283,6 @@ const mibObjectDrawerTitle = computed(() =>
     : 'Edit MIB Object'
 )
 
-const onPageChange = (newPage: number) => {
-  page.value = newPage
-  tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
-}
-
-const onPageSizeChange = (newPageSize: number) => {
-  pageSize.value = newPageSize
-  page.value = 1
-  tableRecords.value = mibObjects.value.slice(0, pageSize.value)
-}
-
-const onChangeStatus = () => {
-  status.value = !status.value
-}
-
 const closeMibGroupDrawer = async () => {
   oid.value = ''
   dataType.value = DEFAULT_MIB_OBJ_TYPE
@@ -301,10 +293,6 @@ const closeMibGroupDrawer = async () => {
   status.value = true
   mibObjects.value = []
   errors.value = {}
-  page.value = 1
-  pageSize.value = 5
-  total.value = 0
-  tableRecords.value = []
   isSaveDisabled.value = true
   isMibObjectSaveDisabled.value = true
   closeMibObjectDrawer()
@@ -312,25 +300,17 @@ const closeMibGroupDrawer = async () => {
 }
 
 const deleteMibObject = (index: number) => {
-  const actualIndex = (page.value - 1) * pageSize.value + index
-  mibObjects.value.splice(actualIndex, 1)
-  total.value = mibObjects.value.length
-
-  // If current page is now empty and we're not on the first page, go back one page
-  const maxPage = Math.max(1, Math.ceil(total.value / pageSize.value))
-  if (page.value > maxPage) {
-    page.value = maxPage
+  if (index < 0) {
+    return
   }
-
-  tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+  mibObjects.value.splice(index, 1)
 }
 
 const openMibObjectDrawer = (index: number, mibObject: MibGroupObjectForm | null, isEditMode: CreateEditMode) => {
-  const actualIndex = isEditMode === CreateEditMode.Edit ? (page.value - 1) * pageSize.value + index : index
   mibObjectDrawerState.value = {
     visible: true,
     isEditMode: isEditMode,
-    mibObjectIndex: actualIndex,
+    mibObjectIndex: index,
     mibObject: mibObject
   }
 }
@@ -370,8 +350,6 @@ const saveMibObject = () => {
         mibObjects.value[index] = mibObject
       }
     }
-    total.value = mibObjects.value.length
-    tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
     closeMibObjectDrawer()
   }
 }
@@ -451,7 +429,7 @@ const validateMibGroup = (): MibGroupErrors => {
 }
 
 const loadInitialData = () => {
-  instancesOptions.value = store.resourceTypeNames.map((name) => ({ _text: name, _value: name }))
+  instancesOptions.value = store.resourceTypeNames.map(name => ({ _text: name, _value: name }))
   if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     ifType.value = DEFAULT_IF_TYPE_FILTER
@@ -467,8 +445,6 @@ const loadInitialData = () => {
       mibObjects.value = JSON.parse(group.mibObjects) || []
     }
   }
-  total.value = mibObjects.value.length
-  tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 
 const loadMibObjectData = () => {
@@ -534,10 +510,6 @@ watch(
       status.value = true
       mibObjects.value = []
       errors.value = {}
-      page.value = 1
-      pageSize.value = 5
-      total.value = 0
-      tableRecords.value = []
       isSaveDisabled.value = true
       isMibObjectSaveDisabled.value = true
     }
@@ -547,31 +519,10 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import '@featherds/styles/themes/variables';
-@import '@featherds/styles/mixins/typography';
-@import '@featherds/table/scss/table';
-@import '@/styles/_transitionDataTable';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
-  padding: 25px;
-  height: 100vh;
-  overflow-y: scroll;
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .title-container {
-      display: flex;
-      align-items: center;
-
-      .title {
-        @include headline4;
-      }
-    }
-  }
 
   .content {
     .spacer {
@@ -590,7 +541,7 @@ watch(
     }
 
     .label {
-      @include headline4;
+      @include onms-headline4;
       margin-bottom: 0.5em;
     }
 
@@ -603,42 +554,30 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
-          }
-        }
-      }
-
-      table {
-        width: 100%;
-        @include table;
-
-        thead {
-          background: var($background);
-          text-transform: uppercase;
-        }
-
-        td {
-          white-space: nowrap;
-          box-shadow: none;
-          border-bottom: 1px solid var($border-on-surface);
-
-          .action-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            @include onms-headline3;
           }
         }
       }
     }
   }
 
+  .action-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   .sub-container {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 6px;
+    margin-top: 1rem;
+
     .header {
       padding: 20px;
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 
@@ -666,4 +605,3 @@ watch(
   }
 }
 </style>
-

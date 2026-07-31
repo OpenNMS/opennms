@@ -124,8 +124,6 @@ public abstract class NotificationManager {
     public static final String PARAM_EMAIL = "-email";
     /** Constant <code>PARAM_PAGER_EMAIL="-pemail"</code> */
     public static final String PARAM_PAGER_EMAIL = "-pemail";
-    /** Constant <code>PARAM_XMPP_ADDRESS="-xmpp"</code> */
-    public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     /** Constant <code>PARAM_TEXT_PAGER_PIN="-tp"</code> */
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     /** Constant <code>PARAM_NUM_PAGER_PIN="-np"</code> */

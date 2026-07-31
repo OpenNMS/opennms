@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.container</artifactId>
+    <version>37.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.opennms.container</groupId>
+  <artifactId>org.opennms.container.daemon</artifactId>
+  <!--
+    Deliberately a plain jar rather than an OSGi bundle. This artifact owns the
+    embedded Karaf lifecycle and publishes its BundleContext through the static
+    KarafContext holder, so it has to be loaded exactly once, from the system
+    class path in $OPENNMS_HOME/lib. Packaging it as a bundle would invite it to
+    be installed inside the very framework it starts, which would produce a
+    second holder and silently disable the OSGi HTTP proxy.
+  -->
+  <packaging>jar</packaging>
+  <name>OpenNMS :: OSGi Container :: Daemon</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.karaf</groupId>
+      <artifactId>org.apache.karaf.main</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

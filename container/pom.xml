@@ -13,11 +13,13 @@
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>
+    <module>daemon</module>
     <module>servlet</module>
     <module>bridge</module>
     <module>jaas-login-module</module>
     <module>extender</module>
     <module>spring-extender</module>
+    <module>hawtio-osgi-patch</module>
     <module>shared</module>
     <module>noop-jetty-extension</module>
   </modules>

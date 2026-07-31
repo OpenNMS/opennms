@@ -16,65 +16,42 @@
               <template #item="{ element, index }">
                 <div class="file">
                   <div class="file-icon">
-                    <FeatherIcon :icon="Text" />
+                    <OnmsIcon :icon="Text" />
                     <span>
                       {{ ellipsify(element.file.name, 39) }}
                     </span>
                   </div>
                   <div class="actions">
-                    <FeatherTooltip
+                    <OnmsIcon
                       v-if="element.isDuplicate"
-                      :title="'File is a duplicate of another file that has been already uploaded.'"
-                      v-slot="{ attrs, on }"
-                    >
-                      <FeatherIcon
-                        :icon="Warning"
-                        v-bind="attrs"
-                        v-on="on"
-                        class="warning-icon"
-                        @click="openFileRenameDialog(index)"
-                      />
-                    </FeatherTooltip>
-                    <FeatherTooltip
+                      :icon="Warning"
+                      v-tooltip="'File is a duplicate of another file that has been already uploaded.'"
+                      class="warning-icon"
+                      @click="openFileRenameDialog(index)"
+                    />
+                    <OnmsIcon
                       v-if="element.isValid && !element.isDuplicate"
-                      :title="'File is valid'"
-                      v-slot="{ attrs, on }"
-                    >
-                      <FeatherIcon
-                        :icon="CheckCircle"
-                        v-bind="attrs"
-                        v-on="on"
-                        class="success-icon"
-                      />
-                    </FeatherTooltip>
-                    <FeatherTooltip
+                      :icon="CheckCircle"
+                      v-tooltip="'File is valid'"
+                      class="success-icon"
+                    />
+                    <OnmsIcon
                       v-if="!element.isValid"
-                      :title="element.errors.map((error: string) => `${error}. `).join('\n')"
-                      v-slot="{ attrs, on }"
-                    >
-                      <FeatherIcon
-                        :icon="Error"
-                        v-bind="attrs"
-                        v-on="on"
-                        class="error-icon"
-                      />
-                    </FeatherTooltip>
-                    <FeatherButton
-                      icon="Apps"
-                      text
-                    >
-                      <FeatherIcon
-                        class="close-icon drag-handle"
-                        :icon="Apps"
-                      />
-                    </FeatherButton>
-                    <FeatherButton
-                      icon="Trash"
+                      :icon="Error"
+                      v-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
+                      class="error-icon"
+                    />
+                    <OnmsIconButton
+                      title="Reorder"
+                      class="close-icon drag-handle"
+                      :icon="Apps"
+                    />
+                    <OnmsIconButton
+                      title="Remove"
                       data-test="remove-files-button"
+                      :icon="Delete"
                       @click="removeFile(index)"
-                    >
-                      <FeatherIcon :icon="Delete" />
-                    </FeatherButton>
+                    />
                   </div>
                 </div>
               </template>
@@ -101,27 +78,25 @@
             @change="handleFolderUpload"
             ref="eventFolderInput"
           />
-          <FeatherButton
+          <OnmsButton
+            variant="outlined"
+            label="Choose files to upload"
             @click="openFileDialog"
             :disabled="isLoading"
-          >
-            Choose files to upload
-          </FeatherButton>
-          <FeatherButton
+          />
+          <OnmsButton
+            variant="outlined"
+            label="Choose folder to upload"
             @click="openFolderDialog"
             :disabled="isLoading"
-          >
-            Choose folder to upload
-          </FeatherButton>
-          <FeatherButton
-            primary
+          />
+          <OnmsButton
+            label="Upload Files"
             :disabled="shouldUploadDisabled"
+            :loading="isLoading"
             @click="uploadFiles"
             data-test="upload-button"
-          >
-            <FeatherSpinner v-if="isLoading" />
-            <span v-else>Upload Files</span>
-          </FeatherButton>
+          />
         </div>
       </div>
       <div class="info-section">
@@ -134,14 +109,14 @@
           <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
           <li>
             Files that are valid and ready for upload will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="CheckCircle"
               class="success-icon-text"
             />.
           </li>
           <li>
             Files with duplicate names (excluding the .xml extension) will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="Warning"
               class="warning-icon-text"
             />
@@ -149,7 +124,7 @@
           </li>
           <li>
             Invalid files will be flagged with icon
-            <FeatherIcon
+            <OnmsIcon
               :icon="Error"
               class="error-icon-text"
             />
@@ -172,21 +147,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
-import Text from '@featherds/icon/file/Text'
-import Apps from '@featherds/icon/navigation/Apps'
-import Error from '@featherds/icon/notification/Error'
-import Warning from '@featherds/icon/notification/Warning'
-import { FeatherSpinner } from '@featherds/progress'
-import { FeatherTooltip } from '@featherds/tooltip'
+import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Text from '@/components/icons/file/Text.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Error from '@/components/icons/notification/Error.vue'
+import Warning from '@/components/icons/notification/Warning.vue'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
@@ -263,7 +237,7 @@ const handleFolderUpload = async (e: Event) => {
         })
       }
 
-    } catch (err) {
+    } catch (_err) {
       snackbar.showSnackBar({
         msg: `Error reading ${file.name}`,
         error: true
@@ -427,10 +401,8 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@use "@featherds/styles/themes/variables";
-
 .upload-files-tab {
-  background: var(variables.$surface);
+  background: var(--p-content-background);
   width: 100%;
   padding: 25px;
   border-radius: 5px;
@@ -451,21 +423,21 @@ watch(
 
     .info-section {
       .success-icon-text {
-        color: var(variables.$success);
+        color: var(--onms-success);
         vertical-align: middle;
         height: 2em;
         width: 2em;
       }
 
       .error-icon-text {
-        color: var(variables.$error);
+        color: var(--onms-error);
         vertical-align: middle;
         height: 2em;
         width: 2em;
       }
 
       .warning-icon-text {
-        color: var(variables.$major);
+        color: var(--onms-major);
         vertical-align: middle;
         height: 2em;
         width: 2em;
@@ -473,7 +445,7 @@ watch(
     }
 
     .selected-files-section {
-      border: 1px solid var(variables.$border-on-surface);
+      border: 1px solid var(--p-content-border-color);
       border-radius: 5px;
       padding: 10px;
       width: 500px;
@@ -485,7 +457,7 @@ watch(
         align-items: center;
         justify-content: space-between;
         padding: 10px;
-        border-bottom: 1px solid var(variables.$border-on-surface);
+        border-bottom: 1px solid var(--p-content-border-color);
         margin-bottom: 5px;
 
         .file-icon {
@@ -502,7 +474,7 @@ watch(
           }
 
           .invalid-text {
-            color: var(variables.$error);
+            color: var(--onms-error);
           }
         }
 
@@ -516,21 +488,21 @@ watch(
           }
 
           .success-icon {
-            color: var(variables.$success);
+            color: var(--onms-success);
             cursor: pointer;
             height: 2em;
             width: 2em;
           }
 
           .error-icon {
-            color: var(variables.$error);
+            color: var(--onms-error);
             cursor: pointer;
             height: 2em;
             width: 2em;
           }
 
           .warning-icon {
-            color: var(variables.$major);
+            color: var(--onms-major);
             cursor: pointer;
             height: 2em;
             width: 2em;
@@ -563,4 +535,3 @@ watch(
   }
 }
 </style>
-

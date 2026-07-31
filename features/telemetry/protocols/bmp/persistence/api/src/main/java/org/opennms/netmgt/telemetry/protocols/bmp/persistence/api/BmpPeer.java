@@ -52,7 +52,7 @@ public class BmpPeer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpPeerSequence")
-    @SequenceGenerator(name = "bmpPeerSequence", sequenceName = "bmppeernxtid")
+    @SequenceGenerator(name = "bmpPeerSequence", sequenceName = "bmppeernxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

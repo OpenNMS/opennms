@@ -127,9 +127,132 @@
         <bundle start-level="30">mvn:org.springframework/spring-webmvc-portlet/3.1.4.RELEASE</bundle>
     </feature>
 
-    <!-- Spring 4.2.x support -->
+    <!-- Spring 4.2.x feature definition. NOTE: not consumed at runtime; kept only as a vestigial
+         definition. The 4.3.x block was removed together with the Camel 3 upgrade (Camel 3.22 features
+         resolve against the 5.3.x features below); this one can go too once re-verified through the
+         karaf-maven-plugin:verify assembly gate. -->
 
-    <feature name="spring" description="Spring 4.2.x support" version="${springVersion}">
+    <feature name="spring" description="Spring 4.2.x support" version="${legacySpring42Version}">
+        <bundle dependency="true" start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/${legacySpring42Version}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/${legacySpring42PatchedVersion}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/${legacySpring42PatchedVersion}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/${legacySpring42PatchedVersion}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/${legacySpring42Version}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-aspects" description="Spring 4.2.x AOP support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-instrument" description="Spring 4.2.x Instrument support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-jdbc" description="Spring 4.2.x JDBC support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring-tx</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-jms" description="Spring 4.2.x JMS support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring-tx</feature>
+        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-messaging" description="Spring 4.2.x Messaging support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-messaging/${legacySpring42PatchedVersion}
+        </bundle>
+    </feature>
+
+    <feature name="spring-test" description="Spring 4.2.x Test support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-orm" description="Spring 4.2.x ORM support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring-jdbc</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-oxm" description="Spring 4.2.x OXM support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-tx" description="Spring 4.2.x Transaction (TX) support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-web" description="Spring 4.2.x Web support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring</feature>
+        <feature>http</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/${legacySpring42PatchedVersion}
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-web-portlet" description="Spring 4.2.x Web Portlet support" version="${legacySpring42Version}">
+        <feature prerequisite="true">wrap</feature>
+        <feature version="[${legacySpring42Version},4.3)">spring-web</feature>
+        <bundle dependency="true" start-level="30">
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
+        </bundle>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <feature name="spring-websocket" description="Spring 4.2.x WebSocket support" version="${legacySpring42Version}">
+        <feature version="[${legacySpring42Version},4.3)">spring-web</feature>
+        <bundle start-level="30">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/${legacySpring42Version}
+        </bundle>
+    </feature>
+
+    <!-- Spring 4.3.x support -->
+
+    <feature name="spring" description="Spring 5.3.x support" version="${springOsgiVersion}">
         <bundle dependency="true" start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6
         </bundle>
@@ -137,13 +260,13 @@
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/${springVersion}
         </bundle>
         <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/${patchedSpringVersion}
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/${springVersion}
         </bundle>
         <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/${patchedSpringVersion}
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/${springVersion}
         </bundle>
         <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/${patchedSpringVersion}
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/${springVersion}
         </bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/${springVersion}
@@ -153,222 +276,75 @@
         </bundle>
     </feature>
 
-    <feature name="spring-aspects" description="Spring 4.2.x AOP support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-aspects" description="Spring 5.3.x AOP support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-instrument" description="Spring 4.2.x Instrument support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-instrument" description="Spring 5.3.x Instrument support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-jdbc" description="Spring 4.2.x JDBC support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring-tx</feature>
+    <feature name="spring-jdbc" description="Spring 5.3.x JDBC support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring-tx</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-jms" description="Spring 4.2.x JMS support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring-tx</feature>
+    <feature name="spring-jms" description="Spring 5.3.x JMS support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring-tx</feature>
         <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+        <!-- JMS 2.0 API: spring-jms 5.3 imports javax.jms unversioned and camel-jms 3.x needs the
+             2.0 API at runtime (see features/distributed/core/jms/pom.xml), so never ship the 1.1
+             spec here where it can shadow the 2.0 exporter. Consumers of the 1.1 export
+             (activemq-client) get it from the opennms-distributed-core-jms feature. -->
+        <bundle dependency="true" start-level="10">mvn:javax.jms/javax.jms-api/${jmsApiVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-messaging" description="Spring 4.2.x Messaging support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-messaging" description="Spring 5.3.x Messaging support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
         <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-messaging/${patchedSpringVersion}
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-messaging/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-test" description="Spring 4.2.x Test support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-test" description="Spring 5.3.x Test support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
+        <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-orm" description="Spring 4.2.x ORM support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring-jdbc</feature>
+    <feature name="spring-orm" description="Spring 5.3.x ORM support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring-jdbc</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-oxm" description="Spring 4.2.x OXM support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-oxm" description="Spring 5.3.x OXM support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/${springVersion}
         </bundle>
     </feature>
 
-    <feature name="spring-tx" description="Spring 4.2.x Transaction (TX) support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
+    <feature name="spring-tx" description="Spring 5.3.x Transaction (TX) support" version="${springOsgiVersion}">
+        <feature version="[5.3,5.4)">spring</feature>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/${springVersion}
-        </bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 4.2.x Web support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring</feature>
-        <feature>http</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/${patchedSpringVersion}
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/${springVersion}
-        </bundle>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 4.2.x Web Portlet support" version="${springVersion}">
-        <feature prerequisite="true">wrap</feature>
-        <feature version="[${springVersion},4.3)">spring-web</feature>
-        <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/${springVersion}
-        </bundle>
-    </feature>
-
-    <feature name="spring-websocket" description="Spring 4.2.x WebSocket support" version="${springVersion}">
-        <feature version="[${springVersion},4.3)">spring-web</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/${springVersion}
-        </bundle>
-    </feature>
-
-    <!-- Spring 4.3.x support -->
-
-    <feature name="spring" description="Spring 4.3.x support" version="4.3.30.RELEASE_1">
-        <bundle dependency="true" start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.3.30.RELEASE_1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.3.30.RELEASE_1.ONMS.1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.3.30.RELEASE_1.ONMS.1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.3.30.RELEASE_1.ONMS.1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.3.30.RELEASE_1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-aspects" description="Spring 4.3.x AOP support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-instrument" description="Spring 4.3.x Instrument support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-jdbc" description="Spring 4.3.x JDBC support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring-tx</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-jms" description="Spring 4.3.x JMS support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring-tx</feature>
-        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle dependency="true" start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-messaging" description="Spring 4.3.x Messaging support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-messaging/4.3.30.RELEASE_1.ONMS.1
-        </bundle>
-    </feature>
-
-    <feature name="spring-test" description="Spring 4.3.x Test support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-orm" description="Spring 4.3.x ORM support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring-jdbc</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-oxm" description="Spring 4.3.x OXM support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-tx" description="Spring 4.3.x Transaction (TX) support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 4.3.x Web support" version="4.3.30.RELEASE_1">
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/4.3.30.RELEASE_1.ONMS.1
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/4.3.30.RELEASE_1
-        </bundle>
-        <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 4.3.x Web Portlet support" version="4.3.30.RELEASE_1">
-        <feature prerequisite="true">pax-url-wrap</feature>
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring-web</feature>
-        <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
-        </bundle>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/4.3.30.RELEASE_1
-        </bundle>
-    </feature>
-
-    <feature name="spring-websocket" description="Spring 4.3.x WebSocket support" version="4.3.30.RELEASE_1">
-        <bundle dependency="true">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-        <feature version="[4.3.30.RELEASE_1,4.4)">spring-web</feature>
-        <bundle start-level="30">
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/4.3.30.RELEASE_1
         </bundle>
     </feature>
 

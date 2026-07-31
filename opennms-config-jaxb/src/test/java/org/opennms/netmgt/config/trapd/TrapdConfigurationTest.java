@@ -21,6 +21,11 @@
  */
 package org.opennms.netmgt.config.trapd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
@@ -230,7 +235,60 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
             fail();
         } catch (Exception e) {
         }
-	        
+
 	    }
+
+	@Test
+	public void getSnmpv3UserByIdFindsMatchingUser() {
+		Snmpv3User a = new Snmpv3User();
+		a.setId("id-a");
+		a.setSecurityName("dup");
+		Snmpv3User b = new Snmpv3User();
+		b.setId("id-b");
+		b.setSecurityName("dup");
+
+		TrapdConfiguration config = new TrapdConfiguration(162, "*");
+		config.addSnmpv3User(a);
+		config.addSnmpv3User(b);
+
+		assertEquals("id-b", config.getSnmpv3UserById("id-b").getId());
+		assertEquals("id-a", config.getSnmpv3UserById("id-a").getId());
+		assertNull(config.getSnmpv3UserById("missing"));
+		assertNull(config.getSnmpv3UserById(null));
+	}
+
+	@Test
+	public void ensureSnmpv3UserIdsAssignsMissingIdsAndIsStable() {
+		Snmpv3User withId = new Snmpv3User();
+		withId.setId("existing-id");
+		withId.setSecurityName("hasId");
+		Snmpv3User withoutId = new Snmpv3User();
+		withoutId.setSecurityName("needsId");
+
+		TrapdConfiguration config = new TrapdConfiguration(162, "*");
+		config.addSnmpv3User(withId);
+		config.addSnmpv3User(withoutId);
+
+		assertTrue("a missing id should have been assigned", config.ensureSnmpv3UserIds());
+		assertEquals("pre-existing id must not change", "existing-id", withId.getId());
+		assertNotNull("missing id must be populated", withoutId.getId());
+		assertFalse("blank id should not remain", withoutId.getId().trim().isEmpty());
+
+		final String assignedId = withoutId.getId();
+		assertFalse("a second call must report no changes", config.ensureSnmpv3UserIds());
+		assertEquals("ids must be stable across calls", assignedId, withoutId.getId());
+		assertEquals("existing-id", withId.getId());
+	}
+
+	@Test
+	public void unmarshalsSnmpv3UserIdAgainstVersionedSchema() {
+		String xml = "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
+				+ "snmp-trap-port=\"162\" new-suspect-on-trap=\"false\">"
+				+   "<snmpv3-user id=\"user-uuid-1\" security-name=\"opennms\"/>"
+				+ "</trapd-configuration>";
+
+		TrapdConfiguration cfg = JaxbUtils.unmarshal(TrapdConfiguration.class, xml);
+		assertEquals("user-uuid-1", cfg.getSnmpv3User(0).getId());
+	}
 
 }
