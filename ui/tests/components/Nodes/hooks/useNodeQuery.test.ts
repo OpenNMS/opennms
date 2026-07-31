@@ -623,6 +623,33 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeStructureQueryParameters: nodesWithOutages', () => {
+    test('emits nodesWithOutages==true when set', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithOutages: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithOutages==true')
+    })
+
+    test('omits the filter when false', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithOutages: false }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s ?? '').not.toContain('nodesWithOutages')
+    })
+
+    test('parses nodesWithOutages from the query string', () => {
+      const filter = buildNodeQueryFilterFromQueryString(
+        { nodesWithOutages: 'true' }, categories, monitoringLocations
+      )
+      expect(filter.nodesWithOutages).toBe(true)
+    })
+
+    test('combines with another filter using a semicolon', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), nodesWithAssets: true, nodesWithOutages: true }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('nodesWithAssets==true;nodesWithOutages==true')
+    })
+  })
+
   describe('buildUpdatedNodeStructureQueryParameters: asset filters', () => {
     test('emits assetRecord.<col>== for a single allowed column', () => {
       const filter = { ...getDefaultNodeQueryFilter(), assetFilters: [{ column: 'building', value: 'HQ' }] }

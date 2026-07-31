@@ -114,6 +114,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       !!queryFilter.value.macAddress?.length ||
       !!queryFilter.value.nodesWithDownAggregateStatus ||
       !!queryFilter.value.nodesWithAssets ||
+      !!queryFilter.value.nodesWithOutages ||
       (queryFilter.value.assetFilters?.length ?? 0) > 0 ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
@@ -169,6 +170,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = {
       ...queryFilter.value,
       nodesWithAssets
+    }
+  }
+
+  const setFilterWithNodesWithOutages = async (nodesWithOutages: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithOutages
     }
   }
 
@@ -332,6 +340,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.nodesWithAssets = true
       }
 
+      if (prefs.nodeFilter.nodesWithOutages) {
+        filter.nodesWithOutages = true
+      }
+
       if (prefs.nodeFilter.assetFilters?.length) {
         filter.assetFilters = [...prefs.nodeFilter.assetFilters]
       }
@@ -435,6 +447,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = { ...queryFilter.value, nodesWithAssets: false }
   }
 
+  const removeNodesWithOutages = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithOutages: false }
+  }
+
   const removeAssetFilter = (column: string) => {
     queryFilter.value = {
       ...queryFilter.value,
@@ -524,6 +540,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setFilterWithMacAddress,
     setFilterWithDownAggregateStatus,
     setFilterWithNodesWithAssets,
+    setFilterWithNodesWithOutages,
     setFilterWithAssetFilters,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
@@ -552,6 +569,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeMacAddress,
     removeDownAggregateStatus,
     removeNodesWithAssets,
+    removeNodesWithOutages,
     removeAssetFilter,
     removeTopology,
     setExtendedSearchParams,

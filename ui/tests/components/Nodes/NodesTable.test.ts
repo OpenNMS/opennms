@@ -56,6 +56,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
     topology: '',
     nodesWithDownAggregateStatus: false,
     nodesWithAssets: false,
+    nodesWithOutages: false,
     assetFilters: [],
     extendedSearch: {
       foreignSourceParams: { foreignId: '', foreignSource: '', foreignSourceId: '' },

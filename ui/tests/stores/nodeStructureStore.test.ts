@@ -252,6 +252,18 @@ describe('useNodeStructureStore', () => {
 
       expect(store.isAnyFilterSelected()).toBe(true)
     })
+
+    it('returns true when nodesWithAssets is set', async () => {
+      await store.setFilterWithNodesWithAssets(true)
+
+      expect(store.isAnyFilterSelected()).toBe(true)
+    })
+
+    it('returns true when nodesWithOutages is set', async () => {
+      await store.setFilterWithNodesWithOutages(true)
+
+      expect(store.isAnyFilterSelected()).toBe(true)
+    })
   })
 
   // ─── clearAllFiltersAndSelections ────────────────────────────────────────────
@@ -293,6 +305,34 @@ describe('useNodeStructureStore', () => {
       await store.setFilterWithIpAddress('10.0.0.1')
 
       expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
+    })
+  })
+
+  describe('setFilterWithNodesWithAssets / removeNodesWithAssets', () => {
+    it('sets nodesWithAssets', async () => {
+      await store.setFilterWithNodesWithAssets(true)
+
+      expect(store.queryFilter.nodesWithAssets).toBe(true)
+    })
+
+    it('clears nodesWithAssets', () => {
+      store.removeNodesWithAssets()
+
+      expect(store.queryFilter.nodesWithAssets).toBe(false)
+    })
+  })
+
+  describe('setFilterWithNodesWithOutages / removeNodesWithOutages', () => {
+    it('sets nodesWithOutages', async () => {
+      await store.setFilterWithNodesWithOutages(true)
+
+      expect(store.queryFilter.nodesWithOutages).toBe(true)
+    })
+
+    it('clears nodesWithOutages', () => {
+      store.removeNodesWithOutages()
+
+      expect(store.queryFilter.nodesWithOutages).toBe(false)
     })
   })
 
@@ -514,6 +554,24 @@ describe('useNodeStructureStore', () => {
       })
 
       expect(store.queryFilter.selectedCategories).toEqual([categories[0]])
+    })
+
+    it('applies nodesWithAssets from filter', async () => {
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: { searchTerm: '', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, nodesWithAssets: true, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
+      })
+
+      expect(store.queryFilter.nodesWithAssets).toBe(true)
+    })
+
+    it('applies nodesWithOutages from filter', async () => {
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: { searchTerm: '', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, nodesWithOutages: true, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
+      })
+
+      expect(store.queryFilter.nodesWithOutages).toBe(true)
     })
   })
 

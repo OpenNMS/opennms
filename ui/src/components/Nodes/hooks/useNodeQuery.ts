@@ -51,6 +51,7 @@ import {
   parseMonitoringLocation,
   parseNodeLabel,
   parseNodesWithAssets,
+  parseNodesWithOutages,
   parseSnmpParams,
   parseSnmpParmParams,
   parseSysParams
@@ -108,6 +109,7 @@ export const useNodeQuery = () => {
       topology: '',
       nodesWithDownAggregateStatus: false,
       nodesWithAssets: false,
+      nodesWithOutages: false,
       assetFilters: [] as AssetFilter[],
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
@@ -208,6 +210,7 @@ export const useNodeQuery = () => {
     'iplike',
     'nodesWithAssets',
     'nodesWithDownAggregateStatus',
+    'nodesWithOutages',
     'listInterfaces',
     'maclike',
     'mib2Parm',
@@ -321,6 +324,11 @@ export const useNodeQuery = () => {
       filter.nodesWithAssets = true
     }
 
+    // nodesWithOutages — limit to nodes that have one or more current outages
+    if (parseNodesWithOutages(queryObject)) {
+      filter.nodesWithOutages = true
+    }
+
     // asset-field filters (e.g. from site-status-view drill-down links)
     const assetFilters = parseAssetFilters(queryObject)
     if (assetFilters.length > 0) {
@@ -380,12 +388,13 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const maclikeQuery = buildMaclikeQuery(filter.macAddress)
   const downStatusQuery = buildDownStatusQuery(filter.nodesWithDownAggregateStatus)
   const withAssetsQuery = buildWithAssetsQuery(filter.nodesWithAssets)
+  const withOutagesQuery = buildWithOutagesQuery(filter.nodesWithOutages)
   const assetQuery = buildAssetQuery(filter.assetFilters)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
   // TODO: May need more search term sanitizing and/or restrict characters in the input control above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, withAssetsQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, withAssetsQuery, withOutagesQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
   // additional fields to search on for main searchTerm
   // these will be added as SetOperator.Union (i.e. 'or')
@@ -648,6 +657,10 @@ const buildDownStatusQuery = (nodesWithDownAggregateStatus?: boolean) => {
 
 const buildWithAssetsQuery = (nodesWithAssets?: boolean) => {
   return nodesWithAssets ? 'nodesWithAssets==true' : ''
+}
+
+const buildWithOutagesQuery = (nodesWithOutages?: boolean) => {
+  return nodesWithOutages ? 'nodesWithOutages==true' : ''
 }
 
 /**

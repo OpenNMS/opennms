@@ -44,6 +44,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
     topology: '',
     nodesWithDownAggregateStatus: false,
     nodesWithAssets: false,
+    nodesWithOutages: false,
     assetFilters: [],
     extendedSearch: {
       foreignSourceParams: { foreignId: '', foreignSource: '', foreignSourceId: '' },
@@ -230,6 +231,14 @@ describe('NodeAdvancedFiltersDrawer.vue', () => {
       toggle.vm.$emit('update:modelValue', true)
       await nextTick()
       expect(wrapper.vm.selectedFilters.nodesWithAssets).toBe(true)
+    })
+
+    it('toggles the with-outages flag via the ToggleSwitch', async () => {
+      const toggle = wrapper.find('[data-test="with-outages"]').findComponent({ name: 'ToggleSwitch' })
+      expect(toggle.exists()).toBe(true)
+      toggle.vm.$emit('update:modelValue', true)
+      await nextTick()
+      expect(wrapper.vm.selectedFilters.nodesWithOutages).toBe(true)
     })
   })
 

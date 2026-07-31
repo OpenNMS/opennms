@@ -369,6 +369,13 @@ export const parseNodesWithAssets = (queryObject: any): boolean => {
 }
 
 /**
+ * Returns true if the `nodesWithOutages` query param requests only nodes with current outages.
+ */
+export const parseNodesWithOutages = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithOutages ?? '').toLowerCase() === 'true'
+}
+
+/**
  * Parses asset-field filters from `assetColumn` + `assetValue` query params.
  * Each param may be a single value (vue-router string) or repeated (array); the two are paired
  * by index. Pairs with an empty value or a column not in ALLOWED_ASSET_COLUMNS are skipped, and

@@ -26,6 +26,7 @@ import {
   parseCategories,
   parseDownAggregateStatus,
   parseNodesWithAssets,
+  parseNodesWithOutages,
   parseFlows,
   parseForeignSource,
   parseIplike,
@@ -448,6 +449,19 @@ describe('Nodes queryStringParser test', () => {
       ['garbage', { nodesWithAssets: 'yes' }, false]
     ]) ('parseNodesWithAssets: %s', (title, queryObject, expected) => {
       expect(parseNodesWithAssets(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseNodesWithOutages', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithOutages: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithOutages: 'TRUE' }, true],
+      ['boolean true', { nodesWithOutages: true }, true],
+      ['false', { nodesWithOutages: 'false' }, false],
+      ['garbage', { nodesWithOutages: 'yes' }, false]
+    ]) ('parseNodesWithOutages: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithOutages(queryObject)).toBe(expected)
     })
   })
 

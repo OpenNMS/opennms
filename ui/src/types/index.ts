@@ -632,6 +632,7 @@ export interface NodeQueryFilter {
   topology?: string
   nodesWithDownAggregateStatus?: boolean
   nodesWithAssets?: boolean
+  nodesWithOutages?: boolean
   assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }

@@ -135,6 +135,12 @@
               @remove="nodeStructureStore.removeNodesWithAssets()"
             />
             <OnmsChip
+              v-if="nodeStructureStore.queryFilter.nodesWithOutages"
+              label="Nodes with outages"
+              removable
+              @remove="nodeStructureStore.removeNodesWithOutages()"
+            />
+            <OnmsChip
               v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
               :key="assetFilter.column"
               :label="`Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}`"

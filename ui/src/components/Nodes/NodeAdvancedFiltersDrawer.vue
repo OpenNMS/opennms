@@ -169,6 +169,15 @@
           />
         </div>
       </div>
+      <div class="onms-row">
+        <div class="onms-col-12 toggle-row" data-test="with-outages">
+          <label for="with-outages">Nodes with current outages</label>
+          <OnmsToggleSwitch
+            v-model="selectedFilters.nodesWithOutages"
+            inputId="with-outages"
+          />
+        </div>
+      </div>
       <div class="spacer-medium"></div>
       <hr />
       <div class="spacer-medium"></div>
@@ -196,7 +205,7 @@
         <template #content>
           <div>
             <p>Use the advanced filters to find nodes that match specific criteria.</p>
-            <p>You can filter by categories, monitoring locations, monitored services, IP address, MAC address, topology, flow type, down status, asset fields and multiple extended search parameters.</p>
+            <p>You can filter by categories, monitoring locations, monitored services, IP address, MAC address, topology, flow type, down status, asset fields, current outages and multiple extended search parameters.</p>
             <br />
             <p><strong>Categories</strong></p>
             <p>You may select up to two category groups to filter nodes by. Each category group can contain multiple categories "unioned" together.</p>
@@ -236,6 +245,9 @@
             <br />
             <p><strong>Nodes with asset info only</strong></p>
             <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
+            <br />
+            <p><strong>Nodes with current outages</strong></p>
+            <p>Limits results to nodes that have one or more services currently in outage.</p>
             <br />
             <p><strong>Asset Fields</strong></p>
             <p>Filter by one or more node asset-record fields (such as Building, Region, or Rack). Choose an asset field, enter a value, and click Add. Each added field is an exact match, and multiple asset fields are intersected (a node must match all of them).</p>
@@ -312,7 +324,8 @@ const selectedFilters = reactive({
   macAddress: '',
   topology: '',
   nodesWithDownAggregateStatus: false,
-  nodesWithAssets: false
+  nodesWithAssets: false,
+  nodesWithOutages: false
 })
 
 const drawerVisible = computed({
@@ -384,6 +397,7 @@ const applySelectedFilters = () => {
   nodeStructureStore.setFilterWithMacAddress(selectedFilters.macAddress)
   nodeStructureStore.setFilterWithDownAggregateStatus(selectedFilters.nodesWithDownAggregateStatus)
   nodeStructureStore.setFilterWithNodesWithAssets(selectedFilters.nodesWithAssets)
+  nodeStructureStore.setFilterWithNodesWithOutages(selectedFilters.nodesWithOutages)
   nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
   assetFilterPanelRef.value?.applyToStore()
   extendedSearchPanelRef.value?.applyToStore()
@@ -402,6 +416,7 @@ const clearDrawerFilters = async () => {
   selectedFilters.topology = ''
   selectedFilters.nodesWithDownAggregateStatus = false
   selectedFilters.nodesWithAssets = false
+  selectedFilters.nodesWithOutages = false
   showSecondCategories.value = false
   assetFilterPanelRef.value?.resetFromStore()
   extendedSearchPanelRef.value?.resetFromStore()
@@ -420,6 +435,7 @@ watch(() => nodeStructureStore.drawerState.visible, (visible) => {
     selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
     selectedFilters.nodesWithDownAggregateStatus = nodeStructureStore.queryFilter.nodesWithDownAggregateStatus ?? false
     selectedFilters.nodesWithAssets = nodeStructureStore.queryFilter.nodesWithAssets ?? false
+    selectedFilters.nodesWithOutages = nodeStructureStore.queryFilter.nodesWithOutages ?? false
     assetFilterPanelRef.value?.resetFromStore()
     extendedSearchPanelRef.value?.resetFromStore()
   }
