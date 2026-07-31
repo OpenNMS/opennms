@@ -97,71 +97,7 @@ License.
         </small>
       </div>
 
-      <template v-if="panel.type === 'metric-chart'">
-        <div class="opts__field">
-          <label class="opts__label">Entity</label>
-          <PSelect
-            v-model="chartEntity"
-            :options="entityOptions"
-            :loading="entitiesLoading"
-            filter
-            class="opts__control"
-          />
-          <small class="opts__hint">Entities that have data for the selected metric.</small>
-        </div>
-        <div class="opts__field">
-          <label class="opts__label">Metric</label>
-          <PSelect
-            v-model="chartMetric"
-            :options="kpiOptions"
-            option-label="label"
-            option-value="value"
-            class="opts__control"
-          />
-        </div>
-      </template>
 
-      <template v-if="panel.type === 'topn'">
-        <div class="opts__field">
-          <label class="opts__label">Rank by (KPI)</label>
-          <PSelect
-            v-model="topnKpi"
-            :options="kpiOptions"
-            option-label="label"
-            option-value="value"
-            class="opts__control"
-          />
-        </div>
-        <fieldset class="opts__group">
-          <legend class="opts__legend">Order</legend>
-          <label class="opts__radio">
-            <input
-              v-model="topnDirection"
-              type="radio"
-              value="desc"
-            >
-            Descending (highest first)
-          </label>
-          <label class="opts__radio">
-            <input
-              v-model="topnDirection"
-              type="radio"
-              value="asc"
-            >
-            Ascending (lowest first)
-          </label>
-        </fieldset>
-        <div class="opts__field">
-          <label class="opts__label">How many (N)</label>
-          <input
-            v-model.number="topnN"
-            type="number"
-            min="1"
-            max="50"
-            class="opts__control opts__number"
-          >
-        </div>
-      </template>
     </div>
 
     <template #footer>
@@ -188,8 +124,6 @@ import Button from 'primevue/button'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
-import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, TOPN_KPIS } from '@/services/topnService'
-import { DEFAULT_CHART_ENTITY, DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
 
 const PDialog = Dialog
 const PTextarea = Textarea
@@ -197,7 +131,6 @@ const PInputText = InputText
 const PSelect = Select
 const PButton = Button
 
-const kpiOptions = TOPN_KPIS.map((k) => ({ label: k.label, value: k.id }))
 
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
@@ -217,34 +150,11 @@ const heightMode = ref<PanelHeightMode>('auto')
 const shade = ref(false)
 const notesText = ref('')
 const htmlUrl = ref('')
-const topnKpi = ref(DEFAULT_TOPN_KPI)
 
 // panels that support optional severity row shading (legacy-style)
 const SHADEABLE = ['pending-situations', 'nodes-with-alarms', 'availability']
 const supportsShade = computed(() => SHADEABLE.includes(props.panel.type))
-const topnN = ref(DEFAULT_TOPN_N)
-const topnDirection = ref<'asc' | 'desc'>('desc')
 
-// metric-chart: one entity x one metric (single-select each)
-const chartEntity = ref(DEFAULT_CHART_ENTITY)
-const chartMetric = ref(DEFAULT_CHART_METRIC)
-const entityOptions = ref<string[]>([])
-const entitiesLoading = ref(false)
-
-const loadEntities = async () => {
-  entitiesLoading.value = true
-  const entities = await listMetricEntities(chartMetric.value)
-  // keep the current selection listed even if it has no data right now
-  if (chartEntity.value && !entities.includes(chartEntity.value)) {
-    entities.unshift(chartEntity.value)
-  }
-  entityOptions.value = entities
-  entitiesLoading.value = false
-}
-
-watch(chartMetric, () => {
-  if (props.panel.type === 'metric-chart' && props.visible) loadEntities()
-})
 
 // External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
 // up front so the user gets an explanation instead of a silent broken iframe.
@@ -268,12 +178,6 @@ const syncFromPanel = () => {
   shade.value = !!props.panel.options?.shade
   notesText.value = String(props.panel.options?.text ?? '')
   htmlUrl.value = String(props.panel.options?.url ?? '')
-  topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
-  topnN.value = Number(props.panel.options?.n ?? DEFAULT_TOPN_N)
-  topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
-  chartEntity.value = String(props.panel.options?.entity ?? DEFAULT_CHART_ENTITY)
-  chartMetric.value = String(props.panel.options?.metric ?? DEFAULT_CHART_METRIC)
-  if (props.panel.type === 'metric-chart') loadEntities()
 }
 
 watch(
@@ -292,15 +196,6 @@ const apply = () => {
   if (supportsShade.value) opts.shade = shade.value
   if (props.panel.type === 'notes') opts.text = notesText.value
   if (props.panel.type === 'html-content') opts.url = htmlUrl.value.trim()
-  if (props.panel.type === 'topn') {
-    opts.kpi = topnKpi.value
-    opts.n = Math.min(50, Math.max(1, Number(topnN.value) || DEFAULT_TOPN_N))
-    opts.direction = topnDirection.value
-  }
-  if (props.panel.type === 'metric-chart') {
-    opts.entity = chartEntity.value
-    opts.metric = chartMetric.value
-  }
   store.setPanelOptions(props.panel.id, opts)
   visibleModel.value = false
 }

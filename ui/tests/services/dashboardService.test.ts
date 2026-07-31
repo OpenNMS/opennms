@@ -32,6 +32,7 @@ describe('dashboardService', () => {
     expect(typeof result.refresh.seconds).toBe('number')
     expect(result.globalTimeframe.preset).toBeTruthy()
     expect(result.globalFilter.surveillanceCategories).toEqual([])
+    expect(Array.isArray(result.panels)).toBe(true)
   })
 
   it('drops malformed panels and unknown types', async () => {
@@ -45,10 +46,11 @@ describe('dashboardService', () => {
     expect(result.panels.map((p) => p.id)).toEqual(['ok'])
   })
 
-  it('falls back to the default on 404 (nothing saved yet)', async () => {
+  it('falls back to the (empty) default on 404 (nothing saved yet)', async () => {
     vi.mocked(v2.get).mockRejectedValue(axios404())
     const result = await getSystemDashboard()
-    expect(result.panels.length).toBeGreaterThan(0)
+    expect(Array.isArray(result.panels)).toBe(true)
+    expect(result.refresh).toBeDefined()
   })
 
   it('propagates non-404 failures instead of fabricating the default', async () => {

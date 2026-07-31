@@ -19,15 +19,18 @@ describe('useDashboardStore', () => {
     vi.clearAllMocks()
   })
 
-  it('starts with the factory default and a clean slate', () => {
-    expect(store.layout.panels.length).toBeGreaterThan(0)
+  it('starts with the empty base layout and a clean slate', () => {
+    expect(store.layout.panels).toEqual([])
     expect(store.isDirty).toBe(false)
     expect(store.editMode).toBe(false)
   })
 
+  // seed a panel so the per-panel operations below have something to act on
+  const seed = () => { store.addPanel('notes'); store.isDirty = false; return store.layout.panels[0] }
+
   it('load replaces the layout and clears dirty', async () => {
     const layout = createDefaultLayout()
-    layout.panels = layout.panels.slice(0, 1)
+    layout.panels = [{ id: 'x', type: 'notes', x: 0, y: 0, w: 3, h: 100, collapsed: false, titleOverride: null, filterOverride: null, timeframeOverride: null, refreshSeconds: null, options: {} }]
     vi.mocked(getSystemDashboard).mockResolvedValue(layout)
     store.isDirty = true
 
@@ -58,6 +61,7 @@ describe('useDashboardStore', () => {
   })
 
   it('syncGeometry is a no-op outside edit mode', () => {
+    seed()
     const panel = store.layout.panels[0]
     const origX = panel.x
     store.editMode = false
@@ -99,6 +103,7 @@ describe('useDashboardStore', () => {
   })
 
   it('removePanel drops the panel and marks dirty', () => {
+    seed()
     const id = store.layout.panels[0].id
     store.removePanel(id)
     expect(store.layout.panels.find((p) => p.id === id)).toBeUndefined()
@@ -106,6 +111,7 @@ describe('useDashboardStore', () => {
   })
 
   it('setPanelTitle trims and nulls empty overrides', () => {
+    seed()
     const id = store.layout.panels[0].id
     store.setPanelTitle(id, '  My Panel  ')
     expect(store.layout.panels[0].titleOverride).toBe('My Panel')
@@ -114,6 +120,7 @@ describe('useDashboardStore', () => {
   })
 
   it('resolved getters prefer the panel override over the global', () => {
+    seed()
     const panel = store.layout.panels[0]
     expect(store.resolvedTimeframe(panel)).toEqual(store.layout.globalTimeframe)
     panel.timeframeOverride = { preset: TimeframePreset.Today, from: null, to: null }
@@ -126,6 +133,7 @@ describe('useDashboardStore', () => {
 
   it('syncGeometry persists moves but keeps stored height for collapsed panels', () => {
     store.editMode = true
+    seed()
     const panel = store.layout.panels[0]
     const storedH = panel.h
     panel.collapsed = true
@@ -140,16 +148,17 @@ describe('useDashboardStore', () => {
 
   it('syncGeometry with no changes does not mark dirty', () => {
     store.editMode = true
+    seed()
     const panel = store.layout.panels[0]
     panel.collapsed = false
     store.syncGeometry([{ i: panel.id, x: panel.x, y: panel.y, w: panel.w, h: panel.h }])
     expect(store.isDirty).toBe(false)
   })
 
-  it('applyFactoryDefault restores the default layout and marks dirty', () => {
-    store.layout.panels = []
+  it('applyFactoryDefault restores the (empty) base default and marks dirty', () => {
+    store.addPanel('notes')
     store.applyFactoryDefault()
-    expect(store.layout.panels.length).toBeGreaterThan(0)
+    expect(store.layout.panels).toEqual([])
     expect(store.isDirty).toBe(true)
   })
 
