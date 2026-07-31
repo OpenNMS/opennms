@@ -39,6 +39,7 @@ jobs:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Denable.license=true \
+              -Dbuild.meridian=true \
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \

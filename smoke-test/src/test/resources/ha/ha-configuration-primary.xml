@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ha-configuration>
+  <enabled>true</enabled>
+  <instance-id>opennms-primary</instance-id>
+  <role>PRIMARY</role>
+  <mode>coordinator</mode>
+  <partner-instance-id>opennms-secondary</partner-instance-id>
+  <partner-rest-url>http://opennms2:8980/opennms</partner-rest-url>
+  <heartbeat-interval-seconds>5</heartbeat-interval-seconds>
+  <failover-threshold-seconds>60</failover-threshold-seconds>
+  <sync-enabled>false</sync-enabled>
+  <sync-interval-seconds>60</sync-interval-seconds>
+</ha-configuration>
