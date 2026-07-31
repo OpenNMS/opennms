@@ -56,6 +56,12 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
     nodeFilter
   } as NodePreferences
 
+  // listInterfaces is a display flag (legacy ?listInterfaces=true), not part of the filter —
+  // applied directly on the store here rather than persisted via NodePreferences.
+  if (String(query.listInterfaces).toLowerCase() === 'true') {
+    nodeStructureStore.setShowInterfaces(true)
+  }
+
   nodeStructureStore.setFromNodePreferences(newPrefs)
 }
 

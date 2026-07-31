@@ -73,6 +73,12 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const serviceTypesLoaded = ref(false)
   const selectedServices = ref<IAutocompleteItemType[]>([])
 
+  // Display-mode flag replicating the legacy node list's `?listInterfaces=true` behavior.
+  // Deliberately NOT part of NodeQueryFilter and NOT persisted in NodePreferences: it's a
+  // display mode, not a filter, so keeping it out avoids spurious refetch via the deep
+  // queryFilter watcher in Nodes.vue.
+  const showInterfaces = ref(false)
+
   const fetchCategories = async () => {
     const resp = await API.getCategories()
 
@@ -482,6 +488,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     )
   }
 
+  const setShowInterfaces = (value: boolean) => {
+    showInterfaces.value = value
+  }
+
   const updateSelectedMonitoringLocations = async (locations: IAutocompleteItemType[]) => {
     selectedMonitoringLocations.value = locations
 
@@ -533,6 +543,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     allServiceTypes,
     serviceTypesLoaded,
     selectedServices,
+    showInterfaces,
+    setShowInterfaces,
     removeCategory,
     removeCategory2,
     removeExtendedSearch,

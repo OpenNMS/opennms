@@ -14,6 +14,12 @@
             @click="nodeStructureStore.openColumnsDrawerModal()"
           />
           <OnmsButton
+            :label="nodeStructureStore.showInterfaces ? 'Hide interfaces' : 'Show interfaces'"
+            variant="outlined"
+            data-test="show-interfaces-button"
+            @click="nodeStructureStore.setShowInterfaces(!nodeStructureStore.showInterfaces)"
+          />
+          <OnmsButton
             label="Clear Filters"
             variant="outlined"
             data-test="clear-filters-button"
@@ -155,17 +161,22 @@
           :rowsPerPageOptions="[10, 20, 50, 100, 200]"
           :sortField="sortField"
           :sortOrder="sortOrder"
+          v-model:expandedRows="expandedRows"
           class="node-table"
           data-test="nodes-table"
           @page="onPage"
           @sort="onSort"
         >
           <OnmsColumn
+            expander
+            style="width: 3rem"
+          />
+          <OnmsColumn
             v-for="col in orderedSelectedColumns"
             :key="col.id"
             :field="col.id"
             :header="col.label"
-            :sortable="col.id !== 'ipaddress'"
+            :sortable="col.id !== 'ipaddress' && col.id !== 'flows'"
           >
             <template #body="{ data }">
               <a
@@ -221,7 +232,17 @@
               data-test="empty-list"
             />
           </template>
+          <template #expansion="{ data }">
+            <NodeInterfacesPanel :node="data" />
+          </template>
         </OnmsTable>
+        <div
+          v-if="nodeStructureStore.showInterfaces"
+          class="interfaces-footer"
+          data-test="interfaces-footer"
+        >
+          {{ nodeCountLabel }}, {{ interfaceCountLabel }} on this page
+        </div>
       </div>
     </div>
   </div>
@@ -294,9 +315,11 @@ import NodeActionsDropdown from './NodeActionsDropdown.vue'
 import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
+import NodeInterfacesPanel from './NodeInterfacesPanel.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
-import { useNodeQuery } from './hooks/useNodeQuery'
+import { useNodeQuery, sanitizeSearchTerm } from './hooks/useNodeQuery'
+import { countInterfacesForNodes, getInterfaceListMode, type InterfaceListMode } from './hooks/useInterfaceListing'
 import { getAssetColumnLabel } from './hooks/queryStringParser'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
@@ -316,6 +339,8 @@ const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
+const expandedRows = ref<Record<string, boolean>>({})
+
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
@@ -332,7 +357,7 @@ const orderedSelectedColumns = computed<NodeColumnSelectionItem[]>(() =>
 
 const onSort = (event: OnmsTableSortEvent) => {
   const field = (event.sortField as string) || 'label'
-  if (field === 'ipaddress') {
+  if (field === 'ipaddress' || field === 'flows') {
     return
   }
   sortField.value = field
@@ -421,6 +446,42 @@ const extendedSearchValues = computed(() => {
   return getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
 })
 
+// ── "Show interfaces" mode (legacy ?listInterfaces=true parity) ────────────────
+
+const interfaceListMode = computed(() => getInterfaceListMode(nodeStructureStore.queryFilter))
+
+const pageNodeIds = computed(() => nodes.value.map(n => n.id))
+
+const pageInterfaceCount = computed(() =>
+  countInterfacesForNodes(pageNodeIds.value, interfaceListMode.value, nodeStore.nodeToIpInterfaceMap, nodeStore.nodeToSnmpInterfaceMap)
+)
+
+const nodeCountLabel = computed(() => {
+  const n = nodeStore.totalCount
+  return `${n} Node${n === 1 ? '' : 's'}`
+})
+
+const interfaceCountLabel = computed(() => {
+  const m = pageInterfaceCount.value
+  return `${m} Interface${m === 1 ? '' : 's'}`
+})
+
+// Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
+// fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
+// getNodeSnmpInterfaceQuery). Sanitized the same way other FIQL builders in useNodeQuery.ts are.
+const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
+  if (mode.mode === 'maclike') {
+    const normalizedMac = mode.mac.toLowerCase().replace(/[:-]/g, '')
+    return `physAddr==*${sanitizeSearchTerm(normalizedMac)}*`
+  }
+
+  if (mode.mode === 'snmpParm') {
+    return `${mode.attr}==*${sanitizeSearchTerm(mode.value)}*`
+  }
+
+  return undefined
+}
+
 const hasTopologySearch = computed(() => {
   return !!nodeStructureStore.queryFilter.topology?.length
 })
@@ -486,6 +547,27 @@ watch([() => nodeStructureStore.queryFilter], () => {
   updateQuery()
 },
 { deep: true }
+)
+
+watch(
+  [nodes, () => nodeStructureStore.showInterfaces, interfaceListMode],
+  ([currentNodes, showInterfaces, mode]) => {
+    if (!showInterfaces) {
+      expandedRows.value = {}
+      return
+    }
+
+    const expanded: Record<string, boolean> = {}
+    currentNodes.forEach((n) => {
+      expanded[n.id] = true
+    })
+    expandedRows.value = expanded
+
+    if (mode.mode === 'maclike' || mode.mode === 'snmpParm') {
+      const narrowing = buildSnmpNarrowing(mode)
+      nodeStore.getSnmpInterfacesForNodes(currentNodes.map(n => n.id), narrowing)
+    }
+  }
 )
 
 defineExpose({ onSort, onPage, removeItem })
@@ -602,5 +684,9 @@ defineExpose({ onSort, onPage, removeItem })
 
 .triple-icon {
   margin-left: 7px;
+}
+
+.interfaces-footer {
+  padding: 0.5rem 0;
 }
 </style>

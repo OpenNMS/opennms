@@ -336,8 +336,8 @@ export const useNodeQuery = () => {
       filter.topology = queryObject.topology
     }
 
-    // listInterfaces: intentionally not handled — the Vue node list page has no interface-listing mode,
-    // and already displays the primary interface in the node table.
+    // listInterfaces: not handled here — it's a display flag, not a filter, so it's applied directly
+    // in Nodes.vue (nodeStructureStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
     // NOTE nodeId: not handled here. Once Vue Node Details (/node/:id) has parity with element/node.jsp,
     //   update quicksearch-box.jsp to link to the Vue route instead of element/node.jsp?node={id}.

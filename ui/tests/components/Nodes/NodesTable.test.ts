@@ -9,6 +9,8 @@ import { SORT } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import Button from 'primevue/button'
+import Column from 'primevue/column'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
@@ -71,7 +73,8 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
       getDefaultNodeQuerySysParams: () => ({ sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '' }),
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
-    })
+    }),
+    sanitizeSearchTerm: (s?: string) => (s || '').replace(/[,;]/g, ' ')
   }
 })
 
@@ -86,7 +89,8 @@ const stubs = {
   ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
   OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
-  EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] }
+  EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] },
+  NodeInterfacesPanel: { name: 'NodeInterfacesPanel', template: '<div class="node-interfaces-panel-stub"></div>', props: ['node'] }
 }
 
 // ── Mount helper ───────────────────────────────────────────────────────────────
@@ -213,5 +217,109 @@ describe('NodesTable.vue', () => {
     str.removeCategory = vi.fn()
     ;(wrapper.vm as any).removeItem({ _text: 'Routers', _value: '1' }, FilterTypeEnum.Category)
     expect(str.removeCategory).toHaveBeenCalled()
+  })
+
+  // ── "Show interfaces" mode ──────────────────────────────────────────────────
+
+  describe('Show interfaces mode', () => {
+    it('renders a leading expander column', () => {
+      const wrapper = mountTable()
+      const selectedCount = defaultColumns.filter(c => c.selected).length
+      const headers = wrapper.findAll('th')
+      // expander column (no header text) + one per selected column + Actions
+      expect(headers.length).toBe(selectedCount + 2)
+    })
+
+    it('toggle button flips nodeStructureStore.showInterfaces and updates its label', async () => {
+      const wrapper = mountTable()
+      const structure = useNodeStructureStore()
+      expect(structure.showInterfaces).toBe(false)
+
+      const toggleBtn = wrapper.findAllComponents(Button).find(b => b.attributes('data-test') === 'show-interfaces-button')
+      expect(toggleBtn).toBeDefined()
+      expect(toggleBtn!.text()).toContain('Show interfaces')
+
+      await toggleBtn!.trigger('click')
+
+      expect(structure.showInterfaces).toBe(true)
+    })
+
+    it('expands every current page row when showInterfaces turns on, and collapses when turned off', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1' }, { id: '2' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true, '2': true })
+
+      structure.setShowInterfaces(false)
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+    })
+
+    it('renders the footer with node/interface counts only when showInterfaces is on', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1' }] as any
+      ns.totalCount = 1
+      ns.nodeToIpInterfaceMap = new Map([['1', [{ id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' }]]]) as any
+      await nextTick()
+
+      expect(wrapper.find('[data-test="interfaces-footer"]').exists()).toBe(false)
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      const footer = wrapper.find('[data-test="interfaces-footer"]')
+      expect(footer.exists()).toBe(true)
+      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('1 Node, 1 Interface on this page')
+    })
+
+    it('pluralizes node/interface counts when greater than one', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1' }, { id: '2' }] as any
+      ns.totalCount = 2
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [{ id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' }]],
+        ['2', [{ id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }]]
+      ]) as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      const footer = wrapper.find('[data-test="interfaces-footer"]')
+      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('2 Nodes, 2 Interfaces on this page')
+    })
+  })
+
+  // ── Flows sort fix ───────────────────────────────────────────────────────────
+
+  describe('flows column sorting', () => {
+    it('the Flows column is not sortable', () => {
+      const wrapper = mountTable()
+      const flowsColumn = wrapper.findAllComponents(Column).find(c => c.props('header') === 'Flows')
+      expect(flowsColumn).toBeDefined()
+      expect(flowsColumn!.props('sortable')).toBe(false)
+    })
+
+    it('does not sort on the flows column', () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ;(wrapper.vm as any).onSort({ sortField: 'flows', sortOrder: 1 })
+      expect(ns.getNodes).not.toHaveBeenCalled()
+    })
   })
 })

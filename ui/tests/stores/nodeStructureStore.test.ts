@@ -73,6 +73,40 @@ describe('useNodeStructureStore', () => {
       expect(store.drawerState.visible).toBe(false)
       expect(store.columnsDrawerState.visible).toBe(false)
     })
+
+    it('has showInterfaces false by default', () => {
+      expect(store.showInterfaces).toBe(false)
+    })
+  })
+
+  // ─── showInterfaces ─────────────────────────────────────────────────────────
+
+  describe('setShowInterfaces', () => {
+    it('sets showInterfaces to true', () => {
+      store.setShowInterfaces(true)
+
+      expect(store.showInterfaces).toBe(true)
+    })
+
+    it('sets showInterfaces back to false', () => {
+      store.setShowInterfaces(true)
+      store.setShowInterfaces(false)
+
+      expect(store.showInterfaces).toBe(false)
+    })
+
+    it('is not part of NodeQueryFilter and is not included in NodePreferences round-trip', async () => {
+      store.setShowInterfaces(true)
+
+      const prefs = await store.getNodePreferences()
+
+      expect((prefs.nodeFilter as any).showInterfaces).toBeUndefined()
+      expect(JSON.stringify(prefs)).not.toContain('showInterfaces')
+
+      // Loading preferences back in must not touch showInterfaces
+      await store.setFromNodePreferences(prefs)
+      expect(store.showInterfaces).toBe(true)
+    })
   })
 
   // ─── getCategories ──────────────────────────────────────────────────────────
