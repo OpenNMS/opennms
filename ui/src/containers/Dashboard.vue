@@ -58,7 +58,7 @@ onMounted(() => store.load())
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--feather-background, #f3f5f7);
+  background: var(--p-surface-ground, var(--p-content-background, #f3f5f7));
 
   &:fullscreen {
     overflow: hidden;

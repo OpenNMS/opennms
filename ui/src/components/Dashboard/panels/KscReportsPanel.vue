@@ -71,16 +71,16 @@ defineProps<PanelComponentProps>()
     flex: 1 1 auto;
     min-width: 0;
     padding: 0.3rem 0.5rem;
-    border: 1px solid var(--feather-border-on-surface, #ccc);
+    border: 1px solid var(--p-content-border-color, #ccc);
     border-radius: 4px;
   }
 
   &__btn {
     flex: 0 0 auto;
     padding: 0.3rem 0.6rem;
-    border: 1px solid var(--feather-border-on-surface, #ccc);
+    border: 1px solid var(--p-content-border-color, #ccc);
     border-radius: 4px;
-    background: var(--feather-surface, #fff);
+    background: var(--p-content-background, #fff);
     cursor: pointer;
   }
 }

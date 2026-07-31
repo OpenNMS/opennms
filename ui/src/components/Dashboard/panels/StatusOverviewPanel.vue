@@ -86,7 +86,7 @@ const colorFor = (label: string) => STATUS_COLORS[label] ?? '#999999'
 const legendColor = (): string => {
   const el = rootRef.value
   if (el) {
-    const c = getComputedStyle(el).getPropertyValue('--feather-primary-text-on-surface').trim()
+    const c = getComputedStyle(el).getPropertyValue('--p-text-color').trim()
     if (c) return c
   }
   return '#333333'
@@ -241,12 +241,12 @@ onBeforeUnmount(() => {
 
   &__cap {
     font-size: 0.7rem;
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 
   &__muted {
     text-align: center;
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 }
 </style>

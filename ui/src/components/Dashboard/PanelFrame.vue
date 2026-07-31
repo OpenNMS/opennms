@@ -230,14 +230,14 @@ const onRemove = () => {
 
   // Theme via Feather variables so panels follow light/dark mode.
   .panel-frame__panel {
-    background: var(--feather-elevation-background-2, #ffffff);
-    color: var(--feather-primary-text-on-surface, #1f1f1f);
-    border-color: var(--feather-border-on-surface, #e0e0e0);
+    background: var(--p-content-background, #ffffff);
+    color: var(--p-text-color, #1f1f1f);
+    border-color: var(--p-content-border-color, #e0e0e0);
 
     // tighter padding so short auto panels don't round up to an extra grid row
     :deep(.p-panel-header) {
       background: transparent;
-      color: var(--feather-primary-text-on-surface, #1f1f1f);
+      color: var(--p-text-color, #1f1f1f);
       padding: 0.5rem 0.75rem;
     }
 
@@ -248,7 +248,7 @@ const onRemove = () => {
     }
 
     &--missing {
-      color: var(--feather-error, #b00020);
+      color: var(--p-red-500, #b00020);
     }
   }
 
@@ -267,7 +267,7 @@ const onRemove = () => {
   }
 
   &__missing {
-    color: var(--feather-error, #b00020);
+    color: var(--p-red-500, #b00020);
     font-style: italic;
   }
 }

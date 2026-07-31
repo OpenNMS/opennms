@@ -216,7 +216,7 @@ onMounted(() => {
   &__empty {
     padding: 2rem;
     text-align: center;
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 }
 </style>

@@ -91,7 +91,7 @@ watch(() => props.refreshTick, load)
   font-size: 0.875rem;
 
   &__muted {
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 
   &__list {
@@ -102,7 +102,7 @@ watch(() => props.refreshTick, load)
 
   &__item {
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--feather-border-on-surface, #e0e0e0);
+    border-bottom: 1px solid var(--p-content-border-color, #e0e0e0);
   }
 
   &__title {
@@ -111,7 +111,7 @@ watch(() => props.refreshTick, load)
 
   &__desc {
     margin: 0.25rem 0 0;
-    color: var(--feather-secondary-text-on-surface, #555);
+    color: var(--p-text-muted-color, #555);
   }
 
   &__tags {
@@ -123,7 +123,7 @@ watch(() => props.refreshTick, load)
 
   &__tag {
     font-size: 0.75rem;
-    color: var(--feather-secondary-text-on-surface, #888);
+    color: var(--p-text-muted-color, #888);
   }
 }
 </style>

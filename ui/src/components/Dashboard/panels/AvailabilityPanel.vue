@@ -114,7 +114,7 @@ watch(() => props.refreshTick, load)
   font-size: 0.875rem;
 
   &__muted {
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 
   &__table {
@@ -125,13 +125,13 @@ watch(() => props.refreshTick, load)
   th {
     text-align: left;
     font-weight: 600;
-    border-bottom: 2px solid var(--feather-border-on-surface, #ccc);
+    border-bottom: 2px solid var(--p-content-border-color, #ccc);
     padding: 0.25rem 0.5rem;
   }
 
   td {
     padding: 0.2rem 0.5rem;
-    border-bottom: 1px solid var(--feather-border-on-surface, #eee);
+    border-bottom: 1px solid var(--p-content-border-color, #eee);
   }
 
   &__num {
@@ -154,7 +154,7 @@ watch(() => props.refreshTick, load)
 
   &__total td {
     font-weight: 700;
-    border-top: 2px solid var(--feather-border-on-surface, #ccc);
+    border-top: 2px solid var(--p-content-border-color, #ccc);
   }
 }
 </style>

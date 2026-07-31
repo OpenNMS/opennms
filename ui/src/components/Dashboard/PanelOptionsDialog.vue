@@ -313,7 +313,7 @@ const apply = () => {
   gap: 1rem;
 
   &__group {
-    border: 1px solid var(--feather-border-on-surface, #ddd);
+    border: 1px solid var(--p-content-border-color, #ddd);
     border-radius: 4px;
     padding: 0.5rem 0.75rem;
   }
@@ -345,22 +345,22 @@ const apply = () => {
   }
 
   &__hint {
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 
   &__error {
-    color: var(--feather-error, #b00020);
+    color: var(--p-red-500, #b00020);
   }
 
   &__control--error {
-    outline: 1px solid var(--feather-error, #b00020);
+    outline: 1px solid var(--p-red-500, #b00020);
     border-radius: 4px;
   }
 
   &__number {
     width: 6rem;
     padding: 0.4rem 0.5rem;
-    border: 1px solid var(--feather-border-on-surface, #ccc);
+    border: 1px solid var(--p-content-border-color, #ccc);
     border-radius: 4px;
   }
 }

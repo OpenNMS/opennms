@@ -60,7 +60,7 @@ const url = computed(() => String(props.options?.url ?? ''))
   }
 
   &__empty {
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 }
 </style>

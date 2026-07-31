@@ -59,7 +59,7 @@ const text = computed(() => String(props.options?.text ?? ''))
 
   &__empty {
     margin: 0;
-    color: var(--feather-secondary-text-on-surface, #666);
+    color: var(--p-text-muted-color, #666);
   }
 }
 </style>

@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
     background: rgba(255, 255, 255, 0.85);
-    color: var(--feather-secondary-text-on-surface, #555);
+    color: var(--p-text-muted-color, #555);
     font-size: 0.8125rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
