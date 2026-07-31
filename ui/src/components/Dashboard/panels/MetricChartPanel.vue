@@ -160,9 +160,18 @@ const render = () => {
   })
 }
 
+// concurrent triggers (refresh tick, options change, timeframe change) race;
+// a stale response must not overwrite a newer one. Only the latest wins.
+let loadSeq = 0
+
 const load = async () => {
+  const seq = ++loadSeq
   loading.value = true
-  series = await queryMetricSeries(metricId.value, entity.value, props.timeframe)
+  const result = await queryMetricSeries(metricId.value, entity.value, props.timeframe)
+  if (seq !== loadSeq) {
+    return // a newer load started while this one was in flight
+  }
+  series = result
   empty.value = !series
   loading.value = false
   await nextTick()

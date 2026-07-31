@@ -38,9 +38,10 @@ export interface CurrentOutage {
 // Currently-open outages: ifRegainedService is the epoch sentinel (== null).
 const OPEN_FIQL = 'outage.ifRegainedService==1970-01-01T00:00:00.000-0000'
 
-export const getCurrentOutages = async (limit = 12): Promise<CurrentOutage[]> => {
+export const getCurrentOutages = async (limit = 12, extraFiql: string[] = []): Promise<CurrentOutage[]> => {
   try {
-    const resp = await v2.get(`/outages?_s=${encodeURIComponent(OPEN_FIQL)}&limit=${limit}`)
+    const fiql = encodeURIComponent([OPEN_FIQL, ...extraFiql].join(';'))
+    const resp = await v2.get(`/outages?_s=${fiql}&limit=${limit}`)
     if (resp.status === 204) {
       return []
     }

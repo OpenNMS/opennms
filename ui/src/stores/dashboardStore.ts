@@ -34,6 +34,11 @@ interface DashboardStoreState {
   isDirty: boolean
   editMode: boolean
   refreshTick: number
+  // bumped when an authoritative layout replaces the working copy (load / reset
+  // / factory default) so the grid rebuilds its geometry; NOT bumped by
+  // syncGeometry, so a live drag isn't fought.
+  layoutRevision: number
+  loadError: boolean
 }
 
 export const useDashboardStore = defineStore('dashboardStore', {
@@ -43,7 +48,9 @@ export const useDashboardStore = defineStore('dashboardStore', {
     isSaving: false,
     isDirty: false,
     editMode: false,
-    refreshTick: 0
+    refreshTick: 0,
+    layoutRevision: 0,
+    loadError: false
   }),
   getters: {
     panels: (state): DashboardPanel[] => state.layout.panels,
@@ -74,6 +81,13 @@ export const useDashboardStore = defineStore('dashboardStore', {
       try {
         this.layout = await getSystemDashboard()
         this.isDirty = false
+        this.loadError = false
+        this.layoutRevision++
+      } catch (error) {
+        // keep whatever is on screen; do NOT clear dirty and do NOT substitute
+        // the default, so a later Save can't overwrite the stored layout
+        console.error('Failed to load dashboard layout:', error)
+        this.loadError = true
       } finally {
         this.isLoading = false
       }
@@ -101,6 +115,7 @@ export const useDashboardStore = defineStore('dashboardStore', {
     applyFactoryDefault() {
       this.layout = createDefaultLayout()
       this.isDirty = true
+      this.layoutRevision++
     },
     setEditMode(on: boolean) {
       this.editMode = on
@@ -124,6 +139,11 @@ export const useDashboardStore = defineStore('dashboardStore', {
     // Persist grid geometry coming back from the layout engine. Collapsed panels
     // report a header-only height, so we keep their stored (expanded) height.
     syncGeometry(items: { i: string; x: number; y: number; w: number; h: number }[]) {
+      // geometry only counts as a user edit while editing; view-mode compaction
+      // and auto-height reflow must not rewrite or dirty the stored layout
+      if (!this.editMode) {
+        return
+      }
       let changed = false
       for (const item of items) {
         const panel = this.layout.panels.find((p) => p.id === item.i)

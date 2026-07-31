@@ -59,6 +59,7 @@ License.
 import { onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getCurrentOutages, outageServiceName, type CurrentOutage } from '@/services/outageService'
+import { buildFilterClauses } from '../filter'
 
 const props = defineProps<PanelComponentProps>()
 
@@ -67,14 +68,19 @@ const outages = ref<CurrentOutage[]>([])
 
 const serviceName = outageServiceName
 
+let loadSeq = 0
 const load = async () => {
   loading.value = true
-  outages.value = await getCurrentOutages()
+  const clauses = await buildFilterClauses(props.filter)
+  const seq = ++loadSeq
+  const result = await getCurrentOutages(12, clauses)
+  if (seq !== loadSeq) return
+  outages.value = result
   loading.value = false
 }
 
 onMounted(load)
-watch(() => props.refreshTick, load)
+watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 </script>
 
 <style scoped lang="scss">

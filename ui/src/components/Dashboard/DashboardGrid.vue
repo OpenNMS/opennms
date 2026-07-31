@@ -107,7 +107,7 @@ interface GridItemModel {
 }
 
 const store = useDashboardStore()
-const { panels, editMode } = storeToRefs(store)
+const { panels, editMode, layoutRevision } = storeToRefs(store)
 
 const getPanel = (id: string): DashboardPanel | undefined => panels.value.find((p) => p.id === id)
 
@@ -152,6 +152,14 @@ const compactLayout = () => {
   layout.value = layout.value.map((it) => ({ ...it }))
 }
 
+// A new authoritative layout (load / reset / factory default) fully replaces the
+// grid geometry — otherwise a saved arrangement never reaches the rendered grid,
+// because the id+collapsed reconcile key below is unchanged across a load.
+watch(layoutRevision, () => {
+  layout.value = panels.value.map(toItem)
+  compactLayout()
+})
+
 // Reconcile the grid model on add/remove/collapse only — keeping existing items'
 // live x/y/w so an in-flight drag isn't reset.
 watch(
@@ -188,7 +196,10 @@ const onRequestHeight = (id: string, px: number) => {
 }
 
 const onLayoutUpdated = (newLayout: GridItemModel[]) => {
-  store.syncGeometry(newLayout)
+  // syncGeometry itself ignores non-edit-mode calls, but avoid the churn too
+  if (editMode.value) {
+    store.syncGeometry(newLayout)
+  }
 }
 
 // After initial render, once panels have reported their auto heights, compact the

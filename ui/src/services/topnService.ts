@@ -157,11 +157,17 @@ export const queryTopn = async (
     const columns: { values?: number[] }[] = resp.data?.columns ?? []
 
     const rows: TopnRow[] = []
-    labels.forEach((_label, i) => {
+    labels.forEach((label, i) => {
+      // the backend returns labels/columns in HashMap (hash) order, NOT request
+      // order, so column i does not map to sources[i]. Each label is the "s{k}"
+      // we sent, which encodes the true source index — map through that.
+      const sourceIndex = /^s(\d+)$/.test(label) ? Number(label.slice(1)) : i
+      const source = sources[sourceIndex]
+      if (!source) return
       const values = (columns[i]?.values ?? []).filter((v) => Number.isFinite(v))
       if (!values.length) return
       const avg = values.reduce((a, b) => a + b, 0) / values.length
-      rows.push({ label: sources[i]?.label ?? `s${i}`, value: avg * kpi.scale, unit: kpi.unit })
+      rows.push({ label: source.label, value: avg * kpi.scale, unit: kpi.unit })
     })
 
     rows.sort((a, b) => (direction === 'asc' ? a.value - b.value : b.value - a.value))

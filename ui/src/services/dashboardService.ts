@@ -22,8 +22,56 @@
 
 import axios from 'axios'
 import { v2 } from './axiosInstances'
-import type { DashboardLayout } from '@/types/dashboard'
+import type { DashboardLayout, DashboardPanel } from '@/types/dashboard'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { getPanelDefinition } from '@/components/Dashboard/registry'
+
+// A stored document is arbitrary JSON (any admin/REST client can PUT it), so
+// coerce it into a complete, safe layout: fill missing top-level blocks from
+// the defaults and drop panels that are malformed or reference an unknown type.
+// This keeps one corrupt/partial document from crashing every user's homepage.
+export const normalizeLayout = (raw: unknown): DashboardLayout => {
+  const base = createDefaultLayout()
+  if (!raw || typeof raw !== 'object') {
+    return base
+  }
+  const doc = raw as Partial<DashboardLayout>
+  const panels = Array.isArray(doc.panels)
+    ? doc.panels.filter((p): p is DashboardPanel =>
+        !!p && typeof p === 'object'
+        && typeof (p as DashboardPanel).id === 'string'
+        && typeof (p as DashboardPanel).type === 'string'
+        && !!getPanelDefinition((p as DashboardPanel).type)
+        && ['x', 'y', 'w', 'h'].every((k) => Number.isFinite((p as unknown as Record<string, unknown>)[k])))
+      .map((p) => ({
+        ...p,
+        collapsed: !!p.collapsed,
+        titleOverride: p.titleOverride ?? null,
+        filterOverride: p.filterOverride ?? null,
+        timeframeOverride: p.timeframeOverride ?? null,
+        refreshSeconds: p.refreshSeconds ?? null,
+        options: (p.options && typeof p.options === 'object') ? p.options : {}
+      }))
+    : base.panels
+  return {
+    scope: 'SYSTEM',
+    version: typeof doc.version === 'number' ? doc.version : base.version,
+    refresh: {
+      seconds: Number.isFinite(doc.refresh?.seconds as number) ? (doc.refresh as DashboardLayout['refresh']).seconds : base.refresh.seconds,
+      paused: !!doc.refresh?.paused
+    },
+    globalFilter: {
+      surveillanceCategories: Array.isArray(doc.globalFilter?.surveillanceCategories) ? doc.globalFilter!.surveillanceCategories : [],
+      ipMatch: doc.globalFilter?.ipMatch ?? null
+    },
+    globalTimeframe: {
+      preset: doc.globalTimeframe?.preset ?? base.globalTimeframe.preset,
+      from: doc.globalTimeframe?.from ?? null,
+      to: doc.globalTimeframe?.to ?? null
+    },
+    panels
+  }
+}
 
 // Single system-wide dashboard document, served by DashboardRestService at
 // /api/v2/dashboard/system. GET 404s until a layout has been saved, in which
@@ -32,21 +80,16 @@ const endpoint = '/dashboard/system'
 
 export const getSystemDashboard = async (): Promise<DashboardLayout> => {
   try {
-    const response = await v2.get<DashboardLayout>(endpoint)
-
-    if (response.status === 200 && Array.isArray(response.data?.panels)) {
-      return response.data
-    }
-
-    return createDefaultLayout()
+    const response = await v2.get<unknown>(endpoint)
+    return normalizeLayout(response.data)
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       // no layout saved yet — use the built-in default
       return createDefaultLayout()
     }
-
-    console.error('Failed to load system dashboard layout:', error)
-    return createDefaultLayout()
+    // a real failure (500, network, timeout) must NOT masquerade as the default
+    // layout: doing so lets a subsequent Save silently overwrite the stored one
+    throw error
   }
 }
 

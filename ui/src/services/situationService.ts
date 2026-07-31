@@ -33,9 +33,9 @@ export interface Situation {
   logMessage?: string
 }
 
-export const getPendingSituations = async (limit = 12): Promise<Situation[]> => {
+export const getPendingSituations = async (limit = 12, extraFiql: string[] = []): Promise<Situation[]> => {
   try {
-    const fiql = encodeURIComponent('isSituation==true')
+    const fiql = encodeURIComponent(['isSituation==true', ...extraFiql].join(';'))
     const resp = await v2.get(`/alarms?_s=${fiql}&limit=${limit}&orderBy=lastEventTime&order=DESC`)
     if (resp.status === 204) {
       return []

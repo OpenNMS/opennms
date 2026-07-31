@@ -85,14 +85,21 @@ const kpiLabel = computed(() => TOPN_KPIS.find((k) => k.id === kpiId.value)?.lab
 
 const format = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2))
 
+// stale-response guard for concurrent triggers
+let loadSeq = 0
 const load = async () => {
   loading.value = true
-  rows.value = await queryTopn(kpiId.value, props.timeframe, n.value, direction.value)
+  const seq = ++loadSeq
+  const result = await queryTopn(kpiId.value, props.timeframe, n.value, direction.value)
+  if (seq !== loadSeq) {
+    return // a newer load superseded this one
+  }
+  rows.value = result
   loading.value = false
 }
 
 onMounted(load)
-watch([() => props.refreshTick, kpiId, n, direction, () => props.timeframe.preset], load)
+watch([() => props.refreshTick, kpiId, n, direction, () => props.timeframe.preset, () => props.timeframe.from, () => props.timeframe.to], load)
 </script>
 
 <style scoped lang="scss">

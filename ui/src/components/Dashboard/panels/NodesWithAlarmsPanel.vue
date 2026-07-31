@@ -70,7 +70,8 @@ import type { PanelComponentProps } from '@/types/dashboard'
 import { SORT } from '@/types'
 import type { Alarm } from '@/types'
 import { getAlarms } from '@/services/alarmService'
-import { maxSeverity, severityColor, severityLabel, severityTint } from '../severity'
+import { buildFilterClauses } from '../filter'
+import { isActionableSeverity, maxSeverity, severityColor, severityLabel, severityTint } from '../severity'
 
 interface NodeAlarmRow {
   nodeId: number
@@ -87,14 +88,29 @@ const shade = computed(() => !!props.options?.shade)
 
 const MAX_ROWS = 12
 
+let loadSeq = 0
 const load = async () => {
   loading.value = true
-  const resp = await getAlarms({ limit: 250, orderBy: 'lastEventTime', order: SORT.DESCENDING })
+  // Parity with the legacy node-alarm-summary box (AlarmDao.getNodeAlarmSummaries):
+  // only UNACKNOWLEDGED alarms of WARNING severity or higher count as "pending".
+  // Filter server-side (FIQL) so acknowledged/cleared/normal alarms neither
+  // inflate the counts nor consume the fetch budget; order by severity so a cap
+  // keeps the most severe. The client guard re-applies the severity floor
+  // defensively in case the server comparison is looser than expected.
+  const clauses = await buildFilterClauses(props.filter)
+  const seq = ++loadSeq
+  const resp = await getAlarms({
+    _s: ['alarmAckTime==\u0000', 'severity=ge=WARNING', ...clauses].join(';'),
+    limit: 500,
+    orderBy: 'severity',
+    order: SORT.DESCENDING
+  })
+  if (seq !== loadSeq) return
   const alarms: Alarm[] = resp ? resp.alarm : []
 
   const byNode = new Map<number, NodeAlarmRow>()
   for (const a of alarms) {
-    if (a.nodeId == null) continue
+    if (a.nodeId == null || !isActionableSeverity(a.severity)) continue
     const existing = byNode.get(a.nodeId)
     if (existing) {
       existing.count += 1
@@ -114,7 +130,7 @@ const load = async () => {
 }
 
 onMounted(load)
-watch(() => props.refreshTick, load)
+watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 </script>
 
 <style scoped lang="scss">

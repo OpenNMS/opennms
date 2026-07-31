@@ -23,11 +23,26 @@ describe('dashboardService', () => {
     expect(await getSystemDashboard()).toEqual(layout)
   })
 
-  it('falls back to the default when the shape is wrong', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: 'nope' } })
+  it('normalizes a partial document by filling missing blocks from defaults', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [] } })
     const result = await getSystemDashboard()
-    expect(Array.isArray(result.panels)).toBe(true)
-    expect(result.panels.length).toBeGreaterThan(0)
+    // missing refresh/globalTimeframe/globalFilter must be present so store
+    // getters never dereference undefined
+    expect(result.refresh).toBeDefined()
+    expect(typeof result.refresh.seconds).toBe('number')
+    expect(result.globalTimeframe.preset).toBeTruthy()
+    expect(result.globalFilter.surveillanceCategories).toEqual([])
+  })
+
+  it('drops malformed panels and unknown types', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [
+      { id: 'ok', type: 'notes', x: 0, y: 0, w: 3, h: 100 },
+      { id: 'bad-type', type: 'no-such-panel', x: 0, y: 0, w: 3, h: 100 },
+      { id: 'no-geometry', type: 'notes' },
+      'garbage'
+    ] } })
+    const result = await getSystemDashboard()
+    expect(result.panels.map((p) => p.id)).toEqual(['ok'])
   })
 
   it('falls back to the default on 404 (nothing saved yet)', async () => {
@@ -36,10 +51,9 @@ describe('dashboardService', () => {
     expect(result.panels.length).toBeGreaterThan(0)
   })
 
-  it('falls back to the default on network errors', async () => {
+  it('propagates non-404 failures instead of fabricating the default', async () => {
     vi.mocked(v2.get).mockRejectedValue(new Error('offline'))
-    const result = await getSystemDashboard()
-    expect(result.panels.length).toBeGreaterThan(0)
+    await expect(getSystemDashboard()).rejects.toThrow()
   })
 
   it('save propagates failures to the caller', async () => {

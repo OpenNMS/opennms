@@ -190,9 +190,9 @@
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
-    <!-- Dashboard layout: every user reads it, only admins write it -->
-    <intercept-url pattern="/api/v2/dashboard/**" method="GET" access="ROLE_USER,ROLE_DASHBOARD,ROLE_ADMIN" />
-    <intercept-url pattern="/api/v2/dashboard/**" method="HEAD" access="ROLE_USER,ROLE_DASHBOARD,ROLE_ADMIN" />
+    <!-- Dashboard layout is system-wide: reads fall through to the /api/v2/** GET
+         catch-all (every reader role); only admins may save it, so override just
+         the write. Order matters — this must precede the /api/v2/** PUT rule. -->
     <intercept-url pattern="/api/v2/dashboard/**" method="PUT" access="ROLE_ADMIN" />
 
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>

@@ -43,6 +43,27 @@ License.
           option-value="value"
           aria-label="Dashboard timeframe"
         />
+        <template v-if="timeframePreset === TimeframePreset.Custom">
+          <PDatePicker
+            v-model="customFrom"
+            showTime
+            hourFormat="24"
+            placeholder="From"
+            :maxDate="customTo ?? undefined"
+            aria-label="Custom range start"
+            data-test="timeframe-custom-from"
+          />
+          <span class="dashboard-toolbar__range-sep">→</span>
+          <PDatePicker
+            v-model="customTo"
+            showTime
+            hourFormat="24"
+            placeholder="To"
+            :minDate="customFrom ?? undefined"
+            aria-label="Custom range end"
+            data-test="timeframe-custom-to"
+          />
+        </template>
       </span>
 
       <span
@@ -74,7 +95,7 @@ License.
         @click="toggleFullscreen"
       />
 
-      <template v-if="editMode">
+      <template v-if="editMode && canEdit">
         <PSelect
           v-model="panelToAdd"
           :options="addablePanels"
@@ -106,7 +127,7 @@ License.
         />
       </template>
       <PButton
-        v-else
+        v-else-if="canEdit"
         outlined
         label="Edit"
         icon="pi pi-pencil"
@@ -121,23 +142,58 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
+import DatePicker from 'primevue/datepicker'
 import { TimeframePreset } from '@/types/dashboard'
 import { refreshOptions, timeframeOptions } from './timeframe'
 import { listPanelDefinitions } from './registry'
 import DashboardFilterControl from './DashboardFilterControl.vue'
 import { useDashboardStore } from '@/stores/dashboardStore'
+import useRole from '@/composables/useRole'
 
 const PButton = Button
 const PSelect = Select
+const PDatePicker = DatePicker
 
 const store = useDashboardStore()
 const { editMode, isDirty, isSaving, isPaused } = storeToRefs(store)
+
+// the system layout is admin-configured; only admins may enter edit mode and
+// save (the PUT is ROLE_ADMIN-only, so non-admin edits would 403 and be lost)
+const { adminRole } = useRole()
+const canEdit = adminRole
 
 const panelToAdd = ref<string | null>(null)
 
 const timeframePreset = computed<TimeframePreset>({
   get: () => store.layout.globalTimeframe.preset,
-  set: (preset) => store.setGlobalTimeframe({ preset, from: null, to: null })
+  set: (preset) => {
+    if (preset === TimeframePreset.Custom) {
+      const tf = store.layout.globalTimeframe
+      const to = tf.to ?? new Date().toISOString()
+      const from = tf.from ?? new Date(Date.now() - 24 * 3600_000).toISOString()
+      store.setGlobalTimeframe({ preset, from, to })
+    } else {
+      store.setGlobalTimeframe({ preset, from: null, to: null })
+    }
+  }
+})
+
+// two-way binding of the persisted ISO from/to to the Date-typed pickers
+const toDate = (iso: string | null): Date | null => (iso ? new Date(iso) : null)
+const commitRange = (from: Date | null, to: Date | null) =>
+  store.setGlobalTimeframe({
+    preset: TimeframePreset.Custom,
+    from: from ? from.toISOString() : null,
+    to: to ? to.toISOString() : null
+  })
+
+const customFrom = computed<Date | null>({
+  get: () => toDate(store.layout.globalTimeframe.from),
+  set: (from) => commitRange(from, toDate(store.layout.globalTimeframe.to))
+})
+const customTo = computed<Date | null>({
+  get: () => toDate(store.layout.globalTimeframe.to),
+  set: (to) => commitRange(toDate(store.layout.globalTimeframe.from), to)
 })
 
 const refreshSeconds = computed<number>({

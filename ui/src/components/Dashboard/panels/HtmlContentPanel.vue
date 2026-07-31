@@ -24,12 +24,18 @@ License.
 <template>
   <div class="html-content">
     <iframe
-      v-if="url"
-      :src="url"
+      v-if="safeUrl"
+      :src="safeUrl"
       class="html-content__frame"
       title="Panel content"
       sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
     />
+    <p
+      v-else-if="url"
+      class="html-content__empty"
+    >
+      The configured URL is not a valid same-origin http(s) address and was not loaded.
+    </p>
     <p
       v-else
       class="html-content__empty"
@@ -46,6 +52,30 @@ import type { PanelComponentProps } from '@/types/dashboard'
 const props = defineProps<PanelComponentProps>()
 
 const url = computed(() => String(props.options?.url ?? ''))
+
+// The stored options are arbitrary JSON (an admin PUT bypasses the options
+// dialog's validation), so re-validate at render time: only same-origin http(s)
+// URLs are loaded. This blocks a persisted javascript:/data: URL from executing
+// in every user's browser, independent of how it got into the layout document.
+const safeUrl = computed(() => {
+  const raw = url.value.trim()
+  if (!raw) {
+    return ''
+  }
+  let parsed: URL
+  try {
+    parsed = new URL(raw, window.location.origin)
+  } catch {
+    return ''
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return ''
+  }
+  if (parsed.origin !== window.location.origin) {
+    return '' // frame-src 'self'; external origins never load anyway
+  }
+  return parsed.href
+})
 </script>
 
 <style scoped lang="scss">

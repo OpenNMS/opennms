@@ -88,7 +88,7 @@ const props = defineProps<PanelComponentProps>()
 const shade = computed(() => !!props.options?.shade)
 
 const loading = ref(true)
-const sections = ref<AvailabilitySection[]>([])
+const allSections = ref<AvailabilitySection[]>([])
 
 // The REST response already includes a "Total" section holding the real
 // "Overall Service Availability" row — render it as the bold total (don't add
@@ -101,9 +101,22 @@ const categoryLink = (name: string) =>
 
 const load = async () => {
   loading.value = true
-  sections.value = await getAvailability()
+  allSections.value = await getAvailability()
   loading.value = false
 }
+
+// The global filter's surveillance-category selection narrows this category
+// rollup directly (IP match does not apply to a category-level view).
+const sections = computed<AvailabilitySection[]>(() => {
+  const selected = props.filter.surveillanceCategories
+  if (!selected.length) {
+    return allSections.value
+  }
+  const set = new Set(selected)
+  return allSections.value
+    .map((section) => ({ ...section, categories: section.categories.filter((c) => set.has(c.name)) }))
+    .filter((section) => section.categories.length > 0)
+})
 
 onMounted(load)
 watch(() => props.refreshTick, load)

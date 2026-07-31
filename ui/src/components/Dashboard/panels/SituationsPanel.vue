@@ -64,6 +64,7 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getPendingSituations, type Situation } from '@/services/situationService'
+import { buildFilterClauses } from '../filter'
 import { severityColor, severityLabel, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()
@@ -79,14 +80,19 @@ const describe = (s: Situation): string => {
   return parts.join(', ')
 }
 
+let loadSeq = 0
 const load = async () => {
   loading.value = true
-  situations.value = await getPendingSituations()
+  const clauses = await buildFilterClauses(props.filter)
+  const seq = ++loadSeq
+  const result = await getPendingSituations(12, clauses)
+  if (seq !== loadSeq) return
+  situations.value = result
   loading.value = false
 }
 
 onMounted(load)
-watch(() => props.refreshTick, load)
+watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 </script>
 
 <style scoped lang="scss">

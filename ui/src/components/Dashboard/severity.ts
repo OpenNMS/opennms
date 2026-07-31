@@ -57,6 +57,12 @@ export const severityTint = (key: string): string => `${severityMeta(key).color}
 
 export const severityLabel = (key: string): string => severityMeta(key).label
 
+// Matches the legacy homepage's "severity > 3" node-alarm-summary threshold:
+// WARNING and above (the actionable severities), i.e. excludes NORMAL, CLEARED,
+// INDETERMINATE. Uses the WARNING weight as the cutoff so it tracks the table.
+const WARNING_WEIGHT = severityMeta('WARNING').weight
+export const isActionableSeverity = (key: string): boolean => severityMeta(key).weight >= WARNING_WEIGHT
+
 // Highest severity among a set of severity keys (by weight).
 export const maxSeverity = (keys: string[]): string =>
   keys.reduce((max, k) => (severityMeta(k).weight > severityMeta(max).weight ? k : max), 'CLEARED')

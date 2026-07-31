@@ -47,7 +47,13 @@ const store = useDashboardStore()
 // Single global refresh timer for the whole dashboard.
 useDashboardRefresh()
 
-onMounted(() => store.load())
+onMounted(() => {
+  // re-entering the route must not blow away unsaved edits held in the
+  // app-lifetime store; only (re)load when there is nothing to lose
+  if (!store.isDirty) {
+    store.load()
+  }
+})
 </script>
 
 <style scoped lang="scss">

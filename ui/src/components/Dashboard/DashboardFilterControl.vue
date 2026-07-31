@@ -34,6 +34,10 @@ License.
   />
   <PPopover ref="op">
     <div class="dashboard-filter">
+      <p class="dashboard-filter__hint">
+        Applies to the node-scoped panels (Situations, Nodes with Alarms, Service
+        Outages, Availability). Panels without node data are unaffected.
+      </p>
       <label class="dashboard-filter__label">Surveillance categories</label>
       <PMultiSelect
         v-model="categories"

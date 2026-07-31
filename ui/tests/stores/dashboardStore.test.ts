@@ -38,6 +38,34 @@ describe('useDashboardStore', () => {
     expect(store.isLoading).toBe(false)
   })
 
+  it('load failure keeps the current layout, dirty flag and flags an error', async () => {
+    const before = store.layout
+    store.isDirty = true
+    vi.mocked(getSystemDashboard).mockRejectedValue(new Error('500'))
+
+    await store.load()
+
+    expect(store.layout).toBe(before)
+    expect(store.isDirty).toBe(true)
+    expect(store.loadError).toBe(true)
+  })
+
+  it('load bumps the layout revision so the grid rebuilds', async () => {
+    vi.mocked(getSystemDashboard).mockResolvedValue(createDefaultLayout())
+    const before = store.layoutRevision
+    await store.load()
+    expect(store.layoutRevision).toBe(before + 1)
+  })
+
+  it('syncGeometry is a no-op outside edit mode', () => {
+    const panel = store.layout.panels[0]
+    const origX = panel.x
+    store.editMode = false
+    store.syncGeometry([{ i: panel.id, x: origX + 3, y: panel.y, w: panel.w, h: panel.h }])
+    expect(panel.x).toBe(origX)
+    expect(store.isDirty).toBe(false)
+  })
+
   it('save clears dirty on success and keeps it on failure', async () => {
     store.isDirty = true
     vi.mocked(saveSystemDashboard).mockResolvedValue()
@@ -97,6 +125,7 @@ describe('useDashboardStore', () => {
   })
 
   it('syncGeometry persists moves but keeps stored height for collapsed panels', () => {
+    store.editMode = true
     const panel = store.layout.panels[0]
     const storedH = panel.h
     panel.collapsed = true
@@ -110,6 +139,7 @@ describe('useDashboardStore', () => {
   })
 
   it('syncGeometry with no changes does not mark dirty', () => {
+    store.editMode = true
     const panel = store.layout.panels[0]
     panel.collapsed = false
     store.syncGeometry([{ i: panel.id, x: panel.x, y: panel.y, w: panel.w, h: panel.h }])
