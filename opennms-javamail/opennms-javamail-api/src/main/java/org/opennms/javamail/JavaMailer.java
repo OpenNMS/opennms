@@ -294,6 +294,11 @@ public class JavaMailer {
                 streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");
                 streamBodyPart.setDisposition(Part.ATTACHMENT);
                 MimeMultipart mp = new MimeMultipart();
+                // The text body precedes the attachment, matching the file-attachment
+                // branch below; without it a streamed attachment arrives with no message.
+                BodyPart textBodyPart = new MimeBodyPart();
+                textBodyPart.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+                mp.addBodyPart(textBodyPart);
                 mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
             } else {

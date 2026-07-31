@@ -63,7 +63,9 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
 
+import jakarta.mail.BodyPart;
 import jakarta.mail.Message;
+import jakarta.mail.internet.MimeMultipart;
 
 /**
  * Wire-level tests against an embedded GreenMail server: these exercise the
@@ -164,6 +166,38 @@ public class JavaMailerWireTest {
 
         assertTrue(greenMail.waitForIncomingEmail(5000, 1));
         assertEquals("authenticated wire test", greenMail.getReceivedMessages()[0].getSubject());
+    }
+
+    /**
+     * Streamed attachments (the path report delivery uses) previously dropped the
+     * message text, so the mail arrived as a bare attachment.
+     */
+    @Test
+    public void streamAttachmentCarriesBothBodyAndAttachment() throws Exception {
+        final byte[] pdf = "%PDF-1.4 not a real pdf".getBytes(StandardCharsets.UTF_8);
+
+        final JavaMailer jm = new JavaMailer(smtpProps());
+        jm.setFrom("sender@opennms.org");
+        jm.setTo("receiver@opennms.org");
+        jm.setSubject("stream attachment wire test");
+        jm.setMessageText("here is your report");
+        jm.setInputStream(new java.io.ByteArrayInputStream(pdf));
+        jm.setInputStreamName("report.pdf");
+        jm.setInputStreamContentType("application/pdf");
+        jm.mailSend();
+
+        assertTrue(greenMail.waitForIncomingEmail(5000, 1));
+        final Message received = greenMail.getReceivedMessages()[0];
+        final MimeMultipart mp = (MimeMultipart) received.getContent();
+        assertEquals(2, mp.getCount());
+
+        final BodyPart text = mp.getBodyPart(0);
+        assertTrue(text.getContentType(), text.getContentType().toLowerCase().startsWith("text/plain"));
+        assertEquals("here is your report", ((String) text.getContent()).trim());
+
+        final BodyPart attachment = mp.getBodyPart(1);
+        assertEquals("report.pdf", attachment.getFileName());
+        assertTrue(attachment.getContentType(), attachment.getContentType().toLowerCase().startsWith("application/pdf"));
     }
 
     @Test
