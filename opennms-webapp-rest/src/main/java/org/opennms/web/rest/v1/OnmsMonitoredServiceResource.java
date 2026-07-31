@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.api.RestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -219,6 +220,10 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             boolean modified = false;
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
             for(String key : params.keySet()) {
+                if (RestUtils.isProtectedProperty(key)) {
+                    LOG.warn("Ignoring attempt to set protected property '{}'", key);
+                    continue;
+                }
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));

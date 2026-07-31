@@ -59,6 +59,17 @@
           <groupId>org.ops4j.pax.logging</groupId>
           <artifactId>pax-logging-service</artifactId>
         </exclusion>
+        <!--
+          pax-logging-log4j2 is an uber bundle which embeds the log4j2 core classes under their
+          original org.apache.logging.log4j.core.* names. On a flat (non-OSGi) test classpath those
+          shaded classes shadow the log4j-core artifact we manage via log4j-bom, while the log4j API
+          still comes from log4j-api - which breaks as soon as the two versions drift apart. The
+          container gets its pax-logging bundles from container/shared, so drop it here.
+        -->
+        <exclusion>
+          <groupId>org.ops4j.pax.logging</groupId>
+          <artifactId>pax-logging-log4j2</artifactId>
+        </exclusion>
         <!-- Exclude all logging APIs since they are provided by the container -->
         <exclusion>
           <groupId>commons-logging</groupId>

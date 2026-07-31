@@ -42,6 +42,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
+import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +105,10 @@ public class CategoryRestService extends OnmsRestService {
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
             boolean modified = false;
             for(String key : params.keySet()) {
+                if (RestUtils.isProtectedProperty(key)) {
+                    LOG.warn("updateCategory: ignoring attempt to set protected property '{}'", key);
+                    continue;
+                }
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));

@@ -50,11 +50,6 @@ Metadata expression can be used for the authenticateUser and authenticatePasswor
 | no
 | no
 
-| microblog-configuration.properties
-| Configuration to send notification emails via specific mail servers.
-Metadata expression can be used for the authen-* and oauth-* fields in order to reference credentials stored in the secure credentials vault.
-| no
-| no
 |===
 
 .Notifd log file overview

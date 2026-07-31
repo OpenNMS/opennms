@@ -81,6 +81,12 @@
         <version>${camelVersion}</version>
     </dependency>
     <dependency>
+      <!-- camel-core-osgi only pulls this in as scope=provided, which isn't transitive -->
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
