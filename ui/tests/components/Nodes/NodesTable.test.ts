@@ -304,6 +304,109 @@ describe('NodesTable.vue', () => {
     })
   })
 
+  // ── SNMP interface narrowing fetch (maclike/snmpParm modes) ─────────────────
+
+  describe('SNMP interface narrowing fetch', () => {
+    it('does not fetch snmp interfaces in default mode', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).not.toHaveBeenCalled()
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('fetches snmp interfaces narrowed to physAddr in maclike mode, normalizing the mac', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }, { id: '2' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'AA:BB-CC' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1', '2'], 'physAddr==*aabbcc*')
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('fetches snmp interfaces narrowed to the snmpParm attribute in snmpParm mode', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      structure.setFilterWithSnmpParams('snmpIfAlias', 'uplink')
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], 'ifAlias==*uplink*')
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('omits the attribute narrowing when the snmpParm value contains SQL wildcards (% or _)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      structure.setFilterWithSnmpParams('snmpIfAlias', 'up%link')
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('does not re-fetch when nodes/mode/narrowing are unchanged (dedupe)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+
+      // Toggling off then on again with the exact same nodes/mode should not re-issue the request.
+      structure.setShowInterfaces(false)
+      await nextTick()
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(wrapper.exists()).toBe(true)
+    })
+  })
+
   // ── Flows sort fix ───────────────────────────────────────────────────────────
 
   describe('flows column sorting', () => {

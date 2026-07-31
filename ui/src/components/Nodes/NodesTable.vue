@@ -466,6 +466,9 @@ const interfaceCountLabel = computed(() => {
   return `${m} Interface${m === 1 ? '' : 's'}`
 })
 
+// SQL-LIKE wildcard characters ('%' any-length, '_' single-char) — see buildSnmpNarrowing below.
+const SQL_WILDCARD_PATTERN = /[%_]/
+
 // Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
 // fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
 // getNodeSnmpInterfaceQuery). Sanitized the same way other FIQL builders in useNodeQuery.ts are.
@@ -476,6 +479,16 @@ const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
   }
 
   if (mode.mode === 'snmpParm') {
+    // The server-side FIQL '==*value*' matches '%'/'_' literally, while useInterfaceListing.ts's
+    // client-side matchesSnmpParm() treats them as SQL-LIKE wildcards. If the value contains
+    // either, the server narrowing would no longer be a superset of the client match — rows the
+    // client considers a match could be excluded from the fetch and silently go missing. Omit the
+    // attribute narrowing entirely in that case; the node.id scoping alone still limits the fetch
+    // to the current page, and exact contains/equals semantics are re-applied client-side anyway.
+    if (SQL_WILDCARD_PATTERN.test(mode.value)) {
+      return undefined
+    }
+
     return `${mode.attr}==*${sanitizeSearchTerm(mode.value)}*`
   }
 
@@ -549,9 +562,13 @@ watch([() => nodeStructureStore.queryFilter], () => {
 { deep: true }
 )
 
+// Expand/collapse rows in response to any of the three: a new page of nodes, the toggle, or the
+// active filter mode changing (e.g. editing the mac/snmpParm filter while already expanded).
+// Harmless — and correct — to re-run on every one of these, since it's just a snapshot of "which
+// rows are on the current page".
 watch(
   [nodes, () => nodeStructureStore.showInterfaces, interfaceListMode],
-  ([currentNodes, showInterfaces, mode]) => {
+  ([currentNodes, showInterfaces]) => {
     if (!showInterfaces) {
       expandedRows.value = {}
       return
@@ -562,11 +579,50 @@ watch(
       expanded[n.id] = true
     })
     expandedRows.value = expanded
+  }
+)
 
-    if (mode.mode === 'maclike' || mode.mode === 'snmpParm') {
-      const narrowing = buildSnmpNarrowing(mode)
-      nodeStore.getSnmpInterfacesForNodes(currentNodes.map(n => n.id), narrowing)
+// Fetch the narrowed SNMP interfaces for the current page. Deliberately watches only [nodes,
+// showInterfaces] — NOT interfaceListMode — and reads interfaceListMode.value fresh inside the
+// callback instead. Reasoning: the pre-existing deep queryFilter watcher above is registered
+// first, so on a mac/snmpParm filter edit it runs first in the same flush and kicks off
+// nodeStore.getNodes(...) (async — nodeStore.nodes, and therefore `nodes` here, doesn't change
+// until it resolves). If interfaceListMode were also a source here, this watcher would fire in
+// that same flush with the NEW mode paired with the STALE (pre-edit) page node ids, issuing a
+// throwaway-but-distinct-looking fetch that can race with — and, on the wire, arrive after — the
+// correct one issued once `nodes` actually updates. getSnmpInterfacesForNodes replaces the whole
+// map with no request-sequencing, so whichever response lands last wins; the stale-ids fetch
+// winning would blank every expanded panel on the new page. Gating on `nodes`/`showInterfaces`
+// instead means the fetch only ever fires once the page has actually settled to match the current
+// filter, so the mode read at that point is always paired with the node ids it actually produced.
+// lastSnmpFetchKey additionally dedupes back-to-back fires with an unchanged (nodeIds, narrowing)
+// pair (e.g. a page re-render that doesn't actually change the result set).
+const lastSnmpFetchKey = ref<string | null>(null)
+
+watch(
+  [nodes, () => nodeStructureStore.showInterfaces],
+  ([currentNodes, showInterfaces]) => {
+    // Deliberately don't reset lastSnmpFetchKey when toggling off — re-toggling on with the exact
+    // same nodes/mode should stay deduped rather than re-issuing an identical request.
+    if (!showInterfaces) {
+      return
     }
+
+    const mode = interfaceListMode.value
+    if (mode.mode !== 'maclike' && mode.mode !== 'snmpParm') {
+      return
+    }
+
+    const nodeIds = currentNodes.map(n => n.id)
+    const narrowing = buildSnmpNarrowing(mode)
+    const key = `${nodeIds.join(',')}|${narrowing ?? ''}`
+
+    if (key === lastSnmpFetchKey.value) {
+      return
+    }
+
+    lastSnmpFetchKey.value = key
+    nodeStore.getSnmpInterfacesForNodes(nodeIds, narrowing)
   }
 )
 
