@@ -456,6 +456,32 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
+    public void testComposedFiqlWireShapes() throws Exception {
+        // Locks in the composed FIQL wire shapes the Vue node-list page emits: a grouped/parenthesized
+        // clause intersected (';') with the mandatory node.type!=D guard (see
+        // buildNodeStructureQuery in useNodeQuery.ts, which always wraps its assembled query in
+        // parens before appending the guard). A server-side FIQL parser regression in any of these
+        // shapes would otherwise only surface client-side as an empty/"No interfaces" result.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Grouped label OR (mirrors buildCategoryQuery/buildServiceQuery-style multi-item groups)
+        // intersected with the node.type!=D guard.
+        sendRequest(GET, url, parseParamData("_s=((node.label==node1,node.label==node2));node.type!=D"), 200);
+
+        // Grouped nodesWithOutages filter (mirrors buildNodeStructureQuery always wrapping the
+        // assembled query, even a single term, in its own parens) intersected with the guard.
+        sendRequest(GET, url, parseParamData("_s=(nodesWithOutages==true);node.type!=D"), 200);
+
+        // Grouped searchTerm-as-IP union (label OR ipInterface.ipAddress) intersected with the
+        // guard -- mirrors buildNodeStructureQuery's searchTerm-looks-like-an-IP union branch.
+        // node1 is seeded with ipAddress 192.168.1.1 (see DatabasePopulator#buildNode1).
+        sendRequest(GET, url, parseParamData("_s=(label==*node*,ipInterface.ipAddress==192.168.1.1);node.type!=D"), 200);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testNodeTypeSearch() throws Exception {
         // DatabasePopulator's nodes are all type "A" (active), which suffices to exercise both
         // branches of the node.type filter. This locks in the FIQL "type" filtering used by the

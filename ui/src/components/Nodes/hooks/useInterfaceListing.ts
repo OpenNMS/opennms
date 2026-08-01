@@ -67,7 +67,12 @@ export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode
     // Legacy could only ever have one snmpParm set at a time. If more than one of our extended
     // search fields is populated, fall through to the default mode.
     if (nonEmpty.length === 1) {
-      const matchType = snmpParams.snmpMatchType === MatchType.Equals ? 'equals' : 'contains'
+      // Default (undefined) must resolve to 'equals' here, matching buildSnmpQuery's and
+      // parseSnmpParmParams's default: `wildcard = snmpMatchType === MatchType.Contains` is false
+      // when snmpMatchType is undefined, so the FIQL filter narrows nodes by exact match. If this
+      // resolved to 'contains' instead, the expanded interface panel would show interfaces that
+      // didn't actually qualify the node under the (exact-match) filter.
+      const matchType = snmpParams.snmpMatchType === MatchType.Contains ? 'contains' : 'equals'
       return { mode: 'snmpParm', attr: nonEmpty[0].attr, value: nonEmpty[0].value as string, matchType }
     }
   }
@@ -239,8 +244,14 @@ const buildSnmpInterfaceRow = (
   }
 }
 
-/** Normalize a MAC-like search value: lowercase, strip ':' and '-'. */
-const normalizeMacSearch = (mac: string): string => mac.toLowerCase().replace(/[:-]/g, '')
+/**
+ * Normalize a MAC-like search value for matching/narrowing: lowercase, strip every non-hex
+ * character (not just ':' and '-' — also '.', spaces, etc., matching the legacy backend's maclike
+ * behavior and buildMaclikeQuery/parseMaclike in useNodeQuery.ts/queryStringParser.ts). Shared by
+ * the client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and
+ * useNodeQuery.ts's buildMaclikeQuery so all three treat e.g. 'aabb.ccdd' identically.
+ */
+export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
 
 const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): InterfaceListRow[] => {
   return ipInterfaces

@@ -590,6 +590,17 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeStructureQueryParameters: searchTerm-as-IP union', () => {
+    test('a searchTerm that looks like an IP, with no explicit ipAddress filter, unions label and ipInterface.ipAddress inside the node.type guard', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: '192.168.1.1' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      // Exact shape (not toContain): buildSearchQuery wraps the label term in wildcards, the union
+      // (',') is spliced in ahead of the closing node.type!=D guard, and the whole thing stays
+      // inside the guard's mandatory parens so the OR branch can't escape it.
+      expect(params._s).toBe('(label==*192.168.1.1*,ipInterface.ipAddress==192.168.1.1);node.type!=D')
+    })
+  })
+
   describe('buildUpdatedNodeStructureQueryParameters: nodesWithDownAggregateStatus', () => {
     test('emits nodesWithDownAggregateStatus==true when set', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: true }

@@ -60,7 +60,10 @@ const handleNodeIdRedirect = (query: LocationQuery): boolean => {
 
   const url = buildNodeDetailUrl(menuStore.mainMenu, id)
   if (url) {
-    window.location.assign(url)
+    // replace (not assign): this is a redirect away from a legacy bookmark, not real in-app
+    // navigation — using replace keeps the ?nodeId=<n> URL out of history so Back doesn't return
+    // to it and immediately re-redirect.
+    window.location.replace(url)
   } else {
     // mainMenu hasn't loaded yet — defer until the watch below sees it arrive.
     pendingNodeIdRedirect.value = id
@@ -76,7 +79,7 @@ watch(
       const url = buildNodeDetailUrl(menuStore.mainMenu, pendingNodeIdRedirect.value)
       if (url) {
         pendingNodeIdRedirect.value = null
-        window.location.assign(url)
+        window.location.replace(url)
       }
     }
   }

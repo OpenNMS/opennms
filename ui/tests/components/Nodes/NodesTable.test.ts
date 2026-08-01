@@ -344,6 +344,28 @@ describe('NodesTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
+    it('narrows using the fully-normalized MAC (dots/spaces stripped too, not just : and -)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      // Cisco-style dotted MAC: buildSnmpNarrowing and buildMaclikeQuery/parseMaclike must all
+      // normalize this the same way, or the filter (exact-match FIQL) and the panel narrowing
+      // (physAddr==*...*) disagree and panels show "No interfaces".
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabb.ccdd' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], 'physAddr==*aabbccdd*')
+      expect(wrapper.exists()).toBe(true)
+    })
+
     it('fetches snmp interfaces narrowed to the snmpParm attribute in snmpParm mode', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
@@ -372,6 +394,35 @@ describe('NodesTable.vue', () => {
 
       ns.nodes = [{ id: '1' }] as any
       structure.setFilterWithSnmpParams('snmpIfAlias', 'up%link')
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    // The under-fetch guard must also cover ',' ';' '(' ')': ',' / ';' are FIQL set operators that
+    // sanitizeSearchTerm elsewhere neutralizes by replacing with spaces (making the server
+    // narrowing no longer a superset of the client match, same failure mode as % and _); '(' / ')'
+    // are FIQL grouping delimiters that, passed through raw, unbalance the expression and cause a
+    // server-side FIQL parse error (surfacing client-side as "No interfaces").
+    it.each([
+      ['a comma', 'up,link'],
+      ['a semicolon', 'up;link'],
+      ['an unbalanced open paren', 'up(link'],
+      ['an unbalanced close paren', 'up)link']
+    ])('omits the attribute narrowing when the snmpParm value contains %s', async (_title, value) => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1' }] as any
+      structure.setFilterWithSnmpParams('snmpIfAlias', value)
       await nextTick()
 
       structure.setShowInterfaces(true)

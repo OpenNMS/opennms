@@ -25,7 +25,8 @@ import {
   countInterfacesForNodes,
   getInterfaceListMode,
   getInterfaceRowsForNode,
-  InterfaceListMode
+  InterfaceListMode,
+  normalizeMacSearch
 } from '@/components/Nodes/hooks/useInterfaceListing'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { IpInterface, MatchType, NodeQueryFilter, SnmpInterface } from '@/types'
@@ -99,10 +100,15 @@ describe('useInterfaceListing', () => {
       ['snmpIfAlias', 'ifAlias' as const],
       ['snmpIfName', 'ifName' as const],
       ['snmpIfDescription', 'ifDescr' as const]
-    ])('returns snmpParm mode for %s (contains, default match type)', (field, attr) => {
+    ])('returns snmpParm mode for %s (equals, default/undefined match type)', (field, attr) => {
+      // Undefined snmpMatchType MUST resolve to 'equals' here, matching buildSnmpQuery
+      // (useNodeQuery.ts) and parseSnmpParmParams (queryStringParser.ts), both of which default
+      // undefined to an exact-match FIQL query. If this instead defaulted to 'contains', the
+      // expanded interfaces panel would show interfaces that didn't actually qualify the node
+      // under the (exact-match) filter used to select which nodes appear at all.
       const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
       ;(filter.extendedSearch.snmpParams as any)[field] = 'uplink'
-      expect(getInterfaceListMode(filter)).toEqual({ mode: 'snmpParm', attr, value: 'uplink', matchType: 'contains' })
+      expect(getInterfaceListMode(filter)).toEqual({ mode: 'snmpParm', attr, value: 'uplink', matchType: 'equals' })
     })
 
     test('returns snmpParm mode with equals matchType when snmpMatchType is Equals', () => {
@@ -110,6 +116,13 @@ describe('useInterfaceListing', () => {
       filter.extendedSearch.snmpParams!.snmpIfName = 'eth0'
       filter.extendedSearch.snmpParams!.snmpMatchType = MatchType.Equals
       expect(getInterfaceListMode(filter)).toEqual({ mode: 'snmpParm', attr: 'ifName', value: 'eth0', matchType: 'equals' })
+    })
+
+    test('returns snmpParm mode with contains matchType when snmpMatchType is Contains', () => {
+      const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams!.snmpIfName = 'eth0'
+      filter.extendedSearch.snmpParams!.snmpMatchType = MatchType.Contains
+      expect(getInterfaceListMode(filter)).toEqual({ mode: 'snmpParm', attr: 'ifName', value: 'eth0', matchType: 'contains' })
     })
 
     test('falls back to default mode when multiple SNMP fields are set', () => {
@@ -181,6 +194,19 @@ describe('useInterfaceListing', () => {
       ]
       const mode: InterfaceListMode = { mode: 'maclike', mac }
       const rows = getInterfaceRowsForNode('1', mode, [], snmps, baseHref)
+      expect(rows.map(r => r.key)).toEqual(['snmp-1'])
+    })
+
+    // normalizeMacSearch strips ALL non-hex characters (not just ':' and '-'), matching
+    // buildMaclikeQuery (useNodeQuery.ts) and parseMaclike (queryStringParser.ts) — a Cisco-style
+    // dotted MAC or space-separated octets must match physAddr the same way a colon/dash MAC does.
+    test.each([
+      ['Cisco-style dotted MAC', 'aabb.ccdd'],
+      ['space-separated octets', 'aa bb cc']
+    ])('matches physAddr aabbccddeeff for a %s search value', (_title, macValue) => {
+      const snmp = makeSnmp({ id: 1, physAddr: 'aabbccddeeff', collectFlag: 'C' })
+      const mode: InterfaceListMode = { mode: 'maclike', mac: macValue }
+      const rows = getInterfaceRowsForNode('1', mode, [], [snmp], baseHref)
       expect(rows.map(r => r.key)).toEqual(['snmp-1'])
     })
 
@@ -291,6 +317,18 @@ describe('useInterfaceListing', () => {
       const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifName', value: 'ETH0', matchType: 'equals' }
       const rows = getInterfaceRowsForNode('1', mode, [], [exact, substring], baseHref)
       expect(rows.map(r => r.key)).toEqual(['snmp-1'])
+    })
+  })
+
+  describe('normalizeMacSearch', () => {
+    test.each([
+      ['colons', 'AA:BB:CC:DD:EE:FF', 'aabbccddeeff'],
+      ['dashes', 'AA-BB-CC-DD-EE-FF', 'aabbccddeeff'],
+      ['dots (Cisco-style)', 'aabb.ccdd.eeff', 'aabbccddeeff'],
+      ['spaces', 'aa bb cc dd ee ff', 'aabbccddeeff'],
+      ['mixed separators', 'AA:bb-CC.dd ee', 'aabbccddee']
+    ])('strips all non-hex characters and lowercases: %s', (_title, input, expected) => {
+      expect(normalizeMacSearch(input)).toBe(expected)
     })
   })
 

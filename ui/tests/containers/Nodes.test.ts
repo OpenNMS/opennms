@@ -34,7 +34,7 @@ vi.mock('@/services/localStorageService', () => ({
 }))
 
 describe('Nodes.vue container', () => {
-  let assignSpy: ReturnType<typeof vi.spyOn>
+  let replaceSpy: ReturnType<typeof vi.spyOn>
 
   const mountComponent = (mainMenu: Record<string, unknown> = { homeUrl: '/home' }) => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
@@ -65,11 +65,11 @@ describe('Nodes.vue container', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routeQuery = {}
-    assignSpy = vi.spyOn(window.location, 'assign').mockImplementation(() => { /* no-op: prevent jsdom navigation */ })
+    replaceSpy = vi.spyOn(window.location, 'replace').mockImplementation(() => { /* no-op: prevent jsdom navigation */ })
   })
 
   afterEach(() => {
-    assignSpy.mockRestore()
+    replaceSpy.mockRestore()
   })
 
   it('sets showInterfaces when the route query has listInterfaces=true', async () => {
@@ -117,7 +117,7 @@ describe('Nodes.vue container', () => {
       mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(assignSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=42')
+      expect(replaceSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=42')
       // The redirect bypasses normal query handling entirely — the URL should not be cleared.
       expect(routerReplaceMock).not.toHaveBeenCalled()
     })
@@ -129,12 +129,12 @@ describe('Nodes.vue container', () => {
       const { menuStore } = mountComponent({})
       await flushPromises()
 
-      expect(assignSpy).not.toHaveBeenCalled()
+      expect(replaceSpy).not.toHaveBeenCalled()
 
       menuStore.mainMenu = loadedMainMenu as any
       await flushPromises()
 
-      expect(assignSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=7')
+      expect(replaceSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=7')
     })
 
     it('does not redirect when nodeId is non-numeric, and normal query handling proceeds', async () => {
@@ -143,7 +143,7 @@ describe('Nodes.vue container', () => {
       mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(assignSpy).not.toHaveBeenCalled()
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
 
     it('does not redirect when nodeId is zero or negative', async () => {
@@ -152,7 +152,7 @@ describe('Nodes.vue container', () => {
       mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(assignSpy).not.toHaveBeenCalled()
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
 
     it('does not redirect when nodeId is absent from the route query', async () => {
@@ -161,7 +161,7 @@ describe('Nodes.vue container', () => {
       mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(assignSpy).not.toHaveBeenCalled()
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
   })
 })

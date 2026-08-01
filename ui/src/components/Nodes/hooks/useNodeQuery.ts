@@ -23,6 +23,7 @@
 import { isConvertibleToInteger } from '@/lib/utils'
 import { MainMenu } from '@/types/mainMenu'
 import { LocationQuery } from 'vue-router'
+import { normalizeMacSearch } from './useInterfaceListing'
 import {
   AssetFilter,
   Category,
@@ -645,7 +646,9 @@ const buildMaclikeQuery = (macAddress?: string) => {
 
   // Strip separators/whitespace and lowercase to match the format stored in snmpinterface.snmpphysaddr.
   // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
-  const stripped = macAddress.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+  // Shared with useInterfaceListing.ts's client-side maclike match and NodesTable.vue's
+  // buildSnmpNarrowing so all three normalize a MAC-like value identically.
+  const stripped = normalizeMacSearch(macAddress)
 
   if (stripped.length === 0) {
     return ''
