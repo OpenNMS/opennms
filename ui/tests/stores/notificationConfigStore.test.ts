@@ -2,24 +2,16 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import API from '@/services'
-import { DestinationPath } from '@/types/notificationConfig'
 
 vi.mock('@/services', () => ({
   default: {
     getNotificationConfigStatus: vi.fn(),
-    setNotificationConfigStatus: vi.fn(),
-    getDestinationPaths: vi.fn()
+    setNotificationConfigStatus: vi.fn()
   }
 }))
 
 describe('useNotificationConfigStore', () => {
   let store: ReturnType<typeof useNotificationConfigStore>
-
-  const mockPath: DestinationPath = {
-    name: 'Email-Admin',
-    'initial-delay': '0s',
-    target: [{ name: 'Admin', command: ['javaEmail'] }]
-  }
 
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -34,7 +26,6 @@ describe('useNotificationConfigStore', () => {
   describe('Initial State', () => {
     it('should start empty with unknown notifd status', () => {
       expect(store.notifdStatus).toBeNull()
-      expect(store.destinationPaths).toEqual([])
     })
   })
 
@@ -64,18 +55,6 @@ describe('useNotificationConfigStore', () => {
 
       expect(ok).toBe(false)
       expect(store.notifdStatus).toBe('off')
-    })
-  })
-
-  describe('populate', () => {
-    it('should load everything the dialog needs', async () => {
-      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue('off')
-      vi.mocked(API.getDestinationPaths).mockResolvedValue([mockPath])
-
-      await store.populate()
-
-      expect(store.notifdStatus).toBe('off')
-      expect(store.destinationPaths).toEqual([mockPath])
     })
   })
 })

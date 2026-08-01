@@ -9,8 +9,7 @@
       <h1 class="page-title">Notifications</h1>
       <OnmsIconButton
         v-if="adminRole"
-        text
-        rounded
+        variant="text"
         :icon="SettingsIcon"
         title="Configure Notifications"
         aria-label="Configure Notifications"

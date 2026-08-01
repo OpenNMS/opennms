@@ -186,12 +186,16 @@ public class NotificationConfigRestService extends OnmsRestService {
     }
 
     private void sendStatusEvent(final String uei, final SecurityContext securityContext, final HttpServletRequest request) {
-        // same parameters the legacy UpdateNotifdStatusServlet put on the event
-        final EventBuilder bldr = new EventBuilder(uei, "ReST");
-        bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
-        bldr.addParam("remoteHost", request.getRemoteHost());
-        bldr.addParam("remoteAddr", request.getRemoteAddr());
+        // Build and send entirely inside the try: the status change has already
+        // been persisted by the caller, so nothing here — including
+        // request.getRemoteHost(), which can trigger a slow/failing reverse DNS
+        // lookup — may propagate and turn a committed change into a 500.
         try {
+            // same parameters the legacy UpdateNotifdStatusServlet put on the event
+            final EventBuilder bldr = new EventBuilder(uei, "ReST");
+            bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
+            bldr.addParam("remoteHost", request.getRemoteHost());
+            bldr.addParam("remoteAddr", request.getRemoteAddr());
             m_eventProxy.send(bldr.getEvent());
         } catch (final Exception e) {
             LOG.warn("Can't send event {}", uei, e);
@@ -207,6 +211,4 @@ public class NotificationConfigRestService extends OnmsRestService {
         DestinationPathFactory.init();
         return DestinationPathFactory.getInstance();
     }
-
-
 }

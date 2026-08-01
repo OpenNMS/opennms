@@ -137,6 +137,10 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
     }
 
+    // Restore opennms.home for later suites sharing this JVM fork.
+    // ConfigurationTestUtils.setRelativeHomeDirectory holds no state of its own —
+    // it only writes opennms.home (via setAbsoluteHomeDirectory) — so resetting
+    // the property here fully undoes the setRelativeHomeDirectory calls too.
     @org.junit.AfterClass
     public static void restoreOpennmsHome() {
         if (s_previousOpennmsHome != null) {

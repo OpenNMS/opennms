@@ -21,13 +21,12 @@
 ///
 
 import API from '@/services'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
+import { NotifdStatus } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
-  const destinationPaths = ref([] as DestinationPath[])
 
   const getStatus = async () => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -41,20 +40,9 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
-  const getDestinationPaths = async () => {
-    destinationPaths.value = await API.getDestinationPaths()
-  }
-
-  const populate = async () => {
-    await Promise.all([getStatus(), getDestinationPaths()])
-  }
-
   return {
     notifdStatus,
-    destinationPaths,
     getStatus,
-    setStatus,
-    getDestinationPaths,
-    populate
+    setStatus
   }
 })

@@ -81,7 +81,9 @@ const emit = defineEmits(['update:visible'])
 
 const store = useNotificationConfigStore()
 
-const activeTab = ref('event-notifications')
+// Event Notifications is first in the final tab order but is only a placeholder
+// until NMS-20118 lands, so open on General (the one live tab) for now.
+const activeTab = ref('general')
 
 const statusPending = ref(false)
 
