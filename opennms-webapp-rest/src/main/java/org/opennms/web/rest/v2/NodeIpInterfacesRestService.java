@@ -147,6 +147,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         }
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+        // interface properties (hostname, ...) are visible to metadata interpolation
+        sendNodeMetadataUpdatedEvent(targetObject.getNodeId());
         return Response.noContent().build();
     }
 

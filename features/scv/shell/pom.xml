@@ -41,5 +41,10 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
             <version>${karafVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

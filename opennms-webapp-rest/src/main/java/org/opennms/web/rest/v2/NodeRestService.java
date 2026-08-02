@@ -434,6 +434,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
+        // node properties (label, sys* fields, ...) are visible to metadata interpolation
+        sendNodeMetadataUpdatedEvent(targetObject.getId());
         return Response.noContent().build();
     }
 

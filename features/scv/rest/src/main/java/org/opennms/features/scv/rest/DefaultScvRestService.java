@@ -24,12 +24,16 @@ package org.opennms.features.scv.rest;
 import com.google.common.base.Strings;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +46,37 @@ public class DefaultScvRestService implements ScvRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultScvRestService.class);
 
     private final SecureCredentialsVault scv;
+    private final EventForwarder eventForwarder;
     private final Pattern pattern = Pattern.compile("\\*{2,}");
     private final String MASKED_PASSWORD = "******";
 
     public DefaultScvRestService(SecureCredentialsVault scv) {
+        this(scv, null);
+    }
+
+    public DefaultScvRestService(SecureCredentialsVault scv, EventForwarder eventForwarder) {
         this.scv = scv;
+        this.eventForwarder = eventForwarder;
+    }
+
+    /**
+     * Notifies interested daemons that credentials changed, so they can discard cached
+     * values interpolated from ${scv:...} expressions. Sent without a node id since
+     * credentials are not tied to a single node.
+     */
+    private void sendCredentialsUpdatedEvent() {
+        if (eventForwarder == null) {
+            return;
+        }
+        try {
+            final Event event = new Event();
+            event.setUei(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI);
+            event.setSource("ScvRestService");
+            event.setTime(new Date());
+            eventForwarder.sendNow(event);
+        } catch (Exception e) {
+            LOG.warn("Failed to send {} event", EventConstants.NODE_METADATA_UPDATED_EVENT_UEI, e);
+        }
     }
 
     @Override
@@ -123,6 +153,7 @@ public class DefaultScvRestService implements ScvRestService {
 
             try {
                 scv.setCredentials(credentialsDTO.getAlias(), credentials);
+                sendCredentialsUpdatedEvent();
                 return Response.accepted().build();
             } catch (Exception e) {
                 LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
@@ -166,6 +197,7 @@ public class DefaultScvRestService implements ScvRestService {
 
             try {
                 scv.setCredentials(alias, credentials);
+                sendCredentialsUpdatedEvent();
                 return Response.accepted().build();
             } catch (Exception e) {
                 LOG.error("Exception while adding credentials with alias {}", credentialsDTO.getAlias(), e);
@@ -180,6 +212,7 @@ public class DefaultScvRestService implements ScvRestService {
     public Response deleteCredentials(final String alias) {
         try {
             scv.deleteCredentials(alias);
+            sendCredentialsUpdatedEvent();
         } catch (Exception e) {
             LOG.error("Exception while deleting credentials with alias {} ", alias, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

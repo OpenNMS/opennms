@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -76,6 +78,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Basic Web Service using REST for OnmsNode entity
@@ -304,6 +308,8 @@ public class NodeRestService extends OnmsRestService {
             if (modified) {
                 LOG.debug("updateNode: node {} updated", node);
                 m_nodeDao.saveOrUpdate(node);
+                // node properties (label, sys* fields, ...) are visible to metadata interpolation
+                sendNodeMetadataUpdatedEvent(node.getId());
                 return Response.noContent().build();
             }
             return Response.notModified().build();
@@ -528,6 +534,38 @@ public class NodeRestService extends OnmsRestService {
             m_eventProxy.send(event);
         } catch (final EventProxyException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
+
+    /**
+     * Notifies interested daemons that scope data of the given node was changed, so
+     * they can discard cached, interpolated values. Dispatched after the surrounding
+     * transaction commits — sending it earlier would let consumers re-read (and
+     * re-cache) the pre-update values. The notification is advisory and best-effort:
+     * a delivery failure must not fail the already-committed request, consumers
+     * re-resolve after the metadata cache TTL.
+     */
+    private void sendNodeMetadataUpdatedEvent(final Integer nodeId) {
+        final Event event = new EventBuilder(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI, "ReST")
+                .setNodeid(nodeId)
+                .getEvent();
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    sendEventQuietly(event);
+                }
+            });
+        } else {
+            sendEventQuietly(event);
+        }
+    }
+
+    private void sendEventQuietly(final Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final Exception e) {
+            LOG.warn("Failed to send {} event; cached metadata will refresh after the TTL.", event.getUei(), e);
         }
     }
 

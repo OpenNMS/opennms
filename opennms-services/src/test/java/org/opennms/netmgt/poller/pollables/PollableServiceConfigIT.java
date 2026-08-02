@@ -244,22 +244,17 @@ public class PollableServiceConfigIT {
         assertTrue(pollStatus.isUnknown());
     }
 
-    /**
-     * Verifies that the service parameters are interpolated once and cached across
-     * polls, and that {@link PollableServiceConfig#refreshMetadata()} discards the
-     * cache so the next poll re-interpolates them.
-     */
-    @Test
-    public void cachesInterpolatedParametersUntilMetadataRefresh() throws Exception {
-        final Map<String, Object> interpolated = Map.of("username", "admin");
-
+    private PollerRequestBuilder mockPollerRequestBuilder(final Map<String, Object> interpolated) {
         final PollerRequestBuilder builder = mock(PollerRequestBuilder.class, Mockito.RETURNS_SELF);
         when(builder.getInterpolatedAttributes()).thenReturn(interpolated);
 
         final PollerResponse response = mock(PollerResponse.class);
         when(response.getPollStatus()).thenReturn(PollStatus.up());
         when(builder.execute()).thenReturn(CompletableFuture.completedFuture(response));
+        return builder;
+    }
 
+    private PollableServiceConfig createPollableServiceConfig(final PollerRequestBuilder builder, final Timer timer) {
         final LocationAwarePollerClient client = mock(LocationAwarePollerClient.class);
         when(client.poll()).thenReturn(builder);
 
@@ -274,9 +269,21 @@ public class PollableServiceConfigIT {
         final PollerConfig pollerConfig = mock(PollerConfig.class);
         when(pollerConfig.getServiceMonitorLocator(any())).thenReturn(Optional.of(mock(ServiceMonitorLocator.class)));
 
-        final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pkg, mock(Timer.class), new MockPersisterFactory(), mock(ThresholdingService.class),
+        return new PollableServiceConfig(pollableSvc, pollerConfig,
+                pkg, timer, new MockPersisterFactory(), mock(ThresholdingService.class),
                 client, m_pollOutagesDao, m_serviceMonitorAdaptor);
+    }
+
+    /**
+     * Verifies that the service parameters are interpolated once and cached across
+     * polls, and that {@link PollableServiceConfig#refreshMetadata()} discards the
+     * cache so the next poll re-interpolates them.
+     */
+    @Test
+    public void cachesInterpolatedParametersUntilMetadataRefresh() throws Exception {
+        final Map<String, Object> interpolated = Map.of("username", "admin");
+        final PollerRequestBuilder builder = mockPollerRequestBuilder(interpolated);
+        final PollableServiceConfig psc = createPollableServiceConfig(builder, mock(Timer.class));
 
         psc.poll();
         psc.poll();
@@ -290,6 +297,35 @@ public class PollableServiceConfigIT {
         psc.refreshMetadata();
         psc.poll();
         verify(builder, times(2)).getInterpolatedAttributes();
+    }
+
+    /**
+     * Verifies the TTL backstop: cached parameters older than
+     * {@link PollableServiceConfig#METADATA_CACHE_TTL_PROPERTY} are re-interpolated
+     * on the next poll, even without an explicit invalidation event.
+     */
+    @Test
+    public void refreshesCachedParametersAfterTtlExpires() throws Exception {
+        System.setProperty(PollableServiceConfig.METADATA_CACHE_TTL_PROPERTY, "100");
+        try {
+            final PollerRequestBuilder builder = mockPollerRequestBuilder(Map.of("username", "admin"));
+            final MockTimer timer = new MockTimer();
+            timer.setCurrentTime(0);
+            final PollableServiceConfig psc = createPollableServiceConfig(builder, timer);
+
+            psc.poll();
+            timer.setCurrentTime(50);
+            psc.poll();
+            // within the TTL the cached parameters are reused
+            verify(builder, times(1)).getInterpolatedAttributes();
+
+            timer.setCurrentTime(200);
+            psc.poll();
+            // the TTL has expired, so the parameters are re-interpolated
+            verify(builder, times(2)).getInterpolatedAttributes();
+        } finally {
+            System.clearProperty(PollableServiceConfig.METADATA_CACHE_TTL_PROPERTY);
+        }
     }
 
     @Test

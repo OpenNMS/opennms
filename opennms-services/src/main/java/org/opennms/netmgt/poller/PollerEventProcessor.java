@@ -46,6 +46,7 @@ import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,6 +170,10 @@ final class PollerEventProcessor implements EventListener {
 
         // node scan completed
         ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
+
+        // hardware inventory finished (the SNMP metadata provisioning adapter
+        // writes node meta-data after the node scan and reports it with this event)
+        ueiList.add(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI);
 
         // for reloading poller configuration and re-scheduling pollers
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
@@ -406,12 +411,26 @@ final class PollerEventProcessor implements EventListener {
         LOG.debug("nodeUpdatedHandler: clearing cached parameters for node {}", nodeId);
         for (final PollableInterface iface : pnode.getInterfaces()) {
             for (final PollableService svc : iface.getServices()) {
-                try {
-                    svc.refreshMetadata();
-                } catch (final Exception e) {
-                    LOG.warn("nodeUpdatedHandler: failed to refresh metadata for {}, skipping.", svc, e);
-                }
+                refreshMetadata(svc);
             }
+        }
+    }
+
+    private void refreshMetadataForAllServices() {
+        LOG.debug("refreshMetadataForAllServices: clearing cached parameters for all services");
+        getNetwork().visit(new PollableVisitorAdaptor() {
+            @Override
+            public void visitService(PollableService svc) {
+                refreshMetadata(svc);
+            }
+        });
+    }
+
+    private static void refreshMetadata(PollableService svc) {
+        try {
+            svc.refreshMetadata();
+        } catch (final Exception e) {
+            LOG.warn("refreshMetadata: failed to refresh metadata for {}, skipping.", svc, e);
         }
     }
 
@@ -610,6 +629,10 @@ final class PollerEventProcessor implements EventListener {
                 LOG.info("PollerEventProcessor: no node or interface found, discarding event");
             }
             nodeLabelChangedHandler(event);
+            if (event.getNodeid() > 0) {
+                // the node label is visible to metadata interpolation (${node:label})
+                nodeUpdatedHandler(event);
+            }
         } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI) || event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
             if (event.getNodeid() < 0) {
                 LOG.info("PollerEventProcessor: no node or interface found, discarding event");
@@ -646,10 +669,18 @@ final class PollerEventProcessor implements EventListener {
                 nodeUpdatedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_UPDATED_EVENT_UEI) ||
-                   event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI) ||
-                   event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI)) {
+                   event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI) ||
+                   event.getUei().equals(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI)) {
             if (event.getNodeid() != null && event.getNodeid() > 0) {
                 nodeUpdatedHandler(event);
+            }
+        } else if (event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI)) {
+            if (event.getNodeid() != null && event.getNodeid() > 0) {
+                nodeUpdatedHandler(event);
+            } else {
+                // without a node id the event signals a global change (e.g. rotated
+                // SCV credentials) — refresh the metadata of every service
+                refreshMetadataForAllServices();
             }
         } // end single event process
 

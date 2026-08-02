@@ -52,6 +52,11 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- test-->
         <dependency>
             <groupId>org.hamcrest</groupId>
