@@ -72,11 +72,13 @@ import { OnmsButton } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import API from '@/services'
+import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
 
 const menuStore = useMenuStore()
+const { showSnackBar } = useSnackbar()
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Generate System Report', to: '/system-report' }
@@ -128,6 +130,12 @@ const generate = () => {
   document.body.appendChild(form)
   form.submit()
   document.body.removeChild(form)
+
+  // The report is built on demand — plugins run live and logs/config are gathered
+  // and compressed before the download begins — so it can take a while on a large
+  // system. The browser can't reliably tell us when the streamed download finishes,
+  // so at least let the user know it's working.
+  showSnackBar({ msg: 'Generating the system report — this can take a while on a large system. Your download will start when it is ready.' })
 }
 
 onMounted(async () => {

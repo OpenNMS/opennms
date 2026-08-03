@@ -44,6 +44,9 @@ vi.mock('@/services', () => ({
   }
 }))
 
+const showSnackBar = vi.fn()
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+
 const mountPage = () =>
   mount(SystemReport, {
     global: {
@@ -60,6 +63,7 @@ describe('SystemReport', () => {
 
   beforeEach(() => {
     submitted = null
+    showSnackBar.mockClear()
     getSystemReportPlugins.mockResolvedValue([...plugins])
     getSystemReportFormatters.mockResolvedValue([...formatters])
     vi.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(function (this: HTMLFormElement) {
@@ -83,6 +87,8 @@ describe('SystemReport', () => {
     expect(fields).toContainEqual(['plugins', 'OS'])
     // no filename entered -> no output field
     expect(fields.some(([n]) => n === 'output')).toBe(false)
+    // the user gets told generation is under way
+    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/generating/i) }))
   })
 
   it('includes the output field when a filename is entered', async () => {
