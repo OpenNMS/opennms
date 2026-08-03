@@ -633,9 +633,13 @@ const emptyListContent = {
 watch([() => nodeStructureStore.queryFilter], () => {
   if (nodeStructureStore.queryFilter.searchTerm !== currentSearch.value) {
     currentSearch.value = nodeStructureStore.queryFilter.searchTerm
-    // The store's searchTerm is always valid (see searchFilterHandler / the buildNodeStructureQuery
-    // guard), so overwriting currentSearch with it also clears any stale validation error.
-    searchError.value = undefined
+    // The store's searchTerm is NOT guaranteed to be valid: it can be written directly by
+    // programmatic paths that bypass searchFilterHandler entirely — the URL `nodename` param and
+    // restored localStorage preferences both flow through nodeStructureStore.setFromNodePreferences,
+    // not through the input handler above. Re-validate so an injected bad term is surfaced as a
+    // visible error (the buildNodeStructureQuery guard in useNodeQuery.ts separately keeps the
+    // actual request safe regardless).
+    searchError.value = getSearchTermValidationError(currentSearch.value) ?? undefined
   }
 
   updateQuery()

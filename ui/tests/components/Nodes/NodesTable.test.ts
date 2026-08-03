@@ -42,7 +42,15 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
   })
 }))
 
-vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
+vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
+  // Real (unmocked) module — delegated to below for the pure search-validation helpers and for
+  // buildUpdatedNodeStructureQueryParameters, so tests that write a searchTerm (valid or invalid)
+  // directly into the store can assert on the ACTUAL request shape (e.g. that an invalid term
+  // really does omit the label clause end-to-end), rather than a naive passthrough stub.
+  const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
+    '@/components/Nodes/hooks/useNodeQuery'
+  )
+
   const makeDefaultFilter = () => ({
     searchTerm: '',
     categoryMode: 'Union',
@@ -66,7 +74,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
   })
   return {
     useNodeQuery: () => ({
-      buildUpdatedNodeStructureQueryParameters: vi.fn().mockImplementation(params => params),
+      buildUpdatedNodeStructureQueryParameters: actual.useNodeQuery().buildUpdatedNodeStructureQueryParameters,
       getExtendedSearchValues: vi.fn().mockReturnValue([]),
       getDefaultNodeQueryFilter: makeDefaultFilter,
       getDefaultNodeQueryForeignSourceParams: () => ({ foreignId: '', foreignSource: '', foreignSourceId: '' }),
@@ -75,14 +83,9 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
     }),
-    sanitizeSearchTerm: (s?: string) => (s || '').replace(/[,;]/g, ' '),
-    INVALID_SEARCH_CHARS_PATTERN: /[#%&()]/,
-    getSearchTermValidationError: (term?: string) => {
-      if (!term) {
-        return null
-      }
-      return /[#%&()]/.test(term) ? 'Search cannot contain the characters # % & ( )' : null
-    }
+    sanitizeSearchTerm: actual.sanitizeSearchTerm,
+    INVALID_SEARCH_CHARS_PATTERN: actual.INVALID_SEARCH_CHARS_PATTERN,
+    getSearchTermValidationError: actual.getSearchTermValidationError
   }
 })
 
@@ -754,6 +757,35 @@ describe('NodesTable.vue', () => {
 
       expect(structure.queryFilter.searchTerm).toBe('*serv*')
       expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
+    })
+
+    it('surfaces a validation error (and keeps the request safe) when an invalid searchTerm is written directly into the store, bypassing the input handler', async () => {
+      // Reproduces the programmatic-injection paths that never go through searchFilterHandler:
+      // nodeStructureStore.setFromNodePreferences writes queryFilter.searchTerm straight from
+      // either the URL `nodename` param (parseNodeLabel, via Nodes.vue's applyQueryFilter) or a
+      // restored localStorage preference — both land here as a raw store mutation. Mutating
+      // queryFilter directly, as done elsewhere in this file (e.g. the macAddress tests above),
+      // exercises exactly that path without depending on setFromNodePreferences' other side effects.
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ;(ns.getNodes as any).mockClear()
+
+      structure.queryFilter = { ...structure.queryFilter, searchTerm: 'bad%term' }
+      await nextTick()
+
+      // The invalid term is shown in the box (not silently dropped) WITH a visible error — this is
+      // the bug being fixed: previously the queryFilter watch unconditionally cleared searchError.
+      const input = wrapper.find('input[data-test="search-input"]')
+      expect((input.element as HTMLInputElement).value).toBe('bad%term')
+      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain the characters # % & ( )')
+
+      // The query-builder guard (buildNodeStructureQuery) independently keeps the actual request
+      // safe: the label clause is omitted entirely, leaving just the node.type!=D guard.
+      expect(ns.getNodes).toHaveBeenCalled()
+      const [requestParams] = (ns.getNodes as any).mock.calls.at(-1)
+      expect(requestParams._s).toBe('node.type!=D')
     })
   })
 
