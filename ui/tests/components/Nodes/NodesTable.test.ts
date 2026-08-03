@@ -75,7 +75,14 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
     }),
-    sanitizeSearchTerm: (s?: string) => (s || '').replace(/[,;]/g, ' ')
+    sanitizeSearchTerm: (s?: string) => (s || '').replace(/[,;]/g, ' '),
+    INVALID_SEARCH_CHARS_PATTERN: /[#%&()]/,
+    getSearchTermValidationError: (term?: string) => {
+      if (!term) {
+        return null
+      }
+      return /[#%&()]/.test(term) ? 'Search cannot contain the characters # % & ( )' : null
+    }
   }
 })
 
@@ -89,7 +96,7 @@ const stubs = {
   NodeTooltipCell: { name: 'NodeTooltipCell', template: '<span></span>', props: ['text'] },
   ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
-  OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
+  OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div><slot name="content" /></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
   EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] },
   NodeInterfacesPanel: { name: 'NodeInterfacesPanel', template: '<div class="node-interfaces-panel-stub"></div>', props: ['node'] }
 }
@@ -678,6 +685,89 @@ describe('NodesTable.vue', () => {
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ;(wrapper.vm as any).onSort({ sortField: 'flows', sortOrder: 1 })
       expect(ns.getNodes).not.toHaveBeenCalled()
+    })
+  })
+
+  // ── Search box client-side validation (NMS-20125 PR review) ─────────────────
+
+  describe('search box validation', () => {
+    it('typing a term with a forbidden character shows a validation error and does not update the store or search', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ;(ns.getNodes as any).mockClear()
+
+      const input = wrapper.find('input[data-test="search-input"]')
+      await input.setValue('bad%term')
+      await nextTick()
+
+      const searchField = wrapper.find('[data-test="search-field"]')
+      expect(searchField.text()).toContain('Search cannot contain the characters # % & ( )')
+      expect(structure.queryFilter.searchTerm).toBe('')
+      expect(ns.getNodes).not.toHaveBeenCalled()
+    })
+
+    it('typing a valid term clears the error and triggers a search', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      const input = wrapper.find('input[data-test="search-input"]')
+      await input.setValue('bad%term')
+      await nextTick()
+      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain')
+
+      await input.setValue('goodterm')
+      await nextTick()
+
+      expect(structure.queryFilter.searchTerm).toBe('goodterm')
+      expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
+      expect(ns.getNodes).toHaveBeenCalled()
+    })
+
+    it.each([
+      ['a hash', 'bad#term'],
+      ['an ampersand', 'bad&term'],
+      ['an open paren', 'bad(term'],
+      ['a close paren', 'bad)term']
+    ])('rejects a term containing %s', async (_title, value) => {
+      const wrapper = mountTable()
+      const structure = useNodeStructureStore()
+
+      const input = wrapper.find('input[data-test="search-input"]')
+      await input.setValue(value)
+      await nextTick()
+
+      expect(structure.queryFilter.searchTerm).toBe('')
+      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain')
+    })
+
+    it('allows a term containing only an asterisk wildcard', async () => {
+      const wrapper = mountTable()
+      const structure = useNodeStructureStore()
+
+      const input = wrapper.find('input[data-test="search-input"]')
+      await input.setValue('*serv*')
+      await nextTick()
+
+      expect(structure.queryFilter.searchTerm).toBe('*serv*')
+      expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
+    })
+  })
+
+  // ── Node Search help dialog content ──────────────────────────────────────────
+
+  describe('Node Search help dialog', () => {
+    it('describes the * wildcard and the disallowed characters, and drops the old underscore/percent claims', () => {
+      const wrapper = mountTable()
+      const text = wrapper.text()
+
+      expect(text).toContain('multiple-character wildcard')
+      expect(text).toContain('The characters # % & ( ) are not allowed in searches.')
+      expect(text).not.toContain('underscore character acts as a single character wildcard')
+      expect(text).not.toContain('percent character acts as a multiple character wildcard')
     })
   })
 })

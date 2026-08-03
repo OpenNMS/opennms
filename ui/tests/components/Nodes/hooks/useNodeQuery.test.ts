@@ -22,7 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, getNodeIdRedirect, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { buildNodeDetailUrl, getNodeIdRedirect, getSearchTermValidationError, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { MainMenu } from '@/types/mainMenu'
@@ -598,6 +598,70 @@ describe('Nodes useNodeQuery test', () => {
       // (',') is spliced in ahead of the closing node.type!=D guard, and the whole thing stays
       // inside the guard's mandatory parens so the OR branch can't escape it.
       expect(params._s).toBe('(label==*192.168.1.1*,ipInterface.ipAddress==192.168.1.1);node.type!=D')
+    })
+  })
+
+  describe('buildUpdatedNodeStructureQueryParameters: invalid search characters omit the label clause', () => {
+    // Defense-in-depth: searchTerm can be set programmatically (URL nodename param, restored
+    // localStorage preferences) bypassing NodesTable.vue's input-level validation. A term that
+    // still fails getSearchTermValidationError must never reach buildSearchQuery.
+    test.each([
+      ['a hash', 'bad#term'],
+      ['a percent', 'bad%term'],
+      ['an ampersand', 'bad&term'],
+      ['an open paren', 'bad(term'],
+      ['a close paren', 'bad)term']
+    ])('omits the label clause when searchTerm contains %s, emitting just node.type!=D', (_title, searchTerm) => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('node.type!=D')
+    })
+
+    test('other clauses are preserved alongside the omitted label clause', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        searchTerm: 'bad%term',
+        nodesWithDownAggregateStatus: true
+      }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(nodesWithDownAggregateStatus==true);node.type!=D')
+    })
+
+    test('a valid searchTerm containing only *, letters, digits, dots, dashes and spaces still searches', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: '*node-1 A.b*' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==*node-1 A.b*);node.type!=D')
+    })
+  })
+
+  describe('getSearchTermValidationError', () => {
+    test.each([
+      ['#', 'has#hash'],
+      ['%', 'has%percent'],
+      ['&', 'has&amp'],
+      ['(', 'has(paren'],
+      [')', 'has)paren']
+    ])('rejects a term containing %s', (_char, term) => {
+      expect(getSearchTermValidationError(term)).toBe('Search cannot contain the characters # % & ( )')
+    })
+
+    test.each([
+      ['*', '*wildcard*'],
+      ['letters', 'abcXYZ'],
+      ['digits', '1234567890'],
+      ['dots', '192.168.1.1'],
+      ['dashes', 'node-1-name'],
+      ['spaces', 'node one']
+    ])('accepts a term containing only %s', (_label, term) => {
+      expect(getSearchTermValidationError(term)).toBeNull()
+    })
+
+    test('accepts an empty string', () => {
+      expect(getSearchTermValidationError('')).toBeNull()
+    })
+
+    test('accepts undefined', () => {
+      expect(getSearchTermValidationError(undefined)).toBeNull()
     })
   })
 
