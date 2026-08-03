@@ -161,8 +161,7 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
 
         int statusCode;
         String contents;
-        try {
-            final CloseableHttpResponse response = clientWrapper.execute(request);
+        try (final CloseableHttpResponse response = clientWrapper.execute(request)) {
             statusCode = response.getStatusLine().getStatusCode();
             contents = response.getEntity() == null ? "" : EntityUtils.toString(response.getEntity());
             LOG.debug("send: {} {} returned {} with body: {}", method, redactUrl(url), statusCode, contents);
