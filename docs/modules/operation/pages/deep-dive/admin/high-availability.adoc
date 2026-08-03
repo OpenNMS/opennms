@@ -55,6 +55,8 @@ $OPENNMS_HOME/bin/scvcli set hasync hasync <password>
 +
 Reference it from the config as `<sync-password>${scv:hasync:password}</sync-password>` so the password never appears in the file.
 
+. Using `systemctl edit`, uncomment the lines for `Restart=` and `RestartSec=` in the shipped `opennms.service` systemd unit.
+
 . Restart both nodes.
 The PRIMARY claims ACTIVE; the SECONDARY blocks before starting services and monitors the primary's heartbeat.
 
