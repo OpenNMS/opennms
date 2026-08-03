@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     maximizable
@@ -11,33 +11,33 @@
   >
     <!-- Tab order and the default tab are declared here once; the sibling
          PRs each replace one placeholder panel and register one loader. -->
-    <Tabs v-model:value="activeTab">
-      <TabList>
-        <Tab value="event-notifications" data-test="tab-event-notifications">Event Notifications</Tab>
-        <Tab value="destination-paths" data-test="tab-destination-paths">Destination Paths</Tab>
-        <Tab value="path-outages" data-test="tab-path-outages">Path Outages</Tab>
-        <Tab value="general" data-test="tab-general">General</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel value="event-notifications">
+    <OnmsTabs v-model:value="activeTab">
+      <OnmsTabList>
+        <OnmsTab value="event-notifications" data-test="tab-event-notifications">Event Notifications</OnmsTab>
+        <OnmsTab value="destination-paths" data-test="tab-destination-paths">Destination Paths</OnmsTab>
+        <OnmsTab value="path-outages" data-test="tab-path-outages">Path Outages</OnmsTab>
+        <OnmsTab value="general" data-test="tab-general">General</OnmsTab>
+      </OnmsTabList>
+      <OnmsTabPanels>
+        <OnmsTabPanel value="event-notifications">
           <p class="tab-placeholder" data-test="placeholder-event-notifications">
             Event notification management arrives with NMS-20118.
           </p>
-        </TabPanel>
-        <TabPanel value="destination-paths">
+        </OnmsTabPanel>
+        <OnmsTabPanel value="destination-paths">
           <p class="tab-placeholder" data-test="placeholder-destination-paths">
             Destination path management arrives with NMS-20119.
           </p>
-        </TabPanel>
-        <TabPanel value="path-outages">
+        </OnmsTabPanel>
+        <OnmsTabPanel value="path-outages">
           <p class="tab-placeholder" data-test="placeholder-path-outages">
             Path outage management arrives with NMS-20120.
           </p>
-        </TabPanel>
-        <TabPanel value="general">
+        </OnmsTabPanel>
+        <OnmsTabPanel value="general">
           <div class="general-tab">
             <div class="status-toggle">
-              <PToggleSwitch
+              <OnmsToggleSwitch
                 :modelValue="store.notifdStatus === 'on'"
                 :disabled="store.notifdStatus === null || statusPending"
                 aria-label="Turn notifications on or off"
@@ -51,27 +51,19 @@
               event. The current status is also reflected by the bell icon in the top bar.
             </p>
           </div>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  </Dialog>
+        </OnmsTabPanel>
+      </OnmsTabPanels>
+    </OnmsTabs>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Dialog from 'primevue/dialog'
-import Tab from 'primevue/tab'
-import TabList from 'primevue/tablist'
-import TabPanel from 'primevue/tabpanel'
-import TabPanels from 'primevue/tabpanels'
-import Tabs from 'primevue/tabs'
-import ToggleSwitch from 'primevue/toggleswitch'
+import { OnmsDialog, OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
-
-const PToggleSwitch = ToggleSwitch
 
 const props = defineProps<{
   visible: boolean

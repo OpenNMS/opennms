@@ -23,7 +23,7 @@
       <div class="query-forms">
         <div class="search-row">
           <IftaLabel>
-            <InputText
+            <OnmsInputText
               id="notification-user-search"
               v-model="userSearch"
               data-test="user-search-input"
@@ -31,8 +31,8 @@
             />
             <label for="notification-user-search">Check notices for user</label>
           </IftaLabel>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             icon="pi pi-search"
             aria-label="Show notices for user"
             data-test="user-search-button"
@@ -41,7 +41,7 @@
         </div>
         <div class="search-row">
           <IftaLabel>
-            <InputText
+            <OnmsInputText
               id="notification-notice-search"
               v-model="noticeSearch"
               data-test="notice-search-input"
@@ -49,8 +49,8 @@
             />
             <label for="notification-notice-search">Get details for notice</label>
           </IftaLabel>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             icon="pi pi-search"
             aria-label="Get notice detail"
             data-test="notice-search-button"
@@ -65,9 +65,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import Button from 'primevue/button'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
 import { useMenuStore } from '@/stores/menuStore'

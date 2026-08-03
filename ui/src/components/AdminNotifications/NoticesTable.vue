@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.notices.length"
       lazy
       :value="store.notices"
@@ -42,7 +42,7 @@
       data-test="notices-table"
       @page="onPage"
     >
-      <Column
+      <OnmsColumn
         field="id"
         header="ID"
       >
@@ -52,28 +52,28 @@
             :data-test="`notice-link-${data.id}`"
           >{{ data.id }}</a>
         </template>
-      </Column>
-      <Column header="Severity">
+      </OnmsColumn>
+      <OnmsColumn header="Severity">
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             v-if="data.severity"
             :value="data.severity"
             :severity="severityMap[String(data.severity).toLowerCase()] ?? 'secondary'"
           />
           <span v-else>-</span>
         </template>
-      </Column>
-      <Column header="Subject">
+      </OnmsColumn>
+      <OnmsColumn header="Subject">
         <template #body="{ data }">
           <span :title="data.textMessage ?? ''">{{ truncate(data.subject || data.textMessage || '-') }}</span>
         </template>
-      </Column>
-      <Column header="Sent Time">
+      </OnmsColumn>
+      <OnmsColumn header="Sent Time">
         <template #body="{ data }">
           {{ formatTime(data.pageTime) }}
         </template>
-      </Column>
-      <Column header="Node">
+      </OnmsColumn>
+      <OnmsColumn header="Node">
         <template #body="{ data }">
           <a
             v-if="data.nodeId"
@@ -81,40 +81,40 @@
           >{{ data.nodeLabel ?? data.nodeId }}</a>
           <span v-else>-</span>
         </template>
-      </Column>
-      <Column header="Interface">
+      </OnmsColumn>
+      <OnmsColumn header="Interface">
         <template #body="{ data }">
           {{ data.ipAddress ?? '-' }}
         </template>
-      </Column>
-      <Column header="Service">
+      </OnmsColumn>
+      <OnmsColumn header="Service">
         <template #body="{ data }">
           {{ data.serviceType?.name ?? '-' }}
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         v-if="showAckColumns"
         header="Responder"
       >
         <template #body="{ data }">
           {{ data.ackUser ?? '-' }}
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         v-if="showAckColumns"
         header="Respond Time"
       >
         <template #body="{ data }">
           {{ formatTime(data.ackTime) }}
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         v-if="!showAckColumns && canAcknowledgeNotifications"
         header="Actions"
       >
         <template #body="{ data }">
-          <Button
-            text
+          <OnmsButton
+            variant="text"
             label="Acknowledge"
             :aria-label="`Acknowledge notice ${data.id}`"
             :data-test="`ack-button-${data.id}`"
@@ -122,8 +122,8 @@
             @click="store.acknowledge(data)"
           />
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <div v-if="!store.notices.length">
       <EmptyList
@@ -137,12 +137,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsIconButton } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable, { DataTablePageEvent } from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
@@ -170,7 +165,7 @@ const emptyListContent = computed(() => ({
   msg: store.preset === 'allAcknowledged' ? 'No acknowledged notices found.' : 'No outstanding notices found.'
 }))
 
-const severityMap: Record<string, string> = {
+const severityMap: Record<string, OnmsTagSeverity> = {
   critical: 'danger',
   major: 'danger',
   minor: 'warn',
@@ -192,7 +187,7 @@ const formatTime = (value?: number | string | null) => {
   return isNaN(date.getTime()) ? '-' : date.toLocaleString()
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   store.onPage(event.first, event.rows)
 }
 
@@ -237,9 +232,9 @@ const downloadCsv = async () => {
   }
   const csv = [
     headers.map(escapeCell).join(','),
-    ...rows.map((row) => headers.map((h) => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
+    ...rows.map(row => headers.map(h => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
   ].join('\r\n')
-  const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' })
+  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
   link.download = `notices-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.csv`
@@ -274,8 +269,8 @@ const printNotices = async () => {
 <h1>${escapeHtml(store.title)}</h1>
 <div class="meta">OpenNMS Horizon — generated ${escapeHtml(new Date().toLocaleString())} — ${rows.length < totalCount ? `first ${rows.length} of ${totalCount}` : rows.length} notice${totalCount === 1 ? '' : 's'}</div>
 <table>
-<thead><tr>${headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
-<tbody>${rows.map((row) => `<tr>${headers.map((h) => `<td>${escapeHtml(row[h])}</td>`).join('')}</tr>`).join('')}</tbody>
+<thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+<tbody>${rows.map(row => `<tr>${headers.map(h => `<td>${escapeHtml(row[h])}</td>`).join('')}</tr>`).join('')}</tbody>
 </table>
 </body>
 </html>`
