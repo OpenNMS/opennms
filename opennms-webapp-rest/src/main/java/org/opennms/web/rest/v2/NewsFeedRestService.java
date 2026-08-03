@@ -102,6 +102,12 @@ public class NewsFeedRestService {
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Get news feed", description = "Get news feed", operationId = "NewsFeedRestServiceGetNewsFeed")
     public Response getNewsFeed(final @Context HttpServletRequest request) {
+        // Honor the legacy opennms.newsFeedPanel.show gate: when disabled (e.g.
+        // air-gapped / privacy-sensitive installs) return No Content WITHOUT
+        // touching the cache, so no outbound request to the feed URL is made.
+        if (!Boolean.parseBoolean(System.getProperty("opennms.newsFeedPanel.show", "true"))) {
+            return Response.noContent().build();
+        }
         try {
             String responseBody = this.cache.get("newsfeed");
 

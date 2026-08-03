@@ -15,7 +15,7 @@ describe('panel registry', () => {
   })
 
   it('hidden panels stay registered but are not offered in the picker', () => {
-    const listed = listPanelDefinitions().map((d) => d.type)
+    const listed = listPanelDefinitions().map(d => d.type)
     for (const [type, def] of Object.entries(panelRegistry)) {
       if (def.hidden) {
         expect(listed, type).not.toContain(type)
@@ -38,5 +38,10 @@ describe('panel registry', () => {
       expect(panel.y).toBeGreaterThanOrEqual(0)
       expect(panel.h).toBeGreaterThan(0)
     }
+  })
+
+  it('labels the KSC-report panel "Graph Collections" to match the legacy dashboard', () => {
+    // same feature as the legacy "Graph Collections" search box (both -> KSC/index.jsp)
+    expect(getPanelDefinition('ksc-reports')?.title).toBe('Graph Collections')
   })
 })
