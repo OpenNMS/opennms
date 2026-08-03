@@ -2,11 +2,11 @@
 = High Availability
 :description: Configure an active/passive {page-component-title} pair coordinated through the shared PostgreSQL database.
 
-ifndef::opennms-prime[]
+ifeval::["{page-component-title}" != "Meridian"]
 This feature is not included in {page-component-title}.
-endif::opennms-prime[]
+endif::[]
 
-ifdef::opennms-prime[]
+ifeval::["{page-component-title}" == "Meridian"]
 Two {page-component-title} nodes form an active/passive pair coordinated through their shared PostgreSQL database: one node runs all services (ACTIVE), the other waits fully installed but with services stopped (STANDBY) and promotes itself if the active node fails.
 All liveness decisions use the database clock; node clocks never participate.
 
@@ -108,4 +108,4 @@ Use this when a third-party tool manages failover.
 
 The `/rest/ha/config`, `/rest/ha/failover`, and `/rest/ha/sync/*` endpoints require ROLE_ADMIN; the sync endpoints serve raw credential stores.
 Because sync replicates keystores and `users.xml`, the two nodes form a single secret domain: protect `etc/` and the sync account credential accordingly, and prefer HTTPS between the nodes.
-endif::opennms-prime[]
+endif::[]
