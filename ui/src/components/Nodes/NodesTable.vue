@@ -174,9 +174,20 @@
           @sort="onSort"
         >
           <OnmsColumn
-            expander
+            v-if="nodeStructureStore.showInterfaces"
             style="width: 3rem"
-          />
+          >
+            <template #body="{ data }">
+              <OnmsIconButton
+                v-if="isRowExpandable(data)"
+                :icon="isRowExpanded(data) ? RowExpandedIcon : RowCollapsedIcon"
+                :aria-expanded="isRowExpanded(data)"
+                :aria-label="`Toggle interfaces for ${data.label}`"
+                data-test="row-expander-toggle"
+                @click="toggleRowExpanded(data)"
+              />
+            </template>
+          </OnmsColumn>
           <OnmsColumn
             v-for="col in orderedSelectedColumns"
             :key="col.id"
@@ -312,6 +323,8 @@ import {
 import FilterAlt from '@/components/icons/action/FilterAlt.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import InfoIcon from '@/components/icons/action/Info.vue'
+import RowExpandedIcon from '@/components/icons/navigation/ExpandMore.vue'
+import RowCollapsedIcon from '@/components/icons/navigation/ChevronRight.vue'
 import { SORT } from '@/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
@@ -325,7 +338,13 @@ import NodeInterfacesPanel from './NodeInterfacesPanel.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
-import { countInterfacesForNodes, getInterfaceListMode, normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
+import {
+  countInterfacesForNodes,
+  getInterfaceListMode,
+  getInterfaceRowsForNode,
+  normalizeMacSearch,
+  type InterfaceListMode
+} from './hooks/useInterfaceListing'
 import { getAssetColumnLabel } from './hooks/queryStringParser'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
@@ -472,6 +491,37 @@ const interfaceCountLabel = computed(() => {
   return `${m} Interface${m === 1 ? '' : 's'}`
 })
 
+// A caret only renders for rows whose expansion actually has content. In 'default' mode a single
+// IP interface is already visible in the IP Address column, so the count must be > 1 for the
+// caret to add anything new; in 'maclike'/'snmpParm' modes the matching interfaces aren't shown
+// anywhere else, so even a single match (>= 1) is new information. Deliberately a plain function
+// (not a computed) reading reactive state directly, so it stays reactive per-row in the template
+// and picks up the async SNMP batch (nodeStore.nodeToSnmpInterfaceMap) once it resolves.
+const isRowExpandable = (node: Node): boolean => {
+  const mode = interfaceListMode.value
+  const ipInterfaces = nodeStore.nodeToIpInterfaceMap.get(String(node.id)) ?? []
+  const snmpInterfaces = nodeStore.nodeToSnmpInterfaceMap.get(String(node.id)) ?? []
+  const rowCount = getInterfaceRowsForNode(String(node.id), mode, ipInterfaces, snmpInterfaces, mainMenu.value.baseHref).length
+  const threshold = mode.mode === 'default' ? 1 : 0
+  return rowCount > threshold
+}
+
+const isRowExpanded = (node: Node): boolean => !!expandedRows.value[node.id]
+
+// PrimeVue's DataTable (object/dataKey expandedRows mode) treats a row as expanded whenever its
+// dataKey is present in the map at all — even `{ [id]: false }` still counts as expanded (see
+// DataTable's `d_rowExpanded = expandedRows?.[dataKey] !== undefined`). So collapsing a row must
+// delete its key, not merely set it to false.
+const toggleRowExpanded = (node: Node) => {
+  const updated = { ...expandedRows.value }
+  if (updated[node.id]) {
+    delete updated[node.id]
+  } else {
+    updated[node.id] = true
+  }
+  expandedRows.value = updated
+}
+
 // Characters that make a value unsafe to splice raw into the FIQL attribute-narrowing term below:
 // - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
 //   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
@@ -589,7 +639,9 @@ watch(
 
     const expanded: Record<string, boolean> = {}
     currentNodes.forEach((n) => {
-      expanded[n.id] = true
+      if (isRowExpandable(n)) {
+        expanded[n.id] = true
+      }
     })
     expandedRows.value = expanded
   }
@@ -639,7 +691,7 @@ watch(
   }
 )
 
-defineExpose({ onSort, onPage, removeItem })
+defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggleRowExpanded })
 </script>
 
 <style lang="scss" scoped>

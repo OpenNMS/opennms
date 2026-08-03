@@ -223,8 +223,21 @@ describe('NodesTable.vue', () => {
   // ── "Show interfaces" mode ──────────────────────────────────────────────────
 
   describe('Show interfaces mode', () => {
-    it('renders a leading expander column', () => {
+    it('renders no expander column and no caret buttons when showInterfaces is off', () => {
       const wrapper = mountTable()
+      const selectedCount = defaultColumns.filter(c => c.selected).length
+      const headers = wrapper.findAll('th')
+      // no expander column: one per selected column + Actions
+      expect(headers.length).toBe(selectedCount + 1)
+      expect(wrapper.findAll('[data-test="row-expander-toggle"]').length).toBe(0)
+    })
+
+    it('renders a leading expander column once showInterfaces is on', async () => {
+      const wrapper = mountTable()
+      const structure = useNodeStructureStore()
+      structure.setShowInterfaces(true)
+      await nextTick()
+
       const selectedCount = defaultColumns.filter(c => c.selected).length
       const headers = wrapper.findAll('th')
       // expander column (no header text) + one per selected column + Actions
@@ -245,18 +258,28 @@ describe('NodesTable.vue', () => {
       expect(structure.showInterfaces).toBe(true)
     })
 
-    it('expands every current page row when showInterfaces turns on, and collapses when turned off', async () => {
+    it('expands only rows with expandable interface content when showInterfaces turns on, and collapses all when turned off', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
       const structure = useNodeStructureStore()
 
-      ns.nodes = [{ id: '1' }, { id: '2' }] as any
+      ns.nodes = [{ id: '1' }, { id: '2' }, { id: '3' }] as any
+      ns.nodeToIpInterfaceMap = new Map([
+        // '1': 2 IP interfaces -> expandable in default mode (> 1 threshold)
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]],
+        // '2': 1 IP interface -> NOT expandable in default mode (already visible in IP column)
+        ['2', [{ id: 'ip3', ipAddress: '10.0.0.3', isManaged: 'M' }]]
+        // '3': no entry -> 0 interfaces -> NOT expandable
+      ]) as any
       await nextTick()
 
       structure.setShowInterfaces(true)
       await nextTick()
 
-      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true, '2': true })
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
 
       structure.setShowInterfaces(false)
       await nextTick()
@@ -302,6 +325,97 @@ describe('NodesTable.vue', () => {
 
       const footer = wrapper.find('[data-test="interfaces-footer"]')
       expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('2 Nodes, 2 Interfaces on this page')
+    })
+  })
+
+  // ── Interface expander caret (per-row, threshold depends on mode) ───────────
+
+  describe('Interface expander caret', () => {
+    it('default mode: caret renders only for a node with more than one IP interface', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1', label: 'two-ips' }, { id: '2', label: 'one-ip' }, { id: '3', label: 'no-ips' }] as any
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]],
+        ['2', [{ id: 'ip3', ipAddress: '10.0.0.3', isManaged: 'M' }]]
+        // '3': no entry -> 0 interfaces
+      ]) as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect((wrapper.vm as any).isRowExpandable({ id: '1' })).toBe(true)
+      expect((wrapper.vm as any).isRowExpandable({ id: '2' })).toBe(false)
+      expect((wrapper.vm as any).isRowExpandable({ id: '3' })).toBe(false)
+
+      const carets = wrapper.findAll('[data-test="row-expander-toggle"]')
+      expect(carets.length).toBe(1)
+    })
+
+    it('maclike mode: caret renders for a node with a single matching SNMP interface (>= 1 threshold)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.nodes = [{ id: '1', label: 'match' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      ns.nodeToSnmpInterfaceMap = new Map([
+        ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
+      ]) as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      expect((wrapper.vm as any).isRowExpandable({ id: '1' })).toBe(true)
+      expect(wrapper.findAll('[data-test="row-expander-toggle"]').length).toBe(1)
+    })
+
+    it('clicking the caret expands the row and clicking again collapses it, reflected in aria-expanded', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1', label: 'node-1' }] as any
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      // Auto-expanded already, since this row qualifies (see the "expands only rows with
+      // expandable interface content" test above).
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+      let caret = wrapper.find('[data-test="row-expander-toggle"]')
+      expect(caret.exists()).toBe(true)
+      expect(caret.attributes('aria-expanded')).toBe('true')
+      expect(caret.attributes('aria-label')).toBe('Toggle interfaces for node-1')
+      expect(wrapper.find('.node-interfaces-panel-stub').exists()).toBe(true)
+
+      await caret.trigger('click')
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+      caret = wrapper.find('[data-test="row-expander-toggle"]')
+      expect(caret.attributes('aria-expanded')).toBe('false')
+      expect(wrapper.find('.node-interfaces-panel-stub').exists()).toBe(false)
+
+      await caret.trigger('click')
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+      caret = wrapper.find('[data-test="row-expander-toggle"]')
+      expect(caret.attributes('aria-expanded')).toBe('true')
+      expect(wrapper.find('.node-interfaces-panel-stub').exists()).toBe(true)
     })
   })
 
