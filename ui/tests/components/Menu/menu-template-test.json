@@ -37,13 +37,6 @@
           "roles": null
         },
         {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },        
-        {
           "id": "deviceConfigs",
           "name": "Device Configs",
           "url": "ui/index.html#/device-config-backup",
