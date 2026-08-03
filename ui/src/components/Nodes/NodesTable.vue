@@ -691,6 +691,57 @@ watch(
   }
 )
 
+// Catch-up for the race the two watchers above create in maclike/snmpParm mode: the auto-expand
+// watcher fires synchronously off [nodes, showInterfaces, interfaceListMode] and evaluates
+// isRowExpandable() there and then, but nodeToSnmpInterfaceMap is only populated later, once the
+// async fetch kicked off by the watcher above resolves. So on first entry to maclike/snmpParm mode
+// (or a fresh page/filter within it), the auto-expand watcher sees an empty map, isRowExpandable is
+// false for every row, and expandedRows becomes {} — nothing auto-expands even though the caret
+// itself appears once the map fills (its per-render reactivity has no such gate). This watcher
+// re-evaluates once nodeToSnmpInterfaceMap is actually replaced and, if the current fetch
+// generation (lastSnmpFetchKey) hasn't already had its catch-up applied, merges in any
+// newly-qualifying rows.
+//
+// Guarded by generation (lastSnmpFetchKey), not just "map changed", and merges (adds keys) rather
+// than recomputing expandedRows wholesale: a wholesale recompute here would also run every time the
+// map reference merely happens to change again for the SAME generation (e.g. a redundant/duplicate
+// resolution), forcibly re-expanding a row the user had since manually collapsed. Applying at most
+// once per generation, additively, means a manual collapse always sticks.
+let snmpCatchUpAppliedForKey: string | null = null
+
+watch(
+  () => nodeStore.nodeToSnmpInterfaceMap,
+  () => {
+    if (!nodeStructureStore.showInterfaces) {
+      return
+    }
+
+    const mode = interfaceListMode.value
+    if (mode.mode !== 'maclike' && mode.mode !== 'snmpParm') {
+      return
+    }
+
+    const key = lastSnmpFetchKey.value
+    if (key === null || key === snmpCatchUpAppliedForKey) {
+      return
+    }
+
+    const qualifying = nodes.value.filter(n => isRowExpandable(n))
+    if (qualifying.length === 0) {
+      // Nothing to catch up (yet) — leave snmpCatchUpAppliedForKey alone so a later, genuine
+      // resolution for this same generation still gets a chance to auto-expand.
+      return
+    }
+
+    snmpCatchUpAppliedForKey = key
+    const updated = { ...expandedRows.value }
+    qualifying.forEach((n) => {
+      updated[n.id] = true
+    })
+    expandedRows.value = updated
+  }
+)
+
 defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggleRowExpanded })
 </script>
 

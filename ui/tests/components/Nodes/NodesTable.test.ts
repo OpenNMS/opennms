@@ -7,7 +7,7 @@ import { FilterTypeEnum } from '@/types'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -377,6 +377,95 @@ describe('NodesTable.vue', () => {
 
       expect((wrapper.vm as any).isRowExpandable({ id: '1' })).toBe(true)
       expect(wrapper.findAll('[data-test="row-expander-toggle"]').length).toBe(1)
+      // The map was already populated before the toggle here, so the primary auto-expand watcher
+      // sees qualifying data synchronously and expands it directly (no catch-up needed) — see the
+      // race-ordered test below for the real-world async-fetch-resolves-after-toggle case.
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+
+    it('auto-expands a qualifying row once the async SNMP fetch resolves AFTER the toggle (maclike mode), and leaves a 0-match row collapsed', async () => {
+      // Reproduces real production ordering: nodeToSnmpInterfaceMap is EMPTY at toggle time (the
+      // primary auto-expand watcher fires synchronously and sees no data), and the mocked
+      // getSnmpInterfacesForNodes only populates the map once its promise is explicitly resolved
+      // afterwards — unlike the test above, which pre-seeds the map before toggling and so can't
+      // exercise the race the auto-expand watcher and the async fetch create.
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+
+      let resolveFetch: () => void = () => undefined
+      const pendingFetch = new Promise<void>((resolve) => {
+        resolveFetch = resolve
+      })
+      ns.getSnmpInterfacesForNodes = vi.fn().mockImplementation(async () => {
+        await pendingFetch
+        // '1' matches the mac filter (1 matching SNMP interface -> qualifies, >= 1 threshold);
+        // '2' has no entry at all -> 0 matches -> must stay collapsed.
+        ns.nodeToSnmpInterfaceMap = new Map([
+          ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
+        ]) as any
+      })
+
+      ns.nodes = [{ id: '1', label: 'match' }, { id: '2', label: 'no-match' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      // Fetch has been kicked off but not yet resolved: map is still empty, so nothing has
+      // auto-expanded yet — this is the bug being guarded against.
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      resolveFetch()
+      await flushPromises()
+      await nextTick()
+
+      // Once the map is actually populated, the qualifying row catches up into expandedRows; the
+      // 0-match row is never added.
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+
+    it('does not force a manually-collapsed row back open when the SNMP map is replaced again for the same fetch generation', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      const snmpMap = () => new Map([
+        ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
+      ]) as any
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getSnmpInterfacesForNodes = vi.fn().mockImplementation(async () => {
+        ns.nodeToSnmpInterfaceMap = snmpMap()
+      })
+
+      ns.nodes = [{ id: '1', label: 'match' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+      await flushPromises()
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // User manually collapses it.
+      ;(wrapper.vm as any).toggleRowExpanded({ id: '1' })
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // A later, spurious replacement of the SAME fetch generation's map (e.g. an unrelated
+      // re-render producing an identical-content new Map instance) must NOT force row '1' back
+      // into expandedRows.
+      ns.nodeToSnmpInterfaceMap = snmpMap()
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({})
     })
 
     it('clicking the caret expands the row and clicking again collapses it, reflected in aria-expanded', async () => {
