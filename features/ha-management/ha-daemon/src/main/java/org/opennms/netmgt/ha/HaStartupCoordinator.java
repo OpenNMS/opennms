@@ -101,6 +101,9 @@ public class HaStartupCoordinator {
     private final AtomicBoolean heartbeatOnlyRegistered = new AtomicBoolean(false);
     private final AtomicBoolean steppingDown = new AtomicBoolean(false);
     private final AtomicBoolean terminalStatePublished = new AtomicBoolean(false);
+    private final AtomicBoolean servicesAuthorized = new AtomicBoolean(false);
+    /** Local observation window only — never compared across nodes. */
+    private volatile long partnerRowMissingSinceNanos;
     private final AtomicReference<HaInstanceState> currentState = new AtomicReference<>(HaInstanceState.STANDBY);
     private ScheduledExecutorService scheduler;
 
@@ -110,6 +113,10 @@ public class HaStartupCoordinator {
     private volatile ScheduledFuture<?> failbackMonitorFuture;
     private volatile ScheduledFuture<?> syncFuture;
     private volatile ScheduledFuture<?> reloadFuture;
+
+    /** Serializes sync passes: a rescheduled sync must not run concurrently
+     * with a still-finishing pass from the previous configuration. */
+    private final Object syncMutex = new Object();
 
     private HaStartupCoordinator(HaConfiguration config, DbConnectionFactory dbFactory) {
         this.config = config;
@@ -549,6 +556,7 @@ public class HaStartupCoordinator {
                 LOG.info("HA: PRIMARY emerging from DEGRADED state — proceeding with service startup");
                 // currentState already set to ACTIVE by promoteFromDegraded();
                 // heartbeat task already running.
+                servicesAuthorized.set(true);
                 return true;
             }
 
@@ -556,6 +564,7 @@ public class HaStartupCoordinator {
             heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                     0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
             LOG.info("HA: PRIMARY mode — heartbeat thread started, proceeding with service startup");
+            servicesAuthorized.set(true);
             return true;
         }
 
@@ -581,6 +590,7 @@ public class HaStartupCoordinator {
 
         LOG.info("HA: SECONDARY promoted to ACTIVE — proceeding with service startup");
         // heartbeat task already running; promote() has already written ACTIVE.
+        servicesAuthorized.set(true);
         return true;
     }
 
@@ -651,6 +661,7 @@ public class HaStartupCoordinator {
                 0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
         LOG.info("HA heartbeat-only mode — external agent supervises; proceeding with service startup");
+        servicesAuthorized.set(true);
         return true;
     }
 
@@ -707,8 +718,11 @@ public class HaStartupCoordinator {
         HaConfigSyncer syncer = new HaConfigSyncer(this::getConfig, this::getCurrentState);
         LOG.info("HA: config sync started — partner {}, interval {}s",
                 cfg.getPartnerRestUrl(), cfg.getSyncIntervalSeconds());
-        syncFuture = scheduler.scheduleAtFixedRate(syncer::sync,
-                0, cfg.getSyncIntervalSeconds(), TimeUnit.SECONDS);
+        syncFuture = scheduler.scheduleAtFixedRate(() -> {
+            synchronized (syncMutex) {
+                syncer.sync();
+            }
+        }, 0, cfg.getSyncIntervalSeconds(), TimeUnit.SECONDS);
     }
 
     private static boolean cancelIfActive(ScheduledFuture<?> f) {
@@ -721,12 +735,12 @@ public class HaStartupCoordinator {
 
     void doShutdown() {
         stopRequested.set(true);
-        if (scheduler != null) {
+        // A node that never started services has nothing draining; otherwise the
+        // scheduler stays up so the heartbeat publishes liveness until
+        // markServicesStopped() publishes the terminal state post-drain.
+        if (!servicesAuthorized.get() && scheduler != null) {
             scheduler.shutdownNow();
         }
-        // No state write here: publishing FAILED/STANDBY before the services
-        // have drained would let the partner promote alongside a node that is
-        // still processing. markServicesStopped() publishes it post-drain.
         startupGate.countDown(); // unblock Starter if waiting
         LOG.info("HA coordinator shut down");
     }
@@ -750,9 +764,9 @@ public class HaStartupCoordinator {
         steppingDown.set(true);
         currentState.set(HaInstanceState.STANDBY);
         stopRequested.set(true);
-        if (scheduler != null) {
-            scheduler.shutdown(); // graceful: let any in-flight heartbeat write finish
-        }
+        // The scheduler keeps running: the heartbeat publishes liveness through
+        // the drain so the partner promotes on the terminal-state write, never
+        // on staleness beside a still-draining node.
     }
 
     /**
@@ -772,21 +786,19 @@ public class HaStartupCoordinator {
 
     void doMarkServicesStopped() {
         // In heartbeat-only mode current_state belongs to the external agent.
-        if (config.getMode() != HaMode.COORDINATOR) {
-            return;
-        }
         // Invoked from both doSystemExit (before the exit timer is armed) and
         // the end of Manager.stop (paths without a scheduled exit) — publish once.
-        if (!terminalStatePublished.compareAndSet(false, true)) {
-            return;
+        if (config.getMode() == HaMode.COORDINATOR
+                && terminalStatePublished.compareAndSet(false, true)) {
+            if (steppingDown.get()) {
+                updateState(HaInstanceState.STANDBY);
+            } else if (currentState.get() != HaInstanceState.STANDBY) {
+                // A gated standby never advertised anything that needs retracting.
+                updateState(HaInstanceState.FAILED);
+            }
         }
-        if (steppingDown.get()) {
-            updateState(HaInstanceState.STANDBY);
-            return;
-        }
-        // A gated standby never advertised anything that needs retracting.
-        if (currentState.get() != HaInstanceState.STANDBY) {
-            updateState(HaInstanceState.FAILED);
+        if (scheduler != null) {
+            scheduler.shutdownNow();
         }
     }
 
@@ -823,10 +835,9 @@ public class HaStartupCoordinator {
      * zero rows until the row exists.
      */
     private void writeHeartbeat() {
-        if (stopRequested.get()) return;
+        if (terminalStatePublished.get()) return;
         if (config.getMode() == HaMode.COORDINATOR) {
-            checkForSplitBrain();
-            if (stopRequested.get()) return;
+            if (checkForSplitBrain()) return; // yielded; halt is imminent
         } else if (!heartbeatOnlyRegistered.get()) {
             try {
                 HaStatusSchema.ensureSchema(dbFactory);
@@ -866,8 +877,9 @@ public class HaStartupCoordinator {
      * <p>Called at the start of every heartbeat write cycle; exits immediately when no
      * split-brain condition exists.
      */
-    void checkForSplitBrain() {
-        if (config.getPartnerInstanceId() == null) return;
+    /** @return {@code true} if this instance yielded (termination is imminent). */
+    boolean checkForSplitBrain() {
+        if (config.getPartnerInstanceId() == null) return false;
 
         double ourActiveSince = Double.NaN;
         double partnerActiveSince = Double.NaN;
@@ -905,11 +917,11 @@ public class HaStartupCoordinator {
             }
         } catch (Exception e) {
             LOG.warn("HA: split-brain check failed; skipping this cycle", e);
-            return;
+            return false;
         }
 
         if (!ourStateActive || !partnerStateActive) {
-            return;
+            return false;
         }
 
         // Arbitrate only against a live rival. An ACTIVE row with a heartbeat
@@ -921,7 +933,7 @@ public class HaStartupCoordinator {
             LOG.warn("HA: partner '{}' row reads ACTIVE but its heartbeat is {}s old (threshold {}s) — " +
                      "the partner appears to have stopped while ACTIVE; continuing as the sole active instance",
                     config.getPartnerInstanceId(), partnerHeartbeatAge, config.getFailoverThresholdSeconds());
-            return;
+            return false;
         }
 
         // Both instances are ACTIVE — split-brain detected. The instance that became ACTIVE
@@ -962,12 +974,14 @@ public class HaStartupCoordinator {
             // instance writing to the database during the split-brain window. Halting kills the
             // JVM immediately with no shutdown hooks, so no further writes can occur.
             terminateJvm(70);
+            return true;
         } else {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
                       "This instance took the ACTIVE role later (our active-since epoch: {} vs partner: {}); continuing. " +
                       "Partner became ACTIVE earlier and should self-terminate on its next heartbeat write.",
                       config.getInstanceId(), config.getPartnerInstanceId(),
                       ourActiveSince, partnerActiveSince);
+            return false;
         }
     }
 
@@ -1000,30 +1014,43 @@ public class HaStartupCoordinator {
                 ps.setString(1, config.getPartnerInstanceId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
-                        LOG.warn("HA: no row found for partner {}; will retry", config.getPartnerInstanceId());
-                        return;
-                    }
+                        if (partnerRowMissingSinceNanos == 0) {
+                            partnerRowMissingSinceNanos = System.nanoTime();
+                            LOG.warn("HA: no row found for partner {}; will promote if it stays missing beyond {}s",
+                                    config.getPartnerInstanceId(), config.getFailoverThresholdSeconds());
+                            return;
+                        }
+                        long missingSeconds = TimeUnit.NANOSECONDS.toSeconds(
+                                System.nanoTime() - partnerRowMissingSinceNanos);
+                        if (missingSeconds <= config.getFailoverThresholdSeconds()) {
+                            return;
+                        }
+                        LOG.warn("HA: partner {} row missing for {}s (threshold {}s) — verifying before promoting",
+                                config.getPartnerInstanceId(), missingSeconds, config.getFailoverThresholdSeconds());
+                    } else {
+                        partnerRowMissingSinceNanos = 0;
 
-                    String stateName = rs.getString(1);
+                        String stateName = rs.getString(1);
 
-                    // Voluntary step-down: PRIMARY explicitly set its state to non-ACTIVE.
-                    // Promote immediately without the anti-flap wait.
-                    if (!HaInstanceState.ACTIVE.name().equals(stateName)) {
-                        LOG.info("HA: PRIMARY state is {} — promoting SECONDARY immediately", stateName);
-                        promote();
-                        return;
-                    }
+                        // Voluntary step-down: PRIMARY explicitly set its state to non-ACTIVE.
+                        // Promote immediately without the anti-flap wait.
+                        if (!HaInstanceState.ACTIVE.name().equals(stateName)) {
+                            LOG.info("HA: PRIMARY state is {} — promoting SECONDARY immediately", stateName);
+                            promote();
+                            return;
+                        }
 
-                    long ageSeconds = rs.getLong(2);
+                        long ageSeconds = rs.getLong(2);
 
-                    if (ageSeconds <= config.getFailoverThresholdSeconds()) {
-                        LOG.debug("HA: PRIMARY heartbeat age {}s within threshold {}s — staying STANDBY",
+                        if (ageSeconds <= config.getFailoverThresholdSeconds()) {
+                            LOG.debug("HA: PRIMARY heartbeat age {}s within threshold {}s — staying STANDBY",
+                                    ageSeconds, config.getFailoverThresholdSeconds());
+                            return;
+                        }
+
+                        LOG.warn("HA: PRIMARY heartbeat is {}s old (threshold {}s) — verifying before promoting",
                                 ageSeconds, config.getFailoverThresholdSeconds());
-                        return;
                     }
-
-                    LOG.warn("HA: PRIMARY heartbeat is {}s old (threshold {}s) — verifying before promoting",
-                            ageSeconds, config.getFailoverThresholdSeconds());
                 }
             }
         } catch (Exception e) {

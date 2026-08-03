@@ -140,6 +140,11 @@ public class Starter {
     private void start() {
         LOG.info("Beginning startup");
 
+        // Constructing the Invoker registers the SIGUSR1 status handler; it must
+        // exist before a lifecycle hook can block this thread, or a routine
+        // "opennms status" (which signals the process) kills a waiting standby.
+        Invoker invoker = new Invoker();
+
         // Lifecycle hooks from optionally-installed modules (e.g. HA coordination:
         // returns quickly on a primary, blocks until promotion on a standby; false
         // means shutdown was requested while waiting — exit cleanly).
@@ -160,7 +165,6 @@ public class Starter {
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
-        Invoker invoker = new Invoker();
         invoker.setServer(server);
         invoker.setAtType(InvokeAtType.START);
         List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());

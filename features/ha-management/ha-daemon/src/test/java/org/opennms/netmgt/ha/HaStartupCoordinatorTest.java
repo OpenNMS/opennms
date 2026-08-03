@@ -32,13 +32,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.sql.SQLException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -913,35 +911,30 @@ public class HaStartupCoordinatorTest {
     }
 
     @Test
-    public void promotionDoesNotReleaseGateWhenActiveWriteFails() throws Exception {
-        when(mockPs.executeUpdate()).thenThrow(new SQLException("write failed"));
-        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
+    public void promotionRequiresThePersistedActiveWrite() throws Exception {
+        // The PRIMARY is provably stale, but the ACTIVE state write fails —
+        // first with an exception, then matching zero rows. Neither may start
+        // services: the standby must stay gated until ACTIVE is persisted.
+        HaConfiguration cfg = secondaryConfig();
+        when(mockRs.next()).thenReturn(true);
+        when(mockRs.getString(1)).thenReturn(HaInstanceState.ACTIVE.name());
+        when(mockRs.getLong(2)).thenReturn(60L); // stale on every read
 
-        Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
-        promote.setAccessible(true);
-        promote.invoke(coord);
+        PreparedStatement statePs = mock(PreparedStatement.class);
+        when(mockConn.prepareStatement(contains("UPDATE ha_instance_status SET current_state")))
+                .thenReturn(statePs);
+        when(statePs.executeUpdate())
+                .thenThrow(new SQLException("write failed"))
+                .thenReturn(0);
 
-        Field gate = HaStartupCoordinator.class.getDeclaredField("startupGate");
-        gate.setAccessible(true);
-        assertEquals("gate must stay closed when the ACTIVE write fails",
-                1, ((CountDownLatch) gate.get(coord)).getCount());
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        scheduleShutdown(coord, 5000); // enough for two failed promotion attempts
+
+        assertFalse("services must not start while ACTIVE is unpersisted",
+                coord.doAwaitReadyToStart());
         assertEquals(HaInstanceState.STANDBY, coord.getCurrentState());
-    }
-
-    @Test
-    public void promotionDoesNotReleaseGateWhenActiveWriteMatchesNoRow() throws Exception {
-        when(mockPs.executeUpdate()).thenReturn(0);
-        HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
-
-        Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
-        promote.setAccessible(true);
-        promote.invoke(coord);
-
-        Field gate = HaStartupCoordinator.class.getDeclaredField("startupGate");
-        gate.setAccessible(true);
-        assertEquals("gate must stay closed when the ACTIVE write matched no row",
-                1, ((CountDownLatch) gate.get(coord)).getCount());
-        assertEquals(HaInstanceState.STANDBY, coord.getCurrentState());
+        verify(statePs, atLeast(2)).executeUpdate();
     }
 
     // -------------------------------------------------------------------------
@@ -1032,6 +1025,55 @@ public class HaStartupCoordinatorTest {
         verify(mockConn, never()).prepareStatement(contains("UPDATE ha_instance_status SET current_state"));
     }
 
+    @Test
+    public void heartbeatContinuesThroughTheServiceDrain() throws Exception {
+        // A stop must not silence the heartbeat while services drain: the
+        // partner promotes on the post-drain terminal write, never on
+        // staleness beside a still-draining node.
+        HaConfiguration cfg = primaryConfig(); // heartbeat interval 1s
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            assertTrue(coord.doAwaitReadyToStart()); // ACTIVE, services authorized
+
+            coord.doShutdown(); // drain begins
+            clearInvocations(mockConn);
+
+            long deadline = System.currentTimeMillis() + 10_000;
+            boolean beating = false;
+            while (!beating && System.currentTimeMillis() < deadline) {
+                try {
+                    verify(mockConn, atLeastOnce()).prepareStatement(contains("SET last_heartbeat"));
+                    beating = true;
+                } catch (AssertionError notYet) {
+                    Thread.sleep(250);
+                }
+            }
+            assertTrue("heartbeat must keep publishing liveness during the drain", beating);
+        } finally {
+            coord.doMarkServicesStopped(); // publishes FAILED, stops the scheduler
+        }
+        verify(mockPs, atLeastOnce()).setString(eq(1), eq(HaInstanceState.FAILED.name()));
+    }
+
+    @Test
+    public void secondaryPromotesWhenPartnerRowStaysMissing() throws Exception {
+        // Partner never registered (or its row was deleted): rs.next() is false
+        // on every read. The standby must promote once the row has been missing
+        // beyond the failover threshold, not wait forever.
+        HaConfiguration cfg = secondaryConfig(); // interval 1s, threshold 5s
+
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            assertTrue("standby must promote against a persistently missing partner row",
+                    coord.doAwaitReadyToStart());
+            assertEquals(HaInstanceState.ACTIVE, coord.getCurrentState());
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Column ownership: the heartbeat writes last_heartbeat ONLY
     // -------------------------------------------------------------------------
@@ -1039,22 +1081,31 @@ public class HaStartupCoordinatorTest {
     @Test
     public void heartbeatWritesOnlyLastHeartbeat() throws Exception {
         HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            assertTrue(coord.doAwaitReadyToStart()); // ACTIVE; heartbeat task running
 
-        Method m = HaStartupCoordinator.class.getDeclaredMethod("writeHeartbeat");
-        m.setAccessible(true);
-        m.invoke(coord);
-
-        ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
-        verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
-        boolean sawHeartbeatUpdate = false;
-        for (String s : sql.getAllValues()) {
-            if (s.contains("SET last_heartbeat")) {
-                sawHeartbeatUpdate = true;
-                assertFalse("heartbeat UPDATE must not touch current_state: " + s,
-                        s.contains("current_state"));
+            long deadline = System.currentTimeMillis() + 10_000;
+            boolean sawHeartbeatUpdate = false;
+            while (!sawHeartbeatUpdate && System.currentTimeMillis() < deadline) {
+                ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
+                verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
+                for (String stmt : sql.getAllValues()) {
+                    if (stmt.contains("SET last_heartbeat")) {
+                        sawHeartbeatUpdate = true;
+                        assertFalse("heartbeat UPDATE must not touch current_state: " + stmt,
+                                stmt.contains("current_state"));
+                    }
+                }
+                if (!sawHeartbeatUpdate) {
+                    Thread.sleep(200);
+                }
             }
+            assertTrue("expected a heartbeat UPDATE to be issued", sawHeartbeatUpdate);
+        } finally {
+            coord.doShutdown();
+            coord.doMarkServicesStopped();
         }
-        assertTrue("expected a heartbeat UPDATE to be issued", sawHeartbeatUpdate);
     }
 
     // -------------------------------------------------------------------------
