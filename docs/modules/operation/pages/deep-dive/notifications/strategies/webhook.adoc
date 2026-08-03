@@ -69,17 +69,17 @@ Within `-body`, `$\{name}` is replaced by the value of the notification command 
 Declare an `<argument>` for every token the template uses; a token with no matching argument is replaced with an empty string.
 
 Substitution applies to the body only.
-A `$\{...}` token in `-url` or in a header value is left as written, so values that vary per notice belong in the body or in a notification parameter.
+A `${...}` token in `-url` or in a header value is left as written, so values that vary per notice belong in the body or in a notification parameter.
 
 `$\{subject}` and `$\{textMessage}` cover most cases.
 `$\{textMessage}` and `$\{numericMessage}` are friendlier spellings of the `-tm` and `-nm` switches.
 
 When the content type is JSON, substituted values are escaped so that a subject containing a quotation mark or a line break still produces a valid payload.
-Add `|raw` to a token, as in `$\{customBlocks|raw}`, when the value is itself a fragment of JSON that should be inserted verbatim.
+Add `|raw` to a token, as in `${customBlocks|raw}`, when the value is itself a fragment of JSON that should be inserted verbatim.
 After substitution, a JSON body is parsed before it is sent; if it does not parse, the notice is not sent and the rendered body is written to the log.
 
 Metadata expressions are also available, but only in values that reach the strategy as notification parameters.
-A `$\{scv:...}` expression in a `<substitution>` or in a system property is not expanded, because notifd resolves metadata against the notification's parameters before the command runs.
+A `${scv:...}` expression in a `<substitution>` or in a system property is not expanded, because notifd resolves metadata against the notification's parameters before the command runs.
 To use a credential from the secure credentials vault, set the value in a `<parameter>` on the notification in `notifications.xml`:
 
 [source, xml]
