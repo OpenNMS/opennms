@@ -22,6 +22,13 @@
     <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
     <onmsgi:reference id="trapdConfigDao" interface="org.opennms.netmgt.dao.api.TrapdConfigDao" />
 
+    <!-- Backs SystemReportRestService: the SOA registry tracks the report plugin /
+         formatter services, exactly as the legacy dispatcher-servlet wiring does. -->
+    <onmsgi:reference id="soaServiceRegistry" interface="org.opennms.core.soa.ServiceRegistry" />
+    <bean id="systemReport" class="org.opennms.systemreport.SystemReport">
+        <property name="serviceRegistry" ref="soaServiceRegistry" />
+    </bean>
+
     <import resource="classpath:/META-INF/cxf/cxf.xml" />
     <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 

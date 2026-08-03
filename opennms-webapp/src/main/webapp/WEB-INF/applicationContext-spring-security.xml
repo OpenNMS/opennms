@@ -193,6 +193,10 @@
     <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
+    <!-- The system report drives an admin-only page and bundles logs/config, so keep
+         even its plugin/formatter metadata to admins rather than the GET catch-all below -->
+    <intercept-url pattern="/api/v2/system-report/**" method="GET" access="ROLE_ADMIN" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
