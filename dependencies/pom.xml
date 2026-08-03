@@ -12,7 +12,6 @@
   <modules>
     <module>activemq</module>
     <module>angus-mail-shaded</module>
-    <module>asterisk</module>
     <module>atomikos</module>
     <module>camel</module>
     <module>camel-test</module>

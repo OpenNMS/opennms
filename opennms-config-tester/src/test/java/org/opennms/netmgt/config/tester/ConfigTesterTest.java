@@ -127,14 +127,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: AsteriskConfig doesn't appear to be in our classpath.
-     */
-    public void testAsteriskConfiguration() {
-        ignoreConfigFile("asterisk-configuration.properties");
-    }
-
-    @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
     }
