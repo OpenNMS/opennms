@@ -1053,7 +1053,13 @@ public abstract class NotificationManager {
             change.apply();
             saveCurrent();
         } catch (final RuntimeException | IOException | ClassNotFoundException e) {
-            parseXML(new StringReader(snapshot));
+            // parseXML does a validating unmarshal and can itself throw; don't let a
+            // restore failure replace the original cause
+            try {
+                parseXML(new StringReader(snapshot));
+            } catch (final RuntimeException restoreFailure) {
+                e.addSuppressed(restoreFailure);
+            }
             throw e;
         }
     }

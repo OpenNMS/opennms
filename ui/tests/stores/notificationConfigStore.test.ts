@@ -33,9 +33,16 @@ describe('useNotificationConfigStore', () => {
     it('should load the status', async () => {
       vi.mocked(API.getNotificationConfigStatus).mockResolvedValue('on')
 
-      await store.getStatus()
+      const ok = await store.getStatus()
 
+      expect(ok).toBe(true)
       expect(store.notifdStatus).toBe('on')
+    })
+
+    it('reports failure so the tab loader does not latch', async () => {
+      vi.mocked(API.getNotificationConfigStatus).mockResolvedValue(null)
+
+      expect(await store.getStatus()).toBe(false)
     })
 
     it('should update the status on success', async () => {

@@ -56,14 +56,16 @@ const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolea
   }
 }
 
-const getDestinationPaths = async (): Promise<DestinationPath[]> => {
+const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
   try {
     startSpinner()
     const resp = await rest.get(`${endpoint}/destination-paths`)
     return resp.data?.path ?? []
   } catch (_err) {
+    // null (not []) so a failed load is distinguishable from an empty one and the
+    // tab loader can retry instead of latching
     showSnackBar({ msg: 'Failed to load destination paths.' })
-    return []
+    return null
   } finally {
     stopSpinner()
   }

@@ -51,8 +51,11 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/notifications/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
 
-    <!-- acknowledge / unacknowledge a notification -->
-    <intercept-url pattern="/rest/notifications/**" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <!-- one notification: a normal user may ack, a read-only user may not -->
+    <intercept-url pattern="/rest/notifications/*" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <!-- the collection PUT acks/unacks by arbitrary criteria (an empty body matches every
+         notification), so keep it REST/ADMIN; also required so no PUT falls through unauthorized -->
+    <intercept-url pattern="/rest/notifications/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/notifications/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>

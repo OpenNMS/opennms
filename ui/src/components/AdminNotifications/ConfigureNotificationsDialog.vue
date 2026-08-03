@@ -93,10 +93,7 @@ const statusPending = ref(false)
 const loadedTabs = ref(new Set<string>())
 
 const TAB_LOADERS: Record<string, () => Promise<boolean>> = {
-  general: async () => {
-    await store.getStatus()
-    return store.notifdStatus !== null
-  }
+  general: () => store.getStatus()
 }
 
 const ensureTabLoaded = async (tab: string) => {

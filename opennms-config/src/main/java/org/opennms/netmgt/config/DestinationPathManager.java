@@ -187,6 +187,9 @@ public abstract class DestinationPathManager {
      * already changed the map, so a change that leaves the config unmarshallable —
      * e.g. removing the last path, which violates destinationPaths.xsd — would
      * otherwise leave memory diverged from the on-disk file until a restart.
+     *
+     * Shallow snapshot: safe only while every mutator replaces whole Path objects. An
+     * in-place edit like NotificationManager.replaceNotification would need a deep copy.
      */
     private synchronized void saveWithRollback(final ConfigChange change) throws IOException {
         final Map<String, Path> snapshot = new TreeMap<>(m_destinationPaths);
@@ -194,8 +197,12 @@ public abstract class DestinationPathManager {
             change.apply();
             saveCurrent();
         } catch (final RuntimeException | IOException e) {
-            m_destinationPaths.clear();
-            m_destinationPaths.putAll(snapshot);
+            try {
+                m_destinationPaths.clear();
+                m_destinationPaths.putAll(snapshot);
+            } catch (final RuntimeException restoreFailure) {
+                e.addSuppressed(restoreFailure);
+            }
             throw e;
         }
     }

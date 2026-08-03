@@ -28,8 +28,9 @@ import { ref } from 'vue'
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
 
-  const getStatus = async () => {
+  const getStatus = async (): Promise<boolean> => {
     notifdStatus.value = await API.getNotificationConfigStatus()
+    return notifdStatus.value !== null
   }
 
   const setStatus = async (status: NotifdStatus) => {
