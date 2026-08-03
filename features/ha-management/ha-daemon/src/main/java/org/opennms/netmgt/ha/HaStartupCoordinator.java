@@ -367,6 +367,10 @@ public class HaStartupCoordinator {
             LOG.error("HA: config reload rejected — {}", partnerError);
             return;
         }
+        if (!Objects.equals(newCfg.getPartnerInstanceId(), oldCfg.getPartnerInstanceId())) {
+            // A new partner gets the full threshold before its absence counts.
+            partnerRowMissingSinceNanos = 0;
+        }
 
         clampConfig(newCfg);
 
@@ -879,7 +883,8 @@ public class HaStartupCoordinator {
      */
     /** @return {@code true} if this instance yielded (termination is imminent). */
     boolean checkForSplitBrain() {
-        if (config.getPartnerInstanceId() == null) return false;
+        final String partnerId = config.getPartnerInstanceId();
+        if (partnerId == null) return false;
 
         double ourActiveSince = Double.NaN;
         double partnerActiveSince = Double.NaN;
@@ -896,7 +901,7 @@ public class HaStartupCoordinator {
                          "FROM ha_instance_status WHERE instance_id IN (?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, config.getInstanceId());
-                ps.setString(2, config.getPartnerInstanceId());
+                ps.setString(2, partnerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         String id           = rs.getString(1);
@@ -907,7 +912,7 @@ public class HaStartupCoordinator {
                         if (config.getInstanceId().equals(id)) {
                             ourStateActive  = HaInstanceState.ACTIVE.name().equals(state);
                             ourActiveSince  = activeSinceNull ? Double.NaN : activeSince;
-                        } else if (config.getPartnerInstanceId().equals(id)) {
+                        } else if (partnerId.equals(id)) {
                             partnerStateActive  = HaInstanceState.ACTIVE.name().equals(state);
                             partnerActiveSince  = activeSinceNull ? Double.NaN : activeSince;
                             partnerHeartbeatAge = rs.getLong(4);
@@ -932,7 +937,7 @@ public class HaStartupCoordinator {
         if (partnerHeartbeatAge > config.getFailoverThresholdSeconds()) {
             LOG.warn("HA: partner '{}' row reads ACTIVE but its heartbeat is {}s old (threshold {}s) — " +
                      "the partner appears to have stopped while ACTIVE; continuing as the sole active instance",
-                    config.getPartnerInstanceId(), partnerHeartbeatAge, config.getFailoverThresholdSeconds());
+                    partnerId, partnerHeartbeatAge, config.getFailoverThresholdSeconds());
             return false;
         }
 
@@ -950,14 +955,14 @@ public class HaStartupCoordinator {
             weYield = false; // partner has no ownership timestamp; we do → partner yields
         } else {
             // Equal timestamps, or neither recorded → deterministic tiebreaker on instance-id.
-            weYield = config.getInstanceId().compareTo(config.getPartnerInstanceId()) < 0;
+            weYield = config.getInstanceId().compareTo(partnerId) < 0;
         }
 
         if (weYield) {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
                       "This instance took the ACTIVE role earlier (our active-since epoch: {} vs partner: {}); " +
                       "yielding by terminating the JVM immediately.",
-                      config.getInstanceId(), config.getPartnerInstanceId(),
+                      config.getInstanceId(), partnerId,
                       ourActiveSince, partnerActiveSince);
             // Flip our row to STANDBY immediately as an explicit signal to the partner
             // (best-effort; connectivity is present since the split-brain read above just
@@ -979,7 +984,7 @@ public class HaStartupCoordinator {
             LOG.error("HA SPLIT-BRAIN DETECTED: both '{}' and '{}' are ACTIVE. " +
                       "This instance took the ACTIVE role later (our active-since epoch: {} vs partner: {}); continuing. " +
                       "Partner became ACTIVE earlier and should self-terminate on its next heartbeat write.",
-                      config.getInstanceId(), config.getPartnerInstanceId(),
+                      config.getInstanceId(), partnerId,
                       ourActiveSince, partnerActiveSince);
             return false;
         }
@@ -1002,7 +1007,10 @@ public class HaStartupCoordinator {
 
     private void checkPrimaryHeartbeat() {
         if (stopRequested.get() || startupGate.getCount() == 0) return;
-        if (config.getPartnerInstanceId() == null) {
+        // One verification concerns one partner: both reads below use this
+        // snapshot, and a partner change mid-verification restarts it.
+        final String partnerId = config.getPartnerInstanceId();
+        if (partnerId == null) {
             LOG.warn("HA: no partner-instance-id configured; cannot monitor PRIMARY heartbeat");
             return;
         }
@@ -1011,13 +1019,13 @@ public class HaStartupCoordinator {
             String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
                          "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, config.getPartnerInstanceId());
+                ps.setString(1, partnerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         if (partnerRowMissingSinceNanos == 0) {
                             partnerRowMissingSinceNanos = System.nanoTime();
                             LOG.warn("HA: no row found for partner {}; will promote if it stays missing beyond {}s",
-                                    config.getPartnerInstanceId(), config.getFailoverThresholdSeconds());
+                                    partnerId, config.getFailoverThresholdSeconds());
                             return;
                         }
                         long missingSeconds = TimeUnit.NANOSECONDS.toSeconds(
@@ -1026,7 +1034,7 @@ public class HaStartupCoordinator {
                             return;
                         }
                         LOG.warn("HA: partner {} row missing for {}s (threshold {}s) — verifying before promoting",
-                                config.getPartnerInstanceId(), missingSeconds, config.getFailoverThresholdSeconds());
+                                partnerId, missingSeconds, config.getFailoverThresholdSeconds());
                     } else {
                         partnerRowMissingSinceNanos = 0;
 
@@ -1066,12 +1074,17 @@ public class HaStartupCoordinator {
             return;
         }
         if (stopRequested.get()) return;
+        if (!partnerId.equals(config.getPartnerInstanceId())) {
+            LOG.info("HA: partner changed to {} during verification; restarting the check against the new partner",
+                    config.getPartnerInstanceId());
+            return;
+        }
 
         try (Connection conn = dbFactory.getConnection()) {
             String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
                          "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, config.getPartnerInstanceId());
+                ps.setString(1, partnerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String stateName = rs.getString(1);
@@ -1099,12 +1112,13 @@ public class HaStartupCoordinator {
      * than treat an unanswered question as "not active".
      */
     private boolean isPartnerActive() throws Exception {
-        if (config.getPartnerInstanceId() == null) return false;
+        final String partnerId = config.getPartnerInstanceId();
+        if (partnerId == null) return false;
         try (Connection conn = dbFactory.getConnection()) {
             String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
                          "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, config.getPartnerInstanceId());
+                ps.setString(1, partnerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String stateName = rs.getString(1);
@@ -1124,7 +1138,8 @@ public class HaStartupCoordinator {
      */
     private void monitorForFailback() {
         if (stopRequested.get() || startupGate.getCount() == 0) return;
-        if (config.getPartnerInstanceId() == null) {
+        final String partnerId = config.getPartnerInstanceId();
+        if (partnerId == null) {
             LOG.warn("HA: no partner-instance-id configured; cannot monitor for failback — promoting PRIMARY");
             promoteFromDegraded();
             return;
@@ -1133,7 +1148,7 @@ public class HaStartupCoordinator {
             String sql = "SELECT current_state, EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds " +
                          "FROM ha_instance_status WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, config.getPartnerInstanceId());
+                ps.setString(1, partnerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         LOG.info("HA: no DB row found for SECONDARY — PRIMARY reclaiming ACTIVE role");
@@ -1165,9 +1180,9 @@ public class HaStartupCoordinator {
             return;
         }
         currentState.set(HaInstanceState.ACTIVE);
-        startupGate.countDown();
         cancelIfActive(failbackMonitorFuture);
         cancelIfActive(syncFuture);
+        startupGate.countDown();
     }
 
 
@@ -1178,9 +1193,9 @@ public class HaStartupCoordinator {
             return;
         }
         currentState.set(HaInstanceState.ACTIVE);
-        startupGate.countDown();
         cancelIfActive(standbyMonitorFuture);
         cancelIfActive(syncFuture);
+        startupGate.countDown();
     }
 
     /** @return {@code true} only if the state was persisted (exactly one row updated). */

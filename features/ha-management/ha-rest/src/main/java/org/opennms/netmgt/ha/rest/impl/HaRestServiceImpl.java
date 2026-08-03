@@ -33,13 +33,13 @@ import org.opennms.netmgt.ha.rest.dto.HaStatusCollectionDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -248,12 +248,7 @@ public class HaRestServiceImpl implements HaRestService {
             // run, this node would keep serving as an ACTIVE row with a dead heartbeat until
             // the partner staleness-promotes next to it — halting is the only safe outcome.
             try {
-                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-                if (servers.isEmpty()) {
-                    LOG.error("HA failover: no MBeanServer found; halting to honor the step-down");
-                    Runtime.getRuntime().halt(70);
-                }
-                servers.get(0).invoke(
+                ManagementFactory.getPlatformMBeanServer().invoke(
                         ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
                         new Object[0], new String[0]);
             } catch (Exception e) {
@@ -310,7 +305,7 @@ public class HaRestServiceImpl implements HaRestService {
         }
         try {
             Path file = HaSyncFiles.resolveSafe(HaSyncFiles.etcRoot(), relativePath);
-            if (!Files.isRegularFile(file)) {
+            if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("no such file: " + relativePath).build();
             }

@@ -33,10 +33,8 @@ import org.opennms.netmgt.ha.HaMode;
 import org.opennms.netmgt.ha.HaInstanceState;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import java.util.List;
+import java.lang.management.ManagementFactory;
 
 /**
  * Karaf shell command: {@code opennms:ha-failover}
@@ -121,13 +119,7 @@ public class HaFailoverCommand implements Action {
                 Thread.currentThread().interrupt();
             }
             try {
-                List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-                if (servers.isEmpty()) {
-                    LOG.error("HA failover: no MBeanServer found; halting to honor the step-down");
-                    System.err.println("ERROR: No MBeanServer found — halting to honor the step-down.");
-                    Runtime.getRuntime().halt(70);
-                }
-                servers.get(0).invoke(
+                ManagementFactory.getPlatformMBeanServer().invoke(
                         ObjectName.getInstance("OpenNMS:Name=Manager"), "stop",
                         new Object[0], new String[0]);
             } catch (Exception e) {
