@@ -26,10 +26,6 @@ Uses the in-process Asterisk notification strategy.
 | Calls the work phone number configured in the user's contact information. +
 Uses the in-process Asterisk notification strategy.
 
-| ircCat
-| Conveys a notice to an instance of the IRCcat Internet Relay Chat bot. +
-Uses the in-process IRCcat notification strategy.
-
 | javaEmail
 | Delivers a notice to the email address listed in the user's `email` contact field. +
 Uses the in-process JavaMail notification strategy.
