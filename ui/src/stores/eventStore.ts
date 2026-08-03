@@ -23,6 +23,7 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { Event, QueryParameters } from '@/types'
+import { ref } from 'vue'
 
 export const useEventStore = defineStore('eventStore', () => {
   const events = ref([] as Event[])

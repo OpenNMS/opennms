@@ -70,7 +70,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -172,7 +171,6 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
     }
 
     @Before
-    @Transactional
     public void setUp() throws Exception {
 
         MockUtil.println("------------ Begin Test  --------------------------");
@@ -188,16 +186,19 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
 
-        // Add a location that no systems are monitoring
-        OnmsMonitoringLocation location = new OnmsMonitoringLocation(NONEXISTENT_LOCATION, "Nullsville");
-        m_monitoringLocationDao.save(location);
+        m_transactionTemplate.execute(status -> {
+            // Add a location that no systems are monitoring
+            OnmsMonitoringLocation location = new OnmsMonitoringLocation(NONEXISTENT_LOCATION, "Nullsville");
+            m_monitoringLocationDao.save(location);
 
-        // Update all of the nodes to have the nonexistent location
-        for (OnmsNode node : m_nodeDao.findAll()) {
-            node.setLocation(location);
-            m_nodeDao.saveOrUpdate(node);
-        }
-        m_nodeDao.flush();
+            // Update all of the nodes to have the nonexistent location
+            for (OnmsNode node : m_nodeDao.findAll()) {
+                node.setLocation(location);
+                m_nodeDao.saveOrUpdate(node);
+            }
+            m_nodeDao.flush();
+            return null;
+        });
 
         InputStream is = new FileInputStream(new File("src/test/resources/etc/rpctimeout-poller-configuration.xml"));
         PollerConfigFactory factory = new PollerConfigFactory(0, is);

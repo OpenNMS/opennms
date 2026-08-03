@@ -9,18 +9,16 @@
         <h3>SNMPv3 User Management</h3>
       </div>
       <div class="section-right">
-        <FeatherButton
-          primary
+        <OnmsButton
           data-test="add-user-button"
+          label="Add User"
           @click="store.openCreateUserDrawer(CreateEditMode.Create, -1)"
-        >
-          Add User
-        </FeatherButton>
+        />
       </div>
     </div>
     <div class="info-section">
       <span>Configure SNMPv3 user settings.</span>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         role="button"
@@ -31,61 +29,56 @@
       />
     </div>
     <div class="table-container">
-      <table
-        class="data-table"
+      <OnmsTable
+        :value="tableRecords"
         aria-label="SNMPv3 Users Table"
       >
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              v-for="col of columns"
-              :key="col.label"
-              scope="col"
-              :property="col.id"
-              :sort="(sort as any)[col.id]"
-              v-on:sort-changed="sortChanged"
-            >
-              {{ col.label }}
-            </FeatherSortHeader>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          name="data-table"
-          tag="tbody"
+        <OnmsColumn
+          field="securityName"
+          header="Security Name"
+          sortable
+        />
+        <OnmsColumn
+          field="securityLevel"
+          header="Security Level"
+          sortable
         >
-          <tr
-            v-for="(user, index) in tableRecords"
-            :key="index"
-          >
-            <td>{{ user.securityName }}</td>
-            <td>{{ displaySecurityLevel(user.securityLevel) }}</td>
-            <td>{{ user.authProtocol }}</td>
-            <td>{{ user.privacyProtocol }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit User"
-                  data-test="edit-user-button"
-                  @click="store.openCreateUserDrawer(CreateEditMode.Edit, index)"
-                >
-                  <FeatherIcon :icon="Edit"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherButton
-                  icon="Delete User"
-                  data-test="delete-user-button"
-                  @click="openDeleteUserDialog(index)"
-                >
-                  <FeatherIcon :icon="Delete"> </FeatherIcon>
-                </FeatherButton>
-              </div>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-      <div v-if="!tableRecords.length">
-        <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
-      </div>
+          <template #body="{ data }">
+            {{ displaySecurityLevel(data.securityLevel) }}
+          </template>
+        </OnmsColumn>
+        <OnmsColumn
+          field="authProtocol"
+          header="Authentication Protocol"
+          sortable
+        />
+        <OnmsColumn
+          field="privacyProtocol"
+          header="Privacy Protocol"
+          sortable
+        />
+        <OnmsColumn header="Action">
+          <template #body="{ data }">
+            <div class="action-container">
+              <OnmsIconButton
+                aria-label="Edit User"
+                data-test="edit-user-button"
+                :icon="Edit"
+                @click="store.openCreateUserDrawer(CreateEditMode.Edit, userIndex(data))"
+              />
+              <OnmsIconButton
+                aria-label="Delete User"
+                data-test="delete-user-button"
+                :icon="Delete"
+                @click="openDeleteUserDialog(userIndex(data))"
+              />
+            </div>
+          </template>
+        </OnmsColumn>
+        <template #empty>
+          <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
+        </template>
+      </OnmsTable>
     </div>
     <DeleteUserConfirmationDialog
       :index="deleteUserIndex"
@@ -93,7 +86,7 @@
       @close="cancelDeleteUser"
       @confirm="confirmDeleteUser"
     />
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -104,19 +97,31 @@
         <div>
           <p>Configure SNMPv3 user settings.</p>
           <p><strong>Note</strong> that the settings here apply to the OpenNMS core system as well as to any Minions or other distributed components.</p>
+          <br />
+          <p><strong>Credentials</strong></p>
+          <br />
+          <p>Credentials for SNMPv3 users have the following requirements:</p>
+          <ul>
+            <li>Authentication Passphrase: at least 8 characters</li>
+            <li>Privacy Passphrase: at least 8 characters</li>
+          </ul>
+          <br />
+          <p>Note that credentials are <em>masked</em>, displayed as a series of '*' characters, and cannot be viewed in the UI once set.</p>
+          <p>If you want to change a credential, you may enter a new one. Note that new credentials must not begin with a '*' character.</p>
+          <p>We strongly suggest that you use an SCV (Secure Credentials Vault) expression for storing credentials securely, rather than entering them directly.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import InfoIcon from '@featherds/icon/action/Info'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import { ref, watch } from 'vue'
+
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsMessageDialog, OnmsTable } from '@opennms/onms-ui'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
@@ -125,7 +130,6 @@ import { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
 const store = useTrapdConfigStore()
@@ -136,26 +140,9 @@ const deleteDialogVisible = ref<boolean>(false)
 const isDeleting = ref(false)
 const isMessageDialogVisible = ref(false)
 
-const columns = computed(() => [
-  { id: 'securityName', label: 'Security Name' },
-  { id: 'securityLevel', label: 'Security Level' },
-  { id: 'authenticationProtocol', label: 'Authentication Protocol' },
-  { id: 'privacyProtocol', label: 'Privacy Protocol' }
-])
-
-const sort = reactive({
-  securityName: SORT.NONE,
-  securityLevel: SORT.NONE,
-  authenticationProtocol: SORT.NONE,
-  privacyProtocol: SORT.NONE
-}) as any
-
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
-}
+// Resolve a row back to its index in the store's user list. DataTable may
+// reorder rows when sorting, so we can't rely on the rendered row index.
+const userIndex = (user: SnmpV3User) => store.snmpV3Users.indexOf(user)
 
 const openDeleteUserDialog = (index: number) => {
   deleteUserIndex.value = index
@@ -213,15 +200,12 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
+@use '@/styles/onms-typography' as *;
 
 .snmp-v3-user-management {
   margin-top: 10px;
   padding: 25px;
-  border: 1px solid var(--feather-border-on-surface);
+  border: 1px solid var(--p-content-border-color);
 
   .header {
     display: flex;
@@ -230,13 +214,13 @@ watch(
 
     .section-left {
       h3 {
-        @include typography.headline3;
-        color: var(--feather-text-primary);
+        @include onms-headline3;
+        color: var(--p-text-color);
       }
 
       p {
-        @include typography.body-large;
-        color: var(--feather-text-secondary);
+        @include onms-body-large;
+        color: var(--p-text-muted-color);
       }
     }
   }
@@ -245,14 +229,14 @@ watch(
     margin-bottom: 1em;
 
     .label {
-      color: var(variables.$primary-text-on-surface);
+      color: var(--p-text-color);
     }
 
     .info-icon {
       cursor: pointer;
       font-size: 1.5em;
       margin-left: 0.5em;
-      color: var(variables.$primary);
+      color: var(--p-primary-color);
 
       &:hover {
         opacity: 0.8;
@@ -265,42 +249,11 @@ watch(
   }
 
   .table-container {
-    table {
-      width: 100%;
-      @include table.table;
-
-      thead {
-        background: var(variables.$background);
-        text-transform: uppercase;
-      }
-
-      td {
-        white-space: nowrap;
-        box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-
-        .action-container {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          button {
-            margin: 0px;
-          }
-
-          :deep(.feather-menu-dropdown) {
-            .feather-dropdown {
-              li {
-                a {
-                  padding: 8px 16px !important;
-                }
-              }
-            }
-          }
-        }
-      }
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
   }
 }
 </style>
-

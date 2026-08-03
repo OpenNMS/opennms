@@ -51,7 +51,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
 
     @Override
     public SnmpCollectionSource findByName(String name) {
-        List<SnmpCollectionSource> list = find("from SnmpCollectionSource s where s.name = ?", name);
+        List<SnmpCollectionSource> list = find("from SnmpCollectionSource s where s.name = ?1", name);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -62,7 +62,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
 
     @Override
     public List<SnmpCollectionSource> findByUploadedBy(String uploadedBy) {
-        return find("from SnmpCollectionSource s where s.uploadedBy = ?", uploadedBy);
+        return find("from SnmpCollectionSource s where s.uploadedBy = ?1", uploadedBy);
     }
 
     @Override
@@ -95,15 +95,16 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
         try {
             List<Object> queryParams = new ArrayList<>();
             List<String> conditions = new ArrayList<>();
+            int paramIndex = 0;
 
             // Add filter conditions dynamically
             if (filter != null && !filter.isBlank()) {
                 String escapedFilter =
                         "%" + DaoUtil.escapeLike(filter.trim().toLowerCase()) + "%";
 
-                conditions.add("lower(s.name) like ? escape '\\'");
-                conditions.add("lower(s.vendor) like ? escape '\\'");
-                conditions.add("lower(s.description) like ? escape '\\'");
+                conditions.add("lower(s.name) like ?" + (++paramIndex) + " escape '\\'");
+                conditions.add("lower(s.vendor) like ?" + (++paramIndex) + " escape '\\'");
+                conditions.add("lower(s.description) like ?" + (++paramIndex) + " escape '\\'");
 
                 queryParams.add(escapedFilter);
                 queryParams.add(escapedFilter);

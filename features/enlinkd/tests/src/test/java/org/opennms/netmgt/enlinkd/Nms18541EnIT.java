@@ -55,14 +55,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = QFX_IP, port = 161, resource = QFX_SNMP_RESOURCE)
     })
     public void networkAllTest() throws InterruptedException {
-        m_nodeDao.save(builder.getMs01());
-        m_nodeDao.save(builder.getMs02());
-        m_nodeDao.save(builder.getMs03());
-        m_nodeDao.save(builder.getMs04());
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.save(builder.getMs09());
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs01(), builder.getMs02(), builder.getMs03(), builder.getMs04(), builder.getMs08(), builder.getMs09(), builder.getQFX());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -152,11 +145,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS03_IP, port = 161, resource = MS03_SNMP_RESOURCE)
     })
     public void topoQfxSw01Sw02Sw03Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs01());
-        m_nodeDao.save(builder.getMs02());
-        m_nodeDao.save(builder.getMs03());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs01(), builder.getMs02(), builder.getMs03());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -225,9 +214,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS01_IP, port = 161, resource = MS01_SNMP_RESOURCE)
     })
     public void topoQfxSw01Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs01());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs01());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -285,9 +272,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS02_IP, port = 161, resource = MS02_SNMP_RESOURCE)
     })
     public void topoQfxSw02Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs02());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs02());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -344,9 +329,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS03_IP, port = 161, resource = MS03_SNMP_RESOURCE)
     })
     public void topoQfxSw03Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs03());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs03());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -403,9 +386,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS04_IP, port = 161, resource = MS04_SNMP_RESOURCE)
     })
     public void topoQfxSw04Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs04());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs04());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -462,9 +443,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS08_IP, port = 161, resource = MS08_SNMP_RESOURCE)
     })
     public void topoQfxSw08Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs08());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -521,9 +500,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS09_IP, port = 161, resource = MS09_SNMP_RESOURCE)
     })
     public void topoQfxSw09Test() throws InterruptedException {
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.save(builder.getMs09());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX(), builder.getMs09());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -580,8 +557,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void qfxTest() {
 
-        m_nodeDao.save(builder.getQFX());
-        m_nodeDao.flush();
+        saveNodes(builder.getQFX());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -755,8 +731,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw01Test() {
 
-        m_nodeDao.save(builder.getMs01());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs01());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -822,8 +797,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw02Test() {
 
-        m_nodeDao.save(builder.getMs02());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs02());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -888,8 +862,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw03Test() {
 
-        m_nodeDao.save(builder.getMs03());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs03());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -943,8 +916,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw04Test() {
 
-        m_nodeDao.save(builder.getMs04());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs04());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -1025,8 +997,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw08Test() {
 
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs08());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -1102,8 +1073,7 @@ public class Nms18541EnIT extends EnLinkdBuilderITCase {
     })
     public void microsensSw09Test() {
 
-        m_nodeDao.save(builder.getMs09());
-        m_nodeDao.flush();
+        saveNodes(builder.getMs09());
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);

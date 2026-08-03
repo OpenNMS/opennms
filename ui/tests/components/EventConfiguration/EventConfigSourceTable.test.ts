@@ -1,52 +1,50 @@
 import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigSourceTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush
-  })
+  useRouter: () => ({ push: mockPush })
 }))
+
+const mockDownloadEventConfXmlBySourceId = vi.fn()
+vi.mock('@/services/eventConfigService', () => ({
+  downloadEventConfXmlBySourceId: (...args: any[]) => mockDownloadEventConfXmlBySourceId(...args),
+  // The store's fetchEventConfigs action runs on mount (before the test overrides it),
+  // so the service functions it chains through must resolve cleanly.
+  filterEventConfigSources: vi.fn().mockResolvedValue({ sources: [], totalRecords: 0 }),
+  getAllSourceNames: vi.fn().mockResolvedValue([])
+}))
+
+// Stub the child dialogs so this suite focuses on the table's own behaviour.
+const stubs = {
+  DeleteEventConfigSourceDialog: { name: 'DeleteEventConfigSourceDialog', template: '<div class="delete-dialog-stub"></div>' },
+  ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' }
+}
 
 describe('EventConfigSourceTable.vue', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigStore>
   let mockSource: EventConfigSource
+  let disabledSource: EventConfigSource
   let openNMSMockSource: EventConfigSource
+
+  const mountTable = () => mount(EventConfigSourceTable, {
+    global: {
+      plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      stubs
+    }
+  })
 
   beforeEach(async () => {
     vi.clearAllMocks()
-
-    const pinia = createTestingPinia({
-      createSpy: vi.fn,
-      stubActions: false
-    })
-
-    store = useEventConfigStore(pinia)
-
-    store.sources = []
-    store.sourcesSearchTerm = ''
-    store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
-    store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
-    store.resetSourcesPagination = vi.fn().mockResolvedValue(undefined)
-    store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
-    store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
-    store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
-    store.onSourcesSortChange = vi.fn().mockResolvedValue(undefined)
-    store.showDeleteEventConfigSourceModal = vi.fn()
-    store.showChangeEventConfigSourceStatusDialog = vi.fn()
+    vi.useFakeTimers()
 
     mockSource = {
       id: 1,
@@ -57,372 +55,189 @@ describe('EventConfigSourceTable.vue', () => {
       eventCount: 5,
       fileOrder: 1,
       uploadedBy: 'TestUser',
-      createdTime: new Date(),
-      lastModified: new Date()
-    }
+      createdTime: new Date('2024-01-01'),
+      lastModified: new Date('2024-01-02')
+    } as any
+    disabledSource = { ...mockSource, id: 2, name: 'Disabled', enabled: false } as any
+    openNMSMockSource = { ...mockSource, id: 3, name: 'OpenNMS', vendor: VENDOR_OPENNMS } as any
 
-    openNMSMockSource = {
-      ...mockSource,
-      id: 2,
-      vendor: VENDOR_OPENNMS,
-      enabled: false,
-      eventCount: 0,
-      description: ''
-    }
-
-    wrapper = mount(EventConfigSourceTable, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          DeleteEventConfigSourceDialog: {
-            name: 'DeleteEventConfigSourceDialog',
-            template: '<div data-test="delete-event-config-source-dialog-stub" />'
-          },
-          ChangeEventConfigSourceStatusDialog: {
-            name: 'ChangeEventConfigSourceStatusDialog',
-            template: '<div data-test="change-event-config-source-status-dialog-stub" />'
-          }
-        },
-        components: {
-          FeatherButton,
-          FeatherDropdown,
-          FeatherDropdownItem,
-          FeatherSortHeader,
-          FeatherPagination,
-          FeatherInput
-        }
-      }
-    })
+    wrapper = mountTable()
+    store = useEventConfigStore()
+    store.sources = []
+    store.sourcesSearchTerm = ''
+    store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
+    store.sourcesSorting = { sortKey: 'createdTime', sortOrder: 'desc' }
+    store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
+    store.refreshSourcesFilters = vi.fn().mockResolvedValue(undefined)
+    store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
+    store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
+    store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
+    store.onSourcesSortChange = vi.fn().mockResolvedValue(undefined)
+    store.showDeleteEventConfigSourceModal = vi.fn()
+    store.showChangeEventConfigSourceStatusDialog = vi.fn()
 
     await flushPromises()
     await nextTick()
   })
 
-  afterEach(async () => {
-    if (wrapper) {
-      wrapper.unmount()
-    }
-
-    await flushPromises()
-    await nextTick()
-
-    document.body.innerHTML = ''
-
-    if (vi.isFakeTimers()) {
-      vi.useRealTimers()
-    }
-
+  afterEach(() => {
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
-  it('renders correctly and calls fetchEventConfigs on mount', () => {
-    expect(wrapper.exists()).toBe(true)
-    expect(store.fetchEventConfigs).toHaveBeenCalled()
-  })
+  describe('Initial Rendering', () => {
+    it('renders the container and header controls', () => {
+      expect(wrapper.find('.event-configuration-table').exists()).toBe(true)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+    })
 
-  it('renders EmptyList when no sources are available', () => {
-    store.sources = []
-    expect(store.sources.length).toBe(0)
-  })
-
-  it('renders table with data when sources exist', () => {
-    store.sources = [mockSource]
-    expect(store.sources.length).toBe(1)
-    expect(store.sources[0].name).toBe('TestSource')
-  })
-
-  it('calls refreshEventsSources when refresh button is clicked', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
-
-    await wrapper.get('[data-test="refresh-button"]').trigger('click') // Assuming data-test added or use selector for refresh button
-    expect(store.refreshSourcesFilters).toHaveBeenCalledTimes(1)
-  })
-
-  it('handles search input changes with debouncing', async () => {
-    const elem = wrapper.get('[data-test="search-input"]')
-    expect(elem.isVisible()).toBeTruthy()
-  })
-
-  it('handles view details button click correctly', () => {
-    wrapper.vm.onEventClick(mockSource)
-
-    expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail',
-      params: { id: mockSource.id }
+    it('renders the child dialogs', () => {
+      expect(wrapper.findComponent({ name: 'DeleteEventConfigSourceDialog' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'ChangeEventConfigSourceStatusDialog' }).exists()).toBe(true)
     })
   })
 
-  it('handles sorting changes correctly', () => {
-    wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
-    expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'asc')
-  })
-
-  it('shows dropdown actions for non-OpenNMS vendors', () => {
-    expect(mockSource.vendor).not.toBe('OpenNMS')
-  })
-
-  it('handles enable/disable source action', () => {
-    store.showChangeEventConfigSourceStatusDialog(mockSource)
-    expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
-  })
-
-  it('handles delete source action', () => {
-    store.showDeleteEventConfigSourceModal(mockSource)
-    expect(store.showDeleteEventConfigSourceModal).toHaveBeenCalledWith(mockSource)
-  })
-
-  it('renders pagination when sources exist', () => {
-    store.sources = [mockSource]
-    store.sourcesPagination = { page: 1, pageSize: 10, total: 15 }
-    expect(store.sourcesPagination.total).toBe(15)
-  })
-
-  it('handles page size changes', () => {
-    store.onSourcePageSizeChange(20)
-    expect(store.onSourcePageSizeChange).toHaveBeenCalledWith(20)
-  })
-
-  it('handles delete source action', async () => {
-    await store.showDeleteEventConfigSourceModal(mockSource)
-    expect(store.showDeleteEventConfigSourceModal).toHaveBeenCalledWith(mockSource)
-  })
-
-  it('handles enable/disable source action', async () => {
-    await store.showChangeEventConfigSourceStatusDialog(mockSource)
-    expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
-  })
-
-  it('renders table rows with correct data including status and event count', async () => {
-    store.sources = [mockSource, openNMSMockSource]
-    await wrapper.vm.$nextTick()
-
-    const rows = wrapper.findAll('transition-group-stub tr')
-    expect(rows).toHaveLength(2)
-
-    // First row
-    expect(rows[0].get('[data-test="view-button"]').isVisible()).toBe(true)
-    expect(rows[0].text()).toContain('TestSource')
-    expect(rows[0].text()).toContain('Cisco')
-    expect(rows[0].text()).toContain('5')
-    expect(rows[0].text()).toContain('Enabled')
-
-    // Second row (OpenNMS, disabled, zero count, empty desc)
-    expect(rows[1].text()).toContain(openNMSMockSource.name)
-    expect(rows[1].text()).toContain(VENDOR_OPENNMS)
-    expect(rows[1].text()).toContain('') // Empty description
-    expect(rows[1].text()).toContain('0')
-    expect(rows[1].text()).toContain('Disabled')
-  })
-
-  it('updates the search term through the input without calling the store immediately', async () => {
-    vi.useFakeTimers()
-
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
-
-    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-    await searchInput.setValue('test')
-    await nextTick()
-
-    expect(store.sourcesSearchTerm).toBe('test')
-    expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
-
-    vi.useRealTimers()
-  })
-
-  it('clicks view details button in row and navigates correctly', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
-
-    await wrapper.get('[data-test="view-button"]').trigger('click')
-    expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail',
-      params: { id: mockSource.id }
+  describe('Empty State', () => {
+    it('shows EmptyList and no table when there are no sources', async () => {
+      store.sources = []
+      await nextTick()
+      expect(wrapper.find('[data-test="event-config-source-table"]').exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'EmptyList' }).exists()).toBe(true)
+      expect(wrapper.text()).toContain('No results found.')
     })
   })
 
-  it('clicks sort header and triggers onSourcesSortChange, resets other sorts', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
+  describe('Table Rendering with Data', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource, disabledSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 2 }
+      await nextTick()
+    })
 
-    const sortHeader = wrapper.findAllComponents(FeatherSortHeader)[0] // First header (name)
-    await sortHeader.vm.$emit('sort-changed', { property: 'name', value: SORT.ASCENDING })
-    await wrapper.vm.$nextTick()
+    it('renders the DataTable with a row per source', () => {
+      expect(wrapper.find('[data-test="event-config-source-table"]').exists()).toBe(true)
+      expect(wrapper.findAll('tbody tr').length).toBe(2)
+    })
 
-    expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', SORT.ASCENDING)
-    expect(wrapper.vm.sort.name).toBe(SORT.ASCENDING)
-    expect(wrapper.vm.sort.vendor).toBe(SORT.NONE) // Reset others
+    it('renders source name, vendor and event count', () => {
+      expect(wrapper.text()).toContain('TestSource')
+      expect(wrapper.text()).toContain('Cisco')
+      expect(wrapper.text()).toContain('5')
+    })
+
+    it.each([
+      { enabled: true, expectedText: 'Enabled', expectedClass: 'enabled-tag' },
+      { enabled: false, expectedText: 'Disabled', expectedClass: 'disabled-tag' }
+    ])('renders a $expectedText status tag', async ({ enabled, expectedText, expectedClass }) => {
+      store.sources = [{ ...mockSource, enabled }]
+      await nextTick()
+      const tag = wrapper.find('[data-test="status-tag"]')
+      expect(tag.text()).toBe(expectedText)
+      expect(tag.classes()).toContain(expectedClass)
+    })
   })
 
-  it('handles sort change for ascending and resets other sorts', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
+  describe('Search', () => {
+    it('updates the store term immediately and debounces the fetch', () => {
+      wrapper.vm.onChangeSearchTerm('  cisco  ')
+      expect(store.sourcesSearchTerm).toBe('  cisco  ')
+      expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
 
-    wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
+      vi.advanceTimersByTime(500)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('cisco')
+    })
 
-    expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'asc')
-    expect(wrapper.vm.sort.name).toBe('asc')
-    expect(wrapper.vm.sort.vendor).toBe(SORT.NONE)
+    it('debounces rapid changes to a single trailing call', () => {
+      wrapper.vm.onChangeSearchTerm('a')
+      wrapper.vm.onChangeSearchTerm('ab')
+      wrapper.vm.onChangeSearchTerm('abc')
+      vi.advanceTimersByTime(500)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledTimes(1)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('abc')
+    })
   })
 
-  it('handles sort reset to default when value is none', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
+  describe('Refresh / navigation', () => {
+    it('refreshes filters on the refresh button', async () => {
+      await wrapper.get('[data-test="refresh-button"]').trigger('click')
+      expect(store.refreshSourcesFilters).toHaveBeenCalledTimes(1)
+    })
 
-    wrapper.vm.sortChanged({ property: 'name', value: SORT.NONE })
-
-    expect(store.onSourcesSortChange).toHaveBeenCalledWith('createdTime', 'desc')
-    expect(wrapper.vm.sort.name).toBe(SORT.NONE)
+    it('navigates to the source detail on view click', () => {
+      wrapper.vm.onEventClick(mockSource)
+      expect(mockPush).toHaveBeenCalledWith({
+        name: 'Event Configuration Detail',
+        params: { id: mockSource.id }
+      })
+    })
   })
 
-  it('renders dropdown for OpenNMS vendor with correct enable/disable text', async () => {
-    store.sources = [openNMSMockSource]
-    await wrapper.vm.$nextTick()
+  describe('Lazy sort and pagination', () => {
+    it('maps a sort event to onSourcesSortChange', () => {
+      wrapper.vm.onSort({ sortField: 'name', sortOrder: 1 })
+      expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'asc')
 
-    const row = wrapper.find('transition-group-stub tr')
-    expect(row.exists()).toBe(true)
-    expect(row.findAll('button')).toHaveLength(3)
+      wrapper.vm.onSort({ sortField: 'vendor', sortOrder: -1 })
+      expect(store.onSourcesSortChange).toHaveBeenCalledWith('vendor', 'desc')
+    })
 
-    expect(row.findAllComponents(FeatherDropdown)).toHaveLength(1)
+    it('falls back to default sort when no field is present', () => {
+      wrapper.vm.onSort({ sortField: null, sortOrder: 1 })
+      expect(store.onSourcesSortChange).toHaveBeenCalledWith('createdTime', 'desc')
+    })
 
-    row.findAllComponents(FeatherDropdown)[0].findAll('button')[0].trigger('click')
-    await wrapper.vm.$nextTick()
+    it('maps a page event to onSourcePageChange (1-based)', () => {
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }
+      wrapper.vm.onPage({ page: 2, rows: 10, first: 20, pageCount: 5 })
+      expect(store.onSourcePageChange).toHaveBeenCalledWith(3)
+    })
 
-    expect(row.findAllComponents(FeatherDropdownItem)).toHaveLength(1)
-    expect(row.findAllComponents(FeatherDropdownItem)[0].text()).toBe('Enable Source')
+    it('maps a page-size change to onSourcePageSizeChange', () => {
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }
+      wrapper.vm.onPage({ page: 0, rows: 20, first: 0, pageCount: 3 })
+      expect(store.onSourcePageSizeChange).toHaveBeenCalledWith(20)
+    })
   })
 
-  it('renders dropdown for non-OpenNMS vendor with correct enable/disable text', async () => {
-    const disabledSource = { ...mockSource, enabled: false }
-    store.sources = [mockSource, disabledSource]
-    await wrapper.vm.$nextTick()
-
-    const rows = wrapper.findAll('transition-group-stub tr')
-    expect(rows).toHaveLength(2)
-
-    const buttons1 = rows[0].findAll('button')
-    expect(buttons1.length).toBe(3)
-
-    await buttons1[2].trigger('click')
-    await wrapper.vm.$nextTick()
-
-    const dropdown1 = rows[0].findAllComponents(FeatherDropdownItem)
-    
-    expect(dropdown1[0].text()).toBe('Disable Source')
-    expect(dropdown1[1].text()).toBe('Delete Source')
-
-    const buttons2 = rows[1].findAll('button')
-    expect(buttons2.length).toBe(3)
-
-    await buttons2[2].trigger('click')
-    await wrapper.vm.$nextTick()
-
-    const dropdown2 = rows[1].findAllComponents(FeatherDropdownItem)
-    expect(buttons1.length).toBe(3)
-
-    expect(dropdown2[0].text()).toBe('Enable Source')
-    expect(dropdown2[1].text()).toBe('Delete Source')
+  describe('Download', () => {
+    it('downloads the source XML by id', async () => {
+      store.sources = [mockSource]
+      await nextTick()
+      await wrapper.get('[data-test="download-button"]').trigger('click')
+      expect(mockDownloadEventConfXmlBySourceId).toHaveBeenCalledWith(mockSource.id)
+    })
   })
 
-  it('clicks enable/disable from dropdown and calls showChangeEventConfigSourceStatusDialog', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
+  describe('Row action menu', () => {
+    it('builds enable/disable + delete items for a non-OpenNMS source', () => {
+      wrapper.vm.rowMenuTarget = mockSource
+      const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
+      expect(labels).toEqual(['Disable Source', 'Delete Source'])
+    })
 
-    const rows = wrapper.findAll('transition-group-stub tr')
-    expect(rows).toHaveLength(1)
+    it('shows Enable label when the source is disabled', () => {
+      wrapper.vm.rowMenuTarget = disabledSource
+      const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
+      expect(labels).toContain('Enable Source')
+    })
 
-    await rows[0].findAll('button')[2].trigger('click')
-    expect(rows[0].findAll('button')).toHaveLength(3)
-    await wrapper.vm.$nextTick()
+    it('omits Delete for an OpenNMS-vendor source', () => {
+      wrapper.vm.rowMenuTarget = openNMSMockSource
+      const labels = wrapper.vm.rowMenuItems.map((i: any) => i.label)
+      expect(labels).not.toContain('Delete Source')
+    })
 
-    await wrapper.get('[data-test="change-status-button"]').trigger('click')
-    expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
-  })
+    it('change-status command opens the change-status dialog', () => {
+      wrapper.vm.rowMenuTarget = mockSource
+      wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Disable Source').command()
+      expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
+    })
 
-  it('clicks download from dropdown and calls downloadEventConfXmlBySourceId', async () => {
-    vi.useFakeTimers()
-    store.sources = [mockSource]
-    const svc = await import('@/services/eventConfigService')
-    vi.spyOn(svc, 'downloadEventConfXmlBySourceId').mockResolvedValue(false)
-    await wrapper.vm.$nextTick()
-
-    const rows = wrapper.findAll('transition-group-stub tr')
-    expect(rows).toHaveLength(1)
-
-    await rows[0].findAll('button')[1].trigger('click')
-    await wrapper.vm.$nextTick()
-    
-    expect(downloadEventConfXmlBySourceId).toHaveBeenCalled()
-    expect(svc.downloadEventConfXmlBySourceId).toHaveBeenCalledWith(mockSource.id)
-    vi.useRealTimers()
-  })
-
-  it('clicks delete from dropdown and calls showDeleteEventConfigSourceModal', async () => {
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
-
-    const rows = wrapper.findAll('transition-group-stub tr')
-    expect(rows).toHaveLength(1)
-
-    await rows[0].findAll('button')[2].trigger('click')
-    await wrapper.vm.$nextTick()
-
-    await wrapper.get('[data-test="delete-source-button"]').trigger('click')
-    expect(store.showDeleteEventConfigSourceModal).toHaveBeenCalledWith(mockSource)
-  })
-
-  it('renders pagination with correct props and handles page change', async () => {
-    store.sources = [mockSource]
-    store.sourcesPagination = { page: 1, pageSize: 10, total: 15 }
-    await wrapper.vm.$nextTick()
-
-    const pagination = wrapper.getComponent(FeatherPagination)
-    expect(pagination.props('modelValue')).toBe(1)
-    expect(pagination.props('pageSize')).toBe(10)
-    expect(pagination.props('total')).toBe(15)
-
-    await pagination.vm.$emit('update:modelValue', 2)
-    expect(store.onSourcePageChange).toHaveBeenCalledWith(2)
-  })
-
-  it('handles page size change via pagination', async () => {
-    store.sources = [mockSource]
-    store.sourcesPagination = { page: 1, pageSize: 10, total: 15 }
-    await wrapper.vm.$nextTick()
-
-    const pagination = wrapper.getComponent(FeatherPagination)
-    await pagination.vm.$emit('update:pageSize', 20)
-    expect(store.onSourcePageSizeChange).toHaveBeenCalledWith(20)
-  })
-
-  it('renders dialogs (DeleteEventConfigSourceDialog and ChangeEventConfigSourceStatusDialog)', () => {
-    expect(wrapper.findComponent({ name: 'DeleteEventConfigSourceDialog' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'ChangeEventConfigSourceStatusDialog' }).exists()).toBe(true)
-  })
-
-  it('renders EmptyList when no sources are available', async () => {
-    store.sources = []
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.get('[data-test="empty-list"]').isVisible()).toBe(true)
-    expect(wrapper.text()).toContain('No results found.')
-  })
-
-  it('shows empty state after search with no results', async () => {
-    vi.useFakeTimers()
-    store.sources = [mockSource]
-    await wrapper.vm.$nextTick()
-
-    wrapper.vm.onChangeSearchTerm('nonexistent')
-    wrapper.vm.onChangeSearchTerm.flush()
-    await flushPromises()
-
-    store.sources = []
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.get('[data-test="empty-list"]').isVisible()).toBe(true)
-    expect(wrapper.text()).toContain('No results found.')
-    vi.useRealTimers()
+    it('delete command opens the delete dialog', () => {
+      wrapper.vm.rowMenuTarget = mockSource
+      wrapper.vm.rowMenuItems.find((i: any) => i.label === 'Delete Source').command()
+      expect(store.showDeleteEventConfigSourceModal).toHaveBeenCalledWith(mockSource)
+    })
   })
 })

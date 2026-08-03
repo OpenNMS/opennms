@@ -1,21 +1,31 @@
 <template>
-  <FeatherButton
+  <OnmsIconButton
     class="compare-btn"
-    icon="Compare configs"
-    @click="onCompare"
+    aria-label="Compare configs"
+    v-onms-tooltip="'Compare configs'"
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
-  >
-    <FeatherIcon :icon="Compare" />
-  </FeatherButton>
+    :icon="Compare"
+    @click="onCompare"
+  />
 
-  <FeatherButton class="return-btn" icon="Return" @click="onReturn" v-if="isCompareView">
-    <FeatherIcon :icon="Restore" />
-  </FeatherButton>
+  <OnmsIconButton
+    class="return-btn"
+    aria-label="Return"
+    v-onms-tooltip="'Return'"
+    v-if="isCompareView"
+    :icon="Restore"
+    @click="onReturn"
+  />
 
-  <FeatherButton class="dwnld-btn" icon="Download configs" @click="onDownload" v-if="isCompareView">
-    <FeatherIcon :icon="Download" />
-  </FeatherButton>
+  <OnmsIconButton
+    class="dwnld-btn"
+    aria-label="Download configs"
+    v-onms-tooltip="'Download configs'"
+    v-if="isCompareView"
+    :icon="Download"
+    @click="onDownload"
+  />
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
   <p
@@ -23,39 +33,42 @@
     v-if="!deviceStore.historyModalBackups.length"
   >No dates are available.</p>
 
-  <FeatherChipList
+  <div
     class="dcb-date-chips"
-    condensed
-    label="Compare selected configurations."
+    aria-label="Compare selected configurations."
     v-if="config1 && config2"
   >
-    <FeatherChip>
+    <OnmsChip>
       <span v-date>{{ config1.lastBackupDate }}</span>
-    </FeatherChip>
-    <FeatherChip>
+    </OnmsChip>
+    <OnmsChip>
       <span v-date>{{ config2.lastBackupDate }}</span>
-    </FeatherChip>
-  </FeatherChipList>
+    </OnmsChip>
+  </div>
 
   <div class="flex-container" v-if="!isCompareView">
-    <FeatherCheckboxGroup :label="deviceStore.historyModalBackups[0].configName" vertical v-if="deviceStore.historyModalBackups.length">
+    <div class="checkbox-group" v-if="deviceStore.historyModalBackups.length">
+      <p class="group-label">{{ deviceStore.historyModalBackups[0].configName }}</p>
       <div class="history-dates-column">
-        <FeatherCheckbox
+        <div
           class="history-date"
           v-for="config of deviceStore.historyModalBackups"
           :key="config.id"
-          @update:modelValue="onCheckbox(config)"
-          :modelValue="selectedConfigs[config.id]"
         >
-          <span v-date>{{ config.lastBackupDate }}</span>
-        </FeatherCheckbox>
+          <OnmsCheckbox
+            :inputId="`dcb-date-${config.id}`"
+            :modelValue="selectedConfigs[config.id]"
+            @update:modelValue="onCheckbox(config)"
+          />
+          <label :for="`dcb-date-${config.id}`" v-date>{{ config.lastBackupDate }}</label>
+        </div>
       </div>
-    </FeatherCheckboxGroup>
+    </div>
   </div>
 
   <div class="compare-container" v-if="config1 && config2 && isCompareView">
     <p class="changes">
-      DIFFERENCES: 
+      DIFFERENCES:
       <span class="deletions">-{{ changes.deletions }}</span>
       <span class="additions"> +{{ changes.additions }}</span>
     </p>
@@ -64,14 +77,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
-import { FeatherButton } from '@featherds/button'
-import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import { FeatherIcon } from '@featherds/icon'
-import Restore from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
+import { OnmsCheckbox, OnmsChip, OnmsIconButton } from '@opennms/onms-ui'
+import Restore from '@/components/icons/action/Restore.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
@@ -85,7 +97,7 @@ const config2 = ref<DeviceConfigBackup | null>(null)
 const isCompareView = ref(false)
 const changes = ref<{ additions: number; deletions: number }>({ additions: 0, deletions: 0 })
 
-const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter((val) => val).length)
+const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter(val => val).length)
 
 const onCompare = () => isCompareView.value = true
 const onReturn = () => isCompareView.value = false
@@ -135,7 +147,7 @@ const updateCheckboxes = () => {
  * used for updating which checkboxes are true,
  * displaying the selected date chips, and the
  *  prev/current configuration text comparison.
- * 
+ *
  * @param config device config from checkbox clicked
  * @returns void
  */
@@ -177,8 +189,8 @@ const setConfig = (config: DeviceConfigBackup) => {
 const calculateChanges = () => {
   if (config1.value && config2.value) {
     const diff = diffLines(config1.value.config, config2.value.config)
-    const additions = diff.filter((item) => item.added).length
-    const deletions = diff.filter((item) => item.removed).length
+    const additions = diff.filter(item => item.added).length
+    const deletions = diff.filter(item => item.removed).length
 
     changes.value = {
       additions,
@@ -192,8 +204,7 @@ onMounted(() => getHistoryBackups())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .flex-container {
   display: flex;
   max-width: 1000px;
@@ -201,14 +212,27 @@ onMounted(() => getHistoryBackups())
   overflow: auto;
   padding-left: 15px;
 
+  .checkbox-group {
+    .group-label {
+      @include onms-subtitle2;
+    }
+  }
+
   .history-dates-column {
     display: flex;
     flex-direction: column;
     white-space: nowrap;
 
     .history-date {
-      @include body-small;
-      color: var($primary);
+      @include onms-body-small;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--p-primary-color);
+
+      label {
+        cursor: pointer;
+      }
     }
   }
 }
@@ -219,24 +243,26 @@ onMounted(() => getHistoryBackups())
   overflow: auto;
 }
 .select-msg {
-  @include subtitle1;
-  color: var($primary);
+  @include onms-subtitle1;
+  color: var(--p-primary-color);
   padding-left: 15px;
   margin-bottom: 33px;
 }
 
 .dcb-date-chips {
+  display: flex;
+  gap: 0.5rem;
   margin-bottom: 23px;
 }
 .changes {
-  @include button;
+  @include onms-button;
 
   .deletions {
-    color: var($error);
+    color: var(--p-red-500);
   }
 
   .additions {
-    color: var($success);
+    color: var(--p-green-500);
   }
 }
 .compare-btn,

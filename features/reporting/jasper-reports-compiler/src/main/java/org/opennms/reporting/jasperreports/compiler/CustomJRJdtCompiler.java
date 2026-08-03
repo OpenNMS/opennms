@@ -149,7 +149,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
             private int getClassIndex(String className) {
                 int classIdx;
                 for (classIdx = 0; classIdx < units.length; ++classIdx) {
-                    if (className.equals(units[classIdx].getName())) {
+                    if (className.equals(units[classIdx].getCompileName())) {
                         break;
                     }
                 }
@@ -345,7 +345,9 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         File saveSourceDir = sourceFile == null ? null : sourceFile.getParentFile();
         sourceFile = getSourceFile(saveSourceDir, unitName, sourceCode);
 
-        return new JRCompilationUnit(unitName, sourceCode, sourceFile, compilationUnit.getExpressions(), sourceTask);
+        JRCompilationUnit unit = new JRCompilationUnit(unitName);
+        unit.setSource(sourceCode, sourceFile, sourceTask);
+        return unit;
     }
 
     @Override
@@ -388,7 +390,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
 
             int classIdx;
             for (classIdx = 0; classIdx < units.length; ++classIdx) {
-                if (className.equals(units[classIdx].getName())) {
+                if (className.equals(units[classIdx].getCompileName())) {
                     break;
                 }
             }
@@ -499,7 +501,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
                     unitResults[i].resolveMissingMethods();
                 }
 
-                compilationUnits[i] = new CompilationUnit(units[i].getSourceCode(), units[i].getName());
+                compilationUnits[i] = new CompilationUnit(units[i].getSourceCode(), units[i].getCompileName());
             }
 
             reset();

@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.telemetry.protocols.openconfig</artifactId>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
-    <version>36.0.1-SNAPSHOT</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guavagRPCVersion}</version>
+      <version>${guavaVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>

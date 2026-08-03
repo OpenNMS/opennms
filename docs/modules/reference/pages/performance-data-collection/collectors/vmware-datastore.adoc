@@ -1,0 +1,84 @@
+
+= VMware datastore capacity
+:description: Reference for the datastore capacity attributes that VmwareCollector emits for each VMware HostSystem in OpenNMS {page-component-title}.
+
+The xref:performance-data-collection/collectors/vmware.adoc[VmwareCollector] emits a multi-instance resource for each datastore a HostSystem mounts, alongside the performance counters it already collects. The values come from `Datastore.summary`, a property on the managed object, rather than from vCenter's PerformanceManager — so capacity numbers reflect what vCenter reports at collection time, not a 5-minute averaged sample.
+
+Datastore data is collected automatically for every host imported by the VMware requisition handler, scoped to the datastores that host mounts. A datastore mounted by multiple hosts is collected once per host, under each host's resource tree.
+
+== When this group runs
+
+The shipped `default-HostSystem6` and `default-HostSystem7` collections include a `<vmware-group>` with `resourceType="vmwareDatastoreCapacity"`. When VmwareCollector iterates a host's configured groups, that resource type triggers the datastore dispatch instead of a PerformanceManager query. Removing the group from a custom collection disables datastore collection for hosts using that collection.
+
+The group is only valid inside HostSystem collections. If it appears in a VirtualMachine collection (or any non-HostSystem managed entity), the collector logs a warning and skips it.
+
+== Resource layout
+
+Per host:
+
+[source]
+----
+share/rrd/snmp/{nodeId}/vmwareDatastoreCapacity/{datastoreMoid}/
+  DsCapacity.rrd  DsFreeSpace.rrd  DsUsed.rrd  DsUsedPct.rrd
+  DsUncommitted.rrd  DsOvercommitted.rrd  DsAccessible.rrd  DsMultiHost.rrd
+  strings.properties   (DsType, DsUrl, vmwareDatastoreCapacityName)
+----
+
+The resource type is registered globally via `$\{OPENNMS_HOME}/etc/resource-types.d/vmware-datastore-resource.xml`.
+Graphs are defined in `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d/vmware-datastore-graph.properties`.
+
+== Numeric attributes (gauges)
+
+[options="header"]
+[cols="2,4"]
+|===
+| Attribute
+| Description
+
+| capacity
+| Total size of the datastore in bytes, as reported by vCenter.
+
+| freeSpace
+| Free space in bytes.
+
+| used
+| Computed as `capacity - freeSpace`.
+
+| usedPct
+| Integer percent of capacity in use (0-100).
+  Returns `0` if `capacity` is `0`.
+
+| uncommitted
+| Bytes promised by thin-provisioned virtual disks but not yet written.
+  Coerced to `0` when vCenter does not report a value.
+
+| overcommittedBytes
+| Computed as `max(0, used + uncommitted - capacity)`.
+  Non-zero values indicate the datastore is at risk if thin-provisioned VMs grow into their full provisioned size.
+
+| accessible
+| `1` if vCenter reports the datastore as accessible at collection time, `0` otherwise.
+
+| multipleHostAccess
+| `1` if the datastore is mounted by more than one host, `0` otherwise.
+  Coerced to `0` if vCenter does not report a value.
+|===
+
+== String attributes
+
+[options="header"]
+[cols="2,4"]
+|===
+| Attribute
+| Description
+
+| name
+| Display name of the datastore (also used as the resource label).
+
+| type
+| Datastore type: `VMFS`, `NFS`, `NFS41`, `vsan`, `VVOL`, etc.
+
+| url
+| Datastore URL (for example, `ds:///vmfs/volumes/<uuid>/`).
+|===
+

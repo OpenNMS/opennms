@@ -12,6 +12,8 @@ vi.mock('@/services/snmpDataCollectionService', () => ({
   getAllSnmpCollectionSourcesNamesAndIds: vi.fn()
 }))
 
+const DEFAULT_PAGE_SIZE = 50
+
 describe('useSnmpDataCollectionStore', () => {
   let store: ReturnType<typeof useSnmpDataCollectionStore>
 
@@ -64,7 +66,7 @@ describe('useSnmpDataCollectionStore', () => {
       expect(store.sources).toEqual([])
       expect(store.sourcesPagination).toEqual({
         page: 1,
-        pageSize: 10,
+        pageSize: DEFAULT_PAGE_SIZE,
         total: 0
       })
       expect(store.sourcesSearchTerm).toBe('')
@@ -97,7 +99,7 @@ describe('useSnmpDataCollectionStore', () => {
 
     it('should have default pagination settings', () => {
       expect(store.sourcesPagination.page).toBe(1)
-      expect(store.sourcesPagination.pageSize).toBe(10)
+      expect(store.sourcesPagination.pageSize).toBe(DEFAULT_PAGE_SIZE)
       expect(store.sourcesPagination.total).toBe(0)
     })
 
@@ -193,7 +195,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       await store.fetchSnmpCollectionSources()
 
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
       expect(store.sources).toEqual(mockSources)
       expect(store.sourcesPagination.total).toBe(2)
       expect(store.isLoading).toBe(false)
@@ -217,7 +219,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       await store.fetchSnmpCollectionSources()
 
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, 'test search', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, 'test search', 'createdTime', 'desc')
     })
 
     it('should fetch with custom sorting', async () => {
@@ -228,7 +230,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       await store.fetchSnmpCollectionSources()
 
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'name', 'asc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'name', 'asc')
     })
 
     it('should handle errors when fetching sources', async () => {
@@ -308,7 +310,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm('new search')
 
       expect(store.sourcesSearchTerm).toBe('new search')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, 'new search', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, 'new search', 'createdTime', 'desc')
     })
 
     it('should handle empty search term', async () => {
@@ -318,7 +320,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm('')
 
       expect(store.sourcesSearchTerm).toBe('')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
     })
 
     it('should trigger fetch after updating search term', async () => {
@@ -336,7 +338,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm('test@#$%')
 
       expect(store.sourcesSearchTerm).toBe('test@#$%')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, 'test@#$%', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, 'test@#$%', 'createdTime', 'desc')
     })
   })
 
@@ -348,7 +350,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       expect(store.sourcesSorting.sortKey).toBe('name')
       expect(store.sourcesSorting.sortOrder).toBe('asc')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'name', 'asc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'name', 'asc')
     })
 
     it('should update only sort key', async () => {
@@ -392,7 +394,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       expect(store.sourcesSorting.sortKey).toBe(sortKey)
       expect(store.sourcesSorting.sortOrder).toBe(sortOrder)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', sortKey, sortOrder)
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', sortKey, sortOrder)
     })
   })
 
@@ -403,7 +405,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onSourcePageChange(3)
 
       expect(store.sourcesPagination.page).toBe(3)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(20, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(100, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
     })
 
     it('should handle page 1', async () => {
@@ -413,7 +415,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onSourcePageChange(1)
 
       expect(store.sourcesPagination.page).toBe(1)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
     })
 
     it('should calculate correct offset for different pages', async () => {
@@ -422,7 +424,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onSourcePageChange(10)
 
       expect(store.sourcesPagination.page).toBe(10)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(90, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(450, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
     })
 
     it('should trigger fetch after updating page', async () => {
@@ -436,17 +438,17 @@ describe('useSnmpDataCollectionStore', () => {
 
     it.each([
       { page: 1, expectedOffset: 0 },
-      { page: 2, expectedOffset: 10 },
-      { page: 3, expectedOffset: 20 },
-      { page: 5, expectedOffset: 40 },
-      { page: 10, expectedOffset: 90 }
+      { page: 2, expectedOffset: 50 },
+      { page: 3, expectedOffset: 100 },
+      { page: 5, expectedOffset: 200 },
+      { page: 10, expectedOffset: 450 }
     ])('should handle page $page with offset $expectedOffset', async ({ page, expectedOffset }) => {
       vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
 
       await store.onSourcePageChange(page)
 
       expect(store.sourcesPagination.page).toBe(page)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(expectedOffset, 10, '', 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(expectedOffset, DEFAULT_PAGE_SIZE, '', 'createdTime', 'desc')
     })
   })
 
@@ -499,77 +501,6 @@ describe('useSnmpDataCollectionStore', () => {
         expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, pageSize, '', 'createdTime', 'desc')
       }
     )
-  })
-
-  describe('refreshSourcesfilters', () => {
-    it('should reset all filters to defaults and fetch sources', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      store.sourcesPagination.page = 5
-      store.sourcesPagination.pageSize = 25
-      store.sourcesSearchTerm = 'test search'
-      store.sourcesSorting.sortKey = 'name'
-      store.sourcesSorting.sortOrder = 'asc'
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sourcesPagination.page).toBe(1)
-      expect(store.sourcesPagination.pageSize).toBe(10)
-      expect(store.sourcesPagination.total).toBe(2) // Updated from API response
-      expect(store.sourcesSearchTerm).toBe('')
-      expect(store.sourcesSorting.sortKey).toBe('createdTime')
-      expect(store.sourcesSorting.sortOrder).toBe('desc')
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', 'createdTime', 'desc')
-    })
-
-    it('should reset pagination to defaults', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesPagination = { page: 10, pageSize: 50, total: 200 }
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sourcesPagination.page).toBe(1)
-      expect(store.sourcesPagination.pageSize).toBe(10)
-      expect(store.sourcesPagination.total).toBe(2) // Updated from API response
-    })
-
-    it('should reset search term to empty string', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesSearchTerm = 'some search'
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sourcesSearchTerm).toBe('')
-    })
-
-    it('should reset sorting to default', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sourcesSorting = { sortKey: 'vendor', sortOrder: 'asc' }
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sourcesSorting.sortKey).toBe('createdTime')
-      expect(store.sourcesSorting.sortOrder).toBe('desc')
-    })
-
-    it('should trigger fetch after resetting filters', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      await store.refreshSourcesfilters()
-
-      expect(filterSnmpCollectionSources).toHaveBeenCalledTimes(1)
-      expect(store.sources).toEqual(mockSources)
-    })
-
-    it('should update sources with fetched data after refresh', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-      store.sources = []
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sources).toEqual(mockSources)
-      expect(store.sourcesPagination.total).toBe(2)
-    })
   })
 
   describe('State Mutations', () => {
@@ -631,25 +562,6 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm('test')
       expect(store.sourcesSearchTerm).toBe('test')
       expect(store.sourcesPagination.pageSize).toBe(20)
-
-      await store.refreshSourcesfilters()
-      expect(store.sourcesPagination.pageSize).toBe(10)
-      expect(store.sourcesSearchTerm).toBe('')
-    })
-
-    it('should handle refresh after complex filtering', async () => {
-      vi.mocked(filterSnmpCollectionSources).mockResolvedValue(mockFilterResponse)
-
-      await store.onChangeSourcesSearchTerm('complex')
-      await store.onSourcesSortChange('vendor', 'asc')
-      await store.onSourcePageChange(3)
-      await store.onSourcePageSizeChange(25)
-
-      await store.refreshSourcesfilters()
-
-      expect(store.sourcesSearchTerm).toBe('')
-      expect(store.sourcesSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
-      expect(store.sourcesPagination).toEqual({ page: 1, pageSize: 10, total: 2 }) // Updated from API response
     })
   })
 
@@ -692,11 +604,11 @@ describe('useSnmpDataCollectionStore', () => {
 
   describe('Parametrized Tests - Pagination Calculations', () => {
     it.each([
-      { page: 1, pageSize: 10, expectedOffset: 0 },
-      { page: 2, pageSize: 10, expectedOffset: 10 },
-      { page: 3, pageSize: 20, expectedOffset: 40 },
-      { page: 5, pageSize: 15, expectedOffset: 60 },
-      { page: 10, pageSize: 5, expectedOffset: 45 },
+      { page: 1, pageSize: 50, expectedOffset: 0 },
+      { page: 2, pageSize: 50, expectedOffset: 50 },
+      { page: 3, pageSize: 50, expectedOffset: 100 },
+      { page: 5, pageSize: 50, expectedOffset: 200 },
+      { page: 10, pageSize: 50, expectedOffset: 450 },
       { page: 1, pageSize: 100, expectedOffset: 0 },
       { page: 7, pageSize: 25, expectedOffset: 150 }
     ])(
@@ -735,7 +647,7 @@ describe('useSnmpDataCollectionStore', () => {
 
       expect(store.sourcesSorting.sortKey).toBe(sortKey)
       expect(store.sourcesSorting.sortOrder).toBe(sortOrder)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, '', sortKey, sortOrder)
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 50, '', sortKey, sortOrder)
     })
   })
 
@@ -754,8 +666,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.onChangeSourcesSearchTerm(term)
 
       expect(store.sourcesSearchTerm).toBe(term)
-      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 10, term, 'createdTime', 'desc')
+      expect(filterSnmpCollectionSources).toHaveBeenCalledWith(0, 50, term, 'createdTime', 'desc')
     })
   })
 })
-

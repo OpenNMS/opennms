@@ -1,6 +1,6 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+
 import SCVListVue from '@/components/SCV/SCVList.vue'
 import SCVFormVue from '@/components/SCV/SCVForm.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -37,8 +39,6 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-
 .scv-container {
   padding: 2px;
   margin-left: 2px;

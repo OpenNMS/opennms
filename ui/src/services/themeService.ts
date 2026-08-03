@@ -41,7 +41,15 @@ export const saveTheme = (theme: Theme): void => {
 }
 
 export const applyThemeClass = (theme: Theme): void => {
-  const body = document.body
-  body.classList.remove(LIGHT_THEME, DARK_THEME)
-  body.classList.add(theme)
+  // Apply to both <html> and <body>. PrimeVue declares its component CSS
+  // variables on `:root` (<html>) as references to the semantic theme variables
+  // (e.g. `--p-inputtext-background: var(--p-form-field-background)`). Those
+  // references are substituted at the element where they are declared (<html>),
+  // so the dark-mode class must be present on <html> for component variables to
+  // resolve to their dark values. FeatherDS reads the same class and is
+  // unaffected by it also being on <html>.
+  for (const el of [document.documentElement, document.body]) {
+    el.classList.remove(LIGHT_THEME, DARK_THEME)
+    el.classList.add(theme)
+  }
 }

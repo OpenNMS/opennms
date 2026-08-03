@@ -32,6 +32,7 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionProfileDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
+import org.opennms.web.rest.v2.model.SnmpCollectionCreateSourceDto;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -523,6 +524,26 @@ public interface DataCollectionConfRestApi {
             SnmpCollectionSystemDefDto request,
             @Context SecurityContext securityContext
     ) throws Exception;
+
+
+    @POST
+    @Path("/collectsources")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Create SNMP Data Collection Source",
+            description = "Create a SNMP data collection source.",
+            operationId = "createSnmpDataCollectionSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Source created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response createSnmpDataCollectionSource(
+            SnmpCollectionCreateSourceDto request,
+            @Context SecurityContext securityContext
+    );
 
     @DELETE
     @Path("/collectsources")

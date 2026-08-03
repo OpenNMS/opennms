@@ -53,7 +53,73 @@ This collector provides tools for parsing and mapping the metrics to the collect
 | header-*
 | Optional headers to pass in the HTTP request.
 | n/a
+
+| trust-store
+| Path to a keystore file that contains the CA or server certificates to trust when the URL uses HTTPS.
+When not set, the server certificate is validated against the JVM's default trust store.
+| n/a
+
+| trust-store-type
+| Type of the truststore file (for example, `PKCS12` or `JKS`).
+| PKCS12
+
+| trust-store-password
+| Password of the truststore file.
+| n/a
+
+| key-store
+| Path to a keystore file that contains a client certificate and its private key.
+When set, the certificate is presented to servers that request one (mutual TLS).
+| n/a
+
+| key-store-type
+| Type of the keystore file (for example, `PKCS12` or `JKS`).
+| PKCS12
+
+| key-store-password
+| Password of the keystore file.
+| n/a
+
+| key-password
+| Password of the private key, if it differs from the keystore password.
+| The `key-store-password` value.
+
+| hostname-verification
+| Whether to verify that the server certificate matches the host in the URL.
+This applies only when `trust-store` or `key-store` is set.
+| true
 |===
+
+[[ga-performance-mgmt-collectors-prometheus-collector-tls]]
+== HTTPS and mutual TLS
+
+When the URL uses HTTPS, the collector validates the server certificate against the JVM's default trust store.
+If the endpoint uses a certificate that public CAs did not issue (for example, a private CA or a self-signed certificate), set `trust-store` to a keystore file that contains the certificates to trust.
+
+If the endpoint also requires a client certificate (mutual TLS), set `key-store` to a keystore file that contains the client certificate and its private key.
+
+[source, xml]
+----
+<service name="Prometheus-Node-Exporter" interval="300000" user-defined="false" status="on">
+ <parameter key="collection" value="node_exporter" />
+ <parameter key="url" value="https://${interface:address}:9100/metrics" />
+ <parameter key="trust-store" value="/opt/opennms/etc/tls/scrape-ca.p12" />
+ <parameter key="trust-store-password" value="${scv:scrape-tls:trust-store-password}" />
+ <parameter key="key-store" value="/opt/opennms/etc/tls/scrape-client.p12" />
+ <parameter key="key-store-password" value="${scv:scrape-tls:key-store-password}" />
+</service>
+----
+
+The keystore and truststore files must be readable by the {page-component-title} process.
+If a Minion performs the collection, the files must also exist at the same path on that Minion; they are not distributed automatically.
+
+To avoid storing passwords in plain text, store them in the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and reference them as `${scv:alias:key}`, as shown above.
+
+Setting `hostname-verification` to `false` disables validation of the server certificate's hostname.
+This weakens the protection that TLS provides; prefer issuing certificates that match the scraped host names.
+
+When `key-store` is set, HTTP redirects are followed only when the target keeps the same scheme, host, and port as the original URL, so that the client certificate is not presented to other services.
+An endpoint that redirects scrapes elsewhere will appear to return no metrics; point the `url` parameter at the final location instead.
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
 == Prometheus collector use

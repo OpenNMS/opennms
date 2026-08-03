@@ -51,8 +51,8 @@
     <property name="concurrentConsumers" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.concurrent-consumers', '10')}" />
   </bean>
 
-  <!-- activemq component to be used by spring applicationContext/camelContext  -->
-  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent" lazy-init="true">
+  <!-- JMS component (backed by ActiveMQ) to be used by spring applicationContext/camelContext  -->
+  <bean id="queuingservice" class="org.apache.camel.component.jms.JmsComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
   </bean>
 

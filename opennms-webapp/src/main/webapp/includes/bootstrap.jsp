@@ -200,7 +200,32 @@
   </c:if>
 
   <%-- Vue side menu --%>
+  <%--
+    Apply the persisted UI theme class to <html> before first paint so
+    theme-dependent styles (PrimeVue's .open-dark darkModeSelector, the menu
+    token overrides in the Vue menu's stylesheet) are correct from the very
+    first frame instead of flipping when the menu bundle mounts (NMS-19975).
+    Storage key and class names mirror ui/src/services/themeService.ts; the
+    menu app re-asserts the class (and adds it to <body>) via initTheme().
+  --%>
+  <script type="text/javascript">
+    (function () {
+      var theme = 'open-light';
+      try {
+        var stored = window.localStorage.getItem('theme');
+        if (stored === 'open-light' || stored === 'open-dark') {
+          theme = stored;
+        }
+      } catch (e) {
+        // localStorage unavailable; fall through to the default theme
+      }
+      document.documentElement.classList.add(theme);
+    })();
+  </script>
   <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css" media="screen" />
+  <%-- Start fetching/compiling the menu bundle now rather than when the parser
+       reaches its <script type="module"> tag near the end of the body. --%>
+  <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -247,9 +272,6 @@
 <%--
     Note, if 'fromVaadin' is true, we display the menu anyway, even if 'superQuiet' is true.
     This means this is a Vaadin page loaded at the top level and should have the menu.
-    For Vaadin pages that are actually dashlets loaded inside a Wallboard, they will have
-    'fromVaadinDashlet=true', which we treat the same as 'superQuiet', i.e. do not display a menu.
-    'fromVaadinDashlet' might be used to add additional code to fix margins, etc.
     See header-component_connector.js and org.opennms.features.vaadin.components.header.HeaderComponent.java for more.
 --%>
 <c:choose>

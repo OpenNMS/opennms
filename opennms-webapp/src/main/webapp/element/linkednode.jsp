@@ -58,7 +58,7 @@
     //get the database node info
     final OnmsNode node_db = factory.getNode( nodeId );
     if( node_db == null ) {
-		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
+		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "ui/#/nodes");
     }
 
 	pageContext.setAttribute("nodeId", nodeId);

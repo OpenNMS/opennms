@@ -56,7 +56,6 @@
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
@@ -102,7 +101,6 @@
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
 
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
@@ -286,10 +284,6 @@
     <property name="userManager" ref="userManager" />
   </bean>
   
-  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
-  </bean>
-
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
   </bean>

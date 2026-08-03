@@ -1,31 +1,27 @@
 <template>
-  <FeatherDropdown class="node-download-dropdown">
-    <template v-slot:trigger="{ attrs, on }">
-      <FeatherButton
-        icon="Download"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <FeatherIcon :icon="downloadIcon" class="download-actions-icon" title="Download" />
-      </FeatherButton>
-    </template>
-    <FeatherDropdownItem @click="onCsvDownload()">
-      <span class="download-menu-item">Download CSV...</span>
-    </FeatherDropdownItem>
-    <FeatherDropdownItem @click="onJsonDownload()">
-      <span class="download-menu-item">Download JSON...</span>
-    </FeatherDropdownItem>
-  </FeatherDropdown>
+  <OnmsIconButton
+    title="Download"
+    aria-label="Download"
+    aria-haspopup="true"
+    aria-controls="node-download-menu"
+    class="node-download-dropdown"
+    data-test="download-button"
+    :icon="downloadIcon"
+    @click="toggle"
+  />
+  <OnmsMenu
+    id="node-download-menu"
+    ref="menu"
+    :items="items"
+  />
 </template>
 
 <script setup lang="ts">
-import { FeatherButton } from '@featherds/button'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
-import { markRaw, PropType } from 'vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
+import { markRaw, ref, PropType } from 'vue'
 
-defineProps({
+const props = defineProps({
   onCsvDownload: {
     required: true,
     type: Function as PropType<() => void>
@@ -37,18 +33,16 @@ defineProps({
 })
 
 const downloadIcon = markRaw(Download)
+const menu = ref()
+
+const items = ref<OnmsMenuItem[]>([
+  { label: 'Download CSV...', command: () => props.onCsvDownload() },
+  { label: 'Download JSON...', command: () => props.onJsonDownload() }
+])
+
+const toggle = (event: Event) => {
+  menu.value?.toggle(event)
+}
+
+defineExpose({ items })
 </script>
-
-<style lang="scss" scoped>
-.download-menu-item {
-  padding: 1em;
-}
-
-button.btn.btn-icon .download-actions-icon {
-  font-size: 1.1rem;
-}
-
-.node-download-dropdown {
-  text-align: left;
-}
-</style>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.scv</artifactId>
-        <version>36.0.1-SNAPSHOT</version>
+        <version>36.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.scv</groupId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guavagRPCVersion}</version>
+            <version>${guavaVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setSSLContextIfConfigured;
 import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
 
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -248,6 +250,14 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             clientWrapper.setRetries(retryCount);
 
             setUseSystemProxyIfDefined(clientWrapper, collectorAgent.getParameters());
+
+            // Custom trust anchors and/or client certificate (mutual TLS);
+            // overrides the relaxed SSL default when configured
+            try {
+                setSSLContextIfConfigured(clientWrapper, collectorAgent.getParameters());
+            } catch (GeneralSecurityException | IOException e) {
+                throw new HttpCollectorException("Failed to configure TLS from the service parameters: " + e, e);
+            }
 
             method = buildHttpMethod(collectorAgent);
             method.setProtocolVersion(httpVersion);

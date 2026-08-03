@@ -10,8 +10,15 @@
     <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" />
     <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" />
 
+    <!-- Resolve ${karaf.etc} in the jaas:module options below. -->
+    <ext:property-placeholder system-properties="override" />
+
     <!-- Override the JAAS LoginModule in the Karaf Container -->
     <jaas:config name="karaf" rank="1">
+        <!-- Public-key auth first; falls through to OpenNMS password auth on no match. -->
+        <jaas:module className="org.apache.karaf.jaas.modules.publickey.PublickeyLoginModule" flags="sufficient">
+            users = ${karaf.etc}/keys.properties
+        </jaas:module>
         <jaas:module className="org.opennms.container.jaas.OpenNMSLoginModule" flags="required" />
     </jaas:config>
 

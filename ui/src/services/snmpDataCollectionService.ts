@@ -483,6 +483,73 @@ export const updateResourceType = async (
 }
 
 /**
+ * Makes a POST request to the REST endpoint to create a new SNMP data collection source.
+ * @param {string} name The name of the source to create.
+ * @param {string[]} profiles The profile names to associate with the new source.
+ * @returns {Promise<number | null>} A promise that resolves to the new source ID on success, or null on failure.
+ */
+export const createSnmpCollectionSource = async (name: string, profiles: string[]): Promise<number | null> => {
+  const endpoint = '/datacollectionconf/collectsources'
+
+  try {
+    const response = await v2.post(endpoint, { name, profiles })
+
+    if (response.status === 201) {
+      return response.data as number
+    }
+
+    return null
+  } catch (error) {
+    console.error('Error creating SNMP data collection source:', error)
+    return null
+  }
+}
+
+/**
+ * Makes a POST request to the REST endpoint to create a new SNMP collection profile.
+ * @param {Omit<SnmpCollectionProfile, 'id'>} profile The profile data to create.
+ * @returns {Promise<boolean>} A promise that resolves to true if the creation was successful.
+ */
+export const createSnmpCollectionProfile = async (profile: Omit<SnmpCollectionProfile, 'id' | 'createdTime' | 'lastModified'>): Promise<boolean> => {
+  const endpoint = '/datacollectionconf/profiles'
+
+  try {
+    const response = await v2.post(endpoint, profile)
+
+    if (response.status === 201) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error('Error creating SNMP collection profile:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a PUT request to the REST endpoint to update an existing SNMP collection profile.
+ * @param {SnmpCollectionProfile} profile The updated profile to send.
+ * @returns {Promise<boolean>} A promise that resolves to true if the update was successful.
+ */
+export const updateDataCollectionProfile = async (profile: SnmpCollectionProfile): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/profiles/${profile.id}`
+
+  try {
+    const response = await v2.put(endpoint, profile)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error(`Error updating SNMP collection profile with ID ${profile.id}:`, error)
+    return false
+  }
+}
+
+/**
  * Makes a DELETE request to the REST endpoint to delete one or more SNMP data collection sources.
  * @param {number[]} sourceIds The IDs of the SNMP data collection sources to delete.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
@@ -491,7 +558,7 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
   const endpoint = '/datacollectionconf/collectsources'
   try {
     const params = new URLSearchParams()
-    sourceIds.forEach((id) => params.append('id', id.toString()))
+    sourceIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -506,6 +573,22 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
 }
 
 /**
+ * Makes a DELETE request to the REST endpoint to delete one or more SNMP data collection profiles.
+ * @param {number[]} ids The IDs of the profiles to delete.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ */
+export const deleteSnmpDataCollectionProfiles = async (ids: number[]): Promise<boolean> => {
+  const endpoint = '/datacollectionconf/profiles'
+  try {
+    const response = await v2.delete(endpoint, { data: ids })
+    return response.status === 200
+  } catch (error) {
+    console.error('Error deleting SNMP data collection profiles:', error)
+    return false
+  }
+}
+
+/**
  * Makes a DELETE request to the REST endpoint to delete one or more MIB groups for a specific SNMP data collection source.
  * @param {number} sourceId The ID of the SNMP data collection source containing the MIB groups.
  * @param {number[]} mibGroupIds The IDs of the MIB groups to delete.
@@ -515,7 +598,7 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mib-groups`
   try {
     const params = new URLSearchParams()
-    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    mibGroupIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -539,7 +622,7 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/resource-types`
   try {
     const params = new URLSearchParams()
-    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    resourceTypeIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -563,7 +646,7 @@ export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: nu
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/system-defs`
   try {
     const params = new URLSearchParams()
-    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    systemDefIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -642,7 +725,7 @@ export const enableDisableSnmpDataCollectionSources = async (
   const endpoint = `/datacollectionconf/collectsources/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    sourceIds.forEach((id) => params.append('id', id.toString()))
+    sourceIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -671,7 +754,7 @@ export const enableDisableSnmpMibGroups = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/mib-groups/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    mibGroupIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -700,7 +783,7 @@ export const enableDisableSnmpResourceTypes = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/resource-types/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    resourceTypeIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -729,7 +812,7 @@ export const enableDisableSnmpSystemDefs = async (
   const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/system-defs/status/${enabled}`
   try {
     const params = new URLSearchParams()
-    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    systemDefIds.forEach(id => params.append('id', id.toString()))
     const response = await v2.patch(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
@@ -742,4 +825,3 @@ export const enableDisableSnmpSystemDefs = async (
     return false
   }
 }
-

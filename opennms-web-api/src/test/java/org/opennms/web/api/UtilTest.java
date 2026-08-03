@@ -94,4 +94,31 @@ public class UtilTest {
 
         Assert.assertEquals("first.example.org", host);
     }
+
+    @Test
+    public void testSubstituteUrlLeavesLegitimateUrlUnchanged() {
+        final MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setScheme("https");
+        request.addHeader("X-Forwarded-Host", "nms.example.org:8443");
+        request.setContextPath("/opennms");
+
+        // A legitimate URL contains no HTML metacharacters, so sanitization is a no-op.
+        Assert.assertEquals("https://nms.example.org:8443/opennms/",
+                Util.substituteUrl(request, "%s://%x%c/"));
+    }
+
+    @Test
+    public void testSubstituteUrlEscapesMaliciousForwardedHost() {
+        final MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setScheme("https");
+        request.addHeader("X-Forwarded-Host", "evil\"><script>alert(1)</script>");
+        request.setContextPath("/opennms");
+
+        final String url = Util.substituteUrl(request, "%s://%x%c/");
+
+        // The reflected-XSS payload must not survive as raw HTML/JS metacharacters.
+        Assert.assertFalse("must not contain raw <", url.contains("<"));
+        Assert.assertFalse("must not contain raw >", url.contains(">"));
+        Assert.assertFalse("must not contain raw \"", url.contains("\""));
+    }
 }

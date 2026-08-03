@@ -74,6 +74,13 @@ public class MinionRestIT {
     }
 
     @Test
+    public void testHawtio() {
+        given().get("/hawtio/jolokia/version")
+                .then().assertThat()
+                .statusCode(200);
+    }
+
+    @Test
     public void testRestHealthServiceOnMinion() throws Exception {
 
         LOG.info("testing /minion/rest/health .........");

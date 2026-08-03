@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.1-SNAPSHOT</version>
+  <version>36.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1150,7 +1150,6 @@
                 <exclude>**/BlueprintCamelStateService.java</exclude>
                 <exclude>**/CaffeineDnsCache*.java</exclude>
                 <exclude>**/DroolsStreamUtils.java</exclude>
-                <exclude>**/GWTTerminal/war/**/*</exclude>
                 <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
                 <exclude>**/KafkaOffsetProvider.java</exclude>
                 <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
@@ -1675,7 +1674,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.1.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>36.0.3.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1740,16 +1739,15 @@
     <args4jVersion>2.33</args4jVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
-    <activemqVersion>5.19.5</activemqVersion>
-    <activemqCamelVersion>5.16.8</activemqCamelVersion>
+    <activemqVersion>5.19.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.83</bouncyCastleVersion>
+    <bouncyCastleVersion>1.84</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
-    <camelVersion>2.21.5</camelVersion>
+    <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1762,11 +1760,9 @@
     <commonsCompressVersion>1.26.1</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
-    <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
     <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.4.0</commonsExecVersion>
-    <commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
@@ -1783,15 +1779,14 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.8</cxfVersion>
+    <cxfVersion>3.6.11</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
     <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
-    <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
+    <dropwizardMetricsVersion>4.2.25</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
-    <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
@@ -1799,7 +1794,6 @@
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
-    <esapiVersion>2.5.2.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
@@ -1813,20 +1807,18 @@
     <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.75.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>31.1-jre</guavaVersion>
-    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
+    <guavaVersion>33.3.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
-    <guavaOsgiVersion>31.1</guavaOsgiVersion>
+    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
+    <guavaOsgiVersion>33.3.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
-    <hibernateVersion>3.6.11.ONMS_RELEASE_1</hibernateVersion>
-    <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
-    <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
-    <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
-    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateVersion>5.6.15.Final</hibernateVersion>
+    <hibernateValidatorVersion>6.2.5.Final</hibernateValidatorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>6.2.5.Final</hibernateValidatorAnnotationProcessorVersion>
+    <javaxElVersion>3.0.0</javaxElVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -1834,13 +1826,14 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.18.7</jackson2Version>
+    <jackson2Version>2.18.9</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>2.3</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
-    <jasperreportsVersion>6.20.0</jasperreportsVersion>
+    <jasperreportsVersion>7.0.7</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <openpdfVersion>1.3.43</openpdfVersion>
     <jasyptVersion>1.9.3</jasyptVersion>
     <javassistVersion>3.29.2-GA</javassistVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -1852,7 +1845,6 @@
     <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
-    <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.5.4</jettisonVersion>
     <jettyVersion>9.4.60.onms1</jettyVersion>
@@ -1916,28 +1908,27 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.21.1</log4j2Version>
-    <logbackClassicVersion>1.5.32</logbackClassicVersion>
+    <log4j2Version>2.25.5</log4j2Version>
+    <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
-    <minaVersion>2.2.7</minaVersion>
+    <minaVersion>2.2.9</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.2.13.Final</netty4Version>
-    <newtsVersion>3.0.0</newtsVersion>
-    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
+    <netty4Version>4.2.16.Final</netty4Version>
+    <newtsVersion>3.0.1</newtsVersion>
+    <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
-    <postgresqlVersion>42.7.10</postgresqlVersion>
+    <postgresqlVersion>42.7.13</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
-    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>2.0.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
     <osgiVersion>8.0.0</osgiVersion>
@@ -1955,7 +1946,6 @@
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
     <lz4JavaVersion>1.10.2</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
-    <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
@@ -1965,7 +1955,6 @@
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
     <snmp4jVersion>2.8.15</snmp4jVersion>
     <snmp4jagentVersion>2.7.9</snmp4jagentVersion>
@@ -1979,7 +1968,6 @@
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
-    <twitter4jVersion>3.0.6</twitter4jVersion>
     <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
@@ -1990,25 +1978,36 @@
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
-    <xmlsecVersion>2.3.4</xmlsecVersion>
     <xstreamVersion>1.4.21</xstreamVersion>
-    <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.3.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
-    <springVersion>4.2.9.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line
+         needed (Spring4Shell CVE-2022-22965, the SpEL array-allocation DoS CVE-2022-22950, a CGLIB/JDK
+         fast-class fix, and spring-web bug fixes) are all shipped in stock 5.3.x, so the patched-bundle
+         split is gone and every Spring bundle uses ${springVersion}. -->
+    <springVersion>5.3.39_2</springVersion>
+    <!-- OSGi-version form of springVersion: the ServiceMix Maven coordinate (5.3.39_2) is NOT a valid
+         OSGi version, so this suffix-free form is used in OSGi package/feature version fields
+         (custom.properties system-packages, feature version attrs/ranges). Keep in sync with springVersion. -->
+    <springOsgiVersion>5.3.39</springOsgiVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
+    <springSecurityVersion>5.8.16_1</springSecurityVersion>
+    <!-- OSGi-version form of springSecurityVersion (5.8.16_1 is not a valid OSGi version); keep in sync. -->
+    <springSecurityOsgiVersion>5.8.16</springSecurityOsgiVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
+    <!-- spring-security-kerberos has no upstream 5.x release; the 1.0.1 bundle only uses
+         spring-security-core auth interfaces, which are still present in 5.8. -->
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
-    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
+    <!-- SAML (spring-security-saml2-core 1.0.x extension) and OpenID dropped: both were unwired and are
+         incompatible with / removed in Spring Security 5.x. Reintroduce SAML via the built-in
+         spring-security-saml2-service-provider if needed (separate effort). -->
 
     <!-- moved here from topology features -->
     <jungVersion>2.1.1</jungVersion>
@@ -3068,12 +3067,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>activemq-web-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
         <version>${activemqVersion}</version>
@@ -3089,14 +3082,13 @@
         <version>${activemqVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>atomikos-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-spring</artifactId>
+        <version>${activemqVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>aws-dependencies</artifactId>
+        <artifactId>atomikos-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3122,18 +3114,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>felix-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>geronimo-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>gwt-maps-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3599,11 +3579,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-rrd-jrobin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-rrdtool</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3726,12 +3701,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>smack-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-asterisk</artifactId>
         <version>${project.version}</version>
@@ -3772,18 +3741,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>twitter4j-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>tracker-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -3911,24 +3868,22 @@
         <version>${camelVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.curator</groupId>
-        <artifactId>curator-client</artifactId>
-        <version>${curatorVersion}</version>
+        <!-- the <camelContext> spring XML namespace handler lives here as of Camel 3 -->
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-spring-xml</artifactId>
+        <version>${camelVersion}</version>
         <exclusions>
           <exclusion>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
           </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.curator</groupId>
-        <artifactId>curator-framework</artifactId>
-        <version>${curatorVersion}</version>
-        <exclusions>
           <exclusion>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3980,6 +3935,11 @@
         <version>${mavenResolverApiVersion}</version>
       </dependency>
       <dependency>
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>openpdf</artifactId>
+        <version>${openpdfVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
         <version>${batikVersion}</version>
@@ -4021,11 +3981,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.santuario</groupId>
-        <artifactId>xmlsec</artifactId>
-        <version>${xmlsecVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>bsf</groupId>
         <artifactId>bsf</artifactId>
         <version>2.4.0</version>
@@ -4051,6 +4006,8 @@
         <artifactId>caffeine</artifactId>
         <version>${caffeineVersion}</version>
       </dependency>
+      <!-- no direct users, but pins the xstream shipped in lib/ (transitive of
+           drools-xml-support, which declares an older release) -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
@@ -4124,11 +4081,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>commons-daemon</groupId>
-        <artifactId>commons-daemon</artifactId>
-        <version>${commonsDaemonVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>${commonsDbcpVersion}</version>
@@ -4148,11 +4100,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${commonsExecVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>${commonsFileuploadVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -4301,23 +4248,6 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-validator</groupId>
-        <artifactId>commons-validator-core</artifactId>
-        <version>${commonsValidatorVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.dbunit</groupId>
-        <artifactId>dbunit</artifactId>
-        <version>2.4.8</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.dom4j</groupId>
@@ -4513,17 +4443,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>1.8.0</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>${jcommonVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jfree</groupId>
         <artifactId>jfreechart</artifactId>
         <version>${jfreechartVersion}</version>
@@ -4538,6 +4457,8 @@
         <artifactId>kotlin-osgi-bundle</artifactId>
         <version>${kotlinVersion}</version>
       </dependency>
+      <!-- no direct users, but pins the kotlin-stdlib shipped in lib/ (transitive of
+           okhttp, which declares an older release) -->
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-stdlib</artifactId>
@@ -4683,6 +4604,11 @@
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>${javaxElVersion}</version>
+      </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
         <groupId>com.sun.istack</groupId>
@@ -4721,11 +4647,6 @@
       </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>javax.activation</artifactId>
-        <version>1.2.0</version>
-      </dependency>
-      <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>1.1.1</version>
@@ -4747,11 +4668,11 @@
         <artifactId>jakarta.activation-api</artifactId>
         <version>1.2.2</version>
       </dependency>
-      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
+      <!-- Using JPA 2.2 API for Hibernate 5.6.15 compatibility -->
       <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>1.0.1.Final</version>
+        <groupId>javax.persistence</groupId>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -4761,12 +4682,12 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
@@ -5009,12 +4930,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>net.sourceforge.jwebunit</groupId>
-        <artifactId>jwebunit-htmlunit-plugin</artifactId>
-        <version>2.5</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.apache.karaf.shell</groupId>
         <artifactId>org.apache.karaf.shell.core</artifactId>
         <version>${karafVersion}</version>
@@ -5045,11 +4960,6 @@
         <groupId>mx4j</groupId>
         <artifactId>mx4j-tools</artifactId>
         <version>3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nokogiri</groupId>
-        <artifactId>nekohtml</artifactId>
-        <version>1.9.22.noko2</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml</groupId>
@@ -5134,7 +5044,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5156,7 +5066,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5200,7 +5110,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5244,7 +5154,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5303,7 +5213,7 @@
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-web</artifactId>
-        <version>${patchedSpringVersion}</version>
+        <version>${springVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -5322,17 +5232,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.spring-webmvc-portlet</artifactId>
-        <version>${springVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      <!-- spring-webmvc-portlet was removed in Spring 5.0; no OpenNMS module consumes it. -->
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
         <artifactId>org.apache.servicemix.bundles.spring-websocket</artifactId>
@@ -5415,11 +5315,6 @@
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity-engine-core</artifactId>
         <version>${velocityVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>wsdl4j</groupId>
-        <artifactId>wsdl4j</artifactId>
-        <version>${wsdl4jVersion}</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -5558,6 +5453,9 @@
         <version>${jqwikVersion}</version>
         <scope>test</scope>
       </dependency>
+      <!-- no direct users, but these align the JUnit Platform on test classpaths:
+           transitives declare jupiter-api 5.6.x, which skews platform-commons
+           against the pinned vintage-engine and breaks the surefire provider -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>

@@ -9,12 +9,11 @@
         class="flex button-wrapper"
         v-if="provisionDList?.length > 0"
       >
-        <FeatherButton
+        <OnmsButton
           class="button"
-          text
+          variant="text"
           @click="addNew"
-          >Add External Requisition</FeatherButton
-        >
+        >Add External Requisition</OnmsButton>
       </div>
     </div>
     <ConfigurationTable
@@ -43,7 +42,7 @@
       :advancedKeyUpdate="advancedKeyUpdate"
       :helpState="helpState"
     />
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="doubleCheck.active"
       :title="`Delete ${doubleCheck.title}`"
       @cancel="doubleCheckSelected(false)"
@@ -52,7 +51,7 @@
       <template v-slot:content>
         <p>This will delete the requisition: {{ doubleCheck.title }}. Are you sure?</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
@@ -60,9 +59,11 @@
   lang="ts"
   setup
 >
+import { computed, reactive } from 'vue'
+
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import { FeatherButton } from '@featherds/button'
+import { OnmsButton, OnmsConfirmationDialog } from '@opennms/onms-ui'
 
 import { putProvisionDService } from '@/services/configurationService'
 import { useProvisionD } from './hooks'
@@ -72,7 +73,6 @@ import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationTable from './ConfigurationTable.vue'
 import ConfigurationEmptyTable from './ConfigurationEmptyTable.vue'
 import ConfigurationDrawer from './ConfigurationDrawer.vue'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import { RequisitionData } from './copy/requisitionTypes'
 
 const configurationStore = useConfigurationStore()
@@ -185,7 +185,7 @@ const saveCurrentState = async () => {
   selectedProvisionDItem.errors = ConfigurationHelper.createBlankErrors()
 
   // Validate the local state.
-  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value,activeIndex.index)
+  const validatedItem = ConfigurationHelper.validateLocalItem(selectedProvisionDItem?.config, provisionDList.value, activeIndex.index)
 
   // If we're valid.
   if (!validatedItem.hasErrors) {
@@ -298,12 +298,11 @@ const advanceActiveUpdate = (newVal: boolean) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 .title {
-  @include headline3();
+  @include onms-headline3();
 }
 .title-padding {
   margin: 20px;
@@ -312,11 +311,11 @@ const advanceActiveUpdate = (newVal: boolean) => {
   margin-bottom: 20px;
 }
 .white-bg {
-  background-color: var($background);
+  background-color: var(--p-content-background);
   border: 1px solid #ebedf0;
   margin-top: 16px;
   margin-bottom: 24px;
-  @include elevation(2);
+  @include onms-elevation(2);
 }
 .flex {
   display: flex;
@@ -327,4 +326,3 @@ const advanceActiveUpdate = (newVal: boolean) => {
   font-size: 24px;
 }
 </style>
-

@@ -24,6 +24,7 @@ import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import API from '@/services'
 import { SCVCredentials, ScvSearchItem } from '@/types/scv'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useScvStore = defineStore('scvStore', () => {
   const aliases = ref([] as string[])
@@ -167,10 +168,10 @@ export const useScvStore = defineStore('scvStore', () => {
   }
 
   const addAttribute = () => {
-    credentials.value.attributes = { ...credentials.value.attributes, ...{ '': '' } } // adds empty key/val inputs in form
+    credentials.value.attributes = { ...credentials.value.attributes, ...{ '': '' }} // adds empty key/val inputs in form
   }
 
-  const updateAttribute = (attribute: { key: string; keyVal: { key: string; value: string } }) => {
+  const updateAttribute = (attribute: { key: string; keyVal: { key: string; value: string }}) => {
     const attributes = { ...credentials.value.attributes }
 
     // updating the value
@@ -211,4 +212,3 @@ export const useScvStore = defineStore('scvStore', () => {
     updateCredentials
   }
 })
-

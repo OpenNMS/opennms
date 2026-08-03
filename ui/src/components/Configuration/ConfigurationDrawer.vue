@@ -22,16 +22,11 @@
             Requisition
           </div>
           <div class="icon">
-            <FeatherButton
-              icon="Cancel"
-              text
+            <OnmsIconButton
+              aria-label="Cancel"
+              :icon="cancelIcon"
               @click="props.closePanel"
-            >
-              <FeatherIcon
-                class="close-icon"
-                :icon="cancelIcon"
-              />
-            </FeatherButton>
+            />
           </div>
         </div>
       </div>
@@ -64,14 +59,12 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button flex button-align-right mt-20">
-          <FeatherButton
-            @click="props.saveCurrentState"
-            primary
+          <OnmsButton
+            label="Save & Close"
+            :loading="loading"
             :disabled="loading"
-          >
-            <FeatherSpinner v-if="loading" />
-            <span v-if="!loading">Save &amp; Close</span>
-          </FeatherButton>
+            @click="props.saveCurrentState"
+          />
         </div>
       </div>
     </div>
@@ -82,13 +75,11 @@
   setup
   lang="ts"
 >
-import { PropType } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import { FeatherSpinner } from '@featherds/progress'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
-import Cancel from '@featherds/icon/navigation/Cancel'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
@@ -138,7 +129,8 @@ watch(errors, () => {
   if (props.item?.errors?.hasErrors) {
     clearTimeout(initialWatchTimeout.value)
     initialWatchTimeout.value = window.setTimeout(() => {
-      const elem = document.querySelector('.feather-input-error')
+      // FormField renders the error as <small class="field-error"> inside .form-field
+      const elem = document.querySelector('.field-error')
       const wrapper = document.querySelector('.slide-outer-body')
 
       //Scrolls the drawer to the first error.
@@ -151,9 +143,9 @@ watch(errors, () => {
       clearTimeout(bounceInTimeout.value)
 
       bounceOutTimeout.value = window.setTimeout(() => {
-        const inputWrapper = elem?.parentElement?.parentElement
+        const inputWrapper = elem?.parentElement
         inputWrapper?.classList.add('bounce')
-        inputWrapper?.querySelector<HTMLInputElement>('.feather-input')?.focus()
+        inputWrapper?.querySelector<HTMLInputElement>('.p-inputtext')?.focus()
         bounceInTimeout.value = window.setTimeout(() => {
           inputWrapper?.classList.remove('bounce')
         }, 200)
@@ -182,37 +174,13 @@ const toggleHelp = () => {
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
-
-.side-label {
-  .group-label {
-    color: var($primary);
-  }
-}
 .slide-inner-body {
-  .feather-input-container {
+  .form-field {
     transform: scale(1);
     transition: all ease-in-out 0.2s;
   }
-  .feather-input-container.bounce {
+  .form-field.bounce {
     transform: scale(1.02);
-  }
-}
-.expansion-panel {
-  .feather-expansion-header-button-text {
-    color: #273180;
-  }
-}
-
-.spinner-button {
-  .spinner {
-    width: 20px;
-    height: 20px;
-  }
-  .spinner-container {
-    display: flex;
-    align-items: center;
-    height: 100%;
   }
 }
 </style>
@@ -220,9 +188,9 @@ const toggleHelp = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
+
 
 .flex {
   display: flex;
@@ -272,8 +240,8 @@ const toggleHelp = () => {
 }
 .slide-inner-body {
   padding: 20px 20px 4px;
-  background-color: var($background);
-  @include elevation(1);
+  background-color: var(--p-content-background);
+  @include onms-elevation(1);
 }
 .side-inner-title {
   display: flex;
@@ -283,28 +251,25 @@ const toggleHelp = () => {
   padding-left: 40px;
   padding-right: 40px;
   padding-bottom: 8px;
-  background-color: var($background);
+  background-color: var(--p-content-background);
   border-top: 1px solid #d7d7dc;
   border-bottom: 1px solid #d7d7dc;
 }
 .title {
-  @include headline2();
-  color: var($primary);
+  @include onms-headline2();
+  color: var(--p-primary-color);
   min-height: 40px;
   display: flex;
   align-items: center;
 }
 .icon {
-  .btn {
+  :deep(.p-button) {
     margin: 0;
   }
 }
-.close-icon {
-  font-size: 32px;
-}
 .sideshared {
   z-index: 2;
-  background-color: var($background);
+  background-color: var(--p-content-background);
   width: 40vw;
   min-width: 320px;
   height: 100vh;
@@ -328,4 +293,3 @@ const toggleHelp = () => {
   transition: all ease-in-out 0.3s;
 }
 </style>
-

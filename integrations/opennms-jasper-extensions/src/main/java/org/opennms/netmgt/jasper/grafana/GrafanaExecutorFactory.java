@@ -23,7 +23,6 @@ package org.opennms.netmgt.jasper.grafana;
 
 import java.util.Map;
 
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -40,11 +39,6 @@ public class GrafanaExecutorFactory implements QueryExecuterFactory {
     @Override
     public JRQueryExecuter createQueryExecuter(JasperReportsContext jasperReportsContext, JRDataset dataset, Map<String, ? extends JRValueParameter> parameters) {
         return new GrafanaQueryExecutor(jasperReportsContext, dataset, parameters);
-    }
-
-    @Override
-    public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parameters) {
-        return createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parameters);
     }
 
     @Override

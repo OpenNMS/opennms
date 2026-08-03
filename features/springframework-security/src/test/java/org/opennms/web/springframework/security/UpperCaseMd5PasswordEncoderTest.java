@@ -28,4 +28,13 @@ public class UpperCaseMd5PasswordEncoderTest extends TestCase {
 		UpperCaseMd5PasswordEncoder encoder = new UpperCaseMd5PasswordEncoder();
 		assertEquals("encoded admin password", "21232F297A57A5A743894A0E4A801FC3", encoder.encodePassword("admin", null));
 	}
+
+	public void testPasswordEncoderContract() {
+		UpperCaseMd5PasswordEncoder encoder = new UpperCaseMd5PasswordEncoder();
+		assertEquals("encode() matches the salt-less encodePassword()", "21232F297A57A5A743894A0E4A801FC3", encoder.encode("admin"));
+		assertTrue("matches() accepts the stored uppercase hash", encoder.matches("admin", "21232F297A57A5A743894A0E4A801FC3"));
+		assertTrue("matches() is case-insensitive on the stored hash", encoder.matches("admin", "21232f297a57a5a743894a0e4a801fc3"));
+		assertFalse("matches() rejects a wrong password", encoder.matches("wrong", "21232F297A57A5A743894A0E4A801FC3"));
+		assertFalse("matches() rejects a null stored hash", encoder.matches("admin", null));
+	}
 }

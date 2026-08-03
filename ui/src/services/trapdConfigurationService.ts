@@ -62,8 +62,8 @@ export const downloadTrapdConfig = async (isXml: boolean) => {
 
   try {
     return await v2.get(fullEndpoint, { responseType: 'blob' })
-  } catch (err) {
-    console.error('Error downloading Trap config file:', err)
+  } catch (_err) {
+    console.error('Error downloading Trap config file:', _err)
     return false
   }
 }
@@ -95,4 +95,3 @@ export const updateTrapdConfiguration = async (payload: TrapConfig): Promise<voi
     return throwTrapdServiceError(error, 'Failed to update trapd configuration.')
   }
 }
-

@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.config</artifactId>
-        <version>36.0.1-SNAPSHOT</version>
+        <version>36.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config</groupId>
@@ -77,14 +77,13 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-
-        <!-- tests -->
         <dependency>
             <groupId>org.opennms.features.config.service</groupId>
             <artifactId>org.opennms.features.config.service.impl</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
+
+        <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

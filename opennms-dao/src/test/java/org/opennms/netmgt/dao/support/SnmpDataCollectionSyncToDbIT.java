@@ -79,6 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=osgi")
 @JUnitTemporaryDatabase
+@Transactional
 public class SnmpDataCollectionSyncToDbIT {
 
     @Autowired
@@ -102,7 +103,6 @@ public class SnmpDataCollectionSyncToDbIT {
     private static final String DEFAULT_TARGET = "default";
 
     @Before
-    @Transactional
     public void wipe() {
         sourceDao.deleteAll(sourceDao.findAll());
         sourceDao.flush();
@@ -111,7 +111,6 @@ public class SnmpDataCollectionSyncToDbIT {
     }
 
     @After
-    @Transactional
     public void cleanup() {
         sourceDao.deleteAll(sourceDao.findAll());
         sourceDao.flush();

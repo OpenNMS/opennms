@@ -5,8 +5,7 @@ set -e # exit when a command fails
 INCOMING_ARGS=("$@")
 
 if [ -z "${OPENNMS_HOME}" ]; then
-  # shellcheck disable=SC2154
-  OPENNMS_HOME="${install.dir}"
+  OPENNMS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fi
 
 if [ -r "${OPENNMS_HOME}/etc/opennms.conf" ]; then

@@ -42,7 +42,7 @@ const getAlarms = async (queryParameters?: QueryParameters): Promise<AlarmApiRes
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
@@ -57,7 +57,7 @@ const modifyAlarm = async (alarmId: string, alarmQueryParameters: AlarmQueryPara
   try {
     const resp = await rest.put(endpointWithQueryString, '')
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

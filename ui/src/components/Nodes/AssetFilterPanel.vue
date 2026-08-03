@@ -1,0 +1,168 @@
+<template>
+  <div class="asset-filter-container">
+    <div class="onms-row add-row">
+      <div class="onms-col-5">
+        <FormField label="Asset Field">
+          <OnmsSelect
+            v-model="currentSelection"
+            :options="assetOptions"
+            optionLabel="title"
+            placeholder="Select a field"
+            data-test="asset-field-select"
+          />
+        </FormField>
+      </div>
+      <div class="onms-col-5">
+        <FormField label="Value">
+          <OnmsInputText
+            v-model="assetValue"
+            data-test="asset-value-input"
+          />
+        </FormField>
+      </div>
+      <div class="onms-col-2 add-btn-col">
+        <OnmsButton
+          variant="outlined"
+          data-test="asset-add-button"
+          class="add-asset-filter-button"
+          @click="onAddAssetFilter"
+        >
+          <OnmsIcon :icon="Add" />
+          Add
+        </OnmsButton>
+      </div>
+    </div>
+
+    <OnmsTable
+      v-if="gridItems.length > 0"
+      :value="gridItems"
+      dataKey="column"
+      class="asset-filter-table"
+    >
+      <OnmsColumn field="label" header="Asset Field" style="width: 40%" />
+      <OnmsColumn field="value" header="Value">
+        <template #body="{ data }">
+          <OnmsInputText
+            v-model="data.value"
+            class="asset-filter-input"
+          />
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
+        <template #body="{ data }">
+          <OnmsIconButton
+            data-test="delete-asset-filter-button"
+            title="Remove asset filter"
+            :icon="DeleteIcon"
+            @click="removeGridItem(data.column)"
+          />
+        </template>
+      </OnmsColumn>
+    </OnmsTable>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+
+interface GridItem {
+  column: string
+  label: string
+  value: string
+}
+
+interface AssetOption { title: string; value: string }
+const assetOptions: AssetOption[] = ASSET_COLUMN_OPTIONS.map(o => ({ title: o.label, value: o.value }))
+
+const nodeStructureStore = useNodeStructureStore()
+const assetValue = ref('')
+const currentSelection = ref<AssetOption | undefined>(undefined)
+const gridItems = ref<GridItem[]>([])
+
+const onAddAssetFilter = () => {
+  if (!currentSelection.value || !assetValue.value.trim()) {
+    return
+  }
+  const column = currentSelection.value.value as string
+  const label = currentSelection.value.title as string
+  const existing = gridItems.value.findIndex(i => i.column === column)
+  if (existing >= 0) {
+    gridItems.value[existing].value = assetValue.value.trim()
+  } else {
+    gridItems.value.push({ column, label, value: assetValue.value.trim() })
+  }
+  assetValue.value = ''
+  currentSelection.value = undefined
+}
+
+const removeGridItem = (column: string) => {
+  gridItems.value = gridItems.value.filter(i => i.column !== column)
+}
+
+const applyToStore = () => {
+  const assetFilters = gridItems.value
+    .filter(i => i.value.trim())
+    .map(i => ({ column: i.column, value: i.value.trim() }))
+  nodeStructureStore.setFilterWithAssetFilters(assetFilters)
+}
+
+const resetFromStore = () => {
+  gridItems.value = (nodeStructureStore.queryFilter.assetFilters ?? []).map(f => ({
+    column: f.column,
+    label: assetOptions.find(o => o.value === f.column)?.title as string ?? f.column,
+    value: f.value
+  }))
+  assetValue.value = ''
+  currentSelection.value = undefined
+}
+
+defineExpose({ applyToStore, resetFromStore, currentSelection, assetValue, gridItems })
+
+onMounted(() => {
+  resetFromStore()
+})
+</script>
+
+<style lang="scss" scoped>
+@use '@/styles/onms-typography' as *;
+@use '@/styles/onms-tokens' as variables;
+
+.asset-filter-container {
+  .add-asset-filter-button {
+    border-radius: 0;
+    border: 1px solid var(--onms-primary);
+    width: auto;
+    padding: 0.5em 1em;
+  }
+
+  .add-btn-col {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 0.5rem;
+  }
+
+  .asset-filter-table {
+    margin-top: 1rem;
+
+    .asset-filter-input {
+      width: 100%;
+    }
+
+    :deep(.p-datatable-tbody > tr > td) {
+      padding: 0.25rem 0.5rem;
+      vertical-align: middle;
+    }
+
+    :deep(.p-datatable-thead > tr > th) {
+      padding: 0.4rem 0.5rem;
+    }
+  }
+}
+</style>

@@ -45,6 +45,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLFilterImpl;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -502,6 +503,19 @@ public class SnmpDataCollectionMigration {
      */
     <T> T unmarshal(final Class<T> clazz, final File file) throws SQLException {
         try (final FileInputStream fis = new FileInputStream(file)) {
+            return unmarshal(clazz, fis, file.getAbsolutePath());
+        } catch (IOException e) {
+            throw new SQLException("Failed to unmarshal " + file.getAbsolutePath(), e);
+        }
+    }
+
+    /**
+     * Unmarshal an XML stream to a JAXB object using the same hardened SAX setup
+     * as the file variant. The caller owns the stream; {@code sourceDescription}
+     * is only used for error reporting.
+     */
+    static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final String sourceDescription) throws SQLException {
+        try {
             final JAXBContext ctx = JAXBContext.newInstance(clazz);
             final Unmarshaller unmarshaller = ctx.createUnmarshaller();
 
@@ -509,14 +523,14 @@ public class SnmpDataCollectionMigration {
             final NamespaceFilter filter = new NamespaceFilter(DATACOLLECTION_NAMESPACE);
             filter.setParent(reader);
 
-            final InputSource is = new InputSource(fis);
+            final InputSource is = new InputSource(stream);
             final SAXSource source = new SAXSource(filter, is);
 
             @SuppressWarnings("unchecked")
             final T result = (T) unmarshaller.unmarshal(source);
             return result;
-        } catch (JAXBException | SAXException | ParserConfigurationException | IOException e) {
-            throw new SQLException("Failed to unmarshal " + file.getAbsolutePath(), e);
+        } catch (JAXBException | SAXException | ParserConfigurationException e) {
+            throw new SQLException("Failed to unmarshal " + sourceDescription, e);
         }
     }
 

@@ -67,9 +67,9 @@ Accept Situation .
 [source,bash]
 ----
 curl -v -X POST http://<opennms-host>:<port>/opennms/api/v2/situations/create   -H "Content-Type: application/json"   -u <username>:<password>   -d '{
-        "alarmIdList": [Alarms Id separated by comma]
-        "description": "some description here ",
-        "diagnosticText": "diagnostic text here "
+        "alarmIdList": [1, 2],
+        "description": "some description here",
+        "diagnosticText": "diagnostic text here"
       }'
 
 ----
@@ -82,8 +82,8 @@ curl -X POST http://<opennms-host>:<port>/opennms/api/v2/situations/associateAla
   -H "Content-Type: application/json" \
   -u <username>:<password> \
   -d '{
-        "situationId": "Situation ID",
-        "alarmIdList": [Alarms Id  separated by comma]
+        "situationId": 100,
+        "alarmIdList": [1, 2]
       }'
 ----
 
@@ -114,9 +114,9 @@ Remove Alarm from situation.
 
 [source,bash]
 ----
-curl -X DELETE http://<opennms-host>:<port>/opennms/api/v2/situations/removeAlarm   -H "Content-Type: application/json"   -u <username>:<passowrd>   -d '{
-       "situationId": "Situation ID",
-        "alarmIdList": [Alarms Id  separated by comma]
+curl -X DELETE http://<opennms-host>:<port>/opennms/api/v2/situations/removeAlarm   -H "Content-Type: application/json"   -u <username>:<password>   -d '{
+        "situationId": 100,
+        "alarmIdList": [1, 2]
       }'
 
 ----

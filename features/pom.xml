@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.1-SNAPSHOT</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -19,6 +19,9 @@
 
     <!-- Topologies -->
     <module>topologies</module>
+
+    <!-- Custom topology views + the image assets they reference -->
+    <module>topology-views</module>
 
     <!-- ActiveMQ broker -->
     <module>activemq</module>
@@ -52,7 +55,6 @@
     <module>kafka</module>
 
     <!-- Executor factories -->
-    <module>executor-factory</module>
 
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
@@ -124,10 +126,6 @@
 
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
-
-    <!-- Dashboard and dashlet UI elements -->
-    <module>vaadin-dashboard</module>
-    <module>vaadin-dashlets</module>
 
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>

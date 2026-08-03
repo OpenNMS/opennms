@@ -410,7 +410,7 @@ describe('useSnmpConfigStore', () => {
 
       const definition = {
         ...mockSnmpAgentConfig,
-        range: [{ begin: '10.0.0.1', end: '10.0.0.100'}],
+        range: [{ begin: '10.0.0.1', end: '10.0.0.100' }],
         specific: [] as string[]
       } as SnmpDefinition
 

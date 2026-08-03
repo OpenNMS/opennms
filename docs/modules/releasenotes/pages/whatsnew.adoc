@@ -9,6 +9,16 @@
 
 == New features and important changes
 
+=== Spring, Hibernate, and Camel platform upgrade
+The core application frameworks have been upgraded to currently supported versions:
+Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
+The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
+and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
+
+Most installations require no action, but there are behavior and compatibility changes for installations with
+custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
+See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
@@ -73,6 +83,15 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 == Breaking changes
 
+=== SAML and OpenID SSO support removed
+Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
+If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
+See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
+
+=== XMPP (Jabber) notification strategies removed
+The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
+Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
@@ -94,3 +113,35 @@ Attempting a schema upgrade with `install -dis` will result in an error.
 If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
 Use this only as a last resort, since it may affect compatibility.
 Be aware that doing so takes you beyond supported configurations — here be dragons.
+
+=== Prometheus RemoteWrite plugin (formerly Cortex TSS plugin)
+
+The OpenNMS Cortex TSS plugin has been renamed to the Prometheus RemoteWrite plugin to reflect that it works with any Prometheus `remote_write`-compatible time series store, not just Cortex.
+As part of the rename, the OSGi configuration PID changed from `org.opennms.plugins.tss.cortex` to `org.opennms.plugins.tss.prometheus`.
+
+IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`, rename the file to `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` after upgrading. If you do not, the plugin falls back to default values and writes will not reach your configured time series store.
+
+The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
+See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
+
+=== Jasper Reports engine
+We have updated the Jasper Reports engine to version 7.0.7. Custom reports created using version 6.x must be updated to work with the new version.
+
+=== Ops Board and Wallboard removed
+
+The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
+These provided auto-rotating, dashlet-composed displays intended for wall-mounted operations screens.
+
+The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
+There is no drop-in replacement.
+
+=== KSC Reports renamed to Graph Collections
+
+The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
+The global search category formerly named *KSC Report* is now *Graph Collection*.
+
+This is a user-facing label change only.
+The underlying configuration file (`etc/ksc-performance-reports.xml`), the REST endpoints under `/rest/ksc`, the `KSC/*.jsp` page URLs, and the internal identifiers are unchanged, so existing reports, saved bookmarks, and API integrations continue to work without modification.
+
+NOTE: Update any of your own documentation, runbooks, training material, or UI automation that refers to *KSC Reports* by name — including tests that match on the old menu label or the *KSC Report* search category — to use *Graph Collections*.
+

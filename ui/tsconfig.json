@@ -22,9 +22,10 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
+    "packages/onms-ui/src/**/*.ts",
+    "packages/onms-ui/src/**/*.vue",
     "vite.config.ts",
-    "tests",
-    "auto-imports.d.ts"
+    "tests"
   ],
   "exclude": [
     "node_modules"

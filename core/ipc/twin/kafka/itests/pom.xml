@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.core.ipc.twin.kafka</artifactId>
         <groupId>org.opennms.core.ipc.twin</groupId>
-        <version>36.0.1-SNAPSHOT</version>
+        <version>36.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guavagRPCVersion}</version>
+            <version>${guavaVersion}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

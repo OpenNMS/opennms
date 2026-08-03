@@ -1,4 +1,4 @@
-.Install OpenJDK 17 JRE runtime
+.Install OpenJDK 21 JRE runtime
 [source, console]
 sudo dnf -y install java-21-openjdk-headless
 

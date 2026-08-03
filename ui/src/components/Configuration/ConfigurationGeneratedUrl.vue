@@ -14,7 +14,7 @@
   lang="ts"
   setup
 >
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import { LocalConfiguration } from './configuration.types'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import { RequisitionData } from './copy/requisitionTypes'
@@ -45,28 +45,26 @@ const convertedItem = computed(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 .white-bg {
-  background-color: var($surface);
+  background-color: var(--p-content-background);
   display: flex;
   align-items: flex-start;
   padding: 16px 24px;
-  @include elevation(2);
+  @include onms-elevation(2);
   margin-top: 16px;
 }
 .title {
-  @include headline4();
-  color: var($primary);
+  @include onms-headline4();
+  color: var(--p-primary-color);
 }
 .url {
   margin-top: 6px;
   margin-left: 3px;
-  @include subtitle2();
+  @include onms-subtitle2();
   color: #a0a1a4;
   overflow-wrap: anywhere;
 }
 </style>
-

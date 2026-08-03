@@ -288,11 +288,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testMicroblogConfiguration() {
-        testConfigFile("microblog-configuration.xml");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 
@@ -543,16 +538,6 @@ public class ConfigTesterTest {
     public void testWSManConfigFiles() {
         testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Configuration code is not in its own class.
-     * 
-     * It's embedded in XMPPNotificationManager's constructor.
-     */
-    public void testXmppConfiguration() {
-        ignoreConfigFile("xmpp-configuration.properties");
     }
 
     @Test

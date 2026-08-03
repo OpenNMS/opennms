@@ -60,30 +60,6 @@
       </argument>
    </command>
    <command binary="false">
-      <name>xmppMessage</name>
-      <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
-      <comment>class for sending XMPP notifications</comment>
-      <contact-type>xmppAddress</contact-type>
-      <argument streamed="false">
-         <switch>-xmpp</switch>
-      </argument>
-      <argument streamed="false">
-         <switch>-tm</switch>
-      </argument>
-   </command>
-   <command binary="false">
-      <name>xmppGroupMessage</name>
-      <execute>org.opennms.netmgt.notifd.XMPPGroupNotificationStrategy</execute>
-      <comment>class for sending XMPP Group Chat notifications</comment>
-      <contact-type>xmppAddress</contact-type>
-      <argument streamed="false">
-         <switch>-xmpp</switch>
-      </argument>
-      <argument streamed="false">
-         <switch>-tm</switch>
-      </argument>
-   </command>
-   <command binary="false">
       <name>ircCat</name>
       <execute>org.opennms.netmgt.notifd.IrcCatNotificationStrategy</execute>
       <comment>class for sending IRC notifications via an IRCcat bot</comment>
@@ -183,38 +159,6 @@
       </argument>
       <argument streamed="false">
          <switch>-tuipin</switch>
-      </argument>
-   </command>
-   <command binary="false">
-      <name>microblogUpdate</name>
-      <execute>org.opennms.netmgt.notifd.MicroblogNotificationStrategy</execute>
-      <comment>class for updating a microblog service (Identica / StatusNet / Twitter) for notifications</comment>
-      <argument streamed="false">
-         <switch>-tm</switch>
-      </argument>
-   </command>
-   <command binary="false">
-      <name>microblogReply</name>
-      <execute>org.opennms.netmgt.notifd.MicroblogReplyNotificationStrategy</execute>
-      <comment>class for replying to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
-      <contact-type>microblog</contact-type>
-      <argument streamed="false">
-         <switch>-ublog</switch>
-      </argument>
-      <argument streamed="false">
-         <switch>-tm</switch>
-      </argument>
-   </command>
-   <command binary="false">
-      <name>microblogDM</name>
-      <execute>org.opennms.netmgt.notifd.MicroblogDMNotificationStrategy</execute>
-      <comment>class for sending direct messages to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
-      <contact-type>microblog</contact-type>
-      <argument streamed="false">
-         <switch>-ublog</switch>
-      </argument>
-      <argument streamed="false">
-         <switch>-tm</switch>
       </argument>
    </command>
    <command binary="false">

@@ -1,13 +1,16 @@
 import {
   filterSnmpCollectionSources,
-  getAllSnmpCollectionSourcesNamesAndIds
+  getAllSnmpCollectionSourcesNamesAndIds,
+  getAllSnmpCollectionProfiles,
+  deleteSnmpDataCollectionProfiles,
+  createSnmpCollectionSource
 } from '@/services/snmpDataCollectionService'
-import { SnmpDataCollectionStoreState } from '@/types/snmpDataCollection'
+import { SnmpCollectionProfile, SnmpDataCollectionStoreState } from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
   page: 1,
-  pageSize: 10,
+  pageSize: 50,
   total: 0
 }
 
@@ -23,7 +26,10 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     sourcesSorting: {
       sortOrder: 'desc',
       sortKey: 'createdTime'
-    }
+    },
+    profiles: [],
+    selectedProfile: null,
+    profilesSearchTerm: ''
   }),
   actions: {
     async fetchAllSourcesNames() {
@@ -57,11 +63,15 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     },
     async onChangeSourcesSearchTerm(searchTerm: string) {
       this.sourcesSearchTerm = searchTerm
+      // Reset to the first page so a narrowed result set can't leave the lazy
+      // table fetching an offset past the new total.
+      this.sourcesPagination.page = 1
       await this.fetchSnmpCollectionSources()
     },
     async onSourcesSortChange(sortKey: string, sortOrder: string) {
       this.sourcesSorting.sortKey = sortKey
       this.sourcesSorting.sortOrder = sortOrder
+      this.sourcesPagination.page = 1
       await this.fetchSnmpCollectionSources()
     },
     async onSourcePageChange(page: number) {
@@ -73,13 +83,41 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
       this.sourcesPagination.pageSize = pageSize
       await this.fetchSnmpCollectionSources()
     },
-    async refreshSourcesfilters() {
-      this.sourcesPagination = { ...defaultPagination }
-      this.sourcesSearchTerm = ''
-      this.sourcesSorting.sortKey = 'createdTime'
-      this.sourcesSorting.sortOrder = 'desc'
-      await this.fetchSnmpCollectionSources()
+    async fetchSnmpCollectionProfiles() {
+      this.isLoading = true
+      try {
+        const response = await getAllSnmpCollectionProfiles()
+        this.profiles = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection profiles:', error)
+        this.isLoading = false
+      }
+    },
+    onChangeProfilesSearchTerm(searchTerm: string) {
+      this.profilesSearchTerm = searchTerm
+    },
+    async removeSnmpCollectionProfiles(ids: number[]): Promise<boolean> {
+      return deleteSnmpDataCollectionProfiles(ids)
+    },
+    profilesForSource(sourceName: string): SnmpCollectionProfile[] {
+      const normalizedSourceName = sourceName.trim().toLowerCase()
+
+      if (!normalizedSourceName) {
+        return []
+      }
+
+      return this.profiles.filter((profile) => {
+        if (!Array.isArray(profile.sourceNames)) {
+          return false
+        }
+        return profile.sourceNames.some(profileSourceName =>
+          profileSourceName.trim().toLowerCase() === normalizedSourceName
+        )
+      })
+    },
+    async createSnmpDataCollectionSource(name: string, profiles: string[]): Promise<number | null> {
+      return createSnmpCollectionSource(name, profiles)
     }
   }
 })
-

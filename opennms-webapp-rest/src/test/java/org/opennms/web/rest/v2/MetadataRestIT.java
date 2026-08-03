@@ -25,7 +25,9 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXB;
 
-import org.apache.camel.StringSource;
+import java.io.StringReader;
+
+import javax.xml.transform.stream.StreamSource;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -146,10 +148,10 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testNodeMetadataXml() throws Exception {
         final String xml = requestXml("/nodes/AAA:BBB/metadata", 200);
-        Assert.assertEquals(JAXB.unmarshal(new StringSource(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c1</context><key>k1</key><value>v1</value></meta-data><meta-data><context>X-c2</context><key>k2</key><value>v2</value></meta-data></meta-data-list>"),
+        Assert.assertEquals(JAXB.unmarshal(new StreamSource(new StringReader(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c1</context><key>k1</key><value>v1</value></meta-data><meta-data><context>X-c2</context><key>k2</key><value>v2</value></meta-data></meta-data-list>")),
                 OnmsMetaDataList.class
-        ), JAXB.unmarshal(new StringSource(xml), OnmsMetaDataList.class));
+        ), JAXB.unmarshal(new StreamSource(new StringReader(xml)), OnmsMetaDataList.class));
     }
 
     @Test
@@ -163,10 +165,10 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testInterfaceMetadataXml() throws Exception {
         final String xml = requestXml("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/metadata", 200);
-        Assert.assertEquals(JAXB.unmarshal(new StringSource(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c3</context><key>k3</key><value>v3</value></meta-data><meta-data><context>X-c4</context><key>k4</key><value>v4</value></meta-data></meta-data-list>"),
+        Assert.assertEquals(JAXB.unmarshal(new StreamSource(new StringReader(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c3</context><key>k3</key><value>v3</value></meta-data><meta-data><context>X-c4</context><key>k4</key><value>v4</value></meta-data></meta-data-list>")),
                 OnmsMetaDataList.class
-        ), JAXB.unmarshal(new StringSource(xml), OnmsMetaDataList.class));
+        ), JAXB.unmarshal(new StreamSource(new StringReader(xml)), OnmsMetaDataList.class));
     }
 
     @Test
@@ -180,9 +182,9 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testServiceMetadataXml() throws Exception {
         final String xml = requestXml("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services/ICMP/metadata", 200);
-        Assert.assertEquals(JAXB.unmarshal(new StringSource(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c5</context><key>k5</key><value>v5</value></meta-data><meta-data><context>X-c6</context><key>k6</key><value>v6</value></meta-data></meta-data-list>"),
+        Assert.assertEquals(JAXB.unmarshal(new StreamSource(new StringReader(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>X-c5</context><key>k5</key><value>v5</value></meta-data><meta-data><context>X-c6</context><key>k6</key><value>v6</value></meta-data></meta-data-list>")),
                 OnmsMetaDataList.class
-        ), JAXB.unmarshal(new StringSource(xml), OnmsMetaDataList.class));
+        ), JAXB.unmarshal(new StreamSource(new StringReader(xml)), OnmsMetaDataList.class));
     }
 }
