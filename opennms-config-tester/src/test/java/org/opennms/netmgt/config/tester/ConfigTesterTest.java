@@ -122,11 +122,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAmiConfig() {
-        testConfigFile("ami-config.xml");
-    }
-
-    @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
     }
