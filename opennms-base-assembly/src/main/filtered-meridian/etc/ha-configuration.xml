@@ -6,7 +6,8 @@
   Quick start: on each node set enabled=true, a unique instance-id, the
   role (one PRIMARY, one SECONDARY) and the partner settings below; enable
   the HA shell/REST features once per node:
-      printf 'opennms-ha-rest\nopennms-ha-shell\n' > $OPENNMS_HOME/etc/featuresBoot.d/ha.boot
+      echo "opennms-ha-rest" >> $OPENNMS_HOME/etc/featuresBoot.d/ha.boot
+      echo "opennms-ha-shell" >> $OPENNMS_HOME/etc/featuresBoot.d/ha.boot
   and create the "hasync" service account (ROLE_REST + ROLE_ADMIN) with the
   same password on both nodes, stored in the Secure Credentials Vault:
       $OPENNMS_HOME/bin/opennms-scv:set hasync hasync <password>
