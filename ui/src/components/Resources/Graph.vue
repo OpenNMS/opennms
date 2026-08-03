@@ -1,13 +1,20 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 container">
-      <router-link
-        v-if="!isSingleGraph"
-        :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
-        target="_blank"
-      >
-        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
-      </router-link>
+      <div v-if="!isSingleGraph" class="graph-actions">
+        <router-link
+          :to="`/resource-graphs/forecast/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined" data-test="forecasting-btn">Forecasting</OnmsButton>
+        </router-link>
+        <router-link
+          :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined">Open</OnmsButton>
+        </router-link>
+      </div>
       <OnmsTabs value="0" class="graph-data-tabs">
         <OnmsTabList>
           <OnmsTab value="0">Graph</OnmsTab>
@@ -330,11 +337,13 @@ onBeforeUnmount(() => {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
 }
-.single-graph-btn {
+.graph-actions {
   position: absolute;
   top: 12px;
   right: 70px;
   z-index: 1;
+  display: flex;
+  gap: 0.5rem;
 }
 .lc {
   @include onms-body-small;

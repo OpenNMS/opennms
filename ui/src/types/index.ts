@@ -532,6 +532,9 @@ export interface PrintStatement {
   text?: string
   metric: string
   value: number | typeof NaN
+  // 'ok' when the value is a finite number, 'nodata' when the source had no
+  // valid samples, 'invalid' when it had samples but the result is non-finite
+  dataState?: 'ok' | 'nodata' | 'invalid'
 }
 
 export interface Series {
