@@ -758,7 +758,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void nodePage() {
         LOG.debug("navigating to the node page");
-        getDriver().get(getBaseUrlInternal() + "opennms/element/nodeList.htm");
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/nodes");
     }
 
     protected void notificationsPage() {
