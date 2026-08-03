@@ -47,6 +47,9 @@ vi.mock('@/services', () => ({
 const showSnackBar = vi.fn()
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
+// the page is admin-only; tests exercise it as an admin
+vi.mock('@/composables/useRole', () => ({ default: () => ({ adminRole: { value: true } }) }))
+
 const mountPage = () =>
   mount(SystemReport, {
     global: {
@@ -71,7 +74,7 @@ describe('SystemReport', () => {
     })
   })
 
-  it('generates with every plugin enabled and the zip formatter by default', async () => {
+  it('generates with every plugin enabled and the text formatter by default', async () => {
     const wrapper = mountPage()
     await flushPromises()
 
@@ -82,7 +85,8 @@ describe('SystemReport', () => {
     expect(submitted!.getAttribute('action')).toContain('admin/support/systemReport.htm')
     const fields = fieldsOf(submitted!)
     expect(fields).toContainEqual(['operation', 'run'])
-    expect(fields).toContainEqual(['formatter', 'zip'])
+    // default matches the legacy form's pre-selected 'text', not 'zip'
+    expect(fields).toContainEqual(['formatter', 'text'])
     expect(fields).toContainEqual(['plugins', 'Java'])
     expect(fields).toContainEqual(['plugins', 'OS'])
     // no filename entered -> no output field
@@ -91,14 +95,35 @@ describe('SystemReport', () => {
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/generating/i) }))
   })
 
-  it('includes the output field when a filename is entered', async () => {
+  it('sanitizes the filename to word characters, mirroring the server', async () => {
     const wrapper = mountPage()
     await flushPromises()
 
-    await wrapper.get('[data-test=filename]').setValue('my-report')
+    await wrapper.get('[data-test=filename]').setValue('my report.txt')
     await wrapper.get('[data-test=generate-btn]').trigger('click')
 
-    expect(fieldsOf(submitted!)).toContainEqual(['output', 'my-report'])
+    expect(fieldsOf(submitted!)).toContainEqual(['output', 'myreport.txt'])
+  })
+
+  it('omits output when the filename sanitizes to empty (no empty download name)', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.get('[data-test=filename]').setValue('///')
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+
+    expect(fieldsOf(submitted!).some(([n]) => n === 'output')).toBe(false)
+  })
+
+  it('reports an error when the download frame loads an error page instead of a file', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+    // a successful download never loads the iframe; simulate the failure case
+    wrapper.find('iframe').element.dispatchEvent(new Event('load'))
+
+    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true, msg: expect.stringMatching(/could not be generated/i) }))
   })
 
   it('the All toggle clears every plugin and reselects them', async () => {

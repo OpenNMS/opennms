@@ -22,8 +22,8 @@
         <template #content>
           <p>Choose which plugins to enable:</p>
           <div v-for="plugin in plugins" :key="plugin.name" class="plugin-row">
-            <Checkbox :inputId="`sr-plugin-${plugin.name}`" v-model="selectedPlugins" :value="plugin.name" />
-            <label :for="`sr-plugin-${plugin.name}`"><strong>{{ plugin.name }}</strong>: {{ plugin.description }}</label>
+            <Checkbox :inputId="pluginId(plugin.name)" v-model="selectedPlugins" :value="plugin.name" />
+            <label :for="pluginId(plugin.name)"><strong>{{ plugin.name }}</strong>: {{ plugin.description }}</label>
           </div>
           <p v-if="!plugins.length && !loadError" class="muted" data-test="no-plugins">No report plugins are available.</p>
         </template>
@@ -72,6 +72,7 @@ import { OnmsButton } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import API from '@/services'
+import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
@@ -79,10 +80,17 @@ import { SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
 
 const menuStore = useMenuStore()
 const { showSnackBar } = useSnackbar()
+const { adminRole } = useRole()
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Generate System Report', to: '/system-report' }
 ])
+
+const downloadFrame = ref<HTMLIFrameElement | null>(null)
+
+// Plugin names can contain spaces (e.g. "Hard Drive Stats"); an HTML id may not,
+// so derive a safe, stable id for the checkbox/label association.
+const pluginId = (name: string) => `sr-plugin-${name.replace(/\W+/g, '-')}`
 
 const plugins = ref<SystemReportPlugin[]>([])
 const formatters = ref<SystemReportFormatter[]>([])
@@ -107,7 +115,9 @@ const generate = () => {
   if (!canGenerate.value) {
     return
   }
-  const base = menuStore.mainMenu?.baseHref || '/opennms/'
+  // baseHref is the deployed context path; fall back to it from the current URL
+  // (strip /ui/...) so a non-default context path still posts to the right place
+  const base = menuStore.mainMenu?.baseHref || window.location.pathname.replace(/\/ui\/.*$/, '/') || '/opennms/'
   const form = document.createElement('form')
   form.method = 'post'
   form.action = `${base}admin/support/systemReport.htm`
@@ -123,8 +133,27 @@ const generate = () => {
   addField('operation', 'run')
   addField('formatter', selectedFormatter.value)
   selectedPlugins.value.forEach((p) => addField('plugins', p))
-  if (filename.value.trim()) {
-    addField('output', filename.value.trim())
+  // Mirror the server's filename sanitising (basename, then strip to word chars)
+  // so a punctuation-only entry doesn't collapse to an empty download name — omit
+  // it entirely in that case and let the server default apply.
+  const cleanedName = (filename.value.trim().split(/[\\/]/).pop() ?? '').replace(/[^\w.]/g, '')
+  if (cleanedName) {
+    addField('output', cleanedName)
+  }
+
+  // A successful report streams as an attachment and never loads the iframe; an
+  // error (500, expired session -> login, bad formatter) renders a page into it,
+  // so a load event here means generation failed.
+  const frame = downloadFrame.value
+  if (frame) {
+    const onLoad = () => {
+      frame.removeEventListener('load', onLoad)
+      showSnackBar({
+        msg: 'The system report could not be generated. Your session may have expired, or a report plugin failed — please try again.',
+        error: true
+      })
+    }
+    frame.addEventListener('load', onLoad)
   }
 
   document.body.appendChild(form)
@@ -144,15 +173,19 @@ onMounted(async () => {
     API.getSystemReportFormatters()
   ])
   if (loadedPlugins === null || loadedFormatters === null) {
-    loadError.value = 'Failed to load the system report options.'
+    // the endpoint is admin-only; a non-admin who deep-links here is being
+    // redirected by the route guard, so don't flash a load error at them
+    if (adminRole.value) {
+      loadError.value = 'Failed to load the system report options.'
+    }
     return
   }
   plugins.value = loadedPlugins
   formatters.value = loadedFormatters
   // default to every plugin enabled, matching the legacy form
   selectedPlugins.value = loadedPlugins.map((p) => p.name)
-  // prefer the zip (full) report if present, else the first formatter
-  selectedFormatter.value = (loadedFormatters.find((f) => f.name === 'zip') ?? loadedFormatters[0])?.name ?? ''
+  // default to the plain-text report (the legacy form's default), else the first
+  selectedFormatter.value = (loadedFormatters.find((f) => f.name === 'text') ?? loadedFormatters[0])?.name ?? ''
 })
 </script>
 

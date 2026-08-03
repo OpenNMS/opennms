@@ -52,6 +52,9 @@ public class SystemReportRestService {
     @Autowired
     private SystemReport m_systemReport;
 
+    // SystemReport already filters by isVisible internally; the filter here is a
+    // deliberate boundary guard so this public endpoint never leaks a hidden plugin
+    // even if that internal contract changes.
     @GET
     @Path("plugins")
     public List<PluginDTO> getPlugins() {

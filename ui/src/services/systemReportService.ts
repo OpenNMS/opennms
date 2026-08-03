@@ -27,7 +27,7 @@ import { SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
 export const getSystemReportPlugins = async (): Promise<SystemReportPlugin[] | null> => {
   try {
     const resp = await v2.get('/system-report/plugins')
-    return (Array.isArray(resp.data) ? resp.data : resp.data?.plugin) ?? []
+    return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     return null
   }
@@ -36,7 +36,7 @@ export const getSystemReportPlugins = async (): Promise<SystemReportPlugin[] | n
 export const getSystemReportFormatters = async (): Promise<SystemReportFormatter[] | null> => {
   try {
     const resp = await v2.get('/system-report/formatters')
-    return (Array.isArray(resp.data) ? resp.data : resp.data?.formatter) ?? []
+    return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     return null
   }
