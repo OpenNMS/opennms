@@ -1,13 +1,22 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 container">
-      <router-link
-        v-if="!isSingleGraph"
-        :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
-        target="_blank"
-      >
-        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
-      </router-link>
+      <div class="graph-actions">
+        <OnmsButton
+          v-if="graphData"
+          variant="outlined"
+          data-test="csv-download-btn"
+          title="Download this graph's data as CSV"
+          @click="downloadCsv"
+        >CSV</OnmsButton>
+        <router-link
+          v-if="!isSingleGraph"
+          :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
+          target="_blank"
+        >
+          <OnmsButton variant="outlined">Open</OnmsButton>
+        </router-link>
+      </div>
       <OnmsTabs value="0" class="graph-data-tabs">
         <OnmsTabList>
           <OnmsTab value="0">Graph</OnmsTab>
@@ -38,6 +47,7 @@
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
+import { downloadGraphCsv } from './utils/graphExport'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
 import { useGraphStore } from '@/stores/graphStore'
@@ -302,6 +312,13 @@ const render = async (update?: boolean) => {
   }
 }
 
+const downloadCsv = () => {
+  if (!graphData.value) {
+    return
+  }
+  downloadGraphCsv(graphData.value, convertedGraphDataRef.value, convertedGraphDataRef.value.title || props.definition)
+}
+
 watch(props.time, () => render(true))
 
 onMounted(() => render())
@@ -330,11 +347,13 @@ onBeforeUnmount(() => {
   margin-top: 50px;
   margin-bottom: v-bind(legendHeight);
 }
-.single-graph-btn {
+.graph-actions {
   position: absolute;
   top: 12px;
   right: 70px;
   z-index: 1;
+  display: flex;
+  gap: 0.5rem;
 }
 .lc {
   @include onms-body-small;
