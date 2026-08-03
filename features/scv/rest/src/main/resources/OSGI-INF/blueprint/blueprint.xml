@@ -5,9 +5,16 @@
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
     <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="optional"/>
 
+    <bean id="credentialsChangedListener" class="org.opennms.features.scv.rest.EventForwardingCredentialsChangedListener">
+        <argument ref="eventForwarder"/>
+    </bean>
+
+    <!-- exposed so the SCV shell commands (whose bundle cannot depend on the event API) can notify on changes -->
+    <service interface="org.opennms.features.scv.api.CredentialsChangedListener" ref="credentialsChangedListener"/>
+
     <bean id="defaultScvRestService" class="org.opennms.features.scv.rest.DefaultScvRestService">
         <argument ref="secureCredentialsVault"/>
-        <argument ref="eventForwarder"/>
+        <argument ref="credentialsChangedListener"/>
     </bean>
 
     <service interface="org.opennms.features.scv.rest.ScvRestService" ref="defaultScvRestService">

@@ -206,6 +206,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
         this.findService();
         m_parameters = null;
+        m_parametersTimestamp = 0;
     }
 
     /**
@@ -216,6 +217,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     @Override
     public synchronized void refreshMetadata() {
         m_parameters = null;
+        m_parametersTimestamp = 0;
     }
 
     private synchronized Map<String,Object> getParameters() {

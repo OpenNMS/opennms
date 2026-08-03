@@ -29,8 +29,8 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.CredentialsChangedListener;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.netmgt.events.api.EventForwarder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +42,9 @@ public class ScvSetCommand implements Action {
     @Reference
     public SecureCredentialsVault secureCredentialsVault;
 
+    // registered on OpenNMS core only; absent on Minion and Sentinel
     @Reference(optional = true)
-    public EventForwarder eventForwarder;
+    public CredentialsChangedListener credentialsChangedListener;
 
     @Argument(index = 0, name = "alias", description = "Alias used to retrieve the credentials.", required = true, multiValued = false)
     @Completion(AliasCompleter.class)
@@ -76,7 +77,9 @@ public class ScvSetCommand implements Action {
         }
         final Credentials credentials = new Credentials(username, password, properties);
         secureCredentialsVault.setCredentials(alias, credentials);
-        CredentialsUpdatedEventSender.sendCredentialsUpdatedEvent(eventForwarder, "scv-set");
+        if (credentialsChangedListener != null) {
+            credentialsChangedListener.credentialsChanged("scv-set");
+        }
 
         return null;
     }

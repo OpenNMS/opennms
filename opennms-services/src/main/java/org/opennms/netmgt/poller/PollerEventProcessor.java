@@ -592,6 +592,14 @@ final class PollerEventProcessor implements EventListener {
             LOG.info("Reloading poller configuration in pollerd");
 
             reloadConfigHandler(event);
+        } else if (event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI)) {
+            // handled before the node-id guard below: without a node id the event
+            // signals a global change (e.g. rotated SCV credentials)
+            if (event.hasNodeid() && event.getNodeid() > 0) {
+                nodeUpdatedHandler(event);
+            } else {
+                refreshMetadataForAllServices();
+            }
         } else if(!event.hasNodeid()) {
             // For all other events, if the event doesn't have a nodeId it can't be processed.
 
@@ -673,14 +681,6 @@ final class PollerEventProcessor implements EventListener {
                    event.getUei().equals(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI)) {
             if (event.getNodeid() != null && event.getNodeid() > 0) {
                 nodeUpdatedHandler(event);
-            }
-        } else if (event.getUei().equals(EventConstants.NODE_METADATA_UPDATED_EVENT_UEI)) {
-            if (event.getNodeid() != null && event.getNodeid() > 0) {
-                nodeUpdatedHandler(event);
-            } else {
-                // without a node id the event signals a global change (e.g. rotated
-                // SCV credentials) — refresh the metadata of every service
-                refreshMetadataForAllServices();
             }
         } // end single event process
 

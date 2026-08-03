@@ -1231,7 +1231,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-        public OnmsIpInterface setIsPrimaryFlag(final Integer nodeId, final String ipAddress) {
+    public OnmsIpInterface setIsPrimaryFlag(final Integer nodeId, final String ipAddress) {
         // TODO upsert? not sure if this needs one.. leave the todo here in case
         if (nodeId == null) {
             LOG.debug("nodeId is null!");
