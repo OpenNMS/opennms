@@ -24,10 +24,15 @@ package org.opennms.netmgt.ha;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.List;
+import java.sql.SQLException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -527,19 +532,6 @@ public class HaStartupCoordinatorTest {
         assertEquals(HaInstanceState.ACTIVE, coord.getCurrentState());
     }
 
-    @Test
-    public void primaryWritesHeartbeat() throws Exception {
-        HaConfiguration cfg = primaryConfig();
-        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
-        setStaticInstance(coord);
-
-        coord.doAwaitReadyToStart();
-
-        // Verify initial DB write happened
-        verify(mockConn, atLeastOnce()).prepareStatement(contains("INSERT INTO ha_instance_status"));
-        verify(mockPs, atLeastOnce()).executeUpdate();
-    }
-
     // -------------------------------------------------------------------------
     // PRIMARY mode: SECONDARY is currently ACTIVE (post-failover, degraded start)
     // -------------------------------------------------------------------------
@@ -840,7 +832,7 @@ public class HaStartupCoordinatorTest {
 
     @Test
     public void schemaFailureKeepsStartupGated() throws Exception {
-        when(mockDbFactory.getConnection()).thenThrow(new java.sql.SQLException("db down"));
+        when(mockDbFactory.getConnection()).thenThrow(new SQLException("db down"));
 
         HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
         setStaticInstance(coord);
@@ -851,7 +843,7 @@ public class HaStartupCoordinatorTest {
 
     @Test
     public void initialStatusWriteFailureKeepsStartupGated() throws Exception {
-        when(mockPs.executeUpdate()).thenThrow(new java.sql.SQLException("connection reset"));
+        when(mockPs.executeUpdate()).thenThrow(new SQLException("connection reset"));
 
         HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
         setStaticInstance(coord);
@@ -864,7 +856,7 @@ public class HaStartupCoordinatorTest {
     public void partnerCheckFailureKeepsPrimaryGated() throws Exception {
         // Schema DDL (execute) succeeds; the partner read (executeQuery) fails —
         // the PRIMARY must not treat the unanswered question as "partner inactive".
-        when(mockPs.executeQuery()).thenThrow(new java.sql.SQLException("connection reset"));
+        when(mockPs.executeQuery()).thenThrow(new SQLException("connection reset"));
 
         HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
         setStaticInstance(coord);
@@ -895,14 +887,14 @@ public class HaStartupCoordinatorTest {
 
         // The initial row write (state = parameter 3) must be DEGRADED — never a
         // transient ACTIVE that could trip the serving partner's split-brain check.
-        org.mockito.ArgumentCaptor<String> stateParam = org.mockito.ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> stateParam = ArgumentCaptor.forClass(String.class);
         verify(mockPs, atLeastOnce()).setString(eq(3), stateParam.capture());
-        assertEquals(java.util.List.of(HaInstanceState.DEGRADED.name()), stateParam.getAllValues());
+        assertEquals(List.of(HaInstanceState.DEGRADED.name()), stateParam.getAllValues());
     }
 
     @Test
     public void heartbeatOnlyNeverGatesEvenWhenRegistrationFails() throws Exception {
-        when(mockDbFactory.getConnection()).thenThrow(new java.sql.SQLException("db down"));
+        when(mockDbFactory.getConnection()).thenThrow(new SQLException("db down"));
 
         HaConfiguration cfg = secondaryConfig();
         cfg.setMode(HaMode.HEARTBEAT_ONLY);
@@ -922,10 +914,10 @@ public class HaStartupCoordinatorTest {
 
     @Test
     public void promotionDoesNotReleaseGateWhenActiveWriteFails() throws Exception {
-        when(mockPs.executeUpdate()).thenThrow(new java.sql.SQLException("write failed"));
+        when(mockPs.executeUpdate()).thenThrow(new SQLException("write failed"));
         HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
 
-        java.lang.reflect.Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
+        Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
         promote.setAccessible(true);
         promote.invoke(coord);
 
@@ -941,7 +933,7 @@ public class HaStartupCoordinatorTest {
         when(mockPs.executeUpdate()).thenReturn(0);
         HaStartupCoordinator coord = createCoordinator(secondaryConfig(), mockDbFactory);
 
-        java.lang.reflect.Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
+        Method promote = HaStartupCoordinator.class.getDeclaredMethod("promote");
         promote.setAccessible(true);
         promote.invoke(coord);
 
@@ -1048,11 +1040,11 @@ public class HaStartupCoordinatorTest {
     public void heartbeatWritesOnlyLastHeartbeat() throws Exception {
         HaStartupCoordinator coord = createCoordinator(primaryConfig(), mockDbFactory);
 
-        java.lang.reflect.Method m = HaStartupCoordinator.class.getDeclaredMethod("writeHeartbeat");
+        Method m = HaStartupCoordinator.class.getDeclaredMethod("writeHeartbeat");
         m.setAccessible(true);
         m.invoke(coord);
 
-        org.mockito.ArgumentCaptor<String> sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
         verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
         boolean sawHeartbeatUpdate = false;
         for (String s : sql.getAllValues()) {
@@ -1080,7 +1072,7 @@ public class HaStartupCoordinatorTest {
 
         HaStatusSchema.ensureSchema(mockDbFactory);
 
-        org.mockito.InOrder inOrder = inOrder(lockPs, ddlPs, unlockPs);
+        InOrder inOrder = inOrder(lockPs, ddlPs, unlockPs);
         inOrder.verify(lockPs).execute();
         inOrder.verify(ddlPs).execute();
         inOrder.verify(unlockPs).execute();
@@ -1094,12 +1086,12 @@ public class HaStartupCoordinatorTest {
         when(mockConn.prepareStatement(contains("pg_advisory_lock"))).thenReturn(lockPs);
         when(mockConn.prepareStatement(contains("CREATE TABLE"))).thenReturn(ddlPs);
         when(mockConn.prepareStatement(contains("pg_advisory_unlock"))).thenReturn(unlockPs);
-        when(ddlPs.execute()).thenThrow(new java.sql.SQLException("permission denied"));
+        when(ddlPs.execute()).thenThrow(new SQLException("permission denied"));
 
         try {
             HaStatusSchema.ensureSchema(mockDbFactory);
             fail("expected the step failure to propagate");
-        } catch (java.sql.SQLException expected) {
+        } catch (SQLException expected) {
             // DDL failures must surface (fail loudly), but never leak the lock.
         }
         verify(unlockPs).execute();
@@ -1148,7 +1140,7 @@ public class HaStartupCoordinatorTest {
         try {
             assertTrue(coord.doAwaitReadyToStart());
 
-            org.mockito.ArgumentCaptor<String> sql = org.mockito.ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
             verify(mockConn, atLeastOnce()).prepareStatement(sql.capture());
             boolean sawUpsert = false;
             for (String s : sql.getAllValues()) {
@@ -1188,6 +1180,50 @@ public class HaStartupCoordinatorTest {
             syncFuture.setAccessible(true);
             assertNull("config sync must never be scheduled in heartbeat-only mode",
                     syncFuture.get(coord));
+        } finally {
+            coord.doShutdown();
+        }
+    }
+
+    @Test
+    public void intervalReloadDoesNotStrandAnUnregisteredHeartbeatOnlyNode() throws Exception {
+        // Registration fails at startup (DB down); an interval reload then
+        // reschedules the heartbeat task. The rescheduled task must still
+        // carry the registration retry, or the node heartbeats against a row
+        // that never exists.
+        final AtomicBoolean dbUp = new AtomicBoolean(false);
+        when(mockDbFactory.getConnection()).thenAnswer(inv -> {
+            if (!dbUp.get()) {
+                throw new SQLException("db down");
+            }
+            return mockConn;
+        });
+
+        HaConfiguration cfg = secondaryConfig();
+        cfg.setMode(HaMode.HEARTBEAT_ONLY);
+        cfg.setHeartbeatIntervalSeconds(1);
+        HaStartupCoordinator coord = createCoordinator(cfg, mockDbFactory);
+        setStaticInstance(coord);
+        try {
+            assertTrue(coord.doAwaitReadyToStart()); // registration failed, never gates
+
+            HaConfiguration updated = copyOf(cfg);
+            updated.setHeartbeatIntervalSeconds(10); // triggers the reschedule
+            coord.applyConfigReload(updated);
+
+            dbUp.set(true);
+
+            long deadline = System.currentTimeMillis() + 30_000;
+            boolean registered = false;
+            while (!registered && System.currentTimeMillis() < deadline) {
+                try {
+                    verify(mockConn, atLeastOnce()).prepareStatement(contains("ON CONFLICT"));
+                    registered = true;
+                } catch (AssertionError notYet) {
+                    Thread.sleep(250);
+                }
+            }
+            assertTrue("the rescheduled heartbeat task must retry registration", registered);
         } finally {
             coord.doShutdown();
         }

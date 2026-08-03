@@ -31,6 +31,7 @@ import org.opennms.netmgt.ha.HaConfiguration;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -114,7 +115,12 @@ public class HaStatusCommand implements Action {
             }
 
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to query HA status: " + e.getMessage());
+            // undefined_table: HA has never been enabled here
+            if (e instanceof SQLException sql && "42P01".equals(sql.getSQLState())) {
+                System.out.println("HA is not enabled on this instance.");
+            } else {
+                System.err.println("ERROR: Failed to query HA status: " + e.getMessage());
+            }
         }
 
         return null;

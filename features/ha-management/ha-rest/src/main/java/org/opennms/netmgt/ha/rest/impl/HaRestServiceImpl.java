@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -118,9 +119,8 @@ public class HaRestServiceImpl implements HaRestService {
             return Response.ok(collection).build();
 
         } catch (Exception e) {
-            if (isUndefinedTable(e)) {
-                // The table is created when HA first starts enabled; its
-                // absence simply means HA has never been enabled here.
+            // undefined_table: HA has never been enabled here
+            if (e instanceof SQLException sql && "42P01".equals(sql.getSQLState())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("HA is not enabled on this instance").build();
             }
@@ -129,19 +129,12 @@ public class HaRestServiceImpl implements HaRestService {
         }
     }
 
-    /** True if the exception chain contains Postgres undefined_table (42P01). */
-    private static boolean isUndefinedTable(Throwable t) {
-        for (Throwable c = t; c != null; c = c.getCause()) {
-            if (c instanceof java.sql.SQLException sql && "42P01".equals(sql.getSQLState())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // -------------------------------------------------------------------------
     // GET /rest/ha/config
     // -------------------------------------------------------------------------
+
+    /** A PUT carrying this placeholder back keeps the stored password. */
+    static final String PASSWORD_MASK = "***";
 
     @Override
     public Response getConfig() {
@@ -150,7 +143,26 @@ public class HaRestServiceImpl implements HaRestService {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("HA is not enabled on this instance").build();
         }
-        return Response.ok(coord.getConfig()).build();
+        return Response.ok(masked(coord.getConfig())).build();
+    }
+
+    /** Copy with the sync password masked; the live config is never mutated. */
+    private static HaConfiguration masked(HaConfiguration src) {
+        HaConfiguration c = new HaConfiguration();
+        c.setEnabled(src.isEnabled());
+        c.setInstanceId(src.getInstanceId());
+        c.setRole(src.getRole());
+        c.setMode(src.getMode());
+        c.setPartnerInstanceId(src.getPartnerInstanceId());
+        c.setHeartbeatIntervalSeconds(src.getHeartbeatIntervalSeconds());
+        c.setFailoverThresholdSeconds(src.getFailoverThresholdSeconds());
+        c.setSyncEnabled(src.isSyncEnabled());
+        c.setSyncIntervalSeconds(src.getSyncIntervalSeconds());
+        c.setPartnerRestUrl(src.getPartnerRestUrl());
+        c.setSyncUsername(src.getSyncUsername());
+        c.setSyncPassword(src.getSyncPassword() != null ? PASSWORD_MASK : null);
+        c.setSyncExcludes(src.getSyncExcludes());
+        return c;
     }
 
     // -------------------------------------------------------------------------
@@ -170,6 +182,10 @@ public class HaRestServiceImpl implements HaRestService {
                     .entity("Request body must contain an HaConfiguration document").build();
         }
 
+        if (PASSWORD_MASK.equals(newCfg.getSyncPassword())) {
+            newCfg.setSyncPassword(coord.getConfig().getSyncPassword());
+        }
+
         try {
             coord.writeConfig(newCfg); // writes to disk and reloads in one step
         } catch (IllegalArgumentException e) {
@@ -182,7 +198,7 @@ public class HaRestServiceImpl implements HaRestService {
         }
 
         LOG.info("HA configuration updated via REST by user '{}'", principal(securityContext));
-        return Response.ok(coord.getConfig()).build();
+        return Response.ok(masked(coord.getConfig())).build();
     }
 
     // -------------------------------------------------------------------------

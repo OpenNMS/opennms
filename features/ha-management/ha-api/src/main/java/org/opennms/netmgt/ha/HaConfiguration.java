@@ -100,7 +100,7 @@ public class HaConfiguration implements Serializable {
 
     /**
      * Username of the service account used for config sync REST calls.
-     * This account must have {@code ROLE_FILESYSTEM_EDITOR} on the partner instance.
+     * This account must have {@code ROLE_REST} and {@code ROLE_ADMIN} on the partner instance.
      * Default: {@code hasync}.
      */
     @XmlElement(name = "sync-username")

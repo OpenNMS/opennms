@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.ha.HaConfiguration;
+import org.opennms.netmgt.ha.HaMode;
 import org.opennms.netmgt.ha.HaInstanceState;
 import org.opennms.netmgt.ha.HaStartupCoordinator;
 
@@ -68,7 +69,7 @@ public class HaFailoverCommand implements Action {
 
         HaConfiguration cfg = coord.getConfig();
 
-        if (cfg.getMode() == org.opennms.netmgt.ha.HaMode.HEARTBEAT_ONLY) {
+        if (cfg.getMode() == HaMode.HEARTBEAT_ONLY) {
             System.out.println("HA is in heartbeat-only mode; failover is controlled by the external HA agent.");
             return null;
         }

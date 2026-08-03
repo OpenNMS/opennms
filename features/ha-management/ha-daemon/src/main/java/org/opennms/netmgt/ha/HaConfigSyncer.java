@@ -330,7 +330,7 @@ public class HaConfigSyncer {
             Credentials creds = scv.getCredentials(alias);
             if (creds == null) {
                 if (fallback != null) {
-                    LOG.debug("HA sync: no SCV entry for alias '{}'; using the expression's default", alias);
+                    LOG.warn("HA sync: no SCV entry for alias '{}'; using the expression's default", alias);
                     return fallback;
                 }
                 LOG.warn("HA sync: no SCV entry found for alias '{}'", alias);
@@ -346,7 +346,7 @@ public class HaConfigSyncer {
             }
             if (value == null) {
                 if (fallback != null) {
-                    LOG.debug("HA sync: SCV alias '{}' has no attribute '{}'; using the expression's default", alias, attribute);
+                    LOG.warn("HA sync: SCV alias '{}' has no attribute '{}'; using the expression's default", alias, attribute);
                     return fallback;
                 }
                 LOG.warn("HA sync: SCV alias '{}' has no attribute '{}'", alias, attribute);

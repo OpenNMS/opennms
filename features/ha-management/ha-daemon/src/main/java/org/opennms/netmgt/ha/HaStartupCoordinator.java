@@ -511,8 +511,8 @@ public class HaStartupCoordinator {
             }
         }
 
-        // Two-thread pool: heartbeat/monitor on one thread, config sync on another
-        scheduler = Executors.newScheduledThreadPool(2, r -> {
+        // heartbeat, partner monitor, and config sync must not share threads
+        scheduler = Executors.newScheduledThreadPool(3, r -> {
             Thread t = new Thread(r, "ha-coordinator");
             t.setDaemon(true);
             return t;
@@ -647,31 +647,11 @@ public class HaStartupCoordinator {
 
         reloadFuture = scheduler.scheduleAtFixedRate(this::reloadConfig,
                 CONFIG_RELOAD_INTERVAL_SECONDS, CONFIG_RELOAD_INTERVAL_SECONDS, TimeUnit.SECONDS);
-        heartbeatFuture = scheduler.scheduleAtFixedRate(this::heartbeatOnlyTick,
+        heartbeatFuture = scheduler.scheduleAtFixedRate(this::writeHeartbeat,
                 0, config.getHeartbeatIntervalSeconds(), TimeUnit.SECONDS);
 
         LOG.info("HA heartbeat-only mode — external agent supervises; proceeding with service startup");
         return true;
-    }
-
-    /**
-     * Heartbeat-only cycle: completes the schema/row registration first if it
-     * failed at startup (the heartbeat UPDATE silently matches zero rows until
-     * the row exists), then publishes liveness.
-     */
-    private void heartbeatOnlyTick() {
-        if (stopRequested.get()) return;
-        if (!heartbeatOnlyRegistered.get()) {
-            try {
-                HaStatusSchema.ensureSchema(dbFactory);
-                upsertSelfNonClobbering();
-                heartbeatOnlyRegistered.set(true);
-            } catch (Exception e) {
-                LOG.warn("HA: instance registration failed; will retry next heartbeat cycle: {}", e.toString());
-                return;
-            }
-        }
-        heartbeatWriter.write();
     }
 
     /**
@@ -837,11 +817,25 @@ public class HaStartupCoordinator {
         LOG.info("HA: wrote initial status: instance={}, role={}, state={}", config.getInstanceId(), config.getRole(), initialState);
     }
 
+    /**
+     * The single heartbeat task for both modes. In heartbeat-only it also
+     * completes a failed startup registration — the heartbeat UPDATE matches
+     * zero rows until the row exists.
+     */
     private void writeHeartbeat() {
         if (stopRequested.get()) return;
         if (config.getMode() == HaMode.COORDINATOR) {
             checkForSplitBrain();
             if (stopRequested.get()) return;
+        } else if (!heartbeatOnlyRegistered.get()) {
+            try {
+                HaStatusSchema.ensureSchema(dbFactory);
+                upsertSelfNonClobbering();
+                heartbeatOnlyRegistered.set(true);
+            } catch (Exception e) {
+                LOG.warn("HA: instance registration failed; will retry next heartbeat cycle: {}", e.toString());
+                return;
+            }
         }
         // Liveness only: the heartbeat never carries current_state. State is
         // written exclusively on edge transitions (updateState), so a stale
@@ -1145,6 +1139,8 @@ public class HaStartupCoordinator {
         }
         currentState.set(HaInstanceState.ACTIVE);
         startupGate.countDown();
+        cancelIfActive(failbackMonitorFuture);
+        cancelIfActive(syncFuture);
     }
 
 
@@ -1156,6 +1152,8 @@ public class HaStartupCoordinator {
         }
         currentState.set(HaInstanceState.ACTIVE);
         startupGate.countDown();
+        cancelIfActive(standbyMonitorFuture);
+        cancelIfActive(syncFuture);
     }
 
     /** @return {@code true} only if the state was persisted (exactly one row updated). */

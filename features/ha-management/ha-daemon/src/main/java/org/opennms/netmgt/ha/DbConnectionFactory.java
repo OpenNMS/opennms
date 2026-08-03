@@ -40,8 +40,8 @@ import java.util.Properties;
  * metadata DSL (including {@code ${env:VAR|default}} substitution) to
  * the URL, username, and password attributes.
  *
- * <p>Connections are opened with a short timeout so that a database outage
- * does not stall the HA monitor loop indefinitely.
+ * <p>Connections carry short connect and socket timeouts so that neither a
+ * database outage nor a silently dead connection can stall the HA monitor loop.
  */
 public class DbConnectionFactory {
 
@@ -80,6 +80,9 @@ public class DbConnectionFactory {
         props.setProperty("password", password != null ? password : "");
         props.setProperty("loginTimeout", "5");
         props.setProperty("connectTimeout", "5");
+        // must exceed the longest legitimate server-side wait
+        // (ensureSchema's pg_advisory_lock during the peer's DDL)
+        props.setProperty("socketTimeout", "30");
         return DriverManager.getConnection(url, props);
     }
 }

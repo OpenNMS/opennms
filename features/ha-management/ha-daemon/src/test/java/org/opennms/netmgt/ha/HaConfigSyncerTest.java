@@ -23,6 +23,7 @@ package org.opennms.netmgt.ha;
 
 import org.junit.Rule;
 import org.junit.Test;
+import java.io.IOException;
 import org.junit.rules.TemporaryFolder;
 
 import java.nio.charset.StandardCharsets;
@@ -127,9 +128,9 @@ public class HaConfigSyncerTest {
     @Test
     public void resolveSafeRejectsTraversal() throws Exception {
         Path etc = tmp.newFolder("etc").toPath().toAbsolutePath().normalize();
-        assertThrows(java.io.IOException.class,
+        assertThrows(IOException.class,
                 () -> HaSyncFiles.resolveSafe(etc, "../outside.txt"));
-        assertThrows(java.io.IOException.class,
+        assertThrows(IOException.class,
                 () -> HaSyncFiles.resolveSafe(etc, "a/../../outside.txt"));
         assertEquals(etc.resolve("a/b.xml"), HaSyncFiles.resolveSafe(etc, "a/b.xml"));
     }
@@ -144,9 +145,9 @@ public class HaConfigSyncerTest {
         Files.createSymbolicLink(etc.resolve("link.txt"), outside.resolve("secret.txt"));
         Files.createSymbolicLink(etc.resolve("linkdir"), outside);
 
-        assertThrows(java.io.IOException.class,
+        assertThrows(IOException.class,
                 () -> HaSyncFiles.resolveSafe(etc, "link.txt"));
-        assertThrows(java.io.IOException.class,
+        assertThrows(IOException.class,
                 () -> HaSyncFiles.resolveSafe(etc, "linkdir/secret.txt"));
 
         // A symlink that stays inside the root is fine
