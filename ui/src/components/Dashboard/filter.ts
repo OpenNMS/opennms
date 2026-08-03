@@ -46,6 +46,7 @@ export const resolveFilterNodeIds = async (filter: DashboardFilter): Promise<num
   if (!nodeIdCache.has(key)) {
     nodeIdCache.set(key, (async () => {
       const ids = new Set<number>()
+      let ok = true
       for (const category of categories) {
         try {
           const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`category.name==${category}`)}&limit=0`)
@@ -55,8 +56,13 @@ export const resolveFilterNodeIds = async (filter: DashboardFilter): Promise<num
             }
           }
         } catch {
-          // a category that resolves to nothing simply contributes no ids
+          // a transient failure must not cache an empty set for the session; evict
+          // so the next refresh retries instead of leaving the panels permanently empty
+          ok = false
         }
+      }
+      if (!ok) {
+        nodeIdCache.delete(key)
       }
       return [...ids]
     })())
@@ -79,7 +85,7 @@ export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | n
   if (nodeIds) {
     // a category selected but matching no nodes must return nothing, not everything
     const capped = nodeIds.slice(0, MAX_NODE_IDS)
-    clauses.push(capped.length ? `(${capped.map((id) => `node.id==${id}`).join(',')})` : 'node.id==-1')
+    clauses.push(capped.length ? `(${capped.map(id => `node.id==${id}`).join(',')})` : 'node.id==-1')
   }
   return clauses
 }

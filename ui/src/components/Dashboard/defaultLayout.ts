@@ -31,6 +31,7 @@ export const createDefaultLayout = (): DashboardLayout => ({
   refresh: { seconds: 120, paused: false },
   globalFilter: { surveillanceCategories: [], ipMatch: null },
   globalTimeframe: { preset: TimeframePreset.Last24h, from: null, to: null },
+  autoCompact: true,
   // The base framework ships an empty dashboard; panels arrive with the
   // parity (NMS-20126) and new-panel (NMS-20127) groups.
   panels: []

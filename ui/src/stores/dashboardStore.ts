@@ -54,19 +54,21 @@ export const useDashboardStore = defineStore('dashboardStore', {
   }),
   getters: {
     panels: (state): DashboardPanel[] => state.layout.panels,
+    // Whether panels squeeze up/down to pack against neighbours (vs. free-form).
+    autoCompact: (state): boolean => state.layout.autoCompact !== false,
     isPaused: (state): boolean => state.layout.refresh.paused,
     refreshSeconds: (state): number => state.layout.refresh.seconds,
     // Effective filter / timeframe / cadence for a panel: override wins, else global.
     resolvedFilter:
-      (state) =>
+      state =>
         (panel: DashboardPanel): DashboardFilter =>
           panel.filterOverride ?? state.layout.globalFilter,
     resolvedTimeframe:
-      (state) =>
+      state =>
         (panel: DashboardPanel): Timeframe =>
           panel.timeframeOverride ?? state.layout.globalTimeframe,
     resolvedRefreshSeconds:
-      (state) =>
+      state =>
         (panel: DashboardPanel): number =>
           panel.refreshSeconds ?? state.layout.refresh.seconds,
     // Effective height mode: panel override, else registry default, else 'auto'.
@@ -136,6 +138,16 @@ export const useDashboardStore = defineStore('dashboardStore', {
       this.layout.globalFilter = filter
       this.isDirty = true
     },
+    // Toggle the squeeze/auto-fit layout mode. Bump layoutRevision so the grid
+    // re-runs (or stops running) compaction against the new setting.
+    setAutoCompact(on: boolean) {
+      if (this.layout.autoCompact === on) {
+        return
+      }
+      this.layout.autoCompact = on
+      this.isDirty = true
+      this.layoutRevision++
+    },
     // Persist grid geometry coming back from the layout engine. Collapsed panels
     // report a header-only height, so we keep their stored (expanded) height.
     syncGeometry(items: { i: string; x: number; y: number; w: number; h: number }[]) {
@@ -146,8 +158,10 @@ export const useDashboardStore = defineStore('dashboardStore', {
       }
       let changed = false
       for (const item of items) {
-        const panel = this.layout.panels.find((p) => p.id === item.i)
-        if (!panel) continue
+        const panel = this.layout.panels.find(p => p.id === item.i)
+        if (!panel) {
+          continue
+        }
         // Don't persist grid height for collapsed (header-only) or auto-height
         // panels — those are derived at runtime, not user-set.
         const derivedH = panel.collapsed || this.resolvedHeightMode(panel) === 'auto'
@@ -160,11 +174,15 @@ export const useDashboardStore = defineStore('dashboardStore', {
           changed = true
         }
       }
-      if (changed) this.isDirty = true
+      if (changed) {
+        this.isDirty = true
+      }
     },
     addPanel(type: string) {
       const def = getPanelDefinition(type)
-      if (!def) {return}
+      if (!def) {
+        return
+      }
       // place the new panel below everything currently laid out
       const nextY = this.layout.panels.reduce((max, p) => Math.max(max, p.y + p.h), 0)
       this.layout.panels.push({
@@ -184,18 +202,18 @@ export const useDashboardStore = defineStore('dashboardStore', {
       this.isDirty = true
     },
     removePanel(id: string) {
-      this.layout.panels = this.layout.panels.filter((p) => p.id !== id)
+      this.layout.panels = this.layout.panels.filter(p => p.id !== id)
       this.isDirty = true
     },
     setPanelCollapsed(id: string, collapsed: boolean) {
-      const panel = this.layout.panels.find((p) => p.id === id)
+      const panel = this.layout.panels.find(p => p.id === id)
       if (panel) {
         panel.collapsed = collapsed
         this.isDirty = true
       }
     },
     setPanelTitle(id: string, title: string | null) {
-      const panel = this.layout.panels.find((p) => p.id === id)
+      const panel = this.layout.panels.find(p => p.id === id)
       if (panel) {
         const trimmed = title?.trim()
         panel.titleOverride = trimmed ? trimmed : null
@@ -203,14 +221,14 @@ export const useDashboardStore = defineStore('dashboardStore', {
       }
     },
     setPanelOptions(id: string, options: Record<string, unknown>) {
-      const panel = this.layout.panels.find((p) => p.id === id)
+      const panel = this.layout.panels.find(p => p.id === id)
       if (panel) {
         panel.options = { ...options }
         this.isDirty = true
       }
     },
     setPanelHeightMode(id: string, mode: PanelHeightMode) {
-      const panel = this.layout.panels.find((p) => p.id === id)
+      const panel = this.layout.panels.find(p => p.id === id)
       if (panel) {
         panel.heightMode = mode
         this.isDirty = true

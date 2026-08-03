@@ -22,11 +22,11 @@ License.
 
 <!-- Per-panel options: height mode (all panels) + panel-type-specific settings. -->
 <template>
-  <PDialog
+  <OnmsDialog
     v-model:visible="visibleModel"
     modal
     :header="`Panel options — ${title}`"
-    :style="{ width: '32rem' }"
+    width="32rem"
   >
     <div class="opts">
       <fieldset class="opts__group">
@@ -65,7 +65,7 @@ License.
         class="opts__field"
       >
         <label class="opts__label">Notes</label>
-        <PTextarea
+        <OnmsTextarea
           v-model="notesText"
           rows="6"
           auto-resize
@@ -78,7 +78,7 @@ License.
         class="opts__field"
       >
         <label class="opts__label">Content URL</label>
-        <PInputText
+        <OnmsInputText
           v-model="htmlUrl"
           placeholder="/opennms/… or https://this-server/…"
           class="opts__control"
@@ -101,36 +101,25 @@ License.
     </div>
 
     <template #footer>
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         @click="visibleModel = false"
       />
-      <PButton
+      <OnmsButton
         label="Apply"
         @click="apply"
       />
     </template>
-  </PDialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import Dialog from 'primevue/dialog'
-import Textarea from 'primevue/textarea'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
+import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton } from '@opennms/onms-ui'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
-
-const PDialog = Dialog
-const PTextarea = Textarea
-const PInputText = InputText
-const PSelect = Select
-const PButton = Button
-
 
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
@@ -139,7 +128,7 @@ const store = useDashboardStore()
 
 const visibleModel = computed({
   get: () => props.visible,
-  set: (v) => emit('update:visible', v)
+  set: v => emit('update:visible', v)
 })
 
 const title = computed(
@@ -160,7 +149,9 @@ const supportsShade = computed(() => SHADEABLE.includes(props.panel.type))
 // up front so the user gets an explanation instead of a silent broken iframe.
 const urlError = computed(() => {
   const t = htmlUrl.value.trim()
-  if (!t) return ''
+  if (!t) {
+    return ''
+  }
   let parsed: URL
   try {
     parsed = new URL(t, window.location.origin)
@@ -183,7 +174,9 @@ const syncFromPanel = () => {
 watch(
   () => props.visible,
   (v) => {
-    if (v) syncFromPanel()
+    if (v) {
+      syncFromPanel()
+    }
   }
 )
 
@@ -193,9 +186,15 @@ const apply = () => {
   }
   store.setPanelHeightMode(props.panel.id, heightMode.value)
   const opts: Record<string, unknown> = { ...props.panel.options }
-  if (supportsShade.value) opts.shade = shade.value
-  if (props.panel.type === 'notes') opts.text = notesText.value
-  if (props.panel.type === 'html-content') opts.url = htmlUrl.value.trim()
+  if (supportsShade.value) {
+    opts.shade = shade.value
+  }
+  if (props.panel.type === 'notes') {
+    opts.text = notesText.value
+  }
+  if (props.panel.type === 'html-content') {
+    opts.url = htmlUrl.value.trim()
+  }
   store.setPanelOptions(props.panel.id, opts)
   visibleModel.value = false
 }

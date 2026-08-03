@@ -41,7 +41,7 @@ License.
       :margin="[12, 0]"
       :is-draggable="editMode"
       :is-resizable="editMode"
-      :vertical-compact="true"
+      :vertical-compact="false"
       @layout-updated="onLayoutUpdated"
     >
       <GridItem
@@ -107,17 +107,30 @@ interface GridItemModel {
 }
 
 const store = useDashboardStore()
-const { panels, editMode, layoutRevision } = storeToRefs(store)
+const { panels, editMode, layoutRevision, autoCompact } = storeToRefs(store)
 
-const getPanel = (id: string): DashboardPanel | undefined => panels.value.find((p) => p.id === id)
+const getPanel = (id: string): DashboardPanel | undefined => panels.value.find(p => p.id === id)
 
-const toItem = (p: DashboardPanel): GridItemModel => ({
-  i: p.id,
-  x: p.x,
-  y: p.y,
-  w: p.w,
-  h: p.collapsed ? COLLAPSED_H : toPx(p.h)
-})
+// Last measured cell height (content + GAP) for each auto-height panel. The
+// authored p.h for an auto panel is only a first-paint placeholder — its real
+// height is whatever PanelFrame measures. A full rebuild (toItem over every
+// panel, e.g. the async store.load() bumping layoutRevision) must NOT reset an
+// auto panel back to that placeholder, because the content size is unchanged so
+// the ResizeObserver won't re-fire and the cell would stay stuck tall (the gaps
+// bug). Reuse the measured height here instead.
+const measuredAutoH = new Map<string, number>()
+
+const toItem = (p: DashboardPanel): GridItemModel => {
+  const isAutoPanel = !p.collapsed && store.resolvedHeightMode(p) === 'auto'
+  const measured = isAutoPanel ? measuredAutoH.get(p.id) : undefined
+  return {
+    i: p.id,
+    x: p.x,
+    y: p.y,
+    w: p.w,
+    h: p.collapsed ? COLLAPSED_H : (measured ?? toPx(p.h))
+  }
+}
 
 const layout = ref<GridItemModel[]>(panels.value.map(toItem))
 
@@ -125,14 +138,17 @@ const minW = (id: string) => getPanelDefinition(getPanel(id)?.type ?? '')?.minSi
 // Auto-height panels size to content, so they may shrink to their content height.
 const minH = (id: string) => {
   const p = getPanel(id)
-  if (p && !p.collapsed && store.resolvedHeightMode(p) === 'auto') return MIN_AUTO_H
+  if (p && !p.collapsed && store.resolvedHeightMode(p) === 'auto') {
+    return MIN_AUTO_H
+  }
   return MIN_FIXED_H
 }
 
 // Vertical compaction: place each item at the lowest non-colliding y within its
-// columns. grid-layout-plus does NOT recompact on programmatic height changes,
-// so we do it ourselves to guarantee no overlaps after auto-height resizes /
-// add / remove. Only mutates the local layout (positions re-derive on load).
+// columns. grid-layout-plus's own vertical-compact is disabled (:vertical-compact
+// ="false") so this is the single authority — the two fighting was what left gaps
+// under short columns. Runs only when the layout's autoCompact ("squeeze") option
+// is on; free-form layouts keep their placed y. Only mutates the local layout.
 const compactLayout = () => {
   const sorted = [...layout.value].sort((a, b) => a.y - b.y || a.x - b.x)
   const placed: GridItemModel[] = []
@@ -140,41 +156,58 @@ const compactLayout = () => {
     let bottom = 0
     for (const p of placed) {
       const xOverlap = it.x < p.x + p.w && p.x < it.x + it.w
-      if (xOverlap) bottom = Math.max(bottom, p.y + p.h)
+      if (xOverlap) {
+        bottom = Math.max(bottom, p.y + p.h)
+      }
     }
     it.y = bottom
     placed.push(it)
   }
-  // ALWAYS reassign with FRESH item objects. grid-layout-plus only reacts to a
-  // change of the layout array reference / length (watch on [layout, length]) —
-  // it ignores in-place h/y mutations. A new array of new objects forces it to
-  // re-read and re-render (this is what makes auto-height + compaction apply).
-  layout.value = layout.value.map((it) => ({ ...it }))
+  // Reassign with FRESH item objects so grid-layout-plus re-reads (it only reacts
+  // to a change of the layout array reference, not in-place h/y mutation). Callers
+  // already gate this: onRequestHeight only compacts when a height actually changed,
+  // so this runs on real changes, not on every height report.
+  layout.value = layout.value.map(it => ({ ...it }))
 }
+
+// Run compaction only in squeeze mode; free-form layouts render at their placed y.
+const maybeCompact = () => {
+  if (autoCompact.value) {
+    compactLayout()
+  }
+}
+
+// Pack the initial layout synchronously so the FIRST paint is already compacted —
+// the default/loaded y values are only an ordering hint, and without this the grid
+// renders panels at their raw y (grid units) with pixel heights, leaving the gaps
+// under short left-column panels until an async pass runs.
+maybeCompact()
 
 // A new authoritative layout (load / reset / factory default) fully replaces the
 // grid geometry — otherwise a saved arrangement never reaches the rendered grid,
 // because the id+collapsed reconcile key below is unchanged across a load.
 watch(layoutRevision, () => {
   layout.value = panels.value.map(toItem)
-  compactLayout()
+  maybeCompact()
 })
 
 // Reconcile the grid model on add/remove/collapse only — keeping existing items'
 // live x/y/w so an in-flight drag isn't reset.
 watch(
-  () => panels.value.map((p) => `${p.id}:${p.collapsed}`).join('|'),
+  () => panels.value.map(p => `${p.id}:${p.collapsed}`).join('|'),
   () => {
-    const byId = new Map(layout.value.map((it) => [it.i, it]))
+    const byId = new Map(layout.value.map(it => [it.i, it]))
     layout.value = panels.value.map((p) => {
+      const fresh = toItem(p) // measured-aware height (auto panels keep their real size)
       const existing = byId.get(p.id)
       if (existing) {
-        existing.h = p.collapsed ? COLLAPSED_H : toPx(p.h)
+        // keep live x/y/w (don't reset an in-flight drag) but take the new height
+        existing.h = fresh.h
         return existing
       }
-      return toItem(p)
+      return fresh
     })
-    compactLayout()
+    maybeCompact()
   }
 )
 
@@ -186,12 +219,23 @@ const isAuto = (id: string): boolean => {
 // An auto-height panel reported its natural pixel height; size the grid cell to
 // exactly that height plus the inter-panel GAP (pixel-perfect, no quantization).
 const onRequestHeight = (id: string, px: number) => {
-  const item = layout.value.find((it) => it.i === id)
-  if (!item || !isAuto(id)) return
+  const item = layout.value.find(it => it.i === id)
+  if (!item || !isAuto(id)) {
+    return
+  }
   const h = Math.max(MIN_AUTO_H, Math.round(px) + GAP)
-  if (item.h !== h) {
-    item.h = h
+  // remember it so a later full rebuild (layoutRevision) doesn't reset this cell
+  measuredAutoH.set(id, h)
+  if (item.h === h) {
+    return
+  }
+  item.h = h
+  if (autoCompact.value) {
     compactLayout()
+  } else {
+    // free-form: still surface the new content height to the grid (so the panel
+    // isn't clipped) without repacking the neighbours' positions
+    layout.value = layout.value.map(it => ({ ...it }))
   }
 }
 
@@ -205,9 +249,9 @@ const onLayoutUpdated = (newLayout: GridItemModel[]) => {
 // After initial render, once panels have reported their auto heights, compact the
 // columns so there are no leftover gaps between short panels.
 onMounted(() => {
-  nextTick(compactLayout)
-  setTimeout(compactLayout, 400)
-  setTimeout(compactLayout, 1200)
+  nextTick(maybeCompact)
+  setTimeout(maybeCompact, 400)
+  setTimeout(maybeCompact, 1200)
 })
 </script>
 

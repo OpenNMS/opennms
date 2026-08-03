@@ -36,7 +36,7 @@ License.
         class="dashboard-toolbar__control"
         title="Time range applied to panels that show time-based data (e.g. Availability). Other panels show current state."
       >
-        <PSelect
+        <OnmsSelect
           v-model="timeframePreset"
           :options="timeframeOptions"
           option-label="label"
@@ -44,7 +44,7 @@ License.
           aria-label="Dashboard timeframe"
         />
         <template v-if="timeframePreset === TimeframePreset.Custom">
-          <PDatePicker
+          <OnmsDatePicker
             v-model="customFrom"
             showTime
             hourFormat="24"
@@ -54,7 +54,7 @@ License.
             data-test="timeframe-custom-from"
           />
           <span class="dashboard-toolbar__range-sep">→</span>
-          <PDatePicker
+          <OnmsDatePicker
             v-model="customTo"
             showTime
             hourFormat="24"
@@ -70,7 +70,7 @@ License.
         class="dashboard-toolbar__control"
         title="How often the dashboard automatically reloads its data. Use Pause to stop auto-refresh."
       >
-        <PSelect
+        <OnmsSelect
           v-model="refreshSeconds"
           :options="refreshOptions"
           option-label="label"
@@ -79,16 +79,16 @@ License.
         />
       </span>
 
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         :icon="isPaused ? 'pi pi-play' : 'pi pi-pause'"
         :label="isPaused ? 'Resume' : 'Pause'"
         :title="isPaused ? 'Resume automatic data refresh' : 'Pause automatic data refresh'"
         @click="store.togglePaused()"
       />
 
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         :icon="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
         :label="isFullscreen ? 'Exit full screen' : 'Full screen'"
         title="Show the dashboard full screen — for NOC wall displays"
@@ -96,7 +96,18 @@ License.
       />
 
       <template v-if="editMode && canEdit">
-        <PSelect
+        <label
+          class="dashboard-toolbar__compact"
+          title="When on, panels squeeze up and down to pack against their neighbours. Turn off to place panels freely."
+        >
+          <OnmsToggleSwitch
+            v-model="autoCompactModel"
+            input-id="dashboard-auto-fit"
+            aria-label="Auto-fit panels"
+          />
+          <span>Auto-fit</span>
+        </label>
+        <OnmsSelect
           v-model="panelToAdd"
           :options="addablePanels"
           option-label="title"
@@ -106,29 +117,29 @@ License.
           aria-label="Add panel"
           @change="onAdd"
         />
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           label="Reset to default"
           icon="pi pi-replay"
           title="Replace the current layout with the built-in default dashboard (legacy homepage parity). Applied when you Save."
           @click="onResetToDefault"
         />
-        <PButton
+        <OnmsButton
           label="Save"
           icon="pi pi-save"
           :disabled="!isDirty"
           :loading="isSaving"
           @click="store.save()"
         />
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           label="Done"
           @click="store.setEditMode(false)"
         />
       </template>
-      <PButton
+      <OnmsButton
         v-else-if="canEdit"
-        outlined
+        variant="outlined"
         label="Edit"
         icon="pi pi-pencil"
         @click="store.setEditMode(true)"
@@ -140,19 +151,13 @@ License.
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import Button from 'primevue/button'
-import Select from 'primevue/select'
-import DatePicker from 'primevue/datepicker'
+import { OnmsToggleSwitch, OnmsButton, OnmsSelect, OnmsDatePicker } from '@opennms/onms-ui'
 import { TimeframePreset } from '@/types/dashboard'
 import { refreshOptions, timeframeOptions } from './timeframe'
 import { listPanelDefinitions } from './registry'
 import DashboardFilterControl from './DashboardFilterControl.vue'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import useRole from '@/composables/useRole'
-
-const PButton = Button
-const PSelect = Select
-const PDatePicker = DatePicker
 
 const store = useDashboardStore()
 const { editMode, isDirty, isSaving, isPaused } = storeToRefs(store)
@@ -163,6 +168,12 @@ const { adminRole } = useRole()
 const canEdit = adminRole
 
 const panelToAdd = ref<string | null>(null)
+
+// Squeeze / free-form layout toggle (persisted on the layout doc; saved on Save).
+const autoCompactModel = computed<boolean>({
+  get: () => store.autoCompact,
+  set: on => store.setAutoCompact(on)
+})
 
 const timeframePreset = computed<TimeframePreset>({
   get: () => store.layout.globalTimeframe.preset,
@@ -189,20 +200,20 @@ const commitRange = (from: Date | null, to: Date | null) =>
 
 const customFrom = computed<Date | null>({
   get: () => toDate(store.layout.globalTimeframe.from),
-  set: (from) => commitRange(from, toDate(store.layout.globalTimeframe.to))
+  set: from => commitRange(from, toDate(store.layout.globalTimeframe.to))
 })
 const customTo = computed<Date | null>({
   get: () => toDate(store.layout.globalTimeframe.to),
-  set: (to) => commitRange(toDate(store.layout.globalTimeframe.from), to)
+  set: to => commitRange(toDate(store.layout.globalTimeframe.from), to)
 })
 
 const refreshSeconds = computed<number>({
   get: () => store.layout.refresh.seconds,
-  set: (seconds) => store.setRefreshSeconds(seconds)
+  set: seconds => store.setRefreshSeconds(seconds)
 })
 
 // Offer every registered panel; duplicates are allowed (e.g. two filtered copies).
-const addablePanels = computed(() => listPanelDefinitions().map((d) => ({ type: d.type, title: d.title })))
+const addablePanels = computed(() => listPanelDefinitions().map(d => ({ type: d.type, title: d.title })))
 
 const onAdd = () => {
   if (panelToAdd.value) {
@@ -238,12 +249,16 @@ const exitCssMaximize = () => {
 
 const toggleFullscreen = async () => {
   const el = dashboardEl()
-  if (!el) return
+  if (!el) {
+    return
+  }
   if (isFullscreen.value) {
     if (document.fullscreenElement) {
       await document.exitFullscreen().catch(() => undefined)
     }
-    if (cssMaximized.value) exitCssMaximize()
+    if (cssMaximized.value) {
+      exitCssMaximize()
+    }
     return
   }
   try {
@@ -256,7 +271,9 @@ const toggleFullscreen = async () => {
 
 const onFullscreenChange = () => {
   // keep state in sync when the user exits via Esc
-  if (!cssMaximized.value) isFullscreen.value = !!document.fullscreenElement
+  if (!cssMaximized.value) {
+    isFullscreen.value = !!document.fullscreenElement
+  }
 }
 
 onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))
@@ -281,6 +298,15 @@ onBeforeUnmount(() => document.removeEventListener('fullscreenchange', onFullscr
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
+  }
+
+  &__compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    cursor: pointer;
   }
 }
 </style>

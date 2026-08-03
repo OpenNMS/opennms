@@ -24,7 +24,6 @@ import axios from 'axios'
 import { v2 } from './axiosInstances'
 import type { DashboardLayout, DashboardPanel } from '@/types/dashboard'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
-import { getPanelDefinition } from '@/components/Dashboard/registry'
 
 // A stored document is arbitrary JSON (any admin/REST client can PUT it), so
 // coerce it into a complete, safe layout: fill missing top-level blocks from
@@ -38,12 +37,14 @@ export const normalizeLayout = (raw: unknown): DashboardLayout => {
   const doc = raw as Partial<DashboardLayout>
   const panels = Array.isArray(doc.panels)
     ? doc.panels.filter((p): p is DashboardPanel =>
-        !!p && typeof p === 'object'
+      !!p && typeof p === 'object'
         && typeof (p as DashboardPanel).id === 'string'
         && typeof (p as DashboardPanel).type === 'string'
-        && !!getPanelDefinition((p as DashboardPanel).type)
-        && ['x', 'y', 'w', 'h'].every((k) => Number.isFinite((p as unknown as Record<string, unknown>)[k])))
-      .map((p) => ({
+        // keep panels whose type isn't in this instance's registry (e.g. a plugin
+        // panel or an older/newer type) — they render as a "missing" placeholder
+        // rather than being silently pruned and lost the next time the layout saves
+        && ['x', 'y', 'w', 'h'].every(k => Number.isFinite((p as unknown as Record<string, unknown>)[k])))
+      .map(p => ({
         ...p,
         collapsed: !!p.collapsed,
         titleOverride: p.titleOverride ?? null,
@@ -69,6 +70,8 @@ export const normalizeLayout = (raw: unknown): DashboardLayout => {
       from: doc.globalTimeframe?.from ?? null,
       to: doc.globalTimeframe?.to ?? null
     },
+    // default true (packed columns) when a stored doc predates this field
+    autoCompact: typeof doc.autoCompact === 'boolean' ? doc.autoCompact : base.autoCompact,
     panels
   }
 }
@@ -105,9 +108,9 @@ export interface ServiceType {
 // Monitored service types (id + name) for the Quick Search "Providing service" control.
 export const getServiceTypes = async (): Promise<ServiceType[]> => {
   try {
-    const resp = await v2.get('/dashboard/service-types', { headers: { Accept: 'application/json' } })
+    const resp = await v2.get('/dashboard/service-types', { headers: { Accept: 'application/json' }})
     return Array.isArray(resp.data) ? (resp.data as ServiceType[]) : []
-  } catch (err) {
+  } catch {
     return []
   }
 }
