@@ -74,9 +74,12 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import { getSystemReportPlugins, getSystemReportFormatters } from './systemReportService'
 
 export default {
   search,
+  getSystemReportPlugins,
+  getSystemReportFormatters,
   getInfo,
   getNodes,
   getAlarms,
