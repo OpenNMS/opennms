@@ -22,6 +22,8 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,7 +51,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * Send a notification to an arbitrary HTTP webhook.
@@ -65,7 +69,11 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebhookNotificationStrategy.class);
 
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    // Trailing tokens are rejected so that a template rendering to something like
+    // {"text": "x"} oops is caught here instead of as a 400 from the receiver.
+    private static final ObjectMapper JSON_MAPPER = JsonMapper.builder()
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .build();
 
     protected static final String SWITCH_NAME = "-name";
     protected static final String SWITCH_URL = "-url";
@@ -90,7 +98,7 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
      * those are resolved by notifd before the strategy runs, but only when the value
      * came from a notification parameter rather than a substitution literal.
      */
-    private static final Pattern TEMPLATE_TOKEN = Pattern.compile("\\$\\{([^{}:|]+?)(\\|raw)?\\}");
+    private static final Pattern TEMPLATE_TOKEN = Pattern.compile("\\$\\{([^{}:|]+?)(?:\\|([^{}|]*))?\\}");
 
     /** Friendlier names for the two cryptic message switches. */
     private static final Map<String, String> TEMPLATE_ALIASES = Map.of(
@@ -157,9 +165,9 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
             final CloseableHttpResponse response = clientWrapper.execute(request);
             statusCode = response.getStatusLine().getStatusCode();
             contents = response.getEntity() == null ? "" : EntityUtils.toString(response.getEntity());
-            LOG.debug("send: {} {} returned {} with body: {}", method, url, statusCode, contents);
+            LOG.debug("send: {} {} returned {} with body: {}", method, redactUrl(url), statusCode, contents);
         } catch (IOException e) {
-            LOG.error("send: I/O problem posting to webhook {}", url, e);
+            LOG.error("send: I/O problem posting to webhook at {}", redactUrl(url), e);
             return 1;
         } finally {
             IOUtils.closeQuietly(clientWrapper);
@@ -223,7 +231,11 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
         final StringBuffer out = new StringBuffer();
         while (matcher.find()) {
             final String name = matcher.group(1).trim();
-            final boolean raw = matcher.group(2) != null;
+            final String modifier = matcher.group(2);
+            final boolean raw = "raw".equals(modifier);
+            if (modifier != null && !raw) {
+                LOG.warn("renderTemplate: ignoring unknown modifier '{}' on '{}'; the only modifier is 'raw'", modifier, name);
+            }
 
             String value = lookupTemplateValue(name);
             if (value == null) {
@@ -308,7 +320,12 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
             return DEFAULT_TIMEOUT_MS;
         }
         try {
-            return Integer.parseInt(value.trim());
+            final int timeout = Integer.parseInt(value.trim());
+            if (timeout < 0) {
+                LOG.warn("Negative {} value '{}'; using {}ms", switchName, value, DEFAULT_TIMEOUT_MS);
+                return DEFAULT_TIMEOUT_MS;
+            }
+            return timeout;
         } catch (NumberFormatException e) {
             LOG.warn("Invalid {} value '{}'; using {}ms", switchName, value, DEFAULT_TIMEOUT_MS);
             return DEFAULT_TIMEOUT_MS;
@@ -373,12 +390,32 @@ public class WebhookNotificationStrategy implements NotificationStrategy {
 
     /** Catches template mistakes here rather than as an opaque 400 from the receiver. */
     protected static boolean isWellFormedJson(final String body) {
+        // readTree maps blank input to a MissingNode rather than failing.
+        if (body == null || body.trim().isEmpty()) {
+            return false;
+        }
         try {
             JSON_MAPPER.readTree(body);
             return true;
         } catch (com.fasterxml.jackson.core.JacksonException e) {
             LOG.debug("isWellFormedJson: rendered body did not parse", e);
             return false;
+        }
+    }
+
+    /**
+     * Webhook URLs carry their own credential in the path or query, so only the
+     * scheme and host are safe to log.
+     */
+    protected static String redactUrl(final String url) {
+        try {
+            final URI uri = new URI(url);
+            if (uri.getHost() == null) {
+                return "(unparseable URL)";
+            }
+            return uri.getScheme() + "://" + uri.getHost() + (uri.getPort() == -1 ? "" : ":" + uri.getPort());
+        } catch (URISyntaxException e) {
+            return "(unparseable URL)";
         }
     }
 

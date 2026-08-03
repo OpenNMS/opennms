@@ -214,6 +214,50 @@ public class WebhookNotificationStrategyTest {
     }
 
     @Test
+    public void testWellFormedJsonRejectsBlankAndTrailingContent() {
+        // Jackson maps all of these to a MissingNode or stops at the first value,
+        // so they have to be rejected explicitly.
+        assertFalse(WebhookNotificationStrategy.isWellFormedJson(null));
+        assertFalse(WebhookNotificationStrategy.isWellFormedJson(""));
+        assertFalse(WebhookNotificationStrategy.isWellFormedJson("   "));
+        assertFalse(WebhookNotificationStrategy.isWellFormedJson("{\"a\": 1} then junk"));
+        assertFalse(WebhookNotificationStrategy.isWellFormedJson("{\"a\": 1} {\"b\": 2}"));
+    }
+
+    @Test
+    public void testRedactUrlKeepsOnlySchemeAndHost() {
+        // Slack, Discord and Teams URLs carry the credential in the path or query.
+        assertEquals("https://hooks.slack.com",
+                WebhookNotificationStrategy.redactUrl("https://hooks.slack.com/services/T000/B000/sekrittoken"));
+        assertEquals("https://example.org:8443",
+                WebhookNotificationStrategy.redactUrl("https://example.org:8443/hook?token=sekrit"));
+        // Credentials in the authority must not survive either.
+        assertEquals("https://example.org",
+                WebhookNotificationStrategy.redactUrl("https://user:pass@example.org/hook"));
+        assertEquals("(unparseable URL)", WebhookNotificationStrategy.redactUrl("not a url"));
+    }
+
+    @Test
+    public void testUnknownModifierIsIgnoredButStillSubstitutes() {
+        withArguments(arg("-subject", "He said \"down\""));
+
+        // The value is still escaped: an unknown modifier must not act like |raw.
+        assertEquals("{\"text\": \"He said \\\"down\\\"\"}",
+                m_strategy.renderTemplate("{\"text\": \"${subject|bogus}\"}", true));
+    }
+
+    @Test
+    public void testNegativeTimeoutFallsBackToDefault() {
+        withArguments(arg("-url", "http://example.org/"), arg("-connect-timeout", "-5"));
+
+        // Exercised through send(): a negative timeout must not reach the client.
+        assertEquals(1, m_strategy.send(Arrays.asList(
+                arg("-url", "http://127.0.0.1:1/refused"),
+                arg("-connect-timeout", "-5"),
+                substituted("-body", "{\"text\": \"hi\"}"))));
+    }
+
+    @Test
     public void testNullArgumentsAreTolerated() {
         m_strategy.setArguments(null);
 

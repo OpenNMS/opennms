@@ -58,6 +58,8 @@ Only `-url` is required.
 The matching system properties are `org.opennms.netmgt.notifd.webhook.url`, `.method`, `.contentType`, `.body`, `.successMatch`, `.connectTimeout`, `.socketTimeout`, `.useSystemProxy`, and `.header.<name>`.
 When a command sets `-name`, the strategy looks for `org.opennms.netmgt.notifd.webhook.<name>.url` first and falls back to the unqualified property.
 
+A header is only sent if the command declares its `-header-<name>` argument, so the `.header.<name>` property supplies the value for a declared header rather than adding one on its own.
+
 Setting the URL through a system property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` keeps the webhook token out of `notificationCommands.xml`.
 
 [[body-templates]]
@@ -65,6 +67,9 @@ Setting the URL through a system property in `$\{OPENNMS_HOME}/etc/opennms.prope
 
 Within `-body`, `$\{name}` is replaced by the value of the notification command argument called `-name`.
 Declare an `<argument>` for every token the template uses; a token with no matching argument is replaced with an empty string.
+
+Substitution applies to the body only.
+A `$\{...}` token in `-url` or in a header value is left as written, so values that vary per notice belong in the body or in a notification parameter.
 
 `$\{subject}` and `$\{textMessage}` cover most cases.
 `$\{textMessage}` and `$\{numericMessage}` are friendlier spellings of the `-tm` and `-nm` switches.
