@@ -20,12 +20,11 @@
 /// License.
 ///
 
-// Pure logic replicating the legacy node-list interface display, see:
-// - opennms-web-api DefaultNodeListService#createModelForNodes (interface selection)
-// - DefaultNodeListService.IpInterfaceComparator / SnmpInterfaceComparator (ordering)
-// - opennms-webapp WEB-INF/tags/element/nodelist.tag (labels/links)
+// Pure logic replicating interface-display behavior from the legacy node-list page (removed in
+// NMS-18217): which interfaces to select per node, how they were ordered, and how their
+// labels/links were rendered.
 //
-// Field mapping from the legacy NodeListCommand params to the Vue NodeQueryFilter:
+// Field mapping from the legacy node-list page's request params to the Vue NodeQueryFilter:
 // - legacy `maclike`               -> filter.macAddress
 // - legacy `snmpParm`/`snmpParmValue`/`snmpParmMatchType` (ifAlias/ifName/ifDescr, contains/equals)
 //     -> filter.extendedSearch.snmpParams.{snmpIfAlias,snmpIfName,snmpIfDescription}
@@ -45,11 +44,11 @@ export type InterfaceListMode =
   | { mode: 'snmpParm'; attr: 'ifAlias' | 'ifName' | 'ifDescr'; value: string; matchType: 'contains' | 'equals' }
 
 /**
- * Decide which interface-listing mode applies for the current node query filter, replicating
- * DefaultNodeListService#createModelForNodes's mode selection: its if/else-if chain checks
- * hasSnmpParm() before hasMaclike(), so snmpParm takes priority over maclike; snmpParm only
- * applies when exactly one of ifAlias/ifName/ifDescr is set; otherwise maclike applies if a MAC
- * filter is set, and failing that the default IP-interface listing applies.
+ * Decide which interface-listing mode applies for the current node query filter, replicating the
+ * legacy node-list page's (removed in NMS-18217) mode selection: its if/else-if chain checked
+ * the SNMP attribute search before the MAC search, so snmpParm takes priority over maclike;
+ * snmpParm only applies when exactly one of ifAlias/ifName/ifDescr is set; otherwise maclike
+ * applies if a MAC filter is set, and failing that the default IP-interface listing applies.
  */
 export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode => {
   const snmpParams = filter.extendedSearch?.snmpParams
@@ -190,8 +189,8 @@ const ipv6ToBytes = (ip: string): number[] | null => {
 
 /**
  * Compare two IP address strings by their raw bytes ascending (shorter byte arrays, i.e. IPv4,
- * sort before longer ones, i.e. IPv6), matching legacy's ByteArrayComparator use in
- * IpInterfaceComparator. Does NOT use localeCompare/string comparison.
+ * sort before longer ones, i.e. IPv6), matching the byte-array-based IP ordering used by the
+ * legacy node-list page (removed in NMS-18217). Does NOT use localeCompare/string comparison.
  */
 export const compareIpAddressBytes = (a: string, b: string): number => {
   const aBytes = ipToBytes(a) ?? []
@@ -258,8 +257,8 @@ const compareNullableNumbersNullsLast = (a: number | null | undefined, b: number
 }
 
 /**
- * Replicates DefaultNodeListService.SnmpInterfaceComparator: ifName (nulls last, case-sensitive)
- * -> ifDescr (nulls last) -> ifIndex (nulls last) -> id.
+ * Replicates the legacy node-list page's (removed in NMS-18217) SNMP interface ordering: ifName
+ * (nulls last, case-sensitive) -> ifDescr (nulls last) -> ifIndex (nulls last) -> id.
  */
 export const compareSnmpInterfaces = (a: SnmpInterface, b: SnmpInterface): number => {
   const nameDiff = compareNullableStringsNullsLast(a.ifName, b.ifName)
