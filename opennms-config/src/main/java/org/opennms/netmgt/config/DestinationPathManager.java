@@ -173,9 +173,31 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void addPath(Path newPath) throws IOException {
-        m_destinationPaths.put(newPath.getName(), newPath);
-    
-        saveCurrent();
+        saveWithRollback(() -> m_destinationPaths.put(newPath.getName(), newPath));
+    }
+
+    @FunctionalInterface
+    private interface ConfigChange {
+        void apply() throws IOException;
+    }
+
+    /**
+     * Applies an in-memory change and persists it, restoring the previous paths if
+     * persistence fails. saveCurrent() marshals the model only after the caller has
+     * already changed the map, so a change that leaves the config unmarshallable —
+     * e.g. removing the last path, which violates destinationPaths.xsd — would
+     * otherwise leave memory diverged from the on-disk file until a restart.
+     */
+    private synchronized void saveWithRollback(final ConfigChange change) throws IOException {
+        final Map<String, Path> snapshot = new TreeMap<>(m_destinationPaths);
+        try {
+            change.apply();
+            saveCurrent();
+        } catch (final RuntimeException | IOException e) {
+            m_destinationPaths.clear();
+            m_destinationPaths.putAll(snapshot);
+            throw e;
+        }
     }
 
     /**
@@ -186,11 +208,11 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void replacePath(String oldName, Path newPath) throws IOException {
-        if (m_destinationPaths.containsKey(oldName)) {
+        // one atomic change so a failed save rolls back both the remove and the add
+        saveWithRollback(() -> {
             m_destinationPaths.remove(oldName);
-        }
-    
-        addPath(newPath);
+            m_destinationPaths.put(newPath.getName(), newPath);
+        });
     }
 
     /**
@@ -202,8 +224,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(Path path) throws IOException {
-        m_destinationPaths.remove(path.getName());
-        saveCurrent();
+        saveWithRollback(() -> m_destinationPaths.remove(path.getName()));
     }
 
     /**
@@ -215,8 +236,7 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(String name) throws IOException {
-        m_destinationPaths.remove(name);
-        saveCurrent();
+        saveWithRollback(() -> m_destinationPaths.remove(name));
     }
 
     /**

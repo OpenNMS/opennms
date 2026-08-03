@@ -109,7 +109,7 @@
         </template>
       </Column>
       <Column
-        v-if="!showAckColumns"
+        v-if="!showAckColumns && canAcknowledgeNotifications"
         header="Actions"
       >
         <template #body="{ data }">
@@ -148,14 +148,15 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import DownloadFileIcon from '@/components/icons/action/DownloadFile.vue'
 import PrintIcon from '@/components/icons/action/Print.vue'
-import API from '@/services'
 import useSnackbar from '@/composables/useSnackbar'
+import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
 import { MessageSeverity } from '@/types'
 import { useNoticesStore } from '@/stores/noticesStore'
 import { OnmsNotice } from '@/types/notices'
 
 const { showSnackBar } = useSnackbar()
+const { canAcknowledgeNotifications } = useRole()
 const menuStore = useMenuStore()
 const store = useNoticesStore()
 
@@ -196,19 +197,15 @@ const onPage = (event: DataTablePageEvent) => {
 }
 
 const fetchAllForExport = async (): Promise<{ notices: OnmsNotice[], totalCount: number }> => {
-  const result = await API.browseNotices({
-    acktype: store.preset === 'allAcknowledged' ? 'ack' : 'unack',
-    user: store.preset === 'yourOutstanding' ? store.currentUser : store.preset === 'userSearch' ? store.userFilter : null,
-    limit: EXPORT_LIMIT,
-    offset: 0
-  })
+  // delegate to the store so the same whoami guard as load() applies
+  const result = await store.fetchForExport(EXPORT_LIMIT)
   if (result.totalCount > result.notices.length) {
     showSnackBar({
       msg: `Only the first ${result.notices.length} of ${result.totalCount} notices were exported.`,
       severity: MessageSeverity.Warn
     })
   }
-  return { notices: result.notices, totalCount: result.totalCount }
+  return result
 }
 
 const exportColumns = (notice: OnmsNotice): Record<string, string> => ({

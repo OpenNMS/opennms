@@ -199,4 +199,43 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).not.toHaveBeenCalled()
     })
   })
+
+  describe('fetchForExport', () => {
+    it('scopes the export to the current user without widening', async () => {
+      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+
+      const result = await store.fetchForExport(1000)
+
+      expect(API.browseNotices).toHaveBeenCalledWith({
+        acktype: 'unack',
+        user: 'admin',
+        limit: 1000,
+        offset: 0
+      })
+      expect(result).toEqual(mockResult)
+    })
+
+    it('refuses to export (no query) when a user-scoped preset has no user id', async () => {
+      const authStore = useAuthStore()
+      authStore.whoAmI = { id: '', fullName: '', internal: true, roles: [] }
+
+      const result = await store.fetchForExport(1000)
+
+      expect(API.browseNotices).not.toHaveBeenCalled()
+      expect(result).toEqual({ notices: [], totalCount: 0 })
+      expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    })
+
+    it('exports all outstanding notices with no user filter for a non-scoped preset', async () => {
+      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      await store.applyPreset('allOutstanding')
+      vi.clearAllMocks()
+
+      await store.fetchForExport(500)
+
+      expect(API.browseNotices).toHaveBeenCalledWith(
+        expect.objectContaining({ acktype: 'unack', user: null, limit: 500 })
+      )
+    })
+  })
 })

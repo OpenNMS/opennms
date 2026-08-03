@@ -68,11 +68,13 @@ export const useNoticesStore = defineStore('noticesStore', () => {
 
   const { showSnackBar } = useSnackbar()
 
+  // a failed whoami leaves no user id; widening a user-scoped query to
+  // everyone's notices would be silently wrong, so callers must refuse
+  const missingRequiredUser = computed<boolean>(() =>
+    (preset.value === 'yourOutstanding' || preset.value === 'userSearch') && !effectiveUser.value)
+
   const load = async () => {
-    // a failed whoami leaves no user id; widening a user-scoped query to
-    // everyone's notices would be silently wrong, so refuse instead
-    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch'
-    if (needsUser && !effectiveUser.value) {
+    if (missingRequiredUser.value) {
       notices.value = []
       totalCount.value = 0
       showSnackBar({ msg: 'Cannot determine the current user; showing no notices. Reload the page to retry.', error: true })
@@ -106,6 +108,22 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     await load()
   }
 
+  // Export/print path: same user guard as load() so a failed whoami never
+  // widens a user-scoped export to everyone's notices.
+  const fetchForExport = async (limit: number): Promise<{ notices: OnmsNotice[], totalCount: number }> => {
+    if (missingRequiredUser.value) {
+      showSnackBar({ msg: 'Cannot determine the current user; nothing to export. Reload the page to retry.', error: true })
+      return { notices: [], totalCount: 0 }
+    }
+    const result = await API.browseNotices({
+      acktype: acktype.value,
+      user: effectiveUser.value,
+      limit,
+      offset: 0
+    })
+    return { notices: result.notices, totalCount: result.totalCount }
+  }
+
   const acknowledge = async (notice: OnmsNotice) => {
     const ok = await API.acknowledgeNotice(notice.id, true)
     if (ok) {
@@ -133,6 +151,7 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     load,
     applyPreset,
     onPage,
+    fetchForExport,
     acknowledge
   }
 })
