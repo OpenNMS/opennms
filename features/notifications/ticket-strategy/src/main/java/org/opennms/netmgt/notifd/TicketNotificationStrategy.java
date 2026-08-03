@@ -76,8 +76,8 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		int m_alarmID;
 		String m_tticketID;
 		int m_tticketState;
-		int m_severity;
-		
+		int m_severity = OnmsSeverity.INDETERMINATE.getId();
+
 		AlarmState(int alarmID) {
 			m_alarmID = alarmID;
 			m_tticketID = "";
@@ -191,10 +191,10 @@ public class TicketNotificationStrategy implements NotificationStrategy {
          * alarm's severity can, and it is also what the ticketer gates a close on.
          */
         if( isCleared(alarmState.getSeverity()) ) {
-            if( hasActiveTicket(alarmState) ) {
+            if( isCloseable(alarmState) ) {
                 sendCloseTicketEvent(alarmState.getAlarmID(), eventUEI, ticketUser, alarmState.getTticketID());
             } else {
-		LOG.info("Alarm-id='{}' is cleared but has no active ticket (tticket-id='{}', state='{}'). Nothing to close.", alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
+		LOG.info("Alarm-id='{}' is cleared but has no ticket to close (tticket-id='{}', state='{}'). Nothing to do.", alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
             }
             return 0;
         }
@@ -237,6 +237,17 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 
 	private static boolean hasActiveTicket(final AlarmState alarmState) {
 		return StringUtils.isNotBlank(alarmState.getTticketID()) && isTicketActive(alarmState.getTticketState());
+	}
+
+    /**
+     * A close already requested through the web UI or REST leaves the alarm
+     * CLOSE_PENDING. Closing again would ask the ticketer to close a ticket it is
+     * already closing, and a plugin that rejects that leaves the alarm in
+     * CLOSE_FAILED.
+     */
+	private static boolean isCloseable(final AlarmState alarmState) {
+		return hasActiveTicket(alarmState)
+				&& alarmState.getTticketState() != TroubleTicketState.CLOSE_PENDING.getValue();
 	}
 
     /**

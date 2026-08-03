@@ -79,11 +79,18 @@ Add the following command to `notificationCommands.xml`:
 </command>
 ----
 
-Add a destination path with an initial delay to `destinationPaths.xml`:
+Add destination paths with an initial delay to `destinationPaths.xml`.
+Both run the same command, one for each direction:
 
 [source, xml]
 ----
 <path name="Create-Ticket" initial-delay="30s">
+    <target>
+        <name>admin</name>
+        <command>troubleTicket</command>
+    </target>
+</path>
+<path name="Close-Ticket" initial-delay="30s">
     <target>
         <name>admin</name>
         <command>troubleTicket</command>
@@ -94,7 +101,7 @@ Add a destination path with an initial delay to `destinationPaths.xml`:
 NOTE: Use a single user as the target, not a group.
 Notifd runs the command once per member of a group target, and near-simultaneous runs can each create a ticket for the same alarm.
 
-Reference the `Create-Ticket` destination path from each notification in `notifications.xml` that should open a ticket.
+Reference the `Create-Ticket` destination path from each notification in `notifications.xml` that should open a ticket, and `Close-Ticket` from the notifications for the events that resolve them.
 
 To set the ticket user for a notification, add a `ticketUser` parameter to its definition:
 
@@ -107,10 +114,21 @@ If the parameter is absent, the strategy uses `admin`.
 
 == Closing tickets
 
-Closing needs no additional configuration for the standard outage events.
-When the resolving event arrives, notifd acknowledges the notice that opened the ticket and re-runs its commands, which delivers this command a second time.
-The resolving event is reduced onto the same alarm as the problem event, and alarmd has cleared that alarm by then, so the strategy closes its ticket instead of opening another.
+Add a notification for the event that resolves the problem and point it at the `Close-Ticket` path:
 
-Closing therefore relies on the `auto-acknowledge` pairing for the problem UEI in `notifd-configuration.xml`, which ships configured for the node, interface, and service outage events and defaults to `notify="true"`.
-A problem UEI with no such pairing, such as a threshold or a custom alarm, opens tickets that nothing closes.
-Add an `auto-acknowledge` entry naming its resolving UEI to close them.
+[source, xml]
+----
+<notification name="nodeUp-ticket" status="on">
+    <uei>uei.opennms.org/nodes/nodeUp</uei>
+    <rule>IPADDR != '0.0.0.0'</rule>
+    <destinationPath>Close-Ticket</destinationPath>
+    <text-message>Closing the trouble ticket for node %nodelabel%.</text-message>
+    <parameter name="ticketUser" value="noc"/>
+</notification>
+----
+
+The resolving event is reduced onto the same alarm as the problem event, so the strategy finds that alarm's ticket and closes it.
+The `initial-delay` on the path is what makes this reliable: alarmd clears the alarm asynchronously, and the ticketer refuses to close a ticket whose alarm is not yet cleared.
+
+Notifd may also deliver this command a second time for the same resolution, because acknowledging the problem notice re-runs its commands.
+That delivery finds the ticket already closed and does nothing.

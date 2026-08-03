@@ -253,6 +253,11 @@ public class TicketNotificationStrategyTest {
     	assertClearedStateSendsNothing("TICKET-1", TroubleTicketState.CLOSED);
     }
 
+    @Test
+    public void testClearedAlarmWithClosePendingTicketSendsNothing() {
+    	assertClearedStateSendsNothing("TICKET-1", TroubleTicketState.CLOSE_PENDING);
+    }
+
     private void assertClearedStateClosesTicket(TroubleTicketState state) {
     	EventBuilder closeTicketBuilder = new EventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, m_ticketNotificationStrategy.getName());
     	closeTicketBuilder.setParam(EventConstants.PARM_ALARM_ID, "1");
