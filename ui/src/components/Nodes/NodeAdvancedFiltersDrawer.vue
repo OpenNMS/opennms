@@ -255,7 +255,7 @@
             <br />
             <p><strong>Extended Search</strong></p>
             <p>Extended search allows you to perform more complex queries across multiple fields and criteria, including requisition, asset, and SNMP fields.</p>
-            <p>Choose a search type, then a search term and click Add to add it as a filter. You may add multiple filters.</p>
+            <p>Choose a search type, then a search term, and click Add to add it as a filter. You may add multiple filters.</p>
             <p>This is a case-insensitive partial string match against the selected field.</p>
           </div>
         </template>
