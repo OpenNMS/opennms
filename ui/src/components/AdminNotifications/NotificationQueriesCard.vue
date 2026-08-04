@@ -31,9 +31,9 @@
             />
             <label for="notification-user-search">Check notices for user</label>
           </IftaLabel>
-          <OnmsButton
+          <OnmsIconButton
             variant="outlined"
-            icon="pi pi-search"
+            :icon="Search"
             aria-label="Show notices for user"
             data-test="user-search-button"
             @click="searchByUser"
@@ -49,9 +49,9 @@
             />
             <label for="notification-notice-search">Get details for notice</label>
           </IftaLabel>
-          <OnmsButton
+          <OnmsIconButton
             variant="outlined"
-            icon="pi pi-search"
+            :icon="Search"
             aria-label="Get notice detail"
             data-test="notice-search-button"
             @click="goToNotice"
@@ -66,9 +66,10 @@
 import { computed, ref } from 'vue'
 
 import IftaLabel from 'primevue/iftalabel'
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
 import TableCard from '@/components/Common/TableCard.vue'
+import Search from '@/components/icons/action/Search.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNoticesStore } from '@/stores/noticesStore'
 

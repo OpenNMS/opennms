@@ -32,7 +32,6 @@
       lazy
       :value="store.notices"
       :totalRecords="store.totalCount"
-      :loading="store.loading"
       paginator
       dataKey="id"
       :first="store.first"

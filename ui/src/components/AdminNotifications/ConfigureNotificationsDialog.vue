@@ -2,10 +2,9 @@
   <OnmsDialog
     :visible="visible"
     modal
-    maximizable
     header="Configure Notifications"
     class="configure-notifications-dialog"
-    :style="{ width: '1100px', maxWidth: '95vw' }"
+    width="min(1100px, 95vw)"
     data-test="configure-notifications-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
