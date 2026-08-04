@@ -111,11 +111,18 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  // Monotonic id sequencing getSnmpInterfacesForNodes requests: a response only applies if no
+  // newer call has started since its request was issued, so a slow response from a superseded
+  // request can never overwrite the map after the latest one (or an empty-ids reset) has run.
+  let snmpInterfacesRequestId = 0
+
   /**
    * Get the SnmpInterfaces for the given nodes, then replace nodeToSnmpInterfaceMap with the
    * newly grouped result (grouped by String(nodeId)).
    */
   const getSnmpInterfacesForNodes = async (nodeIds: string[], narrowing?: string) => {
+    const requestId = ++snmpInterfacesRequestId
+
     if (nodeIds.length === 0) {
       nodeToSnmpInterfaceMap.value = new Map<string, SnmpInterface[]>()
       return
@@ -128,6 +135,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
     } as QueryParameters
 
     const resp = await API.getSnmpInterfaces(queryParameters)
+
+    if (requestId !== snmpInterfacesRequestId) {
+      return
+    }
 
     const grouped = new Map<string, SnmpInterface[]>()
 

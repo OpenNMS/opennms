@@ -676,12 +676,12 @@ watch(
 // nodeStore.getNodes(...) (async — nodeStore.nodes, and therefore `nodes` here, doesn't change
 // until it resolves). If interfaceListMode were also a source here, this watcher would fire in
 // that same flush with the NEW mode paired with the STALE (pre-edit) page node ids, issuing a
-// throwaway-but-distinct-looking fetch that can race with — and, on the wire, arrive after — the
-// correct one issued once `nodes` actually updates. getSnmpInterfacesForNodes replaces the whole
-// map with no request-sequencing, so whichever response lands last wins; the stale-ids fetch
-// winning would blank every expanded panel on the new page. Gating on `nodes`/`showInterfaces`
-// instead means the fetch only ever fires once the page has actually settled to match the current
-// filter, so the mode read at that point is always paired with the node ids it actually produced.
+// throwaway fetch for interfaces of nodes about to leave the page. getSnmpInterfacesForNodes
+// sequences its requests (a superseded request's response is discarded), so the stale fetch can
+// no longer clobber the map on the wire — but it's still a wasted round-trip that can transiently
+// populate panels from the wrong node set. Gating on `nodes`/`showInterfaces` instead means the
+// fetch only ever fires once the page has actually settled to match the current filter, so the
+// mode read at that point is always paired with the node ids it actually produced.
 // lastSnmpFetchKey additionally dedupes back-to-back fires with an unchanged (nodeIds, narrowing)
 // pair (e.g. a page re-render that doesn't actually change the result set).
 const lastSnmpFetchKey = ref<string | null>(null)

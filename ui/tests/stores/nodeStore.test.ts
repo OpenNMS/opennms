@@ -112,5 +112,46 @@ describe('useNodeStore', () => {
       expect(API.getSnmpInterfaces).not.toHaveBeenCalled()
       expect(store.nodeToSnmpInterfaceMap.size).toEqual(0)
     })
+
+    it('ignores a stale response that resolves after a newer request (latest request wins)', async () => {
+      const staleSnmp = createMockSnmpInterface(101, 1)
+      const freshSnmp = createMockSnmpInterface(201, 2)
+
+      let resolveFirst: (value: unknown) => void = () => {}
+      const firstResponse = new Promise(resolve => {
+        resolveFirst = resolve
+      })
+      vi.mocked(API.getSnmpInterfaces)
+        .mockReturnValueOnce(firstResponse as ReturnType<typeof API.getSnmpInterfaces>)
+        .mockResolvedValueOnce({ snmpInterface: [freshSnmp], totalCount: 1, count: 1, offset: 0 })
+
+      const firstCall = store.getSnmpInterfacesForNodes(['1'])
+      await store.getSnmpInterfacesForNodes(['2'])
+
+      // The first request's response arrives on the wire after the second's.
+      resolveFirst({ snmpInterface: [staleSnmp], totalCount: 1, count: 1, offset: 0 })
+      await firstCall
+
+      expect(store.nodeToSnmpInterfaceMap.get('2')).toEqual([freshSnmp])
+      expect(store.nodeToSnmpInterfaceMap.has('1')).toBe(false)
+    })
+
+    it('does not let an in-flight response overwrite a subsequent empty-ids reset', async () => {
+      const staleSnmp = createMockSnmpInterface(101, 1)
+
+      let resolveFirst: (value: unknown) => void = () => {}
+      const firstResponse = new Promise(resolve => {
+        resolveFirst = resolve
+      })
+      vi.mocked(API.getSnmpInterfaces).mockReturnValueOnce(firstResponse as ReturnType<typeof API.getSnmpInterfaces>)
+
+      const firstCall = store.getSnmpInterfacesForNodes(['1'])
+      await store.getSnmpInterfacesForNodes([])
+
+      resolveFirst({ snmpInterface: [staleSnmp], totalCount: 1, count: 1, offset: 0 })
+      await firstCall
+
+      expect(store.nodeToSnmpInterfaceMap.size).toEqual(0)
+    })
   })
 })
