@@ -262,8 +262,9 @@ const filterDefaultModeIp = (ipInterfaces: IpInterface[]): IpInterface[] =>
   ipInterfaces.filter(ip => ip.isManaged !== 'D' && ip.ipAddress !== '0.0.0.0')
 
 const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): InterfaceListRow[] => {
+  // No .slice() needed before .sort(): filterDefaultModeIp's .filter() already returns a fresh
+  // array, so sorting it in place can't mutate anything the caller (or another mode) holds.
   return filterDefaultModeIp(ipInterfaces)
-    .slice()
     .sort((a, b) => compareIpAddressBytes(a.ipAddress, b.ipAddress))
     .map(ip => ({
       key: `ip-${ip.id}`,
@@ -290,8 +291,9 @@ const getMaclikeModeRows = (
   snmpInterfaces: SnmpInterface[],
   baseHref: string
 ): InterfaceListRow[] => {
+  // No .slice() needed before .sort(): filterMaclikeModeSnmp's .filter() already returns a fresh
+  // array.
   return filterMaclikeModeSnmp(mac, snmpInterfaces)
-    .slice()
     .sort(compareSnmpInterfaces)
     .map(snmp => buildSnmpInterfaceRow(nodeId, snmp, ipInterfaces, baseHref, String(snmp.physAddr), ifIndex => `ifIndex:${ifIndex}`))
 }
@@ -344,8 +346,9 @@ const getSnmpParmModeRows = (
   snmpInterfaces: SnmpInterface[],
   baseHref: string
 ): InterfaceListRow[] => {
+  // No .slice() needed before .sort(): filterSnmpParmModeSnmp's .filter() already returns a fresh
+  // array.
   return filterSnmpParmModeSnmp(mode, snmpInterfaces)
-    .slice()
     .sort(compareSnmpInterfaces)
     .map(snmp => buildSnmpInterfaceRow(nodeId, snmp, ipInterfaces, baseHref, String(snmp[mode.attr]), ifIndex => `ifIndex ${ifIndex}`))
 }

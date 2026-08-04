@@ -683,6 +683,23 @@ watch([() => nodeStructureStore.queryFilter], () => {
 watch(
   [nodes, () => nodeStructureStore.showInterfaces, interfaceListMode],
   ([currentNodes, showInterfaces]) => {
+    // Reset BOTH catch-up watchers' "already applied" flags on every input change here (new page,
+    // toggle, or mode change): each such change starts a new generation whose eventual async map
+    // replacement must get a fresh chance to catch up — even if the generation's key happens to
+    // reproduce one that was already marked applied for a PRIOR generation. Without this, a
+    // sequence like "page X catches up -> page Y (nothing qualifies, key never recorded as
+    // applied) -> page X again" — or "default mode catches up -> maclike mode -> back to default,
+    // same page" — leaves the OLD generation's key stuck in *CatchUpAppliedForKey, so the fresh
+    // map replacement for the reproduced key is silently discarded, reproducing the exact B1
+    // symptom this file otherwise fixes. This watcher always runs synchronously, strictly before
+    // the corresponding async map replacement can land (nodeStore.getNodes/getSnmpInterfacesForNodes
+    // are both kicked off from reactions to the same nodes/showInterfaces/mode change), so resetting
+    // here is always in time. The manual-collapse guarantee (see mergeQualifyingIntoExpandedRows)
+    // still holds: a manual collapse changes expandedRows directly, not nodes/showInterfaces/mode,
+    // so it never runs this watcher and never triggers this reset.
+    snmpCatchUpAppliedForKey = null
+    ipCatchUpAppliedForKey = null
+
     if (!showInterfaces) {
       expandedRows.value = {}
       return
@@ -823,7 +840,8 @@ watch(
 // instead: it changes exactly when the page's node set changes (a new batch is genuinely
 // relevant), and stays the same across redundant/duplicate map replacements for an unchanged page —
 // giving the same "manual collapse sticks" guarantee as the SNMP catch-up watcher above.
-const currentIpFetchKey = computed(() => pageNodeIds.value.map(id => String(id)).slice().sort().join(','))
+// No .slice() needed before .sort(): .map() already returns a fresh array.
+const currentIpFetchKey = computed(() => pageNodeIds.value.map(id => String(id)).sort().join(','))
 
 let ipCatchUpAppliedForKey: string | null = null
 

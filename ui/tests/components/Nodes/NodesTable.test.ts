@@ -673,6 +673,169 @@ describe('NodesTable.vue', () => {
     })
   })
 
+  // ── Catch-up generation reset (PR review fix) ────────────────────────────────
+  // Both *CatchUpAppliedForKey slots are a single never-reset value keyed on a "generation" key
+  // that can legitimately recur (the same page's node ids, or the same nodeIds+narrowing pair)
+  // after an intervening generation that never got recorded (nothing qualified) or was never
+  // meant to touch that slot at all (a different mode). Without resetting the slot whenever the
+  // primary auto-expand watcher runs (a new page, a toggle, or a mode change — always
+  // synchronous, always strictly before the corresponding async map replacement can land), a
+  // later, genuine resolution for a REPRODUCED key is silently discarded, reproducing the exact
+  // B1 symptom this file otherwise fixes.
+
+  describe('Catch-up generation reset (recurring key after an intervening generation)', () => {
+    it('applies IP catch-up again when a page recurs after an intervening page with no qualifying rows (A -> B -> A)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1', label: 'page-a' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      // Page A's IP batch resolves: node '1' qualifies (2 interfaces).
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // Page changes to B (different node id): the primary watcher's wholesale recompute
+      // collapses everything against the still-stale (page A's) map.
+      ns.nodes = [{ id: '2', label: 'page-b' }] as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // Page B's IP batch resolves with a NON-qualifying row (1 interface) -- nothing to catch up,
+      // so the IP catch-up watcher deliberately leaves its "applied" slot untouched here.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['2', [{ id: 'ip3', ipAddress: '10.0.1.1', isManaged: 'M' }]]
+      ]) as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // Page changes back to A (node id '1' recurs) -- same generation key as A's first visit.
+      ns.nodes = [{ id: '1', label: 'page-a' }] as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // A fresh IP batch for THIS (repeat) visit to page A resolves. Catch-up must apply again
+      // even though node id '1' already "caught up" once, several generations ago.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+
+    it('applies IP catch-up again after a default -> maclike -> default mode round-trip on the same page', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1', label: 'two-ips' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      // Default mode: IP batch resolves, node '1' qualifies.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // Switch to maclike mode on the same page/node id: the primary watcher's wholesale
+      // recompute uses the (still-empty) SNMP map under maclike's threshold, collapsing the row.
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // Switch back to default mode, same page/node id -- simulate the fresh IP batch for THIS
+      // (repeat) visit not having landed yet by clearing the map in the interim.
+      ns.nodeToIpInterfaceMap = new Map()
+      structure.queryFilter = { ...structure.queryFilter, macAddress: '' }
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The fresh IP batch for this repeat visit to default mode resolves. Catch-up must apply
+      // again even though node id '1' already "caught up" once, several generations ago.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+
+    it('applies SNMP catch-up again after a maclike -> default -> maclike mode round-trip on the same page', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+
+      ns.nodes = [{ id: '1', label: 'match' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The SNMP batch for this (first) visit to maclike mode resolves with a match.
+      ns.nodeToSnmpInterfaceMap = new Map([
+        ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
+      ]) as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // Switch to default mode, same page: the primary watcher's wholesale recompute uses the
+      // (still-empty) IP map under default's threshold, collapsing the row.
+      structure.queryFilter = { ...structure.queryFilter, macAddress: '' }
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // Switch back to maclike mode, same page/node id -- simulate the fresh SNMP batch for THIS
+      // (repeat) visit not having landed yet by clearing the map in the interim. (lastSnmpFetchKey
+      // reproduces the exact same value as the first visit, since nodeIds/narrowing are unchanged
+      // -- that's precisely the case this fix guards.)
+      ns.nodeToSnmpInterfaceMap = new Map()
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The fresh SNMP batch for this repeat visit to maclike mode resolves. Catch-up must apply
+      // again even though node id '1' already "caught up" once, several generations ago.
+      ns.nodeToSnmpInterfaceMap = new Map([
+        ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
+      ]) as any
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+  })
+
   // ── SNMP interface narrowing fetch (maclike/snmpParm modes) ─────────────────
 
   describe('SNMP interface narrowing fetch', () => {
