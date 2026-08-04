@@ -1,7 +1,7 @@
 <template>
   <a
     v-if="ipInfo.label"
-    v-tooltip.top="tooltipTitle"
+    v-onms-tooltip.top="tooltipTitle"
     :href="computeNodeIpInterfaceLink(node.id, ipInfo.label)"
     class="pointer"
   >{{ ipInfo.label }}</a>

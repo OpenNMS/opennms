@@ -84,7 +84,6 @@ import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
-import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -233,7 +232,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
-        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, false, null);
         addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, true, null);
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);
