@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="isEditing ? `Edit Location: ${originalName}` : 'Add New Monitoring Location'"
@@ -18,7 +18,7 @@
 
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="location-name"
             v-model="locationName"
             :invalid="!!nameProblem"
@@ -31,7 +31,7 @@
 
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="monitoring-area"
             v-model="monitoringArea"
             :invalid="!!areaProblem"
@@ -44,7 +44,7 @@
 
       <FormField>
         <IftaLabel>
-          <InputText id="geolocation" v-model="geolocation" data-test="geolocation-input" />
+          <OnmsInputText id="geolocation" v-model="geolocation" data-test="geolocation-input" />
           <label for="geolocation">Geolocation (address)</label>
         </IftaLabel>
       </FormField>
@@ -52,7 +52,7 @@
       <div class="lat-lng">
         <FormField>
           <IftaLabel>
-            <InputNumber
+            <OnmsInputNumber
               v-model="latitude"
               inputId="latitude"
               :minFractionDigits="0"
@@ -68,7 +68,7 @@
         </FormField>
         <FormField>
           <IftaLabel>
-            <InputNumber
+            <OnmsInputNumber
               v-model="longitude"
               inputId="longitude"
               :minFractionDigits="0"
@@ -86,7 +86,7 @@
 
       <FormField>
         <IftaLabel>
-          <InputNumber
+          <OnmsInputNumber
             v-model="priority"
             inputId="priority"
             :useGrouping="false"
@@ -103,26 +103,23 @@
     </div>
 
     <template #footer>
-      <Button text label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
-      <Button
+      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton
         :label="isEditing ? 'Save Location' : 'Add Location'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
+import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'

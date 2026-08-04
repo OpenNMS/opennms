@@ -3,12 +3,15 @@
     <div class="header">
       <div class="card-title">Monitoring Locations</div>
       <div class="header-right">
-        <IconField v-if="store.locations.length" class="search">
-          <InputIcon class="pi pi-search" />
-          <InputText v-model="search" placeholder="Search locations" data-test="location-search" />
-        </IconField>
-        <Button
-          outlined
+        <OnmsSearchInput
+          v-if="store.locations.length"
+          v-model="search"
+          placeholder="Search locations"
+          dataTest="location-search"
+          class="search"
+        />
+        <OnmsButton
+          variant="outlined"
           label="Add New Location"
           icon="pi pi-plus"
           data-test="add-location-button"
@@ -21,7 +24,7 @@
       Showing the first {{ store.locations.length }} of {{ store.totalCount }} locations. Use search to narrow the list.
     </p>
 
-    <DataTable
+    <OnmsTable
       :value="store.locations"
       v-model:filters="filters"
       :globalFilterFields="['location-name', 'monitoring-area', 'geolocation']"
@@ -40,30 +43,30 @@
           data-test="empty-list"
         />
       </template>
-      <Column field="location-name" header="Location Name" sortable />
-      <Column field="monitoring-area" header="Monitoring Area" sortable />
-      <Column field="geolocation" header="Geolocation" sortable>
+      <OnmsColumn field="location-name" header="Location Name" sortable />
+      <OnmsColumn field="monitoring-area" header="Monitoring Area" sortable />
+      <OnmsColumn field="geolocation" header="Geolocation" sortable>
         <template #body="{ data }">{{ data.geolocation ?? '-' }}</template>
-      </Column>
-      <Column field="latitude" header="Latitude" sortable>
+      </OnmsColumn>
+      <OnmsColumn field="latitude" header="Latitude" sortable>
         <template #body="{ data }">{{ data.latitude ?? '-' }}</template>
-      </Column>
-      <Column field="longitude" header="Longitude" sortable>
+      </OnmsColumn>
+      <OnmsColumn field="longitude" header="Longitude" sortable>
         <template #body="{ data }">{{ data.longitude ?? '-' }}</template>
-      </Column>
-      <Column field="priority" header="Priority" sortable />
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn field="priority" header="Priority" sortable />
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data['location-name']}`"
               data-test="edit-location-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :disabled="data['location-name'] === 'Default'"
@@ -73,8 +76,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </TableCard>
 
   <LocationEditorDialog
@@ -102,14 +105,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
@@ -128,8 +124,10 @@ const emptyListContent = { msg: 'No monitoring locations found.' }
 const errorListContent = { msg: 'Could not load monitoring locations. Please retry.' }
 
 const search = ref('')
-const filters = ref({ global: { value: null as string | null, matchMode: 'contains' } })
-watch(search, (value) => { filters.value.global.value = value || null })
+const filters = ref({ global: { value: null as string | null, matchMode: 'contains' }})
+watch(search, (value) => {
+  filters.value.global.value = value || null
+})
 
 const openEditor = (location: MonitoringLocation | null) => {
   locationToEdit.value = location
