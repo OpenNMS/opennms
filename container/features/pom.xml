@@ -135,6 +135,27 @@
                   <token>org.apache.geronimo.specs/geronimo-jms_2.0_spec/1.0-alpha-2</token>
                   <value>javax.jms/javax.jms-api/${jmsApiVersion}</value>
                 </replacement>
+                <!-- Netty moved the kqueue classes out of the native artifact after 4.1.22,
+                     so point at the classes artifact. Must precede the generic rule below. -->
+                <replacement>
+                  <token>io\.netty/netty-transport-native-kqueue/4\.1\.22\.Final</token>
+                  <value>io.netty/netty-transport-classes-kqueue/${netty4Version}</value>
+                </replacement>
+                <!-- Lock Netty to our version -->
+                <replacement>
+                  <token>io\.netty/([a-zA-Z0-9._-]+)/4\.1\.22\.Final</token>
+                  <value>io.netty/$1/${netty4Version}</value>
+                </replacement>
+                <!-- upstream Camel typo: the property is never interpolated -->
+                <replacement>
+                  <token>com\.fasterxml\.jackson\.core/jackson-databind/\$\{jackson2-databind-ersion\}</token>
+                  <value>com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</value>
+                </replacement>
+                <!-- Lock Jackson to our version -->
+                <replacement>
+                  <token>com\.fasterxml\.jackson\.([a-z]+)/([a-zA-Z0-9._-]+)/2\.[0-9]+[0-9.]*</token>
+                  <value>com.fasterxml.jackson.$1/$2/${jackson2Version}</value>
+                </replacement>
               </replacements>
             </configuration>
           </execution>
