@@ -251,6 +251,7 @@
             <br />
             <p><strong>Asset Fields</strong></p>
             <p>Filter by one or more node asset-record fields (such as Building, Region, or Rack). Choose an asset field, enter a value, and click Add. Each added field is an exact match, and multiple asset fields are intersected (a node must match all of them).</p>
+            <p>Enable "Featured Fields Only" to display a short list of featured asset fields. Disable it to choose from all possible fields.</p>
             <br />
             <p><strong>Extended Search</strong></p>
             <p>Extended search allows you to perform more complex queries across multiple fields and criteria, including requisition, asset, and SNMP fields.</p>
