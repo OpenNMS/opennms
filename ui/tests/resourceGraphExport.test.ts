@@ -73,7 +73,7 @@ describe('buildGraphCsv', () => {
   it('neutralizes spreadsheet formula prefixes in header cells', () => {
     const conv: any = { metrics: [{ name: 'm' }], printStatements: [{ metric: 'm', header: '=SUM(A1:A2)' }] }
     const gd: any = { timestamps: [1700000000000], labels: ['m'], columns: [{ values: [1] }] }
-    expect(buildGraphCsv(gd, conv).split('\r\n')[0]).toBe("Date/Time,'=SUM(A1:A2)")
+    expect(buildGraphCsv(gd, conv).split('\r\n')[0]).toBe('Date/Time,\'=SUM(A1:A2)')
   })
 
   it('emits a blank time for an invalid timestamp rather than throwing', () => {

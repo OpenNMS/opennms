@@ -9,12 +9,13 @@
       <div class="controls">
         <TimeControls @updateTime="updateTime" />
         <div class="controls-right" v-if="!singleGraphDefinition">
-          <OnmsButton
+          <OnmsIconButton
             variant="outlined"
+            :icon="DownloadFile"
             data-test="pdf-download-btn"
             title="Download the graphs currently loaded on this page as a PDF"
             @click="downloadPdf"
-          >PDF</OnmsButton>
+          />
           <FormField class="search-input">
             <OnmsInputText
               placeholder="Search"
@@ -39,7 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import DownloadFile from '@/components/icons/action/DownloadFile.vue'
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'

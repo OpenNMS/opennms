@@ -27,19 +27,24 @@ const pdf = {
   text: vi.fn(),
   addImage: vi.fn(),
   addPage: vi.fn(),
-  save: vi.fn(),
+  output: vi.fn(() => new Blob(['%PDF'], { type: 'application/pdf' })),
   splitTextToSize: vi.fn((t: string) => String(t).split('\n')),
-  internal: { pageSize: { getWidth: () => 800, getHeight: () => 600 } }
+  internal: { pageSize: { getWidth: () => 800, getHeight: () => 600 }}
 }
-vi.mock('jspdf', () => ({ jsPDF: vi.fn(function () { return pdf }) }))
-vi.mock('chart.js', () => ({ Chart: { getChart: vi.fn() } }))
+vi.mock('jspdf', () => ({ jsPDF: vi.fn(function () {
+  return pdf
+}) }))
+vi.mock('chart.js', () => ({ Chart: { getChart: vi.fn() }}))
+
+const downloadBlob = vi.fn()
+vi.mock('@/composables/useDownload', () => ({ default: () => ({ downloadBlob }) }))
 
 import { exportGraphsToPdf } from '@/components/Resources/utils/graphExport'
 import { Chart } from 'chart.js'
 
 const containerWith = (...ids: string[]): HTMLElement => {
   const el = document.createElement('div')
-  el.innerHTML = ids.map((id) => `<canvas id="${id}"></canvas>`).join('')
+  el.innerHTML = ids.map(id => `<canvas id="${id}"></canvas>`).join('')
   return el
 }
 
@@ -58,24 +63,24 @@ describe('exportGraphsToPdf', () => {
 
     expect(count).toBe(0)
     expect(pdf.addImage).not.toHaveBeenCalled()
-    expect(pdf.save).not.toHaveBeenCalled()
+    expect(downloadBlob).not.toHaveBeenCalled()
   })
 
   it('adds one image per live chart, saves a sanitized filename, and returns the count', () => {
     vi.mocked(Chart.getChart).mockImplementation(
-      (c: any) => ({ options: { plugins: { title: { text: `Title ${c.id}` } } } }) as any
+      (c: any) => ({ options: { plugins: { title: { text: `Title ${c.id}` }}}}) as any
     )
 
     const count = exportGraphsToPdf(containerWith('g1', 'g2'), 'Resource Graphs')
 
     expect(count).toBe(2)
     expect(pdf.addImage).toHaveBeenCalledTimes(2)
-    expect(pdf.save).toHaveBeenCalledWith('Resource_Graphs.pdf')
+    expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), 'Resource_Graphs.pdf')
   })
 
   it('skips canvases with no chart but still exports the ones that have one', () => {
     vi.mocked(Chart.getChart).mockImplementation(
-      (c: any) => (c.id === 'live' ? ({ options: { plugins: { title: { text: 'Live' } } } }) : undefined) as any
+      (c: any) => (c.id === 'live' ? ({ options: { plugins: { title: { text: 'Live' }}}}) : undefined) as any
     )
 
     const count = exportGraphsToPdf(containerWith('dead', 'live'), 'Resource Graphs')
@@ -86,7 +91,7 @@ describe('exportGraphsToPdf', () => {
 
   it('skips a canvas whose image capture throws instead of aborting the whole export', () => {
     vi.mocked(Chart.getChart).mockImplementation(
-      (c: any) => ({ options: { plugins: { title: { text: c.id } } } }) as any
+      (c: any) => ({ options: { plugins: { title: { text: c.id }}}}) as any
     )
     // make the SECOND canvas's toDataURL throw (e.g. tainted canvas)
     let calls = 0
@@ -101,6 +106,6 @@ describe('exportGraphsToPdf', () => {
     const count = exportGraphsToPdf(containerWith('ok', 'bad'), 'Resource Graphs')
 
     expect(count).toBe(1)
-    expect(pdf.save).toHaveBeenCalled()
+    expect(downloadBlob).toHaveBeenCalled()
   })
 })

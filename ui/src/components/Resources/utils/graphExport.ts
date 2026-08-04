@@ -23,6 +23,7 @@
 import { Chart } from 'chart.js'
 import { jsPDF } from 'jspdf'
 
+import useDownload from '@/composables/useDownload'
 import { ConvertedGraphData, GraphMetricsResponse } from '@/types'
 
 // A safe filename stem from a graph title/definition.
@@ -42,7 +43,7 @@ const escapeCsvHeader = (value: string): string => {
 // strings and values as raw numbers (gaps left blank) so the CSV is analysis-ready.
 export const buildGraphCsv = (graphData: GraphMetricsResponse, converted: ConvertedGraphData): string => {
   const headerFor = (metricName: string): string => {
-    const statement = converted.printStatements.find((s) => s.metric === metricName)
+    const statement = converted.printStatements.find(s => s.metric === metricName)
     return statement?.header || metricName
   }
   const columnFor = (metricName: string): number[] => {
@@ -53,11 +54,11 @@ export const buildGraphCsv = (graphData: GraphMetricsResponse, converted: Conver
   // Only export metrics that actually have a column in the response; transient or
   // CDEF metrics absent from labels would otherwise emit a header over blank cells.
   const columns = converted.metrics
-    .filter((m) => m.name && graphData.labels.includes(m.name as string))
-    .map((m) => ({ header: headerFor(m.name as string), values: columnFor(m.name as string) }))
+    .filter(m => m.name && graphData.labels.includes(m.name as string))
+    .map(m => ({ header: headerFor(m.name as string), values: columnFor(m.name as string) }))
 
   const lines: string[] = []
-  lines.push(['Date/Time', ...columns.map((c) => escapeCsvHeader(c.header))].join(','))
+  lines.push(['Date/Time', ...columns.map(c => escapeCsvHeader(c.header))].join(','))
 
   graphData.timestamps.forEach((ts, i) => {
     const row = [Number.isFinite(ts) ? new Date(ts).toISOString() : '']
@@ -72,17 +73,10 @@ export const buildGraphCsv = (graphData: GraphMetricsResponse, converted: Conver
 }
 
 export const downloadTextFile = (filename: string, text: string, mimeType: string): void => {
-  const blob = new Blob([`﻿${text}`], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  // some browsers ignore a click on a detached anchor or a URL revoked in the
-  // same tick, so attach it and defer the revoke
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  setTimeout(() => URL.revokeObjectURL(url), 0)
+  // Leading BOM so Excel opens the UTF-8 CSV correctly; hand the blob to the
+  // shared useDownload helper rather than rolling a separate anchor here.
+  const blob = new Blob([`\uFEFF${text}`], { type: mimeType })
+  useDownload().downloadBlob(blob, filename)
 }
 
 export const downloadGraphCsv = (
@@ -116,7 +110,7 @@ const canvasToPngOnWhite = (canvas: HTMLCanvasElement): string => {
 // caller may not have loaded them all.
 export const exportGraphsToPdf = (container: HTMLElement, docTitle: string): number => {
   const canvases = (Array.from(container.querySelectorAll('canvas')) as HTMLCanvasElement[])
-    .filter((c) => Chart.getChart(c))
+    .filter(c => Chart.getChart(c))
   if (!canvases.length) {
     return 0
   }
@@ -173,6 +167,6 @@ export const exportGraphsToPdf = (container: HTMLElement, docTitle: string): num
   if (!exported) {
     return 0
   }
-  doc.save(`${safeFileStem(docTitle)}.pdf`)
+  useDownload().downloadBlob(doc.output('blob'), `${safeFileStem(docTitle)}.pdf`)
   return exported
 }

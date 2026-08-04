@@ -2,13 +2,14 @@
   <div class="onms-row">
     <div class="onms-col-12 container">
       <div class="graph-actions">
-        <OnmsButton
+        <OnmsIconButton
           v-if="graphData"
           variant="outlined"
+          :icon="DownloadFile"
           data-test="csv-download-btn"
           title="Download this graph's data as CSV"
           @click="downloadCsv"
-        >CSV</OnmsButton>
+        />
         <router-link
           v-if="!isSingleGraph"
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
@@ -57,7 +58,8 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import DownloadFile from '@/components/icons/action/DownloadFile.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 Chart.register(...registerables)
