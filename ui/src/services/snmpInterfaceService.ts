@@ -49,10 +49,10 @@ export const getSnmpInterfaces = async (queryParameters?: QueryParameters): Prom
  * optional narrowing FIQL expression (e.g. 'physAddr==*aabb*').
  *
  * The node-id OR-group and the narrowing expression are each wrapped in their own parens and
- * joined with ';' (AND): '(nodeIdOrList);(narrowing)'. This is intentional and NOT the same
- * shape as getNodeIpInterfaceQuery's single-group form: FIQL ';' (AND) binds tighter than ','
- * (OR), so folding narrowing into the same group as the node-id OR-list would incorrectly bind
- * it to only the last node id (e.g. 'node.id==1,node.id==2;physAddr==*aa*' means
+ * joined with ';' (AND): '(nodeIdOrList);(narrowing)' — the same shape as
+ * getNodeIpInterfaceQuery. FIQL ';' (AND) binds tighter than ',' (OR), so folding narrowing into
+ * the same group as the node-id OR-list would incorrectly bind it to only the last node id
+ * (e.g. 'node.id==1,node.id==2;physAddr==*aa*' means
  * 'node.id==1 OR (node.id==2 AND physAddr==*aa*)'). Two separate parenthesized groups ensure the
  * narrowing term applies to the whole OR-group.
  * Use this in QueryParameters passed to getSnmpInterfaces.

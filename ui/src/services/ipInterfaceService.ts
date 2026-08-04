@@ -47,12 +47,22 @@ export const getIpInterfaces = async (queryParameters?: QueryParameters): Promis
 /**
  * Construct the '_s' part of the getIpInterfaces query string with the given node ids and whether
  * to return only managed interfaces or all.
+ *
+ * The node-id OR-group and the managed-only term are each wrapped in their own parens and joined
+ * with ';' (AND): '(nodeIdOrList);(isManaged==M)' — the same shape as getNodeSnmpInterfaceQuery.
+ * FIQL ';' (AND) binds tighter than ',' (OR), so the previous single-group form
+ * '(node.id==1,node.id==2;isManaged==M)' incorrectly bound isManaged to only the last node id
+ * ('node.id==1 OR (node.id==2 AND isManaged==M)'), returning unmanaged interfaces for every node
+ * but the last.
  * Use this in QueryParameters passed to getIpInterfaces.
  */
 export const getNodeIpInterfaceQuery = (nodeIds: string[], managedOnly: boolean) => {
   const ids = nodeIds.map(id => `node.id==${id}`).join(',')
+  const nodeIdGroup = `(${ids})`
 
-  const managedQuery = managedOnly ? ';isManaged==M' : ''
+  if (managedOnly) {
+    return `${nodeIdGroup};(isManaged==M)`
+  }
 
-  return `(${ids}${managedQuery})`
+  return nodeIdGroup
 }
