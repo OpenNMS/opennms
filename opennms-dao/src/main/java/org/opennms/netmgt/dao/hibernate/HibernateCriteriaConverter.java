@@ -23,8 +23,10 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -127,6 +129,8 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<>();
 
+        private Map<String, FetchMode> m_fetchModes = new LinkedHashMap<>();
+
         private boolean m_distinct = false;
 
         private Integer m_limit;
@@ -154,7 +158,9 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             /*
              * By implementing distinct() as a subquery, we lose the ability to sort the
              * results on any of the aliased columns. See bug NMS-7830 for more details.
-             * 
+             * Orders and fetch modes are therefore applied to the outer criteria below,
+             * after the rewrite has replaced m_criteria. See bug NMS-20161.
+             *
              * @see http://issues.opennms.org/browse/NMS-7830
              */
             if (m_distinct) {
@@ -169,6 +175,10 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 newCriteria.add(Subqueries.propertyIn("id", m_criteria));
 
                 m_criteria = newCriteria;
+            }
+
+            for (final Map.Entry<String, FetchMode> fetchMode : m_fetchModes.entrySet()) {
+                m_criteria.setFetchMode(fetchMode.getKey(), fetchMode.getValue());
             }
 
             for (final org.hibernate.criterion.Order order : m_orders) {
@@ -229,18 +239,20 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitFetch(final Fetch fetch) {
+            // held rather than applied here, because the distinct rewrite in
+            // getCriteria() replaces the criteria these would be set on
             switch (fetch.getFetchType()) {
             case DEFAULT:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.DEFAULT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.DEFAULT);
                 break;
             case EAGER:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.JOIN);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.JOIN);
                 break;
             case LAZY:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.SELECT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.SELECT);
                 break;
             default:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.DEFAULT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.DEFAULT);
                 break;
             }
         }

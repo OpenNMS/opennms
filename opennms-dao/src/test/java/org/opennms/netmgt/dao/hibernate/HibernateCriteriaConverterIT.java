@@ -22,20 +22,28 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.proxy.HibernateProxy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -66,6 +74,12 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
 
     @Autowired
     NodeDao m_nodeDao;
+
+    @Autowired
+    AlarmDao m_alarmDao;
+
+    @Autowired
+    SessionFactory m_sessionFactory;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -122,5 +136,84 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
         nodes = m_nodeDao.findMatching(cb.toCriteria());
         assertEquals(1, nodes.size());
         assertEquals(Integer.valueOf(1), nodes.get(0).getId());
+    }
+
+    /**
+     * Mirrors the v1 /rest/alarms criteria: an eager fetch alongside distinct().
+     * The distinct rewrite replaces the criteria object, so fetch modes have to
+     * be applied afterwards or the association falls back to a lazy proxy that
+     * is read in a separate statement. See NMS-20161.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDistinctPreservesEagerFetch() {
+        final CriteriaBuilder cb = alarmCriteriaBuilder();
+        cb.distinct();
+
+        // the populated alarm and its event must not already be in the session,
+        // or a lazy association would resolve from the first-level cache
+        m_sessionFactory.getCurrentSession().clear();
+
+        final List<OnmsAlarm> alarms = m_alarmDao.findMatching(cb.toCriteria());
+        assertEquals(1, alarms.size());
+
+        final OnmsAlarm alarm = alarms.get(0);
+        assertNotNull(alarm.getLastEvent());
+        assertFalse("lastEvent should be join-fetched, not a lazy proxy",
+                    alarm.getLastEvent() instanceof HibernateProxy);
+    }
+
+    /**
+     * Applying the fetch modes to the outer criteria must not reintroduce the
+     * duplicate rows that distinct() is there to collapse.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDistinctWithEagerFetchStillDeduplicates() {
+        m_sessionFactory.getCurrentSession().clear();
+        final List<OnmsAlarm> notDistinct = m_alarmDao.findMatching(alarmCriteriaBuilder().toCriteria());
+
+        final CriteriaBuilder cb = alarmCriteriaBuilder();
+        cb.distinct();
+        m_sessionFactory.getCurrentSession().clear();
+        final List<OnmsAlarm> distinct = m_alarmDao.findMatching(cb.toCriteria());
+
+        assertTrue("the to-many join should multiply the single alarm into several rows",
+                   notDistinct.size() > 1);
+        assertEquals(1, distinct.size());
+    }
+
+    /**
+     * Ordering is applied to the outer criteria after the distinct rewrite
+     * (NMS-7830); the fetch modes must not disturb that.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDistinctWithEagerFetchKeepsOrdering() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.fetch("assetRecord", FetchType.EAGER);
+        cb.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        cb.orderBy("label").desc();
+        cb.distinct();
+
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+        assertEquals(6, nodes.size());
+        for (int i = 1; i < nodes.size(); i++) {
+            assertFalse("nodes should be ordered by label descending",
+                        nodes.get(i - 1).getLabel().compareTo(nodes.get(i).getLabel()) < 0);
+        }
+    }
+
+    /**
+     * The to-many join on node.ipInterfaces is what makes distinct()
+     * load-bearing here: without it the single alarm comes back once per
+     * interface.
+     */
+    private CriteriaBuilder alarmCriteriaBuilder() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+        cb.fetch("lastEvent", FetchType.EAGER);
+        cb.alias("node", "node", JoinType.LEFT_JOIN);
+        cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        return cb;
     }
 }
