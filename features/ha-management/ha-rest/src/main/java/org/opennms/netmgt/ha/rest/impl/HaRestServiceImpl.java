@@ -105,11 +105,7 @@ public class HaRestServiceImpl implements HaRestService {
                 dto.setHostname(rs.getString("hostname"));
 
                 long ageSeconds = rs.getLong("age_seconds");
-                boolean heartbeatStale = !rs.wasNull() && ageSeconds > failoverThresholdSeconds;
-                boolean stateBasedDegraded =
-                        ("SECONDARY".equals(dto.getConfiguredRole()) && "ACTIVE".equals(dto.getCurrentState()))
-                        || "DEGRADED".equals(dto.getCurrentState());
-                dto.setDegraded(stateBasedDegraded || heartbeatStale);
+                dto.setHeartbeatStale(!rs.wasNull() && ageSeconds > failoverThresholdSeconds);
 
                 instances.add(dto);
             }

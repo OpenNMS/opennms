@@ -71,16 +71,18 @@ public class HaConfiguration implements Serializable {
     @XmlElement(name = "partner-instance-id")
     private String partnerInstanceId;
 
-    /** How often PRIMARY writes heartbeat to DB. Default: 10 seconds. */
+    /** How often PRIMARY writes heartbeat to DB. Clamped to at least 5 seconds.
+     * Default: 10 seconds. */
     @XmlElement(name = "heartbeat-interval-seconds")
     private int heartbeatIntervalSeconds = 10;
 
     /**
-     * How stale PRIMARY heartbeat must be before SECONDARY promotes.
-     * Must be greater than {@code heartbeatIntervalSeconds}. Default: 30 seconds.
+     * How stale PRIMARY heartbeat must be before SECONDARY promotes. Clamped to
+     * at least 20 seconds and at least twice {@code heartbeatIntervalSeconds}.
+     * Default: 60 seconds.
      */
     @XmlElement(name = "failover-threshold-seconds")
-    private int failoverThresholdSeconds = 30;
+    private int failoverThresholdSeconds = 60;
 
     /**
      * Base REST URL of the partner instance used for config synchronization.
@@ -94,9 +96,10 @@ public class HaConfiguration implements Serializable {
     @XmlElement(name = "sync-enabled")
     private boolean syncEnabled = true;
 
-    /** How often to fetch configuration from the partner while in STANDBY (seconds). Default: 300. */
+    /** How often to fetch configuration from the partner while in STANDBY (seconds).
+     * Clamped to at least 5 seconds. Default: 60. */
     @XmlElement(name = "sync-interval-seconds")
-    private int syncIntervalSeconds = 300;
+    private int syncIntervalSeconds = 60;
 
     /**
      * Username of the service account used for config sync REST calls.

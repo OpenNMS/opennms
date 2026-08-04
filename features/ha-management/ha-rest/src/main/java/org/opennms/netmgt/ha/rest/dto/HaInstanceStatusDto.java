@@ -52,12 +52,10 @@ public class HaInstanceStatusDto {
     @XmlElement(name = "hostname")
     private String hostname;
 
-    /** True when this instance reflects a degraded condition: SECONDARY is ACTIVE
-     *  (failover occurred), the instance is in DEGRADED state (PRIMARY waiting for
-     *  failback), or its heartbeat age exceeds the failover threshold (instance
-     *  unreachable / unhealthy). */
-    @XmlElement(name = "degraded")
-    private boolean degraded;
+    /** True when this instance's heartbeat age exceeds the failover threshold
+     *  (unreachable or unhealthy). Role and state are reported separately. */
+    @XmlElement(name = "heartbeat-stale")
+    private boolean heartbeatStale;
 
     public String getInstanceId() { return instanceId; }
     public void setInstanceId(String instanceId) { this.instanceId = instanceId; }
@@ -77,6 +75,6 @@ public class HaInstanceStatusDto {
     public String getHostname() { return hostname; }
     public void setHostname(String hostname) { this.hostname = hostname; }
 
-    public boolean isDegraded() { return degraded; }
-    public void setDegraded(boolean degraded) { this.degraded = degraded; }
+    public boolean isHeartbeatStale() { return heartbeatStale; }
+    public void setHeartbeatStale(boolean heartbeatStale) { this.heartbeatStale = heartbeatStale; }
 }

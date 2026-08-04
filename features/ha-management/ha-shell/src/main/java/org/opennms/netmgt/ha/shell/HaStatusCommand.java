@@ -41,9 +41,8 @@ import java.sql.Statement;
  * <p>Displays a formatted table of all HA instance rows from the
  * {@code ha_instance_status} database table, mirroring the output of
  * {@code GET /rest/ha/status}. Heartbeat ages are computed on the database
- * server (clock-skew safe) and an instance is reported as DEGRADED if its
- * heartbeat age exceeds the configured failover threshold or if its current
- * role/state combination indicates a degraded cluster condition.
+ * server (clock-skew safe) and an instance is reported as STALE if its
+ * heartbeat age exceeds the configured failover threshold.
  */
 @Command(scope = "opennms", name = "ha-status", description = "Display HA cluster status for all instances.")
 @Service
@@ -81,7 +80,7 @@ public class HaStatusCommand implements Action {
             haTable.column("ACTIVE SINCE");
             haTable.column("HEARTBEAT AGE");
             haTable.column("HOSTNAME");
-            haTable.column("DEGRADED");
+            haTable.column("STALE");
 
             boolean anyRows = false;
             while (rs.next()) {
@@ -96,13 +95,9 @@ public class HaStatusCommand implements Action {
                 boolean heartbeatKnown = !rs.wasNull();
                 boolean heartbeatStale = heartbeatKnown && ageSeconds > failoverThresholdSeconds;
 
-                boolean stateBasedDegraded =
-                        ("SECONDARY".equals(configuredRole) && "ACTIVE".equals(currentState))
-                        || "DEGRADED".equals(currentState);
-                boolean degraded = stateBasedDegraded || heartbeatStale;
                 haTable.addRow().addContent(nvl(instanceId), nvl(configuredRole), nvl(currentState),
                         nvl(activeSince), heartbeatKnown ? formatAge(ageSeconds) : "--",
-                        nvl(hostname), degraded ? "YES" : "no");
+                        nvl(hostname), heartbeatStale ? "YES" : "no");
             }
             
             if (anyRows) {
