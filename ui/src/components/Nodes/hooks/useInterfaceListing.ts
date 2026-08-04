@@ -272,10 +272,11 @@ export const compareSnmpInterfaces = (a: SnmpInterface, b: SnmpInterface): numbe
     return descrDiff
   }
 
-  // ifIndex is typed as a required number, but real API responses can omit it; a plain `a.ifIndex
-  // - b.ifIndex` is NaN in that case, which is why this uses the nulls-last numeric compare. `id`,
-  // by contrast, IS guaranteed present (SnmpInterface.id: number, non-optional, per types/index.ts),
-  // so a plain numeric compare remains safe/correct for it.
+  // ifIndex is typed as a required number, but real API responses can omit it (the backing
+  // OnmsSnmpInterface.ifIndex column is DB-nullable); a plain `a.ifIndex - b.ifIndex` is NaN in
+  // that case, which is why this uses the nulls-last numeric compare. `id`, by contrast, is
+  // backed by a nullable=false primary-key column, so a plain numeric compare is safe for it.
+  // (The TS types don't capture this asymmetry — both are declared `number`.)
   const ifIndexDiff = compareNullableNumbersNullsLast(a.ifIndex, b.ifIndex)
   if (ifIndexDiff !== 0) {
     return ifIndexDiff
