@@ -344,9 +344,8 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { getSearchTermValidationError, useNodeQuery } from './hooks/useNodeQuery'
 import {
-  countInterfacesForNodes,
+  countInterfaceRowsForNode,
   getInterfaceListMode,
-  getInterfaceRowsForNode,
   normalizeMacSearch,
   type InterfaceListMode
 } from './hooks/useInterfaceListing'
@@ -492,9 +491,33 @@ const interfaceListMode = computed(() => getInterfaceListMode(nodeStructureStore
 
 const pageNodeIds = computed(() => nodes.value.map(n => n.id))
 
-const pageInterfaceCount = computed(() =>
-  countInterfacesForNodes(pageNodeIds.value, interfaceListMode.value, nodeStore.nodeToIpInterfaceMap, nodeStore.nodeToSnmpInterfaceMap)
-)
+// Single pass over the current page's nodes, computing each one's interface-row COUNT (not the
+// rows themselves — sorting/labels/hrefs are irrelevant to a count) for the active mode. Read by
+// isRowExpandable, both catch-up watchers, the auto-expand watcher, and pageInterfaceCount, so at
+// 200 rows/page the page's interface lists get filtered once per render instead of twice
+// (isRowExpandable and pageInterfaceCount previously each rebuilt+sorted the full row list per
+// row independently).
+const rowCountByNodeId = computed<Map<string, number>>(() => {
+  const mode = interfaceListMode.value
+  const counts = new Map<string, number>()
+
+  nodes.value.forEach((n) => {
+    const id = String(n.id)
+    const ipInterfaces = nodeStore.nodeToIpInterfaceMap.get(id) ?? []
+    const snmpInterfaces = nodeStore.nodeToSnmpInterfaceMap.get(id) ?? []
+    counts.set(id, countInterfaceRowsForNode(mode, ipInterfaces, snmpInterfaces))
+  })
+
+  return counts
+})
+
+const pageInterfaceCount = computed(() => {
+  let total = 0
+  for (const count of rowCountByNodeId.value.values()) {
+    total += count
+  }
+  return total
+})
 
 const totalNodeCountLabel = computed(() => {
   const n = nodeStore.totalCount
@@ -515,13 +538,14 @@ const pageInterfaceCountLabel = computed(() => {
 // IP interface is already visible in the IP Address column, so the count must be > 1 for the
 // caret to add anything new; in 'maclike'/'snmpParm' modes the matching interfaces aren't shown
 // anywhere else, so even a single match (>= 1) is new information. Deliberately a plain function
-// (not a computed) reading reactive state directly, so it stays reactive per-row in the template
-// and picks up the async SNMP batch (nodeStore.nodeToSnmpInterfaceMap) once it resolves.
+// (not a computed) reading rowCountByNodeId directly, so it stays reactive per-row in the template
+// and picks up the async SNMP/IP batches (nodeStore.nodeToSnmpInterfaceMap /
+// nodeStore.nodeToIpInterfaceMap, via rowCountByNodeId) once they resolve. Only valid for nodes on
+// the current page — rowCountByNodeId is built from nodes.value — which matches every call site
+// (template rows and the watchers below all iterate the current page).
 const isRowExpandable = (node: Node): boolean => {
   const mode = interfaceListMode.value
-  const ipInterfaces = nodeStore.nodeToIpInterfaceMap.get(String(node.id)) ?? []
-  const snmpInterfaces = nodeStore.nodeToSnmpInterfaceMap.get(String(node.id)) ?? []
-  const rowCount = getInterfaceRowsForNode(String(node.id), mode, ipInterfaces, snmpInterfaces, mainMenu.value.baseHref).length
+  const rowCount = rowCountByNodeId.value.get(String(node.id)) ?? 0
   const threshold = mode.mode === 'default' ? 1 : 0
   return rowCount > threshold
 }
@@ -718,6 +742,19 @@ watch(
   }
 )
 
+// Shared by both catch-up watchers below: additively merges `qualifying` node ids into
+// expandedRows, leaving every other existing key untouched. Using this instead of a wholesale
+// recompute is what lets a manual collapse stick — a wholesale recompute would re-add a
+// manually-collapsed row the moment the (redundant/duplicate) map replacement it's guarded against
+// fires again.
+const mergeQualifyingIntoExpandedRows = (qualifying: Node[]) => {
+  const updated = { ...expandedRows.value }
+  qualifying.forEach((n) => {
+    updated[n.id] = true
+  })
+  expandedRows.value = updated
+}
+
 // Catch-up for the race the two watchers above create in maclike/snmpParm mode: the auto-expand
 // watcher fires synchronously off [nodes, showInterfaces, interfaceListMode] and evaluates
 // isRowExpandable() there and then, but nodeToSnmpInterfaceMap is only populated later, once the
@@ -761,11 +798,60 @@ watch(
     }
 
     snmpCatchUpAppliedForKey = key
-    const updated = { ...expandedRows.value }
-    qualifying.forEach((n) => {
-      updated[n.id] = true
-    })
-    expandedRows.value = updated
+    mergeQualifyingIntoExpandedRows(qualifying)
+  }
+)
+
+// Analogous catch-up for the B1 race in DEFAULT mode: nodeStore.getNodes(...) assigns nodes.value
+// (triggering the auto-expand watcher above, synchronously, against a stale/empty
+// nodeToIpInterfaceMap) and only THEN kicks off getIpInterfacesForNodes without awaiting it (see
+// nodeStore.ts) — so the auto-expand watcher's synchronous isRowExpandable() check almost always
+// sees an empty IP map for a freshly-arrived page and expandedRows becomes {}. This watcher
+// re-evaluates once nodeToIpInterfaceMap is actually replaced (now wholesale, mirroring
+// nodeToSnmpInterfaceMap — see nodeStore.ts) and merges in any newly-qualifying rows.
+//
+// Only relevant in 'default' mode: in maclike/snmpParm mode, qualification comes entirely from
+// nodeToSnmpInterfaceMap (handled by the watcher above) — the IP batch that
+// nodeStore.getNodes(..., true) fetches unconditionally alongside it only changes row LABELS
+// (ManagementIPTooltipCell's IP address column), never which rows qualify to expand. Re-running
+// the merge for those modes would be redundant double-handling (harmless, since merge is a no-op
+// when nothing newly qualifies, but pointless), so this bails out early instead.
+//
+// Unlike lastSnmpFetchKey, there's no separately-tracked "key this component issued a fetch for":
+// getIpInterfacesForNodes is called by nodeStore.getNodes itself, not by a watcher here (there is
+// no narrowing to key on either). The current page's sorted node ids double as that generation key
+// instead: it changes exactly when the page's node set changes (a new batch is genuinely
+// relevant), and stays the same across redundant/duplicate map replacements for an unchanged page —
+// giving the same "manual collapse sticks" guarantee as the SNMP catch-up watcher above.
+const currentIpFetchKey = computed(() => pageNodeIds.value.map(id => String(id)).slice().sort().join(','))
+
+let ipCatchUpAppliedForKey: string | null = null
+
+watch(
+  () => nodeStore.nodeToIpInterfaceMap,
+  () => {
+    if (!nodeStructureStore.showInterfaces) {
+      return
+    }
+
+    if (interfaceListMode.value.mode !== 'default') {
+      return
+    }
+
+    const key = currentIpFetchKey.value
+    if (key === ipCatchUpAppliedForKey) {
+      return
+    }
+
+    const qualifying = nodes.value.filter(n => isRowExpandable(n))
+    if (qualifying.length === 0) {
+      // Nothing to catch up (yet) — leave ipCatchUpAppliedForKey alone so a later, genuine
+      // resolution for this same generation still gets a chance to auto-expand.
+      return
+    }
+
+    ipCatchUpAppliedForKey = key
+    mergeQualifyingIntoExpandedRows(qualifying)
   }
 )
 

@@ -254,9 +254,15 @@ const buildSnmpInterfaceRow = (
  */
 export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
 
+/**
+ * Filter predicate for default-mode IP interface rows (unsorted). Shared by getDefaultModeRows
+ * (panel display, sorted+mapped) and countInterfaceRowsForNode (count-only, no sort needed).
+ */
+const filterDefaultModeIp = (ipInterfaces: IpInterface[]): IpInterface[] =>
+  ipInterfaces.filter(ip => ip.isManaged !== 'D' && ip.ipAddress !== '0.0.0.0')
+
 const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): InterfaceListRow[] => {
-  return ipInterfaces
-    .filter(ip => ip.isManaged !== 'D' && ip.ipAddress !== '0.0.0.0')
+  return filterDefaultModeIp(ipInterfaces)
     .slice()
     .sort((a, b) => compareIpAddressBytes(a.ipAddress, b.ipAddress))
     .map(ip => ({
@@ -266,6 +272,17 @@ const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): Inte
     }))
 }
 
+/**
+ * Filter predicate for maclike-mode SNMP interface rows (unsorted). Shared by getMaclikeModeRows
+ * (panel display, sorted+mapped) and countInterfaceRowsForNode (count-only, no sort needed).
+ */
+const filterMaclikeModeSnmp = (mac: string, snmpInterfaces: SnmpInterface[]): SnmpInterface[] => {
+  const normalizedMac = normalizeMacSearch(mac)
+
+  return snmpInterfaces
+    .filter(snmp => snmp.collectFlag !== 'D' && snmp.physAddr != null && String(snmp.physAddr).toLowerCase().includes(normalizedMac))
+}
+
 const getMaclikeModeRows = (
   nodeId: string,
   mac: string,
@@ -273,10 +290,7 @@ const getMaclikeModeRows = (
   snmpInterfaces: SnmpInterface[],
   baseHref: string
 ): InterfaceListRow[] => {
-  const normalizedMac = normalizeMacSearch(mac)
-
-  return snmpInterfaces
-    .filter(snmp => snmp.collectFlag !== 'D' && snmp.physAddr != null && String(snmp.physAddr).toLowerCase().includes(normalizedMac))
+  return filterMaclikeModeSnmp(mac, snmpInterfaces)
     .slice()
     .sort(compareSnmpInterfaces)
     .map(snmp => buildSnmpInterfaceRow(nodeId, snmp, ipInterfaces, baseHref, String(snmp.physAddr), ifIndex => `ifIndex:${ifIndex}`))
@@ -302,6 +316,27 @@ const matchesSnmpParm = (value: string, attrValue: string, matchType: 'contains'
   return buildContainsRegex(value).test(attrValue.toLowerCase())
 }
 
+/**
+ * Filter predicate for snmpParm-mode SNMP interface rows (unsorted). Shared by
+ * getSnmpParmModeRows (panel display, sorted+mapped) and countInterfaceRowsForNode (count-only,
+ * no sort needed).
+ */
+const filterSnmpParmModeSnmp = (
+  mode: { attr: 'ifAlias' | 'ifName' | 'ifDescr'; value: string; matchType: 'contains' | 'equals' },
+  snmpInterfaces: SnmpInterface[]
+): SnmpInterface[] => {
+  return snmpInterfaces.filter((snmp) => {
+    if (snmp.collectFlag === 'D') {
+      return false
+    }
+    const attrValue = snmp[mode.attr]
+    if (attrValue === null || attrValue === undefined) {
+      return false
+    }
+    return matchesSnmpParm(mode.value, String(attrValue), mode.matchType)
+  })
+}
+
 const getSnmpParmModeRows = (
   nodeId: string,
   mode: { attr: 'ifAlias' | 'ifName' | 'ifDescr'; value: string; matchType: 'contains' | 'equals' },
@@ -309,17 +344,7 @@ const getSnmpParmModeRows = (
   snmpInterfaces: SnmpInterface[],
   baseHref: string
 ): InterfaceListRow[] => {
-  return snmpInterfaces
-    .filter((snmp) => {
-      if (snmp.collectFlag === 'D') {
-        return false
-      }
-      const attrValue = snmp[mode.attr]
-      if (attrValue === null || attrValue === undefined) {
-        return false
-      }
-      return matchesSnmpParm(mode.value, String(attrValue), mode.matchType)
-    })
+  return filterSnmpParmModeSnmp(mode, snmpInterfaces)
     .slice()
     .sort(compareSnmpInterfaces)
     .map(snmp => buildSnmpInterfaceRow(nodeId, snmp, ipInterfaces, baseHref, String(snmp[mode.attr]), ifIndex => `ifIndex ${ifIndex}`))
@@ -347,7 +372,30 @@ export const getInterfaceRowsForNode = (
 }
 
 /**
- * Sum of getInterfaceRowsForNode(...).length across the given node ids, using the two maps.
+ * Count the interface-listing rows for a single node, for the given mode — same filter
+ * predicates as getInterfaceRowsForNode, but skips sorting and row-building (label/href), which
+ * are irrelevant to a count. Use this instead of getInterfaceRowsForNode(...).length when only
+ * the count is needed (e.g. per-row expandability, footer totals) to avoid rebuilding/sorting the
+ * full row list just to throw the ordering away.
+ */
+export const countInterfaceRowsForNode = (
+  mode: InterfaceListMode,
+  ipInterfaces: IpInterface[], // this node's IP interfaces
+  snmpInterfaces: SnmpInterface[] // this node's SNMP interfaces (empty in default mode)
+): number => {
+  switch (mode.mode) {
+    case 'maclike':
+      return filterMaclikeModeSnmp(mode.mac, snmpInterfaces).length
+    case 'snmpParm':
+      return filterSnmpParmModeSnmp(mode, snmpInterfaces).length
+    case 'default':
+    default:
+      return filterDefaultModeIp(ipInterfaces).length
+  }
+}
+
+/**
+ * Sum of countInterfaceRowsForNode(...) across the given node ids, using the two maps.
  * A node id missing from either map is treated as having no interfaces of that kind.
  */
 export const countInterfacesForNodes = (
@@ -359,6 +407,6 @@ export const countInterfacesForNodes = (
   return nodeIds.reduce((total, nodeId) => {
     const ipInterfaces = ipMap.get(nodeId) ?? []
     const snmpInterfaces = snmpMap.get(nodeId) ?? []
-    return total + getInterfaceRowsForNode(nodeId, mode, ipInterfaces, snmpInterfaces, '').length
+    return total + countInterfaceRowsForNode(mode, ipInterfaces, snmpInterfaces)
   }, 0)
 }

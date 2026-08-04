@@ -24,11 +24,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNodeStore } from '@/stores/nodeStore'
 import API from '@/services'
-import { SnmpInterface } from '@/types'
+import { IpInterface, SnmpInterface } from '@/types'
 
 vi.mock('@/services', () => ({
   default: {
-    getSnmpInterfaces: vi.fn()
+    getSnmpInterfaces: vi.fn(),
+    getIpInterfaces: vi.fn()
   }
 }))
 
@@ -56,6 +57,22 @@ const createMockSnmpInterface = (id: number, nodeId: number): SnmpInterface => (
   physAddr: null,
   poll: true
 })
+
+const createMockIpInterface = (id: string, nodeId: number, ipAddress: string): IpInterface => ({
+  id,
+  ipAddress,
+  isManaged: 'M',
+  ifIndex: '1',
+  isDown: false,
+  lastCapsdPoll: 0,
+  lastEgressFlow: null,
+  lastIngressFlow: null,
+  monitoredServiceCount: 0,
+  nodeId,
+  snmpInterface: undefined,
+  snmpPrimary: '',
+  hostName: ''
+} as unknown as IpInterface)
 
 describe('useNodeStore', () => {
   let store: ReturnType<typeof useNodeStore>
@@ -152,6 +169,98 @@ describe('useNodeStore', () => {
       await firstCall
 
       expect(store.nodeToSnmpInterfaceMap.size).toEqual(0)
+    })
+  })
+
+  // NMS-20125 PR review (B1): getIpInterfacesForNodes now REPLACES nodeToIpInterfaceMap
+  // wholesale (mirroring getSnmpInterfacesForNodes) instead of mutating it in place, and is
+  // sequenced the same way, so these tests mirror the getSnmpInterfacesForNodes suite above.
+  describe('getIpInterfacesForNodes', () => {
+    it('groups a mocked response containing interfaces for two nodes into nodeToIpInterfaceMap', async () => {
+      const node1Ip1 = createMockIpInterface('101', 1, '10.0.0.1')
+      const node1Ip2 = createMockIpInterface('102', 1, '10.0.0.2')
+      const node2Ip1 = createMockIpInterface('201', 2, '10.0.1.1')
+
+      vi.mocked(API.getIpInterfaces).mockResolvedValue({
+        ipInterface: [node1Ip1, node1Ip2, node2Ip1],
+        totalCount: 3,
+        count: 3,
+        offset: 0
+      })
+
+      await store.getIpInterfacesForNodes(['1', '2'], false)
+
+      expect(store.nodeToIpInterfaceMap.get('1')).toEqual([node1Ip1, node1Ip2])
+      expect(store.nodeToIpInterfaceMap.get('2')).toEqual([node2Ip1])
+    })
+
+    it('leaves an empty map when the service returns false', async () => {
+      vi.mocked(API.getIpInterfaces).mockResolvedValue(false)
+
+      await store.getIpInterfacesForNodes(['1', '2'], false)
+
+      expect(store.nodeToIpInterfaceMap.size).toEqual(0)
+    })
+
+    it('leaves an empty map when the service returns an empty interface list', async () => {
+      vi.mocked(API.getIpInterfaces).mockResolvedValue({
+        ipInterface: [],
+        totalCount: 0,
+        count: 0,
+        offset: 0
+      })
+
+      await store.getIpInterfacesForNodes(['1', '2'], false)
+
+      expect(store.nodeToIpInterfaceMap.size).toEqual(0)
+    })
+
+    it('resets the map to empty and does not call the service when nodeIds is empty', async () => {
+      await store.getIpInterfacesForNodes([], false)
+
+      expect(API.getIpInterfaces).not.toHaveBeenCalled()
+      expect(store.nodeToIpInterfaceMap.size).toEqual(0)
+    })
+
+    it('ignores a stale response that resolves after a newer request (latest request wins)', async () => {
+      const staleIp = createMockIpInterface('101', 1, '10.0.0.1')
+      const freshIp = createMockIpInterface('201', 2, '10.0.1.1')
+
+      let resolveFirst: (value: unknown) => void = () => {}
+      const firstResponse = new Promise((resolve) => {
+        resolveFirst = resolve
+      })
+      vi.mocked(API.getIpInterfaces)
+        .mockReturnValueOnce(firstResponse as ReturnType<typeof API.getIpInterfaces>)
+        .mockResolvedValueOnce({ ipInterface: [freshIp], totalCount: 1, count: 1, offset: 0 })
+
+      const firstCall = store.getIpInterfacesForNodes(['1'], false)
+      await store.getIpInterfacesForNodes(['2'], false)
+
+      // The first request's response arrives on the wire after the second's.
+      resolveFirst({ ipInterface: [staleIp], totalCount: 1, count: 1, offset: 0 })
+      await firstCall
+
+      expect(store.nodeToIpInterfaceMap.get('2')).toEqual([freshIp])
+      expect(store.nodeToIpInterfaceMap.has('1')).toBe(false)
+    })
+
+    it('does not let an in-flight response overwrite a subsequent empty-ids reset', async () => {
+      const staleIp = createMockIpInterface('101', 1, '10.0.0.1')
+
+      let resolveFirst: (value: unknown) => void = () => {}
+      const firstResponse = new Promise((resolve) => {
+        resolveFirst = resolve
+      })
+      vi.mocked(API.getIpInterfaces).mockReturnValueOnce(firstResponse as ReturnType<typeof API.getIpInterfaces>)
+
+      const firstCall = store.getIpInterfacesForNodes(['1'], false)
+      await store.getIpInterfacesForNodes([], false)
+
+      resolveFirst({ ipInterface: [staleIp], totalCount: 1, count: 1, offset: 0 })
+      await firstCall
+
+      expect(store.nodeToIpInterfaceMap.size).toEqual(0)
     })
   })
 })

@@ -518,6 +518,161 @@ describe('NodesTable.vue', () => {
     })
   })
 
+  // ── IP-interface catch-up (default mode, B1) ─────────────────────────────────
+  // Mirrors the maclike/snmpParm SNMP catch-up tests above: nodeStore.getNodes assigns
+  // nodes.value and only THEN fires getIpInterfacesForNodes without awaiting it, so the
+  // auto-expand watcher's synchronous isRowExpandable() check sees a stale/empty
+  // nodeToIpInterfaceMap for a freshly-arrived page. The IP-map catch-up watcher re-evaluates once
+  // nodeToIpInterfaceMap is actually replaced (now wholesale — see nodeStore.ts).
+
+  describe('IP-interface catch-up (default mode)', () => {
+    it('auto-expands a qualifying row once the IP batch resolves AFTER nodes changes, and leaves 0/1-interface rows collapsed', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      // Reproduces real production ordering: nodes arrives first (e.g. a page change) while
+      // nodeToIpInterfaceMap is still whatever the PREVIOUS page left behind — here, empty — and
+      // only later does the (mocked) async IP batch replace the map.
+      ns.nodes = [
+        { id: '1', label: 'two-ips' },
+        { id: '2', label: 'one-ip' },
+        { id: '3', label: 'no-ips' }
+      ] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      // Map hasn't resolved yet: nothing has auto-expanded — this is the bug being guarded
+      // against.
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The async IP batch resolves and replaces the map wholesale.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]],
+        ['2', [{ id: 'ip3', ipAddress: '10.0.0.3', isManaged: 'M' }]]
+        // '3': no entry -> 0 interfaces
+      ]) as any
+      await nextTick()
+
+      // Only '1' (2 IP interfaces, > 1 threshold in default mode) catches up; '2' (1 interface)
+      // and '3' (0 interfaces) stay collapsed.
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+    })
+
+    it('does not force a manually-collapsed row back open when the IP map is replaced again for the same page (generation)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      const ipMap = () => new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+
+      ns.nodes = [{ id: '1', label: 'two-ips' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      ns.nodeToIpInterfaceMap = ipMap()
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // User manually collapses it.
+      ;(wrapper.vm as any).toggleRowExpanded({ id: '1' })
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // A later, spurious replacement of the SAME page's map (e.g. an unrelated re-render
+      // producing an identical-content new Map instance) must NOT force row '1' back into
+      // expandedRows.
+      ns.nodeToIpInterfaceMap = ipMap()
+      await nextTick()
+
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+    })
+
+    it('applies catch-up again for a new page (new node ids reset the generation key)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.nodes = [{ id: '1', label: 'two-ips' }] as any
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({ '1': true })
+
+      // Page changes to a new set of node ids; the map hasn't been re-fetched for them yet.
+      ns.nodes = [{ id: '2', label: 'two-ips-page-2' }] as any
+      await nextTick()
+
+      // The primary auto-expand watcher already reset expandedRows for the new page (node '2'
+      // isn't in the still-stale map yet).
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The async IP batch for the new page resolves.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['2', [
+          { id: 'ip4', ipAddress: '10.0.1.1', isManaged: 'M' },
+          { id: 'ip5', ipAddress: '10.0.1.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+
+      // Catch-up applies again for the new page's node id.
+      expect((wrapper.vm as any).expandedRows).toEqual({ '2': true })
+    })
+
+    it('does not double-handle the IP batch in maclike mode (qualification stays governed by the SNMP map)', async () => {
+      const wrapper = mountTable()
+      const ns = useNodeStore()
+      const structure = useNodeStructureStore()
+
+      ns.getNodes = vi.fn().mockResolvedValue(undefined)
+      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
+      ns.nodes = [{ id: '1', label: 'no-snmp-match' }] as any
+      structure.queryFilter = { ...structure.queryFilter, macAddress: 'aabbcc' }
+      await nextTick()
+
+      structure.setShowInterfaces(true)
+      await nextTick()
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+
+      // The IP batch resolves with 2 IP interfaces for node '1' — plenty to qualify under
+      // DEFAULT mode's threshold, but irrelevant here since the active mode is maclike and
+      // nodeToSnmpInterfaceMap (not nodeToIpInterfaceMap) governs qualification.
+      ns.nodeToIpInterfaceMap = new Map([
+        ['1', [
+          { id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' },
+          { id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }
+        ]]
+      ]) as any
+      await nextTick()
+
+      // Still collapsed: no matching SNMP interface, so node '1' doesn't qualify in maclike mode.
+      expect((wrapper.vm as any).expandedRows).toEqual({})
+    })
+  })
+
   // ── SNMP interface narrowing fetch (maclike/snmpParm modes) ─────────────────
 
   describe('SNMP interface narrowing fetch', () => {
