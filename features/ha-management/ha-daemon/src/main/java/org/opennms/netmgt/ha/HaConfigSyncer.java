@@ -144,6 +144,11 @@ public class HaConfigSyncer {
         if (manifestText == null) {
             return; // already logged
         }
+        if (!HaSyncFiles.isManifest(manifestText)) {
+            LOG.warn("HA sync: response from {} is not an HA manifest; skipping cycle "
+                    + "(check partner-rest-url — a wrong host can answer 200 with unrelated text)", baseUrl);
+            return;
+        }
         List<HaSyncFiles.Entry> manifest = HaSyncFiles.parseManifestText(manifestText);
         if (manifest.isEmpty()) {
             LOG.warn("HA sync: manifest from {} was empty; skipping cycle (refusing to delete everything)", baseUrl);

@@ -86,8 +86,9 @@ public class HaConfiguration implements Serializable {
 
     /**
      * Base REST URL of the partner instance used for config synchronization.
-     * Example: {@code http://opennms-primary:8980/opennms}
-     * Required when {@code sync-enabled} is true.
+     * Example: {@code https://opennms-primary:8443/opennms}
+     * Required when {@code sync-enabled} is true. Immutable at runtime: a
+     * change would redirect the sync credential and the files it installs.
      */
     @XmlElement(name = "partner-rest-url")
     private String partnerRestUrl;
@@ -103,7 +104,7 @@ public class HaConfiguration implements Serializable {
 
     /**
      * Username of the service account used for config sync REST calls.
-     * This account must have {@code ROLE_REST} and {@code ROLE_ADMIN} on the partner instance.
+     * This account must have {@code ROLE_ADMIN} on the partner instance.
      * Default: {@code hasync}.
      */
     @XmlElement(name = "sync-username")

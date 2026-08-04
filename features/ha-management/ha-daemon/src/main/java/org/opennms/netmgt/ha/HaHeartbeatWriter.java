@@ -55,7 +55,12 @@ public class HaHeartbeatWriter {
             String sql = "UPDATE ha_instance_status SET last_heartbeat = NOW() WHERE instance_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, instanceId.get());
-                ps.executeUpdate();
+                if (ps.executeUpdate() == 0) {
+                    // Without our row, split-brain arbitration cannot fire on
+                    // either side while the partner promotes on its absence.
+                    LOG.error("HA: heartbeat matched no row for instance {} — the status row is "
+                            + "missing; HA arbitration is disabled until it is restored", instanceId.get());
+                }
             }
         } catch (Exception e) {
             LOG.warn("HA: failed to write heartbeat for instance {}", instanceId.get(), e);

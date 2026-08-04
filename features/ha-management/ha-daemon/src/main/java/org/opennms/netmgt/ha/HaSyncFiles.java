@@ -134,8 +134,14 @@ public final class HaSyncFiles {
      * the active" when neither side excludes it. */
     static final String EXCLUDE_HEADER_PREFIX = "#exclude ";
 
+    /** First line of every manifest. Entry lines are permissive enough that
+     * arbitrary text can parse as one, so a response without this marker is
+     * never treated as a manifest — least of all as authority to delete. */
+    public static final String MANIFEST_MARKER = "#ha-manifest 1";
+
     public static String toManifestText(List<Entry> entries, List<String> configuredExcludes) {
         StringBuilder sb = new StringBuilder();
+        sb.append(MANIFEST_MARKER).append('\n');
         List<String> all = new ArrayList<>(BUILTIN_EXCLUSIONS);
         if (configuredExcludes != null) {
             all.addAll(configuredExcludes);
@@ -174,6 +180,11 @@ public final class HaSyncFiles {
     }
 
     /** Parses the serving node's exclusion patterns from a manifest. */
+    /** True if {@code text} is a manifest emitted by {@link #toManifestText}. */
+    public static boolean isManifest(String text) {
+        return text != null && text.startsWith(MANIFEST_MARKER);
+    }
+
     public static List<String> parseManifestExcludes(String text) {
         List<String> excludes = new ArrayList<>();
         for (String line : text.split("\n")) {

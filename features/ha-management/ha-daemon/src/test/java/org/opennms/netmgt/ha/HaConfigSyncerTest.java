@@ -67,6 +67,20 @@ public class HaConfigSyncerTest {
     }
 
     @Test
+    public void arbitraryTextIsNotAManifest() {
+        // Entry lines are permissive enough that unrelated text can parse as
+        // one, and honoring it would delete every non-excluded local file.
+        String bogus = "HTTP/1.1 200 OK\nContent-Length: 1234 bytes\n";
+        assertFalse(HaSyncFiles.isManifest(bogus));
+        assertFalse("a parseable line alone must not qualify",
+                HaSyncFiles.parseManifestText(bogus).isEmpty());
+
+        String real = HaSyncFiles.toManifestText(
+                List.of(new HaSyncFiles.Entry("ok.xml", "aa", 5L)), null);
+        assertTrue(HaSyncFiles.isManifest(real));
+    }
+
+    @Test
     public void manifestParserSkipsMalformedLines() {
         assertTrue(HaSyncFiles.parseManifestText("garbage\n\nno-size path\n").isEmpty());
         assertEquals(1, HaSyncFiles.parseManifestText("aa notanumber x\nbb 5 ok.xml\n").size());

@@ -298,6 +298,10 @@ public class HaStartupCoordinator {
             throw new IllegalArgumentException(
                     "'mode' cannot be changed at runtime (requires restart)");
         }
+        if (!Objects.equals(newCfg.getPartnerRestUrl(), current.getPartnerRestUrl())) {
+            throw new IllegalArgumentException(
+                    "'partner-rest-url' cannot be changed at runtime (requires restart)");
+        }
         String partnerError = partnerConfigError(newCfg);
         if (partnerError != null) {
             throw new IllegalArgumentException(partnerError);
@@ -362,6 +366,11 @@ public class HaStartupCoordinator {
                     oldCfg.getMode(), newCfg.getMode());
             return;
         }
+        if (!Objects.equals(newCfg.getPartnerRestUrl(), oldCfg.getPartnerRestUrl())) {
+            LOG.error("HA: config reload rejected — 'partner-rest-url' changed ({} → {}); requires restart",
+                    oldCfg.getPartnerRestUrl(), newCfg.getPartnerRestUrl());
+            return;
+        }
         String partnerError = partnerConfigError(newCfg);
         if (partnerError != null) {
             LOG.error("HA: config reload rejected — {}", partnerError);
@@ -390,12 +399,10 @@ public class HaStartupCoordinator {
 
         // Sync changes: interval, enable flag, or partner URL → cancel and re-evaluate.
         if (oldCfg.getSyncIntervalSeconds() != newCfg.getSyncIntervalSeconds()
-                || oldCfg.isSyncEnabled() != newCfg.isSyncEnabled()
-                || !Objects.equals(oldCfg.getPartnerRestUrl(), newCfg.getPartnerRestUrl())) {
-            LOG.info("HA: sync settings changed (enabled: {} → {}, interval: {}s → {}s, partner-url: {} → {}); re-evaluating sync schedule",
+                || oldCfg.isSyncEnabled() != newCfg.isSyncEnabled()) {
+            LOG.info("HA: sync settings changed (enabled: {} → {}, interval: {}s → {}s); re-evaluating sync schedule",
                     oldCfg.isSyncEnabled(), newCfg.isSyncEnabled(),
-                    oldCfg.getSyncIntervalSeconds(), newCfg.getSyncIntervalSeconds(),
-                    oldCfg.getPartnerRestUrl(), newCfg.getPartnerRestUrl());
+                    oldCfg.getSyncIntervalSeconds(), newCfg.getSyncIntervalSeconds());
             startSyncIfApplicable();
         }
 
@@ -710,6 +717,11 @@ public class HaStartupCoordinator {
         syncFuture = null;
 
         HaConfiguration cfg = config;
+        if (cfg.isSyncEnabled() && cfg.getPartnerRestUrl() != null
+                && cfg.getPartnerRestUrl().startsWith("http://")) {
+            LOG.warn("HA: partner-rest-url {} is not https — sync credentials and credential "
+                    + "stores will cross the network in cleartext", cfg.getPartnerRestUrl());
+        }
         if (!cfg.isSyncEnabled() || cfg.getPartnerRestUrl() == null) {
             LOG.info("HA: config sync inactive (sync-enabled={}, partner-rest-url={})",
                     cfg.isSyncEnabled(), cfg.getPartnerRestUrl());

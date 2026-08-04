@@ -50,7 +50,7 @@ echo "opennms-ha-shell" | sudo tee -a ${OPENNMS_HOME}/etc/featuresBoot.d/ha.boot
 . Edit `$OPENNMS_HOME/etc/ha-configuration.xml`: set `enabled=true`, a unique `instance-id`, the `role` (one PRIMARY, one SECONDARY), the partner's `instance-id` and REST URL.
 Use HTTPS for `partner-rest-url` in production; sync transfers credential stores.
 
-. Create the config-sync service account on the active node: add a user (see xref:deep-dive/user-management/user-config.adoc[]) and assign it the `ROLE_REST` and `ROLE_ADMIN` xref:deep-dive/user-management/security-roles.adoc[security roles].
+. Create the config-sync service account on the active node: add a user (see xref:deep-dive/user-management/user-config.adoc[]) and assign it the `ROLE_ADMIN` xref:deep-dive/user-management/security-roles.adoc[security role].
 The standby authenticates to the active node with this account to pull configuration; any user name works.
 Creating it on one node is enough, because `users.xml` is itself synced.
 
@@ -75,8 +75,8 @@ The PRIMARY claims ACTIVE; the SECONDARY blocks before starting services and mon
 |===
 | State     | Meaning
 | ACTIVE    | Runs all services; writes its heartbeat every `heartbeat-interval-seconds`.
-| STANDBY   | Alive, services blocked; promotes when the partner's state becomes non-ACTIVE or its heartbeat exceeds `failover-threshold-seconds` (verified twice, one interval apart).
-| DEGRADED  | A restarted PRIMARY that found its partner serving; waits to reclaim ACTIVE at failback.
+| STANDBY   | A SECONDARY waiting to take over: alive and heartbeating, services blocked. Promotes when the PRIMARY's state becomes non-ACTIVE or its heartbeat exceeds `failover-threshold-seconds` (verified twice, one interval apart). Also the state a stepped-down node publishes as it stops.
+| DEGRADED  | A PRIMARY that started while the SECONDARY was serving: alive and heartbeating, services blocked, and it reclaims ACTIVE automatically as soon as the SECONDARY stops being ACTIVE. Both states mean "not serving"; they differ in which node is waiting and what it is waiting for.
 | FAILED    | The node stopped while holding an active role, without a handover. Published only after its services finished stopping.
 |===
 
@@ -89,10 +89,11 @@ A node that cannot load its HA configuration, prove its partner's state, or pers
 |===
 | Action | How
 | Status | `opennms:ha-status` (Karaf shell) or `GET /rest/ha/status`
-| Failover (step the active down) | `opennms:ha-failover --force` or `POST /rest/ha/failover`, *on the active node*. Its services stop, STANDBY is published when the stop completes, and the partner promotes within one heartbeat interval. The stepped-down node must be started manually to rejoin as standby.
+| Failover (step the active down) | `opennms:ha-failover --force` or `POST /rest/ha/failover`, *on the active node*. Its services stop, STANDBY is published when the stop completes, and the partner promotes within one heartbeat interval. With a restart policy set the stepped-down node returns on its own and rejoins as DEGRADED, awaiting failback; otherwise start it manually.
+To take a node out of service for maintenance, use `systemctl stop` instead — a restart policy would bring a failed-over node straight back.
 | Failback | Start the repaired primary (it parks DEGRADED), let one sync cycle complete, then run failover on the serving secondary. The primary reclaims ACTIVE automatically.
 | Planned restart without failover | Stop the standby first, restart the active, start the standby again.
-| Change settings at runtime | Edit the file (re-read every 60 seconds), `PUT /rest/ha/config`, or `opennms:ha-config`. `enabled`, `instance-id`, `role`, and `mode` require a restart.
+| Change settings at runtime | Edit the file (re-read every 60 seconds), `PUT /rest/ha/config`, or `opennms:ha-config`. `enabled`, `instance-id`, `role`, `mode`, and `partner-rest-url` require a restart.
 |===
 
 Failure detection: a hard failure (power loss, `kill -9`) leaves the row ACTIVE with an aging heartbeat; the standby promotes after `failover-threshold-seconds` plus one verification interval.

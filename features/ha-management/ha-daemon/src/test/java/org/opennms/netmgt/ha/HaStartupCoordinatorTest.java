@@ -794,6 +794,35 @@ public class HaStartupCoordinatorTest {
         coord.writeConfig(mutated);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void writeConfigRejectsPartnerRestUrlChange() throws Exception {
+        // A runtime change would send the sync credential — and accept files —
+        // from a different host.
+        HaConfiguration original = primaryConfig();
+        original.setPartnerRestUrl("https://partner:8443/opennms");
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration mutated = copyOf(original);
+        mutated.setPartnerRestUrl("https://attacker.example/opennms");
+
+        coord.writeConfig(mutated);
+    }
+
+    @Test
+    public void configReloadRejectsPartnerRestUrlChange() throws Exception {
+        HaConfiguration original = primaryConfig();
+        original.setPartnerRestUrl("https://partner:8443/opennms");
+        HaStartupCoordinator coord = createCoordinator(original, mockDbFactory);
+
+        HaConfiguration updated = copyOf(original);
+        updated.setPartnerRestUrl("https://attacker.example/opennms");
+
+        coord.applyConfigReload(updated);
+
+        assertEquals("partner-rest-url change must be ignored on reload",
+                "https://partner:8443/opennms", coord.getConfig().getPartnerRestUrl());
+    }
+
     @Test
     public void configReloadRejectsBlankPartner() throws Exception {
         HaConfiguration original = primaryConfig();
