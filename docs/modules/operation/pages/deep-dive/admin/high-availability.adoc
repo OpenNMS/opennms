@@ -35,6 +35,16 @@ All liveness decisions use the database clock; node clocks never participate.
 * Network access between the nodes' web ports (config sync, REST status) and from both nodes to PostgreSQL.
 * The HA feature artifacts present in the distribution (`lib/` and `system/`).
 
+== Install the second node
+
+Install the second node exactly as you installed the first (see xref:deployment:core/install.adoc[]), with two differences:
+
+* Point its `$OPENNMS_HOME/etc/opennms-datasources.xml` at the *same* database as the first node: the pair coordinates through that shared database, and neither node holds HA state locally.
+* Run `$OPENNMS_HOME/bin/install -dis` before the node joins the pair — ideally with the first node stopped, or during a maintenance window, since it touches the shared database.
+The schema is already initialized, so the run changes nothing there, but it creates the `etc/configured` marker; without it `bin/opennms start` refuses to start.
+
+Do not hand-copy `$OPENNMS_HOME/etc` from the first node: config sync populates it once HA is enabled, and the per-node files (`ha-configuration.xml`, plus anything in `<sync-excludes>`) must stay local.
+
 == Enable
 
 On each node:
