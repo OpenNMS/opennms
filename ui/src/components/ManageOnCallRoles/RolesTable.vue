@@ -2,8 +2,8 @@
   <TableCard class="roles-table">
     <div class="header">
       <div class="card-title">On-Call Roles</div>
-      <Button
-        outlined
+      <OnmsButton
+        variant="outlined"
         label="Add New Role"
         icon="pi pi-plus"
         data-test="add-role-button"
@@ -11,7 +11,7 @@
       />
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.roles.length"
       :value="store.roles"
       paginator
@@ -21,14 +21,14 @@
       class="data-table"
       data-test="roles-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Role Name"
         sortable
       />
-      <Column header="Currently On Call">
+      <OnmsColumn header="Currently On Call">
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             v-if="data['schedule-error']"
             severity="warn"
             value="schedule error"
@@ -45,22 +45,22 @@
             v-tooltip.top="'Nobody scheduled; the supervisor handles notifications'"
           >{{ data.supervisor }} (supervisor)</span>
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="supervisor"
         header="Supervisor"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="membership-group"
         header="Membership Group"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="description"
         header="Description"
       />
-      <Column header="Actions">
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <span
             v-if="!isPathAddressable(data.name)"
@@ -69,29 +69,29 @@
             data-test="unaddressable-note"
           >file-managed</span>
           <div v-else class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Schedule"
               :aria-label="`View the schedule for ${data.name}`"
               data-test="schedule-role-button"
               @click="openCalendar(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-role-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Rename"
               :aria-label="`Rename ${data.name}`"
               data-test="rename-role-button"
               @click="openRename(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :aria-label="`Delete ${data.name}`"
@@ -100,8 +100,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <div v-if="!store.roles.length">
       <EmptyList
@@ -143,12 +143,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'

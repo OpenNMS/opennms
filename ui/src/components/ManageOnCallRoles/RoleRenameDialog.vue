@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="`Rename On-Call Role: ${roleName}`"
@@ -17,7 +17,7 @@
       >{{ errorText }}</Message>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="role-rename-new-name"
             v-model="newName"
             :invalid="!!nameProblem"
@@ -35,30 +35,28 @@
     </div>
 
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
-      <Button
+      <OnmsButton
         label="Rename"
         :disabled="!newName.trim() || !!nameProblem || newName.trim() === roleName || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminName } from '@/lib/adminValidation'

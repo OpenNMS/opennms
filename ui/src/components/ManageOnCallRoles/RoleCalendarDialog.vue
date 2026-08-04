@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     maximizable
@@ -16,16 +16,16 @@
       data-test="dialog-error"
     >{{ errorText }}</Message>
     <div class="calendar-controls">
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         icon="pi pi-chevron-left"
         aria-label="Previous month"
         data-test="previous-month-button"
         @click="shiftMonth(-1)"
       />
       <span class="month-label" data-test="month-label">{{ monthLabel }}</span>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         icon="pi pi-chevron-right"
         aria-label="Next month"
         data-test="next-month-button"
@@ -84,14 +84,14 @@
           :key="index"
           class="schedule-row"
         >
-          <Tag
+          <OnmsTag
             :value="schedule.type"
             :severity="schedule.type === 'specific' ? 'info' : 'secondary'"
           />
           <span class="schedule-user">{{ schedule.user }}</span>
           <span class="schedule-times">{{ scheduleSummary(schedule) }}</span>
-          <Button
-            text
+          <OnmsButton
+            variant="text"
             rounded
             icon="pi pi-times"
             severity="danger"
@@ -105,7 +105,7 @@
 
       <div class="add-entry-row">
         <IftaLabel>
-          <Select
+          <OnmsSelect
             v-model="entryUser"
             labelId="calendar-entry-user"
             :options="memberOptions"
@@ -115,7 +115,7 @@
           <label for="calendar-entry-user">User</label>
         </IftaLabel>
         <IftaLabel>
-          <DatePicker
+          <OnmsDatePicker
             v-model="entryStart"
             inputId="calendar-entry-start"
             showTime
@@ -125,7 +125,7 @@
           <label for="calendar-entry-start">From</label>
         </IftaLabel>
         <IftaLabel>
-          <DatePicker
+          <OnmsDatePicker
             v-model="entryEnd"
             inputId="calendar-entry-end"
             showTime
@@ -134,8 +134,8 @@
           />
           <label for="calendar-entry-end">To</label>
         </IftaLabel>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           label="Add Coverage"
           icon="pi pi-plus"
           data-test="add-entry-button"
@@ -166,21 +166,15 @@
         </p>
       </template>
     </OnmsConfirmationDialog>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import DatePicker from 'primevue/datepicker'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
 import Message from 'primevue/message'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsConfirmationDialog, OnmsDatePicker, OnmsDialog, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { formatScheduleTimestamp, OnCallCalendar, OnCallCalendarEntry, OnCallRole, OnCallSchedule } from '@/types/onCallRoleAdmin'
@@ -282,7 +276,7 @@ const entryLabel = (entry: OnCallCalendarEntry) =>
   `${timeOf(entry.start)}–${timeOf(entry.end)} ${(entry.user ?? []).join(', ')}`
 
 const scheduleSummary = (schedule: OnCallSchedule) =>
-  schedule.time.map((t) => (t.day ? `${t.day} ` : '') + `${t.begins} – ${t.ends}`).join('; ')
+  schedule.time.map(t => (t.day ? `${t.day} ` : '') + `${t.begins} – ${t.ends}`).join('; ')
 
 // re-read the stored role right before mutating so a concurrent edit from
 // another session (or a hand-edit) is folded in instead of overwritten
@@ -333,7 +327,7 @@ const addEntry = async () => {
 }
 
 const scheduleKey = (schedule: OnCallSchedule) =>
-  [schedule.user, schedule.type, ...schedule.time.map((t) => `${t.day ?? ''}|${t.begins}|${t.ends}`)].join('//')
+  [schedule.user, schedule.type, ...schedule.time.map(t => `${t.day ?? ''}|${t.begins}|${t.ends}`)].join('//')
 
 const removeSchedule = (index: number) => {
   const schedule = role.value?.schedule?.[index]
@@ -357,7 +351,7 @@ const doRemove = async (schedule: OnCallSchedule) => {
     // match by content, not index: the stored list may have changed since render
     const schedules = [...(role.value.schedule ?? [])]
     const target = scheduleKey(schedule)
-    const index = schedules.findIndex((s) => scheduleKey(s) === target)
+    const index = schedules.findIndex(s => scheduleKey(s) === target)
     if (index < 0) {
       errorText.value = 'That coverage entry no longer exists; the list has been refreshed.'
       return

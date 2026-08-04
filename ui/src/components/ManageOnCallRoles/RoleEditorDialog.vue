@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="isEditing ? `Edit On-Call Role: ${originalName}` : 'Add New On-Call Role'"
@@ -17,7 +17,7 @@
       >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="role-editor-name"
             v-model="name"
             :invalid="!!nameProblem"
@@ -33,7 +33,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <Select
+          <OnmsSelect
             v-model="membershipGroup"
             labelId="role-editor-group"
             :options="groupOptions"
@@ -46,7 +46,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <Select
+          <OnmsSelect
             v-model="supervisor"
             labelId="role-editor-supervisor"
             :options="store.supervisorCandidates"
@@ -59,7 +59,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="role-editor-description"
             v-model="description"
             data-test="role-description-input"
@@ -70,31 +70,28 @@
     </div>
 
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
-      <Button
+      <OnmsButton
         :label="isEditing ? 'Save Role' : 'Add Role'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminName } from '@/lib/adminValidation'
