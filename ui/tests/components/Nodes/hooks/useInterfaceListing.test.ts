@@ -89,10 +89,22 @@ describe('useInterfaceListing', () => {
       expect(getInterfaceListMode(filter)).toEqual({ mode: 'maclike', mac: 'AA:BB:CC:DD:EE:FF' })
     })
 
-    test('maclike takes priority over an SNMP parm field', () => {
+    test('snmpParm takes priority over maclike, matching legacy DefaultNodeListService', () => {
+      // DefaultNodeListService#createModelForNodes checks hasSnmpParm() before hasMaclike(),
+      // so when both filters are set the legacy JSP showed the SNMP-attribute matches.
       const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
       filter.macAddress = 'aabbccddeeff'
       filter.extendedSearch.snmpParams!.snmpIfAlias = 'uplink'
+      expect(getInterfaceListMode(filter)).toEqual({ mode: 'snmpParm', attr: 'ifAlias', value: 'uplink', matchType: 'equals' })
+    })
+
+    test('maclike applies when SNMP parm fields fall through (multiple set)', () => {
+      // Legacy fell into the maclike branch whenever the snmpParm branch didn't apply; with
+      // more than one SNMP field populated the snmpParm mode is skipped, so maclike wins.
+      const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
+      filter.macAddress = 'aabbccddeeff'
+      filter.extendedSearch.snmpParams!.snmpIfAlias = 'uplink'
+      filter.extendedSearch.snmpParams!.snmpIfName = 'eth0'
       expect(getInterfaceListMode(filter)).toEqual({ mode: 'maclike', mac: 'aabbccddeeff' })
     })
 

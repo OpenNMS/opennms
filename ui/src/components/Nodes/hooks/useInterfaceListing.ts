@@ -46,15 +46,12 @@ export type InterfaceListMode =
 
 /**
  * Decide which interface-listing mode applies for the current node query filter, replicating
- * DefaultNodeListService#createModelForNodes's mode selection (maclike takes priority over
- * snmpParm; snmpParm only applies when exactly one of ifAlias/ifName/ifDescr is set; otherwise
- * the default IP-interface listing applies).
+ * DefaultNodeListService#createModelForNodes's mode selection: its if/else-if chain checks
+ * hasSnmpParm() before hasMaclike(), so snmpParm takes priority over maclike; snmpParm only
+ * applies when exactly one of ifAlias/ifName/ifDescr is set; otherwise maclike applies if a MAC
+ * filter is set, and failing that the default IP-interface listing applies.
  */
 export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode => {
-  if (filter.macAddress && filter.macAddress.trim().length > 0) {
-    return { mode: 'maclike', mac: filter.macAddress }
-  }
-
   const snmpParams = filter.extendedSearch?.snmpParams
   if (snmpParams) {
     const candidates: Array<{ attr: 'ifAlias' | 'ifName' | 'ifDescr'; value?: string }> = [
@@ -65,7 +62,7 @@ export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode
     const nonEmpty = candidates.filter(c => !!c.value && c.value.trim().length > 0)
 
     // Legacy could only ever have one snmpParm set at a time. If more than one of our extended
-    // search fields is populated, fall through to the default mode.
+    // search fields is populated, fall through to the maclike/default modes.
     if (nonEmpty.length === 1) {
       // Default (undefined) must resolve to 'equals' here, matching buildSnmpQuery's and
       // parseSnmpParmParams's default: `wildcard = snmpMatchType === MatchType.Contains` is false
@@ -75,6 +72,10 @@ export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode
       const matchType = snmpParams.snmpMatchType === MatchType.Contains ? 'contains' : 'equals'
       return { mode: 'snmpParm', attr: nonEmpty[0].attr, value: nonEmpty[0].value as string, matchType }
     }
+  }
+
+  if (filter.macAddress && filter.macAddress.trim().length > 0) {
+    return { mode: 'maclike', mac: filter.macAddress }
   }
 
   return { mode: 'default' }
