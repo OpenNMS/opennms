@@ -8,7 +8,6 @@ import PrimeVue from 'primevue/config'
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import ToggleSwitch from 'primevue/toggleswitch'
 import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
@@ -131,27 +130,48 @@ describe('AssetFilterPanel.vue', () => {
   })
 
   // ── Featured Fields Only toggle ─────────────────────────────────────────────
+  // Driven through the real OnmsToggleSwitch's update:modelValue emit (not direct ref
+  // mutation), mirroring NodeAdvancedFiltersDrawer.test.ts's "Toggles" describe block
+  // (down-only/with-assets/with-outages) so a broken v-model binding or prop-name typo
+  // on the switch would actually be caught.
 
-  it('renders a Featured Fields Only toggle, defaulted on', () => {
+  it('renders a Featured Fields Only toggle, defaulted on, backing the featured (curated) options', () => {
     const wrapper = mountPanel()
-    expect(wrapper.findComponent(ToggleSwitch).exists()).toBe(true)
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+    expect(toggle.exists()).toBe(true)
     expect(wrapper.vm.featuredOnly).toBe(true)
-  })
-
-  it('by default the dropdown offers exactly the featured (curated) options', () => {
-    const wrapper = mountPanel()
     expect(wrapper.vm.assetOptions).toHaveLength(ASSET_COLUMN_OPTIONS.length)
     expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
       .toEqual(ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
   })
 
-  it('toggling featuredOnly off offers every ASSET_COLUMN_FIQL_MAP column', async () => {
+  it('emitting update:modelValue(false) on the ToggleSwitch swaps the dropdown to every ASSET_COLUMN_FIQL_MAP column', async () => {
     const wrapper = mountPanel()
-    wrapper.vm.featuredOnly = false
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+    expect(toggle.exists()).toBe(true)
+
+    toggle.vm.$emit('update:modelValue', false)
     await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(false)
     expect(wrapper.vm.assetOptions).toHaveLength(ALL_ASSET_COLUMN_OPTIONS.length)
     expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
       .toEqual(ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('emitting update:modelValue(true) after toggling off restores the featured-only options', async () => {
+    const wrapper = mountPanel()
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+
+    toggle.vm.$emit('update:modelValue', false)
+    await nextTick()
+    toggle.vm.$emit('update:modelValue', true)
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(true)
+    expect(wrapper.vm.assetOptions).toHaveLength(ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
   })
 
   it('resetFromStore() auto-switches featuredOnly off when an existing filter uses a non-featured column', async () => {

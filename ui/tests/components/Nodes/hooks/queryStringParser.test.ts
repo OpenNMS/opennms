@@ -540,6 +540,14 @@ describe('Nodes queryStringParser test', () => {
         expect(ASSET_COLUMN_FIQL_MAP[option.value]).toBe(option.value)
       }
     })
+
+    test('every ASSET_COLUMN_OPTIONS label stays in sync with ASSET_COLUMN_TITLES', () => {
+      // ASSET_COLUMN_OPTIONS hardcodes its 10 featured labels independently of
+      // ASSET_COLUMN_TITLES — this guards against the two silently drifting apart.
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(option.label).toBe(ASSET_COLUMN_TITLES[option.value])
+      }
+    })
   })
 
   describe('ASSET_COLUMN_TITLES / ALL_ASSET_COLUMN_OPTIONS / getAssetColumnLabel', () => {
