@@ -58,7 +58,10 @@ License.
           class="nodes-alarms__node"
           :href="`/opennms/element/node.jsp?node=${row.nodeId}`"
         >{{ row.nodeLabel }}</a>
-        <span class="nodes-alarms__count">{{ row.count }} alarm{{ row.count === 1 ? '' : 's' }}</span>
+        <a
+          class="nodes-alarms__count"
+          :href="`/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${row.nodeId}`"
+        >{{ row.count }} alarm{{ row.count === 1 ? '' : 's' }}</a>
       </li>
     </ul>
   </div>
@@ -176,7 +179,7 @@ watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 
   &__count {
     flex: 0 0 auto;
-    color: var(--p-text-muted-color, #666);
+    white-space: nowrap;
   }
 }
 </style>
