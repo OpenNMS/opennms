@@ -4,7 +4,7 @@
     modal
     :header="isEditing ? `Edit Location: ${originalName}` : 'Add New Monitoring Location'"
     class="location-editor-dialog"
-    :style="{ width: '560px', maxWidth: '95vw' }"
+    width="min(560px, 95vw)"
     data-test="location-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
