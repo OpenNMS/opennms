@@ -4,7 +4,7 @@
     modal
     :header="`Rename On-Call Role: ${roleName}`"
     class="role-rename-dialog"
-    :style="{ width: '420px', maxWidth: '95vw' }"
+    width="min(420px, 95vw)"
     data-test="role-rename-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >

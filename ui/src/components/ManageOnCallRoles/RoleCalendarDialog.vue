@@ -2,10 +2,9 @@
   <OnmsDialog
     :visible="visible"
     modal
-    maximizable
     :header="`On-Call Schedule: ${roleName}`"
     class="role-calendar-dialog"
-    :style="{ width: '1000px', maxWidth: '95vw' }"
+    width="min(1000px, 95vw)"
     data-test="role-calendar-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
@@ -16,17 +15,15 @@
       data-test="dialog-error"
     >{{ errorText }}</Message>
     <div class="calendar-controls">
-      <OnmsButton
-        variant="text"
-        icon="pi pi-chevron-left"
+      <OnmsIconButton
+        :icon="ChevronLeft"
         aria-label="Previous month"
         data-test="previous-month-button"
         @click="shiftMonth(-1)"
       />
       <span class="month-label" data-test="month-label">{{ monthLabel }}</span>
-      <OnmsButton
-        variant="text"
-        icon="pi pi-chevron-right"
+      <OnmsIconButton
+        :icon="ChevronRight"
         aria-label="Next month"
         data-test="next-month-button"
         @click="shiftMonth(1)"
@@ -90,11 +87,9 @@
           />
           <span class="schedule-user">{{ schedule.user }}</span>
           <span class="schedule-times">{{ scheduleSummary(schedule) }}</span>
-          <OnmsButton
-            variant="text"
-            rounded
-            icon="pi pi-times"
+          <OnmsIconButton
             severity="danger"
+            :icon="Cancel"
             :aria-label="`Remove coverage for ${schedule.user}`"
             data-test="remove-schedule-button"
             @click="removeSchedule(index)"
@@ -174,8 +169,11 @@ import { computed, ref, watch } from 'vue'
 
 import IftaLabel from 'primevue/iftalabel'
 import Message from 'primevue/message'
-import { OnmsButton, OnmsConfirmationDialog, OnmsDatePicker, OnmsDialog, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsDatePicker, OnmsDialog, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
+import Cancel from '@/components/icons/navigation/Cancel.vue'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { formatScheduleTimestamp, OnCallCalendar, OnCallCalendarEntry, OnCallRole, OnCallSchedule } from '@/types/onCallRoleAdmin'
 

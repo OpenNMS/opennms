@@ -4,7 +4,7 @@
     modal
     :header="isEditing ? `Edit On-Call Role: ${originalName}` : 'Add New On-Call Role'"
     class="role-editor-dialog"
-    :style="{ width: '520px', maxWidth: '95vw' }"
+    width="min(520px, 95vw)"
     data-test="role-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
