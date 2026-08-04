@@ -112,7 +112,7 @@
         "flot.saveas": "https://github.com/RangerRick/flot-saveas.git#master",
         "holderjs": "^2.9.6",
         "ionicons": "^2.0.1",
-        "ip-address": "^10.2.0",
+        "ip-address": "^10.3.1",
         "jquery": "^3.6.0",
         "jquery-migrate": "^3.3.2",
         "jquery-sparkline": "https://github.com/kapusta/jquery.sparkline#2.1.3",
