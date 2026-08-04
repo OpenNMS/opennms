@@ -293,7 +293,7 @@
         <p>The characters # % &amp; ( ) are not allowed in searches.</p>
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
         <h3>Show / Hide Interfaces</h3>
-        <p>Clicking on the Show Interfaces button will toggle the display (expandable row) of network interfaces for each node in the list that has more than 1 interface.</p>
+        <p>Clicking on the Show Interfaces button will toggle the display (expandable row) of network interfaces for each node in the list that has more than 1 interface &mdash; or, when filtering by MAC address or SNMP interface attributes, at least 1 matching interface.</p>
       </div>
     </template>
   </OnmsMessageDialog>
