@@ -118,7 +118,7 @@ describe('useNodeStore', () => {
       const freshSnmp = createMockSnmpInterface(201, 2)
 
       let resolveFirst: (value: unknown) => void = () => {}
-      const firstResponse = new Promise(resolve => {
+      const firstResponse = new Promise((resolve) => {
         resolveFirst = resolve
       })
       vi.mocked(API.getSnmpInterfaces)
@@ -140,7 +140,7 @@ describe('useNodeStore', () => {
       const staleSnmp = createMockSnmpInterface(101, 1)
 
       let resolveFirst: (value: unknown) => void = () => {}
-      const firstResponse = new Promise(resolve => {
+      const firstResponse = new Promise((resolve) => {
         resolveFirst = resolve
       })
       vi.mocked(API.getSnmpInterfaces).mockReturnValueOnce(firstResponse as ReturnType<typeof API.getSnmpInterfaces>)
