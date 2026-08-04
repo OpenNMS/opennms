@@ -4,7 +4,7 @@
     modal
     :header="`Change Password: ${userId}`"
     class="user-password-dialog"
-    :style="{ width: '420px', maxWidth: '95vw' }"
+    width="min(420px, 95vw)"
     data-test="user-password-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >

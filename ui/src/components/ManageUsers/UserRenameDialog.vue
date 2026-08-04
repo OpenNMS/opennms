@@ -4,7 +4,7 @@
     modal
     :header="`Rename User: ${userId}`"
     class="user-rename-dialog"
-    :style="{ width: '420px', maxWidth: '95vw' }"
+    width="min(420px, 95vw)"
     data-test="user-rename-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >

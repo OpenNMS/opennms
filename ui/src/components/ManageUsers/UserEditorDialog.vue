@@ -4,7 +4,7 @@
     modal
     :header="isEditing ? `Edit User: ${originalUserId}` : 'Add New User'"
     class="user-editor-dialog"
-    :style="{ width: '640px', maxWidth: '95vw' }"
+    width="min(640px, 95vw)"
     data-test="user-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
