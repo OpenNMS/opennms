@@ -41,7 +41,7 @@ export const getPendingSituations = async (limit = 12, extraFiql: string[] = [])
       return []
     }
     return (resp.data?.alarm ?? []) as Situation[]
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

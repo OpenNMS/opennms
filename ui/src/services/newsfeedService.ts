@@ -39,7 +39,7 @@ export const getNewsFeed = async (): Promise<NewsFeedItem[]> => {
       return []
     }
     return (resp.data?.items ?? []) as NewsFeedItem[]
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

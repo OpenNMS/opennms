@@ -32,7 +32,7 @@ export interface CurrentOutage {
   locationName?: string
   ifLostService?: number | string
   serviceName?: string
-  monitoredService?: { serviceName?: string; serviceType?: { name?: string } }
+  monitoredService?: { serviceName?: string; serviceType?: { name?: string }}
 }
 
 // Currently-open outages: ifRegainedService is the epoch sentinel (== null).
@@ -46,7 +46,7 @@ export const getCurrentOutages = async (limit = 12, extraFiql: string[] = []): P
       return []
     }
     return (resp.data?.outage ?? []) as CurrentOutage[]
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

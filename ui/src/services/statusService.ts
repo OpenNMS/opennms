@@ -38,8 +38,8 @@ const fetchSummary = async (path: string): Promise<StatusSummaryEntry[]> => {
     }
     return (resp.data as unknown[])
       .filter((row): row is [string, number] => Array.isArray(row) && row.length >= 2)
-      .map((row) => ({ label: String(row[0]), count: Number(row[1]) }))
-  } catch (err) {
+      .map(row => ({ label: String(row[0]), count: Number(row[1]) }))
+  } catch (_err) {
     return []
   }
 }
@@ -65,7 +65,7 @@ const severityString = (s: unknown): string =>
 
 const fetchStatusList = async (path: string, key: string): Promise<StatusListItem[]> => {
   try {
-    const resp = await v2.get(path, { headers: { Accept: 'application/json' } })
+    const resp = await v2.get(path, { headers: { Accept: 'application/json' }})
     if (resp.status === 204 || !resp.data) {
       return []
     }
@@ -74,7 +74,7 @@ const fetchStatusList = async (path: string, key: string): Promise<StatusListIte
     return arr
       .map((x: any) => ({ id: Number(x.id), name: x.name, severity: severityString(x.severity) }))
       .filter((x: StatusListItem) => PROBLEM_SEVERITIES.has(x.severity))
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

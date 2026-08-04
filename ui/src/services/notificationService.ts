@@ -45,7 +45,7 @@ export const getNotificationSummary = async (): Promise<NotificationSummary | fa
       return empty()
     }
     return resp.data as NotificationSummary
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
