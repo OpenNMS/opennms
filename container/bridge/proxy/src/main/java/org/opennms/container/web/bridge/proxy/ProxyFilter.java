@@ -98,7 +98,7 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         dispatcherTracker.open();
 
         // By default we register a handler for all rest endpoints, as they are already
-        // known by the ApplicationRegistry (jax-rs-connector project)
+        // known by the JaxrsServiceRuntime of the OSGi JAX-RS Whiteboard
         addRequestHandler(new RestRequestHandler(bundleContext));
     }
 
@@ -167,7 +167,12 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
             for(RequestHandler eachHandler : handlers) {
                 for (String eachPattern : requestHandler.getPatterns()) {
                     if (eachHandler.getPatterns().contains(eachPattern)) {
-                        throw new IllegalArgumentException("Cannot add request handler as another handler already handles these requestes");
+                        // Handlers are added from ServiceTracker callbacks. Throwing here would
+                        // abort the tracker and leave the proxy only partially wired up, so the
+                        // duplicate is skipped instead: the pattern is already being handled.
+                        LOG.warn("Not adding request handler for patterns {}: pattern '{}' is already handled by {}.",
+                                requestHandler.getPatterns(), eachPattern, eachHandler);
+                        return;
                     }
                 }
             }

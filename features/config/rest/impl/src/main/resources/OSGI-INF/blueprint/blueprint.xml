@@ -16,7 +16,9 @@
   </bean>
   <service interface="org.opennms.features.config.rest.api.ConfigManagerRestService" ref="configManagerRestService" >
       <service-properties>
-        <entry key="application-path" value="/rest" />
+        <entry key="osgi.jaxrs.resource" value="true" />
+        <entry key="osgi.jaxrs.name" value="config-manager" />
+        <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
       </service-properties>
   </service>
 </blueprint>

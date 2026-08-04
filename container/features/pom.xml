@@ -320,6 +320,14 @@
                           <feature>opennms-mate-impl</feature>
                           <feature>opennms-mate-shell</feature>
                           <feature>opennms-newts</feature>
+                          <!--
+                              opennms-osgi-core-rest, the OSGi JAX-RS Whiteboard stack, is
+                              deliberately not verified here: cxf-rt-transports-http has a mandatory
+                              import of java.net.http, which the synthetic system bundle of this
+                              goal does not export. The real container does - Karaf's etc/jre.properties
+                              chains jre-21 -> jre-17 -> ... -> jre-11, and jre-11 exports it - so this
+                              is a limitation of the verification harness, not of the feature.
+                          -->
                           <feature>opennms-poller-monitors-core</feature>
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-timeseries-api</feature>

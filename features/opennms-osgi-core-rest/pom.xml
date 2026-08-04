@@ -37,13 +37,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.eclipsesource.jaxrs</groupId>
-            <artifactId>features</artifactId>
-            <classifier>features</classifier>
-            <type>xml</type>
-            <version>${osgiJaxRsVersion}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.rest-provider</artifactId>
             <version>${project.version}</version>

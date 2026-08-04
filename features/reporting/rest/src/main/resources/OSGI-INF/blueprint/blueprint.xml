@@ -30,7 +30,9 @@
     </bean>
     <service interface="org.opennms.features.reporting.rest.ReportRestService" ref="reportRestService" >
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="report" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 </blueprint>

@@ -27,8 +27,8 @@ public interface DataChoiceRestService {
     UsageStatisticsReportDTO getUsageStatistics();
 }
 ----
-<1>  Each REST interface must either have a `@Path` or `@Provider` annotation.
-     Otherwise, it is not considered a REST service.
+<1>  Each REST interface must carry a `@Path` annotation; it defines the path of the resource
+     relative to the base path of the application it is published under (see below).
 <2>  Use jax-rs annotations, such as `@Post, @GET, @PUT, @Path`, etc., to define the REST service.
 
 == Implement a REST Interface
@@ -72,7 +72,9 @@ Achieve this by using either an Activator or the blueprint mechanism.
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl" /> <1>
     <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService" > <2>
         <service-properties>
-            <entry key="application-path" value="/rest" /> <3>
+            <entry key="osgi.jaxrs.resource" value="true" /> <3>
+            <entry key="osgi.jaxrs.name" value="datachoices" /> <4>
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" /> <5>
         </service-properties>
     </service>
 
@@ -80,8 +82,54 @@ Achieve this by using either an Activator or the blueprint mechanism.
 ----
 <1>  Create the REST implementation class.
 <2>  Export the REST service.
-<3>  Define where the REST service will be exported, e.g., `/rest`, `/api/v2`. You can also use completely different paths.
-     If not defined, `/services` is used.
+<3>  Mark the service as a JAX-RS resource. Without this the OSGi JAX-RS Whiteboard ignores it.
+<4>  A name for the resource, unique within the application it attaches to.
+<5>  Select the JAX-RS application, and therefore the base path, the resource is published under.
+
+== Available applications
+
+Endpoints are published by the OSGi JAX-RS Whiteboard (OSGi Compendium R7, chapter 151).
+The base path is not chosen by the resource itself; it is a property of the *application* the
+resource attaches to using `osgi.jaxrs.application.select`.
+OpenNMS declares two applications in the `org.opennms.features.rest-provider` bundle:
+
+[options="header"]
+|===
+| `osgi.jaxrs.name` | Base path
+| `opennms-rest`    | `/rest`
+| `opennms-api-v2`  | `/api/v2`
+|===
+
+To publish under a different base path, declare an additional `javax.ws.rs.core.Application`
+service with an `osgi.jaxrs.name` and an `osgi.jaxrs.application.base` property, then select it.
+A resource that selects no application at all attaches to the whiteboard's default application,
+which is served from the root - it does not end up under `/services` as it did with the
+previously used osgi-jax-rs-connector.
+
+NOTE: A resource whose `osgi.jaxrs.application.select` filter matches no application is silently
+      not published, and requests for it fall through to the ReST implementation of the web
+      application instead, which typically answers `404`.
+
+== Providers and exception mappers
+
+`@Provider` classes such as a `javax.ws.rs.ext.ExceptionMapper` are registered as whiteboard
+*extensions* rather than resources, and they bind *per application* - an extension is not picked up
+globally, it has to select the applications it applies to:
+
+[source, xml]
+----
+<service interface="javax.ws.rs.ext.ExceptionMapper">
+    <service-properties>
+        <entry key="osgi.jaxrs.extension" value="true" />
+        <entry key="osgi.jaxrs.name" value="my-exception-mapper" />
+        <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
+    </service-properties>
+    <bean class="org.example.MyExceptionMapper"/>
+</service>
+----
+
+The JSON provider and the exception mappers shared by all OpenNMS endpoints are registered this way
+in `features/rest-provider/src/main/resources/OSGI-INF/blueprint/blueprint.xml`.
 
 
 For a full working example, refer to the link:https://github.com/OpenNMS/opennms/tree/develop/features/datachoices[datachoices feature].

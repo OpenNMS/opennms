@@ -10,7 +10,9 @@
     </bean>
     <service interface="org.opennms.features.uiextension.api.UIExtensionService" ref="uiExtensionService">
         <service-properties>
-            <entry key="application-path" value="/rest"/>
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="ui-extension" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 </blueprint>

@@ -13,7 +13,9 @@
     </bean>
     <service interface="org.opennms.netmgt.graphml.rest.GraphmlRestService" ref="graphmlRestService" >
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="graphml" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 </blueprint>

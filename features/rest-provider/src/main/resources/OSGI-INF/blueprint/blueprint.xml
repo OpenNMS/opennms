@@ -5,13 +5,67 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
+    <!--
+        The JAX-RS applications OSGi ReST endpoints attach to. These replace the "application-path"
+        service property of the (unmaintained) osgi-jax-rs-connector: a resource selects its
+        application via osgi.jaxrs.application.select, the application defines the base URI.
+    -->
+    <service interface="javax.ws.rs.core.Application">
+        <service-properties>
+            <entry key="osgi.jaxrs.name" value="opennms-rest"/>
+            <entry key="osgi.jaxrs.application.base" value="/rest"/>
+        </service-properties>
+        <bean class="javax.ws.rs.core.Application"/>
+    </service>
+    <service interface="javax.ws.rs.core.Application">
+        <service-properties>
+            <entry key="osgi.jaxrs.name" value="opennms-api-v2"/>
+            <entry key="osgi.jaxrs.application.base" value="/api/v2"/>
+        </service-properties>
+        <bean class="javax.ws.rs.core.Application"/>
+    </service>
+
+    <!--
+        JSON support. Whiteboard extensions are bound per application, so the provider has to
+        select the applications it applies to - it is not picked up globally.
+    -->
+    <service>
+        <interfaces>
+            <value>javax.ws.rs.ext.MessageBodyReader</value>
+            <value>javax.ws.rs.ext.MessageBodyWriter</value>
+        </interfaces>
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+            <entry key="osgi.jaxrs.name" value="opennms-jackson-json-provider"/>
+            <entry key="osgi.jaxrs.media.type" value="application/json"/>
+            <entry key="osgi.jaxrs.application.select" value="(|(osgi.jaxrs.name=opennms-rest)(osgi.jaxrs.name=opennms-api-v2))"/>
+        </service-properties>
+        <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+    </service>
+
+    <!-- Exception mappers, applied to both applications -->
     <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+            <entry key="osgi.jaxrs.name" value="opennms-not-found-mapper"/>
+            <entry key="osgi.jaxrs.application.select" value="(|(osgi.jaxrs.name=opennms-rest)(osgi.jaxrs.name=opennms-api-v2))"/>
+        </service-properties>
         <bean class="org.opennms.web.rest.support.NotFoundProvider"/>
     </service>
     <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+            <entry key="osgi.jaxrs.name" value="opennms-no-such-element-mapper"/>
+            <entry key="osgi.jaxrs.application.select" value="(|(osgi.jaxrs.name=opennms-rest)(osgi.jaxrs.name=opennms-api-v2))"/>
+        </service-properties>
         <bean class="org.opennms.web.rest.support.NoSuchElementProvider"/>
     </service>
     <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+            <entry key="osgi.jaxrs.name" value="opennms-error-response-mapper"/>
+            <entry key="osgi.jaxrs.application.select" value="(|(osgi.jaxrs.name=opennms-rest)(osgi.jaxrs.name=opennms-api-v2))"/>
+        </service-properties>
         <bean class="org.opennms.web.rest.support.ErrorResponseProvider"/>
     </service>
 </blueprint>

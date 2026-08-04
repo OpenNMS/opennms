@@ -32,7 +32,9 @@
 
     <service interface="org.opennms.netmgt.flows.rest.FlowRestService" ref="flowRestService" >
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="flow" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 
@@ -41,13 +43,26 @@
     </bean>
     <service interface="org.opennms.netmgt.flows.rest.classification.ClassificationRestService" ref="classificationRestService">
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="classification" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
+    <!-- whiteboard extensions are bound per application, hence the explicit selection -->
     <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true" />
+            <entry key="osgi.jaxrs.name" value="classification-exception-mapper" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
+        </service-properties>
         <bean class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationExceptionMapper"/>
     </service>
     <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true" />
+            <entry key="osgi.jaxrs.name" value="csv-import-exception-mapper" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
+        </service-properties>
         <bean class="org.opennms.netmgt.flows.rest.internal.classification.CSVImportExceptionMapper"/>
     </service>
 </blueprint>

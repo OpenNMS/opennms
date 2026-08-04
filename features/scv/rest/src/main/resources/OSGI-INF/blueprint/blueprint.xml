@@ -8,9 +8,16 @@
         <argument ref="secureCredentialsVault"/>
     </bean>
 
+    <!--
+        Registered for the OSGi JAX-RS Whiteboard (OSGi cmpn R7, chapter 151).
+        Replaces the "application-path" property of the (unmaintained) osgi-jax-rs-connector:
+        the resource attaches itself to the named application which defines the base URI.
+    -->
     <service interface="org.opennms.features.scv.rest.ScvRestService" ref="defaultScvRestService">
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="scv" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 </blueprint>

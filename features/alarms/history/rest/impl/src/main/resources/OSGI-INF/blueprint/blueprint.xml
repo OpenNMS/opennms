@@ -11,7 +11,9 @@
 
     <service interface="org.opennms.features.alarms.history.rest.api.AlarmHistoryRestService" ref="alarmHistoryRestService" >
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="alarm-history" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 

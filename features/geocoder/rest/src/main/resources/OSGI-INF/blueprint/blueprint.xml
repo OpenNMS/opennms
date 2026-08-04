@@ -15,7 +15,9 @@
     </bean>
     <service interface="org.opennms.features.geocoder.rest.GeocodingRestService" ref="geocodingRestService" >
         <service-properties>
-            <entry key="application-path" value="/api/v2" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="geocoding" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-api-v2)" />
         </service-properties>
     </service>
 </blueprint>

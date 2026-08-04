@@ -37,6 +37,14 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
+
+    /**
+     * The bundle symbolic name of the OSGi JAX-RS Whiteboard implementation.
+     *
+     * @see #isJaxRsWhiteboardServlet(ServiceReference)
+     */
+    private static final String JAX_RS_WHITEBOARD_BSN = "org.apache.aries.jax.rs.whiteboard";
+
     private final ServletContext servletContext;
     private final ProxyFilter proxyFilter;
     private Map<ServiceReference<Servlet>, RequestHandler> requestHandlerMap = new HashMap<>();
@@ -50,6 +58,9 @@ public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
     @Override
     public Servlet addingService(ServiceReference reference) {
         final Servlet servlet = super.addingService(reference);
+        if (isJaxRsWhiteboardServlet(reference)) {
+            return servlet;
+        }
         final ServletInfo servletInfo = new ServletInfo(reference);
         if (servletInfo.hasAlias()) {
             servletContext.log("Property 'alias' is no longer supported. " +
@@ -64,6 +75,25 @@ public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
         requestHandlerMap.put(reference, servletRequestHandler);
         proxyFilter.addRequestHandler(servletRequestHandler);
         return servlet;
+    }
+
+    /**
+     * The JAX-RS Whiteboard registers one servlet per JAX-RS application, and it puts the
+     * application base (e.g. {@code /rest}) on a separate ServletContextHelper via
+     * {@code osgi.http.whiteboard.context.path} - the servlet itself is registered with the
+     * pattern {@code /*}. Taken at face value that pattern would make the proxy forward every
+     * single request of the web application into the OSGi container.
+     *
+     * Prefixing the pattern with the context path would not help either: that yields
+     * {@code /rest/*}, but {@code /rest} is shared - most of it is served by the ReST servlet of
+     * the web application itself, only individual resources come from OSGi. Which ones is exactly
+     * what the {@link org.opennms.container.web.bridge.api.RestEndpointRegistry} knows, and the
+     * {@link org.opennms.container.web.bridge.proxy.handlers.RestRequestHandler} already asks it,
+     * so these servlets must simply be left alone here.
+     */
+    private static boolean isJaxRsWhiteboardServlet(ServiceReference<?> reference) {
+        return reference.getBundle() != null
+                && JAX_RS_WHITEBOARD_BSN.equals(reference.getBundle().getSymbolicName());
     }
 
     @Override

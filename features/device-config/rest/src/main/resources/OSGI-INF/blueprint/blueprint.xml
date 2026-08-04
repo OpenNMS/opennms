@@ -18,7 +18,9 @@
 
     <service interface="org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService" ref="defaultDeviceConfigRestService">
         <service-properties>
-            <entry key="application-path" value="/rest" />
+            <entry key="osgi.jaxrs.resource" value="true" />
+            <entry key="osgi.jaxrs.name" value="device-config" />
+            <entry key="osgi.jaxrs.application.select" value="(osgi.jaxrs.name=opennms-rest)" />
         </service-properties>
     </service>
 </blueprint>

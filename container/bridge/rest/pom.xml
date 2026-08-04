@@ -31,11 +31,22 @@
             <version>${osgiCompendiumVersion}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- org.osgi.dto.DTO, the base class of the JAX-RS Whiteboard DTOs -->
         <dependency>
-            <groupId>com.eclipsesource.jaxrs</groupId>
-            <artifactId>publisher-api</artifactId>
-            <version>${osgiJaxRsVersion}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <!-- javax.ws.rs is referenced by the JAX-RS Whiteboard DTOs of osgi.cmpn -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

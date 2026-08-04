@@ -25,6 +25,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -32,6 +35,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+import org.opennms.container.web.bridge.proxy.handlers.RequestHandler;
 
 public class ProxyFilterTest {
     @Test
@@ -51,5 +55,32 @@ public class ProxyFilterTest {
         // Without a BundleContext the filter must stay out of the way rather than
         // failing the request or the web application startup.
         verify(chain).doFilter(request, response);
+    }
+
+    /**
+     * Handlers are added from ServiceTracker callbacks, where an exception aborts the tracker and
+     * leaves the proxy half wired up. A pattern that is already handled must therefore be skipped
+     * rather than rejected - two JAX-RS applications for instance yield two servlets sharing the
+     * very same pattern.
+     */
+    @Test
+    public void skipsRequestHandlersWithAnAlreadyHandledPattern() {
+        final ProxyFilter filter = new ProxyFilter();
+        filter.addRequestHandler(handlerFor("/opennms/example"));
+        filter.addRequestHandler(handlerFor("/opennms/example"));
+    }
+
+    private static RequestHandler handlerFor(final String pattern) {
+        return new RequestHandler() {
+            @Override
+            public boolean canHandle(String requestedPath) {
+                return requestedPath.startsWith(pattern);
+            }
+
+            @Override
+            public List<String> getPatterns() {
+                return Collections.singletonList(pattern);
+            }
+        };
     }
 }
