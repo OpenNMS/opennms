@@ -4,7 +4,7 @@
     modal
     :header="`Rename Group: ${groupName}`"
     class="group-rename-dialog"
-    :style="{ width: '420px', maxWidth: '95vw' }"
+    width="min(420px, 95vw)"
     data-test="group-rename-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >

@@ -4,7 +4,7 @@
     modal
     :header="isEditing ? `Edit Group: ${originalName}` : 'Add New Group'"
     class="group-editor-dialog"
-    :style="{ width: '640px', maxWidth: '95vw' }"
+    width="min(640px, 95vw)"
     data-test="group-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
@@ -64,9 +64,9 @@
             />
             <label for="group-editor-add-member">Add user</label>
           </IftaLabel>
-          <OnmsButton
+          <OnmsIconButton
             variant="outlined"
-            icon="pi pi-plus"
+            :icon="Add"
             aria-label="Add member"
             data-test="add-member-button"
             :disabled="!memberToAdd"
@@ -86,29 +86,23 @@
             <span class="member-order">{{ index + 1 }}.</span>
             <span class="member-name">{{ member }}</span>
             <span class="member-actions">
-              <OnmsButton
-                variant="text"
-                rounded
-                icon="pi pi-chevron-up"
+              <OnmsIconButton
+                :icon="KeyboardArrowUp"
                 :aria-label="`Move ${member} up`"
                 data-test="move-up-button"
                 :disabled="index === 0"
                 @click="move(index, -1)"
               />
-              <OnmsButton
-                variant="text"
-                rounded
-                icon="pi pi-chevron-down"
+              <OnmsIconButton
+                :icon="KeyboardArrowDown"
                 :aria-label="`Move ${member} down`"
                 data-test="move-down-button"
                 :disabled="index === members.length - 1"
                 @click="move(index, 1)"
               />
-              <OnmsButton
-                variant="text"
-                rounded
-                icon="pi pi-times"
+              <OnmsIconButton
                 severity="danger"
+                :icon="Cancel"
                 :aria-label="`Remove ${member}`"
                 data-test="remove-member-button"
                 @click="members.splice(index, 1)"
@@ -145,9 +139,13 @@ import { computed, ref, watch } from 'vue'
 
 import IftaLabel from 'primevue/iftalabel'
 import Message from 'primevue/message'
-import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import Add from '@/components/icons/action/Add.vue'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
+import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
+import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
 import { validateAdminComments, validateAdminName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup } from '@/types/groupAdmin'
