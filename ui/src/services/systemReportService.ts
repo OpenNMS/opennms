@@ -21,7 +21,7 @@
 ///
 
 import { v2 } from './axiosInstances'
-import { SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
+import { GenerateSystemReportRequest, SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
 
 // null (not []) on failure so the page can distinguish an error from an empty set.
 export const getSystemReportPlugins = async (): Promise<SystemReportPlugin[] | null> => {
@@ -39,5 +39,15 @@ export const getSystemReportFormatters = async (): Promise<SystemReportFormatter
     return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     return null
+  }
+}
+
+// Returns the raw AxiosResponse (blob) so useDownload can pull the filename from
+// the Content-Disposition header; false on failure so the page can warn the user.
+export const generateSystemReport = async (request: GenerateSystemReportRequest) => {
+  try {
+    return await v2.post('/system-report/generate', request, { responseType: 'blob' })
+  } catch (_err) {
+    return false
   }
 }

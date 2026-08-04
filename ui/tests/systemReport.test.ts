@@ -37,18 +37,28 @@ const formatters = [
 
 const getSystemReportPlugins = vi.fn()
 const getSystemReportFormatters = vi.fn()
+const generateSystemReport = vi.fn()
 vi.mock('@/services', () => ({
   default: {
     getSystemReportPlugins: (...a: unknown[]) => getSystemReportPlugins(...a),
-    getSystemReportFormatters: (...a: unknown[]) => getSystemReportFormatters(...a)
+    getSystemReportFormatters: (...a: unknown[]) => getSystemReportFormatters(...a),
+    generateSystemReport: (...a: unknown[]) => generateSystemReport(...a)
   }
 }))
+
+const downloadFile = vi.fn()
+vi.mock('@/composables/useDownload', () => ({ default: () => ({ downloadFile }) }))
 
 const showSnackBar = vi.fn()
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
 // the page is admin-only; tests exercise it as an admin
-vi.mock('@/composables/useRole', () => ({ default: () => ({ adminRole: { value: true } }) }))
+vi.mock('@/composables/useRole', () => ({ default: () => ({ adminRole: { value: true }}) }))
+
+const okResponse = {
+  data: new Blob(['report']),
+  headers: { 'content-disposition': 'attachment; filename="opennms-system-report.txt"' }
+}
 
 const mountPage = () =>
   mount(SystemReport, {
@@ -58,39 +68,29 @@ const mountPage = () =>
     }
   })
 
-const fieldsOf = (form: HTMLFormElement): Array<[string, string]> =>
-  Array.from(form.querySelectorAll('input')).map((i) => [i.name, i.value])
-
 describe('SystemReport', () => {
-  let submitted: HTMLFormElement | null
-
   beforeEach(() => {
-    submitted = null
-    showSnackBar.mockClear()
+    vi.clearAllMocks()
     getSystemReportPlugins.mockResolvedValue([...plugins])
     getSystemReportFormatters.mockResolvedValue([...formatters])
-    vi.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(function (this: HTMLFormElement) {
-      submitted = this
-    })
+    generateSystemReport.mockResolvedValue({ ...okResponse })
   })
 
-  it('generates with every plugin enabled and the text formatter by default', async () => {
+  it('generates with every plugin enabled and the text formatter by default, then downloads', async () => {
     const wrapper = mountPage()
     await flushPromises()
 
     await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
 
-    expect(submitted).not.toBeNull()
-    expect(submitted!.method).toBe('post')
-    expect(submitted!.getAttribute('action')).toContain('admin/support/systemReport.htm')
-    const fields = fieldsOf(submitted!)
-    expect(fields).toContainEqual(['operation', 'run'])
-    // default matches the legacy form's pre-selected 'text', not 'zip'
-    expect(fields).toContainEqual(['formatter', 'text'])
-    expect(fields).toContainEqual(['plugins', 'Java'])
-    expect(fields).toContainEqual(['plugins', 'OS'])
-    // no filename entered -> no output field
-    expect(fields.some(([n]) => n === 'output')).toBe(false)
+    // default matches the legacy form's pre-selected 'text', every plugin enabled
+    expect(generateSystemReport).toHaveBeenCalledWith({
+      formatter: 'text',
+      plugins: ['Java', 'OS'],
+      output: undefined
+    })
+    // the response is handed to useDownload as-is (force-blob)
+    expect(downloadFile).toHaveBeenCalledWith(expect.objectContaining({ data: expect.any(Blob) }), true)
     // the user gets told generation is under way
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/generating/i) }))
   })
@@ -101,8 +101,9 @@ describe('SystemReport', () => {
 
     await wrapper.get('[data-test=filename]').setValue('my report.txt')
     await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
 
-    expect(fieldsOf(submitted!)).toContainEqual(['output', 'myreport.txt'])
+    expect(generateSystemReport).toHaveBeenCalledWith(expect.objectContaining({ output: 'myreport.txt' }))
   })
 
   it('omits output when the filename sanitizes to empty (no empty download name)', async () => {
@@ -111,18 +112,20 @@ describe('SystemReport', () => {
 
     await wrapper.get('[data-test=filename]').setValue('///')
     await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
 
-    expect(fieldsOf(submitted!).some(([n]) => n === 'output')).toBe(false)
+    expect(generateSystemReport).toHaveBeenCalledWith(expect.objectContaining({ output: undefined }))
   })
 
-  it('reports an error when the download frame loads an error page instead of a file', async () => {
+  it('reports an error and does not download when generation fails', async () => {
+    generateSystemReport.mockResolvedValue(false)
     const wrapper = mountPage()
     await flushPromises()
 
     await wrapper.get('[data-test=generate-btn]').trigger('click')
-    // a successful download never loads the iframe; simulate the failure case
-    wrapper.find('iframe').element.dispatchEvent(new Event('load'))
+    await flushPromises()
 
+    expect(downloadFile).not.toHaveBeenCalled()
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true, msg: expect.stringMatching(/could not be generated/i) }))
   })
 
@@ -141,6 +144,22 @@ describe('SystemReport', () => {
     expect(vm.selectedPlugins).toEqual(['Java', 'OS'])
   })
 
+  it('per-plugin toggle adds and removes a single plugin', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+    const vm = wrapper.vm as unknown as { selectedPlugins: string[]; togglePlugin: (n: string, c: boolean) => void }
+
+    vm.togglePlugin('Java', false)
+    expect(vm.selectedPlugins).toEqual(['OS'])
+
+    vm.togglePlugin('Java', true)
+    expect(vm.selectedPlugins).toEqual(['OS', 'Java'])
+
+    // toggling on an already-selected plugin does not duplicate it
+    vm.togglePlugin('Java', true)
+    expect(vm.selectedPlugins).toEqual(['OS', 'Java'])
+  })
+
   it('surfaces a load error and does not generate when the API fails', async () => {
     getSystemReportPlugins.mockResolvedValue(null)
     const wrapper = mountPage()
@@ -148,6 +167,7 @@ describe('SystemReport', () => {
 
     expect(wrapper.get('[data-test=load-error]').text()).toContain('Failed to load')
     await wrapper.get('[data-test=generate-btn]').trigger('click')
-    expect(submitted).toBeNull()
+    await flushPromises()
+    expect(generateSystemReport).not.toHaveBeenCalled()
   })
 })

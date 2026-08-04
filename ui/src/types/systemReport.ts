@@ -30,3 +30,10 @@ export interface SystemReportFormatter {
   description: string
   extension: string
 }
+
+export interface GenerateSystemReportRequest {
+  formatter: string
+  plugins: string[]
+  // sanitized basename; omit to let the server pick a default name
+  output?: string
+}
