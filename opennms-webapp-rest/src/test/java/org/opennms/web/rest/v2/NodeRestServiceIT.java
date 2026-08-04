@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -41,11 +42,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -452,6 +456,83 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // NOT_EQUALS true is equivalent to ==false (exclude nodes with outages)
         sendRequest(GET, url, parseParamData("_s=nodesWithOutages!=true;node.label==node1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchExcludesPerspectiveOnlyOutages() throws Exception {
+        // DatabasePopulator seeds node1 with an unresolved non-perspective outage AND an
+        // unresolved perspective outage (see DatabasePopulator ~L401-451). Resolve the
+        // non-perspective outage here so only the perspective-unresolved one remains open.
+        // NodeRestService#currentOutagesSubquery's "perspective is null" clause must still
+        // exclude node1 -- without that clause, node1 would wrongly match via the surviving
+        // perspective outage.
+        m_databasePopulator.populateDatabase();
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsOutage nonPerspectiveOutage = m_databasePopulator.getOutageDao().currentOutages().stream()
+                    .filter(o -> "node1".equals(o.getNodeLabel()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("expected node1 to have a current non-perspective outage"));
+            nonPerspectiveOutage.setIfRegainedService(new Date(1436881648292L));
+            m_databasePopulator.getOutageDao().update(nonPerspectiveOutage);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchResolvedSuppressedOutageDoesNotCount() throws Exception {
+        // Kills the legacy mis-parenthesized "perspective is null and ifregainedservice is null
+        // or suppresstime < now()" shape: a RESOLVED outage with a PAST suppressTime satisfies
+        // the dangling "or suppresstime < now()" disjunct regardless of ifregainedservice, so the
+        // legacy shape would wrongly match node2. The corrected SQL parenthesizes the
+        // suppresstime OR so it is ANDed with (not OR'd around) ifregainedservice is null, so a
+        // resolved outage must never count as current, no matter its suppressTime.
+        m_databasePopulator.populateDatabase();
+
+        final Date lostService = new Date(1436881548292L);
+        final Date regainedService = new Date(1436881648292L);
+        final Date pastSuppressTime = new Date(1436881448292L);
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsMonitoredService svc = m_databasePopulator.getMonitoredServiceDao()
+                    .get(m_databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "SNMP");
+            final OnmsOutage resolvedSuppressed = new OnmsOutage(lostService, regainedService, svc);
+            resolvedSuppressed.setSuppressTime(pastSuppressTime);
+            m_databasePopulator.getOutageDao().save(resolvedSuppressed);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node2"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchExpiredSuppressionStillCounts() throws Exception {
+        // Locks the OR inside the parens: an UNRESOLVED, non-perspective outage whose
+        // suppressTime is in the PAST must still count as a current outage. A naive
+        // "suppresstime is null"-only version of the clause would wrongly exclude it.
+        m_databasePopulator.populateDatabase();
+
+        final Date lostService = new Date(1436881548292L);
+        final Date pastSuppressTime = new Date(1436881448292L);
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsMonitoredService svc = m_databasePopulator.getMonitoredServiceDao()
+                    .get(m_databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "SNMP");
+            final OnmsOutage unresolvedExpiredSuppression = new OnmsOutage(lostService, svc);
+            unresolvedExpiredSuppression.setSuppressTime(pastSuppressTime);
+            m_databasePopulator.getOutageDao().save(unresolvedExpiredSuppression);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node2"), 200);
     }
 
     @Test
