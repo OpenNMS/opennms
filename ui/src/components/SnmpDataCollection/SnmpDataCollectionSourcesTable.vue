@@ -60,7 +60,7 @@
               :key="profile.id"
               :label="profile.name"
               class="profile-tag clickable-chip"
-              v-tooltip="'Click to edit profile'"
+              v-onms-tooltip="'Click to edit profile'"
               @click="router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id } })"
             />
             <span
