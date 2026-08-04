@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="`Change Password: ${userId}`"
@@ -17,7 +17,7 @@
       >{{ errorText }}</Message>
       <FormField>
         <IftaLabel>
-          <Password
+          <OnmsPassword
             v-model="password"
             inputId="user-password-new"
             :feedback="false"
@@ -30,7 +30,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <Password
+          <OnmsPassword
             v-model="confirmation"
             inputId="user-password-confirm"
             :feedback="false"
@@ -49,30 +49,28 @@
     </div>
 
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
-      <Button
+      <OnmsButton
         label="Change Password"
         :disabled="!password || password !== confirmation || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
 import Message from 'primevue/message'
-import Password from 'primevue/password'
+import { OnmsButton, OnmsDialog, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'

@@ -2,8 +2,8 @@
   <TableCard class="users-table">
     <div class="header">
       <div class="card-title">Users</div>
-      <Button
-        outlined
+      <OnmsButton
+        variant="outlined"
         label="Add New User"
         icon="pi pi-plus"
         data-test="add-user-button"
@@ -11,7 +11,7 @@
       />
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.users.length"
       :value="store.users"
       paginator
@@ -21,14 +21,14 @@
       class="data-table"
       data-test="users-table"
     >
-      <Column
+      <OnmsColumn
         field="user-id"
         header="User ID"
         sortable
       >
         <template #body="{ data }">
           <span class="user-id">{{ data['user-id'] }}</span>
-          <Tag
+          <OnmsTag
             v-if="isProtected(data['user-id'])"
             value="system"
             severity="secondary"
@@ -36,27 +36,27 @@
             v-tooltip.top="'System account: cannot be deleted or renamed'"
           />
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="full-name"
         header="Full Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="email"
         header="Email"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="pager-email"
         header="Pager Email"
       />
-      <Column header="Roles">
+      <OnmsColumn header="Roles">
         <template #body="{ data }">
           <span class="roles">{{ (data.role ?? []).join(', ') || '-' }}</span>
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <span
             v-if="!isPathAddressable(data['user-id'])"
@@ -65,30 +65,30 @@
             data-test="unaddressable-note"
           >file-managed</span>
           <div v-else class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data['user-id']}`"
               data-test="edit-user-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Password"
               :aria-label="`Change password for ${data['user-id']}`"
               data-test="password-user-button"
               @click="openPassword(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Rename"
               :disabled="isProtected(data['user-id'])"
               :aria-label="`Rename ${data['user-id']}`"
               data-test="rename-user-button"
               @click="openRename(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :disabled="isProtected(data['user-id'])"
@@ -98,8 +98,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <div v-if="!store.users.length">
       <EmptyList
@@ -140,12 +140,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'

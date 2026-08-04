@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="isEditing ? `Edit User: ${originalUserId}` : 'Add New User'"
@@ -18,7 +18,7 @@
       >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="user-editor-id"
             v-model="form.userId"
             :invalid="!!userIdProblem"
@@ -34,7 +34,7 @@
       </FormField>
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <Password
+          <OnmsPassword
             v-model="form.password"
             inputId="user-editor-password"
             :feedback="false"
@@ -47,7 +47,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="user-editor-fullname"
             v-model="form.fullName"
             data-test="full-name-input"
@@ -57,7 +57,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="user-editor-comments"
             v-model="form.comments"
             :invalid="!!commentsProblem"
@@ -73,7 +73,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="user-editor-email"
             v-model="form.email"
             :invalid="!!emailProblem"
@@ -89,7 +89,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="user-editor-pager-email"
             v-model="form.pagerEmail"
             :invalid="!!pagerEmailProblem"
@@ -105,7 +105,7 @@
       </FormField>
       <FormField class="full-width">
         <IftaLabel>
-          <MultiSelect
+          <OnmsMultiSelect
             v-model="form.roles"
             labelId="user-editor-roles"
             :options="store.availableRoles"
@@ -121,32 +121,28 @@
     </div>
 
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
-      <Button
+      <OnmsButton
         :label="isEditing ? 'Save User' : 'Add User'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
-import MultiSelect from 'primevue/multiselect'
-import Password from 'primevue/password'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMultiSelect, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
