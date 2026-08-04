@@ -6,6 +6,7 @@ import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { FilterTypeEnum } from '@/types'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
+import { OnmsChip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -1094,6 +1095,34 @@ describe('NodesTable.vue', () => {
       expect(text).not.toContain('are not allowed in searches')
       expect(text).not.toContain('underscore character acts as a single character wildcard')
       expect(text).not.toContain('percent character acts as a multiple character wildcard')
+    })
+  })
+
+  // ── Outages chip ──────────────────────────────────────────────────────────────
+
+  describe('Outages chip', () => {
+    it('renders "Nodes with current outages" (matching the drawer + help text) when the filter is set, and remove calls the store', async () => {
+      const wrapper = mountTable()
+      const structureStore = useNodeStructureStore()
+      structureStore.queryFilter = {
+        ...structureStore.queryFilter,
+        nodesWithOutages: true
+      }
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Nodes with current outages')
+
+      structureStore.removeNodesWithOutages = vi.fn()
+      const chip = wrapper.findAllComponents(OnmsChip).find(c => c.props('label') === 'Nodes with current outages')
+      expect(chip).toBeTruthy()
+
+      await chip!.vm.$emit('remove', new Event('click'))
+      expect(structureStore.removeNodesWithOutages).toHaveBeenCalled()
+    })
+
+    it('does not render the outages chip when the filter is not set', () => {
+      const wrapper = mountTable()
+      expect(wrapper.text()).not.toContain('Nodes with current outages')
     })
   })
 

@@ -138,7 +138,7 @@
             />
             <OnmsChip
               v-if="nodeStructureStore.queryFilter.nodesWithOutages"
-              label="Nodes with outages"
+              label="Nodes with current outages"
               removable
               @remove="nodeStructureStore.removeNodesWithOutages()"
             />

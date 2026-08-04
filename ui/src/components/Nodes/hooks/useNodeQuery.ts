@@ -654,8 +654,10 @@ const buildMaclikeQuery = (macAddress?: string) => {
 
   // Strip separators/whitespace and lowercase to match the format stored in snmpinterface.snmpphysaddr.
   // The backend maclike behavior does a case-insensitive ANYWHERE match, so a partial MAC is fine.
-  // Shared with useInterfaceListing.ts's client-side maclike match and NodesTable.vue's
-  // buildSnmpNarrowing so all three normalize a MAC-like value identically.
+  // normalizeMacSearch strips every non-hex character, not just legacy's '[:-]' -- see its doc
+  // comment in useInterfaceListing.ts for why that's a deliberate improvement, not parity. Shared
+  // with useInterfaceListing.ts's client-side maclike match and NodesTable.vue's buildSnmpNarrowing
+  // so all three normalize a MAC-like value identically.
   const stripped = normalizeMacSearch(macAddress)
 
   if (stripped.length === 0) {

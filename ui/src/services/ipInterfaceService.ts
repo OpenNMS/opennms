@@ -60,6 +60,10 @@ export const getNodeIpInterfaceQuery = (nodeIds: string[], managedOnly: boolean)
   const ids = nodeIds.map(id => `node.id==${id}`).join(',')
   const nodeIdGroup = `(${ids})`
 
+  // Currently unused in production: both call sites (nodeStore.ts's getIpInterfacesForNodes and
+  // useNodeExport.ts) always pass managedOnly=false. Kept -- not dead-code-removed -- for
+  // shape-parity with getNodeSnmpInterfaceQuery's equivalent narrowing branch, and because it's
+  // tested directly (see ipInterfaceService.test.ts); a future caller may need managedOnly=true.
   if (managedOnly) {
     return `${nodeIdGroup};(isManaged==M)`
   }

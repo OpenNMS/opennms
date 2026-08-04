@@ -22,6 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  compareIpAddressBytes,
   countInterfacesForNodes,
   getInterfaceListMode,
   getInterfaceRowsForNode,
@@ -150,6 +151,27 @@ describe('useInterfaceListing', () => {
       filter.extendedSearch.snmpParams!.snmpIfName = '  '
       expect(getInterfaceListMode(filter)).toEqual({ mode: 'default' })
     })
+
+    // A non-blank macAddress that normalizes to '' (every character stripped by
+    // normalizeMacSearch) must NOT enter maclike mode: filterMaclikeModeSnmp's
+    // `physAddr.includes('')` would then match every SNMP interface on every node, while
+    // buildMaclikeQuery (useNodeQuery.ts) already treats the same value as "no maclike filter at
+    // all" and applies no node-narrowing. If getInterfaceListMode disagreed, the client-side panel
+    // would show every interface as "matching" a filter the server never actually narrowed by.
+    test.each([
+      ['--', '--'],
+      ['::', '::'],
+      ['punctuation only', '...---'],
+      ['just whitespace-like separators', '  --  ']
+    ])('a macAddress that normalizes to empty (%s) resolves to default mode, not maclike', (_title, mac) => {
+      const filter: NodeQueryFilter = { ...getDefaultNodeQueryFilter(), macAddress: mac }
+      expect(getInterfaceListMode(filter)).toEqual({ mode: 'default' })
+    })
+
+    test('a macAddress that still normalizes non-empty (valid partial MAC) still enters maclike mode', () => {
+      const filter: NodeQueryFilter = { ...getDefaultNodeQueryFilter(), macAddress: 'aa--bb' }
+      expect(getInterfaceListMode(filter)).toEqual({ mode: 'maclike', mac: 'aa--bb' })
+    })
   })
 
   describe('default mode rows', () => {
@@ -192,6 +214,29 @@ describe('useInterfaceListing', () => {
       expect(rows).toEqual([
         { key: 'ip-42', label: '192.168.1.1', href: `${baseHref}element/interface.jsp?ipinterfaceid=42` }
       ])
+    })
+  })
+
+  describe('compareIpAddressBytes: IPv4-mapped/-compatible IPv6 addresses', () => {
+    // The dotted-quad tail of an IPv4-mapped address (e.g. '::ffff:192.168.1.1') must expand into
+    // its two embedded hextets before byte comparison, not fall through to
+    // parseInt('192.168.1.1', 16) (NaN) or similar garbage -- this is sort order only, no display
+    // impact, but a garbage parse would make the ordering arbitrary rather than reflecting the
+    // embedded IPv4 value.
+    test('orders two IPv4-mapped addresses by their embedded IPv4 value', () => {
+      expect(compareIpAddressBytes('::ffff:192.168.1.1', '::ffff:192.168.1.2')).toBeLessThan(0)
+      expect(compareIpAddressBytes('::ffff:192.168.1.2', '::ffff:192.168.1.1')).toBeGreaterThan(0)
+      expect(compareIpAddressBytes('::ffff:192.168.1.1', '::ffff:192.168.1.1')).toBe(0)
+    })
+
+    test('also handles the fully-written-out (non "::") IPv4-mapped form', () => {
+      expect(compareIpAddressBytes('0:0:0:0:0:ffff:192.168.1.1', '0:0:0:0:0:ffff:192.168.1.2')).toBeLessThan(0)
+    })
+
+    test('an invalid embedded IPv4 octet makes the address unparseable rather than a garbage match', () => {
+      // 999 is not a valid octet: ipv6ToBytes must return null (empty bytes for compare purposes),
+      // not parseInt('999.168.1.1', 16) NaN-garbage that could coincidentally compare as equal.
+      expect(compareIpAddressBytes('::ffff:999.168.1.1', '::ffff:192.168.1.1')).not.toBe(0)
     })
   })
 
@@ -355,6 +400,18 @@ describe('useInterfaceListing', () => {
       const mode: InterfaceListMode = { mode: 'maclike', mac: 'aabbccddeeff' }
       const rows = getInterfaceRowsForNode('1', mode, [], [a, b, c, d, e], baseHref)
       expect(rows.map(r => r.key)).toEqual(['snmp-11', 'snmp-10', 'snmp-12', 'snmp-13', 'snmp-14'])
+    })
+
+    test('an ifIndex-less interface sorts last among ties on ifName/ifDescr (nulls-last), not NaN-scrambled', () => {
+      // ifIndex is typed as required, but real API data can omit it. `a.ifIndex - b.ifIndex`
+      // would be NaN here (Array#sort treats a NaN comparator result as an undefined/unstable
+      // order), so this must go through the nulls-last numeric compare instead.
+      const withIndex = makeSnmp({ id: 20, ifName: null, ifDescr: null, ifIndex: 5, physAddr: 'aabbccddeeff' })
+      const withoutIndex = makeSnmp({ id: 21, ifName: null, ifDescr: null, ifIndex: undefined, physAddr: 'aabbccddeeff' })
+
+      const mode: InterfaceListMode = { mode: 'maclike', mac: 'aabbccddeeff' }
+      const rows = getInterfaceRowsForNode('1', mode, [], [withoutIndex, withIndex], baseHref)
+      expect(rows.map(r => r.key)).toEqual(['snmp-20', 'snmp-21'])
     })
   })
 

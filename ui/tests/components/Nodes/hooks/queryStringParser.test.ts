@@ -23,9 +23,11 @@
 import { describe, expect, test } from 'vitest'
 import {
   ALL_ASSET_COLUMN_OPTIONS,
+  ALLOWED_ASSET_COLUMNS,
   ASSET_COLUMN_FIQL_MAP,
   ASSET_COLUMN_OPTIONS,
   ASSET_COLUMN_TITLES,
+  UI_HIDDEN_ASSET_COLUMNS,
   getAssetColumnFiqlProperty,
   getAssetColumnLabel,
   parseAssetFilters,
@@ -557,8 +559,10 @@ describe('Nodes queryStringParser test', () => {
       }
     })
 
-    test('every ASSET_COLUMN_FIQL_MAP key appears exactly once in ALL_ASSET_COLUMN_OPTIONS', () => {
-      const mapKeys = Object.keys(ASSET_COLUMN_FIQL_MAP).sort()
+    test('every non-hidden ASSET_COLUMN_FIQL_MAP key appears exactly once in ALL_ASSET_COLUMN_OPTIONS', () => {
+      // UI_HIDDEN_ASSET_COLUMNS keys need a title (asserted below) but must NOT get a dropdown
+      // option -- see UI_HIDDEN_ASSET_COLUMNS's own describe block for that half of the contract.
+      const mapKeys = Object.keys(ASSET_COLUMN_FIQL_MAP).filter(k => !UI_HIDDEN_ASSET_COLUMNS.has(k)).sort()
       const optionValues = ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort()
       expect(optionValues).toEqual(mapKeys)
 
@@ -587,6 +591,37 @@ describe('Nodes queryStringParser test', () => {
 
     test('getAssetColumnLabel falls back to the raw key for an unknown column', () => {
       expect(getAssetColumnLabel('notARealColumn')).toBe('notARealColumn')
+    })
+  })
+
+  describe('UI_HIDDEN_ASSET_COLUMNS: credential-ish asset columns are hidden from the dropdown but kept for URL drill-down', () => {
+    const hiddenColumns = ['password', 'enable', 'username', 'connection', 'snmpcommunity']
+
+    test('the hidden set matches exactly the five credential-ish columns', () => {
+      expect(Array.from(UI_HIDDEN_ASSET_COLUMNS).sort()).toEqual([...hiddenColumns].sort())
+    })
+
+    test.each(hiddenColumns)('%s is absent from ALL_ASSET_COLUMN_OPTIONS', (column) => {
+      expect(ALL_ASSET_COLUMN_OPTIONS.some(o => o.value === column)).toBe(false)
+    })
+
+    test.each(hiddenColumns)('%s is still allowed by ALLOWED_ASSET_COLUMNS / parseAssetFilters (URL drill-down parity)', (column) => {
+      expect(ALLOWED_ASSET_COLUMNS.has(column)).toBe(true)
+      expect(parseAssetFilters({ assetColumn: column, assetValue: 'x' })).toEqual([{ column, value: 'x' }])
+    })
+
+    test('getAssetColumnLabel still resolves a proper title for a hidden column (chip labeling)', () => {
+      expect(getAssetColumnLabel('password')).toBe('Password')
+      expect(getAssetColumnLabel('enable')).toBe('Enable')
+      expect(getAssetColumnLabel('username')).toBe('Username')
+      expect(getAssetColumnLabel('connection')).toBe('Connection')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('hidden columns still have identity ASSET_COLUMN_FIQL_MAP entries (URL drill-down parity)', () => {
+      for (const column of hiddenColumns) {
+        expect(ASSET_COLUMN_FIQL_MAP[column]).toBe(column)
+      }
     })
   })
 

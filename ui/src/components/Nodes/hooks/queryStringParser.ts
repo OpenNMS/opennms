@@ -362,10 +362,13 @@ export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
  * bean property names used by legacy site-status filtering.
  *
  * Excluded (non-STRING search properties per SearchProperties.java): `id` (INTEGER) and
- * `lastModifiedDate` (TIMESTAMP). Everything else STRING-typed is included, including
- * `password`/`enable`/`connection` — no precedent was found in this codebase for excluding
- * "secret-like" asset columns from search/filtering (they're already readable/writable via the
- * Asset page and the v2 REST API), so they're included like any other string column.
+ * `lastModifiedDate` (TIMESTAMP). Everything else STRING-typed is included here, including
+ * `password`/`enable`/`username`/`connection`/`snmpcommunity`: this map (and ALLOWED_ASSET_COLUMNS
+ * below) is the whitelist for INBOUND `assetColumn`/`assetValue` query params — i.e. URL
+ * drill-down parity, such as site-status-view links — not the UI-facing dropdown, so these columns
+ * still need to be valid/queryable here. UI_HIDDEN_ASSET_COLUMNS (below) is what keeps them out of
+ * the dropdown itself: advertising an exact-match filter UI on a credential-ish column would turn
+ * the Asset Filter panel into a guessing oracle against stored secrets.
  */
 export const ASSET_COLUMN_FIQL_MAP: Record<string, string> = {
   additionalhardware: 'additionalhardware',
@@ -506,11 +509,26 @@ export const ASSET_COLUMN_TITLES: Record<string, string> = {
 }
 
 /**
- * Every ASSET_COLUMN_FIQL_MAP column as a dropdown option, titled from ASSET_COLUMN_TITLES and
- * sorted alphabetically by title. Used by the Asset Filter panel dropdown when its "Featured
- * Fields Only" toggle is off (see AssetFilterPanel.vue).
+ * Asset columns kept queryable (ASSET_COLUMN_FIQL_MAP/ALLOWED_ASSET_COLUMNS) and labelable
+ * (ASSET_COLUMN_TITLES) for URL drill-down parity, but hidden from the UI-facing dropdown options
+ * below (ALL_ASSET_COLUMN_OPTIONS; ASSET_COLUMN_OPTIONS's curated "Featured Fields" set already
+ * excludes them by simply never having included them). Advertising an exact-match filter control
+ * for these in the Asset Filter panel would let a user brute-force-probe a node's stored
+ * credentials (SNMP community string, device password, etc.) column-by-value, since a FIQL
+ * `assetRecord.<column>==<guess>` filter is itself an oracle: it tells the caller whether the
+ * guessed value is an exact match. These columns are already readable/writable via the Asset page
+ * and the v2 REST API, but that's a very different exposure than a searchable filter UI.
+ */
+export const UI_HIDDEN_ASSET_COLUMNS = new Set(['password', 'enable', 'username', 'connection', 'snmpcommunity'])
+
+/**
+ * Every ASSET_COLUMN_FIQL_MAP column (except UI_HIDDEN_ASSET_COLUMNS -- see its comment) as a
+ * dropdown option, titled from ASSET_COLUMN_TITLES and sorted alphabetically by title. Used by the
+ * Asset Filter panel dropdown when its "Featured Fields Only" toggle is off (see
+ * AssetFilterPanel.vue).
  */
 export const ALL_ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = Object.keys(ASSET_COLUMN_FIQL_MAP)
+  .filter(value => !UI_HIDDEN_ASSET_COLUMNS.has(value))
   .map(value => ({ value, label: ASSET_COLUMN_TITLES[value] ?? value }))
   .sort((a, b) => a.label.localeCompare(b.label))
 

@@ -74,7 +74,13 @@ export const getInterfaceListMode = (filter: NodeQueryFilter): InterfaceListMode
     }
   }
 
-  if (filter.macAddress && filter.macAddress.trim().length > 0) {
+  // Gate on the NORMALIZED value, not just a non-blank trim(): a value that trims non-empty but
+  // normalizes to '' (e.g. '--', '::', punctuation-only) must fall through to default mode. If it
+  // entered maclike mode instead, filterMaclikeModeSnmp's `physAddr.includes('')` would match every
+  // (non-deleted) SNMP interface on every node, while buildMaclikeQuery (useNodeQuery.ts) already
+  // guards on the same normalized-empty check and applies no node-narrowing filter at all — the
+  // client-side panel and the server-side node list would disagree about which nodes qualify.
+  if (filter.macAddress && normalizeMacSearch(filter.macAddress).length > 0) {
     return { mode: 'maclike', mac: filter.macAddress }
   }
 
@@ -102,6 +108,28 @@ const ipToBytes = (ip: string): number[] | null => {
   return bytes
 }
 
+/**
+ * Expand an embedded IPv4 dotted-quad (the final group of an IPv4-mapped/-compatible IPv6 address,
+ * e.g. the '192.168.1.1' in '::ffff:192.168.1.1') into its two equivalent hextets. Returns null if
+ * it isn't a valid dotted-quad.
+ */
+const ipv4TailToHextets = (tail: string): string[] | null => {
+  const parts = tail.split('.')
+  if (parts.length !== 4) {
+    return null
+  }
+
+  const bytes = parts.map(p => Number(p))
+  if (bytes.some(b => !Number.isInteger(b) || b < 0 || b > 255)) {
+    return null
+  }
+
+  return [
+    ((bytes[0] << 8) | bytes[1]).toString(16),
+    ((bytes[2] << 8) | bytes[3]).toString(16)
+  ]
+}
+
 const ipv6ToBytes = (ip: string): number[] | null => {
   let hextets: string[]
 
@@ -112,6 +140,20 @@ const ipv6ToBytes = (ip: string): number[] | null => {
     }
     const head = sides[0].length > 0 ? sides[0].split(':') : []
     const tail = sides[1].length > 0 ? sides[1].split(':') : []
+
+    // IPv4-mapped/-compatible form (e.g. '::ffff:192.168.1.1'): the final tail group is a dotted
+    // quad standing in for the LAST TWO hextets, not one. Expand it before computing how many
+    // zero groups '::' fills in below -- otherwise the fill count (and therefore every byte from
+    // that point on) is off by one, and the dotted-quad string itself would fall through to
+    // parseInt(str, 16) as garbage.
+    if (tail.length > 0 && tail[tail.length - 1].includes('.')) {
+      const expanded = ipv4TailToHextets(tail[tail.length - 1])
+      if (!expanded) {
+        return null
+      }
+      tail.splice(tail.length - 1, 1, ...expanded)
+    }
+
     const missing = 8 - head.length - tail.length
     if (missing < 0) {
       return null
@@ -119,6 +161,15 @@ const ipv6ToBytes = (ip: string): number[] | null => {
     hextets = [...head, ...Array(missing).fill('0'), ...tail]
   } else {
     hextets = ip.split(':')
+
+    // Same embedded-IPv4 handling as above, for the non-'::' (fully-written-out) form.
+    if (hextets.length > 0 && hextets[hextets.length - 1].includes('.')) {
+      const expanded = ipv4TailToHextets(hextets[hextets.length - 1])
+      if (!expanded) {
+        return null
+      }
+      hextets.splice(hextets.length - 1, 1, ...expanded)
+    }
   }
 
   if (hextets.length !== 8) {
@@ -184,8 +235,31 @@ const compareNullableStringsNullsLast = (a: unknown, b: unknown): number => {
 }
 
 /**
+ * Compare two nullable numbers ascending, with null/undefined sorted last (same nulls-last
+ * convention as compareNullableStringsNullsLast above). Guards against e.g. `a.ifIndex -
+ * b.ifIndex` evaluating to NaN when a value is absent, which Array#sort treats as an unstable/
+ * undefined ordering rather than "sorts last".
+ */
+const compareNullableNumbersNullsLast = (a: number | null | undefined, b: number | null | undefined): number => {
+  const aVal = a === undefined || a === null ? null : a
+  const bVal = b === undefined || b === null ? null : b
+
+  if (aVal === null || bVal === null) {
+    if (aVal !== null) {
+      return -1
+    }
+    if (bVal !== null) {
+      return 1
+    }
+    return 0
+  }
+
+  return aVal - bVal
+}
+
+/**
  * Replicates DefaultNodeListService.SnmpInterfaceComparator: ifName (nulls last, case-sensitive)
- * -> ifDescr (nulls last) -> ifIndex -> id.
+ * -> ifDescr (nulls last) -> ifIndex (nulls last) -> id.
  */
 export const compareSnmpInterfaces = (a: SnmpInterface, b: SnmpInterface): number => {
   const nameDiff = compareNullableStringsNullsLast(a.ifName, b.ifName)
@@ -198,8 +272,13 @@ export const compareSnmpInterfaces = (a: SnmpInterface, b: SnmpInterface): numbe
     return descrDiff
   }
 
-  if (a.ifIndex !== b.ifIndex) {
-    return a.ifIndex - b.ifIndex
+  // ifIndex is typed as a required number, but real API responses can omit it; a plain `a.ifIndex
+  // - b.ifIndex` is NaN in that case, which is why this uses the nulls-last numeric compare. `id`,
+  // by contrast, IS guaranteed present (SnmpInterface.id: number, non-optional, per types/index.ts),
+  // so a plain numeric compare remains safe/correct for it.
+  const ifIndexDiff = compareNullableNumbersNullsLast(a.ifIndex, b.ifIndex)
+  if (ifIndexDiff !== 0) {
+    return ifIndexDiff
   }
 
   return a.id - b.id
@@ -247,10 +326,13 @@ const buildSnmpInterfaceRow = (
 
 /**
  * Normalize a MAC-like search value for matching/narrowing: lowercase, strip every non-hex
- * character (not just ':' and '-' — also '.', spaces, etc., matching the legacy backend's maclike
- * behavior and buildMaclikeQuery/parseMaclike in useNodeQuery.ts/queryStringParser.ts). Shared by
- * the client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and
- * useNodeQuery.ts's buildMaclikeQuery so all three treat e.g. 'aabb.ccdd' identically.
+ * character (not just ':' and '-' — also '.', spaces, etc). This is a DELIBERATE DIFFERENCE from
+ * the legacy backend's maclike behavior, not parity with it: legacy stripped only '[:-]', so a
+ * Cisco-style dotted MAC like 'aabb.ccdd' never matched anything there. Stripping every non-hex
+ * character means our maclike/snmpParm matching treats 'aabb.ccdd', 'aabb:ccdd', and 'aabbccdd' as
+ * the same search, which is an improvement, not a port of the old behavior. Shared by the
+ * client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and useNodeQuery.ts's
+ * buildMaclikeQuery so all three treat a given input identically.
  */
 export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
 
