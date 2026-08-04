@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="isEditing ? `Edit Group: ${originalName}` : 'Add New Group'"
@@ -17,7 +17,7 @@
       >{{ errorText }}</Message>
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="group-editor-name"
             v-model="name"
             :invalid="!!nameProblem"
@@ -33,7 +33,7 @@
       </FormField>
       <FormField>
         <IftaLabel>
-          <InputText
+          <OnmsInputText
             id="group-editor-comments"
             v-model="comments"
             :invalid="!!commentsProblem"
@@ -55,7 +55,7 @@
         </div>
         <div class="add-member-row">
           <IftaLabel>
-            <Select
+            <OnmsSelect
               v-model="memberToAdd"
               labelId="group-editor-add-member"
               :options="addableUsers"
@@ -64,8 +64,8 @@
             />
             <label for="group-editor-add-member">Add user</label>
           </IftaLabel>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             icon="pi pi-plus"
             aria-label="Add member"
             data-test="add-member-button"
@@ -86,8 +86,8 @@
             <span class="member-order">{{ index + 1 }}.</span>
             <span class="member-name">{{ member }}</span>
             <span class="member-actions">
-              <Button
-                text
+              <OnmsButton
+                variant="text"
                 rounded
                 icon="pi pi-chevron-up"
                 :aria-label="`Move ${member} up`"
@@ -95,8 +95,8 @@
                 :disabled="index === 0"
                 @click="move(index, -1)"
               />
-              <Button
-                text
+              <OnmsButton
+                variant="text"
                 rounded
                 icon="pi pi-chevron-down"
                 :aria-label="`Move ${member} down`"
@@ -104,8 +104,8 @@
                 :disabled="index === members.length - 1"
                 @click="move(index, 1)"
               />
-              <Button
-                text
+              <OnmsButton
+                variant="text"
                 rounded
                 icon="pi pi-times"
                 severity="danger"
@@ -124,31 +124,28 @@
     </div>
 
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         data-test="cancel-button"
         @click="emit('update:visible', false)"
       />
-      <Button
+      <OnmsButton
         :label="isEditing ? 'Save Group' : 'Add Group'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminComments, validateAdminName } from '@/lib/adminValidation'
@@ -174,7 +171,7 @@ const errorText = ref('')
 const isEditing = computed(() => props.group !== null)
 const originalName = computed(() => props.group?.name ?? '')
 
-const addableUsers = computed(() => store.memberCandidates.filter((u) => !members.value.includes(u)))
+const addableUsers = computed(() => store.memberCandidates.filter(u => !members.value.includes(u)))
 
 const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name')))
 

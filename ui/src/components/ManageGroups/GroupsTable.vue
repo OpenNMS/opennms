@@ -2,8 +2,8 @@
   <TableCard class="groups-table">
     <div class="header">
       <div class="card-title">Groups</div>
-      <Button
-        outlined
+      <OnmsButton
+        variant="outlined"
         label="Add New Group"
         icon="pi pi-plus"
         data-test="add-group-button"
@@ -11,7 +11,7 @@
       />
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.groups.length"
       :value="store.groups"
       paginator
@@ -21,14 +21,14 @@
       class="data-table"
       data-test="groups-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Group Name"
         sortable
       >
         <template #body="{ data }">
           <span class="group-name">{{ data.name }}</span>
-          <Tag
+          <OnmsTag
             v-if="isProtected(data.name)"
             value="system"
             severity="secondary"
@@ -36,18 +36,18 @@
             v-tooltip.top="'System group: cannot be deleted or renamed'"
           />
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="comments"
         header="Comments"
         sortable
       />
-      <Column header="Members">
+      <OnmsColumn header="Members">
         <template #body="{ data }">
           <span class="members">{{ (data.user ?? []).join(', ') || '-' }}</span>
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <span
             v-if="!isPathAddressable(data.name)"
@@ -56,23 +56,23 @@
             data-test="unaddressable-note"
           >file-managed</span>
           <div v-else class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-group-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Rename"
               :disabled="isProtected(data.name)"
               :aria-label="`Rename ${data.name}`"
               data-test="rename-group-button"
               @click="openRename(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :disabled="isProtected(data.name)"
@@ -82,8 +82,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <div v-if="!store.groups.length">
       <EmptyList
@@ -120,12 +120,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
