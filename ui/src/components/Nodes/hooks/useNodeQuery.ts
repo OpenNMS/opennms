@@ -371,13 +371,7 @@ export const useNodeQuery = () => {
  * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
  */
 const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
-  const sanitizedSearchTerm = sanitizeSearchTerm(filter.searchTerm)
-  // Defense in depth: NodesTable.vue's search input already blocks INVALID_SEARCH_CHARS_PATTERN
-  // characters before they reach the store, but searchTerm can also be set programmatically —
-  // the URL `nodename` param (via Nodes.vue) and restored localStorage filter preferences both
-  // bypass that input-level guard. If the term still fails validation here, omit the search
-  // clause entirely rather than emit a request that will 500 or get truncated.
-  const searchTerm = getSearchTermValidationError(sanitizedSearchTerm) ? '' : sanitizedSearchTerm
+  const searchTerm = sanitizeSearchTerm(filter.searchTerm)
   // don't sanitize IP address — allow users to enter commas and other FIQL characters, since buildIpAddressQuery will handle them appropriately
   // (commas are valid in iplike patterns, and users may naturally enter comma-separated lists of IPs or CIDRs)
   const ipAddress = filter.ipAddress
@@ -424,7 +418,14 @@ const buildSearchQuery = (searchTerm: string) => {
   if (searchTerm?.length > 0) {
     const startStar = searchTerm.startsWith('*') ? '' : '*'
     const endStar = searchTerm.endsWith('*') ? '' : '*'
-    return `label==${startStar}${searchTerm}${endStar}`
+    // '*' is the FIQL multi-character wildcard and must stay raw; every other character is
+    // FIQL/URL-transport-unsafe in the general case (label text may legitimately contain
+    // # % & ( ) — see e.g. "Core (bldg 3)", "R&D-sw1"). Split on '*', double-encode each segment
+    // (see encodeFiqlValue for why double), then rejoin with '*'. Splitting on '*' also preserves
+    // any leading/trailing/consecutive stars already in the term as empty segments, which
+    // round-trip through encodeFiqlValue ('') unchanged.
+    const encoded = searchTerm.split('*').map(encodeFiqlValue).join('*')
+    return `label==${startStar}${encoded}${endStar}`
   }
 
   return ''
@@ -726,29 +727,6 @@ const buildTopologyQuery = (topology?: string) => {
  */
 export const sanitizeSearchTerm = (s?: string) => {
   return (s || '').replace(/[,;]/g, ' ')
-}
-
-/**
- * Characters that break the node search request before it ever reaches FIQL, verified empirically
- * against a live OpenNMS instance (NMS-20125 PR review):
- * - '%' in the term: the container's URL-decode of the (unencoded) query string fails -> HTTP 500.
- * - '&' in the term: splits the `_s` query param into a bogus extra param -> truncated FIQL.
- * - '#' in the term: everything after it becomes a URL fragment -> truncated request.
- * - '(' / ')' in the term: CXF FIQL parse error -> HTTP 500, even when the value is encoded.
- * `*` is a native FIQL multi-character wildcard and must remain allowed.
- */
-export const INVALID_SEARCH_CHARS_PATTERN = /[#%&()]/
-
-/**
- * Human-readable validation message for a search term containing one of INVALID_SEARCH_CHARS_PATTERN.
- * Returns null when the term is valid (including empty/undefined).
- */
-export const getSearchTermValidationError = (term?: string): string | null => {
-  if (!term) {
-    return null
-  }
-
-  return INVALID_SEARCH_CHARS_PATTERN.test(term) ? 'Search cannot contain the characters # % & ( )' : null
 }
 
 export const getFiqlSetOperator = (op: SetOperator) => {

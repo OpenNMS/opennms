@@ -35,7 +35,6 @@
             <div class="search-filter-column">
               <FormField
                 class="search-field"
-                :error="searchError"
                 data-test="search-field"
               >
                 <OnmsSearchInput
@@ -290,7 +289,6 @@
         <p>You may search by node name or exact IP address here.</p>
         <p>Searching by name is case-insensitive and matches partial names.</p>
         <p>You can use <code>*</code> as a multiple-character wildcard within your search text. For example, searching on <code>serv</code> would find serv, Service, Reserved, NTSERV, UserVortex, etc., and <code>ser*ice</code> would find Service.</p>
-        <p>The characters # % &amp; ( ) are not allowed in searches.</p>
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
         <h3>Show / Hide Interfaces</h3>
         <p>Clicking on the Show Interfaces button will toggle the display (expandable row) of network interfaces for each node in the list that has more than 1 interface &mdash; or, when filtering by MAC address or SNMP interface attributes, at least 1 matching interface.</p>
@@ -342,7 +340,7 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeInterfacesPanel from './NodeInterfacesPanel.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
-import { getSearchTermValidationError, useNodeQuery } from './hooks/useNodeQuery'
+import { useNodeQuery } from './hooks/useNodeQuery'
 import {
   countInterfaceRowsForNode,
   getInterfaceListMode,
@@ -365,7 +363,6 @@ const sortField = ref('label')
 const sortOrder = ref(1) // 1 = ascending, -1 = descending
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
-const searchError = ref<string | undefined>(getSearchTermValidationError(currentSearch.value) ?? undefined)
 const nodes = computed(() => nodeStore.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
@@ -424,15 +421,6 @@ const updatePageSize = (size: number) => {
 }
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  const validationError = getSearchTermValidationError(val)
-  searchError.value = validationError ?? undefined
-
-  // Never push an invalid term into the store / trigger a refetch — keep the last valid results
-  // on screen until the user corrects (or clears) the offending character(s).
-  if (validationError) {
-    return
-  }
-
   if (val !== nodeStructureStore.queryFilter.searchTerm) {
     nodeStructureStore.setSearchTerm(val)
   }
@@ -662,13 +650,6 @@ const emptyListContent = {
 watch([() => nodeStructureStore.queryFilter], () => {
   if (nodeStructureStore.queryFilter.searchTerm !== currentSearch.value) {
     currentSearch.value = nodeStructureStore.queryFilter.searchTerm
-    // The store's searchTerm is NOT guaranteed to be valid: it can be written directly by
-    // programmatic paths that bypass searchFilterHandler entirely — the URL `nodename` param and
-    // restored localStorage preferences both flow through nodeStructureStore.setFromNodePreferences,
-    // not through the input handler above. Re-validate so an injected bad term is surfaced as a
-    // visible error (the buildNodeStructureQuery guard in useNodeQuery.ts separately keeps the
-    // actual request safe regardless).
-    searchError.value = getSearchTermValidationError(currentSearch.value) ?? undefined
   }
 
   updateQuery()

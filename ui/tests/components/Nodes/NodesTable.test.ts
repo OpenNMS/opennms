@@ -43,10 +43,10 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
 }))
 
 vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
-  // Real (unmocked) module — delegated to below for the pure search-validation helpers and for
-  // buildUpdatedNodeStructureQueryParameters, so tests that write a searchTerm (valid or invalid)
-  // directly into the store can assert on the ACTUAL request shape (e.g. that an invalid term
-  // really does omit the label clause end-to-end), rather than a naive passthrough stub.
+  // Real (unmocked) module — delegated to below for sanitizeSearchTerm and for
+  // buildUpdatedNodeStructureQueryParameters, so tests that write a searchTerm directly into the
+  // store can assert on the ACTUAL request shape (e.g. that a term with FIQL-special characters
+  // really does get double-encoded end-to-end), rather than a naive passthrough stub.
   const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
     '@/components/Nodes/hooks/useNodeQuery'
   )
@@ -83,9 +83,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
     }),
-    sanitizeSearchTerm: actual.sanitizeSearchTerm,
-    INVALID_SEARCH_CHARS_PATTERN: actual.INVALID_SEARCH_CHARS_PATTERN,
-    getSearchTermValidationError: actual.getSearchTermValidationError
+    sanitizeSearchTerm: actual.sanitizeSearchTerm
   }
 })
 
@@ -1009,10 +1007,10 @@ describe('NodesTable.vue', () => {
     })
   })
 
-  // ── Search box client-side validation (NMS-20125 PR review) ─────────────────
+  // ── Search box (NMS-20125 PR review: double-encoding replaces the blocklist) ─
 
-  describe('search box validation', () => {
-    it('typing a term with a forbidden character shows a validation error and does not update the store or search', async () => {
+  describe('search box', () => {
+    it('typing a term with a former blocklist character (%) searches immediately, with no error UI', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
       const structure = useNodeStructureStore()
@@ -1023,29 +1021,11 @@ describe('NodesTable.vue', () => {
       await input.setValue('bad%term')
       await nextTick()
 
-      const searchField = wrapper.find('[data-test="search-field"]')
-      expect(searchField.text()).toContain('Search cannot contain the characters # % & ( )')
-      expect(structure.queryFilter.searchTerm).toBe('')
-      expect(ns.getNodes).not.toHaveBeenCalled()
-    })
-
-    it('typing a valid term clears the error and triggers a search', async () => {
-      const wrapper = mountTable()
-      const ns = useNodeStore()
-      const structure = useNodeStructureStore()
-      ns.getNodes = vi.fn().mockResolvedValue(undefined)
-
-      const input = wrapper.find('input[data-test="search-input"]')
-      await input.setValue('bad%term')
-      await nextTick()
-      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain')
-
-      await input.setValue('goodterm')
-      await nextTick()
-
-      expect(structure.queryFilter.searchTerm).toBe('goodterm')
+      expect(structure.queryFilter.searchTerm).toBe('bad%term')
       expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
       expect(ns.getNodes).toHaveBeenCalled()
+      const [requestParams] = (ns.getNodes as any).mock.calls.at(-1)
+      expect(requestParams._s).toBe('(label==*bad%2525term*);node.type!=D')
     })
 
     it.each([
@@ -1053,7 +1033,7 @@ describe('NodesTable.vue', () => {
       ['an ampersand', 'bad&term'],
       ['an open paren', 'bad(term'],
       ['a close paren', 'bad)term']
-    ])('rejects a term containing %s', async (_title, value) => {
+    ])('searches a term containing %s (R&D-sw1 / Core (bldg 3) style labels are now valid input)', async (_title, value) => {
       const wrapper = mountTable()
       const structure = useNodeStructureStore()
 
@@ -1061,8 +1041,8 @@ describe('NodesTable.vue', () => {
       await input.setValue(value)
       await nextTick()
 
-      expect(structure.queryFilter.searchTerm).toBe('')
-      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain')
+      expect(structure.queryFilter.searchTerm).toBe(value)
+      expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
     })
 
     it('allows a term containing only an asterisk wildcard', async () => {
@@ -1077,7 +1057,7 @@ describe('NodesTable.vue', () => {
       expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
     })
 
-    it('surfaces a validation error (and keeps the request safe) when an invalid searchTerm is written directly into the store, bypassing the input handler', async () => {
+    it('a searchTerm written directly into the store (URL nodename param / restored preferences) flows through unchanged, no error UI', async () => {
       // Reproduces the programmatic-injection paths that never go through searchFilterHandler:
       // nodeStructureStore.setFromNodePreferences writes queryFilter.searchTerm straight from
       // either the URL `nodename` param (parseNodeLabel, via Nodes.vue's applyQueryFilter) or a
@@ -1093,29 +1073,25 @@ describe('NodesTable.vue', () => {
       structure.queryFilter = { ...structure.queryFilter, searchTerm: 'bad%term' }
       await nextTick()
 
-      // The invalid term is shown in the box (not silently dropped) WITH a visible error — this is
-      // the bug being fixed: previously the queryFilter watch unconditionally cleared searchError.
       const input = wrapper.find('input[data-test="search-input"]')
       expect((input.element as HTMLInputElement).value).toBe('bad%term')
-      expect(wrapper.find('[data-test="search-field"]').text()).toContain('Search cannot contain the characters # % & ( )')
+      expect(wrapper.find('[data-test="search-field"]').text()).not.toContain('Search cannot contain')
 
-      // The query-builder guard (buildNodeStructureQuery) independently keeps the actual request
-      // safe: the label clause is omitted entirely, leaving just the node.type!=D guard.
       expect(ns.getNodes).toHaveBeenCalled()
       const [requestParams] = (ns.getNodes as any).mock.calls.at(-1)
-      expect(requestParams._s).toBe('node.type!=D')
+      expect(requestParams._s).toBe('(label==*bad%2525term*);node.type!=D')
     })
   })
 
   // ── Node Search help dialog content ──────────────────────────────────────────
 
   describe('Node Search help dialog', () => {
-    it('describes the * wildcard and the disallowed characters, and drops the old underscore/percent claims', () => {
+    it('describes the * wildcard, drops the old underscore/percent claims, and no longer lists disallowed characters', () => {
       const wrapper = mountTable()
       const text = wrapper.text()
 
       expect(text).toContain('multiple-character wildcard')
-      expect(text).toContain('The characters # % & ( ) are not allowed in searches.')
+      expect(text).not.toContain('are not allowed in searches')
       expect(text).not.toContain('underscore character acts as a single character wildcard')
       expect(text).not.toContain('percent character acts as a multiple character wildcard')
     })

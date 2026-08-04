@@ -22,7 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, getSearchTermValidationError, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { MainMenu } from '@/types/mainMenu'
@@ -601,67 +601,63 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
-  describe('buildUpdatedNodeStructureQueryParameters: invalid search characters omit the label clause', () => {
-    // Defense-in-depth: searchTerm can be set programmatically (URL nodename param, restored
-    // localStorage preferences) bypassing NodesTable.vue's input-level validation. A term that
-    // still fails getSearchTermValidationError must never reach buildSearchQuery.
+  describe('buildUpdatedNodeStructureQueryParameters: search term double-encoding (NMS-20125 PR review)', () => {
+    // The search box no longer blocks # % & ( ) — instead, buildSearchQuery double-encodes the
+    // search term (minus '*', the FIQL wildcard) so it survives the two URL-decodes on the way to
+    // the backend (the servlet container's decode of the unencoded query string, then CXF's
+    // search.decode.values=true) and arrives as the exact literal. Verified against a live server:
+    // a single-encoded '(' 500s, but double-encoded parses cleanly and matches. Values below were
+    // computed via the same strictEncode(strictEncode(...)) round applied by encodeFiqlValue.
     test.each([
-      ['a hash', 'bad#term'],
-      ['a percent', 'bad%term'],
-      ['an ampersand', 'bad&term'],
-      ['an open paren', 'bad(term'],
-      ['a close paren', 'bad)term']
-    ])('omits the label clause when searchTerm contains %s, emitting just node.type!=D', (_title, searchTerm) => {
+      ['#', 'has#hash', 'label==*has%2523hash*'],
+      ['%', 'has%percent', 'label==*has%2525percent*'],
+      ['&', 'has&amp', 'label==*has%2526amp*'],
+      ['(', 'has(paren', 'label==*has%2528paren*'],
+      [')', 'has)paren', 'label==*has%2529paren*']
+    ])('double-encodes a term containing %s', (_char, searchTerm, expectedLabelClause) => {
       const filter = { ...getDefaultNodeQueryFilter(), searchTerm }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('node.type!=D')
+      expect(params._s).toBe(`(${expectedLabelClause});node.type!=D`)
     })
 
-    test('other clauses are preserved alongside the omitted label clause', () => {
+    test('a mixed term with a legitimate label character combination (R&D-sw1) double-encodes just the ampersand', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: 'R&D-sw1' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==*R%2526D-sw1*);node.type!=D')
+    })
+
+    test('other clauses are preserved alongside the encoded label clause', () => {
       const filter = {
         ...getDefaultNodeQueryFilter(),
         searchTerm: 'bad%term',
         nodesWithDownAggregateStatus: true
       }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('(nodesWithDownAggregateStatus==true);node.type!=D')
+      expect(params._s).toBe('(label==*bad%2525term*;nodesWithDownAggregateStatus==true);node.type!=D')
     })
 
-    test('a valid searchTerm containing only *, letters, digits, dots, dashes and spaces still searches', () => {
+    test('a valid searchTerm containing only *, letters, digits, dots, dashes and spaces still searches (spaces double-encode too)', () => {
       const filter = { ...getDefaultNodeQueryFilter(), searchTerm: '*node-1 A.b*' }
       const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
-      expect(params._s).toBe('(label==*node-1 A.b*);node.type!=D')
-    })
-  })
-
-  describe('getSearchTermValidationError', () => {
-    test.each([
-      ['#', 'has#hash'],
-      ['%', 'has%percent'],
-      ['&', 'has&amp'],
-      ['(', 'has(paren'],
-      [')', 'has)paren']
-    ])('rejects a term containing %s', (_char, term) => {
-      expect(getSearchTermValidationError(term)).toBe('Search cannot contain the characters # % & ( )')
+      expect(params._s).toBe('(label==*node-1%2520A.b*);node.type!=D')
     })
 
-    test.each([
-      ['*', '*wildcard*'],
-      ['letters', 'abcXYZ'],
-      ['digits', '1234567890'],
-      ['dots', '192.168.1.1'],
-      ['dashes', 'node-1-name'],
-      ['spaces', 'node one']
-    ])('accepts a term containing only %s', (_label, term) => {
-      expect(getSearchTermValidationError(term)).toBeNull()
+    test('keeps * raw as the wildcard while double-encoding the surrounding text', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: 'ser*ice' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==*ser*ice*);node.type!=D')
     })
 
-    test('accepts an empty string', () => {
-      expect(getSearchTermValidationError('')).toBeNull()
+    test('preserves consecutive stars (empty segments) unchanged', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: 'a**b' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==*a**b*);node.type!=D')
     })
 
-    test('accepts undefined', () => {
-      expect(getSearchTermValidationError(undefined)).toBeNull()
+    test('a term that is only stars stays as-is (no extra wrapping stars added)', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: '**' }
+      const params = buildUpdatedNodeStructureQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==**);node.type!=D')
     })
   })
 
