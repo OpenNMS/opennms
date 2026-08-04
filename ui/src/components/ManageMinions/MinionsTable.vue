@@ -10,12 +10,10 @@
           dataTest="minion-search"
           class="search"
         />
-        <OnmsButton
-          variant="text"
-          icon="pi pi-refresh"
+        <OnmsIconButton
+          :icon="Refresh"
           title="Refresh"
           aria-label="Refresh minions"
-          :loading="store.isLoading"
           data-test="refresh-button"
           @click="store.getMinions()"
         />
@@ -34,7 +32,6 @@
       v-model:filters="filters"
       :globalFilterFields="['id', 'label', 'location', 'type', 'status', 'version']"
       :paginator="store.minions.length > 0"
-      :loading="store.isLoading"
       dataKey="id"
       sortField="label"
       :sortOrder="1"
@@ -123,9 +120,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import MinionEditorDialog from '@/components/ManageMinions/MinionEditorDialog.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'

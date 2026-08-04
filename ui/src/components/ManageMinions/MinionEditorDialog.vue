@@ -4,7 +4,7 @@
     modal
     :header="`Edit Minion: ${minion?.id ?? ''}`"
     class="minion-editor-dialog"
-    :style="{ width: '620px', maxWidth: '95vw' }"
+    width="min(620px, 95vw)"
     data-test="minion-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
@@ -44,11 +44,9 @@
           <li v-for="(prop, index) in properties" :key="index" class="prop-row">
             <OnmsInputText v-model="prop.key" placeholder="Key" :data-test="`prop-key-${index}`" class="prop-key" />
             <OnmsInputText v-model="prop.value" placeholder="Value" :data-test="`prop-value-${index}`" class="prop-value" />
-            <OnmsButton
-              variant="text"
-              rounded
-              icon="pi pi-times"
+            <OnmsIconButton
               severity="danger"
+              :icon="Cancel"
               :aria-label="`Remove property ${prop.key}`"
               :data-test="`remove-prop-${index}`"
               @click="properties.splice(index, 1)"
@@ -72,9 +70,10 @@ import { computed, ref, watch } from 'vue'
 
 import IftaLabel from 'primevue/iftalabel'
 import Message from 'primevue/message'
-import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { Minion } from '@/types/minionAdmin'
 import { MinionEdit } from '@/services/minionAdminService'
