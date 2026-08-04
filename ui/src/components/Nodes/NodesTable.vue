@@ -48,12 +48,11 @@
               </FormField>
             </div>
             <div>
-              <OnmsIcon
-                :icon="InfoIcon"
-                class="info-icon"
+              <OnmsIconButton
                 title="Node Search Help"
-                @click="isHelpMessageDialogVisible = true"
                 data-test="nodes-info-icon"
+                :icon="InfoIcon"
+                @click="isHelpMessageDialogVisible = true"
               />
             </div>
             <div>
@@ -287,12 +286,14 @@
     @close="isHelpMessageDialogVisible = false"
   >
     <template #content>
-      <div>
+      <div class="node-list-help">
         <p>You may search by node name or exact IP address here.</p>
         <p>Searching by name is case-insensitive and matches partial names.</p>
         <p>You can use <code>*</code> as a multiple-character wildcard within your search text. For example, searching on <code>serv</code> would find serv, Service, Reserved, NTSERV, UserVortex, etc., and <code>ser*ice</code> would find Service.</p>
         <p>The characters # % &amp; ( ) are not allowed in searches.</p>
         <p>For more advanced search options, please open the Advanced Filters drawer.</p>
+        <h3>Show / Hide Interfaces</h3>
+        <p>Clicking on the Show Interfaces button will toggle the display (expandable row) of network interfaces for each node in the list that has more than 1 interface.</p>
       </div>
     </template>
   </OnmsMessageDialog>
@@ -317,7 +318,6 @@ import {
   OnmsButton,
   OnmsChip,
   OnmsColumn,
-  OnmsIcon,
   OnmsIconButton,
   OnmsMessageDialog,
   OnmsSearchInput,
@@ -787,6 +787,12 @@ defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggl
   display: block;
 }
 
+.node-list-help {
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
 .action-buttons-column {
   text-align: left;
 }
@@ -846,19 +852,6 @@ defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggl
   display: flex;
   align-items: center;
   gap: 1.5rem;
-}
-
-.search-container {
-  .info-icon {
-    cursor: pointer;
-    font-size: 1.5em;
-    margin-left: 0.5em;
-    color: var(variables.$primary);
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
 }
 
 .action-buttons-container {
