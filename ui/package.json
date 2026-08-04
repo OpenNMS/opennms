@@ -30,7 +30,7 @@
     "@opennms/onms-ui": "workspace:*",
     "@primevue/themes": "^4.5.4",
     "@vueuse/core": "^9.13.0",
-    "ace-builds": "^1.32.6",
+    "ace-builds": "^1.44.0",
     "axios": "^1.15.0",
     "chart.js": "^3.9.1",
     "chartjs-plugin-zoom": "^2.0.1",
