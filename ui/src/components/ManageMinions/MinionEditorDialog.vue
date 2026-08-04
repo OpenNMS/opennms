@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
     modal
     :header="`Edit Minion: ${minion?.id ?? ''}`"
@@ -13,14 +13,14 @@
 
       <FormField>
         <IftaLabel>
-          <InputText id="minion-label" v-model="label" data-test="label-input" />
+          <OnmsInputText id="minion-label" v-model="label" data-test="label-input" />
           <label for="minion-label">Label</label>
         </IftaLabel>
       </FormField>
 
       <FormField>
         <IftaLabel>
-          <InputText id="minion-location" v-model="location" :invalid="!!locationProblem" data-test="location-input" />
+          <OnmsInputText id="minion-location" v-model="location" :invalid="!!locationProblem" data-test="location-input" />
           <label for="minion-location">Location *</label>
         </IftaLabel>
         <small v-if="locationProblem" class="field-error" data-test="location-error">{{ locationProblem }}</small>
@@ -30,8 +30,8 @@
       <div class="props-section">
         <div class="props-header">
           <span class="props-title">Properties</span>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             size="small"
             icon="pi pi-plus"
             label="Add"
@@ -42,10 +42,10 @@
         </div>
         <ul v-if="properties.length" class="props-list" data-test="property-list">
           <li v-for="(prop, index) in properties" :key="index" class="prop-row">
-            <InputText v-model="prop.key" placeholder="Key" :data-test="`prop-key-${index}`" class="prop-key" />
-            <InputText v-model="prop.value" placeholder="Value" :data-test="`prop-value-${index}`" class="prop-value" />
-            <Button
-              text
+            <OnmsInputText v-model="prop.key" placeholder="Key" :data-test="`prop-key-${index}`" class="prop-key" />
+            <OnmsInputText v-model="prop.value" placeholder="Value" :data-test="`prop-value-${index}`" class="prop-value" />
+            <OnmsButton
+              variant="text"
               rounded
               icon="pi pi-times"
               severity="danger"
@@ -61,20 +61,18 @@
     </div>
 
     <template #footer>
-      <Button text label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
-      <Button label="Save Minion" :disabled="!!dupKeyProblem || !!locationProblem || saving" data-test="save-button" @click="save" />
+      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton label="Save Minion" :disabled="!!dupKeyProblem || !!locationProblem || saving" data-test="save-button" @click="save" />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
@@ -99,11 +97,11 @@ const errorText = ref('')
 const locationProblem = computed(() => (location.value.trim() ? null : 'A location is required.'))
 
 const dupKeyProblem = computed(() => {
-  const keys = properties.value.map((p) => p.key.trim()).filter(Boolean)
+  const keys = properties.value.map(p => p.key.trim()).filter(Boolean)
   if (new Set(keys).size !== keys.length) {
     return 'Property keys must be unique.'
   }
-  if (properties.value.some((p) => !p.key.trim() && p.value.trim())) {
+  if (properties.value.some(p => !p.key.trim() && p.value.trim())) {
     return 'A property value needs a key.'
   }
   return null

@@ -3,12 +3,15 @@
     <div class="header">
       <div class="card-title">Minions</div>
       <div class="header-right">
-        <IconField v-if="store.minions.length" class="search">
-          <InputIcon class="pi pi-search" />
-          <InputText v-model="search" placeholder="Search minions" data-test="minion-search" />
-        </IconField>
-        <Button
-          text
+        <OnmsSearchInput
+          v-if="store.minions.length"
+          v-model="search"
+          placeholder="Search minions"
+          dataTest="minion-search"
+          class="search"
+        />
+        <OnmsButton
+          variant="text"
           icon="pi pi-refresh"
           title="Refresh"
           aria-label="Refresh minions"
@@ -26,7 +29,7 @@
       Showing the first {{ store.minions.length }} of {{ store.totalCount }} minions. Use search to narrow the list.
     </p>
 
-    <DataTable
+    <OnmsTable
       :value="store.minions"
       v-model:filters="filters"
       :globalFilterFields="['id', 'label', 'location', 'type', 'status', 'version']"
@@ -43,7 +46,7 @@
       <template #empty>
         <EmptyList v-if="!store.isLoading" :content="store.loadError ? errorListContent : emptyListContent" data-test="empty-list" />
       </template>
-      <Column field="id" header="ID" sortable>
+      <OnmsColumn field="id" header="ID" sortable>
         <template #body="{ data }">
           <a
             v-if="store.nodeIdFor(data)"
@@ -52,39 +55,39 @@
           >{{ data.id }}</a>
           <span v-else>{{ data.id }}</span>
         </template>
-      </Column>
-      <Column field="label" header="Label" sortable />
-      <Column field="location" header="Location" sortable />
-      <Column field="type" header="Type" sortable />
-      <Column field="status" header="Status" sortable>
+      </OnmsColumn>
+      <OnmsColumn field="label" header="Label" sortable />
+      <OnmsColumn field="location" header="Location" sortable />
+      <OnmsColumn field="type" header="Type" sortable />
+      <OnmsColumn field="status" header="Status" sortable>
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :value="data.status ?? 'unknown'"
             :severity="statusSeverity(data.status)"
           />
         </template>
-      </Column>
-      <Column field="version" header="Version" sortable />
-      <Column field="date" header="Last Updated" sortable>
+      </OnmsColumn>
+      <OnmsColumn field="version" header="Version" sortable />
+      <OnmsColumn field="date" header="Last Updated" sortable>
         <template #body="{ data }">{{ formatDate(data.date) }}</template>
-      </Column>
-      <Column header="Properties">
+      </OnmsColumn>
+      <OnmsColumn header="Properties">
         <template #body="{ data }">
           <span class="props-count">{{ Object.keys(data.properties ?? {}).length }} propert{{ Object.keys(data.properties ?? {}).length === 1 ? 'y' : 'ies' }}</span>
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data.label ?? data.id}`"
               data-test="edit-minion-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :aria-label="`Delete ${data.label ?? data.id}`"
@@ -93,8 +96,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </TableCard>
 
   <MinionEditorDialog v-model:visible="showEditor" :minion="minionToEdit" />
@@ -120,15 +123,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
-
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
@@ -151,8 +146,10 @@ const emptyListContent = { msg: 'No minions found.' }
 const errorListContent = { msg: 'Failed to load minions. Check your connection or session and reload.' }
 
 const search = ref('')
-const filters = ref({ global: { value: null as string | null, matchMode: 'contains' } })
-watch(search, (value) => { filters.value.global.value = value || null })
+const filters = ref({ global: { value: null as string | null, matchMode: 'contains' }})
+watch(search, (value) => {
+  filters.value.global.value = value || null
+})
 
 const statusSeverity = (status?: string | null) => {
   const s = (status ?? '').toLowerCase()
