@@ -7,7 +7,7 @@
   >
     <template #header>
       <span class="panel-header">
-        <i class="pi pi-question-circle" aria-hidden="true" />
+        <OnmsIcon :icon="Help" class="help-icon" />
         About Surveillance Categories
       </span>
     </template>
@@ -38,8 +38,10 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsIcon } from '@opennms/onms-ui'
 import { ref } from 'vue'
 
+import Help from '@/components/icons/action/Help.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 
 const collapsed = ref(true)
@@ -52,7 +54,7 @@ const collapsed = ref(true)
   gap: 0.5rem;
   font-weight: 600;
 
-  .pi-question-circle {
+  .help-icon {
     color: var(--p-primary-color);
   }
 }

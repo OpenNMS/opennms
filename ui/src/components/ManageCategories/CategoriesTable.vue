@@ -2,16 +2,16 @@
   <TableCard class="categories-table">
     <div class="header">
       <div class="card-title">Surveillance Categories</div>
-      <Button
-        outlined
-        label="Add New Category"
-        icon="pi pi-plus"
+      <OnmsButton
+        variant="outlined"
         data-test="add-category-button"
         @click="openEditor(null)"
-      />
+      >
+        <OnmsIcon :icon="Add" /> Add New Category
+      </OnmsButton>
     </div>
 
-    <DataTable
+    <OnmsTable
       :value="store.categories"
       :paginator="store.categories.length > 0"
       dataKey="name"
@@ -28,29 +28,29 @@
           data-test="empty-list"
         />
       </template>
-      <Column field="name" header="Name" sortable />
-      <Column header="Description">
+      <OnmsColumn field="name" header="Name" sortable />
+      <OnmsColumn header="Description">
         <template #body="{ data }">{{ data.description || '-' }}</template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Manage Nodes"
               :aria-label="`Manage nodes in ${data.name}`"
               data-test="manage-nodes-button"
               @click="openNodes(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Edit"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-category-button"
               @click="openEditor(data)"
             />
-            <Button
-              text
+            <OnmsButton
+              variant="text"
               label="Delete"
               severity="danger"
               :aria-label="`Delete ${data.name}`"
@@ -59,8 +59,8 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </TableCard>
 
   <CategoryEditorDialog v-model:visible="showEditor" :category="categoryToEdit" />
@@ -86,12 +86,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsConfirmationDialog } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsTable } from '@opennms/onms-ui'
 
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-
+import Add from '@/components/icons/action/Add.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import CategoryEditorDialog from '@/components/ManageCategories/CategoryEditorDialog.vue'

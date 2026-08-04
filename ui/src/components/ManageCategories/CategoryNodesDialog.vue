@@ -1,11 +1,9 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
-    modal
-    maximizable
     :header="`Manage Nodes: ${categoryName}`"
     class="category-nodes-dialog"
-    :style="{ width: '820px', maxWidth: '95vw' }"
+    width="min(820px, 95vw)"
     data-test="category-nodes-dialog"
     @update:visible="onVisible"
   >
@@ -15,12 +13,15 @@
     </p>
 
     <div class="controls">
-      <IconField class="search">
-        <InputIcon class="pi pi-search" />
-        <InputText v-model="searchTerm" placeholder="Search nodes by label" data-test="node-search" />
-      </IconField>
+      <OnmsSearchInput
+        v-model="searchTerm"
+        class="search"
+        placeholder="Search nodes by label"
+        aria-label="Search nodes by label"
+        dataTest="node-search"
+      />
       <label v-if="anyRequisitioned" class="allow-req" data-test="allow-requisitioned">
-        <Checkbox v-model="allowRequisitioned" binary />
+        <OnmsCheckbox v-model="allowRequisitioned" />
         <span>Allow editing requisitioned nodes</span>
       </label>
     </div>
@@ -31,7 +32,7 @@
       they are locked. Tick the box above only if you intend to override them.
     </p>
 
-    <DataTable
+    <OnmsTable
       lazy
       :value="nodes"
       :totalRecords="totalRecords"
@@ -50,16 +51,16 @@
           {{ loadError ? 'Could not load nodes. Try again.' : 'No nodes match your search.' }}
         </div>
       </template>
-      <Column header="Node">
+      <OnmsColumn header="Node">
         <template #body="{ data }">
           <span class="node-label">{{ data.label }}</span>
           <span v-if="data.requisitioned" class="req-tag">(requisitioned)</span>
         </template>
-      </Column>
-      <Column field="location" header="Location" />
-      <Column header="In this category" style="width: 10rem">
+      </OnmsColumn>
+      <OnmsColumn field="location" header="Location" />
+      <OnmsColumn header="In this category" style="width: 10rem">
         <template #body="{ data }">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             :modelValue="data.isMember"
             :disabled="isLocked(data) || busyIds.has(data.id)"
             :aria-label="`${data.isMember ? 'Remove' : 'Add'} ${data.label}`"
@@ -67,28 +68,28 @@
             @update:modelValue="(value: boolean) => toggle(data, value)"
           />
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
     <template #footer>
-      <Button label="Close" data-test="close-button" @click="onVisible(false)" />
+      <OnmsButton label="Close" data-test="close-button" @click="onVisible(false)" />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { debounce } from 'lodash'
 
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Dialog from 'primevue/dialog'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import ToggleSwitch from 'primevue/toggleswitch'
+import {
+  OnmsButton,
+  OnmsCheckbox,
+  OnmsColumn,
+  OnmsDialog,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsToggleSwitch
+} from '@opennms/onms-ui'
 
 import API from '@/services'
 import { SORT } from '@/types'
@@ -120,7 +121,7 @@ const allowRequisitioned = ref(false)
 const busyIds = ref<Set<number>>(new Set())
 let loadToken = 0
 
-const anyRequisitioned = computed(() => nodes.value.some((n) => n.requisitioned))
+const anyRequisitioned = computed(() => nodes.value.some(n => n.requisitioned))
 const isLocked = (row: NodeRow) => row.requisitioned && !allowRequisitioned.value
 
 // only allow a-z0-9 and a few safe chars into the FIQL label search

@@ -1,10 +1,9 @@
 <template>
-  <Dialog
+  <OnmsDialog
     :visible="visible"
-    modal
     :header="isEditing ? `Edit Category: ${originalName}` : 'Add New Surveillance Category'"
     class="category-editor-dialog"
-    :style="{ width: '520px', maxWidth: '95vw' }"
+    width="min(520px, 95vw)"
     data-test="category-editor-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
@@ -13,7 +12,7 @@
 
       <FormField v-if="!isEditing">
         <IftaLabel>
-          <InputText id="category-name" v-model="name" :invalid="!!nameProblem" data-test="category-name-input" />
+          <OnmsInputText id="category-name" v-model="name" :invalid="!!nameProblem" data-test="category-name-input" />
           <label for="category-name">Category Name *</label>
         </IftaLabel>
         <small v-if="nameProblem" class="field-error" data-test="name-error">{{ nameProblem }}</small>
@@ -21,7 +20,7 @@
 
       <FormField>
         <IftaLabel>
-          <InputText id="category-description" v-model="description" data-test="category-description-input" />
+          <OnmsInputText id="category-description" v-model="description" data-test="category-description-input" />
           <label for="category-description">Description</label>
         </IftaLabel>
         <small class="hint">The category name is the identifier and cannot be changed after creation.</small>
@@ -29,24 +28,23 @@
     </div>
 
     <template #footer>
-      <Button text label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
-      <Button
+      <OnmsButton variant="text" label="Cancel" data-test="cancel-button" @click="emit('update:visible', false)" />
+      <OnmsButton
         :label="isEditing ? 'Save Category' : 'Add Category'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
+
 import IftaLabel from 'primevue/iftalabel'
-import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
 
 import FormField from '@/components/Common/FormField.vue'
