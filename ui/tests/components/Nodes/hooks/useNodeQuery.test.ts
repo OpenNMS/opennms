@@ -22,7 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, getNodeIdRedirect, getSearchTermValidationError, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { buildNodeDetailUrl, getSearchTermValidationError, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { MainMenu } from '@/types/mainMenu'
@@ -1020,29 +1020,6 @@ describe('Nodes useNodeQuery test', () => {
         [ 'missing baseHref', { baseNodeUrl: 'element/node.jsp?node=' } as MainMenu ]
       ])('returns null when mainMenu is not loaded: %s', (_title, mainMenu) => {
         expect(buildNodeDetailUrl(mainMenu, 42)).toBe(null)
-      })
-    })
-
-    describe('getNodeIdRedirect', () => {
-      test('returns the node detail url for a valid positive integer nodeId', () => {
-        expect(getNodeIdRedirect({ nodeId: '42' } as any, loadedMainMenu)).toBe('/opennms/element/node.jsp?node=42')
-      })
-
-      test('returns null when nodeId is non-numeric', () => {
-        expect(getNodeIdRedirect({ nodeId: 'abc' } as any, loadedMainMenu)).toBe(null)
-      })
-
-      test('returns null when nodeId is zero or negative', () => {
-        expect(getNodeIdRedirect({ nodeId: '0' } as any, loadedMainMenu)).toBe(null)
-        expect(getNodeIdRedirect({ nodeId: '-1' } as any, loadedMainMenu)).toBe(null)
-      })
-
-      test('returns null when nodeId is absent', () => {
-        expect(getNodeIdRedirect({} as any, loadedMainMenu)).toBe(null)
-      })
-
-      test('returns null when mainMenu has not loaded yet, even with a valid nodeId', () => {
-        expect(getNodeIdRedirect({ nodeId: '42' } as any, {} as MainMenu)).toBe(null)
       })
     })
   })

@@ -346,8 +346,9 @@ export const useNodeQuery = () => {
     // in Nodes.vue (nodeStructureStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
     // NOTE nodeId: not handled here. Legacy `?nodeId=<n>` bookmarks are redirected to the node
-    //   detail page (element/node.jsp?node={id}) directly in Nodes.vue before the query filter is
-    //   ever built — see getNodeIdRedirect() below and the redirect handling in Nodes.vue.
+    //   detail page (element/node.jsp?node={id}) before the query filter is ever built — see
+    //   handleNodeIdRedirect() in Nodes.vue, which combines parseNodeIdQueryParam() and
+    //   buildNodeDetailUrl() (both below) with deferral until mainMenu has loaded.
 
     return filter
   }
@@ -780,14 +781,4 @@ export const buildNodeDetailUrl = (mainMenu: MainMenu | null | undefined, id: nu
     return null
   }
   return `${mainMenu.baseHref}${mainMenu.baseNodeUrl}${id}`
-}
-
-/**
- * Combines parseNodeIdQueryParam() and buildNodeDetailUrl(): given a route query and the
- * current mainMenu, returns the node detail URL to redirect a legacy `?nodeId=<n>` bookmark
- * to, or null if there is no valid nodeId to redirect, or mainMenu hasn't loaded yet.
- */
-export const getNodeIdRedirect = (query: LocationQuery, mainMenu: MainMenu | null | undefined): string | null => {
-  const id = parseNodeIdQueryParam(query)
-  return id === null ? null : buildNodeDetailUrl(mainMenu, id)
 }
