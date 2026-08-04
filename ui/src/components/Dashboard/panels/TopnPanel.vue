@@ -81,7 +81,7 @@ const rows = ref<TopnRow[]>([])
 const kpiId = computed(() => String(props.options?.kpi ?? DEFAULT_TOPN_KPI))
 const n = computed(() => Number(props.options?.n ?? DEFAULT_TOPN_N))
 const direction = computed<'asc' | 'desc'>(() => (props.options?.direction === 'asc' ? 'asc' : 'desc'))
-const kpiLabel = computed(() => TOPN_KPIS.find((k) => k.id === kpiId.value)?.label ?? kpiId.value)
+const kpiLabel = computed(() => TOPN_KPIS.find(k => k.id === kpiId.value)?.label ?? kpiId.value)
 
 const format = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2))
 

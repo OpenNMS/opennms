@@ -40,7 +40,7 @@ export interface MetricSeries {
 export const listMetricEntities = async (metricId: string): Promise<string[]> => {
   try {
     const sources = await listKpiSources(metricId)
-    return [...new Set(sources.map((s) => s.label))].sort((a, b) => a.localeCompare(b))
+    return [...new Set(sources.map(s => s.label))].sort((a, b) => a.localeCompare(b))
   } catch {
     return []
   }
@@ -51,13 +51,15 @@ export const queryMetricSeries = async (
   entityLabel: string,
   timeframe: Timeframe
 ): Promise<MetricSeries | null> => {
-  const kpi = TOPN_KPIS.find((k) => k.id === metricId) ?? TOPN_KPIS[0]
+  const kpi = TOPN_KPIS.find(k => k.id === metricId) ?? TOPN_KPIS[0]
   try {
     const sources = await listKpiSources(kpi.id)
     const source =
-      sources.find((s) => s.label === entityLabel) ??
-      sources.find((s) => s.label.toLowerCase() === entityLabel.toLowerCase())
-    if (!source) return null
+      sources.find(s => s.label === entityLabel) ??
+      sources.find(s => s.label.toLowerCase() === entityLabel.toLowerCase())
+    if (!source) {
+      return null
+    }
 
     const { start, end } = timeframeRange(timeframe)
     // ~200 points; never below the 5-min collection interval (a single huge
@@ -79,11 +81,13 @@ export const queryMetricSeries = async (
         }
       ]
     }
-    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' } })
+    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
     const timestamps: number[] = resp.data?.timestamps ?? []
     const raw: number[] = resp.data?.columns?.[0]?.values ?? []
-    const values = raw.map((v) => (Number.isFinite(v) ? v * kpi.scale : null))
-    if (!timestamps.length || values.every((v) => v === null)) return null
+    const values = raw.map(v => (Number.isFinite(v) ? v * kpi.scale : null))
+    if (!timestamps.length || values.every(v => v === null)) {
+      return null
+    }
     return { timestamps, values, unit: kpi.unit }
   } catch {
     return null

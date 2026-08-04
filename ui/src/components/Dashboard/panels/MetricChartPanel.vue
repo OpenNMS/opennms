@@ -78,14 +78,16 @@ let series: MetricSeries | null = null
 
 const metricId = computed(() => String(props.options?.metric ?? DEFAULT_CHART_METRIC))
 const entity = computed(() => String(props.options?.entity ?? DEFAULT_CHART_ENTITY))
-const metricLabel = computed(() => TOPN_KPIS.find((k) => k.id === metricId.value)?.label ?? metricId.value)
+const metricLabel = computed(() => TOPN_KPIS.find(k => k.id === metricId.value)?.label ?? metricId.value)
 
 // Axis/grid colors must follow the theme (same approach as Status Overview).
 const textColor = (): string => {
   const el = rootRef.value
   if (el) {
     const c = getComputedStyle(el).getPropertyValue('--p-text-color').trim()
-    if (c) return c
+    if (c) {
+      return c
+    }
   }
   return '#333333'
 }
@@ -96,12 +98,14 @@ const gridColor = () => 'rgba(128, 128, 128, 0.2)'
 const timeLabels = (s: MetricSeries): string[] => {
   const span = (s.timestamps[s.timestamps.length - 1] ?? 0) - (s.timestamps[0] ?? 0)
   const fmt = span <= 48 * 3_600_000 ? 'HH:mm' : 'MMM d HH:mm'
-  return s.timestamps.map((t) => format(new Date(t), fmt))
+  return s.timestamps.map(t => format(new Date(t), fmt))
 }
 
 const render = () => {
   const canvas = canvasRef.value
-  if (!canvas || !series) return
+  if (!canvas || !series) {
+    return
+  }
   const labels = timeLabels(series)
   const data = series.values
   const datasetLabel = `${entity.value} — ${metricLabel.value} (${series.unit})`
@@ -112,10 +116,18 @@ const render = () => {
     chart.data.datasets[0].data = data
     chart.data.datasets[0].label = datasetLabel
     const o = chart.options
-    if (o.plugins?.legend?.labels) o.plugins.legend.labels.color = color
-    if (o.scales?.x?.ticks) o.scales.x.ticks.color = color
-    if (o.scales?.y?.ticks) o.scales.y.ticks.color = color
-    if (o.scales?.y && 'title' in o.scales.y && o.scales.y.title) o.scales.y.title.color = color
+    if (o.plugins?.legend?.labels) {
+      o.plugins.legend.labels.color = color
+    }
+    if (o.scales?.x?.ticks) {
+      o.scales.x.ticks.color = color
+    }
+    if (o.scales?.y?.ticks) {
+      o.scales.y.ticks.color = color
+    }
+    if (o.scales?.y && 'title' in o.scales.y && o.scales.y.title) {
+      o.scales.y.title.color = color
+    }
     chart.update()
     return
   }
@@ -143,7 +155,7 @@ const render = () => {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { position: 'bottom', labels: { color, boxWidth: 12 } } },
+      plugins: { legend: { position: 'bottom', labels: { color, boxWidth: 12 }}},
       scales: {
         x: {
           ticks: { color, maxTicksLimit: 8, maxRotation: 0, autoSkip: true },

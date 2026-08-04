@@ -48,7 +48,7 @@ export const ALARM_CHART_SEVERITIES = ['CRITICAL', 'MAJOR', 'MINOR', 'WARNING', 
 const FALLBACK: SeverityMeta = { key: 'UNKNOWN', label: 'Unknown', color: '#999999', weight: 0 }
 
 export const severityMeta = (key: string): SeverityMeta =>
-  SEVERITIES.find((s) => s.key === (key ?? '').toUpperCase()) ?? { ...FALLBACK, key, label: key || 'Unknown' }
+  SEVERITIES.find(s => s.key === (key ?? '').toUpperCase()) ?? { ...FALLBACK, key, label: key || 'Unknown' }
 
 export const severityColor = (key: string): string => severityMeta(key).color
 

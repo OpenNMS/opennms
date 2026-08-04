@@ -33,9 +33,17 @@ describe('dashboardService', () => {
     expect(result.globalTimeframe.preset).toBeTruthy()
     expect(result.globalFilter.surveillanceCategories).toEqual([])
     expect(Array.isArray(result.panels)).toBe(true)
+    // a doc predating the squeeze option defaults to packed (true)
+    expect(result.autoCompact).toBe(true)
   })
 
-  it('drops malformed panels and unknown types', async () => {
+  it('preserves a stored autoCompact=false (free-form) layout', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [], autoCompact: false } })
+    const result = await getSystemDashboard()
+    expect(result.autoCompact).toBe(false)
+  })
+
+  it('drops malformed panels but keeps unknown types (rendered as missing, not lost on save)', async () => {
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [
       { id: 'ok', type: 'notes', x: 0, y: 0, w: 3, h: 100 },
       { id: 'bad-type', type: 'no-such-panel', x: 0, y: 0, w: 3, h: 100 },
@@ -43,7 +51,9 @@ describe('dashboardService', () => {
       'garbage'
     ] } })
     const result = await getSystemDashboard()
-    expect(result.panels.map((p) => p.id)).toEqual(['ok'])
+    // unknown type is preserved so it isn't silently pruned and lost on the next save;
+    // the structurally-malformed ones (missing geometry / non-object) are still dropped
+    expect(result.panels.map((p) => p.id)).toEqual(['ok', 'bad-type'])
   })
 
   it('falls back to the (empty) default on 404 (nothing saved yet)', async () => {

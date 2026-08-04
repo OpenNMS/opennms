@@ -169,4 +169,21 @@ describe('useDashboardStore', () => {
     store.setRefreshSeconds(300)
     expect(store.refreshSeconds).toBe(300)
   })
+
+  it('setAutoCompact toggles the squeeze option, marks dirty and bumps the revision', () => {
+    expect(store.autoCompact).toBe(true)
+    const before = store.layoutRevision
+    store.setAutoCompact(false)
+    expect(store.autoCompact).toBe(false)
+    expect(store.layout.autoCompact).toBe(false)
+    expect(store.isDirty).toBe(true)
+    expect(store.layoutRevision).toBe(before + 1)
+  })
+
+  it('setAutoCompact is a no-op (no dirty, no revision bump) when unchanged', () => {
+    const before = store.layoutRevision
+    store.setAutoCompact(true) // already true by default
+    expect(store.isDirty).toBe(false)
+    expect(store.layoutRevision).toBe(before)
+  })
 })

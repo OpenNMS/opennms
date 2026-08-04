@@ -116,4 +116,4 @@ export const panelRegistry: Record<string, PanelDefinition> = {
 export const getPanelDefinition = (type: string): PanelDefinition | undefined => panelRegistry[type]
 
 export const listPanelDefinitions = (): PanelDefinition[] =>
-  Object.values(panelRegistry).filter((d) => !d.hidden)
+  Object.values(panelRegistry).filter(d => !d.hidden)

@@ -26,20 +26,20 @@ License.
   options dialog in milestone 5; this is the dashboard-wide control.
 -->
 <template>
-  <PButton
-    text
+  <OnmsButton
+    variant="text"
     icon="pi pi-filter"
     :label="filterLabel"
     @click="toggle"
   />
-  <PPopover ref="op">
+  <OnmsPopover ref="op">
     <div class="dashboard-filter">
       <p class="dashboard-filter__hint">
         Applies to the node-scoped panels (Situations, Nodes with Alarms, Service
         Outages, Availability). Panels without node data are unaffected.
       </p>
       <label class="dashboard-filter__label">Surveillance categories</label>
-      <PMultiSelect
+      <OnmsMultiSelect
         v-model="categories"
         :options="categoryOptions"
         option-label="label"
@@ -51,40 +51,32 @@ License.
       />
 
       <label class="dashboard-filter__label">IP address match</label>
-      <PInputText
+      <OnmsInputText
         v-model="ipMatch"
         placeholder="e.g. 10.1.*.*"
         class="dashboard-filter__field"
       />
 
       <div class="dashboard-filter__actions">
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           label="Clear"
           @click="clear"
         />
-        <PButton
+        <OnmsButton
           label="Apply"
           @click="apply"
         />
       </div>
     </div>
-  </PPopover>
+  </OnmsPopover>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import Button from 'primevue/button'
-import Popover from 'primevue/popover'
-import MultiSelect from 'primevue/multiselect'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsPopover, OnmsMultiSelect, OnmsInputText } from '@opennms/onms-ui'
 import { getCategories } from '@/services/categoryService'
 import { useDashboardStore } from '@/stores/dashboardStore'
-
-const PButton = Button
-const PPopover = Popover
-const PMultiSelect = MultiSelect
-const PInputText = InputText
 
 const store = useDashboardStore()
 
@@ -104,7 +96,7 @@ const toggle = (event: Event) => op.value?.toggle(event)
 onMounted(async () => {
   const resp = await getCategories()
   if (resp) {
-    categoryOptions.value = resp.category.map((c) => ({ label: c.name, value: c.name }))
+    categoryOptions.value = resp.category.map(c => ({ label: c.name, value: c.name }))
   }
 })
 

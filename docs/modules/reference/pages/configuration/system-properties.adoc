@@ -43,14 +43,6 @@ Many of the properties here are documented with much greater detail in their rel
 | 127.0.0.1
 | IP address of the DNS server to which the `DnsProvisioningAdapter` should send dynamic DNS updates
 
-| `irccat.host`
-| 127.0.0.1
-| Hostname or IP address used by the IRCcat notification strategy
-
-| `irccat.port`
-| 12345
-| Port number used by IRCcat notification strategy
-
 | `opennms.alarmlist.sound.enable`
 | false
 | If `true`, enable "alarm sounds" on Alarm List Pages

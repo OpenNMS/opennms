@@ -87,8 +87,8 @@ const collectSources = (root: { resource?: RawResource[] }, kpi: TopnKpiDef): Me
 
 // All entities (resources) carrying the given KPI — shared by Top-N and the metric chart.
 export const listKpiSources = async (kpiId: string): Promise<MeasurementSource[]> => {
-  const kpi = TOPN_KPIS.find((k) => k.id === kpiId) ?? TOPN_KPIS[0]
-  const tree = await rest.get('/resources?depth=2', { headers: { Accept: 'application/json' } })
+  const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
+  const tree = await rest.get('/resources?depth=2', { headers: { Accept: 'application/json' }})
   return collectSources(tree.data ?? {}, kpi)
 }
 
@@ -98,10 +98,12 @@ export const queryTopn = async (
   n: number,
   direction: 'asc' | 'desc'
 ): Promise<TopnRow[]> => {
-  const kpi = TOPN_KPIS.find((k) => k.id === kpiId) ?? TOPN_KPIS[0]
+  const kpi = TOPN_KPIS.find(k => k.id === kpiId) ?? TOPN_KPIS[0]
   try {
     const sources = await listKpiSources(kpi.id)
-    if (!sources.length) return []
+    if (!sources.length) {
+      return []
+    }
 
     const { start, end } = timeframeRange(timeframe)
     // Use a normal resolution step (a single huge bucket returns NaN from RRD);
@@ -121,7 +123,7 @@ export const queryTopn = async (
         transient: false
       }))
     }
-    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' } })
+    const resp = await rest.post('/measurements', payload, { headers: { Accept: 'application/json' }})
     const labels: string[] = resp.data?.labels ?? []
     const columns: { values?: number[] }[] = resp.data?.columns ?? []
 
@@ -132,16 +134,20 @@ export const queryTopn = async (
       // we sent, which encodes the true source index — map through that.
       const sourceIndex = /^s(\d+)$/.test(label) ? Number(label.slice(1)) : i
       const source = sources[sourceIndex]
-      if (!source) return
-      const values = (columns[i]?.values ?? []).filter((v) => Number.isFinite(v))
-      if (!values.length) return
+      if (!source) {
+        return
+      }
+      const values = (columns[i]?.values ?? []).filter(v => Number.isFinite(v))
+      if (!values.length) {
+        return
+      }
       const avg = values.reduce((a, b) => a + b, 0) / values.length
       rows.push({ label: source.label, value: avg * kpi.scale, unit: kpi.unit })
     })
 
     rows.sort((a, b) => (direction === 'asc' ? a.value - b.value : b.value - a.value))
     return rows.slice(0, Math.max(1, n))
-  } catch (err) {
+  } catch (_err) {
     return []
   }
 }

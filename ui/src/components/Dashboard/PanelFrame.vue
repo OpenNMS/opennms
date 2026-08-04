@@ -32,7 +32,7 @@ License.
     class="panel-frame"
     :class="heightModeClass"
   >
-    <PPanel
+    <OnmsPanel
       class="panel-frame__panel"
       :class="{ 'panel-frame__panel--missing': !panelDef }"
       :toggleable="collapsible"
@@ -40,47 +40,51 @@ License.
       @update:collapsed="onCollapsedChange"
     >
       <template #header>
-        <a
-          v-if="titleHref && !editMode"
-          class="panel-frame__title panel-frame__title--link"
-          :href="titleHref"
-          :title="`Open ${displayTitle}`"
-        >{{ displayTitle }}</a>
-        <span
-          v-else
-          class="panel-frame__title"
-        >{{ displayTitle }}</span>
-      </template>
+        <!-- title + (edit-mode) icons share the header row; OnmsPanel forwards
+             only #header, so the icons live here instead of PrimeVue's #icons -->
+        <div class="panel-frame__header">
+          <a
+            v-if="titleHref && !editMode"
+            class="panel-frame__title panel-frame__title--link"
+            :href="titleHref"
+            :title="`Open ${displayTitle}`"
+          >{{ displayTitle }}</a>
+          <span
+            v-else
+            class="panel-frame__title"
+          >{{ displayTitle }}</span>
 
-      <template
-        v-if="editMode"
-        #icons
-      >
-        <button
-          v-if="renamable"
-          type="button"
-          class="p-panel-header-icon"
-          title="Rename panel"
-          @click="onRename"
-        >
-          <i class="pi pi-pencil" />
-        </button>
-        <button
-          type="button"
-          class="p-panel-header-icon"
-          title="Panel options"
-          @click="showOptions = true"
-        >
-          <i class="pi pi-cog" />
-        </button>
-        <button
-          type="button"
-          class="p-panel-header-icon"
-          title="Remove panel"
-          @click="onRemove"
-        >
-          <i class="pi pi-times" />
-        </button>
+          <span
+            v-if="editMode"
+            class="panel-frame__icons"
+          >
+            <button
+              v-if="renamable"
+              type="button"
+              class="p-panel-header-icon"
+              title="Rename panel"
+              @click="onRename"
+            >
+              <i class="pi pi-pencil" />
+            </button>
+            <button
+              type="button"
+              class="p-panel-header-icon"
+              title="Panel options"
+              @click="showOptions = true"
+            >
+              <i class="pi pi-cog" />
+            </button>
+            <button
+              type="button"
+              class="p-panel-header-icon"
+              title="Remove panel"
+              @click="onRemove"
+            >
+              <i class="pi pi-times" />
+            </button>
+          </span>
+        </div>
       </template>
 
       <component
@@ -97,7 +101,7 @@ License.
       >
         Unknown panel type: <code>{{ panel.type }}</code>
       </div>
-    </PPanel>
+    </OnmsPanel>
   </div>
 
   <PanelOptionsDialog
@@ -109,13 +113,11 @@ License.
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import Panel from 'primevue/panel'
+import { OnmsPanel } from '@opennms/onms-ui'
 import type { DashboardPanel } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import PanelOptionsDialog from './PanelOptionsDialog.vue'
-
-const PPanel = Panel
 
 const props = defineProps<{ panel: DashboardPanel }>()
 const emit = defineEmits<{ (e: 'request-height', id: string, px: number): void }>()
@@ -144,9 +146,13 @@ const heightModeClass = computed(() => (heightMode.value === 'auto' ? 'panel-fra
 let resizeObserver: ResizeObserver | null = null
 
 const measure = () => {
-  if (heightMode.value !== 'auto' || props.panel.collapsed) return
+  if (heightMode.value !== 'auto' || props.panel.collapsed) {
+    return
+  }
   const el = frameRef.value
-  if (el) emit('request-height', props.panel.id, el.offsetHeight)
+  if (el) {
+    emit('request-height', props.panel.id, el.offsetHeight)
+  }
 }
 
 const setupObserver = () => {
@@ -171,7 +177,7 @@ const onCollapsedChange = (collapsed: boolean) => {
 }
 
 const onRename = () => {
-  // eslint-disable-next-line no-alert
+
   const next = window.prompt('Panel title', displayTitle.value)
   if (next !== null) {
     store.setPanelTitle(props.panel.id, next)
@@ -234,22 +240,40 @@ const onRemove = () => {
     color: var(--p-text-color, #1f1f1f);
     border-color: var(--p-content-border-color, #e0e0e0);
 
-    // tighter padding so short auto panels don't round up to an extra grid row
+    // tighter padding so short auto panels don't round up to an extra grid row,
+    // and to fit more data / read closer to the legacy dashboard density
     :deep(.p-panel-header) {
       background: transparent;
       color: var(--p-text-color, #1f1f1f);
-      padding: 0.5rem 0.75rem;
+      padding: 0.4rem 0.6rem;
     }
 
     :deep(.p-panel-content) {
       background: transparent;
       color: inherit;
-      padding: 0.5rem 0.75rem;
+      padding: 0.3rem 0.6rem;
     }
 
     &--missing {
       color: var(--p-red-500, #b00020);
     }
+  }
+
+  // title + edit icons share the header row (icons pushed right); flex:1 lets the
+  // row fill the header so justify-content can separate them
+  &__header {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
   }
 
   &__title {

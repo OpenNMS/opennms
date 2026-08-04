@@ -89,6 +89,10 @@ export interface DashboardLayout {
   refresh: DashboardRefresh
   globalFilter: DashboardFilter
   globalTimeframe: Timeframe
+  // When true, panels squeeze up/down to pack against their neighbours (vertical
+  // compaction + auto-height reflow). When false, panels stay where they are
+  // placed (free-form). Default true for legacy-homepage-style packed columns.
+  autoCompact: boolean
   panels: DashboardPanel[]
 }
 

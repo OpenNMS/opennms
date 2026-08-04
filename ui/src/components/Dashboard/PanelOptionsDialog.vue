@@ -22,11 +22,11 @@ License.
 
 <!-- Per-panel options: height mode (all panels) + panel-type-specific settings. -->
 <template>
-  <PDialog
+  <OnmsDialog
     v-model:visible="visibleModel"
     modal
     :header="`Panel options — ${title}`"
-    :style="{ width: '32rem' }"
+    width="32rem"
   >
     <div class="opts">
       <fieldset class="opts__group">
@@ -65,7 +65,7 @@ License.
         class="opts__field"
       >
         <label class="opts__label">Notes</label>
-        <PTextarea
+        <OnmsTextarea
           v-model="notesText"
           rows="6"
           auto-resize
@@ -78,7 +78,7 @@ License.
         class="opts__field"
       >
         <label class="opts__label">Content URL</label>
-        <PInputText
+        <OnmsInputText
           v-model="htmlUrl"
           placeholder="/opennms/… or https://this-server/…"
           class="opts__control"
@@ -100,7 +100,7 @@ License.
       <template v-if="panel.type === 'metric-chart'">
         <div class="opts__field">
           <label class="opts__label">Entity</label>
-          <PSelect
+          <OnmsSelect
             v-model="chartEntity"
             :options="entityOptions"
             :loading="entitiesLoading"
@@ -111,7 +111,7 @@ License.
         </div>
         <div class="opts__field">
           <label class="opts__label">Metric</label>
-          <PSelect
+          <OnmsSelect
             v-model="chartMetric"
             :options="kpiOptions"
             option-label="label"
@@ -124,7 +124,7 @@ License.
       <template v-if="panel.type === 'topn'">
         <div class="opts__field">
           <label class="opts__label">Rank by (KPI)</label>
-          <PSelect
+          <OnmsSelect
             v-model="topnKpi"
             :options="kpiOptions"
             option-label="label"
@@ -165,48 +165,38 @@ License.
     </div>
 
     <template #footer>
-      <PButton
-        text
+      <OnmsButton
+        variant="text"
         label="Cancel"
         @click="visibleModel = false"
       />
-      <PButton
+      <OnmsButton
         label="Apply"
         @click="apply"
       />
     </template>
-  </PDialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import Dialog from 'primevue/dialog'
-import Textarea from 'primevue/textarea'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
+import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton, OnmsSelect } from '@opennms/onms-ui'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import { DEFAULT_TOPN_KPI, DEFAULT_TOPN_N, TOPN_KPIS } from '@/services/topnService'
 import { DEFAULT_CHART_ENTITY, DEFAULT_CHART_METRIC, listMetricEntities } from '@/services/metricChartService'
 
-const PDialog = Dialog
-const PTextarea = Textarea
-const PInputText = InputText
-const PSelect = Select
-const PButton = Button
-
-const kpiOptions = TOPN_KPIS.map((k) => ({ label: k.label, value: k.id }))
-
 const props = defineProps<{ panel: DashboardPanel; visible: boolean }>()
 const emit = defineEmits<{ (e: 'update:visible', value: boolean): void }>()
 
 const store = useDashboardStore()
 
+const kpiOptions = TOPN_KPIS.map(k => ({ label: k.label, value: k.id }))
+
 const visibleModel = computed({
   get: () => props.visible,
-  set: (v) => emit('update:visible', v)
+  set: v => emit('update:visible', v)
 })
 
 const title = computed(
@@ -217,11 +207,12 @@ const heightMode = ref<PanelHeightMode>('auto')
 const shade = ref(false)
 const notesText = ref('')
 const htmlUrl = ref('')
-const topnKpi = ref(DEFAULT_TOPN_KPI)
 
 // panels that support optional severity row shading (legacy-style)
 const SHADEABLE = ['pending-situations', 'nodes-with-alarms', 'availability']
 const supportsShade = computed(() => SHADEABLE.includes(props.panel.type))
+
+const topnKpi = ref(DEFAULT_TOPN_KPI)
 const topnN = ref(DEFAULT_TOPN_N)
 const topnDirection = ref<'asc' | 'desc'>('desc')
 
@@ -243,14 +234,18 @@ const loadEntities = async () => {
 }
 
 watch(chartMetric, () => {
-  if (props.panel.type === 'metric-chart' && props.visible) loadEntities()
+  if (props.panel.type === 'metric-chart' && props.visible) {
+    loadEntities()
+  }
 })
 
 // External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
 // up front so the user gets an explanation instead of a silent broken iframe.
 const urlError = computed(() => {
   const t = htmlUrl.value.trim()
-  if (!t) return ''
+  if (!t) {
+    return ''
+  }
   let parsed: URL
   try {
     parsed = new URL(t, window.location.origin)
@@ -273,13 +268,17 @@ const syncFromPanel = () => {
   topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
   chartEntity.value = String(props.panel.options?.entity ?? DEFAULT_CHART_ENTITY)
   chartMetric.value = String(props.panel.options?.metric ?? DEFAULT_CHART_METRIC)
-  if (props.panel.type === 'metric-chart') loadEntities()
+  if (props.panel.type === 'metric-chart') {
+    loadEntities()
+  }
 }
 
 watch(
   () => props.visible,
   (v) => {
-    if (v) syncFromPanel()
+    if (v) {
+      syncFromPanel()
+    }
   }
 )
 
@@ -289,9 +288,15 @@ const apply = () => {
   }
   store.setPanelHeightMode(props.panel.id, heightMode.value)
   const opts: Record<string, unknown> = { ...props.panel.options }
-  if (supportsShade.value) opts.shade = shade.value
-  if (props.panel.type === 'notes') opts.text = notesText.value
-  if (props.panel.type === 'html-content') opts.url = htmlUrl.value.trim()
+  if (supportsShade.value) {
+    opts.shade = shade.value
+  }
+  if (props.panel.type === 'notes') {
+    opts.text = notesText.value
+  }
+  if (props.panel.type === 'html-content') {
+    opts.url = htmlUrl.value.trim()
+  }
   if (props.panel.type === 'topn') {
     opts.kpi = topnKpi.value
     opts.n = Math.min(50, Math.max(1, Number(topnN.value) || DEFAULT_TOPN_N))
