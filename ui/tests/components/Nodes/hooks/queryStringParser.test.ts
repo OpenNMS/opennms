@@ -22,9 +22,12 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  ALL_ASSET_COLUMN_OPTIONS,
   ASSET_COLUMN_FIQL_MAP,
   ASSET_COLUMN_OPTIONS,
+  ASSET_COLUMN_TITLES,
   getAssetColumnFiqlProperty,
+  getAssetColumnLabel,
   parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
@@ -536,6 +539,46 @@ describe('Nodes queryStringParser test', () => {
       for (const option of ASSET_COLUMN_OPTIONS) {
         expect(ASSET_COLUMN_FIQL_MAP[option.value]).toBe(option.value)
       }
+    })
+  })
+
+  describe('ASSET_COLUMN_TITLES / ALL_ASSET_COLUMN_OPTIONS / getAssetColumnLabel', () => {
+    test('every ASSET_COLUMN_FIQL_MAP key has a title', () => {
+      for (const column of Object.keys(ASSET_COLUMN_FIQL_MAP)) {
+        expect(ASSET_COLUMN_TITLES[column]).toBeTruthy()
+      }
+    })
+
+    test('every ASSET_COLUMN_FIQL_MAP key appears exactly once in ALL_ASSET_COLUMN_OPTIONS', () => {
+      const mapKeys = Object.keys(ASSET_COLUMN_FIQL_MAP).sort()
+      const optionValues = ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort()
+      expect(optionValues).toEqual(mapKeys)
+
+      const counts = new Map<string, number>()
+      for (const option of ALL_ASSET_COLUMN_OPTIONS) {
+        counts.set(option.value, (counts.get(option.value) ?? 0) + 1)
+      }
+      for (const count of counts.values()) {
+        expect(count).toBe(1)
+      }
+    })
+
+    test('ALL_ASSET_COLUMN_OPTIONS is sorted alphabetically by label', () => {
+      const labels = ALL_ASSET_COLUMN_OPTIONS.map(o => o.label)
+      const sorted = [...labels].sort((a, b) => a.localeCompare(b))
+      expect(labels).toEqual(sorted)
+    })
+
+    test('getAssetColumnLabel resolves titles for curated and non-curated columns', () => {
+      expect(getAssetColumnLabel('city')).toBe('City')
+      expect(getAssetColumnLabel('assetNumber')).toBe('Asset Number')
+      expect(getAssetColumnLabel('building')).toBe('Building')
+      expect(getAssetColumnLabel('cpu')).toBe('CPU')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('getAssetColumnLabel falls back to the raw key for an unknown column', () => {
+      expect(getAssetColumnLabel('notARealColumn')).toBe('notARealColumn')
     })
   })
 

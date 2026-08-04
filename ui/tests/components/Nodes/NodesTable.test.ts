@@ -802,4 +802,20 @@ describe('NodesTable.vue', () => {
       expect(text).not.toContain('percent character acts as a multiple character wildcard')
     })
   })
+
+  // ── Asset filter chips ────────────────────────────────────────────────────────
+
+  describe('Asset filter chips', () => {
+    it('shows a proper title (not the raw key) for a non-curated asset column', async () => {
+      const wrapper = mountTable()
+      const structureStore = useNodeStructureStore()
+      structureStore.queryFilter = {
+        ...structureStore.queryFilter,
+        assetFilters: [{ column: 'city', value: 'Pittsboro' }]
+      }
+      await nextTick()
+
+      expect(wrapper.text()).toContain('Asset: City: Pittsboro')
+    })
+  })
 })

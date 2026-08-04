@@ -1,5 +1,6 @@
 // ui/tests/components/Nodes/AssetFilterPanel.test.ts
 import AssetFilterPanel from '@/components/Nodes/AssetFilterPanel.vue'
+import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
@@ -7,6 +8,7 @@ import PrimeVue from 'primevue/config'
 import Select from 'primevue/select'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import ToggleSwitch from 'primevue/toggleswitch'
 import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
@@ -126,5 +128,60 @@ describe('AssetFilterPanel.vue', () => {
 
     expect(wrapper.vm.gridItems.length).toBe(1)
     expect(wrapper.vm.gridItems[0]).toMatchObject({ column: 'room', value: 'B204' })
+  })
+
+  // ── Featured Fields Only toggle ─────────────────────────────────────────────
+
+  it('renders a Featured Fields Only toggle, defaulted on', () => {
+    const wrapper = mountPanel()
+    expect(wrapper.findComponent(ToggleSwitch).exists()).toBe(true)
+    expect(wrapper.vm.featuredOnly).toBe(true)
+  })
+
+  it('by default the dropdown offers exactly the featured (curated) options', () => {
+    const wrapper = mountPanel()
+    expect(wrapper.vm.assetOptions).toHaveLength(ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('toggling featuredOnly off offers every ASSET_COLUMN_FIQL_MAP column', async () => {
+    const wrapper = mountPanel()
+    wrapper.vm.featuredOnly = false
+    await nextTick()
+    expect(wrapper.vm.assetOptions).toHaveLength(ALL_ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('resetFromStore() auto-switches featuredOnly off when an existing filter uses a non-featured column', async () => {
+    const wrapper = mountPanel()
+
+    store.queryFilter = {
+      ...store.queryFilter,
+      assetFilters: [{ column: 'city', value: 'Pittsboro' }]
+    } as any
+
+    wrapper.vm.resetFromStore()
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(false)
+    expect(wrapper.vm.gridItems[0]).toMatchObject({ column: 'city', label: 'City', value: 'Pittsboro' })
+    // The dropdown must include the non-featured column so re-selecting it is never blank.
+    expect(wrapper.vm.assetOptions.some((o: { value: string }) => o.value === 'city')).toBe(true)
+  })
+
+  it('resetFromStore() keeps featuredOnly on when all existing filters use featured columns', async () => {
+    const wrapper = mountPanel()
+
+    store.queryFilter = {
+      ...store.queryFilter,
+      assetFilters: [{ column: 'building', value: 'HQ' }]
+    } as any
+
+    wrapper.vm.resetFromStore()
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(true)
   })
 })

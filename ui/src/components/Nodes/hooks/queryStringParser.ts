@@ -329,9 +329,11 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
- * OnmsAssetRecord string columns curated for the Asset Filter panel dropdown UI, with
- * human-readable labels. This is intentionally a small subset of ASSET_COLUMN_FIQL_MAP (below) —
- * every value here must also be a key in ASSET_COLUMN_FIQL_MAP.
+ * OnmsAssetRecord string columns curated as the "Featured Fields" set for the Asset Filter panel
+ * dropdown UI (AssetFilterPanel.vue), with human-readable labels. This is intentionally a small
+ * subset of ASSET_COLUMN_FIQL_MAP (below) — every value here must also be a key in
+ * ASSET_COLUMN_FIQL_MAP. When the panel's "Featured Fields Only" toggle is off, the dropdown uses
+ * ALL_ASSET_COLUMN_OPTIONS instead, which covers every ASSET_COLUMN_FIQL_MAP key.
  */
 export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
   { value: 'building', label: 'Building' },
@@ -432,9 +434,91 @@ export const ASSET_COLUMN_FIQL_MAP: Record<string, string> = {
 /** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
 export const ALLOWED_ASSET_COLUMNS = new Set(Object.keys(ASSET_COLUMN_FIQL_MAP))
 
-/** Display label for an asset column key (falls back to the key itself). */
+/**
+ * Human-readable title for every ASSET_COLUMN_FIQL_MAP key, taken verbatim from the display-name
+ * strings in `SearchProperties.java`'s `ASSET_RECORD_PROPERTIES` (server-side search-property
+ * registry — the source of truth, since it correctly handles abbreviations/oddities like "CPU",
+ * "HDD 1", "RAM", "SNMP Community", "ZIP or Postal Code" that a runtime camelCase-to-Title-Case
+ * conversion would get wrong). Every key in ASSET_COLUMN_FIQL_MAP must have an entry here.
+ */
+export const ASSET_COLUMN_TITLES: Record<string, string> = {
+  additionalhardware: 'Additional Hardware',
+  address1: 'Address 1',
+  address2: 'Address 2',
+  admin: 'Admin',
+  assetNumber: 'Asset Number',
+  autoenable: 'Auto-enable',
+  building: 'Building',
+  category: 'Category',
+  circuitId: 'Circuit ID',
+  city: 'City',
+  comment: 'Comment',
+  connection: 'Connection',
+  country: 'Country',
+  cpu: 'CPU',
+  dateInstalled: 'Date Installed',
+  department: 'Department',
+  description: 'Description',
+  displayCategory: 'Display Category',
+  division: 'Division',
+  enable: 'Enable',
+  floor: 'Floor',
+  hdd1: 'HDD 1',
+  hdd2: 'HDD 2',
+  hdd3: 'HDD 3',
+  hdd4: 'HDD 4',
+  hdd5: 'HDD 5',
+  hdd6: 'HDD 6',
+  inputpower: 'Input Power',
+  lastModifiedBy: 'Last Modified By',
+  lease: 'Lease',
+  leaseExpires: 'Lease Expires',
+  maintcontract: 'Maintenance Contract',
+  maintContractExpiration: 'Maintenance Contract Expiration',
+  managedObjectInstance: 'Managed Object Instance',
+  managedObjectType: 'Managed Object Type',
+  manufacturer: 'Manufacturer',
+  modelNumber: 'Model Number',
+  notifyCategory: 'Notify Category',
+  numpowersupplies: 'Number of Power Supplies',
+  operatingSystem: 'Operating System',
+  password: 'Password',
+  pollerCategory: 'Poller Category',
+  port: 'Port',
+  rack: 'Rack',
+  rackunitheight: 'Rack Unit Height',
+  ram: 'RAM',
+  region: 'Region',
+  room: 'Room',
+  serialNumber: 'Serial Number',
+  slot: 'Slot',
+  snmpcommunity: 'SNMP Community',
+  state: 'State or Province',
+  storagectrl: 'Storage Controller',
+  supportPhone: 'Support Phone',
+  thresholdCategory: 'Threshold Category',
+  username: 'Username',
+  vendor: 'Vendor',
+  vendorAssetNumber: 'Vendor Asset Number',
+  vendorFax: 'Vendor Fax',
+  vendorPhone: 'Vendor Phone',
+  zip: 'ZIP or Postal Code'
+}
+
+/**
+ * Every ASSET_COLUMN_FIQL_MAP column as a dropdown option, titled from ASSET_COLUMN_TITLES and
+ * sorted alphabetically by title. Used by the Asset Filter panel dropdown when its "Featured
+ * Fields Only" toggle is off (see AssetFilterPanel.vue).
+ */
+export const ALL_ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = Object.keys(ASSET_COLUMN_FIQL_MAP)
+  .map(value => ({ value, label: ASSET_COLUMN_TITLES[value] ?? value }))
+  .sort((a, b) => a.label.localeCompare(b.label))
+
+/** Display label for an asset column key (falls back to the key itself). Resolves from the full
+ * ASSET_COLUMN_TITLES registry regardless of the panel's "Featured Fields Only" toggle state, so
+ * chip labels (NodesTable.vue) show a proper title even for non-featured columns. */
 export const getAssetColumnLabel = (column: string): string =>
-  ASSET_COLUMN_OPTIONS.find(o => o.value === column)?.label ?? column
+  ASSET_COLUMN_TITLES[column] ?? column
 
 /** Maps an asset column key to its FIQL property under `assetRecord.` (identity if not in the map). */
 export const getAssetColumnFiqlProperty = (column: string): string => ASSET_COLUMN_FIQL_MAP[column] ?? column

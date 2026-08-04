@@ -1,5 +1,12 @@
 <template>
   <div class="asset-filter-container">
+    <div class="onms-row toggle-row" data-test="featured-fields-only">
+      <label for="featured-fields-only">Featured Fields Only</label>
+      <OnmsToggleSwitch
+        v-model="featuredOnly"
+        inputId="featured-fields-only"
+      />
+    </div>
     <div class="onms-row add-row">
       <div class="onms-col-5">
         <FormField label="Asset Field">
@@ -63,13 +70,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
+import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS, getAssetColumnLabel } from '@/components/Nodes/hooks/queryStringParser'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 interface GridItem {
@@ -79,7 +86,14 @@ interface GridItem {
 }
 
 interface AssetOption { title: string; value: string }
-const assetOptions: AssetOption[] = ASSET_COLUMN_OPTIONS.map(o => ({ title: o.label, value: o.value }))
+
+// Featured columns are the curated 10; the toggle swaps in every ASSET_COLUMN_FIQL_MAP column
+// (with server-derived titles) when the user wants to filter on a non-featured field.
+const featuredColumnValues = new Set(ASSET_COLUMN_OPTIONS.map(o => o.value))
+const featuredOnly = ref(true)
+const assetOptions = computed<AssetOption[]>(() =>
+  (featuredOnly.value ? ASSET_COLUMN_OPTIONS : ALL_ASSET_COLUMN_OPTIONS).map(o => ({ title: o.label, value: o.value }))
+)
 
 const nodeStructureStore = useNodeStructureStore()
 const assetValue = ref('')
@@ -114,16 +128,20 @@ const applyToStore = () => {
 }
 
 const resetFromStore = () => {
-  gridItems.value = (nodeStructureStore.queryFilter.assetFilters ?? []).map(f => ({
+  const filters = nodeStructureStore.queryFilter.assetFilters ?? []
+  gridItems.value = filters.map(f => ({
     column: f.column,
-    label: assetOptions.find(o => o.value === f.column)?.title as string ?? f.column,
+    label: getAssetColumnLabel(f.column),
     value: f.value
   }))
+  // If an existing filter uses a column outside the featured 10, the featured-only dropdown
+  // wouldn't be able to show/re-select it — switch to the full list so it's never blank/mismatched.
+  featuredOnly.value = filters.every(f => featuredColumnValues.has(f.column))
   assetValue.value = ''
   currentSelection.value = undefined
 }
 
-defineExpose({ applyToStore, resetFromStore, currentSelection, assetValue, gridItems })
+defineExpose({ applyToStore, resetFromStore, currentSelection, assetValue, gridItems, featuredOnly, assetOptions })
 
 onMounted(() => {
   resetFromStore()
@@ -135,6 +153,15 @@ onMounted(() => {
 @use '@/styles/onms-tokens' as variables;
 
 .asset-filter-container {
+  // Label on the left, ToggleSwitch pushed to the right edge — same idiom as the drawer's
+  // down-nodes/assets/outages toggles.
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
   .add-asset-filter-button {
     border-radius: 0;
     border: 1px solid var(--onms-primary);
