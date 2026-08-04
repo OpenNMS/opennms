@@ -4,7 +4,7 @@
     modal
     header="Configure Notifications"
     class="configure-notifications-dialog"
-    width="min(1100px, 95vw)"
+    width="min(1400px, 95vw)"
     data-test="configure-notifications-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
