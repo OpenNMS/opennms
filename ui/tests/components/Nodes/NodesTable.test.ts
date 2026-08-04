@@ -314,7 +314,7 @@ describe('NodesTable.vue', () => {
 
       const footer = wrapper.find('[data-test="interfaces-footer"]')
       expect(footer.exists()).toBe(true)
-      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('1 Node, 1 Interface on this page')
+      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('1 Node total. 1 node and 1 interface on this page')
     })
 
     it('pluralizes node/interface counts when greater than one', async () => {
@@ -323,7 +323,7 @@ describe('NodesTable.vue', () => {
       const structure = useNodeStructureStore()
 
       ns.nodes = [{ id: '1' }, { id: '2' }] as any
-      ns.totalCount = 2
+      ns.totalCount = 5
       ns.nodeToIpInterfaceMap = new Map([
         ['1', [{ id: 'ip1', ipAddress: '10.0.0.1', isManaged: 'M' }]],
         ['2', [{ id: 'ip2', ipAddress: '10.0.0.2', isManaged: 'M' }]]
@@ -334,7 +334,7 @@ describe('NodesTable.vue', () => {
       await nextTick()
 
       const footer = wrapper.find('[data-test="interfaces-footer"]')
-      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('2 Nodes, 2 Interfaces on this page')
+      expect(footer.text().replace(/\s+/g, ' ').trim()).toBe('5 Nodes total. 2 nodes and 2 interfaces on this page')
     })
   })
 

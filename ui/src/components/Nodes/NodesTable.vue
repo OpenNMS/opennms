@@ -261,7 +261,7 @@
           class="interfaces-footer"
           data-test="interfaces-footer"
         >
-          {{ nodeCountLabel }}, {{ interfaceCountLabel }} on this page
+          {{ totalNodeCountLabel }}. {{ pageNodeCountLabel }} and {{ pageInterfaceCountLabel }} on this page
         </div>
       </div>
     </div>
@@ -496,14 +496,19 @@ const pageInterfaceCount = computed(() =>
   countInterfacesForNodes(pageNodeIds.value, interfaceListMode.value, nodeStore.nodeToIpInterfaceMap, nodeStore.nodeToSnmpInterfaceMap)
 )
 
-const nodeCountLabel = computed(() => {
+const totalNodeCountLabel = computed(() => {
   const n = nodeStore.totalCount
-  return `${n} Node${n === 1 ? '' : 's'}`
+  return `${n} Node${n === 1 ? '' : 's'} total`
 })
 
-const interfaceCountLabel = computed(() => {
+const pageNodeCountLabel = computed(() => {
+  const p = nodes.value.length
+  return `${p} node${p === 1 ? '' : 's'}`
+})
+
+const pageInterfaceCountLabel = computed(() => {
   const m = pageInterfaceCount.value
-  return `${m} Interface${m === 1 ? '' : 's'}`
+  return `${m} interface${m === 1 ? '' : 's'}`
 })
 
 // A caret only renders for rows whose expansion actually has content. In 'default' mode a single
