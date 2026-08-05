@@ -2,7 +2,7 @@
   <OnmsIconButton
     class="compare-btn"
     aria-label="Compare configs"
-    v-tooltip="'Compare configs'"
+    v-onms-tooltip="'Compare configs'"
     :icon="Compare"
     @click="emit('onCompare')"
   />
@@ -10,7 +10,7 @@
   <OnmsIconButton
     class="dwnld-btn"
     aria-label="Download config"
-    v-tooltip="'Download config'"
+    v-onms-tooltip="'Download config'"
     :icon="Download"
     @click="onDownload"
   />

@@ -2,7 +2,7 @@
   <OnmsIconButton
     class="compare-btn"
     aria-label="Compare configs"
-    v-tooltip="'Compare configs'"
+    v-onms-tooltip="'Compare configs'"
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
     :icon="Compare"
@@ -12,7 +12,7 @@
   <OnmsIconButton
     class="return-btn"
     aria-label="Return"
-    v-tooltip="'Return'"
+    v-onms-tooltip="'Return'"
     v-if="isCompareView"
     :icon="Restore"
     @click="onReturn"
@@ -21,7 +21,7 @@
   <OnmsIconButton
     class="dwnld-btn"
     aria-label="Download configs"
-    v-tooltip="'Download configs'"
+    v-onms-tooltip="'Download configs'"
     v-if="isCompareView"
     :icon="Download"
     @click="onDownload"

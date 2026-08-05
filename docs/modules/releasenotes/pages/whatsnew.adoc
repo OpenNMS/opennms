@@ -97,6 +97,10 @@ See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernat
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
 Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
 
+=== IRCcat notification strategy removed
+The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
+An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 

@@ -12,7 +12,6 @@ Notifications are commonly sent through email or a text/pager message, but mecha
 * Arbitrary HTTP GET and POST operations
 * Arbitrary external commands
 * Asterisk call origination
-* IRCcat Internet Relay Chat bot
 * SNMP traps
 * Slack, Mattermost, and other API-compatible team chat platforms
 * User-provided scripts in any JSR-223 compatible language
