@@ -261,6 +261,17 @@
   </profiles>
 
   <dependencies>
+    <!--
+        The JAX-RS API. Declared explicitly, even though CXF pulls it in transitively anyway,
+        because the OSGi container exports javax.ws.rs* from the system bundle out of
+        ${OPENNMS_HOME}/lib - see container/karaf .../etc/custom.properties. If this jar stopped
+        being assembled, that export would still be announced but resolve to nothing, and every
+        OSGi ReST endpoint would fail with a NoClassDefFoundError instead of a build error.
+    -->
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>

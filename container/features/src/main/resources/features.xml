@@ -943,7 +943,14 @@
     </feature>
 
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
-        <feature>opennms-osgi-core-rest</feature>
+        <!--
+            No dependency on opennms-osgi-core-rest, which publishes the ReST endpoints: it is a boot
+            feature (see container/karaf .../etc/org.apache.karaf.features.cfg), so it is always
+            there, and the other ReST features do not declare it either. Declaring it would also make
+            karaf-maven-plugin:verify fail for this feature, because the publisher imports
+            org.apache.cxf.* - packages the real container exports from the system bundle but the
+            synthetic system bundle of that goal does not model.
+        -->
         <feature>pax-web-http-jetty</feature>
         <feature>opennms-alarm-history-api</feature>
         <feature>opennms-es-rest</feature>
@@ -1199,68 +1206,29 @@
             such as @Path annotated interfaces.</details>
         <!--
             The Declarative Services extender. The osgi-jax-rs-connector feature used to pull this
-            in, the aries-jax-rs-whiteboard feature does not - and other bundles in the container
-            (e.g. com.vaadin.shared) rely on it being there.
+            in, and other bundles in the container (e.g. com.vaadin.shared) rely on it being there.
         -->
         <feature>scr</feature>
         <!--
-            The whiteboard registers its servlets through the OSGi Http Whiteboard and requires the
-            JavaServlet contract, both of which this feature provides.
+            The ReST endpoints are published as servlets through the OSGi Http Whiteboard, which
+            this feature provides (the Felix HTTP bridge).
         -->
         <feature version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
         <!--
-            The CXF runtime the whiteboard is built on. The cxf-jaxrs / cxf-sse *features* cannot be
-            used here: cxf-http depends on the Karaf "http" feature == Pax Web, which this container
-            does not have - it replaces it with the Felix HTTP bridge, see
-            opennms-bridge-http-service. So the CXF bundles are listed directly instead.
+            No JAX-RS runtime and no JAX-RS API bundle here on purpose. Apache CXF and the JAX-RS API
+            are on the OpenNMS classpath and the container exports both from the system bundle, see
+            container/karaf .../etc/custom.properties. That is the same class space the ReST API of
+            the web application runs in; installing a second copy of either as bundles splits it and
+            breaks JAX-RS with confusing errors such as
+            "VerifyError: RuntimeDelegateImpl is not assignable to RuntimeDelegate".
         -->
-        <feature version="[9.4,10)">asm</feature>
-        <!-- the whiteboard requires the osgi.serviceloader.registrar extender -->
-        <bundle dependency="true">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-osgi-registry/${geronimoOsgiRegistryVersion}</bundle>
-        <bundle dependency="true">mvn:com.sun.activation/jakarta.activation/${jakartaActivationVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.2/${karaf.servicemix.specs.version}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.3/${servicemixJaxbApiVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.woodstox/stax2-api/${stax2ApiVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.woodstox/woodstox-core/${woodstoxVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-runtime/${servicemixJaxbRuntimeVersion}</bundle>
-        <bundle dependency="true">mvn:com.sun.istack/istack-commons-runtime/${istackCommonsRuntimeVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlresolver/${servicemixXmlResolverVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.fastinfoset/${servicemixFastInfosetVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-core/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-management/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-security/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-transports-http/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-frontend-jaxrs/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-rs-client/${cxfVersion}</bundle>
-        <bundle>mvn:org.apache.cxf/cxf-rt-rs-sse/${cxfVersion}</bundle>
-        <!--
-            The whiteboard itself. Its aries-jax-rs-whiteboard feature cannot be used either - it
-            requires the http-whiteboard feature, i.e. the Pax Web whiteboard - so its bundles are
-            listed here directly. component-dsl is missing from that feature definition anyway.
-        -->
-        <!--
-            The JAX-RS API. Deliberately the ServiceMix spec bundle and not the
-            org.apache.aries.javax.jax.rs-api one the whiteboard feature would bring: CXF wires
-            javax.ws.rs from this bundle, and two providers of that package in one container make
-            the whiteboard activator fail with a VerifyError (RuntimeDelegateImpl not assignable
-            to RuntimeDelegate). The JavaJAXRS contract the whiteboard requires is declared on the
-            system bundle in custom.properties, because this bundle declares no capabilities.
-        -->
-        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxrs-api-2.1/${servicemixJaxrsApiVersion}</bundle>
-        <bundle dependency="true">mvn:org.osgi/org.osgi.util.function/${osgiUtilFunctionVersion}</bundle>
-        <bundle dependency="true">mvn:org.osgi/org.osgi.util.promise/${osgiUtilPromiseVersion}</bundle>
-        <bundle dependency="true">mvn:org.osgi/org.osgi.service.jaxrs/${osgiServiceJaxrsVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.annotation-api-1.3/${servicemixAnnotationApiVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/${ariesComponentDslVersion}</bundle>
-        <bundle>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.whiteboard/${ariesJaxRsVersion}</bundle>
         <feature>jackson-core</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
-        <!-- rest-provider registers the Jackson JSON provider as a whiteboard extension -->
+        <!-- declares the /rest and /api/v2 applications plus the shared JSON provider and mappers -->
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
+        <!-- publishes the annotated OSGi services as ReST endpoints and reports them to the bridge -->
         <bundle>mvn:org.opennms.container.bridge/org.opennms.container.bridge.rest/${project.version}</bundle>
     </feature>
     <feature name="opennms-jaas-login-module" version="${project.version}" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">

@@ -98,7 +98,7 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         dispatcherTracker.open();
 
         // By default we register a handler for all rest endpoints, as they are already
-        // known by the JaxrsServiceRuntime of the OSGi JAX-RS Whiteboard
+        // known by the bundle publishing them, see RestEndpointRegistry
         addRequestHandler(new RestRequestHandler(bundleContext));
     }
 

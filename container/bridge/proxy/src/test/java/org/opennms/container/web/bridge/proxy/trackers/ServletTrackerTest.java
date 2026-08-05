@@ -40,16 +40,16 @@ import org.osgi.framework.ServiceReference;
 public class ServletTrackerTest {
 
     /**
-     * The JAX-RS Whiteboard registers its servlets with the pattern "/*" and puts the application
-     * base on a separate ServletContextHelper. Registering a request handler for that pattern would
-     * make the proxy forward every single request into the OSGi container, so these servlets have to
-     * be ignored here - the RestRequestHandler covers them at resource granularity instead.
+     * The ReST endpoints are published as one servlet per application, i.e. one for all of /rest.
+     * Registering a request handler for that pattern would divert the whole ReST API of the web
+     * application into the OSGi container, so these servlets have to be ignored here - the
+     * RestRequestHandler covers them at resource granularity instead.
      */
     @Test
-    public void ignoresServletsOfTheJaxRsWhiteboard() {
+    public void ignoresServletsOfTheJaxRsPublisher() {
         final ProxyFilter proxyFilter = mock(ProxyFilter.class);
         final ServiceReference<Servlet> reference =
-                servletReference("org.apache.aries.jax.rs.whiteboard", "/*");
+                servletReference("org.opennms.container.bridge.rest", "/*");
 
         newTracker(proxyFilter, reference).addingService(reference);
 

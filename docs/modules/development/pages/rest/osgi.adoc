@@ -82,13 +82,17 @@ Achieve this by using either an Activator or the blueprint mechanism.
 ----
 <1>  Create the REST implementation class.
 <2>  Export the REST service.
-<3>  Mark the service as a JAX-RS resource. Without this the OSGi JAX-RS Whiteboard ignores it.
+<3>  Mark the service as a JAX-RS resource. Without this the endpoint is not published.
 <4>  A name for the resource, unique within the application it attaches to.
 <5>  Select the JAX-RS application, and therefore the base path, the resource is published under.
 
 == Available applications
 
-Endpoints are published by the OSGi JAX-RS Whiteboard (OSGi Compendium R7, chapter 151).
+Endpoints are published by the `org.opennms.container.bridge.rest` bundle, which builds them with
+the Apache CXF of the OpenNMS classpath. The service properties it understands are those of the
+OSGi JAX-RS Whiteboard (OSGi Compendium R7, chapter 151), but only the subset shown here -- it is
+not a full implementation of that specification.
+
 The base path is not chosen by the resource itself; it is a property of the *application* the
 resource attaches to using `osgi.jaxrs.application.select`.
 OpenNMS declares two applications in the `org.opennms.features.rest-provider` bundle:
@@ -102,9 +106,9 @@ OpenNMS declares two applications in the `org.opennms.features.rest-provider` bu
 
 To publish under a different base path, declare an additional `javax.ws.rs.core.Application`
 service with an `osgi.jaxrs.name` and an `osgi.jaxrs.application.base` property, then select it.
-A resource that selects no application at all attaches to the whiteboard's default application,
-which is served from the root - it does not end up under `/services` as it did with the
-previously used osgi-jax-rs-connector.
+A resource that selects no application at all is not published: there is deliberately no default
+application, because one rooted at `/` would make the web bridge claim every request of the web
+application. Note this differs from the osgi-jax-rs-connector, which fell back to `/services`.
 
 NOTE: A resource whose `osgi.jaxrs.application.select` filter matches no application is silently
       not published, and requests for it fall through to the ReST implementation of the web
@@ -112,7 +116,7 @@ NOTE: A resource whose `osgi.jaxrs.application.select` filter matches no applica
 
 == Providers and exception mappers
 
-`@Provider` classes such as a `javax.ws.rs.ext.ExceptionMapper` are registered as whiteboard
+`@Provider` classes such as a `javax.ws.rs.ext.ExceptionMapper` are registered as
 *extensions* rather than resources, and they bind *per application* - an extension is not picked up
 globally, it has to select the applications it applies to:
 

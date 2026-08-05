@@ -39,11 +39,11 @@ import org.osgi.util.tracker.ServiceTracker;
 public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
 
     /**
-     * The bundle symbolic name of the OSGi JAX-RS Whiteboard implementation.
+     * The bundle symbolic name of the bundle publishing the ReST endpoints.
      *
-     * @see #isJaxRsWhiteboardServlet(ServiceReference)
+     * @see #isJaxRsServlet(ServiceReference)
      */
-    private static final String JAX_RS_WHITEBOARD_BSN = "org.apache.aries.jax.rs.whiteboard";
+    private static final String JAX_RS_PUBLISHER_BSN = "org.opennms.container.bridge.rest";
 
     private final ServletContext servletContext;
     private final ProxyFilter proxyFilter;
@@ -58,7 +58,7 @@ public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
     @Override
     public Servlet addingService(ServiceReference reference) {
         final Servlet servlet = super.addingService(reference);
-        if (isJaxRsWhiteboardServlet(reference)) {
+        if (isJaxRsServlet(reference)) {
             return servlet;
         }
         final ServletInfo servletInfo = new ServletInfo(reference);
@@ -78,22 +78,19 @@ public class ServletTracker extends ServiceTracker<Servlet, Servlet> {
     }
 
     /**
-     * The JAX-RS Whiteboard registers one servlet per JAX-RS application, and it puts the
-     * application base (e.g. {@code /rest}) on a separate ServletContextHelper via
-     * {@code osgi.http.whiteboard.context.path} - the servlet itself is registered with the
-     * pattern {@code /*}. Taken at face value that pattern would make the proxy forward every
-     * single request of the web application into the OSGi container.
+     * The ReST endpoints of OSGi bundles are published as one servlet per JAX-RS application, i.e.
+     * one servlet for all of {@code /rest} and one for all of {@code /api/v2}. Those patterns must
+     * not be taken at face value here: both paths are shared - most of them is served by the ReST
+     * API of the web application itself, only individual resources come from OSGi.
      *
-     * Prefixing the pattern with the context path would not help either: that yields
-     * {@code /rest/*}, but {@code /rest} is shared - most of it is served by the ReST servlet of
-     * the web application itself, only individual resources come from OSGi. Which ones is exactly
-     * what the {@link org.opennms.container.web.bridge.api.RestEndpointRegistry} knows, and the
+     * Which resources those are is exactly what the
+     * {@link org.opennms.container.web.bridge.api.RestEndpointRegistry} knows, and the
      * {@link org.opennms.container.web.bridge.proxy.handlers.RestRequestHandler} already asks it,
-     * so these servlets must simply be left alone here.
+     * so these servlets are deliberately left alone here.
      */
-    private static boolean isJaxRsWhiteboardServlet(ServiceReference<?> reference) {
+    private static boolean isJaxRsServlet(ServiceReference<?> reference) {
         return reference.getBundle() != null
-                && JAX_RS_WHITEBOARD_BSN.equals(reference.getBundle().getSymbolicName());
+                && JAX_RS_PUBLISHER_BSN.equals(reference.getBundle().getSymbolicName());
     }
 
     @Override

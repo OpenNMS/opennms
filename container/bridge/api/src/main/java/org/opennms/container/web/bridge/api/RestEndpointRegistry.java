@@ -24,8 +24,8 @@ package org.opennms.container.web.bridge.api;
 import java.util.List;
 
 /**
- * The Rest Endpoints are known to the OSGi JAX-RS Whiteboard, which exposes them via its
- * JaxrsServiceRuntime service. As they need to be made available to the Jetty Classpath, it would
+ * The Rest Endpoints are known to the bundle that publishes them,
+ * org.opennms.container.bridge.rest. As they need to be made available to the Jetty Classpath, it would
  * either mean copy over some whiteboard jars to the ${OPENNMS_HOME}/lib directory and hack the
  * custom.properties, or provide a wrapper implementation.
  * As the last was easier, this is what was used.

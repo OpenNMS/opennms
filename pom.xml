@@ -1941,28 +1941,14 @@
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
     <!--
-        OSGi JAX-RS Whiteboard (OSGi cmpn R7, chapter 151), replaces the unmaintained osgi-jax-rs-connector.
-        Pinned to 2.0.1: 2.0.2 requires the JavaServlet 4.0 contract, while this container provides
-        ${servletApiVersion} (Karaf ${karafVersion}). Note the whiteboard bundle imports
-        org.osgi.util.function/promise in [1.1,2), which ${osgiUtilFunctionVersion}/${osgiUtilPromiseVersion} satisfy.
+        The JAX-RS API. jakarta.ws.rs-api 2.1.x is still the javax namespace, and it is the copy the
+        OSGi container exports from the system bundle (see container/karaf .../etc/custom.properties);
+        opennms-base-assembly depends on it so it is always present in ${OPENNMS_HOME}/lib.
+        The package version is the spec version, which is what importers match against, so it does
+        not follow the artifact version.
     -->
-    <ariesJaxRsVersion>2.0.1</ariesJaxRsVersion>
-    <ariesComponentDslVersion>1.2.2</ariesComponentDslVersion>
-    <servicemixJaxrsApiVersion>2.9.1</servicemixJaxrsApiVersion>
-    <osgiServiceJaxrsVersion>1.0.0</osgiServiceJaxrsVersion>
-    <servicemixAnnotationApiVersion>1.3_1</servicemixAnnotationApiVersion>
-    <!--
-        CXF runtime bundles for the JAX-RS Whiteboard. Versions taken from the apache-cxf
-        ${cxfVersion} Karaf feature descriptor, which cannot be used directly because it depends on
-        <feature>http</feature> == Pax Web. Keep them in sync when cxfVersion is bumped.
-    -->
-    <geronimoOsgiRegistryVersion>1.1</geronimoOsgiRegistryVersion>
-    <jakartaActivationVersion>1.2.2</jakartaActivationVersion>
-    <servicemixJaxbApiVersion>2.3_2</servicemixJaxbApiVersion>
-    <servicemixJaxbRuntimeVersion>2.3.2_1</servicemixJaxbRuntimeVersion>
-    <servicemixXmlResolverVersion>1.2_5</servicemixXmlResolverVersion>
-    <servicemixFastInfosetVersion>1.2.18_1</servicemixFastInfosetVersion>
-    <woodstoxVersion>6.6.2</woodstoxVersion>
+    <jakartaWsRsApiVersion>2.1.6</jakartaWsRsApiVersion>
+    <jakartaWsRsApiPackageVersion>2.1</jakartaWsRsApiPackageVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
@@ -4749,6 +4735,11 @@
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jakartaXmlBindVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakartaWsRsApiVersion}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>

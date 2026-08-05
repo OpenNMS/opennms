@@ -15,6 +15,11 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>org.opennms.container.web.bridge.rest.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -27,20 +32,43 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
-            <version>${osgiCompendiumVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- org.osgi.dto.DTO, the base class of the JAX-RS Whiteboard DTOs -->
-        <dependency>
-            <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- javax.ws.rs is referenced by the JAX-RS Whiteboard DTOs of osgi.cmpn -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+            Apache CXF is the JAX-RS runtime the endpoints are published with. It is used at compile
+            time only: at runtime the container exports these packages from the system bundle, out of
+            the CXF on the OpenNMS classpath, which is the same class space the ReST API of the web
+            application runs in.
+        -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
