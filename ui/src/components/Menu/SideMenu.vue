@@ -11,6 +11,7 @@
       v-onms-tooltip="{ value: isPinned ? 'Collapse menu (Ctrl+\\)' : 'Expand menu (Ctrl+\\)', showDelay: 300 }"
       :aria-label="isPinned ? 'Collapse menu' : 'Expand menu'"
       :aria-expanded="isPinned"
+      aria-keyshortcuts="Control+\"
       @click="togglePinned"
     >
       <OnmsIcon :icon="isPinned ? ChevronLeft : ChevronRight" />
@@ -115,8 +116,13 @@ const togglePinned = () => {
   // TieredMenu's outside-click listener; this makes the keyboard shortcut
   // behave the same — otherwise the flyout would be repositioned mid-way
   // through the rail's 0.1s width transition and end up with a stale left
-  // offset once the transition finishes.
-  tieredMenuRef.value?.hide?.()
+  // offset once the transition finishes. Guarded on an actually-open flyout
+  // (activeItemPath non-empty) because hide() also resets TieredMenu's
+  // focusedItemInfo — calling it unconditionally would throw away a keyboard
+  // user's arrow-navigation position even when there was nothing to close.
+  if (tieredMenuRef.value?.activeItemPath?.length) {
+    tieredMenuRef.value.hide?.()
+  }
 }
 
 // Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
