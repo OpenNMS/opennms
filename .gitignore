@@ -77,3 +77,9 @@ __pycache__
 opennms-base-assembly/src/main/filtered/etc/scv.jce
 
 core/web-assets/.eslintcache
+
+# AI tools
+_bmad/
+_bmad-output/
+openspec/
+.claude/
