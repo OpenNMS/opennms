@@ -1893,7 +1893,7 @@
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.2</jansiVersion>
-    <jlineVersion>3.30.6</jlineVersion>
+    <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
     <paxLoggingVersion>2.3.0</paxLoggingVersion>
