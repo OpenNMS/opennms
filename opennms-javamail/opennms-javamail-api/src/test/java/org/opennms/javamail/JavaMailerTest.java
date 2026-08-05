@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.Message;
+import jakarta.mail.Message;
 
 import org.junit.After;
 import org.junit.Before;

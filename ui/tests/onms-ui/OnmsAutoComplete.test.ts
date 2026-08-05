@@ -57,4 +57,13 @@ describe('OnmsAutoComplete', () => {
     })
     expect(wrapper.findComponent({ name: 'AutoComplete' }).vm.$slots.empty).toBeTruthy()
   })
+
+  it('forwards the option slot for custom suggestion rendering', () => {
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions: [{ label: 'node1' }] },
+      slots: { option: '<div data-test="opt">custom</div>' },
+      global: globalPlugins
+    })
+    expect(wrapper.findComponent({ name: 'AutoComplete' }).vm.$slots.option).toBeTruthy()
+  })
 })
