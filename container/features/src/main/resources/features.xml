@@ -7,10 +7,12 @@
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
-    <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <!-- our repackaged copy, with Jackson locked to ours -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/jaxrs</repository>
     <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <!-- Newts Features -->
-    <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
+    <!-- our repackaged copy, with Jackson/Netty/Guava/driver locked to ours -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/newts</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
         <bundle start-level="60">mvn:io.netty/netty-common/${netty4Version}</bundle>
