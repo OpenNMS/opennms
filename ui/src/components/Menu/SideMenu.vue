@@ -44,7 +44,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-// eslint-disable-next-line no-restricted-imports -- deliberately unwrapped: SideMenu drives TieredMenu internals (DOM queries in positionFlyouts); revisit when the side menu is redesigned (NMS-20081)
+// We are using PrimeVue TieredMenu directly here, rather than wrapping it in an OnmsUI component.
+// We are reaching into TieredMenu internals (DOM queries in positionFlyouts, hide() in togglePinned),
+// and also not using this anywhere else in the app, so we don't want to add a new OnmsUI component for it.
+// If we ever need to use TieredMenu elsewhere, we can wrap it in an OnmsUI component at that time.
+// eslint-disable-next-line no-restricted-imports
 import TieredMenu from 'primevue/tieredmenu'
 import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
