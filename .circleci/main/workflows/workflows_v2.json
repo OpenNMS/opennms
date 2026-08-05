@@ -219,7 +219,10 @@
             ],
             "requires": [
                 "build"
-            ]
+            ],
+            "parameters": {
+                "changes-only": "<< pipeline.parameters.trigger-integration-changes-only >>"
+            }
         },
         "smoke-test-core": {
             "context": [

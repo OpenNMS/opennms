@@ -31,7 +31,7 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
-                                <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/newts</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                                 <!-- Add Sentinel features -->
