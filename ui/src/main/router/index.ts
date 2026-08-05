@@ -211,6 +211,18 @@ const router = createRouter({
       ]
     },
     {
+      path: '/graph-collections',
+      name: 'GraphCollections',
+      component: () => import('@/containers/GraphCollections.vue')
+    },
+    {
+      // Constrain :id to a non-negative integer (KSC report ids start at 0).
+      path: '/graph-collections/:id(\\d+)',
+      name: 'GraphCollectionView',
+      props: true,
+      component: () => import('@/containers/GraphCollectionView.vue')
+    },
+    {
       path: '/open-api',
       name: 'OpenAPI',
       component: () => import('@/containers/OpenAPI.vue')

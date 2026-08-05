@@ -66,6 +66,14 @@ import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApiV1, getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
+import {
+  getKscReports,
+  getKscReport,
+  createKscReport,
+  updateKscReport,
+  deleteKscReport,
+  reloadKscConfig
+} from './kscService'
 import { getPlugins } from './pluginService'
 import {
   getUsageStatistics,
@@ -116,6 +124,12 @@ export default {
   getDefinitionData,
   getResourceForNode,
   getGraphDefinitionsByResourceId,
+  getKscReports,
+  getKscReport,
+  createKscReport,
+  updateKscReport,
+  deleteKscReport,
+  reloadKscConfig,
   getPlugins,
   getServiceTypes,
   getDeviceConfigBackups,

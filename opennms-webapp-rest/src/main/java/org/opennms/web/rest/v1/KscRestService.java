@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -75,7 +76,10 @@ public class KscRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public KscReportCollection getReports() throws ParseException {
-        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
+        // Non-terse: include each report's graphs so the list can show a graph
+        // count and callers can edit a report from the list without a broken,
+        // graph-less copy (a terse list once caused edits to overwrite graphs).
+        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), false);
         reports.setTotalCount(reports.size());
         return reports;
     }
@@ -165,33 +169,21 @@ public class KscRestService extends OnmsRestService {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addKscReport(@Context final UriInfo uriInfo, final KscReport kscReport) {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
-            Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
-            if (report != null) {
+            // A supplied id must not collide with an existing report; a null id
+            // means "assign the next available one" (addReport does that on save).
+            if (kscReport.getId() != null && m_kscReportFactory.getReportByIndex(kscReport.getId()) != null) {
                 throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
             }
-            report = new Report();
-            report.setId(kscReport.getId());
-            report.setTitle(kscReport.getLabel());
-            if (kscReport.getShowGraphtypeButton() != null) {
-                report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
+            final Report report = new Report();
+            if (kscReport.getId() != null) {
+                report.setId(kscReport.getId());
             }
-            if (kscReport.getShowTimespanButton() != null) {
-                report.setShowTimespanButton(kscReport.getShowTimespanButton());
-            }
-            if (kscReport.getGraphsPerLine() != null) {
-                report.setGraphsPerLine(kscReport.getGraphsPerLine());
-            }
-            if (kscReport.hasGraphs()) {
-                for (KscGraph kscGraph : kscReport.getGraphs()) {
-                    final Graph graph = kscGraph.buildGraph();
-                    report.addGraph(graph);
-                }
-            }
+            applyReportFields(kscReport, report);
 
             m_kscReportFactory.addReport(report);
             try {
@@ -199,9 +191,72 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
+            return Response.created(getRedirectUri(uriInfo, report.getId())).build();
         } finally {
             writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{reportId}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional
+    public Response updateKscReport(@PathParam("reportId") final Integer reportId, final KscReport kscReport) {
+        writeLock();
+        try {
+            if (m_kscReportFactory.getReportByIndex(reportId) == null) {
+                throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+            }
+            final Report report = new Report();
+            report.setId(reportId);
+            applyReportFields(kscReport, report);
+            m_kscReportFactory.setReport(reportId, report);
+            try {
+                m_kscReportFactory.saveCurrent();
+            } catch (final Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", reportId.toString(), e.getMessage());
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{reportId}")
+    @Transactional
+    public Response deleteKscReport(@PathParam("reportId") final Integer reportId) {
+        writeLock();
+        try {
+            if (m_kscReportFactory.getReportByIndex(reportId) == null) {
+                throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
+            }
+            try {
+                m_kscReportFactory.deleteReportAndSave(reportId);
+            } catch (final Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot delete report with Id {} : {} ", reportId.toString(), e.getMessage());
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    private static void applyReportFields(final KscReport source, final Report target) {
+        target.setTitle(source.getLabel());
+        if (source.getShowGraphtypeButton() != null) {
+            target.setShowGraphtypeButton(source.getShowGraphtypeButton());
+        }
+        if (source.getShowTimespanButton() != null) {
+            target.setShowTimespanButton(source.getShowTimespanButton());
+        }
+        if (source.getGraphsPerLine() != null) {
+            target.setGraphsPerLine(source.getGraphsPerLine());
+        }
+        if (source.hasGraphs()) {
+            for (final KscGraph kscGraph : source.getGraphs()) {
+                target.addGraph(kscGraph.buildGraph());
+            }
         }
     }
 

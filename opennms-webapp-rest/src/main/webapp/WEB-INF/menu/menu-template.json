@@ -72,6 +72,13 @@
         {
           "id": "kscReports",
           "name": "Graph Collections",
+          "url": "ui/index.html#/graph-collections",
+          "locationMatch": "graph-collections",
+          "roles": null
+        },
+        {
+          "id": "kscReportsLegacy",
+          "name": "Graph Collections (Legacy)",
           "url": "KSC/index.jsp",
           "locationMatch": "ksc",
           "roles": null
