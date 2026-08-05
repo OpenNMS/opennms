@@ -28,6 +28,15 @@
     >
       <slot name="footer" />
     </template>
+    <template
+      v-if="$slots.option"
+      #option="slotProps"
+    >
+      <slot
+        name="option"
+        v-bind="slotProps"
+      />
+    </template>
   </AutoComplete>
 </template>
 
