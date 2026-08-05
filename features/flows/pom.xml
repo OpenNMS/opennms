@@ -15,6 +15,7 @@
     <module>processing</module>
     <module>classification</module>
     <module>elastic</module>
+    <module>victorialogs</module>
     <module>itests</module>
     <module>rest</module>
     <module>kafka-persistence</module>

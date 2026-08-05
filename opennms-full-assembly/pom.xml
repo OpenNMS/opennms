@@ -1049,6 +1049,20 @@
       <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Nothing in the reactor depends on this module; it is named only from features.xml.
+         The bundle would still reach system/ without this — karaf-maven-plugin's
+         features-add-to-repository resolves the whole closure of the opennms-flows feature, which
+         is why flows.elastic and flows.api ship without being dependencies here either. What this
+         entry buys is reactor ordering, and the difference from those two is why it is needed here:
+         they are pulled into the reactor ahead of the assembly transitively, as dependencies of
+         other modules the assembly already depends on, whereas this one is a leaf that nothing
+         depends on and would otherwise have no ordering constraint at all. Keep it for that reason,
+         not for the resolution one. -->
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.victorialogs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.bmp.stats</artifactId>

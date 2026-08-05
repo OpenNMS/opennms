@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder
+                             persistent-id="org.opennms.features.flows.persistence.victorialogs"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <!-- Connection. Point this at vmauth (or an equivalent proxy) rather than at
+                 VictoriaLogs directly whenever the network is not fully trusted: VictoriaLogs has
+                 no authentication of its own. -->
+            <cm:property name="url" value="http://localhost:9428"/>
+            <cm:property name="username" value=""/>
+            <cm:property name="password" value=""/>
+            <cm:property name="connectTimeoutMs" value="5000"/>
+            <cm:property name="readTimeoutMs" value="30000"/>
+
+            <!-- Unlike the Elasticsearch repository, compression defaults to on here. There is no
+                 reason to ship uncompressed flow JSON over the wire.
+
+                 It does, however, make the two backends differ in a way that has nothing to do with
+                 either storage engine. This module exists partly to compare them, and running the
+                 comparison with gzip on one side and off the other confounds it: some of the
+                 difference in CPU and in bytes on the wire is the compression, not the backend.
+                 Anyone measuring should set this to false, or enable compression on the
+                 Elasticsearch side, and say in the write-up which was done. -->
+            <cm:property name="httpCompression" value="true"/>
+
+            <!-- Only low-cardinality, per-stream-constant fields belong here. Adding anything that
+                 varies per flow (addresses, ports, conversation keys) causes unbounded stream churn
+                 and degrades both ingestion and querying. Watch vl_streams_created_total: the
+                 default set is per-exporter and per-direction, so expect roughly twice the exporter
+                 count in streams, and treat six figures as the point to drop node_exporter.node_id.
+                 -->
+            <cm:property name="streamFields" value="location,node_exporter.node_id,netflow.direction"/>
+
+            <!-- Bulk behaviour. maxBufferedFlows bounds heap growth when VictoriaLogs is
+                 unreachable; beyond it flows are dropped and counted rather than accumulated. -->
+            <cm:property name="bulkSize" value="1000"/>
+            <cm:property name="bulkFlushMs" value="500"/>
+            <cm:property name="maxBufferedFlows" value="100000"/>
+
+            <!-- Longest a flow may span, in milliseconds. This bounds the query-side fan-out and
+                 is NOT a cap: a flow running longer is attributed only to its first buckets and the
+                 remainder is silently not counted — no error, no warning, just numbers that are
+                 low. Set it to at least the exporters' active timeout. Two minutes is below what
+                 many exporters use: Cisco IOS ships a 30-minute active timeout by default, and 5
+                 and 10 minutes are common elsewhere. Raising it costs one extra unrolled row per
+                 flow per additional bucket. See ProportionalSumQuery. -->
+            <cm:property name="maxFlowDurationMs" value="120000"/>
+
+            <!-- Querying is opted into separately from writing. They are different risks: writing
+                 is additive and affects only this backend, while answering queries takes over what
+                 the whole flow UI shows. Evaluating ingestion without handing the UI over is the
+                 normal intermediate state, and one flag cannot express it. -->
+            <cm:property name="skipVictoriaLogsQueries" value="true"/>
+
+            <!-- Disabled by default, deliberately. This backend is additive and evaluative: an
+                 install that has not been pointed at a real VictoriaLogs must not start trying to
+                 write flows to localhost:9428 on its own. Set to false to enable. -->
+            <cm:property name="skipVictoriaLogsPersistence" value="true"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="victoriaLogsFlowMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="victoriaLogsFlowMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="VictoriaLogsFlows"/>
+        </service-properties>
+    </service>
+
+    <bean id="victoriaLogsClientConfig" class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsClientConfig">
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="streamFields" value="${streamFields}"/>
+        <property name="httpCompression" value="${httpCompression}"/>
+        <property name="connectTimeoutMs" value="${connectTimeoutMs}"/>
+        <property name="readTimeoutMs" value="${readTimeoutMs}"/>
+    </bean>
+
+    <bean id="victoriaLogsClient" class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsClient"
+          destroy-method="close">
+        <argument ref="victoriaLogsClientConfig"/>
+    </bean>
+
+    <!--
+        The query side.
+
+        Registered programmatically rather than with a <service> element, because a <service> is
+        unconditional and this interface is consumed through a singleton <reference>: one
+        implementation is bound and everything the flow UI shows comes from it. Ranking cannot make
+        that safe — Aries binds reluctantly, so a reference re-binds when the service it holds goes
+        away and not when a better one arrives. An Elasticsearch config edit reloads that container,
+        its service departs, this one is the only candidate left, and nothing moves back afterwards.
+        See VictoriaLogsQueryServiceRegistrar for the full sequence. Not being in the registry is the
+        only state that cannot be bound by accident.
+    -->
+    <bean id="victoriaLogsFlowQueryService"
+          class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsFlowQueryService"
+          destroy-method="stop">
+        <argument ref="victoriaLogsClient"/>
+        <argument value="${maxFlowDurationMs}"/>
+    </bean>
+
+    <bean id="victoriaLogsQueryServiceRegistrar"
+          class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsQueryServiceRegistrar"
+          init-method="start" destroy-method="stop">
+        <argument ref="blueprintBundleContext"/>
+        <argument ref="victoriaLogsFlowQueryService"/>
+        <argument ref="victoriaLogsClient"/>
+        <property name="disabled" value="${skipVictoriaLogsQueries}"/>
+    </bean>
+
+    <bean id="victoriaLogsFlowRepository" class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsFlowRepository"
+          init-method="start" destroy-method="stop">
+        <argument ref="victoriaLogsFlowMetricRegistry"/>
+        <argument ref="victoriaLogsClient"/>
+        <property name="bulkSize" value="${bulkSize}"/>
+        <property name="bulkFlushMs" value="${bulkFlushMs}"/>
+        <property name="maxBufferedFlows" value="${maxBufferedFlows}"/>
+        <!-- So the flush thread is not started at all while this backend is switched off. -->
+        <property name="disabled" value="${skipVictoriaLogsPersistence}"/>
+    </bean>
+
+    <bean id="switchedVictoriaLogsFlowRepository"
+          class="org.opennms.netmgt.flows.processing.persisting.SwitchedFlowRepository">
+        <argument ref="victoriaLogsFlowRepository"/>
+        <property name="disabled" value="${skipVictoriaLogsPersistence}"/>
+    </bean>
+
+    <!-- Registered with a distinct flows.repository.id so this coexists with the Elasticsearch
+         repository instead of replacing it. Running both is how the two are compared. -->
+    <service interface="org.opennms.integration.api.v1.flows.FlowRepository"
+             ref="switchedVictoriaLogsFlowRepository">
+        <service-properties>
+            <entry key="flows.repository.id" value="victorialogs"/>
+        </service-properties>
+    </service>
+
+    <!-- Gated on the same flag as persistence: while this backend is switched off the check reports
+         "Not configured" rather than failing against a VictoriaLogs nobody deployed. -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.netmgt.flows.victorialogs.VictoriaLogsHealthCheck">
+            <argument ref="victoriaLogsClient"/>
+            <property name="disabled" value="${skipVictoriaLogsPersistence}"/>
+            <property name="queriesDisabled" value="${skipVictoriaLogsQueries}"/>
+        </bean>
+    </service>
+
+</blueprint>
