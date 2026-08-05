@@ -444,14 +444,7 @@
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ],
-            "filters": {
-                "branches": {
-                    "only": [
-                        "/^(?!develop$)<< pipeline.parameters.main_branch >>$/"
-                    ]
-                },
-                "user_overridable": false
-            }
+            "filters": "pipeline.git.branch == pipeline.parameters.main_branch and pipeline.parameters.main_branch != \"develop\""
         },
         "merge-foundation-branch": {
             "context": [
@@ -553,6 +546,7 @@
             "filters": {
                 "branches": {
                     "only": [
+                        "develop",
                         "/^master-.*/"
                     ]
                 },
