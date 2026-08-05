@@ -87,19 +87,19 @@ public class BSFNotificationStrategyIT {
     }
 
     /**
-     * Verifies that we can invoke a BSH script and that
+     * Verifies that we can invoke a Groovy script and that
      * the an instance of the appropriate OnmsNode object is
-     * passed to the script. 
+     * passed to the script.
      */
     @Test
     public void canUseNodeInScript() throws IOException {
-        // Create a simple BSH script that verifies the node bean
-        File notifyBsh = tempFolder.newFile("notify.bsh");
-        FileUtils.write(notifyBsh, "results.put(\"status\", node.id == 1 ? \"OK\" : \"NOT_OK\");");
+        // Create a simple Groovy script that verifies the node bean
+        File notifyScript = tempFolder.newFile("notify.groovy");
+        FileUtils.write(notifyScript, "results.put(\"status\", node.id == 1 ? \"OK\" : \"NOT_OK\")");
 
         List<Argument> arguments = new ArrayList<>();
         // Point to our script
-        arguments.add(new Argument("file-name", null, notifyBsh.getAbsolutePath(), false));
+        arguments.add(new Argument("file-name", null, notifyScript.getAbsolutePath(), false));
         // Reference node 1
         arguments.add(new Argument(NotificationManager.PARAM_NODE, null, "1", false));
 

@@ -1246,7 +1246,8 @@
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
                    <exclude>org.ow2.asm:asm-all</exclude>            <!-- doesn't exist anymore, use individual deps -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
-                   <exclude>bsh:*</exclude>                          <!-- use: org.apache-extras.beanshell:bsh -->
+                   <exclude>bsh:*</exclude>                          <!-- BeanShell is dead upstream and has open CVEs; use Groovy -->
+                   <exclude>org.apache-extras.beanshell:*</exclude>  <!-- BeanShell is dead upstream and has open CVEs; use Groovy -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
@@ -3985,11 +3986,6 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache-extras.beanshell</groupId>
-        <artifactId>bsh</artifactId>
-        <version>2.0b6</version>
       </dependency>
       <dependency>
         <groupId>org.mongodb</groupId>
