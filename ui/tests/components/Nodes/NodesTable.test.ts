@@ -5,7 +5,7 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { FilterTypeEnum } from '@/types'
 import { defaultColumns } from '@/components/Nodes/utils'
-import { SORT } from '@featherds/table'
+import { SORT } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -85,7 +85,7 @@ const stubs = {
   NodeTooltipCell: { name: 'NodeTooltipCell', template: '<span></span>', props: ['text'] },
   ManagementIPTooltipCell: { name: 'ManagementIPTooltipCell', template: '<span></span>', props: ['computeNodeIpInterfaceLink', 'node', 'nodeToIpInterfaceMap'] },
   FlowTooltipCell: { name: 'FlowTooltipCell', template: '<span></span>', props: ['node'] },
-  MessageDialog: { name: 'MessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
+  OnmsMessageDialog: { name: 'OnmsMessageDialog', template: '<div></div>', props: ['visible', 'relative', 'maxHeight', 'maxWidth', 'title'] },
   EmptyList: { name: 'EmptyList', template: '<div class="empty-list-stub"></div>', props: ['content'] }
 }
 

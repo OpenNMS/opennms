@@ -1,5 +1,5 @@
 <template>
-  <DataTable
+  <OnmsTable
     lazy
     :value="eventStore.events"
     paginator
@@ -10,39 +10,36 @@
     data-test="events-table"
     @page="onPage"
   >
-    <Column field="id" header="Id">
+    <OnmsColumn field="id" header="Id">
       <template #body="{ data }">
         <router-link :to="`/event/${data.id}`">{{ data.id }}</router-link>
       </template>
-    </Column>
-    <Column field="createTime" header="Created">
+    </OnmsColumn>
+    <OnmsColumn field="createTime" header="Created">
       <template #body="{ data }">
         <span v-date>{{ data.createTime }}</span>
       </template>
-    </Column>
-    <Column field="severity" header="Severity">
+    </OnmsColumn>
+    <OnmsColumn field="severity" header="Severity">
       <template #body="{ data }">
-        <Tag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
+        <OnmsTag :value="data.severity" :severity="severityMap[data.severity?.toLowerCase()] ?? 'secondary'" />
       </template>
-    </Column>
-    <Column field="logMessage" header="Message">
+    </OnmsColumn>
+    <OnmsColumn field="logMessage" header="Message">
       <template #body="{ data }">
         <span v-html="data.logMessage" class="log-message" />
       </template>
-    </Column>
+    </OnmsColumn>
     <template #empty>
       <EmptyList :content="emptyListContent" data-test="empty-list" />
     </template>
-  </DataTable>
+  </OnmsTable>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { type DataTablePageEvent } from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsColumn, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useEventStore } from '@/stores/eventStore'
 
@@ -53,7 +50,7 @@ const pageSize = ref(5)
 const first = ref(0)
 const emptyListContent = { msg: 'No results found.' }
 
-const severityMap: Record<string, string> = {
+const severityMap: Record<string, OnmsTagSeverity> = {
   critical: 'danger',
   major: 'danger',
   minor: 'warn',
@@ -69,7 +66,7 @@ const queryParameters = ref({
   _s: `node.id==${route.params.id}`
 })
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
   pageSize.value = event.rows
   queryParameters.value = {

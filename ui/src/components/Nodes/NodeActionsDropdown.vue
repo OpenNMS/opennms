@@ -1,32 +1,23 @@
 <template>
-  <Button
-    text
+  <OnmsIconButton
     title="Node Actions"
     aria-label="Node Actions"
     aria-haspopup="true"
     :aria-controls="menuId"
     data-test="node-actions-button"
+    :icon="menuIcon"
     @click="toggle"
-  >
-    <FeatherIcon
-      :icon="menuIcon"
-      class="node-actions-icon"
-    />
-  </Button>
-  <Menu
+  />
+  <OnmsMenu
     :id="menuId"
     ref="menu"
-    :model="items"
-    popup
+    :items="items"
   />
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
-import { FeatherIcon } from '@featherds/icon'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
+import MoreVert from '@/components/icons/navigation/MoreVert.vue'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, computed, ref, PropType } from 'vue'
 import { Node } from '@/types'
 
@@ -65,7 +56,7 @@ const linkItems = [
   { name: 'topology', label: 'View Topology Map' }
 ]
 
-const items = computed<MenuItem[]>(() => [
+const items = computed<OnmsMenuItem[]>(() => [
   { label: 'Info...', command: () => props.triggerNodeInfo(props.node) },
   ...linkItems.map(li => ({
     label: li.label,
@@ -117,9 +108,3 @@ const mapLink = (name: string, node: Node) => {
 
 defineExpose({ items })
 </script>
-
-<style lang="scss" scoped>
-.node-actions-icon {
-  font-size: 1.1rem;
-}
-</style>

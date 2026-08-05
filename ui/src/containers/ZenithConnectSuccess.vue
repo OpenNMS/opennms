@@ -15,21 +15,21 @@
             <div>
               <div>Connection response:</div>
               <div class="spacer-medium"></div>
-              <PDataTable
+              <OnmsTable
                 class="kv-table"
                 :value="responseRows"
                 stripedRows
                 size="small"
               >
-                <PColumn field="label" />
-                <PColumn field="value" />
-              </PDataTable>
+                <OnmsColumn field="label" />
+                <OnmsColumn field="value" />
+              </OnmsTable>
               <div class="spacer-medium"></div>
               <div>
                 <div>
                   Click to save values. You will then be redirected back to /zenith-connect to view your existing connections.
                 </div>
-                <PButton
+                <OnmsButton
                   :disabled="savedSuccess"
                   label="Save Values"
                   @click="onSaveValues"
@@ -39,7 +39,7 @@
                 <div>
                   Click to return to view connections. Eventually this will be automatic.
                 </div>
-                <PButton
+                <OnmsButton
                   :disabled="!savedSuccess"
                   label="View Connections"
                   @click="onViewConnections"
@@ -60,14 +60,8 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { v2 } from '@/services/axiosInstances'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { OnmsButton, OnmsColumn, OnmsTable } from '@opennms/onms-ui'
 import { useRoute, useRouter } from 'vue-router'
-
-const PButton = Button
-const PDataTable = DataTable
-const PColumn = Column
 
 const menuStore = useMenuStore()
 const route = useRoute()
@@ -140,7 +134,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .card {
   background: var(--p-content-background);
@@ -158,7 +152,7 @@ onMounted(() => {
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }

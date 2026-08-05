@@ -7,35 +7,28 @@
       <div class="header-content-container">
         <div class="search-container">
           <FormField class="search-field">
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor, UEI or Label"
-                :aria-label="'Search by Source, Vendor, UEI or Label'"
-              />
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor, UEI or Label"
+              :aria-label="'Search by Source, Vendor, UEI or Label'"
+            />
           </FormField>
         </div>
         <div class="refresh">
-          <Button
-            text
+          <OnmsIconButton
             title="Refresh"
             data-test="refresh-button"
+            :icon="Refresh"
             @click="store.refreshSourcesFilters()"
-          >
-            <FeatherIcon :icon="Refresh" />
-          </Button>
+          />
         </div>
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -52,69 +45,62 @@
       class="data-table"
       data-test="event-config-source-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="vendor"
         header="Vendor"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="eventCount"
         header="Event Count"
         sortable
       />
-      <Column header="Status">
+      <OnmsColumn header="Status">
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsIconButton
               :title="`View ${data.name}`"
               data-test="view-button"
+              :icon="ViewDetails"
               @click="onEventClick(data)"
-            >
-              <FeatherIcon :icon="ViewDetails" />
-            </Button>
-            <Button
-              text
+            />
+            <OnmsIconButton
               :title="`Download ${data.name} XML`"
               data-test="download-button"
+              :icon="Download"
               @click="downloadEventConfXmlBySourceId(data.id)"
-            >
-              <FeatherIcon :icon="Download" />
-            </Button>
-            <Button
-              text
+            />
+            <OnmsIconButton
               aria-haspopup="true"
               aria-controls="event-source-row-menu"
               :title="`More actions for ${data.name}`"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <FeatherIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="event-source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -136,22 +122,21 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Refresh from '@featherds/icon/navigation/Refresh'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
+import {
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
+import Download from '@/components/icons/action/DownloadFile.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
@@ -168,12 +153,12 @@ const emptyListContent = {
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: target.enabled ? 'Disable Source' : 'Enable Source',
       command: () => store.showChangeEventConfigSourceStatusDialog(target)
@@ -200,7 +185,7 @@ const onEventClick = (source: EventConfigSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -208,7 +193,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {
@@ -273,24 +258,10 @@ onMounted(async () => {
             width: 100%;
             padding-right: 2.75rem;
           }
-
-          // enlarge the search glyph (FeatherIcon scales with font-size) and
-          // keep it near the right edge, vertically centered
-          :deep(.p-inputicon) {
-            font-size: 1.75rem;
-            right: 0.625rem;
-            margin-top: -0.875rem;
-          }
         }
 
         .refresh {
           display: flex;
-
-          :deep(.p-inputicon) {
-            font-size: 1.75rem;
-            right: 0.625rem;
-            margin-top: -0.875rem;
-          }
         }
       }
     }

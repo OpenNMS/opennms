@@ -1,0 +1,180 @@
+// Vendored table mixins (NMS-19981, Phase 6) — local replacement for the two
+// FeatherDS @featherds/table/scss/table mixins the app actually uses (table,
+// table-condensed) on raw <table> elements. Copied verbatim from FeatherDS,
+// with typography via onms-typography and the border/text color tokens mapped
+// to PrimeVue (--p-*). The other Feather table mixins (row-striped, row-hover,
+// row-select, tbody-*) were unused and are not vendored.
+//
+// Usage (inside a component <style>, scoped under a table selector):
+//   #wrap table { @include onms-table; &.condensed { @include onms-table-condensed; } }
+
+@import '@/styles/onms-typography';
+
+@mixin onms-table-condensed {
+  tr {
+    height: 2.5rem;
+  }
+  thead tr th {
+    height: 3rem;
+  }
+
+  thead {
+    .checkbox-cell,
+    .icon-cell {
+      width: 3rem;
+      padding: 0;
+    }
+  }
+  tbody {
+    .checkbox-cell,
+    .icon-cell {
+      width: 3rem;
+      padding: 0;
+    }
+  }
+}
+
+@mixin onms-table {
+  border-spacing: 0px;
+  @include onms-body-small;
+  color: var(--p-text-muted-color);
+
+  caption {
+    text-align: left;
+    @include onms-subtitle1;
+    color: var(--p-text-color);
+    margin-bottom: 1rem;
+  }
+  th {
+    padding: 0 1rem;
+    align-items: center;
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px solid var(--p-content-border-color);
+    & a {
+      display: inline-block;
+      padding: 0.5rem 0px;
+    }
+  }
+
+  td {
+    padding: 0px 1rem;
+    box-shadow: 0 1px 0 0 var(--p-content-border-color);
+    text-align: left;
+    .btn {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+  th :deep(.btn.btn-icon-table) {
+    height: 1.5rem;
+    width: 1.5rem;
+    border-width: 1px;
+    svg {
+      width: 1.125rem;
+      font-size: 1.125rem;
+      vertical-align: middle;
+    }
+  }
+
+  tbody > tr {
+    background-color: transparent;
+  }
+
+  .checkbox-cell {
+    .layout-container {
+      margin: 0;
+    }
+    .feather-checkbox-table {
+      user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      -webkit-user-select: none;
+      margin-left: 0px;
+    }
+  }
+  .icon-cell {
+    font-size: 1.125rem;
+  }
+  thead {
+    .checkbox-cell,
+    .icon-cell {
+      width: 3.5rem;
+      padding: 0;
+      & > * {
+        vertical-align: middle;
+      }
+    }
+  }
+  tbody {
+    .checkbox-cell,
+    .icon-cell {
+      width: 3.25rem;
+      padding: 0;
+      & > * {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  thead tr th {
+    height: 3.5rem;
+  }
+  // need for selection and hover
+  tr {
+    height: 3.25rem;
+  }
+  tbody > tr {
+    position: relative;
+  }
+
+  // Column alignments
+  $col-limit: 50;
+  %text-left {
+    text-align: left;
+  }
+  %text-right {
+    text-align: right;
+    :deep(.header-flex-container) {
+      justify-content: flex-end;
+    }
+  }
+  %text-center {
+    text-align: center;
+    :deep(.header-flex-container) {
+      justify-content: center;
+    }
+  }
+  .tl {
+    @extend %text-left;
+  }
+  .tr {
+    @extend %text-right;
+  }
+  .tc {
+    @extend %text-center;
+  }
+
+  @for $i from 1 through $col-limit {
+    &.tl#{$i} td:nth-child(#{$i}),
+    &.tl#{$i} th:nth-child(#{$i}) {
+      @extend %text-left;
+    }
+  }
+
+  @for $i from 1 through $col-limit {
+    &.tr#{$i} td:nth-child(#{$i}),
+    &.tr#{$i} th:nth-child(#{$i}) {
+      @extend %text-right;
+    }
+  }
+
+  @for $i from 1 through $col-limit {
+    &.tc#{$i} td:nth-child(#{$i}),
+    &.tc#{$i} th:nth-child(#{$i}) {
+      @extend %text-center;
+    }
+  }
+}

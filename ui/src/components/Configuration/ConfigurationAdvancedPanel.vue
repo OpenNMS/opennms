@@ -13,40 +13,36 @@
         class="item-wrapper"
       >
         <FormField label="Key" class="key-field">
-          <PAutoComplete
+          <OnmsAutoComplete
             :modelValue="item.key"
             optionLabel="name"
             :suggestions="results.list[index]"
             dropdown
-            @complete="(e) => search(e.query, props.type, props.subType, index)"
-            @item-select="(e) => onKeySelect(e.value, index)"
+            @complete="(query: string) => search(query, props.type, props.subType, index)"
+            @optionSelect="(value: unknown) => onKeySelect(value as AdvancedKey, index)"
             @update:modelValue="(val) => onKeyInput(val, index)"
           >
             <template #empty>
               <div class="autocomplete-empty">{{ labels.noResults }}</div>
             </template>
-          </PAutoComplete>
+          </OnmsAutoComplete>
         </FormField>
         <FormField label="Value" class="value-field" :hint="item.hint || ' '">
-          <PInputText v-model="item.value" />
+          <OnmsInputText v-model="item.value" />
         </FormField>
-        <PButton
-          text
+        <OnmsIconButton
+          class="delete-icon"
           aria-label="Delete"
-          v-tooltip="'Delete'"
+          v-onms-tooltip="'Delete'"
+          :icon="Delete"
           @click="() => deleteAdvancedOption(index)"
-        >
-          <FeatherIcon
-            class="delete-icon"
-            :icon="Delete"
-          ></FeatherIcon>
-        </PButton>
+        />
       </div>
       <div class="button-wrapper">
-        <PButton
+        <OnmsButton
           :disabled="buttonAddDisabled"
           @click="addAdvancedOption"
-        >Add</PButton>
+        >Add</OnmsButton>
       </div>
     </div>
   </TogglePanel>
@@ -57,21 +53,14 @@
   lang="ts"
 >
 import { PropType, computed, reactive, ref } from 'vue'
-import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
+import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import Delete from '@/components/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { orderBy } from 'lodash'
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
-
-const PAutoComplete = AutoComplete
-const PButton = Button
-const PInputText = InputText
 
 /**
  * Props
@@ -210,11 +199,11 @@ const search = (searchVal: string, type: string, subType: string, index: number)
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .advanced-panel {
   :deep(.p-panel-title) {
-    @include headline4();
+    @include onms-headline4();
     color: var(--p-primary-color);
   }
 }
@@ -247,6 +236,5 @@ const search = (searchVal: string, type: string, subType: string, index: number)
 }
 .delete-icon {
   color: var(--p-red-500);
-  font-size: 1.5rem;
 }
 </style>

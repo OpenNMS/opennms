@@ -674,21 +674,6 @@ const findSubType = (url: Array<string>) => {
 }
 
 /**
- * This is a workaround for FeatherInput
- * Attributes are not tracked reactively and
- * therefore do not update after the initial render.
- */
-const forceSetHint = (key: { hint: string }, index: number, wrapperClass = '.hint-label') => {
-  const labels = document.querySelectorAll(wrapperClass)
-  if (labels && labels[index]) {
-    const hintLabel = labels[index].querySelector('.feather-input-hint')
-    if (hintLabel) {
-      hintLabel.textContent = key.hint
-    }
-  }
-}
-
-/**
  *
  * @param type Currently set Type of Requisition
  * @returns The hint for the host field if there is one.
@@ -1043,7 +1028,6 @@ export const ConfigurationHelper = {
   createBlankErrors,
   createBlankLocal,
   cronToEnglish,
-  forceSetHint,
   getHostHint,
   parseHint,
   stripOriginalIndexes,

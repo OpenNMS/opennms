@@ -14,8 +14,8 @@
   <context:annotation-config />
 
   <!--
-    The bean is defined twice. Once here, and in component-measurement.xml.
-    The "component-measurement.xml" application context does not need to know about the "osgi:" definition, otherwise all
+    The bean is defined twice. Once here, and in component-dao.xml.
+    The "component-dao.xml" application context does not need to know about the "osgi:" definition, otherwise all
     modules need to depend on core-soa and include "component-soa.xml and component-soa-osgi.xml".
     To prevent this, only for the inclusion of the "onmsgi:service" the bean with id "measurementFetchStrategyFactory" is defined twice.
   -->

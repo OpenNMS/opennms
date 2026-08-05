@@ -5,7 +5,7 @@
   >
     <div class="onms-search-input-wrapper">
       <div class="search-icon">
-        <FeatherIcon :icon="SearchIcon" />
+        <OnmsIcon :icon="SearchIcon" />
       </div>
       <input
         ref="searchInputRef"
@@ -23,7 +23,7 @@
       @mousedown.prevent
     >
       <div class="search-results-toolbar">
-        <FeatherIcon
+        <OnmsIcon
           :icon="CancelIcon"
           class="search-results-close"
           role="button"
@@ -71,9 +71,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import SearchIcon from '@featherds/icon/action/Search'
-import CancelIcon from '@featherds/icon/navigation/Cancel'
+import { OnmsIcon } from '@opennms/onms-ui'
+import SearchIcon from '@/components/icons/action/Search.vue'
+import CancelIcon from '@/components/icons/navigation/Cancel.vue'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'

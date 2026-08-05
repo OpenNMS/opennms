@@ -1,7 +1,7 @@
 <template>
   <div class="logs-sidebar">
     <h3>Search Logs</h3>
-    <PListbox
+    <OnmsListbox
       v-model="selectedLog"
       :options="logs"
       filter
@@ -16,10 +16,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Listbox from 'primevue/listbox'
+import { OnmsListbox } from '@opennms/onms-ui'
 import { useLogStore } from '@/stores/logStore'
-
-const PListbox = Listbox
 
 const logStore = useLogStore()
 const logs = computed(() => logStore.logs)
@@ -32,13 +30,14 @@ watch(() => logStore.selectedLog, (log) => {
   selectedLog.value = log
 })
 
-const onChange = (event: { value: string | null }) => {
+const onChange = (newValue: unknown) => {
   // PrimeVue Listbox single-select treats a click on the already-selected option
   // as a toggle: it emits update:modelValue with null (clearing selectedLog)
   // before emitting @change. Fall back to the currently loaded log so a re-click
   // reloads it and keeps the highlight, matching the old FeatherListItem behavior
   // that reloaded on every click.
-  const log = event.value ?? logStore.selectedLog
+  const value = newValue as string | null
+  const log = value ?? logStore.selectedLog
   if (!log) {
     return
   }

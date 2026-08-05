@@ -46,3 +46,15 @@
     grid-column: span #{$i};
   }
 }
+
+// Max-width content container (replaces FeatherDS .feather-container).
+// 75rem + 1.5rem side padding match the FeatherDS content width/gutter.
+.onms-container {
+  max-width: 75rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  &.full-width {
+    max-width: 100%;
+  }
+}

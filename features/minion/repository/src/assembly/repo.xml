@@ -21,6 +21,8 @@
         <exclude>io/netty/netty-*/4.1.22.Final/*</exclude>
         <exclude>io/netty/netty-*/4.1.77.Final</exclude>
         <exclude>io/netty/netty-*/4.1.77.Final/*</exclude>
+        <exclude>org/bouncycastle/bcprov-jdk18on/1.75</exclude>
+        <exclude>org/bouncycastle/bcprov-jdk18on/1.75/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="resource-type-drawer"
     v-model:visible="store.resourceTypeDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '80rem' }"
+    width="80rem"
     @hide="closeResourceTypeDrawer"
     class="resource-type-drawer"
   >
     <div class="container">
       <div class="content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -25,7 +24,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -40,7 +39,7 @@
           :for="labelId"
           :error="errors.label"
         >
-          <InputText
+          <OnmsInputText
             :id="labelId"
             v-model.trim="label"
             :invalid="!!errors.label"
@@ -55,7 +54,7 @@
           :for="resourceLabelId"
           :error="errors.resourceLabel"
         >
-          <InputText
+          <OnmsInputText
             :id="resourceLabelId"
             v-model.trim="resourceLabel"
             :invalid="!!errors.resourceLabel"
@@ -70,7 +69,7 @@
           :for="storageStrategyId"
           :error="errors.storageStrategy"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="storageStrategyId"
             v-model="storageStrategy"
             :suggestions="storageStrategyResults"
@@ -90,55 +89,51 @@
               <h3>Storage Strategy Parameters</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add Storage Strategy Parameter"
                 data-test="add-storage-strategy-button"
                 @click="openStorageStrategyDrawer(CreateEditMode.Create)"
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="storageStrategyParams"
             paginator
             :rows="3"
             :rowsPerPageOptions="[3, 6, 9]"
             data-test="storage-strategy-table"
           >
-            <Column
+            <OnmsColumn
               field="key"
               header="Key"
             />
-            <Column
+            <OnmsColumn
               field="value"
               header="Value"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
-                    text
+                  <OnmsIconButton
                     title="Edit Storage Strategy Parameter"
                     data-test="edit-storage-strategy-button"
+                    :icon="Edit"
                     @click="openStorageStrategyDrawer(CreateEditMode.Edit, storageStrategyParams.indexOf(data), data)"
-                  >
-                    <FeatherIcon :icon="Edit" />
-                  </Button>
-                  <Button
-                    text
+                  />
+                  <OnmsIconButton
                     title="Delete Storage Strategy Parameter"
                     data-test="delete-storage-strategy-button"
+                    :icon="Delete"
                     @click="deleteStorageStrategy(storageStrategyParams.indexOf(data))"
-                  >
-                    <FeatherIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No Storage Strategy parameters added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -147,7 +142,7 @@
           :for="persistenceSelectorStrategyId"
           :error="errors.persistenceSelectorStrategy"
         >
-          <AutoComplete
+          <OnmsAutoComplete
             :inputId="persistenceSelectorStrategyId"
             v-model="persistenceSelectorStrategy"
             :suggestions="persistenceSelectorStrategyResults"
@@ -167,55 +162,51 @@
               <h3>Persistence Selector Strategy Parameters</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add Persistence Selector Strategy Parameter"
                 data-test="add-persistence-selector-strategy-button"
                 @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Create)"
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="persistenceSelectorStrategyParams"
             paginator
             :rows="3"
             :rowsPerPageOptions="[3, 6, 9]"
             data-test="persistence-selector-strategy-table"
           >
-            <Column
+            <OnmsColumn
               field="key"
               header="Key"
             />
-            <Column
+            <OnmsColumn
               field="value"
               header="Value"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
-                    text
+                  <OnmsIconButton
                     title="Edit Persistence Selector Strategy Parameter"
                     data-test="edit-persistence-selector-strategy-button"
+                    :icon="Edit"
                     @click="openPersistenceSelectorStrategyDrawer(CreateEditMode.Edit, persistenceSelectorStrategyParams.indexOf(data), data)"
-                  >
-                    <FeatherIcon :icon="Edit" />
-                  </Button>
-                  <Button
-                    text
+                  />
+                  <OnmsIconButton
                     title="Delete Persistence Selector Strategy Parameter"
                     data-test="delete-persistence-selector-strategy-button"
+                    :icon="Delete"
                     @click="deletePersistenceSelectorStrategy(persistenceSelectorStrategyParams.indexOf(data))"
-                  >
-                    <FeatherIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No Persistence Selector Strategy parameters added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -232,7 +223,7 @@
             :for="keyId"
             :error="parameterErrors.key"
           >
-            <InputText
+            <OnmsInputText
               :id="keyId"
               v-model.trim="key"
               :invalid="!!parameterErrors.key"
@@ -247,7 +238,7 @@
             :for="valueId"
             :error="parameterErrors.value"
           >
-            <InputText
+            <OnmsInputText
               :id="valueId"
               v-model.trim="value"
               :invalid="!!parameterErrors.value"
@@ -258,13 +249,13 @@
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <Button
-            text
+          <OnmsButton
+            variant="ghost"
             label="Cancel"
             data-test="cancel-resource-type-parameter-button"
             @click="closeParameterDrawer"
           />
-          <Button
+          <OnmsButton
             label="Save"
             data-test="save-resource-type-parameter-button"
             @click="saveResourceTypeParameter"
@@ -276,13 +267,13 @@
         class="footer"
         v-if="!resourceTypeDrawerState.visible"
       >
-        <Button
-          text
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           data-test="cancel-resource-type"
           @click="closeResourceTypeDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save"
           data-test="save-resource-type"
           @click="saveResourceType"
@@ -290,7 +281,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
@@ -305,17 +296,10 @@ import { createResourceType, updateResourceType } from '@/services/snmpDataColle
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import AutoComplete from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
-import ToggleSwitch from 'primevue/toggleswitch'
+import { IAutocompleteItemType } from '@/types'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
@@ -385,12 +369,12 @@ const buildStrategyResults = (options: string[], query: string): IAutocompleteIt
   return filtered
 }
 
-const onSearchStorageStrategy = (event: { query: string }) => {
-  storageStrategyResults.value = buildStrategyResults(STORAGE_STRATEGY_OPTIONS, event.query)
+const onSearchStorageStrategy = (query: string) => {
+  storageStrategyResults.value = buildStrategyResults(STORAGE_STRATEGY_OPTIONS, query)
 }
 
-const onSearchPersistenceSelectorStrategy = (event: { query: string }) => {
-  persistenceSelectorStrategyResults.value = buildStrategyResults(PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, event.query)
+const onSearchPersistenceSelectorStrategy = (query: string) => {
+  persistenceSelectorStrategyResults.value = buildStrategyResults(PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, query)
 }
 
 const openStorageStrategyDrawer = (
@@ -659,7 +643,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
@@ -694,7 +678,7 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
+            @include onms-headline3;
           }
         }
       }
@@ -717,7 +701,7 @@ watch(
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 

@@ -57,39 +57,6 @@
         </argument>
     </command>
     <command binary="false">
-        <name>xmppMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
-        <comment>class for sending XMPP notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>xmppGroupMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPGroupNotificationStrategy</execute>
-        <comment>class for sending XMPP Group Chat notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>ircCat</name>
-        <execute>org.opennms.netmgt.notifd.IrcCatNotificationStrategy</execute>
-        <comment>class for sending IRC notifications via an IRCcat bot</comment>
-        <argument streamed="false">
-            <switch>-email</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
         <name>callWorkPhone</name>
         <execute>org.opennms.netmgt.notifd.asterisk.AsteriskOriginateNotificationStrategy</execute>
         <comment>class for calling via Asterisk for notifications</comment>
@@ -247,6 +214,30 @@
     	<argument streamed="false">
     		<switch>trapVarbind</switch>
     	</argument>
+    </command>
+    <!-- Use this notificationCommand to manage the trouble ticket for the alarm associated with the
+    notification's event: it creates a ticket while the alarm is active and closes that ticket once
+    the alarm is cleared.  Requires a configured ticketer plugin, and the event must have alarm-data.
+    Use a destination path with a non-zero initial-delay so alarmd has associated the event with an
+    alarm before the ticket lookup runs.  The optional ticketUser argument sets the user parameter
+    on the ticket events (defaults to "admin"); it can be supplied per notification with a
+    parameter named "ticketUser" in notifications.xml. -->
+    <command binary="false">
+        <name>troubleTicket</name>
+        <execute>org.opennms.netmgt.notifd.TicketNotificationStrategy</execute>
+        <comment>class for managing the trouble ticket for the alarm associated with the notification's event</comment>
+        <argument streamed="false">
+            <switch>eventID</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>eventUEI</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>noticeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>ticketUser</switch>
+        </argument>
     </command>
 	<command binary="true">
 		<name>syslog</name>

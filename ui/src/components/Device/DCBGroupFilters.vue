@@ -3,33 +3,33 @@
     <p class="title">Group By</p>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, vendorMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, vendorMenu)">
         Vendor
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
-      <PMenu ref="vendorMenu" :model="vendorItems" :popup="true" />
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+      </OnmsButton>
+      <OnmsMenu ref="vendorMenu" :items="vendorItems" />
     </div>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, statusMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, statusMenu)">
         Backup Status
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
-      <PMenu ref="statusMenu" :model="statusItems" :popup="true">
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+      </OnmsButton>
+      <OnmsMenu ref="statusMenu" :items="statusItems">
         <template #item="{ item, props }">
           <a v-bind="props.action">
             <div class="option" :class="item.statusClass">{{ item.label }}</div>
           </a>
         </template>
-      </PMenu>
+      </OnmsMenu>
     </div>
 
     <div class="dropdown">
-      <PButton text class="btn" menu-trigger @click="toggleMenu($event, osImageMenu)">
+      <OnmsButton variant="text" class="btn" menu-trigger @click="toggleMenu($event, osImageMenu)">
         OS Image
-        <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
-      </PButton>
-      <PMenu ref="osImageMenu" :model="osImageItems" :popup="true" />
+        <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+      </OnmsButton>
+      <OnmsMenu ref="osImageMenu" :items="osImageItems" />
     </div>
   </div>
 </template>
@@ -37,15 +37,10 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import Button from 'primevue/button'
-import Menu from 'primevue/menu'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
+import { OnmsButton, OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
+import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
-
-const PButton = Button
-const PMenu = Menu
 
 const deviceStore = useDeviceStore()
 
@@ -72,8 +67,9 @@ const osImageItems = computed(() => deviceStore.osImageOptions.map((option: stri
 const toggleMenu = (event: Event, menuRef: { toggle: (e: Event) => void }) => menuRef.toggle(event)
 
 const onGroupByOptionClick = (groupBy: string, value: string) => {
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     groupBy: groupBy,
     groupByValue: value
@@ -85,7 +81,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .group-filters-container {
   display: flex;
@@ -97,7 +93,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
   padding: 15px;
 
   .title {
-    @include headline4;
+    @include onms-headline4;
     margin-top: 0px;
   }
 

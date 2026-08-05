@@ -1,0 +1,60 @@
+import { OnmsAutoComplete } from '@opennms/onms-ui'
+import { mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
+import { describe, expect, it } from 'vitest'
+
+// NOTE (PrimeVue-reality rule): installed primevue@4.5.5's AutoComplete
+// extends BaseInput, whose computed properties (searchMessage,
+// emptySearchMessage, etc.) read `this.$primevue.config.locale` unconditionally
+// — same issue documented in OnmsInputText.test.ts / OnmsSelect.test.ts.
+// Mounting without the PrimeVue config plugin installed throws "Cannot read
+// properties of undefined (reading 'config')". The brief's mount calls are
+// amended here with `global: { plugins: [PrimeVue] }`; no other assertion
+// changes.
+const globalPlugins = { plugins: [PrimeVue] }
+
+describe('OnmsAutoComplete', () => {
+  it('forwards suggestions/optionLabel/forceSelection and re-emits model updates', () => {
+    const suggestions = [{ label: 'node1' }]
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions, optionLabel: 'label', forceSelection: true, invalid: true },
+      global: globalPlugins
+    })
+    const inner = wrapper.findComponent({ name: 'AutoComplete' })
+    expect(inner.props('suggestions')).toEqual(suggestions)
+    expect(inner.props('optionLabel')).toBe('label')
+    expect(inner.props('forceSelection')).toBe(true)
+    expect(inner.props('invalid')).toBe(true)
+    inner.vm.$emit('update:modelValue', 'node1')
+    expect(wrapper.emitted('update:modelValue')![0]).toEqual(['node1'])
+  })
+
+  it('emits complete with the query string and optionSelect with the value', () => {
+    const wrapper = mount(OnmsAutoComplete, { props: { suggestions: [] }, global: globalPlugins })
+    const inner = wrapper.findComponent({ name: 'AutoComplete' })
+    inner.vm.$emit('complete', { originalEvent: new Event('input'), query: 'nod' })
+    expect(wrapper.emitted('complete')![0]).toEqual(['nod'])
+    inner.vm.$emit('option-select', { originalEvent: new Event('click'), value: { label: 'node1' }})
+    expect(wrapper.emitted('optionSelect')![0]).toEqual([{ label: 'node1' }])
+  })
+
+  it('forwards dropdown/multiple/fluid to the inner AutoComplete', () => {
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions: [], dropdown: true, multiple: true, fluid: true },
+      global: globalPlugins
+    })
+    const inner = wrapper.findComponent({ name: 'AutoComplete' })
+    expect(inner.props('dropdown')).toBe(true)
+    expect(inner.props('multiple')).toBe(true)
+    expect(inner.props('fluid')).toBe(true)
+  })
+
+  it('forwards the empty slot', () => {
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions: [] },
+      slots: { empty: '<div data-test="empty-msg">No results</div>' },
+      global: globalPlugins
+    })
+    expect(wrapper.findComponent({ name: 'AutoComplete' }).vm.$slots.empty).toBeTruthy()
+  })
+})

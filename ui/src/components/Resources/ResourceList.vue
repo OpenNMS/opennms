@@ -2,7 +2,7 @@
   <div class="onms-row">
     <div class="onms-col-12">
       <FormField label="Search/Filter Resources" class="search-field">
-        <PInputText
+        <OnmsInputText
           :modelValue="searchValue"
           @update:modelValue="(val) => search(val as string)"
         />
@@ -21,15 +21,13 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsInputText } from '@opennms/onms-ui'
 import { computed, ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
 import FormField from '@/components/Common/FormField.vue'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
-
-const PInputText = InputText
 
 const graphStore = useGraphStore()
 const resourceStore = useResourceStore()

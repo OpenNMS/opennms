@@ -13,7 +13,7 @@
 
       <!-- Provision/Quick add node menu -->
       <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
-        <Button
+        <OnmsButton
           v-if="mainMenu.provisionMenu"
           label="Add a Node"
           @click="onAddNode"
@@ -28,7 +28,7 @@
       </div>
 
        <span title="Toggle Light/Dark Mode">
-        <FeatherIcon
+        <OnmsIcon
             :icon="LightDarkMode"
             title="Toggle Light/Dark Mode"
             class="light-dark"
@@ -58,10 +58,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 
-import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
-import { FeatherIcon } from '@featherds/icon'
-import LightDarkMode from '@featherds/icon/action/LightDarkMode'
-import Button from 'primevue/button'
+import { useOutsideClick } from '@/composables/useOutsideClick'
+import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -174,10 +173,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/dropdown/scss/mixins";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 // Fixed top menu bar. Replaces FeatherAppBar, which was used only as a fixed
 // 3-column flex bar (its skip-link, responsive hamburger, scroll-hide and
@@ -187,13 +184,13 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: var(--feather-zindex-fixed, 1030);
+  z-index: var(--onms-zindex-fixed, 1030);
   display: flex;
   align-items: center;
   height: var(--onms-header-height, 3.75rem);
   padding: 0 1rem;
-  background-color: var(--feather-surface-dark);
-  color: var(--feather-state-text-color-on-surface-dark);
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
 }
 
 .onms-menubar__left {
@@ -230,29 +227,29 @@ onUnmounted(() => {
   max-width: none;
 }
 
-// Notification-status colors stay on their light-theme Feather values so
-// the indicator meaning doesn't change with the active theme. We re-declare
-// the Feather CSS variables locally with their light-mode values and keep
-// the consuming rules pointing at the Feather variable names.
+// Notification-status colors stay on their light-mode values so the indicator
+// meaning doesn't change with the active theme. We re-declare the onms token
+// variables locally with those fixed values and keep the consuming rules
+// pointing at the token variable names.
 .alarm-error,
 .alarm-ok,
 .alarm-unknown {
-  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
+  --onms-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
 }
 
 .alarm-error {
-  --feather-error: #a5021f;
+  --onms-error: #a5021f;
   background-color: var($error);
 }
 
 .alarm-ok {
-  --feather-success: #0b720c;
+  --onms-success: #0b720c;
   background-color: var($success);
 }
 
 .alarm-unknown {
-  --feather-indeterminate: #0092c7;
+  --onms-indeterminate: #0092c7;
   background-color: var($indeterminate);
 }
 
@@ -278,7 +275,7 @@ onUnmounted(() => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
-  font-family: var(--feather-header-font-family);
+  font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
   margin-right: 1em;
 
@@ -305,7 +302,7 @@ onUnmounted(() => {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 0.5rem;
-  color: var(--feather-state-text-color-on-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   cursor: pointer;
   outline: none;
 
@@ -314,7 +311,7 @@ onUnmounted(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: 2px;
     border-radius: 4px;
   }

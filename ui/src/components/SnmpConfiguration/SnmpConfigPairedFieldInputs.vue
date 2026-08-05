@@ -11,7 +11,7 @@
           :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
         >
-          <PSelect
+          <OnmsSelect
             :inputId="fieldId(field.key)"
             class="paired-input"
             :data-test="field.dataTest"
@@ -32,7 +32,7 @@
             :error="(props.validationErrors as any)[field.key]"
             :hint="field.hint"
           >
-            <PInputText
+            <OnmsInputText
               :id="fieldId(field.key)"
               class="paired-input scv-enabled-input"
               :data-test="field.dataTest"
@@ -58,13 +58,12 @@
           :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
         >
-          <PInputNumber
+          <OnmsInputNumber
             :inputId="fieldId(field.key)"
             class="paired-input"
             :inputProps="{ 'data-test': field.dataTest }"
             :disabled="field.disabled"
             :modelValue="(props.config as any)[field.key]"
-            :useGrouping="false"
             :invalid="!!(props.validationErrors as any)[field.key]"
             @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), true)"
           />
@@ -78,7 +77,7 @@
           :error="(props.validationErrors as any)[field.key]"
           :hint="field.hint"
         >
-          <PInputText
+          <OnmsInputText
             :id="fieldId(field.key)"
             class="paired-input"
             :data-test="field.dataTest"
@@ -94,18 +93,12 @@
 </template>
 
 <script setup lang="ts">
+import { OnmsInputNumber, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { computed, onMounted, ref, useId, watch } from 'vue'
 
 import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
-
-const PInputText = InputText
-const PInputNumber = InputNumber
-const PSelect = Select
 
 // Unique per-instance prefix so label `for`/input `id` pairs don't collide
 // across the several PairedFieldInputs instances (and tab panels) that PrimeVue
@@ -119,7 +112,7 @@ const props = defineProps<{
   validationErrors: SnmpConfigFormErrors
 }>()
 
-// key: ISelectItemType for FeatherSelect component models
+// key: ISelectItemType for Select component models
 const selectModel = ref<Record<string, any>>({})
 
 const emit = defineEmits<{
@@ -163,7 +156,7 @@ const handleFormSelectUpdate = (key: string, val?: any, isNumeric?: boolean) => 
   const selectedOption = field?.selectOptions?.find(option => option._value === value)
 
   if (value?.length > 0) {
-    // update the FeatherSelect model value
+    // update the Select model value
     selectModel.value = {
       ...selectModel.value,
       [key]: selectedOption
@@ -189,7 +182,7 @@ const updateSelectValues = () => {
     // from the field's selectOptions, find the option that matches the current value
     const selectedOption = field.selectOptions?.find(option => option._value === value)
 
-    // update the model for the corresponding FeatherSelect
+    // update the model for the corresponding Select
     newModel = {
       ...newModel,
       [field.key]: {

@@ -1,9 +1,8 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     v-model:visible="drawerVisible"
-    position="right"
     header="Customize Columns"
-    :style="{ width: '55em' }"
+    width="55em"
   >
     <div class="drawer-content">
       <section>
@@ -19,10 +18,12 @@
       >
         <template #item="{ element, index }">
           <div class="column-row">
-            <Button text class="drag-btn">
-              <FeatherIcon class="close-icon drag-handle" :icon="Apps" />
-            </Button>
-            <Select
+            <OnmsIconButton
+              class="drag-btn close-icon drag-handle"
+              aria-label="Reorder column"
+              :icon="Apps"
+            />
+            <OnmsSelect
               v-model="element.value"
               :options="getAvailableOptions(index)"
               optionLabel="name"
@@ -30,41 +31,38 @@
               :placeholder="`Column ${index + 1}`"
               class="columns-selector"
             />
-            <Button
-              text
+            <OnmsIconButton
               :data-test="`remove-column-${index}`"
+              title="Remove column"
+              class="close-icon"
+              :icon="Cancel"
               @click="removeColumn(index)"
-            >
-              <FeatherIcon class="close-icon" :icon="Cancel" />
-            </Button>
+            />
           </div>
         </template>
       </Draggable>
       <div class="spacer-medium"></div>
       <div class="button-row">
-        <Button @click="customizeTable">Save</Button>
-        <Button
-          outlined
+        <OnmsButton @click="customizeTable">Save</OnmsButton>
+        <OnmsButton
+          variant="outlined"
           :disabled="selectedColumns.length >= 10"
           @click="addColumn"
-        >Add Column</Button>
-        <Button outlined @click="resetColumns">Reset Columns</Button>
-        <Button outlined @click="nodeStructureStore.columnsDrawerState.visible = false">Close</Button>
+        >Add Column</OnmsButton>
+        <OnmsButton variant="outlined" @click="resetColumns">Reset Columns</OnmsButton>
+        <OnmsButton variant="outlined" @click="nodeStructureStore.columnsDrawerState.visible = false">Close</OnmsButton>
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import Apps from '@featherds/icon/navigation/Apps'
-import Cancel from '@featherds/icon/navigation/Cancel'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'

@@ -1,37 +1,31 @@
 <template>
-  <PButton
-    text
+  <OnmsIconButton
     class="compare-btn"
     aria-label="Compare configs"
-    v-tooltip="'Compare configs'"
-    @click="onCompare"
+    v-onms-tooltip="'Compare configs'"
     v-if="!isCompareView"
     :disabled="!config1 || !config2"
-  >
-    <FeatherIcon :icon="Compare" />
-  </PButton>
+    :icon="Compare"
+    @click="onCompare"
+  />
 
-  <PButton
-    text
+  <OnmsIconButton
     class="return-btn"
     aria-label="Return"
-    v-tooltip="'Return'"
-    @click="onReturn"
+    v-onms-tooltip="'Return'"
     v-if="isCompareView"
-  >
-    <FeatherIcon :icon="Restore" />
-  </PButton>
+    :icon="Restore"
+    @click="onReturn"
+  />
 
-  <PButton
-    text
+  <OnmsIconButton
     class="dwnld-btn"
     aria-label="Download configs"
-    v-tooltip="'Download configs'"
-    @click="onDownload"
+    v-onms-tooltip="'Download configs'"
     v-if="isCompareView"
-  >
-    <FeatherIcon :icon="Download" />
-  </PButton>
+    :icon="Download"
+    @click="onDownload"
+  />
 
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
   <p
@@ -44,12 +38,12 @@
     aria-label="Compare selected configurations."
     v-if="config1 && config2"
   >
-    <PChip>
+    <OnmsChip>
       <span v-date>{{ config1.lastBackupDate }}</span>
-    </PChip>
-    <PChip>
+    </OnmsChip>
+    <OnmsChip>
       <span v-date>{{ config2.lastBackupDate }}</span>
-    </PChip>
+    </OnmsChip>
   </div>
 
   <div class="flex-container" v-if="!isCompareView">
@@ -61,8 +55,7 @@
           v-for="config of deviceStore.historyModalBackups"
           :key="config.id"
         >
-          <PCheckbox
-            binary
+          <OnmsCheckbox
             :inputId="`dcb-date-${config.id}`"
             :modelValue="selectedConfigs[config.id]"
             @update:modelValue="onCheckbox(config)"
@@ -88,20 +81,13 @@ import { computed, onMounted, ref } from 'vue'
 
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Chip from 'primevue/chip'
-import { FeatherIcon } from '@featherds/icon'
-import Restore from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
+import { OnmsCheckbox, OnmsChip, OnmsIconButton } from '@opennms/onms-ui'
+import Restore from '@/components/icons/action/Restore.vue'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
-
-const PButton = Button
-const PCheckbox = Checkbox
-const PChip = Chip
 
 const deviceStore = useDeviceStore()
 
@@ -218,7 +204,7 @@ onMounted(() => getHistoryBackups())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .flex-container {
   display: flex;
   max-width: 1000px;
@@ -228,7 +214,7 @@ onMounted(() => getHistoryBackups())
 
   .checkbox-group {
     .group-label {
-      @include subtitle2;
+      @include onms-subtitle2;
     }
   }
 
@@ -238,7 +224,7 @@ onMounted(() => getHistoryBackups())
     white-space: nowrap;
 
     .history-date {
-      @include body-small;
+      @include onms-body-small;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -257,7 +243,7 @@ onMounted(() => getHistoryBackups())
   overflow: auto;
 }
 .select-msg {
-  @include subtitle1;
+  @include onms-subtitle1;
   color: var(--p-primary-color);
   padding-left: 15px;
   margin-bottom: 33px;
@@ -269,7 +255,7 @@ onMounted(() => getHistoryBackups())
   margin-bottom: 23px;
 }
 .changes {
-  @include button;
+  @include onms-button;
 
   .deletions {
     color: var(--p-red-500);

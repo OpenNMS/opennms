@@ -5,7 +5,7 @@
       <div v-if="displayTable" class="info-section">
         <div>
           <span>SNMP profiles provide sets of SNMP configuration that can be applied to devices matching specific filter criteria.</span>
-          <FeatherIcon
+          <OnmsIcon
             :icon="InfoIcon"
             class="info-icon"
             @click="isMessageDialogVisible = true"
@@ -31,7 +31,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Profiles"
       @close="isMessageDialogVisible = false"
@@ -44,21 +44,20 @@
           <p>A profile with a filter expression will be fitted to a given IP address only if the filter expression evaluates true against that IP address.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import { OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
 import SnmpConfigProfilesTable from './SnmpConfigProfilesTable.vue'
 import SnmpConfigProfileBasicInformation from './SnmpConfigProfileBasicInformation.vue'
-import MessageDialog from '../Common/MessageDialog.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
@@ -107,9 +106,8 @@ const onDeleteProfile = async (label: string) => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-profiles-tab {

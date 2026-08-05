@@ -13,6 +13,7 @@
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>
+    <module>daemon</module>
     <module>servlet</module>
     <module>bridge</module>
     <module>jaas-login-module</module>

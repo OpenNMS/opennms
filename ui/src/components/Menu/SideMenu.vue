@@ -15,12 +15,12 @@
       :aria-expanded="isPinned"
       @click="togglePinned"
     >
-      <i class="pi" :class="isPinned ? 'pi-angle-double-left' : 'pi-angle-double-right'" aria-hidden="true" />
+      <OnmsIcon :icon="isPinned ? ChevronLeft : ChevronRight" />
     </button>
 
     <TieredMenu
       ref="tieredMenuRef"
-      :model="topPanels"
+      :model="topPanels as never"
       class="onms-side-menu__menu"
       breakpoint="0px"
     >
@@ -35,7 +35,7 @@
             <component :is="item.iconComponent" v-if="item.iconComponent" aria-hidden="true" />
           </span>
           <span class="onms-side-menu__label">{{ item.label }}</span>
-          <i v-if="hasSubmenu" class="pi pi-angle-right onms-side-menu__chevron" aria-hidden="true" />
+          <OnmsIcon v-if="hasSubmenu" :icon="ChevronRight" class="onms-side-menu__chevron" />
         </a>
       </template>
     </TieredMenu>
@@ -45,8 +45,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+// eslint-disable-next-line no-restricted-imports -- deliberately unwrapped: SideMenu drives TieredMenu internals (dirty flag, DOM queries); revisit when the side menu is redesigned (NMS-20081)
 import TieredMenu from 'primevue/tieredmenu'
-import type { MenuItem } from 'primevue/menuitem'
+import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -110,7 +113,11 @@ const onPerformLogout = async () => {
   await performLogout()
 }
 
-const topPanels = computed<MenuItem[]>(() => {
+// `as never` at the :model binding above: PrimeVue's own MenuItem.label
+// accepts a render function in addition to string, which our narrower
+// OnmsMenuItem.label doesn't — TS rejects the plain assignment even though
+// this is structurally what TieredMenu expects at runtime.
+const topPanels = computed<OnmsMenuItem[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
     return []
@@ -260,7 +267,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // Fixed, collapsible side menu rail. Replaces FeatherSidenav/FeatherDock.
 // Pinned dark (independent of the active light/dark app theme) so it stays
@@ -274,8 +281,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   width: var(--onms-side-menu-collapsed, 3.75rem);
-  background-color: var(--feather-surface-dark);
-  color: var(--feather-state-text-color-on-surface-dark);
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   transition: width 0.1s linear;
   // The nav itself does not scroll (the inner .p-tieredmenu list does); keep it
   // visible so the toggle button and rail chrome are never clipped.
@@ -283,16 +290,16 @@ onBeforeUnmount(() => {
 
   // Force the TieredMenu (and its flyout submenus, which are descendants of
   // this nav) onto the dark surface via PrimeVue design tokens.
-  --p-tieredmenu-background: var(--feather-surface-dark);
-  --p-tieredmenu-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-background: var(--onms-surface-dark);
+  --p-tieredmenu-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-border-color: transparent;
   --p-tieredmenu-border-radius: 0;
-  --p-tieredmenu-item-color: var(--feather-state-text-color-on-surface-dark);
-  --p-tieredmenu-item-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-color: var(--onms-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-item-focus-color: #fff;
   --p-tieredmenu-item-icon-focus-color: #fff;
   --p-tieredmenu-item-focus-background: rgba(255, 255, 255, 0.12);
-  --p-tieredmenu-submenu-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-submenu-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-submenu-icon-focus-color: #fff;
   --p-tieredmenu-separator-border-color: rgba(255, 255, 255, 0.2);
 }
@@ -319,7 +326,7 @@ onBeforeUnmount(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: -2px;
   }
 }

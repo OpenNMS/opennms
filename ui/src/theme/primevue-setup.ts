@@ -21,7 +21,7 @@
 ///
 
 import PrimeVue from 'primevue/config'
-import Tooltip from 'primevue/tooltip'
+import { OnmsTooltip } from '@opennms/onms-ui'
 import OpenNMSPreset from './opennms-preset'
 import 'primeicons/primeicons.css'
 import '@/styles/primevue-overrides.scss'
@@ -50,5 +50,5 @@ export const setupPrimeVue = (app: App) => {
     }
   })
 
-  app.directive('tooltip', Tooltip)
+  app.directive('onms-tooltip', OnmsTooltip)
 }

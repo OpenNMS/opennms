@@ -4,17 +4,12 @@
     :class="props?.active ? 'config-help-panel-open' : ''"
   >
     <div class="config-help-close">
-      <PButton
+      <OnmsIconButton
         class="button"
-        text
         aria-label="Close help"
+        :icon="chevronRight"
         @click="onClose"
-      >
-        <FeatherIcon
-          class="buttonIcon"
-          :icon="chevronRight"
-        />
-      </PButton>
+      />
     </div>
     <div class="config-help-header">
       <div class="config-help-title">
@@ -43,14 +38,11 @@
 >
 import { PropType, computed } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import Button from 'primevue/button'
+import { OnmsIconButton } from '@opennms/onms-ui'
 
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { LocalConfiguration } from './configuration.types'
-
-const PButton = Button
 
 /**
  * Props
@@ -184,7 +176,7 @@ const helpText = computed(() => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .config-help-close {
   display: flex;
@@ -192,7 +184,6 @@ const helpText = computed(() => {
   padding-top: 12px;
   height: 50px;
   .button {
-    font-size: 42px;
     color: var(--p-primary-color);
     display: flex;
     align-items: center;
@@ -223,12 +214,12 @@ const helpText = computed(() => {
   }
 }
 .config-help-title {
-  @include headline2();
+  @include onms-headline2();
   color: var(--p-primary-color);
   margin-top: 32px;
 }
 .config-help-body {
-  @include body-small();
+  @include onms-body-small();
   margin-top: 12px;
   p {
     margin-bottom: 24px;
@@ -246,7 +237,7 @@ const helpText = computed(() => {
     color: var(--p-primary-color);
   }
   .footer-subtitle {
-    @include headline4();
+    @include onms-headline4();
     font-weight: 700;
   }
   .footer-button {

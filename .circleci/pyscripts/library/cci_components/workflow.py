@@ -109,7 +109,14 @@ class workflow:
                 # Since we have expanded the dependency we don't need this anymore
                 del tmp_output_elements["extends"]
 
-            if "filters" in tmp_output_elements:
+            if "filters" in tmp_output_elements and isinstance(
+                tmp_output_elements["filters"], str
+            ):
+                # A string filter is a pipeline value expression (CircleCI
+                # "config next" job-level `filters:`), always mandatory -
+                # there's no branches/tags dict for user_overridable to live on.
+                print("We cannot disable filters for " + job + "")
+            elif "filters" in tmp_output_elements:
                 if "user_overridable" in tmp_output_elements["filters"]:
                     if (
                         tmp_output_elements["filters"]["user_overridable"]
@@ -130,7 +137,15 @@ class workflow:
                 tmp_output[-1] += ":"
             # lets loop through the elements
             for element in tmp_output_elements:
-                if "filters" in element:
+                if "filters" in element and isinstance(
+                    tmp_output_elements[element], str
+                ):
+                    tmp_output.append(
+                        self._common_library.create_space(leading_space + 4)
+                        + "filters: "
+                        + tmp_output_elements[element]
+                    )
+                elif "filters" in element:
                     tmp_output.append(
                         self._common_library.create_space(leading_space + 4)
                         + "filters:"

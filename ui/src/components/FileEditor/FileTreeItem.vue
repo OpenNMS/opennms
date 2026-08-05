@@ -7,7 +7,7 @@
   >
     <div :class="{ subtitle1: isFolder, subtitle2: !isFolder }" @click="toggle">
       <span v-if="isFolder">
-        <FeatherIcon :icon="isOpen ? Open : Close" />
+        <OnmsIcon :icon="isOpen ? Open : Close" />
       </span>
 
       <span v-if="!isEditing">{{ item.name }}</span>
@@ -15,7 +15,7 @@
       <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp; +</span>
 
       <span class="remove" v-if="item.fullPath === selectedFile">
-        <FeatherIcon :icon="Remove" @click.stop="openConfirmDeleteModal(item)" />
+        <OnmsIcon :icon="Remove" @click.stop="openConfirmDeleteModal(item)" />
       </span>
 
       <NewFileInput v-if="isEditing" :item="item" />
@@ -34,10 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherIcon } from '@featherds/icon'
-import Open from '@featherds/icon/navigation/ExpandMore'
-import Close from '@featherds/icon/navigation/ChevronRight'
-import Remove from '@featherds/icon/action/Remove'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Open from '@/components/icons/navigation/ExpandMore.vue'
+import Close from '@/components/icons/navigation/ChevronRight.vue'
+import Remove from '@/components/icons/action/Remove.vue'
 import NewFileInput from './NewFileInput.vue'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
 import { PropType, computed, ref, watch } from 'vue'

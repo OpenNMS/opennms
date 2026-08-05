@@ -56,14 +56,14 @@ const displayContainer = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .container {
   border: 2px solid var(--p-content-border-color);
   margin-bottom: 15px;
 
   .header {
-    @include headline3();
+    @include onms-headline3();
     text-align: center;
     padding: 6px;
     background: var(--p-datatable-header-cell-background);

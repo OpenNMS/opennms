@@ -88,6 +88,14 @@ Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they a
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== XMPP (Jabber) notification strategies removed
+The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
+Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
+
+=== IRCcat notification strategy removed
+The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
+An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
@@ -130,6 +138,10 @@ These provided auto-rotating, dashlet-composed displays intended for wall-mounte
 
 The *Ops Board* and *Wallboard* main-menu entries and the `admin/wallboardConfig.jsp` page no longer exist, and any existing Ops Board configuration is no longer used.
 There is no drop-in replacement.
+
+=== Actiond removed
+
+The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have been removed. Actiond-related event fields will still validate but are ignored.
 
 === KSC Reports renamed to Graph Collections
 

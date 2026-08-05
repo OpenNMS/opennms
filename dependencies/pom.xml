@@ -11,7 +11,6 @@
   <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>
-    <module>activemq-web</module>
     <module>asterisk</module>
     <module>atomikos</module>
     <module>camel</module>
@@ -50,7 +49,6 @@
     <module>pax-exam</module>
     <module>quartz</module>
     <module>servlet</module>
-    <module>smack</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>
     <module>snmp</module>
@@ -60,7 +58,6 @@
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>
-    <module>twitter4j</module>
     <module>jcifs-shaded</module>
   </modules>
 </project>

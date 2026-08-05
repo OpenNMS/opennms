@@ -83,7 +83,10 @@ describe('ResourceTypeCreationDrawer.vue', () => {
 
   describe('Strategy autocomplete search', () => {
     it('filters storage strategy options and offers a custom value', () => {
-      wrapper.vm.onSearchStorageStrategy({ query: 'zzz-custom' })
+      // NMS-20029: onSearchStorageStrategy now receives the query string
+      // directly (OnmsAutoComplete's `complete` event emits the raw string,
+      // not PrimeVue's `{ query }` event object).
+      wrapper.vm.onSearchStorageStrategy('zzz-custom')
       expect(wrapper.vm.storageStrategyResults).toEqual([{ _text: 'zzz-custom', _value: 'zzz-custom' }])
     })
   })

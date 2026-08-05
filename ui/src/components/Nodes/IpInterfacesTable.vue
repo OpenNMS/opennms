@@ -1,5 +1,5 @@
 <template>
-  <DataTable
+  <OnmsTable
     lazy
     :value="nodeStore.ipInterfaces"
     paginator
@@ -10,28 +10,26 @@
     data-test="ip-interfaces-table"
     @page="onPage"
   >
-    <Column field="ipAddress" header="IP Address" />
-    <Column field="hostName" header="IP Host Name">
+    <OnmsColumn field="ipAddress" header="IP Address" />
+    <OnmsColumn field="hostName" header="IP Host Name">
       <template #body="{ data }">{{ data.hostName || 'N/A' }}</template>
-    </Column>
-    <Column field="ifIndex" header="SNMP ifIndex">
+    </OnmsColumn>
+    <OnmsColumn field="ifIndex" header="SNMP ifIndex">
       <template #body="{ data }">{{ data.ifIndex || 'N/A' }}</template>
-    </Column>
-    <Column field="isManaged" header="Managed">
+    </OnmsColumn>
+    <OnmsColumn field="isManaged" header="Managed">
       <template #body="{ data }">{{ data.isManaged || 'N/A' }}</template>
-    </Column>
+    </OnmsColumn>
     <template #empty>
       <EmptyList :content="emptyListContent" data-test="empty-list" />
     </template>
-  </DataTable>
+  </OnmsTable>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { type DataTablePageEvent } from 'primevue/datatable'
+import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 
@@ -48,7 +46,7 @@ const queryParameters = ref({
   _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
 })
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
   pageSize.value = event.rows
   queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }

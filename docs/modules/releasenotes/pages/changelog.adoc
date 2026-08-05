@@ -2,6 +2,16 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.3]]
+
+== Release 36.0.3
+
+=== Enhancement
+
+* Remove the defunct microblog (Twitter/Identi.ca/StatusNet) notification strategies (Issue https://issues.opennms.org/browse/NMS-20098[NMS-20098])
+* Remove the XMPP (Jabber) notification strategies (Issue https://issues.opennms.org/browse/NMS-20099[NMS-20099])
+* Remove the IRCcat notification strategy (Issue https://issues.opennms.org/browse/NMS-20112[NMS-20112])
+
 [[releasenotes-changelog-36.0.2]]
 
 == Release 36.0.2

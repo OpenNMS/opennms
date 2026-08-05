@@ -210,9 +210,6 @@
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6$Bundle-SymbolicName=net.sf.ezmorph&amp;Bundle-Version=1.0.6</bundle>
         <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15$Bundle-SymbolicName=net.sf.json-lib&amp;Bundle-Version=2.2.3</bundle>
     </feature>
-    <feature name="lmax-disruptor" version="${lmaxDisruptorVersion}" description="LMAX :: Disruptor">
-        <bundle>mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
-    </feature>
     <feature name="org.json" version="${jsonVersion}" description="org.json">
         <bundle>wrap:mvn:org.json/json/${jsonVersion}$Bundle-SymbolicName=org.json&amp;Bundle-Version=${jsonVersion}&amp;Export-Package=org.json</bundle>
     </feature>
@@ -248,9 +245,6 @@
         <bundle>mvn:com.zaxxer/HikariCP/2.7.9</bundle>
         <bundle>mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
-    <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
-        <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}$Bundle-SymbolicName=org.twitter4j.core&amp;Bundle-Version=${twitter4jVersion}</bundle>
-    </feature>
     <feature name="opentracing-api" version="${opentracingVersion}" description="OpenTracing API">
         <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.api&amp;Bundle-Version=${opentracingVersion}</bundle>
         <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.noop&amp;Bundle-Version=${opentracingVersion}</bundle>
@@ -284,9 +278,6 @@
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-bootstrap" version="${project.version}" description="opennms-bootstrap">
-        <bundle>mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
-    </feature>
 
     <feature name="opennms-identity" version="${project.version}" description="OpenNMS :: Features :: OpenNMS Identity">
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.opennms-identity/${project.version}</bundle>
@@ -810,13 +801,6 @@
         <feature>opennms-dao-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.eif-adapter/${project.version}</bundle>
     </feature>
-    <feature name="smack" version="${smackVersion}" description="Ignite Realtime :: Smack">
-        <bundle>mvn:org.igniterealtime.smack/smack-core/${smackVersion}$Bundle-Sym</bundle>
-        <bundle>mvn:org.igniterealtime.smack/smack-tcp/${smackVersion}</bundle>
-        <bundle>mvn:org.igniterealtime.smack/smack-extensions/${smackVersion}</bundle>
-        <bundle>mvn:org.igniterealtime.smack/smack-resolver-javax/${smackVersion}</bundle>
-        <bundle>wrap:mvn:xmlpull/xmlpull/1.1.3.1$Bundle-SymbolicName=xmlpull&amp;Bundle-Version=1.1.3.1</bundle>
-    </feature>
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
         <feature>guava</feature>
         <feature>javax.servlet</feature>
@@ -1037,26 +1021,6 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-telemetry-daemon" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
-        <feature>bson</feature>
-        <feature>camel-spring</feature>
-        <feature>dropwizard-metrics</feature>
-        <feature version="${netty4Version}">netty</feature>
-        <feature>opennms-core-daemon</feature>
-        <feature>opennms-core-ipc-sink-api</feature>
-        <feature>opennms-dao-api</feature>
-        <feature>opennms-dao</feature>
-        <feature>opennms-telemetry-collection</feature>
-        <feature>opennms-util</feature>
-        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
-    </feature>
     <feature name="opennms-telemetry-bmp" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-bmp-adapter</feature>
         <feature>rate-limited-logger</feature>
@@ -1659,19 +1623,6 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
     </feature>
 
-    <feature name="netty4" version="${netty4Version}" description="Netty">
-        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
-    </feature>
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
         <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>
@@ -1825,9 +1776,6 @@
         <feature>opennms-graph-service</feature>
         <feature>opennms-graph-domain</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
-        <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
         <feature>jackson-dataformat-yaml</feature>
