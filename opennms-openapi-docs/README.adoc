@@ -32,16 +32,15 @@ committed copies have drifted, so this is not optional.
 `OpenApiDocGenerator` finds resources the same way `<jaxrs:server basePackages>`
 does, by scanning `org.opennms.web.rest.v1` and `org.opennms.web.rest.v2` on its
 own classpath. A module that contributes classes to those packages therefore has
-to be a test-scope dependency of this module, or its endpoints silently vanish
-from the documents.
+to be a dependency of this module, or its endpoints silently vanish from the
+documents.
 
 `OpenApiDocsContentTest` asserts a sentinel endpoint for each module known
 today. Add one there when you add a module here.
 
-The rest of the classpath restates what `opennms-webapp-rest` marks `provided`.
-Provided scope is not transitive, but the generator still needs those classes to
-load the resources, so keep that list in step with the `${onmsLibScope}` block in
-`opennms-webapp-rest/pom.xml`.
+Every dependency here is `provided`, so none of it reaches consumers of this
+artifact. The list restates what `opennms-webapp-rest` marks provided, so keep it
+in step with the `${onmsLibScope}` block in `opennms-webapp-rest/pom.xml`.
 
 Depending on `opennms-base-assembly` would say the same thing far more compactly,
 since it lists what ends up in `$OPENNMS_HOME/lib`. It is not a module of the root

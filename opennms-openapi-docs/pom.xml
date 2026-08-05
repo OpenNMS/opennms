@@ -14,323 +14,318 @@
   </description>
 
   <dependencies>
-    <!-- Test scope throughout: the artifact holds nothing but the generated JSON. -->
-
     <!--
-      opennms-webapp-rest marks these provided, so they do not arrive transitively,
-      but the generator needs them to load the ReST resource classes. Keep in step
-      with the ${onmsLibScope} block in opennms-webapp-rest/pom.xml.
+      Provided throughout, so consumers of this artifact get only the generated
+      JSON. Mirrors the ${onmsLibScope} block in opennms-webapp-rest/pom.xml.
     -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-email</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.rest-provider</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
       <type>pom</type>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.config</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.service.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.topology-views</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${gsonVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator-annotation-processor</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.config-dao.poll-outages.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.config-dao.thresholding.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jdk8</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-json-org</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.activation</groupId>
       <artifactId>jakarta.activation-api</artifactId>
       <version>1.2.2</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
       <version>${swaggerVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-core</artifactId>
       <version>${swaggerVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-models</artifactId>
       <version>${swaggerVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
       <version>${swaggerVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.api</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.config.dao</groupId>
       <artifactId>org.opennms.features.config.dao.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <!--
-      Any module contributing classes to org.opennms.web.rest.v1 or .v2 must be listed
-      here, or its endpoints go missing from the documents without failing the build.
-      OpenApiDocsContentTest guards the ones known today.
+      A module contributing to org.opennms.web.rest.v1 or .v2 and missing here loses
+      its endpoints silently; OpenApiDocsContentTest guards the ones known today.
     -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp-rest</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.rest.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.status</groupId>
       <artifactId>org.opennms.features.status.rest</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
       <artifactId>org.opennms.features.geolocation.rest</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.rest</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <!--
-      cxf-rt-rs-service-description-openapi-v3 is needed for its
-      META-INF/services OpenAPIExtension, which is what reads @Context and
-      SearchContext parameters correctly.
+      cxf-rt-rs-service-description-openapi-v3 is here for its META-INF/services
+      OpenAPIExtension, which reads @Context and SearchContext parameters correctly.
     -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-jaxrs2</artifactId>
       <version>${swaggerVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
       <exclusions>
         <!-- Banned by the enforcer; jakarta.xml.bind-api is listed above instead. -->
         <exclusion>
@@ -343,13 +338,13 @@
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
       <version>${cxfVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
       <version>${cxfVersion}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
