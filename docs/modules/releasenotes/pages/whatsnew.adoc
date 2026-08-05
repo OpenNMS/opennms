@@ -89,17 +89,7 @@ The JMTA local-MTA transport is gone (`use-jmta` is still accepted, but mail is 
 See xref:operation:deep-dive/notifications/configuration.adoc#mail-tls[Mail server TLS] for the TLS properties, and xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] for the OAuth2 (XOAUTH2) SMTP authentication that Microsoft 365 and Gmail now require.
 
 === Scripted (BSF) notifications now run on JSR-223
-The `BSFNotificationStrategy` notification command executes scripts through the Java scripting API (JSR-223) instead of the retired Apache Bean Scripting Framework.
-The class name, all script variable names, and the `results.status` success contract are unchanged, so existing `notificationCommands.xml` entries and scripts generally keep working.
-Points to review:
-
-* The `bsf-engine` and `file-extensions` switches are ignored (a warning is logged); the engine is chosen by `lang-class` or the script file extension.
-* The implicit `bsf` helper object BSF injected into scripts no longer exists.
-* Each notification runs with fresh script variables; do not rely on state carried over from earlier notifications.
-* Script files must be valid UTF-8; malformed bytes that were previously replaced now fail the notification.
-* BeanShell and Groovy are supported. Python and JavaScript scripts already required interpreters that were not shipped, so they were non-functional before this change.
-
-See xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications] for the full parameter and variable reference.
+`BSFNotificationStrategy` executes scripts through the Java scripting API instead of the retired Apache Bean Scripting Framework; existing scripts generally keep working, but see xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications] for the deprecated parameters and behavior changes.
 
 === SAML and OpenID SSO support removed
 Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.

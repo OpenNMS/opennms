@@ -102,3 +102,4 @@ A notification counts as delivered only when `results` contains the key `status`
 The class name, all variable names, and the `results.status` contract are unchanged.
 Two BSF-era behaviors no longer exist: the implicit `bsf` helper object is not available, and interpreter state does not persist between notifications — each notification runs with fresh variables.
 Python and JavaScript scripts required interpreters that {page-component-title} has not shipped for some time, so they did not work under the BSF-based strategy either.
+Script files are now read as UTF-8, so a file containing malformed bytes fails the notification where those bytes were previously replaced.
