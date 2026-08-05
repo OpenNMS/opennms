@@ -44,6 +44,7 @@ ui/src/main/node_modules/
 ui/src/menu/node_modules/
 ui/node_modules/
 ui/packages/*/node_modules/
+ui/packages/onms-ui-example-plugin/dist/
 ui/package-lock.json
 ui/devConfig.ts
 .circleci/main.yml

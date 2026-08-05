@@ -285,6 +285,7 @@
                           <feature>jackson1</feature>
                           <feature>java-native-access</feature>
                           <feature>javax.mail</feature>
+                          <feature>jakarta.mail</feature>
                           <feature>javax.servlet</feature>
                           <feature>javax.validation</feature>
                           <feature>jetty</feature>

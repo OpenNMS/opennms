@@ -70,6 +70,8 @@ describe('Menu utils', () => {
       expect(inventory.key).toBe('opennms-menu-id-inventoryMenu')
       expect(inventory.label).toBe('Inventory')
       expect(inventory.iconComponent).toBeDefined()
+      // topLevel marks root items for collapsed-rail tooltips; child items don't get it
+      expect(inventory.topLevel).toBe(true)
 
       const inventoryItems = childItems(inventory)
       expect(inventoryItems).toHaveLength(3)
@@ -80,6 +82,7 @@ describe('Menu utils', () => {
         target: '_self'
       })
       expect(inventoryItems[0].iconComponent).toBeUndefined()
+      expect(inventoryItems[0].topLevel).toBeUndefined()
       expect(inventoryItems[1]).toMatchObject({
         key: 'legacyNodes',
         label: 'Nodes (Legacy)',

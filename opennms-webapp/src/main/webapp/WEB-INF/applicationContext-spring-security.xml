@@ -123,6 +123,13 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
+    <!-- HA management. The sync endpoints serve raw credential stores, hence ADMIN.
+         Status has no rule on purpose: any authenticated user may read it. -->
+    <intercept-url pattern="/rest/ha/config/**" method="GET" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/config/**" method="PUT" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/failover/**" method="POST" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/sync/**" method="GET" access="ROLE_ADMIN"/>
+
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 

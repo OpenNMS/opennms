@@ -273,7 +273,6 @@ public class UserIT extends OpenNMSSeleniumIT {
                 "<input type='hidden' name='configuredRoles' value='ROLE_ADMIN' />" +
                 "<input type='hidden' name='email' value=' ' />" +
                 "<input type='hidden' name='pemail' value=' ' />" +
-                "<input type='hidden' name='microblog' value=' ' />" +
                 "<input type='hidden' name='numericalService' value=' ' />" +
                 "<input type='hidden' name='numericalPin' value=' ' />" +
                 "<input type='hidden' name='textService' value=' ' />" +
