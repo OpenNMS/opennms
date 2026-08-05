@@ -135,9 +135,28 @@ public class PipelineImpl implements Pipeline {
             throw new FlowException("Failed to threshold one or more flows.", e);
         }
 
-        // Push flows to persistence
+        // Push flows to persistence. Every persister is attempted even if an earlier one
+        // fails: one unreachable backend must not starve the remaining repositories of the
+        // same flows. The first failure is rethrown afterwards (further ones attached as
+        // suppressed) so a broken backend stays visible to the caller.
+        FlowException failure = null;
         for (final var persister : this.persisters.entrySet()) {
-            persister.getValue().persist(enrichedFlows);
+            try {
+                persister.getValue().persist(enrichedFlows);
+            } catch (final Exception e) {
+                LOG.error("Failed to persist flows to repository {}.", persister.getKey(), e);
+                final FlowException wrapped = e instanceof final FlowException flowException
+                        ? flowException
+                        : new FlowException("Failed to persist flows to repository " + persister.getKey() + ".", e);
+                if (failure == null) {
+                    failure = wrapped;
+                } else {
+                    failure.addSuppressed(wrapped);
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
         }
     }
 
