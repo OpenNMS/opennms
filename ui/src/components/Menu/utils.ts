@@ -180,7 +180,10 @@ const createPrimeTopItem = (
   const item: PrimeMenuItem = {
     key: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
     label: topMenuItem.name ?? undefined,
-    iconComponent: createMenuIcon(topMenuItem, getIcon)
+    iconComponent: createMenuIcon(topMenuItem, getIcon),
+    // Marks root items so the side menu can show label tooltips for them while
+    // the rail is collapsed (submenu items keep their visible labels).
+    topLevel: true
   }
 
   const children = topMenuItem.items ?? []

@@ -3,14 +3,12 @@
     ref="navRef"
     id="opennms-sidemenu-vue-container"
     class="onms-side-menu"
-    :class="{ 'onms-side-menu--open': isOpen }"
-    @mouseenter="onRailEnter"
-    @mouseleave="onRailLeave"
+    :class="{ 'onms-side-menu--open': isPinned }"
   >
     <button
       type="button"
       class="onms-side-menu__toggle"
-      :title="isPinned ? 'Collapse menu' : 'Expand menu'"
+      v-onms-tooltip="{ value: isPinned ? 'Collapse menu (Ctrl+\\)' : 'Expand menu (Ctrl+\\)', showDelay: 300 }"
       :aria-label="isPinned ? 'Collapse menu' : 'Expand menu'"
       :aria-expanded="isPinned"
       @click="togglePinned"
@@ -28,6 +26,7 @@
         <a
           class="onms-side-menu__link"
           v-bind="props.action"
+          v-onms-tooltip="{ value: item.label, disabled: isPinned || !item.topLevel, showDelay: 300 }"
           :href="item.url || undefined"
           :target="item.target || undefined"
         >
@@ -45,7 +44,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-// eslint-disable-next-line no-restricted-imports -- deliberately unwrapped: SideMenu drives TieredMenu internals (dirty flag, DOM queries); revisit when the side menu is redesigned (NMS-20081)
+// We are using PrimeVue TieredMenu directly here, rather than wrapping it in an OnmsUI component.
+// We are reaching into TieredMenu internals (DOM queries in positionFlyouts, hide() in togglePinned),
+// and also not using this anywhere else in the app, so we don't want to add a new OnmsUI component for it.
+// If we ever need to use TieredMenu elsewhere, we can wrap it in an OnmsUI component at that time.
+// eslint-disable-next-line no-restricted-imports
 import TieredMenu from 'primevue/tieredmenu'
 import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
@@ -77,37 +80,11 @@ const { getIcon } = useMenuIcons()
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 
-// isPinned is the persisted expanded/collapsed state (toggle button).
-// isHovering expands the rail transiently (open-on-hover) without persisting.
+// isPinned is the persisted expanded/collapsed state (toggle button). The rail
+// no longer expands on hover (NMS-20167): submenus follow PrimeVue TieredMenu's
+// default interaction — click to open, hover-to-switch only after that first
+// click — and TieredMenu's own outside-click listener closes any open flyout.
 const isPinned = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
-const isHovering = ref<boolean>(false)
-const isOpen = computed<boolean>(() => isPinned.value || isHovering.value)
-
-const tieredMenuRef = ref<any>(null)
-
-const onRailEnter = () => {
-  isHovering.value = true
-
-  // PrimeVue's TieredMenu only opens submenus on hover once it is "dirty"
-  // (after an initial click / keyboard interaction). Enable that flag on entry
-  // so the rail behaves as open-on-hover from the first interaction, matching
-  // the previous FeatherSidenav. Guarded so it degrades to click-to-open if the
-  // internal flag ever changes.
-  if (tieredMenuRef.value) {
-    tieredMenuRef.value.dirty = true
-  }
-}
-
-const onRailLeave = () => {
-  isHovering.value = false
-
-  // The flyout submenus are position:fixed (see positionFlyouts) so they are
-  // visually detached from the rail. When the pointer leaves the rail+flyout,
-  // close any open flyout via TieredMenu's hide() (clears activeItemPath) so it
-  // doesn't linger orphaned after the rail collapses. hide() also resets the
-  // internal `dirty` flag, which onRailEnter re-enables on the next hover.
-  tieredMenuRef.value?.hide?.()
-}
 
 const onPerformLogout = async () => {
   await performLogout()
@@ -128,18 +105,48 @@ const topPanels = computed<OnmsMenuItem[]>(() => {
   return createPrimeMenuModel(allMenus, mainMenu.value.baseHref, getIcon, onPerformLogout)
 })
 
+const tieredMenuRef = ref<any>(null)
+
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
+
+  // Close any open flyout. Clicking the toggle button already does this via
+  // TieredMenu's outside-click listener; this makes the keyboard shortcut
+  // behave the same — otherwise the flyout would be repositioned mid-way
+  // through the rail's 0.1s width transition and end up with a stale left
+  // offset once the transition finishes.
+  tieredMenuRef.value?.hide?.()
 }
 
-// Push the main content aside for the pinned (persisted) expanded rail only;
-// hover-expansion overlays the content instead of pushing it, to avoid
-// reflowing the whole page on every hover. The COLLAPSED/base left offset is
-// owned by each host's stylesheet (JSP #content, SPA .app-layout) so the two
-// contexts can differ; when not pinned we clear the inline padding-left so that
-// base applies. This keeps the collapsed gap "guaranteed" (JS never clobbers
-// it) while still widening the push when the rail is pinned open.
+// Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
+// pinned/unpinned without first tabbing to the toggle button. Ctrl+\ is free of
+// browser-shortcut conflicts in all major browsers (unlike e.g. Ctrl+Shift+M:
+// Firefox responsive design mode, Chrome/Edge profile switcher). Matched on
+// e.code (physical key) so it works regardless of keyboard layout; the other
+// modifiers are excluded so a larger chord doesn't also trigger it.
+const onGlobalKeydown = (e: KeyboardEvent) => {
+  if (e.code !== 'Backslash' || !e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || e.repeat) {
+    return
+  }
+
+  // Don't steal the shortcut while the user is typing in an editable element.
+  const target = e.target as HTMLElement | null
+
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+    return
+  }
+
+  e.preventDefault()
+  togglePinned()
+}
+
+// Push the main content aside when the rail is pinned (persisted) expanded.
+// The COLLAPSED/base left offset is owned by each host's stylesheet (JSP
+// #content, SPA .app-layout) so the two contexts can differ; when not pinned we
+// clear the inline padding-left so that base applies. This keeps the collapsed
+// gap "guaranteed" (JS never clobbers it) while still widening the push when
+// the rail is pinned open.
 const getPushedElement = (): HTMLElement | null => {
   try {
     return document.querySelector<HTMLElement>(props.pushedSelector)
@@ -232,6 +239,8 @@ const scheduleFlyoutPosition = () => {
 onMounted(() => {
   applyPush()
 
+  window.addEventListener('keydown', onGlobalKeydown)
+
   const nav = navRef.value
 
   if (nav) {
@@ -263,6 +272,7 @@ onBeforeUnmount(() => {
   }
 
   window.removeEventListener('resize', scheduleFlyoutPosition)
+  window.removeEventListener('keydown', onGlobalKeydown)
 })
 </script>
 
