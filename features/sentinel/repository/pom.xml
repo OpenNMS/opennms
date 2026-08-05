@@ -134,6 +134,10 @@
                                   <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
                                   <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-features" includes="**/*-jettyconfig.xml" />
                                 </delete>
+                                <delete includeemptydirs="true">
+                                  <fileset dir="${project.build.directory}/maven-repo/org/jline/jline"
+                                           excludes="${jlineVersion}/**" erroronmissingdir="false" />
+                                </delete>
                             </target>
                         </configuration>
                     </execution>
