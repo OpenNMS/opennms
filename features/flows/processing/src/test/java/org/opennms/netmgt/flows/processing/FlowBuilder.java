@@ -42,6 +42,10 @@ public class FlowBuilder {
     private String srcHostname = null;
     private String dstHostname = null;
     private Integer tos = null;
+    private Double samplingInterval = null;
+    private boolean explicitInterfaces = false;
+    private Integer explicitInputSnmp = null;
+    private Integer explicitOutputSnmp = null;
 
     public FlowBuilder withSnmpInterfaceId(Integer snmpInterfaceId) {
         this.snmpInterfaceId = snmpInterfaceId;
@@ -74,6 +78,27 @@ public class FlowBuilder {
         return this;
     }
 
+    public FlowBuilder withSamplingInterval(final Double samplingInterval) {
+        this.samplingInterval = samplingInterval;
+        return this;
+    }
+
+    /**
+     * Sets both SNMP interfaces regardless of direction.
+     *
+     * <p>{@link #withFlow} otherwise writes only the interface a flow's direction implies, so a
+     * record whose direction and interfaces disagree — an exporter populating both per record, or a
+     * hairpin where one interface is both — cannot be expressed at all. That shape distinguishes an
+     * implementation that reads {@code netflow.direction} from one that infers direction purely from
+     * an interface match, and without it the two are indistinguishable.
+     */
+    public FlowBuilder withSnmpInterfaces(final Integer inputSnmp, final Integer outputSnmp) {
+        this.explicitInterfaces = true;
+        this.explicitInputSnmp = inputSnmp;
+        this.explicitOutputSnmp = outputSnmp;
+        return this;
+    }
+
     public FlowBuilder withTos(final Integer tos) {
         this.tos = tos;
         return this;
@@ -101,7 +126,10 @@ public class FlowBuilder {
         };
         flow.setBytes(numBytes);
         flow.setProtocol(6); // TCP
-        if (direction == Direction.INGRESS) {
+        if (explicitInterfaces) {
+            flow.setInputSnmp(explicitInputSnmp);
+            flow.setOutputSnmp(explicitOutputSnmp);
+        } else if (direction == Direction.INGRESS) {
             flow.setInputSnmp(snmpInterfaceId);
         } else if (direction == Direction.EGRESS) {
             flow.setOutputSnmp(snmpInterfaceId);
@@ -111,6 +139,7 @@ public class FlowBuilder {
         }
         flow.setDirection(direction);
         flow.setTos(tos);
+        flow.setSamplingInterval(samplingInterval);
         flows.add(flow);
         return this;
     }

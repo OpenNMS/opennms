@@ -1,0 +1,3776 @@
+{
+  "description": "Elasticsearch + Drift reference output for every FlowQueryService method. Regenerate with FlowQueryReferenceCaptureIT.",
+  "elasticsearchVersion": "8.18.2",
+  "driftPluginVersion": "2.0.7",
+  "alwaysUseRawForQueries": true,
+  "caseCount": 77,
+  "corpusSize": 16,
+  "filterSets": {
+    "default": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 98
+      }
+    ],
+    "partialWindow": [
+      {
+        "type": "timeRange",
+        "start": 10,
+        "end": 20
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 98
+      }
+    ],
+    "dscpAll": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 98
+      },
+      {
+        "type": "dscp",
+        "dscp": [
+          17,
+          20,
+          34,
+          40
+        ]
+      }
+    ],
+    "dscpFirst": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 98
+      },
+      {
+        "type": "dscp",
+        "dscp": [
+          17
+        ]
+      }
+    ],
+    "unknownInterface": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 99
+      }
+    ],
+    "unknownInterfaceBothSnmp": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 99
+      },
+      {
+        "type": "dscp",
+        "dscp": [
+          44,
+          46
+        ]
+      }
+    ],
+    "noInterface": [
+      {
+        "type": "timeRange",
+        "start": 0,
+        "end": 100000
+      }
+    ],
+    "extendedCoverage": [
+      {
+        "type": "timeRange",
+        "start": 200000,
+        "end": 300000
+      },
+      {
+        "type": "snmpInterfaceId",
+        "snmpInterfaceId": 100
+      }
+    ]
+  },
+  "corpus": [
+    {
+      "@timestamp": 15,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "10.1.1.11",
+        "192.168.1.100"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 10,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "10.1.1.11",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 80,
+      "netflow.first_switched": 3,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 98,
+      "netflow.last_switched": 15,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "192.168.1.100",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 43444,
+      "netflow.delta_switched": 3,
+      "netflow.tos": 68,
+      "netflow.ecn": 0,
+      "netflow.dscp": 17
+    },
+    {
+      "@timestamp": 15,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "192.168.1.100",
+        "10.1.1.11"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 100,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]",
+      "netflow.direction": "egress",
+      "netflow.dst_addr": "192.168.1.100",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 43444,
+      "netflow.first_switched": 3,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.last_switched": 15,
+      "netflow.output_snmp": 98,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.1.1.11",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 80,
+      "netflow.delta_switched": 3,
+      "netflow.tos": 136,
+      "netflow.ecn": 0,
+      "netflow.dscp": 34
+    },
+    {
+      "@timestamp": 26,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "10.1.1.12",
+        "192.168.1.100"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 100,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "10.1.1.12",
+      "netflow.dst_addr_hostname": "la.le.lu",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 443,
+      "netflow.first_switched": 13,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 98,
+      "netflow.last_switched": 26,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "192.168.1.100",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 43445,
+      "netflow.delta_switched": 13,
+      "netflow.tos": 80,
+      "netflow.ecn": 0,
+      "netflow.dscp": 20
+    },
+    {
+      "@timestamp": 26,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "192.168.1.100",
+        "10.1.1.12"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 1000,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]",
+      "netflow.direction": "egress",
+      "netflow.dst_addr": "192.168.1.100",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 43445,
+      "netflow.first_switched": 13,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.last_switched": 26,
+      "netflow.output_snmp": 98,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.1.1.12",
+      "netflow.src_addr_hostname": "la.le.lu",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 13,
+      "netflow.tos": 160,
+      "netflow.ecn": 0,
+      "netflow.dscp": 40
+    },
+    {
+      "@timestamp": 45,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "10.1.1.12",
+        "192.168.1.101"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 110,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.12\",\"192.168.1.101\",\"https\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "10.1.1.12",
+      "netflow.dst_addr_hostname": "la.le.lu",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 443,
+      "netflow.first_switched": 14,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 98,
+      "netflow.last_switched": 45,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "192.168.1.101",
+      "netflow.src_addr_hostname": "ingress.only",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 43442,
+      "netflow.delta_switched": 14,
+      "netflow.tos": 160,
+      "netflow.ecn": 0,
+      "netflow.dscp": 40
+    },
+    {
+      "@timestamp": 45,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "192.168.1.101",
+        "10.1.1.12"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 1100,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.12\",\"192.168.1.101\",\"https\"]",
+      "netflow.direction": "egress",
+      "netflow.dst_addr": "192.168.1.101",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 43442,
+      "netflow.first_switched": 14,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.last_switched": 45,
+      "netflow.output_snmp": 98,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.1.1.12",
+      "netflow.src_addr_hostname": "la.le.lu",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 14,
+      "netflow.tos": 160,
+      "netflow.ecn": 0,
+      "netflow.dscp": 40
+    },
+    {
+      "@timestamp": 52,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "10.1.1.13",
+        "192.168.1.102"
+      ],
+      "location": "test",
+      "netflow.bytes": 200,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.13\",\"192.168.1.102\",null]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "10.1.1.13",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 50001,
+      "netflow.first_switched": 50,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 98,
+      "netflow.last_switched": 52,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "192.168.1.102",
+      "netflow.src_addr_hostname": "la.le.lu",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 50000,
+      "netflow.delta_switched": 50,
+      "netflow.tos": 160,
+      "netflow.ecn": 0,
+      "netflow.dscp": 40
+    },
+    {
+      "@timestamp": 52,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "192.168.1.102",
+        "10.1.1.13"
+      ],
+      "location": "test",
+      "netflow.bytes": 100,
+      "netflow.convo_key": "[\"test\",6,\"10.1.1.13\",\"192.168.1.102\",null]",
+      "netflow.direction": "egress",
+      "netflow.dst_addr": "192.168.1.102",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 50000,
+      "netflow.first_switched": 50,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.last_switched": 52,
+      "netflow.output_snmp": 98,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.1.1.13",
+      "netflow.src_addr_hostname": "la.le.lu",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 50001,
+      "netflow.delta_switched": 50,
+      "netflow.tos": 160,
+      "netflow.ecn": 0,
+      "netflow.dscp": 40
+    },
+    {
+      "@timestamp": 70,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "10.2.2.10",
+        "172.16.0.10"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 400,
+      "netflow.convo_key": "[\"test\",6,\"10.2.2.10\",\"172.16.0.10\",\"http\"]",
+      "netflow.direction": "unknown",
+      "netflow.dst_addr": "10.2.2.10",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 80,
+      "netflow.first_switched": 60,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 99,
+      "netflow.last_switched": 70,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "172.16.0.10",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 40000,
+      "netflow.delta_switched": 60,
+      "netflow.tos": 176,
+      "netflow.ecn": 0,
+      "netflow.dscp": 44
+    },
+    {
+      "@timestamp": 70,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.16.0.10",
+        "10.2.2.10"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 4000,
+      "netflow.convo_key": "[\"test\",6,\"10.2.2.10\",\"172.16.0.10\",\"http\"]",
+      "netflow.direction": "unknown",
+      "netflow.dst_addr": "172.16.0.10",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40000,
+      "netflow.first_switched": 60,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.last_switched": 70,
+      "netflow.output_snmp": 99,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.2.2.10",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 80,
+      "netflow.delta_switched": 60,
+      "netflow.tos": 180,
+      "netflow.ecn": 0,
+      "netflow.dscp": 45
+    },
+    {
+      "@timestamp": 80,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.16.0.11",
+        "10.2.2.11"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 800,
+      "netflow.convo_key": "[\"test\",6,\"10.2.2.11\",\"172.16.0.11\",\"https\"]",
+      "netflow.direction": "unknown",
+      "netflow.dst_addr": "172.16.0.11",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40001,
+      "netflow.first_switched": 70,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 5,
+      "netflow.last_switched": 80,
+      "netflow.output_snmp": 99,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.2.2.11",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 70,
+      "netflow.tos": 184,
+      "netflow.ecn": 0,
+      "netflow.dscp": 46
+    },
+    {
+      "@timestamp": 200010,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.17.0.10",
+        "10.3.3.10"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 500,
+      "netflow.convo_key": "[\"test\",6,\"10.3.3.10\",\"172.17.0.10\",\"https\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "172.17.0.10",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40100,
+      "netflow.first_switched": 200000,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 100,
+      "netflow.last_switched": 200010,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.sampling_interval": 10.0,
+      "netflow.src_addr": "10.3.3.10",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 200000,
+      "netflow.tos": 200,
+      "netflow.ecn": 0,
+      "netflow.dscp": 50
+    },
+    {
+      "@timestamp": 200040,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.17.0.11",
+        "10.3.3.11"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 600,
+      "netflow.convo_key": "[\"test\",6,\"10.3.3.11\",\"172.17.0.11\",\"https\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "172.17.0.11",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40101,
+      "netflow.first_switched": 200000,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 100,
+      "netflow.last_switched": 200040,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.3.3.11",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 200020,
+      "netflow.tos": 204,
+      "netflow.ecn": 0,
+      "netflow.dscp": 51
+    },
+    {
+      "@timestamp": 200030,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.17.0.12",
+        "10.3.3.12"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 700,
+      "netflow.convo_key": "[\"test\",6,\"10.3.3.12\",\"172.17.0.12\",\"http\"]",
+      "netflow.direction": "egress",
+      "netflow.dst_addr": "172.17.0.12",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40102,
+      "netflow.first_switched": 200000,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 100,
+      "netflow.last_switched": 200030,
+      "netflow.output_snmp": 100,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.3.3.12",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 80,
+      "netflow.delta_switched": 200000,
+      "netflow.tos": 208,
+      "netflow.ecn": 0,
+      "netflow.dscp": 52
+    },
+    {
+      "@timestamp": 200050,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.17.0.13",
+        "10.3.3.13"
+      ],
+      "location": "test",
+      "netflow.application": "http",
+      "netflow.bytes": 800,
+      "netflow.convo_key": "[\"test\",6,\"10.3.3.13\",\"172.17.0.13\",\"http\"]",
+      "netflow.direction": "ingress",
+      "netflow.dst_addr": "172.17.0.13",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40103,
+      "netflow.first_switched": 200000,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 100,
+      "netflow.last_switched": 200050,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.3.3.13",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 80,
+      "netflow.delta_switched": 200000,
+      "netflow.tos": 215,
+      "netflow.ecn": 3,
+      "netflow.dscp": 53
+    },
+    {
+      "@timestamp": 200060,
+      "@clock_correction": 0,
+      "@version": 1,
+      "host": "127.0.0.1",
+      "hosts": [
+        "172.17.0.14",
+        "10.3.3.14"
+      ],
+      "location": "test",
+      "netflow.application": "https",
+      "netflow.bytes": 900,
+      "netflow.convo_key": "[\"test\",6,\"10.3.3.14\",\"172.17.0.14\",\"https\"]",
+      "netflow.direction": "unknown",
+      "netflow.dst_addr": "172.17.0.14",
+      "netflow.dst_locality": "private",
+      "netflow.dst_port": 40104,
+      "netflow.first_switched": 200000,
+      "netflow.flow_locality": "private",
+      "netflow.flow_records": 0,
+      "netflow.flow_seq_num": 0,
+      "netflow.input_snmp": 100,
+      "netflow.last_switched": 200060,
+      "netflow.output_snmp": 100,
+      "netflow.protocol": 6,
+      "netflow.sampling_algorithm": "Unassigned",
+      "netflow.src_addr": "10.3.3.14",
+      "netflow.src_locality": "private",
+      "netflow.src_port": 443,
+      "netflow.delta_switched": 200000,
+      "netflow.tos": 216,
+      "netflow.ecn": 0,
+      "netflow.dscp": 54
+    }
+  ],
+  "cases": [
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "default"
+      },
+      "result": 8
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "partialWindow"
+      },
+      "result": 6
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "dscpFirst"
+      },
+      "result": 1
+    },
+    {
+      "method": "getApplications",
+      "params": {
+        "filters": "default",
+        "matchingPrefix": "",
+        "limit": 1
+      },
+      "result": [
+        "http"
+      ]
+    },
+    {
+      "method": "getApplications",
+      "params": {
+        "filters": "default",
+        "matchingPrefix": "",
+        "limit": 10
+      },
+      "result": [
+        "http",
+        "https"
+      ]
+    },
+    {
+      "method": "getApplications",
+      "params": {
+        "filters": "default",
+        "matchingPrefix": "h",
+        "limit": 10
+      },
+      "result": [
+        "http",
+        "https"
+      ]
+    },
+    {
+      "method": "getApplications",
+      "params": {
+        "filters": "default",
+        "matchingPrefix": "httz",
+        "limit": 10
+      },
+      "result": [
+        "http"
+      ]
+    },
+    {
+      "method": "getApplications",
+      "params": {
+        "filters": "default",
+        "matchingPrefix": "hyyps",
+        "limit": 10
+      },
+      "result": []
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Unknown",
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "http",
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Other",
+          "bytesIn": 0,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": false
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Unknown",
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "http",
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 1,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Other",
+          "bytesIn": 210,
+          "bytesOut": 200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 0,
+        "includeOther": false
+      },
+      "result": []
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 0,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "Other",
+          "bytesIn": 420,
+          "bytesOut": 2300,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "partialWindow",
+        "N": 1,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 75,
+          "bytesOut": 751,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "https"
+        ],
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "https",
+          "http"
+        ],
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "http",
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSummaries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "https"
+        ],
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Other",
+          "bytesIn": 210,
+          "bytesOut": 200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSeries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "https"
+        ],
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSeries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "https"
+        ],
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "Other",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "Other",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSeries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "http",
+          "https"
+        ],
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        }
+      ]
+    },
+    {
+      "method": "getApplicationSeries",
+      "params": {
+        "filters": "default",
+        "applications": [
+          "http",
+          "https"
+        ],
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "Other",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "Other",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "Unknown",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "Unknown",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "default",
+        "N": 2,
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": "Other",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "Other",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "Unknown",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "Unknown",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "default",
+        "N": 1,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        }
+      ]
+    },
+    {
+      "method": "getConversations",
+      "params": {
+        "filters": "default",
+        "locationPattern": ".*",
+        "protocolPattern": ".*",
+        "lowerIPPattern": ".*",
+        "upperIPPattern": ".*",
+        "applicationPattern": ".*",
+        "limit": 1
+      },
+      "result": [
+        "[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"
+      ]
+    },
+    {
+      "method": "getConversations",
+      "params": {
+        "filters": "default",
+        "locationPattern": ".*",
+        "protocolPattern": ".*",
+        "lowerIPPattern": ".*",
+        "upperIPPattern": ".*",
+        "applicationPattern": ".*",
+        "limit": 10
+      },
+      "result": [
+        "[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]",
+        "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]",
+        "[\"test\",6,\"10.1.1.12\",\"192.168.1.101\",\"https\"]",
+        "[\"test\",6,\"10.1.1.13\",\"192.168.1.102\",null]"
+      ]
+    },
+    {
+      "method": "getTopNConversationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 2,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "bytesIn": 110,
+          "bytesOut": 1100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "bytesIn": 100,
+          "bytesOut": 1000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNConversationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 1,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "bytesIn": 110,
+          "bytesOut": 1100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "bytesIn": 310,
+          "bytesOut": 1200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNConversationSummaries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "bytesIn": 110,
+          "bytesOut": 1100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "bytesIn": 100,
+          "bytesOut": 1000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.13",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.102",
+            "upperHostname": "la.le.lu",
+            "application": null
+          },
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.11",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "http"
+          },
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getConversationSummaries",
+      "params": {
+        "filters": "default",
+        "conversations": [
+          "[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"
+        ],
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.11",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "http"
+          },
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getConversationSummaries",
+      "params": {
+        "filters": "default",
+        "conversations": [
+          "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"
+        ],
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "bytesIn": 100,
+          "bytesOut": 1000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "bytesIn": 320,
+          "bytesOut": 1300,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getConversationSeries",
+      "params": {
+        "filters": "default",
+        "conversations": [
+          "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"
+        ],
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "10": 538.4615384615385,
+            "20": 461.53846153846155
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "10": 53.84615384615385,
+            "20": 46.15384615384615
+          }
+        }
+      ]
+    },
+    {
+      "method": "getConversationSeries",
+      "params": {
+        "filters": "default",
+        "conversations": [
+          "[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"
+        ],
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 254.56989247311827,
+            "20": 354.83870967741933,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 25.456989247311828,
+            "20": 35.483870967741936,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 538.4615384615385,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 53.84615384615385,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNConversationSeries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.11",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "http"
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.11",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "http"
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 538.4615384615385,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 53.84615384615385,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 212.90322580645162,
+            "20": 354.83870967741933,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 21.29032258064516,
+            "20": 35.483870967741936,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.13",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.102",
+            "upperHostname": "la.le.lu",
+            "application": null
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.13",
+            "lowerHostname": null,
+            "upperIp": "192.168.1.102",
+            "upperHostname": "la.le.lu",
+            "application": null
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNConversationSeries",
+      "params": {
+        "filters": "default",
+        "N": 2,
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "location": "Other",
+            "protocol": -1,
+            "lowerIp": "Other",
+            "lowerHostname": null,
+            "upperIp": "Other",
+            "upperHostname": null,
+            "application": "Other"
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 538.4615384615385,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.100",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 53.84615384615385,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 212.90322580645162,
+            "20": 354.83870967741933,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.1.1.12",
+            "lowerHostname": "la.le.lu",
+            "upperIp": "192.168.1.101",
+            "upperHostname": "ingress.only",
+            "application": "https"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 21.29032258064516,
+            "20": 35.483870967741936,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getHosts",
+      "params": {
+        "filters": "default",
+        "regex": ".*",
+        "limit": 1
+      },
+      "result": [
+        "10.1.1.11"
+      ]
+    },
+    {
+      "method": "getHosts",
+      "params": {
+        "filters": "default",
+        "regex": ".*",
+        "limit": 10
+      },
+      "result": [
+        "10.1.1.11",
+        "10.1.1.12",
+        "10.1.1.13",
+        "192.168.1.100",
+        "192.168.1.101",
+        "192.168.1.102"
+      ]
+    },
+    {
+      "method": "getHosts",
+      "params": {
+        "filters": "default",
+        "regex": "10.1.1.*",
+        "limit": 10
+      },
+      "result": [
+        "10.1.1.11",
+        "10.1.1.12",
+        "10.1.1.13"
+      ]
+    },
+    {
+      "method": "getHosts",
+      "params": {
+        "filters": "default",
+        "regex": "10.1.*|192.168.*",
+        "limit": 10
+      },
+      "result": [
+        "10.1.1.11",
+        "10.1.1.12",
+        "10.1.1.13",
+        "192.168.1.100",
+        "192.168.1.101",
+        "192.168.1.102"
+      ]
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "bytesIn": 110,
+          "bytesOut": 1100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.101",
+            "hostname": "ingress.only"
+          },
+          "bytesIn": 110,
+          "bytesOut": 1100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.13",
+            "hostname": null
+          },
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.102",
+            "hostname": "la.le.lu"
+          },
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.11",
+            "hostname": null
+          },
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "default",
+        "N": 1,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "bytesIn": 210,
+          "bytesOut": 200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "default",
+        "N": 0,
+        "includeOther": false
+      },
+      "result": []
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "default",
+        "N": 0,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "bytesIn": 420,
+          "bytesOut": 2300,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getHostSummaries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.12"
+        ],
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getHostSummaries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.11",
+          "10.1.1.12"
+        ],
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.11",
+            "hostname": null
+          },
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getHostSummaries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.11"
+        ],
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.11",
+            "hostname": null
+          },
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "bytesIn": 410,
+          "bytesOut": 2200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getHostSeries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.12"
+        ],
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        }
+      ]
+    },
+    {
+      "method": "getHostSeries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.12"
+        ],
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": 0.0,
+            "30": 0.0,
+            "40": 0.0,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getHostSeries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.12",
+          "192.168.1.100"
+        ],
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 580.1282051282051,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 58.01282051282051,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getHostSeries",
+      "params": {
+        "filters": "default",
+        "hosts": [
+          "10.1.1.12",
+          "192.168.1.100"
+        ],
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 580.1282051282051,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 58.01282051282051,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSeries",
+      "params": {
+        "filters": "default",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.11",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.11",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.13",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.13",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 580.1282051282051,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 58.01282051282051,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.101",
+            "hostname": "ingress.only"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 212.90322580645162,
+            "20": 354.83870967741933,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.101",
+            "hostname": "ingress.only"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 21.29032258064516,
+            "20": 35.483870967741936,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.102",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.102",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSeries",
+      "params": {
+        "filters": "default",
+        "N": 2,
+        "step": 10,
+        "includeOther": true
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 580.1282051282051,
+            "20": 461.53846153846155,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "192.168.1.100",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 58.01282051282051,
+            "20": 46.15384615384615,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": {
+            "ip": "Other",
+            "hostname": null
+          },
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSeries",
+      "params": {
+        "filters": "default",
+        "N": 1,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": false,
+          "values": {
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967
+          }
+        },
+        {
+          "entity": {
+            "ip": "10.1.1.12",
+            "hostname": "la.le.lu"
+          },
+          "ingress": true,
+          "values": {
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFieldValues",
+      "params": {
+        "filters": "default",
+        "field": "DSCP"
+      },
+      "result": [
+        "17",
+        "20",
+        "34",
+        "40"
+      ]
+    },
+    {
+      "method": "getFieldValues",
+      "params": {
+        "filters": "dscpFirst",
+        "field": "DSCP"
+      },
+      "result": [
+        "17"
+      ]
+    },
+    {
+      "method": "getFieldSummaries",
+      "params": {
+        "filters": "default",
+        "field": "DSCP"
+      },
+      "result": [
+        {
+          "entity": "17",
+          "bytesIn": 10,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "20",
+          "bytesIn": 100,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "34",
+          "bytesIn": 0,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "40",
+          "bytesIn": 310,
+          "bytesOut": 2200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getFieldSummaries",
+      "params": {
+        "filters": "dscpAll",
+        "field": "DSCP"
+      },
+      "result": [
+        {
+          "entity": "17",
+          "bytesIn": 10,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "20",
+          "bytesIn": 100,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "34",
+          "bytesIn": 0,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "40",
+          "bytesIn": 310,
+          "bytesOut": 2200,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getFieldSummaries",
+      "params": {
+        "filters": "dscpFirst",
+        "field": "DSCP"
+      },
+      "result": [
+        {
+          "entity": "17",
+          "bytesIn": 10,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getFieldSeries",
+      "params": {
+        "filters": "default",
+        "field": "DSCP",
+        "step": 8
+      },
+      "result": [
+        {
+          "entity": "17",
+          "ingress": true,
+          "values": {
+            "0": 4.166666666666667,
+            "8": 5.833333333333334
+          }
+        },
+        {
+          "entity": "20",
+          "ingress": true,
+          "values": {
+            "8": 23.076923076923077,
+            "16": 61.53846153846154,
+            "24": 15.384615384615385
+          }
+        },
+        {
+          "entity": "34",
+          "ingress": false,
+          "values": {
+            "0": 41.66666666666667,
+            "8": 58.333333333333336
+          }
+        },
+        {
+          "entity": "40",
+          "ingress": false,
+          "values": {
+            "8": 301.7369727047146,
+            "16": 899.255583126551,
+            "24": 437.71712158808936,
+            "32": 283.8709677419355,
+            "40": 177.41935483870967,
+            "48": 100.0
+          }
+        },
+        {
+          "entity": "40",
+          "ingress": true,
+          "values": {
+            "8": 7.096774193548387,
+            "16": 28.387096774193548,
+            "24": 28.387096774193548,
+            "32": 28.387096774193548,
+            "40": 17.741935483870968,
+            "48": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFieldSeries",
+      "params": {
+        "filters": "default",
+        "field": "DSCP",
+        "step": 10
+      },
+      "result": [
+        {
+          "entity": "17",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667
+          }
+        },
+        {
+          "entity": "20",
+          "ingress": true,
+          "values": {
+            "10": 53.84615384615385,
+            "20": 46.15384615384615
+          }
+        },
+        {
+          "entity": "34",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667
+          }
+        },
+        {
+          "entity": "40",
+          "ingress": false,
+          "values": {
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "40",
+          "ingress": true,
+          "values": {
+            "10": 21.29032258064516,
+            "20": 35.483870967741936,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": 200.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFieldSeries",
+      "params": {
+        "filters": "dscpFirst",
+        "field": "DSCP",
+        "step": 8
+      },
+      "result": [
+        {
+          "entity": "17",
+          "ingress": true,
+          "values": {
+            "0": 4.166666666666667,
+            "8": 5.833333333333334
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "unknownInterface"
+      },
+      "result": 3
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "unknownInterface",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "bytesIn": 400,
+          "bytesOut": 4000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "https",
+          "bytesIn": 0,
+          "bytesOut": 800,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "unknownInterface",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "60": 4000.0,
+            "70": 0.0,
+            "80": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "60": 400.0,
+            "70": 0.0,
+            "80": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "60": NaN,
+            "70": 800.0,
+            "80": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "unknownInterfaceBothSnmp"
+      },
+      "result": 2
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "unknownInterfaceBothSnmp",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 0,
+          "bytesOut": 800,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "http",
+          "bytesIn": 400,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "unknownInterfaceBothSnmp",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "60": 400.0,
+            "70": 0.0,
+            "80": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "60": NaN,
+            "70": 800.0,
+            "80": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "noInterface"
+      },
+      "result": 11
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "noInterface",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "bytesIn": 10,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "https",
+          "bytesIn": 210,
+          "bytesOut": 2100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "Unknown",
+          "bytesIn": 200,
+          "bytesOut": 100,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "noInterface",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "Unknown",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 100.0
+          }
+        },
+        {
+          "entity": "Unknown",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": NaN,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": 200.0
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "0": 58.333333333333336,
+            "10": 41.66666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "0": 5.833333333333334,
+            "10": 4.166666666666667,
+            "20": NaN,
+            "30": NaN,
+            "40": NaN,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": false,
+          "values": {
+            "0": NaN,
+            "10": 751.36476426799,
+            "20": 816.3771712158809,
+            "30": 354.83870967741933,
+            "40": 177.41935483870967,
+            "50": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "0": NaN,
+            "10": 75.136476426799,
+            "20": 81.63771712158808,
+            "30": 35.483870967741936,
+            "40": 17.741935483870968,
+            "50": NaN
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "unknownInterface",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.2.2.10",
+            "hostname": null
+          },
+          "bytesIn": 400,
+          "bytesOut": 4000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.16.0.10",
+            "hostname": null
+          },
+          "bytesIn": 400,
+          "bytesOut": 4000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.2.2.11",
+            "hostname": null
+          },
+          "bytesIn": 0,
+          "bytesOut": 800,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.16.0.11",
+            "hostname": null
+          },
+          "bytesIn": 0,
+          "bytesOut": 800,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getTopNConversationSummaries",
+      "params": {
+        "filters": "unknownInterface",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.2.2.10",
+            "lowerHostname": null,
+            "upperIp": "172.16.0.10",
+            "upperHostname": null,
+            "application": "http"
+          },
+          "bytesIn": 400,
+          "bytesOut": 4000,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "location": "test",
+            "protocol": 6,
+            "lowerIp": "10.2.2.11",
+            "lowerHostname": null,
+            "upperIp": "172.16.0.11",
+            "upperHostname": null,
+            "application": "https"
+          },
+          "bytesIn": 0,
+          "bytesOut": 800,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getFlowCount",
+      "params": {
+        "filters": "extendedCoverage"
+      },
+      "result": 5
+    },
+    {
+      "method": "getTopNApplicationSummaries",
+      "params": {
+        "filters": "extendedCoverage",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "https",
+          "bytesIn": 6500,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "http",
+          "bytesIn": 800,
+          "bytesOut": 700,
+          "congestionEncountered": true,
+          "nonEcnCapableTransport": false
+        }
+      ]
+    },
+    {
+      "method": "getTopNApplicationSeries",
+      "params": {
+        "filters": "extendedCoverage",
+        "N": 10,
+        "step": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": "http",
+          "ingress": false,
+          "values": {
+            "200000": 233.33333333333331,
+            "200010": 233.33333333333331,
+            "200020": 233.33333333333331,
+            "200030": 0.0,
+            "200040": NaN,
+            "200050": NaN,
+            "200060": NaN
+          }
+        },
+        {
+          "entity": "http",
+          "ingress": true,
+          "values": {
+            "200000": 160.0,
+            "200010": 160.0,
+            "200020": 160.0,
+            "200030": 160.0,
+            "200040": 160.0,
+            "200050": 0.0,
+            "200060": NaN
+          }
+        },
+        {
+          "entity": "https",
+          "ingress": true,
+          "values": {
+            "200000": 5150.0,
+            "200010": 150.0,
+            "200020": 450.0,
+            "200030": 450.0,
+            "200040": 150.0,
+            "200050": 150.0,
+            "200060": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "method": "getTopNHostSummaries",
+      "params": {
+        "filters": "extendedCoverage",
+        "N": 10,
+        "includeOther": false
+      },
+      "result": [
+        {
+          "entity": {
+            "ip": "10.3.3.14",
+            "hostname": null
+          },
+          "bytesIn": 900,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.17.0.14",
+            "hostname": null
+          },
+          "bytesIn": 900,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.3.3.13",
+            "hostname": null
+          },
+          "bytesIn": 800,
+          "bytesOut": 0,
+          "congestionEncountered": true,
+          "nonEcnCapableTransport": false
+        },
+        {
+          "entity": {
+            "ip": "172.17.0.13",
+            "hostname": null
+          },
+          "bytesIn": 800,
+          "bytesOut": 0,
+          "congestionEncountered": true,
+          "nonEcnCapableTransport": false
+        },
+        {
+          "entity": {
+            "ip": "10.3.3.12",
+            "hostname": null
+          },
+          "bytesIn": 0,
+          "bytesOut": 700,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.17.0.12",
+            "hostname": null
+          },
+          "bytesIn": 0,
+          "bytesOut": 700,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.3.3.11",
+            "hostname": null
+          },
+          "bytesIn": 600,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.17.0.11",
+            "hostname": null
+          },
+          "bytesIn": 600,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "10.3.3.10",
+            "hostname": null
+          },
+          "bytesIn": 5000,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": {
+            "ip": "172.17.0.10",
+            "hostname": null
+          },
+          "bytesIn": 5000,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    },
+    {
+      "method": "getFieldSummaries",
+      "params": {
+        "filters": "extendedCoverage",
+        "field": "DSCP"
+      },
+      "result": [
+        {
+          "entity": "50",
+          "bytesIn": 5000,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "51",
+          "bytesIn": 600,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "52",
+          "bytesIn": 0,
+          "bytesOut": 700,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        },
+        {
+          "entity": "53",
+          "bytesIn": 800,
+          "bytesOut": 0,
+          "congestionEncountered": true,
+          "nonEcnCapableTransport": false
+        },
+        {
+          "entity": "54",
+          "bytesIn": 900,
+          "bytesOut": 0,
+          "congestionEncountered": false,
+          "nonEcnCapableTransport": true
+        }
+      ]
+    }
+  ]
+}
