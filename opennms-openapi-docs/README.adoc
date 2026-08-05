@@ -1,0 +1,58 @@
+= OpenNMS OpenAPI documents
+
+This module ships the OpenAPI documents for the v1 and v2 ReST APIs as static
+resources:
+
+  src/main/resources/openapi/openapi-v1.json
+  src/main/resources/openapi/openapi-v2.json
+
+They used to be built inside the running JVM: both CXF servlets registered
+`org.apache.cxf.jaxrs.openapi.OpenApiFeature`, which ran `swagger-jaxrs2`'s
+reader over every deployed resource class on the first request to
+`openapi.json`. That cost about 1.3 seconds per document on first hit, kept the
+reader and its dependencies in `WEB-INF/lib`, and meant a broken annotation was
+never caught by the build.
+
+The documents are committed so that a change to the ReST surface shows up in
+review.
+
+== Regenerating
+
+After changing anything the documents describe, which means JAX-RS annotations,
+`io.swagger.v3.oas.annotations`, or the shape of a model class that appears in a
+signature:
+
+  mvn -pl opennms-openapi-docs test -Dopenapi.regenerate=true
+
+then commit the result. `OpenApiDocsUpToDateTest` fails the build if the
+committed copies have drifted, so this is not optional.
+
+== Adding a ReST module
+
+`OpenApiDocGenerator` finds resources the same way `<jaxrs:server basePackages>`
+does, by scanning `org.opennms.web.rest.v1` and `org.opennms.web.rest.v2` on its
+own classpath. A module that contributes classes to those packages therefore has
+to be a test-scope dependency of this module, or its endpoints silently vanish
+from the documents.
+
+`OpenApiDocsContentTest` asserts a sentinel endpoint for each module known
+today. Add one there when you add a module here.
+
+The rest of the classpath restates what `opennms-webapp-rest` marks `provided`.
+Provided scope is not transitive, but the generator still needs those classes to
+load the resources, so keep that list in step with the `${onmsLibScope}` block in
+`opennms-webapp-rest/pom.xml`.
+
+Depending on `opennms-base-assembly` would say the same thing far more compactly,
+since it lists what ends up in `$OPENNMS_HOME/lib`. It is not a module of the root
+reactor though, so it does not exist yet when this module builds.
+
+This module reaches the webapp through `opennms-assemblies/webapp-full`.
+
+== How the documents are served
+
+`servers[0].url` holds the literal `__OPENNMS_BASE_URI__`, standing in for the
+request-derived value that `OpenApiCustomizer`'s dynamicBasePath used to fill in.
+`org.opennms.web.rest.support.openapi.AbstractStaticOpenApiResource` substitutes
+the caller's base URI, and derives the `openapi.yaml` rendering from the same
+JSON, so only JSON is committed here.
