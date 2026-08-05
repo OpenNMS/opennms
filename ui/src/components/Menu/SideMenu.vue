@@ -17,6 +17,7 @@
     </button>
 
     <TieredMenu
+      ref="tieredMenuRef"
       :model="topPanels as never"
       class="onms-side-menu__menu"
       breakpoint="0px"
@@ -100,9 +101,18 @@ const topPanels = computed<OnmsMenuItem[]>(() => {
   return createPrimeMenuModel(allMenus, mainMenu.value.baseHref, getIcon, onPerformLogout)
 })
 
+const tieredMenuRef = ref<any>(null)
+
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
+
+  // Close any open flyout. Clicking the toggle button already does this via
+  // TieredMenu's outside-click listener; this makes the keyboard shortcut
+  // behave the same — otherwise the flyout would be repositioned mid-way
+  // through the rail's 0.1s width transition and end up with a stale left
+  // offset once the transition finishes.
+  tieredMenuRef.value?.hide?.()
 }
 
 // Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
@@ -112,18 +122,27 @@ const togglePinned = () => {
 // e.code (physical key) so it works regardless of keyboard layout; the other
 // modifiers are excluded so a larger chord doesn't also trigger it.
 const onGlobalKeydown = (e: KeyboardEvent) => {
-  if (e.code === 'Backslash' && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && !e.repeat) {
-    e.preventDefault()
-    togglePinned()
+  if (e.code !== 'Backslash' || !e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || e.repeat) {
+    return
   }
+
+  // Don't steal the shortcut while the user is typing in an editable element.
+  const target = e.target as HTMLElement | null
+
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+    return
+  }
+
+  e.preventDefault()
+  togglePinned()
 }
 
 // Push the main content aside when the rail is pinned (persisted) expanded.
-// The COLLAPSED/base left offset is
-// owned by each host's stylesheet (JSP #content, SPA .app-layout) so the two
-// contexts can differ; when not pinned we clear the inline padding-left so that
-// base applies. This keeps the collapsed gap "guaranteed" (JS never clobbers
-// it) while still widening the push when the rail is pinned open.
+// The COLLAPSED/base left offset is owned by each host's stylesheet (JSP
+// #content, SPA .app-layout) so the two contexts can differ; when not pinned we
+// clear the inline padding-left so that base applies. This keeps the collapsed
+// gap "guaranteed" (JS never clobbers it) while still widening the push when
+// the rail is pinned open.
 const getPushedElement = (): HTMLElement | null => {
   try {
     return document.querySelector<HTMLElement>(props.pushedSelector)
