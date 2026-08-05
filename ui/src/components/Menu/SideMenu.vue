@@ -8,7 +8,7 @@
     <button
       type="button"
       class="onms-side-menu__toggle"
-      v-onms-tooltip="{ value: isPinned ? 'Collapse menu' : 'Expand menu', showDelay: 300 }"
+      v-onms-tooltip="{ value: isPinned ? 'Collapse menu (Ctrl+\\)' : 'Expand menu (Ctrl+\\)', showDelay: 300 }"
       :aria-label="isPinned ? 'Collapse menu' : 'Expand menu'"
       :aria-expanded="isPinned"
       @click="togglePinned"
@@ -103,6 +103,19 @@ const topPanels = computed<OnmsMenuItem[]>(() => {
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
+}
+
+// Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
+// pinned/unpinned without first tabbing to the toggle button. Ctrl+\ is free of
+// browser-shortcut conflicts in all major browsers (unlike e.g. Ctrl+Shift+M:
+// Firefox responsive design mode, Chrome/Edge profile switcher). Matched on
+// e.code (physical key) so it works regardless of keyboard layout; the other
+// modifiers are excluded so a larger chord doesn't also trigger it.
+const onGlobalKeydown = (e: KeyboardEvent) => {
+  if (e.code === 'Backslash' && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && !e.repeat) {
+    e.preventDefault()
+    togglePinned()
+  }
 }
 
 // Push the main content aside when the rail is pinned (persisted) expanded.
@@ -203,6 +216,8 @@ const scheduleFlyoutPosition = () => {
 onMounted(() => {
   applyPush()
 
+  window.addEventListener('keydown', onGlobalKeydown)
+
   const nav = navRef.value
 
   if (nav) {
@@ -234,6 +249,7 @@ onBeforeUnmount(() => {
   }
 
   window.removeEventListener('resize', scheduleFlyoutPosition)
+  window.removeEventListener('keydown', onGlobalKeydown)
 })
 </script>
 
