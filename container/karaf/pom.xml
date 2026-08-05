@@ -160,6 +160,40 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- The pax-url-aether uber-bundle that Karaf's framework feature puts
+                             into system/ shades a plexus-utils affected by CVE-2025-67030.
+                             Replace it with the rebuilt one from
+                             container/pax-url-aether-patch. The "compile" phase is after
+                             karaf:assembly (process-resources) has written system/ and before
+                             both the checksums (prepare-package) and karaf:archive
+                             (package). -->
+                        <id>replace-vulnerable-pax-url-aether</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.pax-url-aether-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/url/pax-url-aether/${paxUrlAetherVersion}</outputDirectory>
+                                    <destFileName>pax-url-aether-${paxUrlAetherVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
                 <artifactId>checksum-maven-plugin</artifactId>
                 <executions>
