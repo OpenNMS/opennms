@@ -48,7 +48,9 @@ import com.google.gson.JsonObject;
  * Elasticsearch interprets those dots as a path into an object; VictoriaLogs simply stores a field
  * whose name contains dots. That coincidence is what lets both backends be fed from the same
  * serialized shape, which in turn is what makes an A/B comparison between them meaningful. Keeping
- * the two in step is the point, so {@code FlowJsonSerializerTest} pins the emitted key set.
+ * the two in step is the point, so {@code FlowJsonSerializerTest} pins the emitted key set. The two
+ * deliberate additions on top of that shape are {@link #TIME_FIELD} and {@link #MSG_FIELD}, both of
+ * which exist because VictoriaLogs' data model demands them.
  *
  * <p><strong>Timestamps.</strong> {@code @timestamp} stays an epoch-milli number for parity with the
  * Elasticsearch document. Relying on VictoriaLogs to infer the unit of a bare number would be a
@@ -71,6 +73,15 @@ public class FlowJsonSerializer {
 
     /** Unambiguous RFC3339 timestamp; this is what {@code _time_field} should point at. */
     public static final String TIME_FIELD = "_time";
+
+    /**
+     * VictoriaLogs' mandatory message field. Every log entry must carry one; a document without it
+     * is stored with the literal placeholder {@code "missing _msg field; see ..."} as its message,
+     * which is what a reader browsing the raw logs then sees for every single flow. The
+     * Elasticsearch document has no message concept, so this is a VictoriaLogs-only addition rather
+     * than part of the shared shape.
+     */
+    public static final String MSG_FIELD = "_msg";
 
     /** Schema version carried by the Elasticsearch flow document; mirrored for parity. */
     private static final int DOCUMENT_VERSION = 1;
@@ -125,6 +136,7 @@ public class FlowJsonSerializer {
         doc.addProperty("@clock_correction",
                 flow.getClockCorrection() != null ? flow.getClockCorrection().toMillis() : 0L);
         doc.addProperty("@version", DOCUMENT_VERSION);
+        doc.addProperty(MSG_FIELD, message(flow));
 
         addIfPresent(doc, "host", flow.getHost());
         addIfPresent(doc, "location", flow.getLocation());
@@ -178,6 +190,66 @@ public class FlowJsonSerializer {
         addHosts(doc, flow);
 
         return doc;
+    }
+
+    /**
+     * Renders the human-readable log line for {@link #MSG_FIELD}, for example
+     * {@code "Netflow v9 ingress tcp 192.168.1.1:51000 -> 10.0.0.1:443 https 1000 bytes 10 packets"}.
+     *
+     * <p>Every part is optional — the queries all run against the structured fields, so this line is
+     * purely for a human browsing raw logs — but the result is never empty: an all-null flow still
+     * says {@code "flow"} rather than reintroducing the missing-message placeholder this field exists
+     * to avoid.
+     */
+    static String message(final Flow flow) {
+        final StringBuilder sb = new StringBuilder();
+        appendPart(sb, netflowVersion(flow.getNetflowVersion()));
+        appendPart(sb, direction(flow.getDirection()));
+        appendPart(sb, protocolName(flow.getProtocol()));
+        if (flow.getSrcAddr() != null && flow.getDstAddr() != null) {
+            appendPart(sb, endpoint(flow.getSrcAddr(), flow.getSrcPort()) + " -> "
+                    + endpoint(flow.getDstAddr(), flow.getDstPort()));
+        }
+        appendPart(sb, flow.getApplication());
+        if (flow.getBytes() != null) {
+            appendPart(sb, flow.getBytes() + " bytes");
+        }
+        if (flow.getPackets() != null) {
+            appendPart(sb, flow.getPackets() + " packets");
+        }
+        return sb.length() > 0 ? sb.toString() : "flow";
+    }
+
+    private static void appendPart(final StringBuilder sb, final String part) {
+        if (part == null) {
+            return;
+        }
+        if (sb.length() > 0) {
+            sb.append(' ');
+        }
+        sb.append(part);
+    }
+
+    private static String endpoint(final String addr, final Integer port) {
+        return port != null ? addr + ":" + port : addr;
+    }
+
+    /** Names for the protocols a flow reader recognises at a glance; the rest stay numeric. */
+    private static String protocolName(final Integer protocol) {
+        if (protocol == null) {
+            return null;
+        }
+        switch (protocol) {
+            case 1:   return "icmp";
+            case 2:   return "igmp";
+            case 6:   return "tcp";
+            case 17:  return "udp";
+            case 47:  return "gre";
+            case 50:  return "esp";
+            case 58:  return "icmpv6";
+            case 132: return "sctp";
+            default:  return "proto " + protocol;
+        }
     }
 
     /**

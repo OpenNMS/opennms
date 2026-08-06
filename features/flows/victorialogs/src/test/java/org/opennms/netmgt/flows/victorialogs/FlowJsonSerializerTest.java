@@ -63,6 +63,32 @@ public class FlowJsonSerializerTest {
     }
 
     /**
+     * VictoriaLogs requires a {@code _msg} field on every entry; without one it stores the literal
+     * placeholder "missing _msg field; see ..." as the log line, which is what every flow then shows
+     * as in Grafana. The content is for humans only — no query reads it — so only its presence and
+     * general shape are pinned.
+     */
+    @Test
+    public void emitsAHumanReadableMsgField() {
+        final JsonObject doc = serializer.toJsonObject(TestFlow.full());
+
+        assertEquals("Netflow v9 ingress tcp 192.168.1.1:51000 -> 10.0.0.1:443 https 1000 bytes 10 packets",
+                doc.get(FlowJsonSerializer.MSG_FIELD).getAsString());
+    }
+
+    /** Sparse flows still get a message; only the parts that exist appear. */
+    @Test
+    public void msgDegradesGracefullyForSparseFlows() {
+        assertEquals("egress 1 bytes",
+                serializer.toJsonObject(TestFlow.minimal())
+                        .get(FlowJsonSerializer.MSG_FIELD).getAsString());
+        // Never empty: an empty message would reintroduce the placeholder this field exists to avoid.
+        assertEquals("flow",
+                serializer.toJsonObject(new TestFlow())
+                        .get(FlowJsonSerializer.MSG_FIELD).getAsString());
+    }
+
+    /**
      * proportional attribution downstream depends on these three, so a regression here would be
      * expensive and quiet.
      */
