@@ -20,33 +20,17 @@ review.
 
 After changing anything the documents describe, which means JAX-RS annotations,
 `io.swagger.v3.oas.annotations`, or the shape of a model class that appears in a
-signature:
+signature, build the modules you changed, then regenerate:
 
+  ./compile.pl -DskipTests
   mvn -pl opennms-openapi-docs test -Dopenapi.regenerate=true
 
 then commit the result. `OpenApiDocsUpToDateTest` fails the build if the
 committed copies have drifted, so this is not optional.
 
-== Adding a ReST module
-
-`OpenApiDocGenerator` finds resources the same way `<jaxrs:server basePackages>`
-does, by scanning `org.opennms.web.rest.v1` and `org.opennms.web.rest.v2` on its
-own classpath. A module that contributes classes to those packages therefore has
-to be a dependency of this module, or its endpoints silently vanish from the
-documents.
-
-`OpenApiDocsContentTest` asserts a sentinel endpoint for each module known
-today. Add one there when you add a module here.
-
-Every dependency here is `provided`, so none of it reaches consumers of this
-artifact. The list restates what `opennms-webapp-rest` marks provided, so keep it
-in step with the `${onmsLibScope}` block in `opennms-webapp-rest/pom.xml`.
-
-Depending on `opennms-base-assembly` would say the same thing far more compactly,
-since it lists what ends up in `$OPENNMS_HOME/lib`. It is not a module of the root
-reactor though, so it does not exist yet when this module builds.
-
-This module reaches the webapp through `opennms-assemblies/webapp-full`.
+The order matters: the generator resolves its dependencies from `~/.m2` rather
+than the reactor, so regenerating before reinstalling the module you changed
+scans the stale jar and produces a document that omits the change.
 
 == How the documents are served
 
@@ -55,3 +39,5 @@ request-derived value that `OpenApiCustomizer`'s dynamicBasePath used to fill in
 `org.opennms.web.rest.support.openapi.AbstractStaticOpenApiResource` substitutes
 the caller's base URI, and derives the `openapi.yaml` rendering from the same
 JSON, so only JSON is committed here.
+
+The module reaches the webapp through `opennms-assemblies/webapp-full`.
