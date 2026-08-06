@@ -298,9 +298,14 @@
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
-    <%-- Vue menus: do not display if 'quiet' is true, or if 'oldmenu' query string param is true --%>
+    <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
+         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
+         if 'oldmenu' query string param is true. On unauthenticated quiet pages
+         the menu app must not execute at all: its REST calls would trigger the
+         browser's basic-auth prompt and poison SPRING_SECURITY_SAVED_REQUEST
+         with a REST URL (NMS-20174). --%>
     <c:choose>
-      <c:when test='${param.quiet == "true"}'>
+      <c:when test='${param.quiet == "true" or __bs_flags.contains("quiet")}'>
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
