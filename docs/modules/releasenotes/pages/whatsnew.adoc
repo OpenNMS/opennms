@@ -101,6 +101,10 @@ Existing `users.xml` files with `xmppAddress` contacts still load, but no notifi
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
 
+=== Asterisk notification strategy removed
+The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
+Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 

@@ -185,8 +185,8 @@ export const useNodeQuery = () => {
    * Build new QueryParameters based on existing QueryParameters (which contain e.g. limit, offset and similar),
    * combined with the given NodeQueryFilter.
    */
-  const buildUpdatedNodeStructureQueryParameters = (queryParameters: QueryParameters, filter: NodeQueryFilter) => {
-    const searchQuery = buildNodeStructureQuery(filter)
+  const buildUpdatedNodeListQueryParameters = (queryParameters: QueryParameters, filter: NodeQueryFilter) => {
+    const searchQuery = buildNodeListQuery(filter)
     const searchQueryParam: QueryParameters = { _s: searchQuery }
     const updatedParams = { ...queryParameters, ...searchQueryParam }
 
@@ -194,7 +194,7 @@ export const useNodeQuery = () => {
   }
 
   /**
-   * Query string search parameters tracked/accepted by the Node Structure page.
+   * Query string search parameters tracked/accepted by the Node List page.
    */
   const trackedNodeQueryStringProperties = new Set([
     'assetColumn',
@@ -343,7 +343,7 @@ export const useNodeQuery = () => {
     }
 
     // listInterfaces: not handled here — it's a display flag, not a filter, so it's applied directly
-    // in Nodes.vue (nodeStructureStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
+    // in Nodes.vue (nodeListStore.setShowInterfaces) rather than folded into the NodeQueryFilter.
     // service=<id>: numeric service ID is not resolved here; PR 3 pages will send monitoredService=<name>.
     // NOTE nodeId: not handled here. Legacy `?nodeId=<n>` bookmarks are redirected to the node
     //   detail page (element/node.jsp?node={id}) before the query filter is ever built — see
@@ -356,7 +356,7 @@ export const useNodeQuery = () => {
   return {
     addIpAddressToQueryFilter,
     buildNodeQueryFilterFromQueryString,
-    buildUpdatedNodeStructureQueryParameters,
+    buildUpdatedNodeListQueryParameters,
     getDefaultNodeQueryFilter,
     getDefaultNodeQueryExtendedSearchParams,
     getDefaultNodeQueryForeignSourceParams,
@@ -370,7 +370,7 @@ export const useNodeQuery = () => {
 /**
  * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
  */
-const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
+const buildNodeListQuery = (filter: NodeQueryFilter) => {
   const searchTerm = sanitizeSearchTerm(filter.searchTerm)
   // don't sanitize IP address — allow users to enter commas and other FIQL characters, since buildIpAddressQuery will handle them appropriately
   // (commas are valid in iplike patterns, and users may naturally enter comma-separated lists of IPs or CIDRs)
