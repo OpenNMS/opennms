@@ -131,16 +131,16 @@
               @remove="nodeListStore.removeDownAggregateStatus()"
             />
             <OnmsChip
-              v-if="nodeListStore.queryFilter.nodesWithAssets"
-              label="Nodes with asset info"
-              removable
-              @remove="nodeListStore.removeNodesWithAssets()"
-            />
-            <OnmsChip
               v-if="nodeListStore.queryFilter.nodesWithOutages"
               label="Nodes with current outages"
               removable
               @remove="nodeListStore.removeNodesWithOutages()"
+            />
+            <OnmsChip
+              v-if="nodeListStore.queryFilter.nodesWithAssets"
+              label="Nodes with asset info"
+              removable
+              @remove="nodeListStore.removeNodesWithAssets()"
             />
             <OnmsChip
               v-for="assetFilter in (nodeListStore.queryFilter.assetFilters ?? [])"
