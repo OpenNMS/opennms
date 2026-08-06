@@ -21,10 +21,10 @@
  */
 package org.opennms.openapi;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,71 +33,69 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 
 /**
- * Walks the source tree for JAX-RS root resources and checks each one is on this
- * module's classpath.
+ * Fails when a module contributing ReST resources is not a dependency of this one.
  *
- * A module that contributes to org.opennms.web.rest.v1 or .v2 and is not a
- * dependency here still generates a valid document, just one that is missing
- * those endpoints. Nothing else notices.
+ * Such a module still produces a valid document, just one missing its endpoints,
+ * and nothing else notices.
+ *
+ * Checked per module rather than per resource class: {@code @Path} is often
+ * inherited from an interface in org.opennms.web.rest.v2.api, so reading it off
+ * the class declaration in source misses those and understates the coverage.
  */
 public class OpenApiResourceCoverageTest {
 
-    private static final Path REPO_ROOT = Paths.get("..").toAbsolutePath().normalize();
+    /** Overrides the search below; the build does not need to set it. */
+    private static final String REPO_ROOT_PROPERTY = "opennms.repoRoot";
+
+    private static final String SOURCE_ROOT = "/src/main/java/";
+
+    private static final List<String> REST_PACKAGES =
+            List.of("org/opennms/web/rest/v1/", "org/opennms/web/rest/v2/");
 
     private static final Set<String> PRUNED = Set.of("target", ".git", "node_modules", ".claude");
 
-    /** The generator only registers resources in these packages and below. */
-    private static final Pattern REST_PACKAGE =
-            Pattern.compile("^\\s*package\\s+(org\\.opennms\\.web\\.rest\\.v[12](?:\\.[\\w.]+)?)\\s*;", Pattern.MULTILINE);
-
-    /** Guards against a parser change quietly reducing this to a no-op. */
-    private static final int EXPECTED_AT_LEAST = 50;
-
     @Test
-    public void everyRootResourceIsOnTheClasspath() throws Exception {
-        final TreeMap<String, String> missing = new TreeMap<>();
-        int rootResources = 0;
+    public void everyRestModuleIsOnTheClasspath() throws IOException {
+        final Path repoRoot = repoRoot();
+        final Map<String, List<String>> restClassesByModule = restClassesByModule(repoRoot);
 
-        for (final Path source : findRestSources()) {
-            final String className = rootResourceClassName(source);
-            if (className == null) {
-                continue;
-            }
+        assertFalse("no ReST sources found under " + repoRoot + "; the scan is broken, not the classpath",
+                restClassesByModule.isEmpty());
 
-            rootResources++;
-            try {
-                Class.forName(className, false, getClass().getClassLoader());
-            } catch (final ClassNotFoundException e) {
-                missing.put(className, moduleOf(source));
-            }
-        }
+        final List<String> missing = restClassesByModule.entrySet().stream()
+                .filter(module -> module.getValue().stream().noneMatch(OpenApiResourceCoverageTest::isOnClasspath))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
 
-        assertTrue("found only " + rootResources + " root resources under " + REPO_ROOT
-                        + "; the source scan is broken, not the classpath",
-                rootResources >= EXPECTED_AT_LEAST);
-
-        assertTrue("these ReST resources are not on this module's classpath, so their endpoints are"
-                        + " missing from the generated documents. Add the module as a provided"
-                        + " dependency in opennms-openapi-docs/pom.xml:\n"
-                        + missing.entrySet().stream()
-                                .map(e -> "  " + e.getKey() + " (" + e.getValue() + ")")
-                                .collect(Collectors.joining("\n")),
+        assertTrue("these modules contribute ReST resources but are not on this module's classpath,"
+                        + " so their endpoints are missing from the generated documents."
+                        + " Add each as a provided dependency in opennms-openapi-docs/pom.xml:\n"
+                        + missing.stream().map(m -> "  " + m).collect(Collectors.joining("\n")),
                 missing.isEmpty());
     }
 
-    private static List<Path> findRestSources() throws IOException {
-        final List<Path> sources = new ArrayList<>();
+    private static boolean isOnClasspath(final String className) {
+        try {
+            Class.forName(className, false, OpenApiResourceCoverageTest.class.getClassLoader());
+            return true;
+        } catch (final ClassNotFoundException | NoClassDefFoundError e) {
+            return false;
+        }
+    }
 
-        Files.walkFileTree(REPO_ROOT, new SimpleFileVisitor<>() {
+    /** Maps each module holding ReST sources to the classes it contributes. */
+    private static Map<String, List<String>> restClassesByModule(final Path repoRoot) throws IOException {
+        final Map<String, List<String>> byModule = new TreeMap<>();
+
+        Files.walkFileTree(repoRoot, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
                 return PRUNED.contains(dir.getFileName().toString())
@@ -108,9 +106,24 @@ public class OpenApiResourceCoverageTest {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) {
                 final String path = file.toString().replace('\\', '/');
-                if (path.endsWith(".java") && path.contains("/src/main/java/org/opennms/web/rest/")) {
-                    sources.add(file);
+                if (!path.endsWith(".java")) {
+                    return FileVisitResult.CONTINUE;
                 }
+
+                final int sourceRoot = path.lastIndexOf(SOURCE_ROOT);
+                if (sourceRoot < 0) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                final String relative = path.substring(sourceRoot + SOURCE_ROOT.length());
+                if (REST_PACKAGES.stream().noneMatch(relative::startsWith)) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                final String module = repoRoot.relativize(Paths.get(path.substring(0, sourceRoot))).toString();
+                final String className = relative.substring(0, relative.length() - ".java".length()).replace('/', '.');
+                byModule.computeIfAbsent(module, m -> new ArrayList<>()).add(className);
+
                 return FileVisitResult.CONTINUE;
             }
 
@@ -120,66 +133,33 @@ public class OpenApiResourceCoverageTest {
             }
         });
 
-        return sources;
+        return byModule;
     }
 
     /**
-     * Returns the class name when the file declares a concrete root resource, meaning
-     * a class carrying a type-level {@code @Path}. Sub-resources reached from a
-     * locator method carry {@code @Path} only on their methods and are never
-     * registered on their own, so they must not be counted.
+     * Walks up for the marker rather than assuming a fixed depth, so moving this
+     * module does not quietly break the scan.
      */
-    private static String rootResourceClassName(final Path source) throws IOException {
-        final String fileName = source.getFileName().toString();
-        final String simpleName = fileName.substring(0, fileName.length() - ".java".length());
-        final String content = new String(Files.readAllBytes(source), StandardCharsets.UTF_8);
-
-        final Matcher packageMatcher = REST_PACKAGE.matcher(content);
-        if (!packageMatcher.find()) {
-            return null;
+    private static Path repoRoot() {
+        final String configured = System.getProperty(REPO_ROOT_PROPERTY);
+        if (configured != null && !configured.isBlank() && !configured.startsWith("${")) {
+            final Path candidate = Paths.get(configured).toAbsolutePath().normalize();
+            if (isRepoRoot(candidate)) {
+                return candidate;
+            }
         }
 
-        final Matcher declaration = Pattern.compile(
-                "^[^\\S\\n]*(?:public\\s+)?(?:(abstract|final)\\s+)?(class|interface|enum)\\s+" + Pattern.quote(simpleName) + "\\b",
-                Pattern.MULTILINE).matcher(content);
-        if (!declaration.find()) {
-            return null;
-        }
-        if (!"class".equals(declaration.group(2)) || "abstract".equals(declaration.group(1))) {
-            return null;
+        for (Path dir = Paths.get("").toAbsolutePath().normalize(); dir != null; dir = dir.getParent()) {
+            if (isRepoRoot(dir)) {
+                return dir;
+            }
         }
 
-        return annotatedWithPath(content.substring(0, declaration.start()))
-                ? packageMatcher.group(1) + "." + simpleName
-                : null;
+        throw new IllegalStateException("no repository root above " + Paths.get("").toAbsolutePath()
+                + "; pass -D" + REPO_ROOT_PROPERTY + "=<path>");
     }
 
-    /** Only the annotation block directly above the declaration counts, not imports or javadoc. */
-    private static boolean annotatedWithPath(final String beforeDeclaration) {
-        final String[] lines = beforeDeclaration.split("\n");
-
-        for (int i = lines.length - 1; i >= 0; i--) {
-            final String line = lines[i].trim();
-            if (line.isEmpty() || line.startsWith("*") || line.startsWith("/*") || line.startsWith("//")) {
-                continue;
-            }
-            if (!line.startsWith("@")) {
-                return false;
-            }
-            if (line.startsWith("@Path")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static String moduleOf(final Path source) {
-        for (Path dir = source.getParent(); dir != null && dir.startsWith(REPO_ROOT); dir = dir.getParent()) {
-            if (Files.exists(dir.resolve("pom.xml"))) {
-                return REPO_ROOT.relativize(dir).toString();
-            }
-        }
-        return "unknown module";
+    private static boolean isRepoRoot(final Path dir) {
+        return Files.isRegularFile(dir.resolve("compile.pl")) && Files.isRegularFile(dir.resolve("pom.xml"));
     }
 }
