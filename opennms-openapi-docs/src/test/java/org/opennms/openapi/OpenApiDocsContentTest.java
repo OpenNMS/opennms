@@ -59,8 +59,7 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.measurements.rest
         assertHasPath(document, "/measurements");
 
-        assertTrue("v1 document describes suspiciously few paths: " + document.get("paths").size(),
-                document.get("paths").size() > 150);
+        assertPathCountAtLeast(document, "v1", 180);
     }
 
     @Test
@@ -82,8 +81,14 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.geolocation.rest
         assertHasPath(document, "/geolocation");
 
-        assertTrue("v2 document describes suspiciously few paths: " + document.get("paths").size(),
-                document.get("paths").size() > 150);
+        assertPathCountAtLeast(document, "v2", 200);
+    }
+
+    /** A tripwire for mass loss of endpoints, not an exact count; raise it if the API grows. */
+    private static void assertPathCountAtLeast(final JsonNode document, final String api, final int floor) {
+        assertTrue(api + " document describes suspiciously few paths: " + document.get("paths").size()
+                        + ", expected at least " + floor,
+                document.get("paths").size() >= floor);
     }
 
     private static void assertBaseUriPlaceholder(final JsonNode document) {

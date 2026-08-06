@@ -35,10 +35,26 @@ public final class OpenApiDocWriter {
     private OpenApiDocWriter() {
     }
 
+    /**
+     * Run inside Maven, by exec:java rather than exec:exec, this class is loaded by a
+     * plugin realm and part of the project classpath is shadowed. The documents still
+     * generate and every assertion about them still passes, they are just quietly
+     * wrong, so refuse to produce them at all.
+     */
+    private static void requireForkedJvm() {
+        if (OpenApiDocWriter.class.getClassLoader() != ClassLoader.getSystemClassLoader()) {
+            throw new IllegalStateException("loaded by " + OpenApiDocWriter.class.getClassLoader()
+                    + " rather than the system class loader, so this is not a forked JVM."
+                    + " The exec-maven-plugin execution must use the exec goal, not java.");
+        }
+    }
+
     public static void main(final String[] args) throws Exception {
         if (args.length != 1) {
             throw new IllegalArgumentException("usage: OpenApiDocWriter <output-directory>");
         }
+
+        requireForkedJvm();
 
         final Path outputDir = Paths.get(args[0]);
         Files.createDirectories(outputDir);

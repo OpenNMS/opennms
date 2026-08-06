@@ -60,7 +60,13 @@ public class OpenApiResourceCoverageTest {
     private static final List<String> REST_PACKAGES =
             List.of("org/opennms/web/rest/v1/", "org/opennms/web/rest/v2/");
 
-    private static final Set<String> PRUNED = Set.of("target", ".git", "node_modules", ".claude");
+    private static final Set<String> PRUNED = Set.of("target", "node_modules");
+
+    /**
+     * Modules whose ReST resources are deliberately not part of the webapp, so their
+     * absence from the documents is intended. Empty today.
+     */
+    private static final Set<String> NOT_IN_THE_WEBAPP = Set.of();
 
     @Test
     public void everyRestModuleIsOnTheClasspath() throws IOException {
@@ -71,13 +77,15 @@ public class OpenApiResourceCoverageTest {
                 restClassesByModule.isEmpty());
 
         final List<String> missing = restClassesByModule.entrySet().stream()
+                .filter(module -> !NOT_IN_THE_WEBAPP.contains(module.getKey()))
                 .filter(module -> module.getValue().stream().noneMatch(OpenApiResourceCoverageTest::isOnClasspath))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
         assertTrue("these modules contribute ReST resources but are not on this module's classpath,"
-                        + " so their endpoints are missing from the generated documents."
-                        + " Add each as a provided dependency in opennms-openapi-docs/pom.xml:\n"
+                        + " so their endpoints are missing from the generated documents. Add each as a"
+                        + " provided dependency in opennms-openapi-docs/pom.xml, or list it in"
+                        + " NOT_IN_THE_WEBAPP if it is deliberately not deployed there:\n"
                         + missing.stream().map(m -> "  " + m).collect(Collectors.joining("\n")),
                 missing.isEmpty());
     }
@@ -98,7 +106,9 @@ public class OpenApiResourceCoverageTest {
         Files.walkFileTree(repoRoot, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
-                return PRUNED.contains(dir.getFileName().toString())
+                final String name = dir.getFileName().toString();
+                // Dot directories cover .git and any nested checkout a developer keeps in the tree.
+                return PRUNED.contains(name) || (name.startsWith(".") && !dir.equals(repoRoot))
                         ? FileVisitResult.SKIP_SUBTREE
                         : FileVisitResult.CONTINUE;
             }

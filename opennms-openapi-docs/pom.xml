@@ -13,6 +13,22 @@
     Generates and ships the OpenAPI documents for the v1 and v2 ReST APIs. See README.adoc.
   </description>
 
+  <properties>
+    <!-- The JDK running the build, so generation does not depend on what is on PATH. -->
+    <openapi.javaExecutable>${java.home}/bin/java</openapi.javaExecutable>
+  </properties>
+
+  <profiles>
+    <profile>
+      <activation>
+        <os><family>windows</family></os>
+      </activation>
+      <properties>
+        <openapi.javaExecutable>${java.home}/bin/java.exe</openapi.javaExecutable>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <!--
@@ -32,7 +48,7 @@
             <configuration>
               <!-- Forked, not exec:java: in-process the Maven realm shadows part of
                    the project classpath and the documents come out different. -->
-              <executable>${java.home}/bin/java</executable>
+              <executable>${openapi.javaExecutable}</executable>
               <classpathScope>compile</classpathScope>
               <arguments>
                 <argument>-classpath</argument>
