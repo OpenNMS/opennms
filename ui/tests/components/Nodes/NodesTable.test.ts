@@ -992,8 +992,12 @@ describe('NodesTable.vue', () => {
   // ── Flows sort fix ───────────────────────────────────────────────────────────
 
   describe('flows column sorting', () => {
-    it('the Flows column is not sortable', () => {
+    it('the Flows column is not sortable', async () => {
       const wrapper = mountTable()
+      // Flows is no longer in the default column selection (NMS-20175) — select it explicitly.
+      const structure = useNodeStructureStore()
+      structure.columns = structure.columns.map(c => (c.id === 'flows' ? { ...c, selected: true } : c))
+      await nextTick()
       const flowsColumn = wrapper.findAllComponents(Column).find(c => c.props('header') === 'Flows')
       expect(flowsColumn).toBeDefined()
       expect(flowsColumn!.props('sortable')).toBe(false)
