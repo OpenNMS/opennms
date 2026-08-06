@@ -20,6 +20,9 @@
         <bundle start-level="60">mvn:io.netty/netty-transport/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <!-- netty 4.2 split the base and compression codecs out of netty-codec; netty-codec-http needs both -->
+        <bundle start-level="60">mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-codec-compression/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
@@ -326,6 +329,9 @@
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
+        <!-- XmlFrameDecoderFactory needs the XML codec, which netty 4.2 no longer pulls in via netty-codec -->
+        <bundle dependency="true">mvn:com.fasterxml/aalto-xml/${aaltoXmlVersion}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-xml/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
@@ -1654,6 +1660,7 @@
         <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>

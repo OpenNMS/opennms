@@ -296,6 +296,8 @@ org.jolokia.authMode=jaas
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <!-- netty 4.2 moved the codec base classes out of netty-codec into netty-codec-base -->
+        <bundle dependency="true">mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-common/${netty4Version}</bundle>
