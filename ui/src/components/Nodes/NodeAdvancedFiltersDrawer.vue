@@ -161,20 +161,20 @@
         </div>
       </div>
       <div class="onms-row">
-        <div class="onms-col-12 toggle-row" data-test="with-assets">
-          <label for="with-assets">Nodes with asset info only</label>
-          <OnmsToggleSwitch
-            v-model="selectedFilters.nodesWithAssets"
-            inputId="with-assets"
-          />
-        </div>
-      </div>
-      <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="with-outages">
           <label for="with-outages">Nodes with current outages</label>
           <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithOutages"
             inputId="with-outages"
+          />
+        </div>
+      </div>
+      <div class="onms-row">
+        <div class="onms-col-12 toggle-row" data-test="with-assets">
+          <label for="with-assets">Nodes with asset info only</label>
+          <OnmsToggleSwitch
+            v-model="selectedFilters.nodesWithAssets"
+            inputId="with-assets"
           />
         </div>
       </div>
@@ -243,11 +243,11 @@
             <p><strong>Down nodes only</strong></p>
             <p>Limits results to nodes with a down aggregate status, i.e. nodes that have at least one active monitored service currently in outage.</p>
             <br />
-            <p><strong>Nodes with asset info only</strong></p>
-            <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
-            <br />
             <p><strong>Nodes with current outages</strong></p>
             <p>Limits results to nodes that have one or more services currently in outage.</p>
+            <br />
+            <p><strong>Nodes with asset info only</strong></p>
+            <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
             <br />
             <p><strong>Asset Fields</strong></p>
             <p>Filter by one or more node asset-record fields (such as Building, Region, or Rack). Choose an asset field, enter a value, and click Add. Each added field is an exact match, and multiple asset fields are intersected (a node must match all of them).</p>
