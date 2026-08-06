@@ -130,7 +130,6 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
-    <module>opennms-asterisk</module>
     <module>opennms-config-dao</module>
   </modules>
   <build>
@@ -3696,17 +3695,6 @@
      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>newts-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-asterisk</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>asterisk-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

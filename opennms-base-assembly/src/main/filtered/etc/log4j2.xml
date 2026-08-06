@@ -187,10 +187,6 @@
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
     </logger>
-    <logger name="org.asteriskjava" additivity="false" level="WARN">
-      <appender-ref ref="RoutingAppender"/>
-      <appender-ref ref="\${console.daemon.output}"/>
-    </logger>
     <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
@@ -295,7 +291,6 @@
         <KeyValuePair key="access-point-monitor" value="DEBUG" />
         <KeyValuePair key="ackd"                 value="DEBUG" />
         <KeyValuePair key="alarmd"               value="DEBUG" />
-        <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
         <KeyValuePair key="archiver"             value="DEBUG" />
         <KeyValuePair key="bsmd"                 value="DEBUG" />
         <KeyValuePair key="collectd"             value="DEBUG" />

@@ -363,6 +363,37 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         downStatusBehavior.setSkipPropertyByDefault(true);
         map.put("nodesWithDownAggregateStatus", downStatusBehavior);
 
+        // nodesWithOutages: nodes that have at least one current (unresolved, unsuppressed,
+        // non-perspective) outage. Mirrors the legacy node-list "nodes with outages" filter,
+        // with its operator-precedence bug fixed: the suppresstime disjunction is parenthesized
+        // so it no longer overrides "ifregainedservice is null".
+        final String currentOutagesSubquery = "(select ip.nodeid from outages o " +
+                "join ifservices s on o.ifserviceid = s.id " +
+                "join ipinterface ip on s.ipinterfaceid = ip.id " +
+                "where o.perspective is null " +
+                "and o.ifregainedservice is null " +
+                "and (o.suppresstime is null or o.suppresstime < now()))";
+        CriteriaBehavior<?> outagesBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            if (v == null) {
+                return;
+            }
+            final boolean wantOutages = Boolean.parseBoolean((String)v);
+            boolean hasOutages;
+            switch (c) {
+            case EQUALS:
+                hasOutages = wantOutages;
+                break;
+            case NOT_EQUALS:
+                hasOutages = !wantOutages;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type for nodesWithOutages expression: " + c);
+            }
+            b.sql("{alias}.nodeid " + (hasOutages ? "in " : "not in ") + currentOutagesSubquery);
+        });
+        outagesBehavior.setSkipPropertyByDefault(true);
+        map.put("nodesWithOutages", outagesBehavior);
+
         // nodesWithAssets: nodes whose asset record has at least one non-empty field.
         // Mirrors the legacy AssetModel.searchNodesWithAssets() query ("All nodes with asset info").
         final String[] assetColumns = {
