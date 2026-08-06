@@ -311,7 +311,7 @@
 
     <!--
       A module contributing to org.opennms.web.rest.v1 or .v2 and missing here loses
-      its endpoints silently; OpenApiDocsContentTest guards the ones known today.
+      its endpoints silently; OpenApiResourceCoverageTest catches that.
     -->
     <dependency>
       <groupId>org.opennms</groupId>
