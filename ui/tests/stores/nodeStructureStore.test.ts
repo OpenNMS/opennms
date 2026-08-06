@@ -73,6 +73,40 @@ describe('useNodeStructureStore', () => {
       expect(store.drawerState.visible).toBe(false)
       expect(store.columnsDrawerState.visible).toBe(false)
     })
+
+    it('has showInterfaces false by default', () => {
+      expect(store.showInterfaces).toBe(false)
+    })
+  })
+
+  // ─── showInterfaces ─────────────────────────────────────────────────────────
+
+  describe('setShowInterfaces', () => {
+    it('sets showInterfaces to true', () => {
+      store.setShowInterfaces(true)
+
+      expect(store.showInterfaces).toBe(true)
+    })
+
+    it('sets showInterfaces back to false', () => {
+      store.setShowInterfaces(true)
+      store.setShowInterfaces(false)
+
+      expect(store.showInterfaces).toBe(false)
+    })
+
+    it('is not part of NodeQueryFilter and is not included in NodePreferences round-trip', async () => {
+      store.setShowInterfaces(true)
+
+      const prefs = await store.getNodePreferences()
+
+      expect((prefs.nodeFilter as any).showInterfaces).toBeUndefined()
+      expect(JSON.stringify(prefs)).not.toContain('showInterfaces')
+
+      // Loading preferences back in must not touch showInterfaces
+      await store.setFromNodePreferences(prefs)
+      expect(store.showInterfaces).toBe(true)
+    })
   })
 
   // ─── getCategories ──────────────────────────────────────────────────────────
@@ -218,6 +252,18 @@ describe('useNodeStructureStore', () => {
 
       expect(store.isAnyFilterSelected()).toBe(true)
     })
+
+    it('returns true when nodesWithAssets is set', async () => {
+      await store.setFilterWithNodesWithAssets(true)
+
+      expect(store.isAnyFilterSelected()).toBe(true)
+    })
+
+    it('returns true when nodesWithOutages is set', async () => {
+      await store.setFilterWithNodesWithOutages(true)
+
+      expect(store.isAnyFilterSelected()).toBe(true)
+    })
   })
 
   // ─── clearAllFiltersAndSelections ────────────────────────────────────────────
@@ -259,6 +305,34 @@ describe('useNodeStructureStore', () => {
       await store.setFilterWithIpAddress('10.0.0.1')
 
       expect(store.queryFilter.extendedSearch.snmpParams?.snmpIfAlias).toBe('uplink')
+    })
+  })
+
+  describe('setFilterWithNodesWithAssets / removeNodesWithAssets', () => {
+    it('sets nodesWithAssets', async () => {
+      await store.setFilterWithNodesWithAssets(true)
+
+      expect(store.queryFilter.nodesWithAssets).toBe(true)
+    })
+
+    it('clears nodesWithAssets', () => {
+      store.removeNodesWithAssets()
+
+      expect(store.queryFilter.nodesWithAssets).toBe(false)
+    })
+  })
+
+  describe('setFilterWithNodesWithOutages / removeNodesWithOutages', () => {
+    it('sets nodesWithOutages', async () => {
+      await store.setFilterWithNodesWithOutages(true)
+
+      expect(store.queryFilter.nodesWithOutages).toBe(true)
+    })
+
+    it('clears nodesWithOutages', () => {
+      store.removeNodesWithOutages()
+
+      expect(store.queryFilter.nodesWithOutages).toBe(false)
     })
   })
 
@@ -480,6 +554,24 @@ describe('useNodeStructureStore', () => {
       })
 
       expect(store.queryFilter.selectedCategories).toEqual([categories[0]])
+    })
+
+    it('applies nodesWithAssets from filter', async () => {
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: { searchTerm: '', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, nodesWithAssets: true, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
+      })
+
+      expect(store.queryFilter.nodesWithAssets).toBe(true)
+    })
+
+    it('applies nodesWithOutages from filter', async () => {
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: { searchTerm: '', selectedCategories: [], selectedFlows: [], selectedMonitoringLocations: [], categoryMode: SetOperator.Union, nodesWithOutages: true, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
+      })
+
+      expect(store.queryFilter.nodesWithOutages).toBe(true)
     })
   })
 

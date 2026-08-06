@@ -73,6 +73,12 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const serviceTypesLoaded = ref(false)
   const selectedServices = ref<IAutocompleteItemType[]>([])
 
+  // Display-mode flag replicating the legacy node list's `?listInterfaces=true` behavior.
+  // Deliberately NOT part of NodeQueryFilter and NOT persisted in NodePreferences: it's a
+  // display mode, not a filter, so keeping it out avoids spurious refetch via the deep
+  // queryFilter watcher in Nodes.vue.
+  const showInterfaces = ref(false)
+
   const fetchCategories = async () => {
     const resp = await API.getCategories()
 
@@ -108,6 +114,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       !!queryFilter.value.macAddress?.length ||
       !!queryFilter.value.nodesWithDownAggregateStatus ||
       !!queryFilter.value.nodesWithAssets ||
+      !!queryFilter.value.nodesWithOutages ||
       (queryFilter.value.assetFilters?.length ?? 0) > 0 ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
       hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
@@ -163,6 +170,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = {
       ...queryFilter.value,
       nodesWithAssets
+    }
+  }
+
+  const setFilterWithNodesWithOutages = async (nodesWithOutages: boolean) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      nodesWithOutages
     }
   }
 
@@ -326,6 +340,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.nodesWithAssets = true
       }
 
+      if (prefs.nodeFilter.nodesWithOutages) {
+        filter.nodesWithOutages = true
+      }
+
       if (prefs.nodeFilter.assetFilters?.length) {
         filter.assetFilters = [...prefs.nodeFilter.assetFilters]
       }
@@ -429,6 +447,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = { ...queryFilter.value, nodesWithAssets: false }
   }
 
+  const removeNodesWithOutages = () => {
+    queryFilter.value = { ...queryFilter.value, nodesWithOutages: false }
+  }
+
   const removeAssetFilter = (column: string) => {
     queryFilter.value = {
       ...queryFilter.value,
@@ -482,6 +504,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     )
   }
 
+  const setShowInterfaces = (value: boolean) => {
+    showInterfaces.value = value
+  }
+
   const updateSelectedMonitoringLocations = async (locations: IAutocompleteItemType[]) => {
     selectedMonitoringLocations.value = locations
 
@@ -514,6 +540,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setFilterWithMacAddress,
     setFilterWithDownAggregateStatus,
     setFilterWithNodesWithAssets,
+    setFilterWithNodesWithOutages,
     setFilterWithAssetFilters,
     setFilterWithSnmpParams,
     setFilterWithForeignSourceParams,
@@ -533,6 +560,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     allServiceTypes,
     serviceTypesLoaded,
     selectedServices,
+    showInterfaces,
+    setShowInterfaces,
     removeCategory,
     removeCategory2,
     removeExtendedSearch,
@@ -540,6 +569,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeMacAddress,
     removeDownAggregateStatus,
     removeNodesWithAssets,
+    removeNodesWithOutages,
     removeAssetFilter,
     removeTopology,
     setExtendedSearchParams,

@@ -11,7 +11,7 @@
   <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>
-    <module>asterisk</module>
+    <module>angus-mail-shaded</module>
     <module>atomikos</module>
     <module>camel</module>
     <module>camel-test</module>
@@ -27,7 +27,6 @@
     <module>jackson2</module>
     <module>jasper</module>
     <module>jasypt</module>
-    <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
     <module>jinterop</module>

@@ -255,6 +255,7 @@ export interface SnmpInterface {
   lastEgressFlow: any
   lastIngressFlow: any
   lastSnmpPoll: number
+  nodeId: number
   physAddr: any
   poll: boolean
 }
@@ -631,6 +632,7 @@ export interface NodeQueryFilter {
   topology?: string
   nodesWithDownAggregateStatus?: boolean
   nodesWithAssets?: boolean
+  nodesWithOutages?: boolean
   assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }

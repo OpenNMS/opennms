@@ -659,7 +659,8 @@
     </feature>
     <feature name="opennms-javamail" version="${project.version}" description="OpenNMS :: Javamail">
         <feature>commons-lang</feature>
-        <feature>javax.mail</feature>
+        <feature>guava</feature>
+        <feature>jakarta.mail</feature>
         <feature>opennms-core</feature>
         <feature>opennms-config-api</feature>
         <bundle>mvn:org.opennms/opennms-javamail-api/${project.version}</bundle>
@@ -1800,6 +1801,15 @@
 
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-ha-shell" version="${project.version}" description="OpenNMS :: Features :: HA Management :: Shell Commands">
+        <bundle>mvn:org.opennms.features.ha-management/org.opennms.features.ha-management.ha-shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-ha-rest" version="${project.version}" description="OpenNMS :: Features :: HA Management :: REST">
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.ha-management/org.opennms.features.ha-management.ha-rest/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">

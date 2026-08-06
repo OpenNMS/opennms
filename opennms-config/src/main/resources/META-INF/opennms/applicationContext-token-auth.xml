@@ -31,6 +31,12 @@
     <onmsgi:service interface="org.opennms.netmgt.config.tokenauth.TokenProvider"
                     ref="tokenAuthProvider"/>
 
+    <!-- ${token:<name>} metadata context; JavaMailerConfig picks this up by bean name -->
+    <bean id="tokenScope"
+          class="org.opennms.netmgt.config.tokenauth.TokenScope">
+        <constructor-arg ref="tokenAuthProvider"/>
+    </bean>
+
     <bean id="tokenAuthCollectorAdaptor"
           class="org.opennms.netmgt.config.tokenauth.TokenAuthCollectorAdaptor">
         <constructor-arg ref="tokenAuthProvider"/>
