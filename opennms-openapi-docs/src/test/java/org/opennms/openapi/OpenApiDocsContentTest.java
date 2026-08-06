@@ -27,14 +27,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Reads the committed documents off the classpath, the way the webapp will.
+ * Reads the generated documents off the classpath, the way the webapp will.
  *
  * The paths asserted here are sentinels, one per contributing module. If a
  * dependency goes missing from this module's pom, generation still succeeds and
@@ -43,12 +42,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OpenApiDocsContentTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    /** A regenerate run writes after resources were copied, so the classpath is stale. */
-    @Before
-    public void skipWhileRegenerating() {
-        org.junit.Assume.assumeFalse(Boolean.getBoolean("openapi.regenerate"));
-    }
 
     @Test
     public void v1DescribesEveryContributingModule() throws Exception {

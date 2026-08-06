@@ -48,7 +48,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
 /**
- * Produces the OpenAPI documents shipped in src/main/resources/openapi.
+ * Produces the OpenAPI documents packaged under openapi/ in this module's jar.
  *
  * The metadata and base packages here must match
  * {@code opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v*.xml},
@@ -130,9 +130,9 @@ public final class OpenApiDocGenerator {
     }
 
     /**
-     * Jackson derives schema properties from reflection, whose order is not
-     * stable across JVM runs, so the map keys have to be sorted or the committed
-     * documents churn on every regeneration.
+     * Jackson derives schema properties from reflection, whose order is not stable
+     * across JVM runs, so the map keys have to be sorted or the documents differ
+     * from build to build.
      */
     private static String serialize(final OpenAPI document) throws JsonProcessingException {
         final ObjectMapper mapper = Json.mapper().copy()

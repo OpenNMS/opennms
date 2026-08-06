@@ -10,8 +10,42 @@
   <packaging>jar</packaging>
   <name>OpenNMS :: OpenAPI Documents</name>
   <description>
-    Ships the pre-generated OpenAPI documents for the v1 and v2 ReST APIs. See README.adoc.
+    Generates and ships the OpenAPI documents for the v1 and v2 ReST APIs. See README.adoc.
   </description>
+
+  <build>
+    <plugins>
+      <!--
+        Generated into the build output instead of committed: a checked-in copy
+        drifts from the ReST annotations, conflicts on forward merges, and has to
+        be refreshed by hand. process-classes, since the generator is compiled here.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>generate-openapi-documents</id>
+            <phase>process-classes</phase>
+            <goals><goal>exec</goal></goals>
+            <configuration>
+              <!-- Forked, not exec:java: in-process the Maven realm shadows part of
+                   the project classpath and the documents come out different. -->
+              <executable>${java.home}/bin/java</executable>
+              <classpathScope>compile</classpathScope>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>org.opennms.openapi.OpenApiDocWriter</argument>
+                <argument>${project.build.outputDirectory}/openapi</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <!--
