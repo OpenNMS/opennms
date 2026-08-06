@@ -55,7 +55,7 @@ const getDefaultDrawerState = (): DrawerState => {
   }
 }
 
-export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
+export const useNodeListStore = defineStore('nodeListStore', () => {
   const categories = ref<Category[]>([])
   const categoryCount = computed(() => categories.value.length)
   const categoriesLoaded = ref(false)

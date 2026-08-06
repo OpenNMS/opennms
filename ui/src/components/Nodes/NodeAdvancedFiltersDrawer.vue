@@ -161,20 +161,20 @@
         </div>
       </div>
       <div class="onms-row">
-        <div class="onms-col-12 toggle-row" data-test="with-assets">
-          <label for="with-assets">Nodes with asset info only</label>
-          <OnmsToggleSwitch
-            v-model="selectedFilters.nodesWithAssets"
-            inputId="with-assets"
-          />
-        </div>
-      </div>
-      <div class="onms-row">
         <div class="onms-col-12 toggle-row" data-test="with-outages">
           <label for="with-outages">Nodes with current outages</label>
           <OnmsToggleSwitch
             v-model="selectedFilters.nodesWithOutages"
             inputId="with-outages"
+          />
+        </div>
+      </div>
+      <div class="onms-row">
+        <div class="onms-col-12 toggle-row" data-test="with-assets">
+          <label for="with-assets">Nodes with asset info only</label>
+          <OnmsToggleSwitch
+            v-model="selectedFilters.nodesWithAssets"
+            inputId="with-assets"
           />
         </div>
       </div>
@@ -243,11 +243,11 @@
             <p><strong>Down nodes only</strong></p>
             <p>Limits results to nodes with a down aggregate status, i.e. nodes that have at least one active monitored service currently in outage.</p>
             <br />
-            <p><strong>Nodes with asset info only</strong></p>
-            <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
-            <br />
             <p><strong>Nodes with current outages</strong></p>
             <p>Limits results to nodes that have one or more services currently in outage.</p>
+            <br />
+            <p><strong>Nodes with asset info only</strong></p>
+            <p>Limits results to nodes that have at least one non-empty asset-record field.</p>
             <br />
             <p><strong>Asset Fields</strong></p>
             <p>Filter by one or more node asset-record fields (such as Building, Region, or Rack). Choose an asset field, enter a value, and click Add. Each added field is an exact match, and multiple asset fields are intersected (a node must match all of them).</p>
@@ -277,7 +277,7 @@
         </OnmsButton>
         <OnmsButton
           variant="outlined"
-          @click="nodeStructureStore.closeInstancesDrawerModal()"
+          @click="nodeListStore.closeInstancesDrawerModal()"
         >
           Close
         </OnmsButton>
@@ -298,7 +298,7 @@ import InfoIcon from '@/components/icons/action/Info.vue'
 import FormField from '@/components/Common/FormField.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 
 interface DrawerErrors {
   ipAddress?: string
@@ -311,7 +311,7 @@ const isMessageDialogVisible = ref(false)
 const errors = ref<DrawerErrors>({})
 const isApplyDisabled = ref(false)
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const extendedSearchPanelRef = ref<ExtendedSearchPanelInstance | null>(null)
 const assetFilterPanelRef = ref<AssetFilterPanelInstance | null>(null)
 const showSecondCategories = ref(false)
@@ -330,10 +330,10 @@ const selectedFilters = reactive({
 })
 
 const drawerVisible = computed({
-  get: () => nodeStructureStore.drawerState.visible,
+  get: () => nodeListStore.drawerState.visible,
   set: (val: boolean) => {
     if (!val) {
-      nodeStructureStore.closeInstancesDrawerModal()
+      nodeListStore.closeInstancesDrawerModal()
     }
   }
 })
@@ -341,14 +341,14 @@ const drawerVisible = computed({
 // Full option lists for each MultiSelect (the same lists the old @search
 // handlers filtered over). MultiSelect performs its own client-side filtering.
 const categoryOptions = computed<IAutocompleteItemType[]>(() => {
-  const categoriesArray = Array.isArray(nodeStructureStore.categories)
-    ? nodeStructureStore.categories
+  const categoriesArray = Array.isArray(nodeListStore.categories)
+    ? nodeListStore.categories
     : []
   return categoriesArray.map(c => ({ _text: c.name, _value: c.id } as IAutocompleteItemType))
 })
 
 const locationOptions = computed<IAutocompleteItemType[]>(() =>
-  nodeStructureStore.monitoringLocations.map(location => ({
+  nodeListStore.monitoringLocations.map(location => ({
     _text: location.name,
     _value: location.name,
     name: location.name
@@ -356,7 +356,7 @@ const locationOptions = computed<IAutocompleteItemType[]>(() =>
 )
 
 const serviceOptions = computed<IAutocompleteItemType[]>(() =>
-  nodeStructureStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
+  nodeListStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
 )
 
 const flowOptions = computed<IAutocompleteItemType[]>(() => [
@@ -389,24 +389,24 @@ watchEffect(() => {
 })
 
 const applySelectedFilters = () => {
-  nodeStructureStore.updateSelectedCategories(selectedFilters.categories)
-  nodeStructureStore.updateSelectedCategories2(showSecondCategories.value ? selectedFilters.categories2 : [])
-  nodeStructureStore.updateSelectedFlows(selectedFilters.flows)
-  nodeStructureStore.updateSelectedMonitoringLocations(selectedFilters.locations)
-  nodeStructureStore.updateSelectedServices(selectedFilters.services)
-  nodeStructureStore.setFilterWithIpAddress(selectedFilters.ipAddress)
-  nodeStructureStore.setFilterWithMacAddress(selectedFilters.macAddress)
-  nodeStructureStore.setFilterWithDownAggregateStatus(selectedFilters.nodesWithDownAggregateStatus)
-  nodeStructureStore.setFilterWithNodesWithAssets(selectedFilters.nodesWithAssets)
-  nodeStructureStore.setFilterWithNodesWithOutages(selectedFilters.nodesWithOutages)
-  nodeStructureStore.setFilterWithTopology(selectedFilters.topology)
+  nodeListStore.updateSelectedCategories(selectedFilters.categories)
+  nodeListStore.updateSelectedCategories2(showSecondCategories.value ? selectedFilters.categories2 : [])
+  nodeListStore.updateSelectedFlows(selectedFilters.flows)
+  nodeListStore.updateSelectedMonitoringLocations(selectedFilters.locations)
+  nodeListStore.updateSelectedServices(selectedFilters.services)
+  nodeListStore.setFilterWithIpAddress(selectedFilters.ipAddress)
+  nodeListStore.setFilterWithMacAddress(selectedFilters.macAddress)
+  nodeListStore.setFilterWithDownAggregateStatus(selectedFilters.nodesWithDownAggregateStatus)
+  nodeListStore.setFilterWithNodesWithAssets(selectedFilters.nodesWithAssets)
+  nodeListStore.setFilterWithNodesWithOutages(selectedFilters.nodesWithOutages)
+  nodeListStore.setFilterWithTopology(selectedFilters.topology)
   assetFilterPanelRef.value?.applyToStore()
   extendedSearchPanelRef.value?.applyToStore()
-  nodeStructureStore.closeInstancesDrawerModal()
+  nodeListStore.closeInstancesDrawerModal()
 }
 
 const clearDrawerFilters = async () => {
-  await nodeStructureStore.clearAllFiltersAndSelections()
+  await nodeListStore.clearAllFiltersAndSelections()
   selectedFilters.categories = []
   selectedFilters.categories2 = []
   selectedFilters.flows = []
@@ -423,20 +423,20 @@ const clearDrawerFilters = async () => {
   extendedSearchPanelRef.value?.resetFromStore()
 }
 
-watch(() => nodeStructureStore.drawerState.visible, (visible) => {
+watch(() => nodeListStore.drawerState.visible, (visible) => {
   if (visible) {
-    selectedFilters.categories = [...nodeStructureStore.selectedCategories]
-    selectedFilters.categories2 = [...nodeStructureStore.selectedCategories2]
-    showSecondCategories.value = nodeStructureStore.selectedCategories2.length > 0
-    selectedFilters.flows = [...nodeStructureStore.selectedFlows]
-    selectedFilters.locations = [...nodeStructureStore.selectedMonitoringLocations]
-    selectedFilters.services = [...nodeStructureStore.selectedServices]
-    selectedFilters.ipAddress = nodeStructureStore.queryFilter.ipAddress ?? ''
-    selectedFilters.macAddress = nodeStructureStore.queryFilter.macAddress ?? ''
-    selectedFilters.topology = nodeStructureStore.queryFilter.topology ?? ''
-    selectedFilters.nodesWithDownAggregateStatus = nodeStructureStore.queryFilter.nodesWithDownAggregateStatus ?? false
-    selectedFilters.nodesWithAssets = nodeStructureStore.queryFilter.nodesWithAssets ?? false
-    selectedFilters.nodesWithOutages = nodeStructureStore.queryFilter.nodesWithOutages ?? false
+    selectedFilters.categories = [...nodeListStore.selectedCategories]
+    selectedFilters.categories2 = [...nodeListStore.selectedCategories2]
+    showSecondCategories.value = nodeListStore.selectedCategories2.length > 0
+    selectedFilters.flows = [...nodeListStore.selectedFlows]
+    selectedFilters.locations = [...nodeListStore.selectedMonitoringLocations]
+    selectedFilters.services = [...nodeListStore.selectedServices]
+    selectedFilters.ipAddress = nodeListStore.queryFilter.ipAddress ?? ''
+    selectedFilters.macAddress = nodeListStore.queryFilter.macAddress ?? ''
+    selectedFilters.topology = nodeListStore.queryFilter.topology ?? ''
+    selectedFilters.nodesWithDownAggregateStatus = nodeListStore.queryFilter.nodesWithDownAggregateStatus ?? false
+    selectedFilters.nodesWithAssets = nodeListStore.queryFilter.nodesWithAssets ?? false
+    selectedFilters.nodesWithOutages = nodeListStore.queryFilter.nodesWithOutages ?? false
     assetFilterPanelRef.value?.resetFromStore()
     extendedSearchPanelRef.value?.resetFromStore()
   }

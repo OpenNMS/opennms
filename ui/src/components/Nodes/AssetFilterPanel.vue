@@ -77,7 +77,7 @@ import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS, getAssetColumnLabel } from '@/components/Nodes/hooks/queryStringParser'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 
 interface GridItem {
   column: string
@@ -95,7 +95,7 @@ const assetOptions = computed<AssetOption[]>(() =>
   (featuredOnly.value ? ASSET_COLUMN_OPTIONS : ALL_ASSET_COLUMN_OPTIONS).map(o => ({ title: o.label, value: o.value }))
 )
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const assetValue = ref('')
 const currentSelection = ref<AssetOption | undefined>(undefined)
 const gridItems = ref<GridItem[]>([])
@@ -124,11 +124,11 @@ const applyToStore = () => {
   const assetFilters = gridItems.value
     .filter(i => i.value.trim())
     .map(i => ({ column: i.column, value: i.value.trim() }))
-  nodeStructureStore.setFilterWithAssetFilters(assetFilters)
+  nodeListStore.setFilterWithAssetFilters(assetFilters)
 }
 
 const resetFromStore = () => {
-  const filters = nodeStructureStore.queryFilter.assetFilters ?? []
+  const filters = nodeListStore.queryFilter.assetFilters ?? []
   gridItems.value = filters.map(f => ({
     column: f.column,
     label: getAssetColumnLabel(f.column),
