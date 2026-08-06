@@ -234,7 +234,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 req.updateDateStamp();
-                RestUtils.setBeanProperties(req, params);
+                RestUtils.setRequisitionProperties(req, params);
                 save(req);
                 LOG.debug("updateRequisition: Requisition with foreign source {} updated", foreignSource);
             }
@@ -249,7 +249,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     req.updateDateStamp();
-                    RestUtils.setBeanProperties(node, params);
+                    RestUtils.setRequisitionProperties(node, params);
                     save(req);
                     LOG.debug("updateNode: Node with foreign source {} and foreign id {} updated", foreignSource, foreignId);
                 }
@@ -267,7 +267,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
                     final RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
                         req.updateDateStamp();
-                        RestUtils.setBeanProperties(iface, params);
+                        RestUtils.setRequisitionProperties(iface, params);
                         save(req);
                         LOG.debug("updateInterface: Interface {} on node {}/{} updated", ipAddress, foreignSource, foreignId);
                     }

@@ -30,7 +30,12 @@ package org.opennms.web.api;
 
 import java.beans.PropertyEditor;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -50,6 +55,67 @@ public abstract class RestUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
 
+	/** Nested ('.') and indexed ('[', ']') separators in a Spring bean property path. */
+	private static final Pattern PROPERTY_PATH_SEPARATOR = Pattern.compile("[.\\[\\]]");
+
+	/** Primary keys and the category ACL collection: never settable from request parameters. */
+	public static final Set<String> IMMUTABLE_PROPERTIES = Collections.unmodifiableSet(
+	        new HashSet<>(Arrays.asList("id", "dbId", "nodeId", "authorizedGroups")));
+
+	/** Node identity and provisioning-ownership properties. */
+	public static final Set<String> PROTECTED_NODE_PROPERTIES = Collections.unmodifiableSet(
+	        new HashSet<>(Arrays.asList("foreignSource", "foreignId", "type")));
+
+	/** Enforced for every caller that does not explicitly opt out. */
+	private static final Set<String> DEFAULT_PROTECTED_PROPERTIES;
+	static {
+	    final Set<String> defaults = new HashSet<>(IMMUTABLE_PROPERTIES);
+	    defaults.addAll(PROTECTED_NODE_PROPERTIES);
+	    DEFAULT_PROTECTED_PROPERTIES = Collections.unmodifiableSet(defaults);
+	}
+
+	/**
+	 * Whether a request parameter name resolves to a property protected by default, including via
+	 * a key variant ({@code foreign_source}) or traversal ({@code asset_record.node.foreign_source}).
+	 */
+	public static boolean isProtectedProperty(final String key) {
+	    return pathReachesProperty(key, DEFAULT_PROTECTED_PROPERTIES);
+	}
+
+	/** As {@link #isProtectedProperty(String)}, plus names protected for this endpoint only. */
+	public static boolean isProtectedProperty(final String key, final Set<String> additionalProtectedProperties) {
+	    return isProtectedProperty(key) || pathReachesProperty(key, additionalProtectedProperties);
+	}
+
+	/** As {@link #isProtectedProperty}, for endpoints that reject the request outright. */
+	public static boolean containsProperty(final MultivaluedMap<String,String> properties, final String propertyName) {
+	    final Set<String> wanted = Collections.singleton(propertyName);
+	    for (final String key : properties.keySet()) {
+	        if (pathReachesProperty(key, wanted)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	/**
+	 * Callers bind either the raw key or the normalized one, and normalization is not
+	 * case-preserving, so both spellings are compared ignoring case. BeanWrapper resolves nested
+	 * and indexed paths, hence the per-segment check.
+	 */
+	private static boolean pathReachesProperty(final String key, final Set<String> propertyNames) {
+	    for (final String path : new String[] { key, convertNameToPropertyName(key) }) {
+	        for (final String segment : PROPERTY_PATH_SEPARATOR.split(path)) {
+	            for (final String propertyName : propertyNames) {
+	                if (propertyName.equalsIgnoreCase(segment)) {
+	                    return true;
+	                }
+	            }
+	        }
+	    }
+	    return false;
+	}
+
 	/**
 	 * <p>Use Spring's {@link PropertyAccessorFactory} to set values on the specified bean.
 	 * This call registers several {@link PropertyEditor} classes to properly convert
@@ -63,10 +129,32 @@ public abstract class RestUtils {
 	 * <li>{@link PrimaryTypeEditor}</li>
 	 * </ul>
 	 * 
+	 * <p>Properties protected by {@link #isProtectedProperty(String)} are ignored.</p>
+	 *
 	 * @param bean
 	 * @param properties
 	 */
 	public static void setBeanProperties(final Object bean, final MultivaluedMap<String,String> properties) {
+	    applyProperties(bean, properties, DEFAULT_PROTECTED_PROPERTIES);
+	}
+
+	/** As {@link #setBeanProperties(Object, MultivaluedMap)}, plus endpoint-specific names. */
+	public static void setBeanProperties(final Object bean, final MultivaluedMap<String,String> properties, final Set<String> additionalProtectedProperties) {
+	    final Set<String> protectedProperties = new HashSet<>(DEFAULT_PROTECTED_PROPERTIES);
+	    protectedProperties.addAll(additionalProtectedProperties);
+	    applyProperties(bean, properties, protectedProperties);
+	}
+
+	/**
+	 * For provisioning requisitions only, where {@code foreignSource}/{@code foreignId} identify
+	 * the requisition and so are legitimately settable. Enforces {@link #IMMUTABLE_PROPERTIES}
+	 * alone; use {@link #setBeanProperties(Object, MultivaluedMap)} for anything node-reachable.
+	 */
+	public static void setRequisitionProperties(final Object bean, final MultivaluedMap<String,String> properties) {
+	    applyProperties(bean, properties, IMMUTABLE_PROPERTIES);
+	}
+
+	private static void applyProperties(final Object bean, final MultivaluedMap<String,String> properties, final Set<String> protectedProperties) {
 	    final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
 	    wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 	    wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
@@ -75,6 +163,10 @@ public abstract class RestUtils {
 	    wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
 	    for(final String key : properties.keySet()) {
 	        final String propertyName = convertNameToPropertyName(key);
+	        if (pathReachesProperty(key, protectedProperties)) {
+	            LOG.warn("Ignoring attempt to set protected property '{}' from request parameters", propertyName);
+	            continue;
+	        }
 	        if (wrapper.isWritableProperty(propertyName)) {
 	            final String stringValue = properties.getFirst(key);
 	            Object value = convertIfNecessary(wrapper, propertyName, stringValue);

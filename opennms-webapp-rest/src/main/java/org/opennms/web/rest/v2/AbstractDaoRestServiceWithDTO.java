@@ -80,7 +80,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.ISO8601DateEditor;
-import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.DateCollection;
@@ -475,8 +474,16 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                RestUtils.setBeanProperties(object, params);
-                doUpdateProperties(securityContext, uriInfo, object, params);
+                // Applying the params to the entity is doUpdateProperties' responsibility.
+                final Response response = doUpdateProperties(securityContext, uriInfo, object, params);
+                // A non-error status such as 304 Not Modified means this item was unchanged.
+                if (response != null) {
+                    final Response.Status.Family family = response.getStatusInfo().getFamily();
+                    if (family == Response.Status.Family.CLIENT_ERROR || family == Response.Status.Family.SERVER_ERROR) {
+                        // Throw, not return: transactional, and earlier items may be modified.
+                        throw new WebApplicationException(response);
+                    }
+                }
             }
             return Response.noContent().build();
         } finally {

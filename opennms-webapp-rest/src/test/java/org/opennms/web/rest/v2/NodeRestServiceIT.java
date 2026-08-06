@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -41,12 +43,16 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -73,6 +79,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -247,6 +256,82 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         category.put("name", "Production");
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
+    }
+
+    /**
+     * The v2 node update must ignore provisioning-ownership fields, however the request spells
+     * them and whether or not they are reached through a nested path.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateNodeCannotReassignProtectedFields() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysName", "TestMachine1");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        // Separator keys are what reach a camelCase property (foreign_source -> foreignSource).
+        sendPut("/nodes/1", "sys_contact=LegitContact&foreign_source=AttackerReq&foreign_id=999&Type=D"
+                + "&asset_record.node.foreign_source=NestedReq", 204);
+
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertEquals("foreignSource must not be reassignable", "JUnit", updated.getForeignSource());
+        assertEquals("foreignId must not be reassignable", "TestMachine1", updated.getForeignId());
+        assertEquals("type must not be reassignable", NodeType.ACTIVE, updated.getType());
+        assertEquals("legitimate fields still update", "LegitContact", updated.getSysContact());
+    }
+
+    /**
+     * The child endpoints bind to entities that hold a back-reference to their node, so none of
+     * them may be used as a route to the node's protected properties.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void subResourceUpdatesCannotReachNodeForeignSource() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysName", "TestMachine1");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        final JSONObject ipInterface = new JSONObject();
+        ipInterface.put("snmpPrimary", "P");
+        ipInterface.put("ipAddress", "10.10.10.10");
+        ipInterface.put("hostName", "TestMachine");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces", ipInterface.toString(), 201);
+
+        final JSONObject service = new JSONObject();
+        service.put("status", "A");
+        final JSONObject serviceType = new JSONObject();
+        serviceType.put("name", "ICMP");
+        service.put("serviceType", serviceType);
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces/10.10.10.10/services", service.toString(), 201);
+
+        final JSONObject snmpInterface = new JSONObject();
+        snmpInterface.put("ifIndex", 6);
+        snmpInterface.put("ifDescr", "en1");
+        snmpInterface.put("ifName", "en1");
+        snmpInterface.put("ifType", 6);
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/snmpinterfaces", snmpInterface.toString(), 201);
+
+        final String attack = "node.foreign_source=AttackerReq&node.foreign_id=666";
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10", attack, 204);
+        sendPut("/nodes/1/snmpinterfaces/6", attack, 204);
+        // this one reports 304 Not Modified because the service status did not change
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", attack, 304);
+
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertEquals("foreignSource must not be reachable from a child endpoint", "JUnit", updated.getForeignSource());
+        assertEquals("foreignId must not be reachable from a child endpoint", "TestMachine1", updated.getForeignId());
     }
 
 }
