@@ -687,6 +687,30 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.severity==CLEARED", 1);
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void testReadOnlyUserCannotModifyAlarm() throws Exception {
+        // NMS-20030: a ROLE_REST user who is also ROLE_READONLY must not be able to modify alarms.
+        setUser("ranger", new String[]{ "ROLE_REST", "ROLE_READONLY" });
+        sendRequest(PUT, "/alarms/" + alarm1.getId(), parseParamData("ack=true"), 403);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testCannotAcknowledgeAsAnotherUser() throws Exception {
+        // NMS-20030: a ROLE_REST user without ROLE_DELEGATE must not acknowledge as another username.
+        setUser("foo", new String[]{ "ROLE_REST" });
+        sendRequest(PUT, "/alarms/" + alarm1.getId(), parseParamData("ack=true&ackUser=bar"), 403);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testCanAcknowledgeAsSelf() throws Exception {
+        // NMS-20030: the fix must still allow a ROLE_REST user to acknowledge as themselves.
+        setUser("foo", new String[]{ "ROLE_REST" });
+        sendRequest(PUT, "/alarms/" + alarm1.getId(), parseParamData("ack=true"), 204);
+    }
+
     /**
      * The inherited bulk-update endpoint (PUT /alarms) must not let a raw 'severity' parameter
      * forge the alarm severity.

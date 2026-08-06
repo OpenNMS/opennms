@@ -215,7 +215,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         final String ackUserValue = params.getFirst("ackUser");
 
         final String ackUser = ackUserValue == null ? securityContext.getUserPrincipal().getName() : ackUserValue;
-        if (ackUser != null && !StringUtils.isNotBlank(ackUser)) {
+        if (ackUser != null && StringUtils.isNotBlank(ackUser)) {
             SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
         }
 
