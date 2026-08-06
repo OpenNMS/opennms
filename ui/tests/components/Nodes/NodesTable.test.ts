@@ -2,7 +2,7 @@
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { FilterTypeEnum } from '@/types'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
@@ -45,7 +45,7 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
 
 vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
   // Real (unmocked) module — delegated to below for sanitizeSearchTerm and for
-  // buildUpdatedNodeStructureQueryParameters, so tests that write a searchTerm directly into the
+  // buildUpdatedNodeListQueryParameters, so tests that write a searchTerm directly into the
   // store can assert on the ACTUAL request shape (e.g. that a term with FIQL-special characters
   // really does get double-encoded end-to-end), rather than a naive passthrough stub.
   const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
@@ -75,7 +75,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
   })
   return {
     useNodeQuery: () => ({
-      buildUpdatedNodeStructureQueryParameters: actual.useNodeQuery().buildUpdatedNodeStructureQueryParameters,
+      buildUpdatedNodeListQueryParameters: actual.useNodeQuery().buildUpdatedNodeListQueryParameters,
       getExtendedSearchValues: vi.fn().mockReturnValue([]),
       getDefaultNodeQueryFilter: makeDefaultFilter,
       getDefaultNodeQueryForeignSourceParams: () => ({ foreignId: '', foreignSource: '', foreignSourceId: '' }),
@@ -117,7 +117,7 @@ const mountTable = () =>
 
 describe('NodesTable.vue', () => {
   let nodeStore: ReturnType<typeof useNodeStore>
-  let structure: ReturnType<typeof useNodeStructureStore>
+  let structure: ReturnType<typeof useNodeListStore>
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -126,7 +126,7 @@ describe('NodesTable.vue', () => {
     const wrapper = mountTable()
 
     nodeStore = useNodeStore()
-    structure = useNodeStructureStore()
+    structure = useNodeListStore()
     const menuStore = useMenuStore()
 
     // Seed stores
@@ -223,7 +223,7 @@ describe('NodesTable.vue', () => {
   it('removing a category chip calls the store', () => {
     // Seed a category before mounting so the chip renders
     const wrapper = mountTable()
-    const str = useNodeStructureStore()
+    const str = useNodeListStore()
     str.removeCategory = vi.fn()
     ;(wrapper.vm as any).removeItem({ _text: 'Routers', _value: '1' }, FilterTypeEnum.Category)
     expect(str.removeCategory).toHaveBeenCalled()
@@ -243,7 +243,7 @@ describe('NodesTable.vue', () => {
 
     it('renders a leading expander column once showInterfaces is on', async () => {
       const wrapper = mountTable()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       structure.setShowInterfaces(true)
       await nextTick()
 
@@ -253,9 +253,9 @@ describe('NodesTable.vue', () => {
       expect(headers.length).toBe(selectedCount + 2)
     })
 
-    it('toggle button flips nodeStructureStore.showInterfaces and updates its label', async () => {
+    it('toggle button flips nodeListStore.showInterfaces and updates its label', async () => {
       const wrapper = mountTable()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       expect(structure.showInterfaces).toBe(false)
 
       const toggleBtn = wrapper.findAllComponents(Button).find(b => b.attributes('data-test') === 'show-interfaces-button')
@@ -270,7 +270,7 @@ describe('NodesTable.vue', () => {
     it('expands only rows with expandable interface content when showInterfaces turns on, and collapses all when turned off', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1' }, { id: '2' }, { id: '3' }] as any
       ns.nodeToIpInterfaceMap = new Map([
@@ -299,7 +299,7 @@ describe('NodesTable.vue', () => {
     it('renders the footer with node/interface counts only when showInterfaces is on', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1' }] as any
       ns.totalCount = 1
@@ -319,7 +319,7 @@ describe('NodesTable.vue', () => {
     it('pluralizes node/interface counts when greater than one', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1' }, { id: '2' }] as any
       ns.totalCount = 5
@@ -343,7 +343,7 @@ describe('NodesTable.vue', () => {
     it('default mode: caret renders only for a node with more than one IP interface', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1', label: 'two-ips' }, { id: '2', label: 'one-ip' }, { id: '3', label: 'no-ips' }] as any
       ns.nodeToIpInterfaceMap = new Map([
@@ -370,7 +370,7 @@ describe('NodesTable.vue', () => {
     it('maclike mode: caret renders for a node with a single matching SNMP interface (>= 1 threshold)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
@@ -400,7 +400,7 @@ describe('NodesTable.vue', () => {
       // exercise the race the auto-expand watcher and the async fetch create.
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -441,7 +441,7 @@ describe('NodesTable.vue', () => {
     it('does not force a manually-collapsed row back open when the SNMP map is replaced again for the same fetch generation', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       const snmpMap = () => new Map([
         ['1', [{ id: 5, ifIndex: 2, physAddr: 'aabbccddeeff', collectFlag: 'N', ifName: 'eth0', ifDescr: null }]]
@@ -480,7 +480,7 @@ describe('NodesTable.vue', () => {
     it('clicking the caret expands the row and clicking again collapses it, reflected in aria-expanded', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1', label: 'node-1' }] as any
       ns.nodeToIpInterfaceMap = new Map([
@@ -528,7 +528,7 @@ describe('NodesTable.vue', () => {
     it('auto-expands a qualifying row once the IP batch resolves AFTER nodes changes, and leaves 0/1-interface rows collapsed', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       // Reproduces real production ordering: nodes arrives first (e.g. a page change) while
       // nodeToIpInterfaceMap is still whatever the PREVIOUS page left behind — here, empty — and
@@ -566,7 +566,7 @@ describe('NodesTable.vue', () => {
     it('does not force a manually-collapsed row back open when the IP map is replaced again for the same page (generation)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       const ipMap = () => new Map([
         ['1', [
@@ -603,7 +603,7 @@ describe('NodesTable.vue', () => {
     it('applies catch-up again for a new page (new node ids reset the generation key)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1', label: 'two-ips' }] as any
       await nextTick()
@@ -644,7 +644,7 @@ describe('NodesTable.vue', () => {
     it('does not double-handle the IP batch in maclike mode (qualification stays governed by the SNMP map)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
@@ -686,7 +686,7 @@ describe('NodesTable.vue', () => {
     it('applies IP catch-up again when a page recurs after an intervening page with no qualifying rows (A -> B -> A)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.nodes = [{ id: '1', label: 'page-a' }] as any
       await nextTick()
@@ -739,7 +739,7 @@ describe('NodesTable.vue', () => {
     it('applies IP catch-up again after a default -> maclike -> default mode round-trip on the same page', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
@@ -789,7 +789,7 @@ describe('NodesTable.vue', () => {
     it('applies SNMP catch-up again after a maclike -> default -> maclike mode round-trip on the same page', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
@@ -841,7 +841,7 @@ describe('NodesTable.vue', () => {
     it('does not fetch snmp interfaces in default mode', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -858,7 +858,7 @@ describe('NodesTable.vue', () => {
     it('fetches snmp interfaces narrowed to physAddr in maclike mode, normalizing the mac', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -877,7 +877,7 @@ describe('NodesTable.vue', () => {
     it('narrows using the fully-normalized MAC (dots/spaces stripped too, not just : and -)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -899,7 +899,7 @@ describe('NodesTable.vue', () => {
     it('fetches snmp interfaces narrowed to the snmpParm attribute in snmpParm mode', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -918,7 +918,7 @@ describe('NodesTable.vue', () => {
     it('omits the attribute narrowing when the snmpParm value contains SQL wildcards (% or _)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -947,7 +947,7 @@ describe('NodesTable.vue', () => {
     ])('omits the attribute narrowing when the snmpParm value contains %s', async (_title, value) => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -966,7 +966,7 @@ describe('NodesTable.vue', () => {
     it('does not re-fetch when nodes/mode/narrowing are unchanged (dedupe)', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
 
@@ -995,7 +995,7 @@ describe('NodesTable.vue', () => {
     it('the Flows column is not sortable', async () => {
       const wrapper = mountTable()
       // Flows is no longer in the default column selection (NMS-20175) — select it explicitly.
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       structure.columns = structure.columns.map(c => (c.id === 'flows' ? { ...c, selected: true } : c))
       await nextTick()
       const flowsColumn = wrapper.findAllComponents(Column).find(c => c.props('header') === 'Flows')
@@ -1018,7 +1018,7 @@ describe('NodesTable.vue', () => {
     it('typing a term with a former blocklist character (%) searches immediately, with no error UI', async () => {
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ;(ns.getNodes as any).mockClear()
 
@@ -1040,7 +1040,7 @@ describe('NodesTable.vue', () => {
       ['a close paren', 'bad)term']
     ])('searches a term containing %s (R&D-sw1 / Core (bldg 3) style labels are now valid input)', async (_title, value) => {
       const wrapper = mountTable()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       const input = wrapper.find('input[data-test="search-input"]')
       await input.setValue(value)
@@ -1052,7 +1052,7 @@ describe('NodesTable.vue', () => {
 
     it('allows a term containing only an asterisk wildcard', async () => {
       const wrapper = mountTable()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
 
       const input = wrapper.find('input[data-test="search-input"]')
       await input.setValue('*serv*')
@@ -1064,14 +1064,14 @@ describe('NodesTable.vue', () => {
 
     it('a searchTerm written directly into the store (URL nodename param / restored preferences) flows through unchanged, no error UI', async () => {
       // Reproduces the programmatic-injection paths that never go through searchFilterHandler:
-      // nodeStructureStore.setFromNodePreferences writes queryFilter.searchTerm straight from
+      // nodeListStore.setFromNodePreferences writes queryFilter.searchTerm straight from
       // either the URL `nodename` param (parseNodeLabel, via Nodes.vue's applyQueryFilter) or a
       // restored localStorage preference — both land here as a raw store mutation. Mutating
       // queryFilter directly, as done elsewhere in this file (e.g. the macAddress tests above),
       // exercises exactly that path without depending on setFromNodePreferences' other side effects.
       const wrapper = mountTable()
       const ns = useNodeStore()
-      const structure = useNodeStructureStore()
+      const structure = useNodeListStore()
       ns.getNodes = vi.fn().mockResolvedValue(undefined)
       ;(ns.getNodes as any).mockClear()
 
@@ -1107,7 +1107,7 @@ describe('NodesTable.vue', () => {
   describe('Outages chip', () => {
     it('renders "Nodes with current outages" (matching the drawer + help text) when the filter is set, and remove calls the store', async () => {
       const wrapper = mountTable()
-      const structureStore = useNodeStructureStore()
+      const structureStore = useNodeListStore()
       structureStore.queryFilter = {
         ...structureStore.queryFilter,
         nodesWithOutages: true
@@ -1135,7 +1135,7 @@ describe('NodesTable.vue', () => {
   describe('Asset filter chips', () => {
     it('shows a proper title (not the raw key) for a non-curated asset column', async () => {
       const wrapper = mountTable()
-      const structureStore = useNodeStructureStore()
+      const structureStore = useNodeListStore()
       structureStore.queryFilter = {
         ...structureStore.queryFilter,
         assetFilters: [{ column: 'city', value: 'Pittsboro' }]

@@ -11,19 +11,19 @@
           <OnmsButton
             label="Customize Columns"
             data-test="customize-columns-button"
-            @click="nodeStructureStore.openColumnsDrawerModal()"
+            @click="nodeListStore.openColumnsDrawerModal()"
           />
           <OnmsButton
-            :label="nodeStructureStore.showInterfaces ? 'Hide interfaces' : 'Show interfaces'"
+            :label="nodeListStore.showInterfaces ? 'Hide interfaces' : 'Show interfaces'"
             variant="outlined"
             data-test="show-interfaces-button"
-            @click="nodeStructureStore.setShowInterfaces(!nodeStructureStore.showInterfaces)"
+            @click="nodeListStore.setShowInterfaces(!nodeListStore.showInterfaces)"
           />
           <OnmsButton
             label="Clear Filters"
             variant="outlined"
             data-test="clear-filters-button"
-            @click="nodeStructureStore.clearAllFiltersAndSelections()"
+            @click="nodeListStore.clearAllFiltersAndSelections()"
           />
         </div>
       </div>
@@ -59,41 +59,41 @@
                 title="Advanced Filters"
                 data-test="advanced-filters-button"
                 :icon="FilterAlt"
-                @click="nodeStructureStore.openInstancesDrawerModal()"
+                @click="nodeListStore.openInstancesDrawerModal()"
               />
             </div>
           </div>
           <div class="chip-container">
             <OnmsChip
-              v-for="cat in nodeStructureStore.selectedCategories"
+              v-for="cat in nodeListStore.selectedCategories"
               :key="`cat-${cat._value}`"
               :label="`Category: ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category)"
             />
             <OnmsChip
-              v-for="cat in nodeStructureStore.selectedCategories2"
+              v-for="cat in nodeListStore.selectedCategories2"
               :key="`cat2-${cat._value}`"
               :label="`Category (2): ${cat._text}`"
               removable
               @remove="removeItem(cat, FilterTypeEnum.Category2)"
             />
             <OnmsChip
-              v-for="flow in nodeStructureStore.selectedFlows"
+              v-for="flow in nodeListStore.selectedFlows"
               :key="`flow-${flow._value}`"
               :label="`Flows: ${flow._text}`"
               removable
               @remove="removeItem(flow, FilterTypeEnum.Flow)"
             />
             <OnmsChip
-              v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
+              v-for="loc in nodeListStore.queryFilter.selectedMonitoringLocations"
               :key="loc.name"
               :label="`Location: ${loc.name}`"
               removable
               @remove="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
             />
             <OnmsChip
-              v-for="svc in nodeStructureStore.selectedServices"
+              v-for="svc in nodeListStore.selectedServices"
               :key="`svc-${svc._value}`"
               :label="`Service: ${svc._text}`"
               removable
@@ -107,47 +107,47 @@
               @remove="removeExtendedSearchItem(value)"
             />
             <OnmsChip
-              v-if="nodeStructureStore.queryFilter.ipAddress"
-              :label="`IP Pattern: ${nodeStructureStore.queryFilter.ipAddress}`"
+              v-if="nodeListStore.queryFilter.ipAddress"
+              :label="`IP Pattern: ${nodeListStore.queryFilter.ipAddress}`"
               removable
-              @remove="nodeStructureStore.removeIpAddress()"
+              @remove="nodeListStore.removeIpAddress()"
             />
             <OnmsChip
-              v-if="nodeStructureStore.queryFilter.macAddress"
-              :label="`MAC Address: ${nodeStructureStore.queryFilter.macAddress}`"
+              v-if="nodeListStore.queryFilter.macAddress"
+              :label="`MAC Address: ${nodeListStore.queryFilter.macAddress}`"
               removable
-              @remove="nodeStructureStore.removeMacAddress()"
+              @remove="nodeListStore.removeMacAddress()"
             />
             <OnmsChip
               v-if="hasTopologySearch"
               :label="`Topology: ${topologyTerm}`"
               removable
-              @remove="nodeStructureStore.removeTopology()"
+              @remove="nodeListStore.removeTopology()"
             />
             <OnmsChip
-              v-if="nodeStructureStore.queryFilter.nodesWithDownAggregateStatus"
+              v-if="nodeListStore.queryFilter.nodesWithDownAggregateStatus"
               label="Down nodes only"
               removable
-              @remove="nodeStructureStore.removeDownAggregateStatus()"
+              @remove="nodeListStore.removeDownAggregateStatus()"
             />
             <OnmsChip
-              v-if="nodeStructureStore.queryFilter.nodesWithAssets"
+              v-if="nodeListStore.queryFilter.nodesWithAssets"
               label="Nodes with asset info"
               removable
-              @remove="nodeStructureStore.removeNodesWithAssets()"
+              @remove="nodeListStore.removeNodesWithAssets()"
             />
             <OnmsChip
-              v-if="nodeStructureStore.queryFilter.nodesWithOutages"
+              v-if="nodeListStore.queryFilter.nodesWithOutages"
               label="Nodes with current outages"
               removable
-              @remove="nodeStructureStore.removeNodesWithOutages()"
+              @remove="nodeListStore.removeNodesWithOutages()"
             />
             <OnmsChip
-              v-for="assetFilter in (nodeStructureStore.queryFilter.assetFilters ?? [])"
+              v-for="assetFilter in (nodeListStore.queryFilter.assetFilters ?? [])"
               :key="assetFilter.column"
               :label="`Asset: ${getAssetColumnLabel(assetFilter.column)}: ${assetFilter.value}`"
               removable
-              @remove="nodeStructureStore.removeAssetFilter(assetFilter.column)"
+              @remove="nodeListStore.removeAssetFilter(assetFilter.column)"
             />
           </div>
         </div>
@@ -176,7 +176,7 @@
           @sort="onSort"
         >
           <OnmsColumn
-            v-if="nodeStructureStore.showInterfaces"
+            v-if="nodeListStore.showInterfaces"
             style="width: var(--expander-col-width)"
           >
             <template #body="{ data }">
@@ -264,7 +264,7 @@
           </template>
         </OnmsTable>
         <div
-          v-if="nodeStructureStore.showInterfaces"
+          v-if="nodeListStore.showInterfaces"
           class="interfaces-footer"
           data-test="interfaces-footer"
         >
@@ -309,7 +309,7 @@
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import {
   ExtendedSearchValue,
   FilterTypeEnum,
@@ -360,17 +360,17 @@ import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
 
 const menuStore = useMenuStore()
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
-const { buildUpdatedNodeStructureQueryParameters, getExtendedSearchValues } = useNodeQuery()
+const { buildUpdatedNodeListQueryParameters, getExtendedSearchValues } = useNodeQuery()
 const isHelpMessageDialogVisible = ref(false)
 
 const sortField = ref('label')
 const sortOrder = ref(1) // 1 = ascending, -1 = descending
 
-const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
+const currentSearch = ref(nodeListStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
@@ -385,7 +385,7 @@ const pageSize = ref(nodeStore.nodeQueryParameters.limit || 50)
 const first = computed(() => (pageNumber.value - 1) * pageSize.value)
 
 const orderedSelectedColumns = computed<NodeColumnSelectionItem[]>(() =>
-  nodeStructureStore.columns
+  nodeListStore.columns
     .filter(col => col.selected)
     .sort((a, b) => a.order - b.order)
 )
@@ -429,14 +429,14 @@ const updatePageSize = (size: number) => {
 }
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  if (val !== nodeStructureStore.queryFilter.searchTerm) {
-    nodeStructureStore.setSearchTerm(val)
+  if (val !== nodeListStore.queryFilter.searchTerm) {
+    nodeListStore.setSearchTerm(val)
   }
 }
 
 const onDownload = async (format: string) => {
-  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParameters.value, nodeStructureStore.queryFilter)
-  const data = await getExportData(format, updatedParams, nodeStructureStore.columns)
+  const updatedParams = buildUpdatedNodeListQueryParameters(queryParameters.value, nodeListStore.queryFilter)
+  const data = await getExportData(format, updatedParams, nodeListStore.columns)
 
   if (!data) {
     showSnackBar({
@@ -478,12 +478,12 @@ const onNodeLinkClick = (nodeId: number | string) => {
 }
 
 const extendedSearchValues = computed(() => {
-  return getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+  return getExtendedSearchValues(nodeListStore.queryFilter.extendedSearch)
 })
 
 // ── "Show interfaces" mode (legacy ?listInterfaces=true parity) ────────────────
 
-const interfaceListMode = computed(() => getInterfaceListMode(nodeStructureStore.queryFilter))
+const interfaceListMode = computed(() => getInterfaceListMode(nodeListStore.queryFilter))
 
 const pageNodeIds = computed(() => nodes.value.map(n => n.id))
 
@@ -599,29 +599,29 @@ const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
 }
 
 const hasTopologySearch = computed(() => {
-  return !!nodeStructureStore.queryFilter.topology?.length
+  return !!nodeListStore.queryFilter.topology?.length
 })
 
 const topologyTerm = computed(() => {
-  return nodeStructureStore.queryFilter.topology ?? ''
+  return nodeListStore.queryFilter.topology ?? ''
 })
 
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
-      nodeStructureStore.removeCategory(item)
+      nodeListStore.removeCategory(item)
       break
     case FilterTypeEnum.Category2:
-      nodeStructureStore.removeCategory2(item)
+      nodeListStore.removeCategory2(item)
       break
     case FilterTypeEnum.Flow:
-      nodeStructureStore.removeFlow(item)
+      nodeListStore.removeFlow(item)
       break
     case FilterTypeEnum.MonitoringLocation:
-      nodeStructureStore.removeMonitoringLocation(item)
+      nodeListStore.removeMonitoringLocation(item)
       break
     case FilterTypeEnum.MonitoredService:
-      nodeStructureStore.removeService(item)
+      nodeListStore.removeService(item)
       break
     default:
       console.warn(`Unknown filter type: ${type}`)
@@ -629,7 +629,7 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
 }
 
 const removeExtendedSearchItem = (item: ExtendedSearchValue) => {
-  nodeStructureStore.removeExtendedSearch(item)
+  nodeListStore.removeExtendedSearch(item)
 }
 
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
@@ -645,7 +645,7 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
       }
       : nodeStore.nodeQueryParameters
 
-  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParamsToUse, nodeStructureStore.queryFilter)
+  const updatedParams = buildUpdatedNodeListQueryParameters(queryParamsToUse, nodeListStore.queryFilter)
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
@@ -655,9 +655,9 @@ const emptyListContent = {
   msg: 'No results found.'
 }
 
-watch([() => nodeStructureStore.queryFilter], () => {
-  if (nodeStructureStore.queryFilter.searchTerm !== currentSearch.value) {
-    currentSearch.value = nodeStructureStore.queryFilter.searchTerm
+watch([() => nodeListStore.queryFilter], () => {
+  if (nodeListStore.queryFilter.searchTerm !== currentSearch.value) {
+    currentSearch.value = nodeListStore.queryFilter.searchTerm
   }
 
   updateQuery()
@@ -670,7 +670,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 // Harmless — and correct — to re-run on every one of these, since it's just a snapshot of "which
 // rows are on the current page".
 watch(
-  [nodes, () => nodeStructureStore.showInterfaces, interfaceListMode],
+  [nodes, () => nodeListStore.showInterfaces, interfaceListMode],
   ([currentNodes, showInterfaces]) => {
     // Reset BOTH catch-up watchers' "already applied" flags on every input change here (new page,
     // toggle, or mode change): each such change starts a new generation whose eventual async map
@@ -722,7 +722,7 @@ watch(
 const lastSnmpFetchKey = ref<string | null>(null)
 
 watch(
-  [nodes, () => nodeStructureStore.showInterfaces],
+  [nodes, () => nodeListStore.showInterfaces],
   ([currentNodes, showInterfaces]) => {
     // Deliberately don't reset lastSnmpFetchKey when toggling off — re-toggling on with the exact
     // same nodes/mode should stay deduped rather than re-issuing an identical request.
@@ -782,7 +782,7 @@ let snmpCatchUpAppliedForKey: string | null = null
 watch(
   () => nodeStore.nodeToSnmpInterfaceMap,
   () => {
-    if (!nodeStructureStore.showInterfaces) {
+    if (!nodeListStore.showInterfaces) {
       return
     }
 
@@ -837,7 +837,7 @@ let ipCatchUpAppliedForKey: string | null = null
 watch(
   () => nodeStore.nodeToIpInterfaceMap,
   () => {
-    if (!nodeStructureStore.showInterfaces) {
+    if (!nodeListStore.showInterfaces) {
       return
     }
 

@@ -21,12 +21,12 @@ import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/compo
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { BreadCrumb, NodePreferences } from '@/types'
 import { LocationQuery, useRoute, useRouter } from 'vue-router'
 
 const menuStore = useMenuStore()
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const { buildNodeQueryFilterFromQueryString, queryStringHasTrackedValues } = useNodeQuery()
 
 const route = useRoute()
@@ -88,9 +88,9 @@ watch(
 const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) => {
   const nodeFilter = buildNodeQueryFilterFromQueryString(
     query,
-    nodeStructureStore.categories,
-    nodeStructureStore.monitoringLocations,
-    nodeStructureStore.allServiceTypes
+    nodeListStore.categories,
+    nodeListStore.monitoringLocations,
+    nodeListStore.allServiceTypes
   )
   const newPrefs = {
     nodeColumns: prefs?.nodeColumns || [],
@@ -100,15 +100,15 @@ const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) =
   // listInterfaces is a display flag (legacy ?listInterfaces=true), not part of the filter —
   // applied directly on the store here rather than persisted via NodePreferences.
   if (String(query.listInterfaces).toLowerCase() === 'true') {
-    nodeStructureStore.setShowInterfaces(true)
+    nodeListStore.setShowInterfaces(true)
   }
 
-  nodeStructureStore.setFromNodePreferences(newPrefs)
+  nodeListStore.setFromNodePreferences(newPrefs)
 }
 
 const handleQuery = (prefs: NodePreferences | null) => {
   if (queryStringHasTrackedValues(route.query)) {
-    if (!nodeStructureStore.categoriesLoaded || !nodeStructureStore.monitoringLocationsLoaded || !nodeStructureStore.serviceTypesLoaded) {
+    if (!nodeListStore.categoriesLoaded || !nodeListStore.monitoringLocationsLoaded || !nodeListStore.serviceTypesLoaded) {
       // Lists not finished loading yet — save and defer.
       pendingRouteQuery.value = { ...route.query }
     } else {
@@ -126,7 +126,7 @@ const handleQuery = (prefs: NodePreferences | null) => {
 // and Nodes.vue mounting with query params already in the URL.
 // Note: lists may be empty (e.g. no categories configured) — loaded flags handle this correctly.
 watch(
-  [() => nodeStructureStore.categoriesLoaded, () => nodeStructureStore.monitoringLocationsLoaded, () => nodeStructureStore.serviceTypesLoaded],
+  [() => nodeListStore.categoriesLoaded, () => nodeListStore.monitoringLocationsLoaded, () => nodeListStore.serviceTypesLoaded],
   ([catsLoaded, locsLoaded, svcTypesLoaded]) => {
     if (pendingRouteQuery.value && catsLoaded && locsLoaded && svcTypesLoaded) {
       applyQueryFilter(pendingRouteQuery.value, loadNodePreferences())
@@ -138,7 +138,7 @@ watch(
 let saveFilterTimeout: number | undefined
 
 watch(
-  () => nodeStructureStore.queryFilter,
+  () => nodeListStore.queryFilter,
   (filter) => {
     if (saveFilterTimeout !== undefined) {
       clearTimeout(saveFilterTimeout)
@@ -157,7 +157,7 @@ onMounted(() => {
     return
   }
   if (prefs) {
-    nodeStructureStore.setFromNodePreferences(prefs)
+    nodeListStore.setFromNodePreferences(prefs)
   }
 })
 

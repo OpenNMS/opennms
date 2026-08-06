@@ -22,7 +22,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { defaultColumns } from '@/components/Nodes/utils'
 import API from '@/services'
 import { SetOperator } from '@/types'
@@ -36,12 +36,12 @@ vi.mock('@/services', () => ({
   }
 }))
 
-describe('useNodeStructureStore', () => {
-  let store: ReturnType<typeof useNodeStructureStore>
+describe('useNodeListStore', () => {
+  let store: ReturnType<typeof useNodeListStore>
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    store = useNodeStructureStore()
+    store = useNodeListStore()
     vi.clearAllMocks()
   })
 
@@ -651,21 +651,21 @@ describe('useNodeStructureStore', () => {
 
   describe('service types', () => {
     it('loads service types on init', async () => {
-      const store = useNodeStructureStore()
+      const store = useNodeListStore()
       vi.mocked(API.getServiceTypes).mockResolvedValue([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
       await store.getServiceTypes()
       expect(store.allServiceTypes).toEqual([{ id: 1, name: 'HTTP' }, { id: 8, name: 'HTTPS' }])
     })
 
     it('updateSelectedServices updates selectedServices and queryFilter', () => {
-      const store = useNodeStructureStore()
+      const store = useNodeListStore()
       store.updateSelectedServices([{ _value: 8, _text: 'HTTPS' }])
       expect(store.selectedServices).toEqual([{ _value: 8, _text: 'HTTPS' }])
       expect(store.queryFilter.selectedServices).toEqual(['HTTPS'])
     })
 
     it('removeService removes from selectedServices and queryFilter', () => {
-      const store = useNodeStructureStore()
+      const store = useNodeListStore()
       store.updateSelectedServices([{ _value: 1, _text: 'HTTP' }, { _value: 8, _text: 'HTTPS' }])
       store.removeService({ _value: 8, _text: 'HTTPS' })
       expect(store.selectedServices).toEqual([{ _value: 1, _text: 'HTTP' }])
@@ -673,7 +673,7 @@ describe('useNodeStructureStore', () => {
     })
 
     it('clearAllFiltersAndSelections clears selectedServices', async () => {
-      const store = useNodeStructureStore()
+      const store = useNodeListStore()
       store.updateSelectedServices([{ _value: 8, _text: 'HTTPS' }])
       await store.clearAllFiltersAndSelections()
       expect(store.selectedServices).toEqual([])
@@ -681,7 +681,7 @@ describe('useNodeStructureStore', () => {
     })
 
     it('setFromNodePreferences restores selectedServices after getServiceTypes', async () => {
-      const store = useNodeStructureStore()
+      const store = useNodeListStore()
       vi.mocked(API.getServiceTypes).mockResolvedValue([
         { id: 1, name: 'HTTP' },
         { id: 8, name: 'HTTPS' }

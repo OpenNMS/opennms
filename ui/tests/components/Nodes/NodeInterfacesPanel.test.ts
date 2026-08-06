@@ -2,7 +2,7 @@
 import NodeInterfacesPanel from '@/components/Nodes/NodeInterfacesPanel.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -19,7 +19,7 @@ const mountPanel = (node: any = { id: '1' }) => {
     wrapper,
     menuStore: useMenuStore(),
     nodeStore: useNodeStore(),
-    structure: useNodeStructureStore()
+    structure: useNodeListStore()
   }
 }
 

@@ -1,12 +1,12 @@
 // ui/tests/containers/Nodes.test.ts
 //
-// NOTE: originally this file only covered the listInterfaces=true -> nodeStructureStore.setShowInterfaces
+// NOTE: originally this file only covered the listInterfaces=true -> nodeListStore.setShowInterfaces
 // wiring added for NMS-20125 (Task 4). It has since been extended (Task 6) with coverage for the
 // legacy `?nodeId=<n>` bookmark redirect. Please extend this file further rather than creating a
 // second one.
 import Nodes from '@/containers/Nodes.vue'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -40,7 +40,7 @@ describe('Nodes.vue container', () => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     setActivePinia(pinia)
 
-    const structure = useNodeStructureStore()
+    const structure = useNodeListStore()
     // Skip the deferred-query path: pretend categories/locations/service-types are already loaded.
     structure.categoriesLoaded = true
     structure.monitoringLocationsLoaded = true

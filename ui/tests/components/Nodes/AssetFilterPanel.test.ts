@@ -1,7 +1,7 @@
 // ui/tests/components/Nodes/AssetFilterPanel.test.ts
 import AssetFilterPanel from '@/components/Nodes/AssetFilterPanel.vue'
 import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 describe('AssetFilterPanel.vue', () => {
-  let store: ReturnType<typeof useNodeStructureStore>
+  let store: ReturnType<typeof useNodeListStore>
 
   const mountPanel = () =>
     mount(AssetFilterPanel, {
@@ -28,7 +28,7 @@ describe('AssetFilterPanel.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
-    store = useNodeStructureStore()
+    store = useNodeListStore()
     store.setFilterWithAssetFilters = vi.fn()
     store.queryFilter = {
       ...store.queryFilter,
@@ -114,7 +114,7 @@ describe('AssetFilterPanel.vue', () => {
 
   // ── resetFromStore ─────────────────────────────────────────────────────────
 
-  it('resetFromStore() seeds grid rows from nodeStructureStore.queryFilter.assetFilters', async () => {
+  it('resetFromStore() seeds grid rows from nodeListStore.queryFilter.assetFilters', async () => {
     const wrapper = mountPanel()
 
     store.queryFilter = {
