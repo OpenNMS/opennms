@@ -49,10 +49,14 @@
 <script lang="ts">
 import API from '@/services'
 
+type Specs = [Record<string, unknown>, Record<string, unknown>]
+
 // Module scope, unlike `<script setup>` bindings which are created per component
 // instance: the specs are large and the REST responses are deliberately
 // uncacheable, so they are fetched once and kept for the lifetime of the SPA session.
-let cachedSpecs: [Record<string, unknown>, Record<string, unknown>] | null = null
+// The pending promise is what is held, so a tab click during the mount-time fetch
+// joins it instead of starting a second pair of requests.
+let cachedSpecs: Promise<Specs> | null = null
 
 // RapiDoc may normalize the spec it is handed in place, so never share the cached
 // objects with it directly.
@@ -76,11 +80,7 @@ const stripNullExamples = (key: string, value: unknown): unknown => {
 const sanitizeSpec = (spec: Record<string, unknown>): Record<string, unknown> =>
   JSON.parse(JSON.stringify(spec, stripNullExamples))
 
-const fetchSpecs = async (): Promise<[Record<string, unknown>, Record<string, unknown>]> => {
-  if (cachedSpecs) {
-    return cachedSpecs
-  }
-
+const loadSpecs = async (): Promise<Specs> => {
   const http = 'http', https = 'https'
   const protocol = window.location.protocol.slice(0, -1)
 
@@ -102,15 +102,35 @@ const fetchSpecs = async (): Promise<[Record<string, unknown>, Record<string, un
     modifiedOpenApiV1Spec = JSON.parse(modifiedOpenApiSpecStringV1)
   }
 
-  modifiedOpenApiSpec = sanitizeSpec(modifiedOpenApiSpec)
-  modifiedOpenApiV1Spec = sanitizeSpec(modifiedOpenApiV1Spec)
+  return [sanitizeSpec(modifiedOpenApiSpec), sanitizeSpec(modifiedOpenApiV1Spec)]
+}
 
-  // an empty object means the fetch failed; let the next mount retry instead of caching it
-  if (Object.keys(modifiedOpenApiSpec).length > 0 && Object.keys(modifiedOpenApiV1Spec).length > 0) {
-    cachedSpecs = [modifiedOpenApiSpec, modifiedOpenApiV1Spec]
+// Only drops the entry it created, so a retry already in flight is left alone.
+const forget = (pending: Promise<Specs>) => {
+  if (cachedSpecs === pending) {
+    cachedSpecs = null
+  }
+}
+
+const fetchSpecs = (): Promise<Specs> => {
+  if (!cachedSpecs) {
+    const pending: Promise<Specs> = loadSpecs()
+      .then((specs) => {
+        // an empty object means the fetch failed; let the next call retry instead of caching it
+        if (specs.some(spec => Object.keys(spec).length === 0)) {
+          forget(pending)
+        }
+        return specs
+      })
+      .catch((error) => {
+        forget(pending)
+        throw error
+      })
+
+    cachedSpecs = pending
   }
 
-  return [modifiedOpenApiSpec, modifiedOpenApiV1Spec]
+  return cachedSpecs
 }
 </script>
 

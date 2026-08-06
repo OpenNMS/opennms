@@ -47,7 +47,10 @@ class ResizeObserverStub {
 
 // Per-test mount: the height measurement reads document-level geometry, which a
 // shared mount leaks between tests.
-const mountPage = async (options: { viewport?: number, columnTop?: number, footerHeight?: number } = {}) => {
+const mountPage = async (
+  options: { viewport?: number, columnTop?: number, footerHeight?: number } = {},
+  component: any = OpenAPI
+) => {
   const { viewport = 900, columnTop = 140, footerHeight = 40 } = options
 
   observedTargets = []
@@ -74,7 +77,7 @@ const mountPage = async (options: { viewport?: number, columnTop?: number, foote
   const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
   setActivePinia(pinia)
 
-  const wrapper = mount(OpenAPI, {
+  const wrapper = mount(component, {
     attachTo: document.body,
     global: {
       plugins: [pinia, PrimeVue],
@@ -142,6 +145,36 @@ describe('OpenAPI.vue', () => {
     await flushPromises()
 
     expect(idsRendered().filter(id => id === 'thedocV1')).toHaveLength(1)
+  })
+
+  // The specs are cached at module scope, so observing a cold start takes a fresh
+  // module instance. Both fetches are left pending until after the tab is clicked.
+  it('shares the in-flight fetch when the V1 tab is opened before it resolves', async () => {
+    vi.resetModules()
+
+    const API = (await import('@/services')).default as any
+    let resolveV2 = (_spec: Record<string, unknown>) => {}
+    let resolveV1 = (_spec: Record<string, unknown>) => {}
+    API.getOpenApi.mockImplementation(() => new Promise((resolve) => {
+      resolveV2 = resolve
+    }))
+    API.getOpenApiV1.mockImplementation(() => new Promise((resolve) => {
+      resolveV1 = resolve
+    }))
+
+    const freshPage = (await import('@/containers/OpenAPI.vue')).default
+    wrapper = await mountPage({}, freshPage)
+
+    wrapper.vm.onTabChange(1)
+    await flushPromises()
+
+    resolveV2({ openapi: '3.0.1', info: { title: 'V2' }, paths: {}})
+    resolveV1({ openapi: '3.0.1', info: { title: 'V1' }, paths: {}})
+    await flushPromises()
+
+    expect(API.getOpenApi).toHaveBeenCalledTimes(1)
+    expect(API.getOpenApiV1).toHaveBeenCalledTimes(1)
+    expect(idsRendered()).toEqual(['thedoc', 'thedocV1'])
   })
 
   it('coerces the selected tab to a number', async () => {
