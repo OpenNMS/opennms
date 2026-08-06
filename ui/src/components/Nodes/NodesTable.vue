@@ -177,7 +177,7 @@
         >
           <OnmsColumn
             v-if="nodeStructureStore.showInterfaces"
-            style="width: 3rem"
+            style="width: var(--expander-col-width)"
           >
             <template #body="{ data }">
               <OnmsIconButton
@@ -252,7 +252,15 @@
             />
           </template>
           <template #expansion="{ data }">
-            <NodeInterfacesPanel :node="data" />
+            <!-- The expansion cell spans the full table width; offset by the expander column's
+                 width so the interface list left-aligns with the first data column's content,
+                 whichever column the user has placed there. -->
+            <div
+              class="interface-expansion"
+              data-test="interface-expansion"
+            >
+              <NodeInterfacesPanel :node="data" />
+            </div>
           </template>
         </OnmsTable>
         <div
@@ -864,6 +872,13 @@ defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggl
 
 .node-table {
   margin-top: 1rem;
+  // Single source of truth for the expander column width, shared by the expander
+  // OnmsColumn's inline style and the expansion row's alignment offset below.
+  --expander-col-width: 3rem;
+}
+
+.interface-expansion {
+  margin-left: var(--expander-col-width);
 }
 
 .card {
