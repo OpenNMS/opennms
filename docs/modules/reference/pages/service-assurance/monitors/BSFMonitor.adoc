@@ -8,6 +8,9 @@ Users can write scripts to perform highly customized service checks.
 IMPORTANT: This monitor is not optimized for scale.
 It is intended for a small number of custom checks or prototyping of monitors.
 
+NOTE: Groovy is the scripting language that ships with {page-component-title}.
+BeanShell is no longer supported; rewrite any existing `.bsh` scripts in Groovy and update the `bsf-engine` and `lang-class` parameters of the affected services.
+
 == BSFMonitor versus SystemExecuteMonitor
 
 The BSFMonitor avoids the overhead of fork(2) that the SystemExecuteMonitor uses.
@@ -40,7 +43,6 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 | bsf-engine
 | The BSF Engine to run the script in different languages:
 
-* bsh.util.BeanShellBSFEngine
 * org.codehaus.groovy.bsf.GroovyEngine
 * org.apache.bsf.engines.jython.JythonEngine
 | n/a
@@ -52,7 +54,7 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 | eval
 
 | lang-class
-| The BSF language class, like `groovy` or `beanshell`
+| The BSF language class, like `groovy`
 | filename extension is interpreted by default
 
 | file-extensions
@@ -155,7 +157,7 @@ If the response time should be persisted, add the following parameters:
 <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
 
 <!-- name of the rrd file -->
-<parameter key="rrd-base-name" value="minimalbshbase" />
+<parameter key="rrd-base-name" value="myscriptbase" />
 
 <!-- name of the data source in the rrd file -->
 <!-- by default "response-time" is used as ds-name -->
@@ -196,15 +198,10 @@ The following table provides the required setup for commonly used languages.
 | bsf-engine
 | required library
 
-| http://www.beanshell.org[BeanShell]
-| beanshell
-| `bsh.util.BeanShellBSFEngine`
-| supported by default
-
 | https://groovy-lang.org/[Groovy]
 | groovy
 | `org.codehaus.groovy.bsf.GroovyEngine`
-| `groovy-all-[version].jar`
+| ships with {page-component-title}
 
 | http://www.jython.org[Jython]
 | jython
@@ -212,38 +209,9 @@ The following table provides the required setup for commonly used languages.
 | `jython-[version].jar`
 |===
 
-== BeanShell example
-
-Note that you must include the `monitor` section for each service in your definition.
-
-.BeanShell example `poller-configuration.xml`
-[source, xml]
-----
-<service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
-  <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
-  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
-</service>
-
-<monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
-----
-
-.BeanShell example `MinimalBeanShell.bsh` script file
-[source, java]
-----
-bsf_monitor.log("ERROR", "Starting MinimalBeanShell.bsf", null);
-File testFile = new File("/tmp/TestFile");
-if (testFile.exists()) {
-  return "OK";
-} else {
-  results.put("reason", "file does not exist");
-  return "NOK";
-}
-----
-
 == Groovy example
 
-The use of the Groovy language requires an additional library.
-Copy a compatible `groovy-all.jar` into the `$\{OPENNMS_HOME}/lib` folder and restart {page-component-title} to make Groovy available for the BSFMonitor.
+Groovy ships with {page-component-title}, so no additional library is required.
 
 Note that you must include the `monitor` section for each service in your definition.
 
@@ -259,7 +227,7 @@ Note that you must include the `monitor` section for each service in your defini
 ----
 
 .Groovy example `MinimalGroovy.groovy` script file for `run-type` set to `eval`
-[source, java]
+[source, groovy]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
 File testFile = new File("/tmp/TestFile");
@@ -284,7 +252,7 @@ if (testFile.exists()) {
 ----
 
 .Groovy example `MinimalGroovy.groovy` script file for `run-type` set to `exec`
-[source, java]
+[source, groovy]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
 def testFile = new File("/tmp/TestFile");
@@ -362,7 +330,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 ----
 
 .Groovy example Bean referencing script file
-[source, java]
+[source, groovy]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
 
