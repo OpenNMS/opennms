@@ -3,17 +3,23 @@
     ref="rootEl"
     class="form-field"
   >
-    <label
-      v-if="label"
-      :for="controlId"
-      class="form-field__label"
+    <div
+      v-if="label || $slots['label-suffix']"
+      class="form-field__label-row"
     >
-      {{ label }}<span
-        v-if="required"
-        class="form-field__required"
-        aria-hidden="true"
-      >*</span>
-    </label>
+      <label
+        v-if="label"
+        :for="controlId"
+        class="form-field__label"
+      >
+        {{ label }}<span
+          v-if="required"
+          class="form-field__required"
+          aria-hidden="true"
+        >*</span>
+      </label>
+      <slot name="label-suffix" />
+    </div>
     <slot
       :errorId="errorId"
       :invalid="invalid"
@@ -109,9 +115,18 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   }
 }
 
+.form-field__label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.375rem;
+  // Fixed height so fields with a help icon in the label align, row-for-row,
+  // with plain-label fields beside them.
+  min-height: 1.25rem;
+}
+
 .form-field__label {
   display: block;
-  margin-bottom: 0.375rem;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--p-text-color);

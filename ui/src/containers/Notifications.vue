@@ -6,21 +6,31 @@
   </div>
   <div class="notifications-container">
     <div class="page-header">
-      <h1 class="page-title">Notifications</h1>
-      <OnmsIconButton
+      <div class="title-with-help">
+        <h1 class="page-title">Notifications</h1>
+        <OnmsIconButton
+          variant="text"
+          :icon="InfoIcon"
+          title="About Notices and Escalation"
+          aria-label="About Notices and Escalation"
+          data-test="notifications-about-button"
+          @click="showAboutDialog = true"
+        />
+      </div>
+      <OnmsButton
         v-if="adminRole"
-        variant="text"
-        :icon="SettingsIcon"
-        title="Configure Notifications"
-        aria-label="Configure Notifications"
+        variant="outlined"
+        label="Configure Notifications"
+        icon="pi pi-plus"
         data-test="configure-notifications-button"
         @click="showConfigDialog = true"
       />
     </div>
 
-    <NotificationExplanationsCard />
     <NotificationQueriesCard />
     <NoticesTable />
+
+    <NotificationExplanationsCard v-model:visible="showAboutDialog" />
 
     <ConfigureNotificationsDialog
       v-if="adminRole"
@@ -32,7 +42,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-import { OnmsIconButton } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
 import { whenever } from '@vueuse/core'
 
@@ -40,7 +50,7 @@ import ConfigureNotificationsDialog from '@/components/AdminNotifications/Config
 import NoticesTable from '@/components/AdminNotifications/NoticesTable.vue'
 import NotificationExplanationsCard from '@/components/AdminNotifications/NotificationExplanationsCard.vue'
 import NotificationQueriesCard from '@/components/AdminNotifications/NotificationQueriesCard.vue'
-import SettingsIcon from '@/components/icons/action/Settings.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
@@ -54,6 +64,7 @@ const noticesStore = useNoticesStore()
 const { adminRole } = useRole()
 
 const showConfigDialog = ref(false)
+const showAboutDialog = ref(false)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -90,6 +101,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  .title-with-help {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
 
   .page-title {
     font-size: 1.4rem;
