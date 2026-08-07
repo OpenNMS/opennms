@@ -1,0 +1,105 @@
+= Scripted Notifications
+:description: How to run a script as a notification command in {page-component-title} using JSR-223 script engines.
+
+You can run a script when a notification fires, which can be useful when no dedicated notification strategy exists for the system you want to reach.
+Scripts run through the Java scripting API (JSR-223); BeanShell and Groovy engines ship with {page-component-title}.
+Other JSR-223 engines may work if their jars are placed on the classpath, but this is not tested.
+
+The strategy class is named `BSFNotificationStrategy` for compatibility with its origins in the retired Apache Bean Scripting Framework; scripts and configuration written for the BSF-based versions generally keep working (see the notes below).
+
+== Setup
+
+Add a command to `notificationCommands.xml`:
+
+[source, xml]
+----
+<command binary="false">
+  <name>scriptNotify</name>
+  <execute>org.opennms.netmgt.notifd.BSFNotificationStrategy</execute>
+  <comment>run a script to deliver notifications</comment>
+  <argument streamed="false">
+    <switch>file-name</switch>
+    <substitution>/opt/opennms/etc/scripts/notify.bsh</substitution>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-nodeid</switch>
+  </argument>
+</command>
+----
+
+Reference the command from a destination path as with any other notification command.
+
+The strategy's own switches (`file-name`, `lang-class`, `run-type`) can be set through the `<substitution>` element as shown above, or per notification with a `<parameter name="file-name" value="..."/>` entry on the `<notification>` in `notifications.xml`; a parameter value overrides the substitution.
+
+== Parameters
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Switch
+| Description
+| Default
+
+| file-name
+| Path to the script file.
+The path is used as given; there is no restriction on where scripts may be located, so treat the referenced files as trusted configuration.
+| required
+
+| lang-class
+| JSR-223 engine name (for example, `beanshell` or `groovy`).
+When omitted, the engine is chosen by the script file's extension; `.gy` is treated as Groovy.
+| inferred from extension
+
+| run-type
+| `exec` runs the script for its side effects; `eval` additionally stores the script's final value in `results.status` (see below).
+| exec
+
+| bsf-engine, file-extensions
+| Deprecated.
+These selected a BSF engine class, which has no JSR-223 equivalent; they are ignored and a warning is logged when present.
+| —
+|===
+
+== Variables available to the script
+
+[options="header"]
+[cols="1,3"]
+|===
+| Variable
+| Description
+
+| results
+| A `Map<String, String>` the script uses to report its outcome (see below).
+
+| bsf_notif_strategy
+| The strategy instance; scripts can call `bsf_notif_strategy.log(level, format, args...)`.
+
+| logger
+| An SLF4J logger.
+
+| notif_params
+| A `Map<String, String>` of every command argument switch and its value.
+
+| node, node_label, node_assets, node_categories, foreign_source, foreign_id
+| Details of the node the notice refers to, looked up from the `-nodeid` argument.
+These may be null when the notification has no node.
+|===
+
+When the corresponding argument switch is present on the command, its value is also available under a dedicated name: `text_message` (`-tm`), `numeric_message` (`-nm`), `node_id` (`-nodeid`), `ip_addr` (`-interface`), `svc_name` (`-service`), `subject` (`-subject`), `email` (`-email`), `pager_email` (`-pemail`), `text_pin` (`-tp`), `numeric_pin` (`-np`), `work_phone` (`-wphone`), `home_phone` (`-hphone`), `mobile_phone` (`-mphone`), `phone_pin` (`-tuipin`), and `microblog_username` (`-ublog`, deprecated and scheduled for removal).
+
+== Reporting success
+
+A notification counts as delivered only when `results` contains the key `status` with the exact value `OK`; anything else marks the notification as failed and escalation continues.
+
+* With `run-type="exec"` the script must set it: `results.put("status", "OK")`.
+* With `run-type="eval"` the string value of the script's final expression is stored into `results.status`, overwriting anything the script put there.
+
+== Notes for scripts written for the BSF-based strategy
+
+The class name, all variable names, and the `results.status` contract are unchanged.
+Two BSF-era behaviors no longer exist: the implicit `bsf` helper object is not available, and interpreter state does not persist between notifications — each notification runs with fresh variables.
+Python and JavaScript scripts required interpreters that {page-component-title} has not shipped for some time, so they did not work under the BSF-based strategy either.
+Script files are now read as UTF-8, so a file containing malformed bytes fails the notification where those bytes were previously replaced.
