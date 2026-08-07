@@ -149,7 +149,9 @@ public abstract class LoginModuleUtils {
     }
 
     /**
-     * Do not save asset files in the saved request cache.
+     * Whether a URL from the saved request cache must not be used as a
+     * post-login redirect target: asset files (by suffix) and REST/API
+     * endpoints (by servlet-path prefix), neither of which is a navigable page.
      */
     public static boolean isInvalidSavedRequestUrl(String url) {
         if (StringUtils.isEmpty(url)) {
