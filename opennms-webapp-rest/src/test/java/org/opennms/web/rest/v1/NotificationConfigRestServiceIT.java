@@ -38,6 +38,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -135,6 +136,10 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     public void afterServletStart() throws Exception {
         System.setProperty("opennms.home", m_onmsHome);
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
+        // Webapp beans may have initialized GroupFactory while context startup
+        // had opennms.home pointed elsewhere; pin a factory built against the
+        // test home so the seeded roles are visible.
+        GroupFactory.setInstance(new GroupFactory());
     }
 
     // Restore opennms.home for later suites sharing this JVM fork.
@@ -163,6 +168,94 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
 
         // only on/off are valid
         sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/status", "{\"status\":\"maybe\"}", 400);
+    }
+
+    @Test
+    public void testDestinationPathLifecycle() throws Exception {
+        JSONObject list = new JSONObject(getJson("/notification-config/destination-paths"));
+        Assert.assertEquals(1, list.getJSONArray("path").length());
+
+        final String newPath = "{\"name\":\"junit-path\",\"initial-delay\":\"30s\","
+                + "\"target\":[{\"name\":\"noc@example.com\",\"command\":[\"javaEmail\"]}],"
+                + "\"escalate\":[{\"delay\":\"15m\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", newPath, 204);
+
+        JSONObject added = new JSONObject(getJson("/notification-config/destination-paths/junit-path"));
+        Assert.assertEquals("30s", added.getString("initial-delay"));
+        Assert.assertEquals(1, added.getJSONArray("escalate").length());
+
+        final String updatedPath = "{\"name\":\"junit-path\",\"initial-delay\":\"1m\","
+                + "\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}";
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/junit-path", updatedPath, 204);
+        added = new JSONObject(getJson("/notification-config/destination-paths/junit-path"));
+        Assert.assertEquals("1m", added.getString("initial-delay"));
+
+        sendRequest(DELETE, "/notification-config/destination-paths/junit-path", 204);
+        sendRequest(GET, "/notification-config/destination-paths/junit-path", 404);
+    }
+
+    @Test
+    public void testCommands() throws Exception {
+        JSONArray commands = new JSONArray(getJson("/notification-config/commands"));
+        Assert.assertEquals(1, commands.length());
+        Assert.assertEquals("javaEmail", commands.getJSONObject(0).getString("name"));
+    }
+
+    @Test
+    public void testDestinationPathInvalidUpdateKeepsExistingPath() throws Exception {
+        // a target with no commands would fail the schema-validated save AFTER
+        // the factory already removed the old entry — must be rejected up front
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/Email-Admin",
+                "{\"name\":\"Email-Admin\",\"target\":[{\"name\":\"Admin\",\"command\":[]}]}", 400);
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/Email-Admin",
+                "{\"name\":\"Email-Admin\",\"target\":[]}", 400);
+        JSONObject unchanged = new JSONObject(getJson("/notification-config/destination-paths/Email-Admin"));
+        Assert.assertEquals(1, unchanged.getJSONArray("target").length());
+    }
+
+    @Test
+    public void testDestinationPathRenameCollisionRejected() throws Exception {
+        final String other = "{\"name\":\"junit-p2\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}";
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths", other, 204);
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/Email-Admin",
+                "{\"name\":\"junit-p2\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}", 400);
+        // both paths still intact
+        sendRequest(GET, "/notification-config/destination-paths/Email-Admin", 200);
+        sendRequest(GET, "/notification-config/destination-paths/junit-p2", 200);
+    }
+
+    @Test
+    public void testDestinationPathRenameUpdatesReferences() throws Exception {
+        sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/destination-paths/Email-Admin",
+                "{\"name\":\"Email-Ops\",\"target\":[{\"name\":\"Admin\",\"command\":[\"javaEmail\"]}]}", 204);
+        sendRequest(GET, "/notification-config/destination-paths/Email-Admin", 404);
+        sendRequest(GET, "/notification-config/destination-paths/Email-Ops", 200);
+        // the notification that referenced the old name follows the rename
+        org.opennms.netmgt.config.NotificationFactory.init();
+        Assert.assertEquals("Email-Ops", org.opennms.netmgt.config.NotificationFactory.getInstance()
+                .getNotification("junitNotification").getDestinationPath());
+    }
+
+    @Test
+    public void testOnCallRoles() throws Exception {
+        JSONArray roles = new JSONArray(getJson("/notification-config/on-call-roles"));
+        Assert.assertEquals(1, roles.length());
+        Assert.assertEquals("junit-oncall", roles.getString(0));
+    }
+
+    @Test
+    public void testOnCallRolesFollowFileChanges() throws Exception {
+        Assert.assertEquals(1, new JSONArray(getJson("/notification-config/on-call-roles")).length());
+        // removing the last role from groups.xml must not leave it cached
+        final File groupsFile = new File("target/test-work-dir/etc/groups.xml");
+        FileUtils.writeStringToFile(groupsFile, "<?xml version=\"1.0\"?>"
+                + "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\">"
+                + "<header><rev>1.3</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
+                + "<groups><group><name>Admin</name><user>admin</user></group></groups>"
+                + "</groupinfo>", Charset.defaultCharset());
+        groupsFile.setLastModified(System.currentTimeMillis() + 1000);
+        Assert.assertEquals(0, new JSONArray(getJson("/notification-config/on-call-roles")).length());
     }
 
     @Test

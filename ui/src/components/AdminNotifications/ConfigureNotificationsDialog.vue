@@ -24,9 +24,7 @@
           </p>
         </OnmsTabPanel>
         <OnmsTabPanel value="destination-paths">
-          <p class="tab-placeholder" data-test="placeholder-destination-paths">
-            Destination path management arrives with NMS-20119.
-          </p>
+          <DestinationPathsTable />
         </OnmsTabPanel>
         <OnmsTabPanel value="path-outages">
           <p class="tab-placeholder" data-test="placeholder-path-outages">
@@ -61,6 +59,7 @@ import { ref, watch } from 'vue'
 
 import { OnmsDialog, OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
+import DestinationPathsTable from '@/components/AdminNotifications/DestinationPathsTable.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 
@@ -84,6 +83,10 @@ const statusPending = ref(false)
 const loadedTabs = ref(new Set<string>())
 
 const TAB_LOADERS: Record<string, () => Promise<boolean>> = {
+  'destination-paths': async () => {
+    const results = await Promise.all([store.getDestinationPaths(), store.getCommands(), store.getUsersAndGroups()])
+    return results.every(Boolean)
+  },
   general: () => store.getStatus()
 }
 

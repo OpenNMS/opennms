@@ -21,12 +21,17 @@
 ///
 
 import API from '@/services'
-import { NotifdStatus } from '@/types/notificationConfig'
+import { DestinationPath, NotifdStatus, NotificationCommand } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
+  const destinationPaths = ref([] as DestinationPath[])
+  const commands = ref([] as NotificationCommand[])
+  const users = ref([] as string[])
+  const groups = ref([] as string[])
+  const roles = ref([] as string[])
 
   const getStatus = async (): Promise<boolean> => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -41,9 +46,81 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
+  const getDestinationPaths = async (): Promise<boolean> => {
+    const result = await API.getDestinationPaths()
+    if (result === null) {
+      return false
+    }
+    destinationPaths.value = result
+    return true
+  }
+
+  const addDestinationPath = async (path: DestinationPath) => {
+    const ok = await API.addDestinationPath(path)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const updateDestinationPath = async (originalName: string, path: DestinationPath) => {
+    const ok = await API.updateDestinationPath(originalName, path)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const getUsersAndGroups = async (): Promise<boolean> => {
+    const [u, g, r] = await Promise.all([API.getNotificationUsers(), API.getNotificationGroups(), API.getOnCallRoles()])
+    if (u) {
+      users.value = u
+    }
+    if (g) {
+      groups.value = g
+    }
+    if (r) {
+      roles.value = r
+    }
+    return u !== null && g !== null && r !== null
+  }
+
+  const deleteDestinationPath = async (name: string) => {
+    const ok = await API.deleteDestinationPath(name)
+    if (ok) {
+      await getDestinationPaths()
+    }
+    return ok
+  }
+
+  const testDestinationPath = async (name: string) => {
+    return await API.testDestinationPath(name)
+  }
+
+  const getCommands = async (): Promise<boolean> => {
+    const result = await API.getNotificationCommands()
+    if (result === null) {
+      return false
+    }
+    commands.value = result
+    return true
+  }
+
   return {
     notifdStatus,
+    destinationPaths,
+    commands,
     getStatus,
-    setStatus
+    setStatus,
+    getDestinationPaths,
+    addDestinationPath,
+    updateDestinationPath,
+    deleteDestinationPath,
+    testDestinationPath,
+    getCommands,
+    users,
+    groups,
+    roles,
+    getUsersAndGroups
   }
 })

@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { DestinationPath, NotifdStatus } from '@/types/notificationConfig'
+import { DestinationPath, NotifdStatus, NotificationCommand } from '@/types/notificationConfig'
 import { rest } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
@@ -71,9 +71,120 @@ const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
   }
 }
 
+const deleteDestinationPath = async (name: string): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.delete(`${endpoint}/destination-paths/${encodeURIComponent(name)}`)
+    showSnackBar({ msg: `Destination path '${name}' deleted.` })
+    return true
+  } catch (_err) {
+    showSnackBar({ msg: `Failed to delete destination path '${name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const testDestinationPath = async (name: string): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
+    showSnackBar({ msg: `Test notification triggered for '${name}'.` })
+    return true
+  } catch (_err) {
+    showSnackBar({ msg: `Failed to trigger test notification for '${name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const addDestinationPath = async (path: DestinationPath): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.post(`${endpoint}/destination-paths`, path)
+    showSnackBar({ msg: `Destination path '${path.name}' added.` })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to add destination path '${path.name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const updateDestinationPath = async (originalName: string, path: DestinationPath): Promise<boolean> => {
+  try {
+    startSpinner()
+    await rest.put(`${endpoint}/destination-paths/${encodeURIComponent(originalName)}`, path)
+    showSnackBar({ msg: `Destination path '${path.name}' updated.` })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to update destination path '${path.name}'.` })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+// Users and groups for destination path target pickers (v1 users/groups REST).
+const getNotificationUsers = async (): Promise<string[] | null> => {
+  try {
+    const resp = await rest.get('/users?limit=0')
+    const users = resp.data?.user ?? []
+    return (Array.isArray(users) ? users : [users]).map((u: any) => u['user-id']).filter(Boolean)
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load users.' })
+    return null
+  }
+}
+
+const getNotificationGroups = async (): Promise<string[] | null> => {
+  try {
+    const resp = await rest.get('/groups?limit=0')
+    const groups = resp.data?.group ?? []
+    return (Array.isArray(groups) ? groups : [groups]).map((g: any) => g.name).filter(Boolean)
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load groups.' })
+    return null
+  }
+}
+
+const getOnCallRoles = async (): Promise<string[] | null> => {
+  try {
+    const resp = await rest.get(`${endpoint}/on-call-roles`)
+    return Array.isArray(resp.data) ? resp.data : []
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load on-call roles.' })
+    return null
+  }
+}
+
+const getNotificationCommands = async (): Promise<NotificationCommand[] | null> => {
+  try {
+    startSpinner()
+    const resp = await rest.get(`${endpoint}/commands`)
+    return resp.data ?? []
+  } catch (_err) {
+    showSnackBar({ msg: 'Failed to load notification commands.' })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
 
 export {
+  addDestinationPath,
+  deleteDestinationPath,
   getDestinationPaths,
+  getNotificationCommands,
   getNotificationConfigStatus,
-  setNotificationConfigStatus
+  getNotificationGroups,
+  getNotificationUsers,
+  getOnCallRoles,
+  setNotificationConfigStatus,
+  testDestinationPath,
+  updateDestinationPath
 }
