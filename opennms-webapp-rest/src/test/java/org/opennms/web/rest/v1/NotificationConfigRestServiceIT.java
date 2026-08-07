@@ -22,7 +22,13 @@
 package org.opennms.web.rest.v1;
 
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
+import java.util.TreeMap;
+import java.util.SortedMap;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.core.MediaType;
@@ -38,7 +44,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,7 +78,24 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 
+    private static final String INVALID_RULE = "this is not a rule";
+
     private String m_onmsHome;
+
+    private FilterDao m_filterDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
+
+    // the node the mocked filter matches; seeded via Hibernate so the service's
+    // PathOutageDao/NodeDao (which read through Hibernate) can see it
+    private int m_pathNodeId;
 
     private static String s_previousOpennmsHome;
 
@@ -127,6 +157,23 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
                 + "<roles><role name=\"junit-oncall\" supervisor=\"admin\" membership-group=\"Admin\"/></roles>"
                 + "</groupinfo>", Charset.defaultCharset());
 
+
+        m_filterDao = mock(FilterDao.class);
+        // the *.*.*.* -> node stub is added in afterServletStart, once the node
+        // has been seeded through Hibernate and its generated id is known
+        // a rule that matches nothing, for the zero-match apply case
+        when(m_filterDao.getNodeMap("IPADDR IPLIKE 1.1.1.1")).thenReturn(new TreeMap<>());
+        doThrow(new FilterParseException("invalid rule")).when(m_filterDao).validateRule(INVALID_RULE);
+        // getNodeMap now parses the rule itself (the redundant validateRule was dropped)
+        doThrow(new FilterParseException("invalid rule")).when(m_filterDao).getNodeMap(INVALID_RULE);
+        FilterDaoFactory.setInstance(m_filterDao);
+    }
+
+    @org.junit.After
+    public void restoreFilterDao() {
+        // the mock was pushed into the static factory in setUp; don't leak it
+        // into other ITs sharing this JVM
+        FilterDaoFactory.setInstance(null);
     }
 
     // Required so context initialization can't repoint opennms.home at
@@ -135,6 +182,17 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     public void afterServletStart() throws Exception {
         System.setProperty("opennms.home", m_onmsHome);
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
+        // Seed the node the mocked filter matches through Hibernate (a committed
+        // transaction), so the service's PathOutageDao/NodeDao — which read via
+        // Hibernate, not DataSourceFactory — can see it for the foreign key.
+        m_pathNodeId = m_sessionUtils.withTransaction(() -> {
+            final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+            m_nodeDao.save(node);
+            return node.getId();
+        });
+        final SortedMap<Integer, String> nodeMap = new TreeMap<>();
+        nodeMap.put(m_pathNodeId, "node1");
+        when(m_filterDao.getNodeMap("IPADDR IPLIKE *.*.*.*")).thenReturn(nodeMap);
     }
 
     // Restore opennms.home for later suites sharing this JVM fork.
@@ -179,11 +237,61 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testPathOutageLifecycle() throws Exception {
+        JSONArray outages = new JSONArray(getJson("/notification-config/path-outages"));
+        Assert.assertEquals(0, outages.length());
+
+        JSONObject preview = new JSONObject(getJson("/notification-config/path-outages/preview?rule=IPADDR%20IPLIKE%20*.*.*.*"));
+        Assert.assertEquals(1, preview.getInt("totalCount"));
+        Assert.assertEquals("node1", preview.getJSONArray("nodes").getJSONObject(0).getString("nodeLabel"));
+
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"IPADDR IPLIKE *.*.*.*\",\"criticalIp\":\"192.168.1.1\",\"criticalSvc\":\"ICMP\"}", 204);
+        outages = new JSONArray(getJson("/notification-config/path-outages"));
+        Assert.assertEquals(1, outages.length());
+        Assert.assertEquals("192.168.1.1", outages.getJSONObject(0).getString("criticalPathIp"));
+
+        sendRequest(DELETE, "/notification-config/path-outages/" + m_pathNodeId, 204);
+        outages = new JSONArray(getJson("/notification-config/path-outages"));
+        Assert.assertEquals(0, outages.length());
+    }
+
+    @Test
+    public void testPathOutageClearsWithBlankIp() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"IPADDR IPLIKE *.*.*.*\",\"criticalIp\":\"192.168.1.1\"}", 204);
+        Assert.assertEquals(1, new JSONArray(getJson("/notification-config/path-outages")).length());
+
+        // blank critical IP clears the path for the matching nodes
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"IPADDR IPLIKE *.*.*.*\"}", 204);
+        Assert.assertEquals(0, new JSONArray(getJson("/notification-config/path-outages")).length());
+    }
+
+    @Test
+    public void testPathOutageValidation() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"" + INVALID_RULE + "\",\"criticalIp\":\"192.168.1.1\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages", "{}", 400);
+        sendRequest(GET, "/notification-config/path-outages/preview", 400);
+        // a rule matching no nodes is rejected rather than silently succeeding
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"IPADDR IPLIKE 1.1.1.1\",\"criticalIp\":\"192.168.1.1\"}", 400);
+        // only ICMP is supported as the critical path service
+        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                "{\"rule\":\"IPADDR IPLIKE *.*.*.*\",\"criticalIp\":\"192.168.1.1\",\"criticalSvc\":\"HTTP\"}", 400);
+        // deleting a critical path that isn't configured is a 404, not a silent 204
+        sendRequest(DELETE, "/notification-config/path-outages/999", 404);
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {
             sendRequest(GET, "/notification-config/status", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/status", "{\"status\":\"on\"}", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/path-outages",
+                    "{\"rule\":\"IPADDR IPLIKE *.*.*.*\"}", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }

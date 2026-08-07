@@ -29,9 +29,7 @@
           </p>
         </OnmsTabPanel>
         <OnmsTabPanel value="path-outages">
-          <p class="tab-placeholder" data-test="placeholder-path-outages">
-            Path outage management arrives with NMS-20120.
-          </p>
+          <PathOutagesTab />
         </OnmsTabPanel>
         <OnmsTabPanel value="general">
           <div class="general-tab">
@@ -61,6 +59,7 @@ import { ref, watch } from 'vue'
 
 import { OnmsDialog, OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
+import PathOutagesTab from '@/components/AdminNotifications/PathOutagesTab.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 
@@ -84,6 +83,9 @@ const statusPending = ref(false)
 const loadedTabs = ref(new Set<string>())
 
 const TAB_LOADERS: Record<string, () => Promise<boolean>> = {
+  'path-outages': async () => {
+    return await store.getPathOutages()
+  },
   general: () => store.getStatus()
 }
 

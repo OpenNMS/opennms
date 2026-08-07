@@ -2,16 +2,25 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import API from '@/services'
+import { PathOutage } from '@/types/notificationConfig'
 
 vi.mock('@/services', () => ({
   default: {
     getNotificationConfigStatus: vi.fn(),
-    setNotificationConfigStatus: vi.fn()
+    setNotificationConfigStatus: vi.fn(),
+    getPathOutages: vi.fn(),
+    previewPathOutageRule: vi.fn(),
+    applyPathOutage: vi.fn(),
+    deletePathOutage: vi.fn()
   }
 }))
 
 describe('useNotificationConfigStore', () => {
   let store: ReturnType<typeof useNotificationConfigStore>
+
+  const mockPathOutages: PathOutage[] = [
+    { nodeId: 1, nodeLabel: 'localhost', criticalPathIp: '192.168.1.1', criticalPathServiceName: 'ICMP' }
+  ]
 
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -26,6 +35,7 @@ describe('useNotificationConfigStore', () => {
   describe('Initial State', () => {
     it('should start empty with unknown notifd status', () => {
       expect(store.notifdStatus).toBeNull()
+      expect(store.pathOutages).toEqual([])
     })
   })
 
@@ -62,6 +72,57 @@ describe('useNotificationConfigStore', () => {
 
       expect(ok).toBe(false)
       expect(store.notifdStatus).toBe('off')
+    })
+  })
+
+  describe('path outages', () => {
+    it('should load path outages', async () => {
+      vi.mocked(API.getPathOutages).mockResolvedValue(mockPathOutages)
+
+      const ok = await store.getPathOutages()
+
+      expect(ok).toBe(true)
+      expect(store.pathOutages).toEqual(mockPathOutages)
+    })
+
+    it('should report failure and not clobber existing outages when the load errors', async () => {
+      vi.mocked(API.getPathOutages).mockResolvedValueOnce(mockPathOutages)
+      await store.getPathOutages()
+      vi.mocked(API.getPathOutages).mockResolvedValueOnce(null)
+
+      const ok = await store.getPathOutages()
+
+      expect(ok).toBe(false)
+      // prior data is preserved so the tab can retry instead of latching empty
+      expect(store.pathOutages).toEqual(mockPathOutages)
+    })
+
+    it('should refresh after apply and delete', async () => {
+      vi.mocked(API.applyPathOutage).mockResolvedValue(true)
+      vi.mocked(API.deletePathOutage).mockResolvedValue(true)
+      vi.mocked(API.getPathOutages).mockResolvedValue(mockPathOutages)
+
+      await store.applyPathOutage({ rule: 'IPADDR IPLIKE *.*.*.*', criticalIp: '192.168.1.1' })
+      await store.deletePathOutage(1)
+
+      expect(API.getPathOutages).toHaveBeenCalledTimes(2)
+    })
+
+    it('should not refresh after a failed apply', async () => {
+      vi.mocked(API.applyPathOutage).mockResolvedValue(false)
+
+      await store.applyPathOutage({ rule: 'bogus rule' })
+
+      expect(API.getPathOutages).not.toHaveBeenCalled()
+    })
+
+    it('should pass the preview through', async () => {
+      const preview = { totalCount: 3, nodes: mockPathOutages }
+      vi.mocked(API.previewPathOutageRule).mockResolvedValue(preview)
+
+      const result = await store.previewPathOutageRule('IPADDR IPLIKE *.*.*.*')
+
+      expect(result).toEqual(preview)
     })
   })
 })

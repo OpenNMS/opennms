@@ -76,8 +76,12 @@ import {
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import {
+  applyPathOutage,
+  deletePathOutage,
   getDestinationPaths,
   getNotificationConfigStatus,
+  getPathOutages,
+  previewPathOutageRule,
   setNotificationConfigStatus
 } from './notificationConfigService'
 import { acknowledgeNotice, browseNotices } from './noticesService'
@@ -146,7 +150,11 @@ export default {
   getZenithRegistrations,
   performLogout,
   acknowledgeNotice,
+  applyPathOutage,
   browseNotices,
+  deletePathOutage,
+  getPathOutages,
+  previewPathOutageRule,
   getDestinationPaths,
   getNotificationConfigStatus,
   setNotificationConfigStatus

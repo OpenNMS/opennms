@@ -21,12 +21,13 @@
 ///
 
 import API from '@/services'
-import { NotifdStatus } from '@/types/notificationConfig'
+import { NotifdStatus, PathOutage, PathOutagePreview, PathOutageRequest } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
   const notifdStatus = ref<NotifdStatus | null>(null)
+  const pathOutages = ref([] as PathOutage[])
 
   const getStatus = async (): Promise<boolean> => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -41,9 +42,43 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
+  const getPathOutages = async (): Promise<boolean> => {
+    const result = await API.getPathOutages()
+    if (result === null) {
+      return false
+    }
+    pathOutages.value = result
+    return true
+  }
+
+  const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+    return await API.previewPathOutageRule(rule)
+  }
+
+  const applyPathOutage = async (request: PathOutageRequest) => {
+    const ok = await API.applyPathOutage(request)
+    if (ok) {
+      await getPathOutages()
+    }
+    return ok
+  }
+
+  const deletePathOutage = async (nodeId: number) => {
+    const ok = await API.deletePathOutage(nodeId)
+    if (ok) {
+      await getPathOutages()
+    }
+    return ok
+  }
+
   return {
     notifdStatus,
+    pathOutages,
     getStatus,
-    setStatus
+    setStatus,
+    getPathOutages,
+    previewPathOutageRule,
+    applyPathOutage,
+    deletePathOutage
   }
 })

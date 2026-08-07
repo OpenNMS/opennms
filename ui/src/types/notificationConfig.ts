@@ -45,3 +45,23 @@ export interface DestinationPath {
   target: DestinationPathTarget[]
   escalate?: DestinationPathEscalate[]
 }
+
+// Path outages (critical paths) — DB-backed (pathoutage table), unlike the
+// XML-backed config above. Wire shapes of /rest/notification-config/path-outages.
+export interface PathOutage {
+  nodeId: number
+  nodeLabel?: string | null
+  criticalPathIp?: string | null
+  criticalPathServiceName?: string | null
+}
+
+export interface PathOutagePreview {
+  totalCount: number
+  nodes: PathOutage[]
+}
+
+export interface PathOutageRequest {
+  rule: string
+  criticalIp?: string
+  criticalSvc?: string
+}
