@@ -122,6 +122,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Metrics Menu
         clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Network Performance Data']")));
+
+        clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs (Preview)");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//li[contains(text()[normalize-space()], 'Resources')]")));
 
