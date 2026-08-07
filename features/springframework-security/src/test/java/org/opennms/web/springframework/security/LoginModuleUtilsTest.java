@@ -58,7 +58,7 @@ public class LoginModuleUtilsTest {
     @Test
     public void testPageUrlsAreValid() {
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/index.jsp"));
-        assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/element/nodeList.htm"));
+        assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/element/node.jsp?node=1"));
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/alarm/detail.htm"));
         // prefix matching must not reject pages that merely start with "rest"/"api"
         assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/restrictedPage.jsp"));

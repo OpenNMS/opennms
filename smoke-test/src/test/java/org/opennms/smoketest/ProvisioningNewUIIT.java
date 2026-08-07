@@ -269,11 +269,10 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
             driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
-        // Open the Vue nodes list page, then navigate directly to this node's detail page.
-        // (The legacy node-list page, and its single-node auto-redirect, were removed in
-        // NMS-18217; we already know the node's foreignSource:foreignId here, so go straight
-        // to its detail page rather than relying on Vue table click timing.)
-        nodePage();
+        // Navigate directly to this node's detail page. (The legacy node-list page, and its
+        // single-node auto-redirect, were removed in NMS-18217; we already know the node's
+        // foreignSource:foreignId here, so go straight to its detail page rather than relying
+        // on Vue table click timing.)
         driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
 
         waitUntil(elementToBeClickable(By.linkText("ICMP")));
