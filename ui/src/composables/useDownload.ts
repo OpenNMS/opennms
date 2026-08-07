@@ -71,7 +71,8 @@ const getNameFromHeaders = (headers: AxiosResponse['headers']): string => {
  * @return  {Blob}               file object
  */
 const generateBlob = (file: AxiosResponse, extension: string, forceBlob = false): Blob => {
-  const contentType = file.headers['content-type']
+  const rawContentType = file.headers['content-type']
+  const contentType = typeof rawContentType === 'string' ? rawContentType : undefined
 
   // stringify if it's a JSON file, unless forceBlob is true
   if (!forceBlob && extension.toLowerCase() === 'json') {
