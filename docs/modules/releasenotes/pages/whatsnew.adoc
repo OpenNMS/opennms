@@ -96,6 +96,13 @@ Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they a
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== Slack and Mattermost notification strategies replaced by a webhook strategy
+`SlackNotificationStrategy` and `MattermostNotificationStrategy` have been removed in favor of `WebhookNotificationStrategy`, which takes the URL, method, headers, and body from the notification command and so can also target Microsoft Teams, Discord, and non-chat endpoints.
+The `org.opennms.netmgt.notifd.slack.*` and `org.opennms.netmgt.notifd.mattermost.*` properties no longer have any effect.
+
+Neither strategy shipped as a stock notification command, so this affects only hand-added commands, which fail when a notice is sent until their `<execute>` element and arguments are updated.
+See xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-from-slack-and-mattermost[Webhook Notifications] for the mapping.
+
 === XMPP (Jabber) notification strategies removed
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
 Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
