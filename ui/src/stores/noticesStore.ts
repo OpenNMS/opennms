@@ -52,10 +52,15 @@ export const useNoticesStore = defineStore('noticesStore', () => {
     return null
   })
 
+  const effectiveExcludeUser = computed<string | null>(() =>
+    preset.value === 'teamOutstanding' ? currentUser.value || null : null)
+
   const title = computed<string>(() => {
     switch (preset.value) {
       case 'yourOutstanding':
         return 'Your Outstanding Notices'
+      case 'teamOutstanding':
+        return 'Outstanding Notices Assigned to Anyone but You'
       case 'allOutstanding':
         return 'All Outstanding Notices'
       case 'allAcknowledged':
@@ -68,13 +73,12 @@ export const useNoticesStore = defineStore('noticesStore', () => {
 
   const { showSnackBar } = useSnackbar()
 
-  // a failed whoami leaves no user id; widening a user-scoped query to
-  // everyone's notices would be silently wrong, so callers must refuse
-  const missingRequiredUser = computed<boolean>(() =>
-    (preset.value === 'yourOutstanding' || preset.value === 'userSearch') && !effectiveUser.value)
 
   const load = async () => {
-    if (missingRequiredUser.value) {
+    // a failed whoami leaves no user id; widening a user-scoped query to
+    // everyone's notices would be silently wrong, so refuse instead
+    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
+    if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
       notices.value = []
       totalCount.value = 0
       showSnackBar({ msg: 'Cannot determine the current user; showing no notices. Reload the page to retry.', error: true })
@@ -85,6 +89,7 @@ export const useNoticesStore = defineStore('noticesStore', () => {
       const result = await API.browseNotices({
         acktype: acktype.value,
         user: effectiveUser.value,
+        excludeUser: effectiveExcludeUser.value,
         limit: rows.value,
         offset: first.value
       })
@@ -111,13 +116,17 @@ export const useNoticesStore = defineStore('noticesStore', () => {
   // Export/print path: same user guard as load() so a failed whoami never
   // widens a user-scoped export to everyone's notices.
   const fetchForExport = async (limit: number): Promise<{ notices: OnmsNotice[], totalCount: number }> => {
-    if (missingRequiredUser.value) {
+    // Same guard as load(); the teamOutstanding preset is user-scoped via
+    // excludeUser, so a failed whoami must block it too rather than widen.
+    const needsUser = preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding'
+    if (needsUser && !effectiveUser.value && !effectiveExcludeUser.value) {
       showSnackBar({ msg: 'Cannot determine the current user; nothing to export. Reload the page to retry.', error: true })
       return { notices: [], totalCount: 0 }
     }
     const result = await API.browseNotices({
       acktype: acktype.value,
       user: effectiveUser.value,
+      excludeUser: effectiveExcludeUser.value,
       limit,
       offset: 0
     })

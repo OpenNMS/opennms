@@ -40,7 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
@@ -57,8 +58,10 @@ import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNoticesStore } from '@/stores/noticesStore'
 import { BreadCrumb } from '@/types'
+import { NoticeQueryPreset } from '@/types/notices'
 
 const authStore = useAuthStore()
+const route = useRoute()
 const menuStore = useMenuStore()
 const noticesStore = useNoticesStore()
 const { adminRole } = useRole()
@@ -80,11 +83,30 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 // silently drop the user filter and show every user's notices.
 const authLoaded = computed<boolean>(() => authStore.loaded)
 
+// the top-bar bell deep-links here with a preset (NMS-20124)
+const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAcknowledged'] as const
+const initialLoad = () => {
+  const preset = route.query.preset as string
+  if ((PRESETS as readonly string[]).includes(preset)) {
+    noticesStore.applyPreset(preset as NoticeQueryPreset)
+  } else {
+    noticesStore.load()
+  }
+}
+
 onMounted(() => {
   if (authLoaded.value) {
-    noticesStore.load()
+    initialLoad()
   } else {
-    whenever(authLoaded, () => noticesStore.load(), { once: true })
+    whenever(authLoaded, () => initialLoad(), { once: true })
+  }
+})
+
+// Clicking a bell link while already on this page only changes the hash query,
+// so the component is not remounted — re-apply the preset when it changes.
+watch(() => route.query.preset, () => {
+  if (authLoaded.value) {
+    initialLoad()
   }
 })
 </script>

@@ -27,7 +27,7 @@
 
 export type NoticeAckType = 'unack' | 'ack' | 'all'
 
-export type NoticeQueryPreset = 'yourOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
+export type NoticeQueryPreset = 'yourOutstanding' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
 
 export interface OnmsNoticeServiceType {
   id?: number

@@ -32,6 +32,7 @@ const endpoint = '/notifications'
 interface BrowseNoticesParams {
   acktype: NoticeAckType
   user?: string | null
+  excludeUser?: string | null
   limit: number
   offset: number
 }
@@ -51,6 +52,9 @@ const browseNotices = async (params: BrowseNoticesParams): Promise<NoticeBrowseR
     }
     if (params.user) {
       query.set('usersNotified.userId', params.user)
+    }
+    if (params.excludeUser) {
+      query.set('excludeNotifiedUser', params.excludeUser)
     }
     const resp = await rest.get(`${endpoint}?${query.toString()}`)
     // 204 No Content when nothing matches

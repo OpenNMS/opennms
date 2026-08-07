@@ -9,6 +9,12 @@
         >Your outstanding notices</a>
         <span class="separator">|</span>
         <a
+          :class="{ active: store.preset === 'teamOutstanding' }"
+          data-test="query-team-outstanding"
+          @click.prevent="store.applyPreset('teamOutstanding')"
+        >Outstanding for anyone but you</a>
+        <span class="separator">|</span>
+        <a
           :class="{ active: store.preset === 'allOutstanding' }"
           data-test="query-all-outstanding"
           @click.prevent="store.applyPreset('allOutstanding')"
