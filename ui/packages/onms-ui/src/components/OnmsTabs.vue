@@ -1,6 +1,6 @@
 <template>
   <Tabs
-    :value="value"
+    :value="value!"
     :pt="unsafePt as never"
     @update:value="emit('update:value', $event)"
   >

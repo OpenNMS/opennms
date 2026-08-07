@@ -38,18 +38,23 @@ describe('OutagesTable.vue', () => {
   let wrapper: VueWrapper<any>
   let nodeStore: ReturnType<typeof useNodeStore>
 
-  const mountTable = () =>
-    mount(OutagesTable, {
+  // The store action must be mocked BEFORE mounting — the component fetches in
+  // onMounted, and an unmocked action would fire a real network request.
+  const mountTable = () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    nodeStore = useNodeStore(pinia)
+    nodeStore.getNodeOutages = vi.fn().mockResolvedValue(undefined)
+
+    return mount(OutagesTable, {
       global: {
-        plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue]
+        plugins: [pinia, PrimeVue]
       }
     })
+  }
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountTable()
-    nodeStore = useNodeStore()
-    nodeStore.getNodeOutages = vi.fn().mockResolvedValue(undefined)
     nodeStore.outages = []
     nodeStore.outagesTotalCount = 0
     await flushPromises()
@@ -107,36 +112,11 @@ describe('OutagesTable.vue', () => {
   describe('onMounted fetch', () => {
     it('calls getNodeOutages on mount with node id, offset 0 and limit 10', async () => {
       vi.clearAllMocks()
-      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-      const localWrapper = mount(OutagesTable, {
-        global: {
-          plugins: [pinia, PrimeVue]
-        }
-      })
-      const localStore = useNodeStore()
-      const spy = vi.fn().mockResolvedValue(undefined)
-      localStore.getNodeOutages = spy
+      const localWrapper = mountTable()
       await flushPromises()
       await nextTick()
 
-      // Mount again so onMounted fires after spy is set
-      vi.clearAllMocks()
-      const pinia2 = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-      const localWrapper2 = mount(OutagesTable, {
-        global: {
-          plugins: [pinia2, PrimeVue]
-        }
-      })
-      const localStore2 = useNodeStore()
-      localStore2.getNodeOutages = vi.fn().mockResolvedValue(undefined)
-      await flushPromises()
-      await nextTick()
-
-      // The component calls getNodeOutages in onMounted; verify via onPage at offset 0
-      await localWrapper2.vm.onPage({ first: 0, rows: 10, page: 0, pageCount: 1 } as any)
-      await flushPromises()
-
-      expect(localStore2.getNodeOutages).toHaveBeenCalledWith(
+      expect(nodeStore.getNodeOutages).toHaveBeenCalledWith(
         expect.objectContaining({
           id: mockNodeId,
           queryParameters: expect.objectContaining({ offset: 0, limit: 10 })
@@ -144,7 +124,6 @@ describe('OutagesTable.vue', () => {
       )
 
       localWrapper.unmount()
-      localWrapper2.unmount()
     })
   })
 
