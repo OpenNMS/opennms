@@ -1604,6 +1604,7 @@
     <hawtio.version>2.17.5</hawtio.version>
 
     <!-- dependency versions -->
+    <aaltoXmlVersion>1.3.3</aaltoXmlVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.7</asmVersion>
@@ -1782,7 +1783,7 @@
     <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.100.Final</netty4Version>
+    <netty4Version>4.2.16.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
@@ -4942,6 +4943,11 @@
         <version>1.9.22.noko2</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml</groupId>
+        <artifactId>aalto-xml</artifactId>
+        <version>${aaltoXmlVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
         <version>${netty4Version}</version>
@@ -4949,6 +4955,21 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-base</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-compression</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-xml</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
