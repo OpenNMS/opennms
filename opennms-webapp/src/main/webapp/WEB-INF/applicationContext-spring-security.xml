@@ -37,6 +37,45 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
+  <!--
+    Acknowledging a notification is a read-write action a normal ROLE_USER may
+    perform (as the legacy /notification/acknowledge did), but a ROLE_READONLY user
+    may not. Notice config editing lives under /rest/notification-config and is left
+    to the /rest/** rules below, so it stays REST/ADMIN-only. Kept in its own
+    use-expressions block so ROLE_READONLY can be excluded, mirroring the alarms rules.
+  -->
+  <http pattern="/rest/notifications/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/rest/notifications/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
+
+    <!-- the trailing-slash form of the collection PUT, which /rest/notifications/* also
+         matches; JAX-RS routes it to the criteria-based mass ack/unack, so pin it to
+         REST/ADMIN ahead of the narrow single-resource rule below -->
+    <intercept-url pattern="/rest/notifications/" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <!-- one notification: a normal user may ack, a read-only user may not -->
+    <intercept-url pattern="/rest/notifications/*" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <!-- the collection PUT acks/unacks by arbitrary criteria (an empty body matches every
+         notification), so keep it REST/ADMIN; also required so no PUT falls through unauthorized -->
+    <intercept-url pattern="/rest/notifications/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/rest/notifications/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/notifications/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
+    <!-- read-write calls should be allowed for the REST and ADMIN roles -->
+    <intercept-url pattern="/rest/notifications/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/notifications/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
     <csrf disabled="true" />

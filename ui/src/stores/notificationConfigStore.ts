@@ -20,31 +20,30 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
 import API from '@/services'
-import { WhoAmIResponse } from '@/types'
+import { NotifdStatus } from '@/types/notificationConfig'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useAuthStore = defineStore('authStore', () => {
-  const whoAmI = ref({ roles: [] as string[] } as WhoAmIResponse)
-  const loaded = ref(false)
+export const useNotificationConfigStore = defineStore('notificationConfigStore', () => {
+  const notifdStatus = ref<NotifdStatus | null>(null)
 
-  const getWhoAmI = async () => {
-    try {
-      const resp = await API.getWhoAmI()
-      if (resp) {
-        whoAmI.value = resp
-      }
-    } finally {
-      // consumers gate on loaded (page loads, role guards); a failed whoami
-      // must still release them instead of hanging them forever
-      loaded.value = true
+  const getStatus = async (): Promise<boolean> => {
+    notifdStatus.value = await API.getNotificationConfigStatus()
+    return notifdStatus.value !== null
+  }
+
+  const setStatus = async (status: NotifdStatus) => {
+    const ok = await API.setNotificationConfigStatus(status)
+    if (ok) {
+      notifdStatus.value = status
     }
+    return ok
   }
 
   return {
-    loaded,
-    whoAmI,
-    getWhoAmI
+    notifdStatus,
+    getStatus,
+    setStatus
   }
 })

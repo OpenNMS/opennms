@@ -77,3 +77,7 @@ __pycache__
 opennms-base-assembly/src/main/filtered/etc/scv.jce
 
 core/web-assets/.eslintcache
+
+# Atomikos JTA transaction logs left in module dirs by ITs
+tmlog*.log
+*.tm[0-9]*.epoch

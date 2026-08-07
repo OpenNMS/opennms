@@ -262,7 +262,7 @@
         {
           "id": "notifications",
           "name": "Notifications",
-          "url": "notification/index.jsp",
+          "url": "ui/index.html#/admin/notifications",
           "locationMatch": "notification",
           "roles": null
         },

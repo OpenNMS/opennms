@@ -20,31 +20,28 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
-import API from '@/services'
-import { WhoAmIResponse } from '@/types'
-import { ref } from 'vue'
+// JSON mirrors of the JAXB config models behind /rest/notification-config.
+// Field names follow the XML element/attribute names in notifications.xml,
+// destinationPaths.xml and notificationCommands.xml — the files stay the
+// system of record, this API is a 1:1 view of them.
 
-export const useAuthStore = defineStore('authStore', () => {
-  const whoAmI = ref({ roles: [] as string[] } as WhoAmIResponse)
-  const loaded = ref(false)
+export type NotifdStatus = 'on' | 'off'
 
-  const getWhoAmI = async () => {
-    try {
-      const resp = await API.getWhoAmI()
-      if (resp) {
-        whoAmI.value = resp
-      }
-    } finally {
-      // consumers gate on loaded (page loads, role guards); a failed whoami
-      // must still release them instead of hanging them forever
-      loaded.value = true
-    }
-  }
+export interface DestinationPathTarget {
+  interval?: string
+  name: string
+  autoNotify?: string
+  command: string[]
+}
 
-  return {
-    loaded,
-    whoAmI,
-    getWhoAmI
-  }
-})
+export interface DestinationPathEscalate {
+  delay: string
+  target: DestinationPathTarget[]
+}
+
+export interface DestinationPath {
+  name: string
+  'initial-delay'?: string
+  target: DestinationPathTarget[]
+  escalate?: DestinationPathEscalate[]
+}

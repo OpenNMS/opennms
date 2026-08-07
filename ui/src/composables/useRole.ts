@@ -29,7 +29,9 @@ const enum Roles {
   ROLE_REST = 'ROLE_REST',
   ROLE_PROVISION = 'ROLE_PROVISION',
   ROLE_FILESYSTEM_EDITOR = 'ROLE_FILESYSTEM_EDITOR',
-  ROLE_DEVICE_CONFIG_BACKUP = 'ROLE_DEVICE_CONFIG_BACKUP'
+  ROLE_DEVICE_CONFIG_BACKUP = 'ROLE_DEVICE_CONFIG_BACKUP',
+  ROLE_MOBILE = 'ROLE_MOBILE',
+  ROLE_READONLY = 'ROLE_READONLY'
 }
 
 type Role = typeof Roles[keyof typeof Roles]
@@ -53,8 +55,13 @@ const useRole = () => {
   const filesystemEditorRole = computed<boolean>(() => hasOneOf(Roles.ROLE_FILESYSTEM_EDITOR))
   const dcbRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_REST, Roles.ROLE_DEVICE_CONFIG_BACKUP))
   const snmpRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_PROVISION))
+  const readOnlyRole = computed<boolean>(() => hasOneOf(Roles.ROLE_READONLY))
+  // Mirrors the server-side carve-out for PUT /rest/notifications/**: a normal user
+  // may acknowledge, a read-only user may not.
+  const canAcknowledgeNotifications = computed<boolean>(() =>
+    hasOneOf(Roles.ROLE_USER, Roles.ROLE_MOBILE, Roles.ROLE_REST, Roles.ROLE_ADMIN) && !readOnlyRole.value)
 
-  return { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded }
+  return { adminRole, filesystemEditorRole, dcbRole, snmpRole, readOnlyRole, canAcknowledgeNotifications, rolesAreLoaded }
 }
 
 export default useRole
