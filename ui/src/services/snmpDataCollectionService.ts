@@ -678,7 +678,8 @@ export const downloadSnmpDataCollectionById = async (collectionSourceId: number,
     })
 
     if (response.status === 200) {
-      return new Blob([response.data], { type: response.headers['content-type'] as string | undefined })
+      const contentType = response.headers['content-type']
+      return new Blob([response.data], { type: typeof contentType === 'string' ? contentType : undefined })
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -703,7 +704,8 @@ export const downloadDatacollectionConfig = async (format: string): Promise<Blob
       responseType: 'blob'
     })
     if (response.status === 200) {
-      return new Blob([response.data], { type: response.headers['content-type'] as string | undefined })
+      const contentType = response.headers['content-type']
+      return new Blob([response.data], { type: typeof contentType === 'string' ? contentType : undefined })
     }
     throw new Error(`Unexpected response status: ${response.status}`)
   } catch (error) {
