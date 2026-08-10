@@ -568,7 +568,7 @@
       "items": [
         {
           "id": "restOpenApiDocumentation",
-          "name": "REST Open API Documentation",
+          "name": "OpenAPI Documentation",
           "url": "ui/index.html#/open-api",
           "locationMatch": "",
           "roles": null

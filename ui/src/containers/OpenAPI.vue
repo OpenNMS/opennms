@@ -162,7 +162,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Open API Docs', to: '#', position: 'last' }
+    { label: 'OpenAPI Documentation', to: '#', position: 'last' }
   ]
 })
 
