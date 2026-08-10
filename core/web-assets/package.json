@@ -186,6 +186,7 @@
         "overrides": {
             "@babel/plugin-transform-modules-systemjs": "^7.29.4",
             "@isaacs/brace-expansion": "^5.0.6",
+            "@tootallnate/once": "^2.0.1",
             "ajv@<5": "^6.14.0",
             "brace-expansion@>=1 <2": "^1.1.18",
             "brace-expansion@>=2 <3": "^2.1.4",
