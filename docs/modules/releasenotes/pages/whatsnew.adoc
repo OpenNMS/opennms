@@ -88,10 +88,20 @@ All mail sending and reading now uses Jakarta Mail 2.1 (Eclipse Angus) instead o
 The JMTA local-MTA transport is gone (`use-jmta` is still accepted, but mail is sent over SMTP to the configured mail host), `<javamail-property>` entries now reach the mail session instead of being ignored, and SSL/TLS connections now verify that the server certificate covers the mail host.
 See xref:operation:deep-dive/notifications/configuration.adoc#mail-tls[Mail server TLS] for the TLS properties, and xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] for the OAuth2 (XOAUTH2) SMTP authentication that Microsoft 365 and Gmail now require.
 
+=== Scripted (BSF) notifications now run on JSR-223
+`BSFNotificationStrategy` executes scripts through the Java scripting API instead of the retired Apache Bean Scripting Framework; existing scripts generally keep working, but see xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications] for the deprecated parameters and behavior changes.
+
 === SAML and OpenID SSO support removed
 Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
+
+=== Slack and Mattermost notification strategies replaced by a webhook strategy
+`SlackNotificationStrategy` and `MattermostNotificationStrategy` have been removed in favor of `WebhookNotificationStrategy`, which takes the URL, method, headers, and body from the notification command and so can also target Microsoft Teams, Discord, and non-chat endpoints.
+The `org.opennms.netmgt.notifd.slack.*` and `org.opennms.netmgt.notifd.mattermost.*` properties no longer have any effect.
+
+Neither strategy shipped as a stock notification command, so this affects only hand-added commands, which fail when a notice is sent until their `<execute>` element and arguments are updated.
+See xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-from-slack-and-mattermost[Webhook Notifications] for the mapping.
 
 === XMPP (Jabber) notification strategies removed
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.

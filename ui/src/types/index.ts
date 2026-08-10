@@ -618,7 +618,7 @@ export interface AssetFilter {
   value: string
 }
 
-/** All components of a node structure query */
+/** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
   categoryMode: SetOperator

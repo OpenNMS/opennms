@@ -12,6 +12,8 @@
 * Remove the XMPP (Jabber) notification strategies (Issue https://issues.opennms.org/browse/NMS-20099[NMS-20099])
 * Remove the IRCcat notification strategy (Issue https://issues.opennms.org/browse/NMS-20112[NMS-20112])
 * Remove the Asterisk notification strategy, AGI gateway, and AMI configuration (Issue https://issues.opennms.org/browse/NMS-20114[NMS-20114])
+* Port the BSF notification strategy to JSR-223 (Issue https://issues.opennms.org/browse/NMS-20111[NMS-20111])
+* Replace the Slack and Mattermost notification strategies with a generic webhook strategy (Issue https://issues.opennms.org/browse/NMS-20113[NMS-20113])
 
 [[releasenotes-changelog-36.0.2]]
 

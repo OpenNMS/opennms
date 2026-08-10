@@ -39,13 +39,13 @@ import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 
 const authStore = useAuthStore()
 const infoStore = useInfoStore()
 const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const pluginStore = usePluginStore()
 
 onMounted(() => {
@@ -55,9 +55,9 @@ onMounted(() => {
   menuStore.getNotificationSummary()
   menuStore.loadSideMenuExpanded()
   monitoringSystemStore.getMainMonitoringSystem()
-  nodeStructureStore.getCategories()
-  nodeStructureStore.getMonitoringLocations()
-  nodeStructureStore.getServiceTypes()
+  nodeListStore.getCategories()
+  nodeListStore.getMonitoringLocations()
+  nodeListStore.getServiceTypes()
   pluginStore.getPlugins()
 })
 </script>

@@ -177,12 +177,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
-  <!-- Node List page -->
-  <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
-  </bean>
   <bean id="rtcService" class="org.opennms.web.svclayer.support.DefaultRtcService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="outageDao" ref="outageDao"/>

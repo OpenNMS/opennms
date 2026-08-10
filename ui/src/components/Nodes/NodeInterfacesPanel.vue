@@ -27,7 +27,7 @@
 import { PropType, computed } from 'vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { Node } from '@/types'
 import { getInterfaceListMode, getInterfaceRowsForNode } from './hooks/useInterfaceListing'
 
@@ -40,10 +40,10 @@ const props = defineProps({
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 
 const rows = computed(() => {
-  const mode = getInterfaceListMode(nodeStructureStore.queryFilter)
+  const mode = getInterfaceListMode(nodeListStore.queryFilter)
   const ipInterfaces = nodeStore.nodeToIpInterfaceMap.get(props.node.id) ?? []
   const snmpInterfaces = nodeStore.nodeToSnmpInterfaceMap.get(props.node.id) ?? []
   const baseHref = menuStore.mainMenu.baseHref

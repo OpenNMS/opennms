@@ -123,27 +123,27 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, click Skip, then should redirect to original page
-        LOG.debug("Test logout and login to the node page, confirm that skipping the password gate redirects there");
+        LOG.debug("Test logout and login to the outage page, confirm that skipping the password gate redirects there");
         logout();
-        nodePage();
+        outagePage();
         waitFor("login.jsp");
         login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, false, false, false);
-        waitFor("element/nodeList.htm");
+        waitFor("outage/index.jsp");
 
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
-        // will get password gate page, change the password, then should redirect to node page
-        LOG.debug("Test logout and login to the node page, confirm that changing the password redirects to node page");
+        // will get password gate page, change the password, then should redirect to outage page
+        LOG.debug("Test logout and login to the outage page, confirm that changing the password redirects to outage page");
         logout();
-        nodePage();
+        outagePage();
         waitFor("login.jsp");
-        loginAndChangePassword("element/nodeList.htm", false);
+        loginAndChangePassword("outage/index.jsp", false);
 
         // Reset password back to "admin" using Rest API
         resetPassword();
 
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
-        LOG.debug("Test final logout and login to the node page and skip");
+        LOG.debug("Test final logout and login to the outage page and skip");
         logout();
         loginAndSkip();
     }
