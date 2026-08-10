@@ -20,12 +20,14 @@
 /// License.
 ///
 
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-// for process.env.VITE_APP_LOGO_NAME in resolve.alias
+// for process.env.VITE_APP_LOGO_NAME in resolve.alias; .env.local listed
+// first so it wins, matching Vite's own env-file precedence
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config({ path: ['.env.local', '.env'] })
 
 export default defineConfig({
   css: {
@@ -38,8 +40,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@/': new URL('./src/', import.meta.url).pathname,
-      './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
+      // fileURLToPath, not URL#pathname: pathname percent-encodes (a checkout
+      // path containing a space becomes %20 and fails to resolve)
+      '@/': fileURLToPath(new URL('./src/', import.meta.url)),
+      // Absolute path required, matching vite.config.ts: a relative
+      // replacement resolves against the IMPORTER's directory in dev-mode
+      // import analysis, while production builds resolve it against the
+      // project root — absolute works identically in both.
+      './src/assets/ProductLogo.vue': fileURLToPath(new URL(`./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`, import.meta.url))
     },
     dedupe: ['vue', 'primevue']
   },

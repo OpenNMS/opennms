@@ -27,9 +27,12 @@ import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-// for process.env.VITE_APP_LOGO_NAME in resolve.alias
+// for process.env.VITE_APP_LOGO_NAME / VITE_SERVICENOW_PLUGIN_DIST in the
+// config below. Vite itself reads .env.local for import.meta.env, but this
+// dotenv call populates process.env — list .env.local too (first file wins)
+// so both halves of the config see the same values.
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config({ path: ['.env.local', '.env'] })
 
 // this file is ESM with no __dirname; derive it from import.meta.url instead
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
@@ -48,16 +51,30 @@ const pluginDevServer = (extensionId: string, distDir: string): PluginOption => 
     name: `onms-plugin-dev-server-${extensionId}`,
     apply: 'serve',
     configureServer(server) {
-      server.middlewares.use(`/plugin-modules/${extensionId}`, (req, res, next) => {
-        const fileName = (req.url ?? '').split('?')[0].replace(/^\//, '')
-        const file = resolve(distDir, fileName)
-        // Containment check prevents ../ traversal attacks (connect does not normalize mount-prefix match)
-        if (!fileName || !file.startsWith(distDir + sep) || !existsSync(file) || !statSync(file).isFile()) {
-          return next()
-        }
-        res.setHeader('Content-Type', PLUGIN_DEV_CONTENT_TYPES[extname(fileName)] ?? 'application/octet-stream')
-        res.end(readFileSync(file))
-      })
+      // Returning the hook installs this AFTER Vite's internal middlewares
+      // (host check, CORS) so it can't be reached by requests Vite's own
+      // DNS-rebinding protection would reject. That also puts it after the
+      // SPA html fallback, which rewrites req.url to /index.html for any
+      // Accept: */* GET (a <script type="module"> request) — so match on
+      // req.originalUrl, which connect preserves through the rewrite,
+      // instead of a mount prefix.
+      const prefix = `/plugin-modules/${extensionId}/`
+      return () => {
+        server.middlewares.use((req, res, next) => {
+          const urlPath = (req.originalUrl ?? req.url ?? '').split('?')[0]
+          if (!urlPath.startsWith(prefix)) {
+            return next()
+          }
+          const fileName = urlPath.slice(prefix.length)
+          const file = resolve(distDir, fileName)
+          // Containment check prevents ../ traversal attacks
+          if (!fileName || !file.startsWith(distDir + sep) || !existsSync(file) || !statSync(file).isFile()) {
+            return next()
+          }
+          res.setHeader('Content-Type', PLUGIN_DEV_CONTENT_TYPES[extname(fileName)] ?? 'application/octet-stream')
+          res.end(readFileSync(file))
+        })
+      }
     }
   }
 }
@@ -73,13 +90,15 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@/': new URL('./src/', import.meta.url).pathname,
+      // fileURLToPath, not URL#pathname: pathname percent-encodes (a checkout
+      // path containing a space becomes %20 and fails to resolve)
+      '@/': fileURLToPath(new URL('./src/', import.meta.url)),
       // Absolute path required: a relative replacement resolves against the
       // IMPORTER's directory in dev-mode import analysis (breaking `pnpm dev`
       // with "Failed to resolve import ./src/assets/ProductLogo.vue"), while
       // production builds resolved it against the project root — absolute
       // works identically in both.
-      './src/assets/ProductLogo.vue': new URL(`./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`, import.meta.url).pathname
+      './src/assets/ProductLogo.vue': fileURLToPath(new URL(`./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`, import.meta.url))
     },
     dedupe: ['vue', 'primevue']
   },
@@ -92,7 +111,10 @@ export default defineConfig({
       }
     }),
     svgLoader(),
-    pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist')),
+    // Gated to match the VITE_EXAMPLE_PLUGIN-gated route in src/main/main.ts
+    ...(process.env.VITE_EXAMPLE_PLUGIN === 'true'
+      ? [pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist'))]
+      : []),
     // Dev harness for opennms-servicenow-plugin (MPLUG-100): point
     // VITE_SERVICENOW_PLUGIN_DIST at that repo's built UI, e.g.
     // /path/to/opennms-servicenow-plugin/plugin/src/main/ui/dist
