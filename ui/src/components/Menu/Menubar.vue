@@ -27,6 +27,15 @@
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
 
+      <span
+        class="date-icon-wrapper"
+        v-onms-tooltip="`${formattedTime} ${formattedDate}`"
+        tabindex="0"
+        :aria-label="`${formattedTime} ${formattedDate}`"
+      >
+        <OnmsIcon :icon="CalendarIcon" />
+      </span>
+
        <span title="Toggle Light/Dark Mode">
         <OnmsIcon
             :icon="LightDarkMode"
@@ -61,6 +70,7 @@ import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
 import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
+import CalendarIcon from '@/components/icons/action/Calendar.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -193,11 +203,13 @@ onUnmounted(() => {
   color: var(--onms-state-text-color-on-surface-dark);
 }
 
+// No `min-width: 0` here: the flex-item default of `min-width: auto` keeps
+// this column from collapsing below the logo's intrinsic width, so the
+// (rigid) center column can never paint over the logo (NMS-20201).
 .onms-menubar__left {
   flex: 1 1 0;
   display: flex;
   align-items: center;
-  min-width: 0;
 }
 
 .onms-menubar__center {
@@ -278,6 +290,9 @@ onUnmounted(() => {
   font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
   margin-right: 1em;
+  // Keep time/date each on one line; without this the text word-wraps and
+  // spills out of the fixed-height bar when the right column is squeezed.
+  white-space: nowrap;
 
   .date-formatted-date {
     display: flex;
@@ -288,6 +303,32 @@ onUnmounted(() => {
     display: flex;
     justify-content: right;
     font-weight: 800;
+  }
+}
+
+// Compact date representation: below 1024px the two-line date text is
+// replaced by a calendar icon whose tooltip carries the full date/time.
+.date-icon-wrapper {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .date-wrapper {
+    display: none;
+  }
+
+  .date-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    font-size: 24px;
+    margin-right: 1em;
+    outline: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--onms-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
   }
 }
 </style>
