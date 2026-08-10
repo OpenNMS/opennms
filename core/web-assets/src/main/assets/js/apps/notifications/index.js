@@ -216,9 +216,26 @@ const renderOptIn = ($container) => {
     }
 };
 
+// Older Safari only has the callback form and returns undefined, so calling .then() on the
+// result would throw. Browsers that honour both would otherwise invoke the callback twice.
+const requestPermission = (callback) => {
+    let called = false;
+    const once = (result) => {
+        if (!called) {
+            called = true;
+            callback(result);
+        }
+    };
+
+    const returned = Notification.requestPermission(once);
+    if (returned && typeof returned.then === 'function') {
+        returned.then(once);
+    }
+};
+
 const wireOptIn = ($container) => {
     $('.onms-notification-optin-button', $container).on('click', () => {
-        Notification.requestPermission().then((result) => {
+        requestPermission((result) => {
             if (result === 'granted') {
                 start();
             }
