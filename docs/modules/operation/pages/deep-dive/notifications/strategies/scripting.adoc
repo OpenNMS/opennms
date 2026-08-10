@@ -75,7 +75,10 @@ These selected a BSF engine class, which has no JSR-223 equivalent; they are ign
 | A `Map<String, String>` the script uses to report its outcome (see below).
 
 | bsf_notif_strategy
-| The strategy instance; scripts can call `bsf_notif_strategy.log(level, format, args...)`.
+| The strategy instance.
+Groovy scripts can call `bsf_notif_strategy.log(level, format, args...)`.
+That method is declared with variable arguments, which the BeanShell engine does not resolve, so under BeanShell the call fails with `Method log( ... ) not found` and the notification is marked failed.
+The `logger` variable works under both engines and is the safer choice.
 
 | logger
 | An SLF4J logger.
