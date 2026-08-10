@@ -76,7 +76,7 @@ have to agree. Get any of them out of sync and the host loads the module but
 never finds the component on `window`.
 
 CSS is a separate concern: Vite's library mode extracts any `<style>` block
-into its own CSS file, and this example's dev harness (Task 5) does not serve
+into its own CSS file, and this example's dev harness does not serve
 it — real plugins ship their CSS via `GET
 /rest/plugins/ui-extension/css/{extensionId}` (`getCSSPath` in
 `Plugin/utils.ts`), loaded by the host as a `<link>` tag. That is why
@@ -100,6 +100,14 @@ implementations always come from the host's `window.OnmsUI` at runtime), but
 keeping it aligned means the types you build against match the host you'll
 actually run on.
 
+> **Not yet possible outside this repo:** `@opennms/onms-ui` is currently
+> `private: true` and unpublished — there is no npm package to pin a
+> dependency on, and no published type declarations. Publishing is planned;
+> until then a third-party plugin builds against the runtime contract only
+> (`window.OnmsUI`, externalized as shown above) and the pinning advice in
+> this section applies once the package is published. Inside this repo the
+> example uses `"@opennms/onms-ui": "workspace:*"`.
+
 ## Build
 
 ```bash
@@ -109,13 +117,16 @@ pnpm --filter @opennms/onms-ui-example-plugin build
 
 This produces `dist/exampleUiExtension.es.js`.
 
-Type-check the package on its own strict `tsconfig.json` (nothing in the
-normal `pnpm build`/`pnpm test` gates at the repo root reaches into this
-package):
+Type-check the package on its own strict `tsconfig.json`:
 
 ```bash
 pnpm --filter @opennms/onms-ui-example-plugin typecheck
 ```
+
+CI runs both of the above via `pnpm check:example-plugin` (see the
+`build-ui` job), so a change to `@opennms/onms-ui` that breaks this
+package's build or types fails the pipeline — that is this package's
+contract-test role.
 
 ## Run it in the dev harness
 
@@ -123,9 +134,10 @@ pnpm --filter @opennms/onms-ui-example-plugin typecheck
 VITE_EXAMPLE_PLUGIN=true pnpm dev
 ```
 
-Then open `/example-plugin` in the running dev server. (Task 5 wires the dev
-harness route and the flag that serves this package's `dist/` output plus a
-mount point for it.)
+Then open `/#/example-plugin` in the running dev server (the router uses
+hash history). The flag both registers the route (`ui/src/main/main.ts`)
+and mounts the dev middleware that serves this package's `dist/` output
+(`ui/vite.config.ts`).
 
 ## Manual verification checklist
 
