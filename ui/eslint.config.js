@@ -133,5 +133,21 @@ export default tseslint.config(
         ]
       }]
     }
+  },
+
+  // ── Plugin contract (NMS-20054) ────────────────────────────────────────
+  // Plugins compile against the host's window globals (vue, pinia,
+  // vue-router, @opennms/onms-ui). PrimeVue is not one of them, so ANY
+  // primevue import in a plugin either bloats the bundle or breaks at
+  // runtime — blanket ban, unlike the per-wrapper list above.
+  {
+    files: ['packages/onms-ui-example-plugin/src/**/*.ts', 'packages/onms-ui-example-plugin/src/**/*.vue'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          { group: ['primevue', 'primevue/*'], message: 'Plugins must use @opennms/onms-ui — PrimeVue is not part of the host plugin contract (NMS-20054 seam).' }
+        ]
+      }]
+    }
   }
 )
