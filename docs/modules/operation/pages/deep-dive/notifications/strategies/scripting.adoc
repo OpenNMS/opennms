@@ -18,8 +18,8 @@ Add a command to `notificationCommands.xml`:
   <execute>org.opennms.netmgt.notifd.BSFNotificationStrategy</execute>
   <comment>run a script to deliver notifications</comment>
   <argument streamed="false">
-    <switch>file-name</switch>
     <substitution>/opt/opennms/etc/scripts/notify.bsh</substitution>
+    <switch>file-name</switch>
   </argument>
   <argument streamed="false">
     <switch>-tm</switch>
