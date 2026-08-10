@@ -60,7 +60,7 @@ The following topics are starting points for establishing more complex monitorin
 == Notifications
 
 We covered how to configure notifications in xref:quick-start/notifications.adoc[] and xref:quick-start/notification-config.adoc[].
-Beyond that, you can review the xref:deep-dive/notifications/bonus-strategies.adoc[bonus notification strategies] to set up routing to Slack and Mattermost.
+Beyond that, you can review the xref:deep-dive/notifications/bonus-strategies.adoc[bonus notification strategies] to set up routing to a webhook, such as a Slack, Mattermost, Microsoft Teams, or Discord channel.
 
 == Customize {page-component-title} home page
 

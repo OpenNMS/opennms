@@ -87,13 +87,6 @@
           "roles": null
         },
         {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
           "id": "geographicalMap",
           "name": "Geographical",
           "url": "ui/index.html#/map",
