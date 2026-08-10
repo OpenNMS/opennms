@@ -33,21 +33,28 @@ store registry, single component library — no duplicate frameworks, no
 prop/type drift).
 
 This package's `vite.config.ts` implements that contract with
-[`vite-plugin-externals`](https://www.npmjs.com/package/vite-plugin-externals):
+[`rollup-plugin-external-globals`](https://www.npmjs.com/package/rollup-plugin-external-globals),
+applied through `build.rollupOptions`:
 
 ```ts
-viteExternalsPlugin({
-  vue: 'Vue',
-  pinia: 'Pinia',
-  'vue-router': 'VueRouter',
-  '@opennms/onms-ui': 'OnmsUI'
-})
+rollupOptions: {
+  external: ['vue', 'pinia', 'vue-router', '@opennms/onms-ui'],
+  plugins: [
+    externalGlobals({
+      vue: 'window.Vue',
+      pinia: 'window.Pinia',
+      'vue-router': 'window.VueRouter',
+      '@opennms/onms-ui': 'window.OnmsUI'
+    })
+  ]
+}
 ```
 
-Window-global resolution (`import X from 'vue'` → `const X = window.Vue`) is
-the plugin's **default** mode — no extra option is required to get it. (Its
-`useWindow: false` option exists for a different scenario — module-path
-resolution without the `window` prefix — and is not used here.)
+The plugin rewrites every externalized import (`import X from 'vue'` →
+reads of `window.Vue`) in the emitted module. A plain Rollup
+`external` + `output.globals` pair is **not** a substitute here:
+`output.globals` only applies to `umd`/`iife` output, and this build must
+be an ES module (the host loads it via `<script type="module">`).
 
 ## The module contract
 

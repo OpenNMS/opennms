@@ -157,8 +157,9 @@ import * as OnmsUI from '@opennms/onms-ui'
 
 exactly as it already does for `vue`/`pinia`/`vue-router` on `window.Vue`/
 `window.Pinia`/`window.VueRouter`. A plugin's build externalizes
-`@opennms/onms-ui` to `OnmsUI` (see
-[`vite-plugin-externals`](https://www.npmjs.com/package/vite-plugin-externals)),
+`@opennms/onms-ui` to `window.OnmsUI` (see
+[`rollup-plugin-external-globals`](https://www.npmjs.com/package/rollup-plugin-external-globals)
+in the example plugin's `vite.config.ts`),
 so `import { OnmsButton } from '@opennms/onms-ui'` in plugin source resolves
 to `window.OnmsUI.OnmsButton` at runtime instead of being bundled — one Vue
 runtime, one component library, shared between host and plugin.

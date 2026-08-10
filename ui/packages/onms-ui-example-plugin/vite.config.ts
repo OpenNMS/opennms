@@ -22,24 +22,31 @@
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { viteExternalsPlugin } from 'vite-plugin-externals'
+import externalGlobals from 'rollup-plugin-external-globals'
 
 // Builds a real OpenNMS UI plugin module: an ES module whose framework
 // imports resolve from the HOST page's window globals (set in
 // ui/src/main/main.ts) instead of being bundled. This mirrors how production
 // plugins (e.g. opennms-servicenow-plugin) are built — the externals map
-// below is the plugin-developer contract.
+// below is the plugin-developer contract. Rollup's own `external` +
+// `output.globals` cannot do this for ES-module output (globals only apply
+// to umd/iife), hence the plugin.
 export default defineConfig({
   plugins: [
-    vue(),
-    viteExternalsPlugin({
-      vue: 'Vue',
-      pinia: 'Pinia',
-      'vue-router': 'VueRouter',
-      '@opennms/onms-ui': 'OnmsUI'
-    })
+    vue()
   ],
   build: {
+    rollupOptions: {
+      external: ['vue', 'pinia', 'vue-router', '@opennms/onms-ui'],
+      plugins: [
+        externalGlobals({
+          vue: 'window.Vue',
+          pinia: 'window.Pinia',
+          'vue-router': 'window.VueRouter',
+          '@opennms/onms-ui': 'window.OnmsUI'
+        })
+      ]
+    },
     lib: {
       entry: 'src/main.ts',
       formats: ['es'],
