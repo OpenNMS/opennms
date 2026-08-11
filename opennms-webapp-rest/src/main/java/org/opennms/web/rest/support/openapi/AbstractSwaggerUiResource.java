@@ -23,6 +23,7 @@ package org.opennms.web.rest.support.openapi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
@@ -30,8 +31,10 @@ import java.util.Properties;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,14 +75,23 @@ public abstract class AbstractSwaggerUiResource {
 
     @GET
     @Path("{resource:.*}")
-    public Response getResource(@PathParam("resource") final String resource) {
+    public Response getResource(@PathParam("resource") final String resource,
+                                @Context final UriInfo uriInfo) {
         if (VERSION == null) {
             return Response.status(Response.Status.NOT_FOUND).type(MediaType.TEXT_PLAIN)
                     .entity("Swagger UI is not available in this build.\n").build();
         }
 
-        final String name = (resource == null || resource.isEmpty() || "/".equals(resource))
-                ? "index.html" : resource;
+        final boolean index = resource == null || resource.isEmpty() || "/".equals(resource);
+
+        // index.html names its assets and the spec relative to itself, so without the
+        // trailing slash the browser resolves every one of them a directory too high.
+        final String requestPath = uriInfo.getRequestUri().getRawPath();
+        if (index && !requestPath.endsWith("/")) {
+            return Response.seeOther(URI.create(requestPath + "/")).build();
+        }
+
+        final String name = index ? "index.html" : resource;
 
         // The webjar is a flat directory, so any separator is an escape attempt.
         if (name.contains("/") || name.contains("\\") || name.contains("..")) {
