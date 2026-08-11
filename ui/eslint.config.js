@@ -158,7 +158,9 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
-          { group: ['primevue', 'primevue/*'], message: 'Plugins must use @opennms/onms-ui — PrimeVue is not part of the host plugin contract.' }
+          // primevue/**, not primevue/*: these are gitignore-style globs
+          // where * stops at /, and the intent is ANY primevue subpath
+          { group: ['primevue', 'primevue/**'], message: 'Plugins must use @opennms/onms-ui — PrimeVue is not part of the host plugin contract.' }
         ]
       }]
     }
