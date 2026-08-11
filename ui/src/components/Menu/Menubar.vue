@@ -28,8 +28,9 @@
       </div>
 
       <span
+        v-if="dateTimeLabel"
         class="date-icon-wrapper"
-        v-onms-tooltip="dateTimeLabel"
+        v-onms-tooltip.bottom="dateTimeLabel"
       >
         <OnmsIcon
           :icon="CalendarIcon"
@@ -95,9 +96,11 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
 
-// Empty (falsy) until the menu data loads, which keeps the tooltip unbound —
-// PrimeVue's string-form tooltip does not trim whitespace-only values and
-// would otherwise show an empty box.
+// Empty until the menu data loads. The calendar icon is v-if'd on this:
+// PrimeVue's tooltip captures the configured z-index only when the directive
+// mounts with a non-empty value (an empty value both binds a blank tooltip
+// and falls back to z-index ~1000, behind this fixed header's 1030), so the
+// element must not mount until the label is ready.
 const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
 useOutsideClick(outsideClick.value, () => {
