@@ -77,8 +77,9 @@ const deleteDestinationPath = async (name: string): Promise<boolean> => {
     await rest.delete(`${endpoint}/destination-paths/${encodeURIComponent(name)}`)
     showSnackBar({ msg: `Destination path '${name}' deleted.` })
     return true
-  } catch (_err) {
-    showSnackBar({ msg: `Failed to delete destination path '${name}'.` })
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : `Failed to delete destination path '${name}'.` })
     return false
   } finally {
     stopSpinner()

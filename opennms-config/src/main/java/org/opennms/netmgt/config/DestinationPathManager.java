@@ -60,7 +60,7 @@ public abstract class DestinationPathManager {
      * @param stream a {@link java.io.InputStream} object.
      * @throws IOException 
      */
-    protected void parseXML(final InputStream stream) throws IOException {
+    protected synchronized void parseXML(final InputStream stream) throws IOException {
         try (final InputStreamReader isr = new InputStreamReader(stream)) {
             allPaths = JaxbUtils.unmarshal(DestinationPaths.class, isr);
             oldHeader = allPaths.getHeader();
@@ -69,9 +69,16 @@ public abstract class DestinationPathManager {
     }
 
     private void initializeDestinationPaths() {
+        // Build the replacement map and swap the field reference in one
+        // assignment rather than clearing in place: a reload replaces memory
+        // with the file (instead of merging over it), while a reader holding an
+        // earlier unmodifiableMap keeps a consistent snapshot and saveCurrent()'s
+        // iteration is never emptied mid-flight.
+        final Map<String, Path> paths = new TreeMap<>();
         for (Path curPath : allPaths.getPaths()) {
-            m_destinationPaths.put(curPath.getName(), curPath);
+            paths.put(curPath.getName(), curPath);
         }
+        m_destinationPaths = paths;
     }
 
     /**

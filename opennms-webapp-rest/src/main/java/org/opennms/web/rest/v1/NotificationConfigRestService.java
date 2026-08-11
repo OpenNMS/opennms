@@ -228,18 +228,35 @@ public class NotificationConfigRestService extends OnmsRestService {
             if (renamed && getDestinationPathFactory().getPath(path.getName()) != null) {
                 throw getException(Status.BAD_REQUEST, "Destination path {} already exists.", path.getName());
             }
+            final org.opennms.netmgt.config.destinationPaths.Path oldPath = getDestinationPathFactory().getPath(name);
             getDestinationPathFactory().replacePath(name, path);
             if (renamed) {
                 // keep event notifications pointing at the renamed path
-                boolean changed = false;
+                final List<Notification> touched = new ArrayList<>();
                 for (final Notification n : getNotificationFactory().getNotifications().values()) {
                     if (name.equals(n.getDestinationPath())) {
                         n.setDestinationPath(path.getName());
-                        changed = true;
+                        touched.add(n);
                     }
                 }
-                if (changed) {
-                    getNotificationFactory().saveCurrent();
+                if (!touched.isEmpty()) {
+                    try {
+                        getNotificationFactory().saveCurrent();
+                    } catch (final Exception notifSaveError) {
+                        // The path rename already persisted; undo it and revert the
+                        // in-memory notifications so destinationPaths.xml and
+                        // notifications.xml stay consistent instead of leaving
+                        // notifications pointing at a name that no longer exists.
+                        try {
+                            getDestinationPathFactory().replacePath(path.getName(), oldPath);
+                        } catch (final Exception rollbackError) {
+                            notifSaveError.addSuppressed(rollbackError);
+                        }
+                        for (final Notification n : touched) {
+                            n.setDestinationPath(name);
+                        }
+                        throw notifSaveError;
+                    }
                 }
             }
             return Response.noContent().build();
@@ -261,6 +278,12 @@ public class NotificationConfigRestService extends OnmsRestService {
         try {
             if (getDestinationPathFactory().getPath(name) == null) {
                 throw getException(Status.NOT_FOUND, "Destination path {} was not found.", name);
+            }
+            // destinationPaths.xsd requires at least one path, so removing the
+            // last one would fail schema validation on marshal (a raw 500).
+            // Reject it up front with an explanation instead.
+            if (getDestinationPathFactory().getPaths().size() <= 1) {
+                throw getException(Status.BAD_REQUEST, "Destination path {} is the only one configured; at least one must remain.", name);
             }
             getDestinationPathFactory().removePath(name);
             return Response.noContent().build();

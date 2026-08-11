@@ -195,6 +195,20 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
+    public void testDeleteLastDestinationPathRejected() throws Exception {
+        // Whittle down to a single path, then confirm the last one is rejected
+        // (destinationPaths.xsd requires at least one) rather than 500ing.
+        final JSONArray paths = new JSONObject(getJson("/notification-config/destination-paths")).getJSONArray("path");
+        for (int i = 1; i < paths.length(); i++) {
+            sendRequest(DELETE, "/notification-config/destination-paths/"
+                    + java.net.URLEncoder.encode(paths.getJSONObject(i).getString("name"), java.nio.charset.StandardCharsets.UTF_8), 204);
+        }
+        final String last = paths.getJSONObject(0).getString("name");
+        sendRequest(DELETE, "/notification-config/destination-paths/"
+                + java.net.URLEncoder.encode(last, java.nio.charset.StandardCharsets.UTF_8), 400);
+    }
+
+    @Test
     public void testCommands() throws Exception {
         JSONArray commands = new JSONArray(getJson("/notification-config/commands"));
         Assert.assertEquals(1, commands.length());
