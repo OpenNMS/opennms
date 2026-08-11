@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "verify": "node scripts/verify-dist.mjs"
   },
   "dependencies": {
     "@opennms/onms-ui": "workspace:*",

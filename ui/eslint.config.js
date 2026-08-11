@@ -85,6 +85,19 @@ export default tseslint.config(
     },
   },
 
+  // ── Node build/CI scripts ─────────────────────────────────────────────────
+  // e.g. packages/onms-ui-example-plugin/scripts/verify-dist.mjs — these run
+  // under Node, not the browser. (Top-level scripts/** stays ignored above.)
+  {
+    files: ['**/scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2025,
+      },
+    },
+  },
+
   // ── Seam layer ────────────────────────────────────────────────────────────
   // Direct PrimeVue imports are banned in app code once an Onms- wrapper
   // exists. The @opennms/onms-ui package itself (packages/onms-ui) and tests

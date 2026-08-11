@@ -130,10 +130,17 @@ Type-check the package on its own strict `tsconfig.json`:
 pnpm --filter @opennms/onms-ui-example-plugin typecheck
 ```
 
-CI runs both of the above via `pnpm check:example-plugin` (see the
+Verify the built module honors the externals contract (`vite build` exits 0
+even if externalization silently failed — see `scripts/verify-dist.mjs`):
+
+```bash
+pnpm --filter @opennms/onms-ui-example-plugin verify
+```
+
+CI runs all three of the above via `pnpm check:example-plugin` (see the
 `build-ui` job), so a change to `@opennms/onms-ui` that breaks this
-package's build or types fails the pipeline — that is this package's
-contract-test role.
+package's build, types, or built artifact fails the pipeline — that is
+this package's contract-test role.
 
 ## Run it in the dev harness
 
@@ -160,14 +167,15 @@ After building, confirm:
       renders itself.
 - [ ] **Table/tabs render**: switching between the Form and Table tabs works,
       and the table renders three rows with an `up`/`down` status tag per row.
-- [ ] **Zero framework code in dist** — externalization actually happened:
+- [ ] **Zero framework code in dist** — externalization actually happened.
+      `pnpm --filter @opennms/onms-ui-example-plugin verify` asserts the
+      import-rewriting half of this automatically (no residual framework
+      imports, `window.*` globals present); the greps below additionally
+      confirm no framework *implementation* code was bundled:
 
   ```bash
   grep -c "createElementBlock\|defineComponent" dist/exampleUiExtension.es.js
   # small (this component's own compiled render code only — not Vue's runtime)
-
-  grep "window.OnmsUI\|window\['OnmsUI'\]" dist/exampleUiExtension.es.js
-  # present — confirms components resolve from the host at runtime
 
   grep -c "p-datatable\|BaseComponent" dist/exampleUiExtension.es.js
   # 0 — confirms no PrimeVue implementation code was bundled
