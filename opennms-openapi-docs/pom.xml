@@ -50,6 +50,9 @@
                    the project classpath and the documents come out different. -->
               <executable>${openapi.javaExecutable}</executable>
               <classpathScope>compile</classpathScope>
+              <!-- This classpath is well past the 32K command line Windows allows, so
+                   pass it in the manifest of a generated jar rather than inline. -->
+              <longClasspath>true</longClasspath>
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
