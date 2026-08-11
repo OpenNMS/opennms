@@ -482,6 +482,10 @@ export interface GraphMetricsPayload {
   step: number
   source: Metric[]
   expression?: { label: string; transient: boolean; value: string }[]
+  /** Cap on returned rows; the server downsamples further if the step would exceed it. */
+  maxrows?: number
+  /** When true a missing/unknown source yields NaNs instead of failing the whole query. */
+  relaxed?: boolean
 }
 
 export interface GraphDefinition {

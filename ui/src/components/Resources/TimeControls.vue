@@ -19,7 +19,7 @@
           <ul class="onms-list options-col">
             <li
               class="list-item"
-              v-for="option in options"
+              v-for="option in TIME_RANGE_OPTIONS"
               :key="option.label"
               @click="selectOption(option)"
             >{{ option.label }}</li>
@@ -31,7 +31,7 @@
             </FormField>
             <FormField label="Start Time">
               <OnmsSelect
-                :options="times"
+                :options="HOUR_OPTIONS"
                 v-model="startTimeRef"
                 optionLabel="label"
               />
@@ -41,7 +41,7 @@
             </FormField>
             <FormField label="End Time">
               <OnmsSelect
-                :options="times"
+                :options="HOUR_OPTIONS"
                 v-model="endTimeRef"
                 optionLabel="label"
               />
@@ -63,64 +63,19 @@ import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsDatePicker, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
+import { add, sub, getUnixTime, differenceInHours, fromUnixTime } from 'date-fns'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-
-interface TimeOption {
-  label: string
-  time: Record<string, unknown>
-}
+import { HOUR_OPTIONS, TIME_RANGE_OPTIONS, TimeOption } from './utils/timeRangeOptions'
 
 const emit = defineEmits(['updateTime'])
 
 const menu = ref()
 const startDateRef = ref()
-const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' }})
+const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: 13 }})
 const endDateRef = ref()
-const endTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: '1' }})
+const endTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: 13 }})
 
 const selectedTime = ref('Last Day')
-const options = [
-  { label: 'Last hour', time: { minutes: '60' }},
-  { label: 'Last 2 hours', time: { hours: '2' }},
-  { label: 'Last 4 hours', time: { hours: '4' }},
-  { label: 'Last 8 hours', time: { hours: '5' }},
-  { label: 'Last 12 hours', time: { hours: '12' }},
-  { label: 'Last day', time: { hours: '24' }},
-  { label: 'Last two days', time: { hours: '48' }},
-  { label: 'Last week', time: { days: '7' }},
-  { label: 'Last month', time: { months: '1' }},
-  { label: 'Last three months', time: { months: '3' }},
-  { label: 'Last six months', time: { months: '6' }},
-  { label: 'Last year', time: { years: '1' }}
-]
-
-const times = [
-  { label: '12 AM', time: { hours: '0' }},
-  { label: '1 AM', time: { hours: '1' }},
-  { label: '2 AM', time: { hours: '2' }},
-  { label: '3 AM', time: { hours: '3' }},
-  { label: '4 AM', time: { hours: '4' }},
-  { label: '5 AM', time: { hours: '5' }},
-  { label: '6 AM', time: { hours: '6' }},
-  { label: '7 AM', time: { hours: '7' }},
-  { label: '8 AM', time: { hours: '8' }},
-  { label: '9 AM', time: { hours: '9' }},
-  { label: '10 AM', time: { hours: '10' }},
-  { label: '11 AM', time: { hours: '11' }},
-  { label: '12 PM', time: { hours: '12' }},
-  { label: '1 PM', time: { hours: '13' }},
-  { label: '2 PM', time: { hours: '14' }},
-  { label: '3 PM', time: { hours: '15' }},
-  { label: '4 PM', time: { hours: '16' }},
-  { label: '5 PM', time: { hours: '17' }},
-  { label: '6 PM', time: { hours: '18' }},
-  { label: '7 PM', time: { hours: '19' }},
-  { label: '8 PM', time: { hours: '20' }},
-  { label: '9 PM', time: { hours: '21' }},
-  { label: '10 PM', time: { hours: '22' }},
-  { label: '11 PM', time: { hours: '23' }}
-]
 
 const disableCustomTimeBtn = computed(() => Boolean(!startDateRef.value || !startTimeRef.value || !endDateRef.value || !endTimeRef.value))
 
@@ -147,7 +102,11 @@ const applyCustomTime = () => {
   const startTime = getUnixTime(add(startDateRef.value, startTimeRef.value.time))
   const endTime = getUnixTime(add(endDateRef.value, endTimeRef.value.time))
 
-  const difference = differenceInHours(startTime, endTime)
+  // end - start, as Dates. This previously passed unix SECONDS in the wrong order,
+  // so the difference was always negative and every custom range was labelled as
+  // minutes.
+  const difference = differenceInHours(fromUnixTime(endTime), fromUnixTime(startTime))
+
   if (difference < 1) {
     format = 'minutes'
   }
