@@ -576,7 +576,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "locationMatch": "",
@@ -596,7 +596,7 @@
     {
       "id": "helpDocumentationMenu",
       "name": "Help",
-      "url": "https://docs.opennms.com/meridian/2024",
+      "url": "https://docs.opennms.com/horizon/latest",
       "isExternalLink": true,
       "locationMatch": null,
       "icon": "action/Help",
