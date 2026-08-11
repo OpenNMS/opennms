@@ -313,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 
 import { OnmsAutoComplete, OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsSelect, OnmsTextarea, OnmsToggleSwitch } from '@opennms/onms-ui'
 
@@ -432,6 +432,12 @@ const isFullyGrouped = (s: string): boolean => {
   return depth === 0
 }
 
+// A service clause becomes the filter token is<Name>; only names made of the
+// identifier characters the filter grammar accepts (matching parseRule's charset)
+// can be emitted — a name with whitespace or other illegal characters would
+// produce an unparseable token, so it is skipped.
+const isLegalServiceName = (s: string): boolean => /^[\w.-]+$/.test(s)
+
 // Assemble the rule the way the legacy wizard did: (ip filter) & (isA | isB) & (!isC & !isD).
 const buildRule = (): string => {
   let base = ipFilter.value.trim() || 'IPADDR IPLIKE *.*.*.*'
@@ -439,11 +445,13 @@ const buildRule = (): string => {
     base = `(${base})`
   }
   let out = base
-  if (ruleServices.value.length) {
-    out += ` & (${ruleServices.value.map(s => `is${s}`).join(' | ')})`
+  const svc = ruleServices.value.filter(isLegalServiceName)
+  if (svc.length) {
+    out += ` & (${svc.map(s => `is${s}`).join(' | ')})`
   }
-  if (ruleNotServices.value.length) {
-    out += ` & (${ruleNotServices.value.map(s => `!is${s}`).join(' & ')})`
+  const notSvc = ruleNotServices.value.filter(isLegalServiceName)
+  if (notSvc.length) {
+    out += ` & (${notSvc.map(s => `!is${s}`).join(' & ')})`
   }
   return out
 }
@@ -499,9 +507,16 @@ const doValidateRule = async () => {
   validating.value = false
 }
 
+// Populating the pickers from an existing rule mutates ipFilter/ruleServices/
+// ruleNotServices, which would fire the sync below and rewrite form.rule (e.g.
+// wrapping the IP filter in parens) — an unrequested mutation. Suppress the sync
+// during initial population so opening and saving with no edit leaves the rule
+// byte-identical; genuine user input to a builder field clears the guard.
+const suppressRuleBuild = ref(false)
+
 // While in Builder mode the pickers own the rule string.
 watch([ipFilter, ruleServices, ruleNotServices], () => {
-  if (ruleMode.value === 'builder') {
+  if (ruleMode.value === 'builder' && !suppressRuleBuild.value) {
     form.rule = buildRule()
   }
 })
@@ -575,6 +590,7 @@ watch(
     ueiSuggestions.value = []
     advancedCollapsed.value = true
     clearErrors()
+    suppressRuleBuild.value = true
     if (props.notification) {
       const n = props.notification
       Object.assign(form, {
@@ -601,6 +617,11 @@ watch(
     ruleParseNote.value = ''
     loadServices()
     ruleMode.value = parseRule(form.rule) ? 'builder' : 'raw'
+    // Release the guard only after the pending picker mutations have flushed,
+    // so the suppressed sync never rewrites the freshly loaded rule.
+    nextTick(() => {
+      suppressRuleBuild.value = false
+    })
   }
 )
 
@@ -620,8 +641,10 @@ const save = async () => {
     const originalRule = typeof props.notification?.rule === 'object' && props.notification?.rule !== null
       ? props.notification.rule
       : {}
+    // The server (Parameter.setValue) rejects an empty value with a 400, so drop
+    // any row missing either cell — mirroring the varbind's both-or-neither rule.
     const params = form.parameters
-      .filter(p => p.name.trim())
+      .filter(p => p.name.trim() && p.value.trim())
       .map(p => ({ name: p.name.trim(), value: p.value }))
     const varbind = form.varbindName.trim() && form.varbindValue.trim()
       ? { vbname: form.varbindName.trim(), vbvalue: form.varbindValue.trim() }

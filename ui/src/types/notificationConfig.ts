@@ -55,7 +55,7 @@ export interface EventNotificationVarbind {
 export interface EventNotification {
   name: string
   status: NotifdStatus
-  writeable?: string
+  writeable?: boolean
   uei: string
   description?: string
   rule?: EventNotificationRule | string

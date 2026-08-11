@@ -4,11 +4,12 @@
       <div class="card-title">Event Notifications</div>
       <OnmsButton
         variant="outlined"
-        label="Add New Event Notification"
-        icon="pi pi-plus"
         data-test="add-event-notification-button"
         @click="openEditor(null)"
-      />
+      >
+        <OnmsIcon :icon="AddIcon" />
+        Add New Event Notification
+      </OnmsButton>
     </div>
 
     <OnmsTable
@@ -124,6 +125,7 @@ import {
   OnmsConfirmationDialog,
   OnmsButton,
   OnmsColumn,
+  OnmsIcon,
   OnmsIconButton,
   OnmsMenu,
   OnmsMenuItem,
@@ -134,6 +136,7 @@ import {
 import EventNotificationEditorDialog from '@/components/AdminNotifications/EventNotificationEditorDialog.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import AddIcon from '@/components/icons/action/Add.vue'
 import EditIcon from '@/components/icons/action/Edit.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
