@@ -37,6 +37,12 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
+      // Technically redundant: externalGlobals >= 0.13 installs its own
+      // resolver that already marks every id in its map as external. Kept
+      // as belt-and-braces — it documents the contract in standard rollup
+      // vocabulary and still externalizes correctly under older plugin
+      // versions that only rewrite imports. Keep this list and the globals
+      // map below in sync (scripts/verify-dist.mjs asserts the output).
       external: ['vue', 'pinia', 'vue-router', '@opennms/onms-ui'],
       plugins: [
         externalGlobals({
