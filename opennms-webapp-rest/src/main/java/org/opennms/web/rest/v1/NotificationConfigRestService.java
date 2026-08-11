@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -399,12 +400,20 @@ public class NotificationConfigRestService extends OnmsRestService {
         final FilterDao filterDao = FilterDaoFactory.getInstance();
         try {
             filterDao.validateRule(rule);
-        } catch (final Exception e) {
+        } catch (final FilterParseException e) {
+            // A malformed rule is user input; report it as an invalid result.
+            // Infrastructure failures propagate to a 500 instead.
             result.setValid(false);
             result.setError(e.getMessage());
             return result;
         }
         result.setValid(true);
+        // The match preview materializes a Map over every interface/service the
+        // rule selects, so only build it when the caller explicitly asks. The
+        // save path leaves preview false and pays only for validateRule above.
+        if (request == null || !request.isPreview()) {
+            return result;
+        }
         try {
             final Map<InetAddress, Set<String>> map = filterDao.getIPAddressServiceMap(rule);
             result.setMatchCount(map.size());
@@ -431,6 +440,7 @@ public class NotificationConfigRestService extends OnmsRestService {
     @XmlRootElement(name = "rule-request")
     public static class RuleRequestDTO {
         private String m_rule;
+        private boolean m_preview;
 
         @XmlElement(name = "rule")
         public String getRule() {
@@ -439,6 +449,18 @@ public class NotificationConfigRestService extends OnmsRestService {
 
         public void setRule(final String rule) {
             m_rule = rule;
+        }
+
+        // When false (the default, used by the save path), the endpoint only
+        // validates the rule; the caller must opt in to the match preview, which
+        // materializes the full interface/service map.
+        @XmlElement(name = "preview")
+        public boolean isPreview() {
+            return m_preview;
+        }
+
+        public void setPreview(final boolean preview) {
+            m_preview = preview;
         }
     }
 
@@ -533,9 +555,11 @@ public class NotificationConfigRestService extends OnmsRestService {
         }
         try {
             FilterDaoFactory.getInstance().validateRule(notification.getRule().getContent());
-        } catch (final Exception e) {
+        } catch (final FilterParseException e) {
             throw getException(Status.BAD_REQUEST, "The rule is not a valid filter: {}", e.getMessage());
         }
+        // Infrastructure failures (uninitialized factory, DB outage) are not the
+        // caller's fault; let them propagate to a 500 rather than a 400.
         if (isBlank(notification.getDestinationPath())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a destinationPath");
         }

@@ -494,7 +494,8 @@ const loadServices = async () => {
 
 const doValidateRule = async () => {
   validating.value = true
-  ruleValidation.value = await API.validateNotificationRule(form.rule.trim() || 'IPADDR IPLIKE *.*.*.*')
+  // Explicit user action: opt into the match preview (matchCount + matches).
+  ruleValidation.value = await API.validateNotificationRule(form.rule.trim() || 'IPADDR IPLIKE *.*.*.*', true)
   validating.value = false
 }
 

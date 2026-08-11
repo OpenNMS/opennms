@@ -172,9 +172,11 @@ const getNotificationServices = async (): Promise<string[] | null> => {
   }
 }
 
-const validateNotificationRule = async (rule: string): Promise<RuleValidation | null> => {
+// preview builds the (potentially large) match list; the save path leaves it
+// false so validation costs only a rule parse on the server.
+const validateNotificationRule = async (rule: string, preview = false): Promise<RuleValidation | null> => {
   try {
-    const resp = await rest.post(`${endpoint}/rule/validate`, { rule })
+    const resp = await rest.post(`${endpoint}/rule/validate`, { rule, preview })
     return resp.data ?? null
   } catch (_err) {
     showSnackBar({ msg: 'Failed to validate the rule.' })
