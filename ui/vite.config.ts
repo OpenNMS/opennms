@@ -24,15 +24,10 @@ import { existsSync, readFileSync, statSync } from 'node:fs'
 import { extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+import { loadEnv } from 'vite'
 import type { PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
-// for process.env.VITE_APP_LOGO_NAME / VITE_SERVICENOW_PLUGIN_DIST in the
-// config below. Vite itself reads .env.local for import.meta.env, but this
-// dotenv call populates process.env — list .env.local too (first file wins)
-// so both halves of the config see the same values.
-import dotenv from 'dotenv'
-dotenv.config({ path: ['.env.local', '.env'] })
 
 // this file is ESM with no __dirname; derive it from import.meta.url instead
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
@@ -79,81 +74,90 @@ const pluginDevServer = (extensionId: string, distDir: string): PluginOption => 
   }
 }
 
-export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern',
-        silenceDeprecations: ['color-functions', 'global-builtin', 'legacy-js-api', 'import']
-      }
-    }
-  },
-  resolve: {
-    alias: {
-      // fileURLToPath, not URL#pathname: pathname percent-encodes (a checkout
-      // path containing a space becomes %20 and fails to resolve)
-      '@/': fileURLToPath(new URL('./src/', import.meta.url)),
-      // Absolute path required: a relative replacement resolves against the
-      // IMPORTER's directory in dev-mode import analysis (breaking `pnpm dev`
-      // with "Failed to resolve import ./src/assets/ProductLogo.vue"), while
-      // production builds resolved it against the project root — absolute
-      // works identically in both.
-      './src/assets/ProductLogo.vue': fileURLToPath(new URL(`./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`, import.meta.url))
-    },
-    dedupe: ['vue', 'primevue']
-  },
-  plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          isCustomElement: tag => tag.includes('rapi-doc')
+export default defineConfig(({ mode }) => {
+  // loadEnv, not dotenv: it reads the same file set Vite gives app code for
+  // import.meta.env (.env, .env.local, .env.[mode], .env.[mode].local, real
+  // process.env winning), so the VITE_* gates below can't disagree with
+  // gates in src (e.g. the VITE_EXAMPLE_PLUGIN route in src/main/main.ts).
+  // '' = no VITE_ prefix filter; __dirname matches envDir below.
+  const env = loadEnv(mode, __dirname, '')
+
+  return {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern',
+          silenceDeprecations: ['color-functions', 'global-builtin', 'legacy-js-api', 'import']
         }
       }
-    }),
-    svgLoader(),
-    // Gated to match the VITE_EXAMPLE_PLUGIN-gated route in src/main/main.ts
-    ...(process.env.VITE_EXAMPLE_PLUGIN === 'true'
-      ? [pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist'))]
-      : []),
-    // Dev harness for opennms-servicenow-plugin (MPLUG-100): point
-    // VITE_SERVICENOW_PLUGIN_DIST at that repo's built UI, e.g.
-    // /path/to/opennms-servicenow-plugin/plugin/src/main/ui/dist
-    // (dotenv is loaded above, so .env.local works).
-    ...(process.env.VITE_SERVICENOW_PLUGIN_DIST
-      ? [pluginDevServer('serviceNowUiExtension', resolve(process.env.VITE_SERVICENOW_PLUGIN_DIST))]
-      : [])
-  ],
-  test: {
-    dir: './tests',
-    globals: true,
-    environment: 'happy-dom',
-    css: {
-      include: /.+/
     },
-    server: {
-      deps: {
-        // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
-        // https://github.com/vitest-dev/vitest/issues/3862
-        inline: [
-          /primevue/
-        ]
+    resolve: {
+      alias: {
+        // fileURLToPath, not URL#pathname: pathname percent-encodes (a checkout
+        // path containing a space becomes %20 and fails to resolve)
+        '@/': fileURLToPath(new URL('./src/', import.meta.url)),
+        // Absolute path required: a relative replacement resolves against the
+        // IMPORTER's directory in dev-mode import analysis (breaking `pnpm dev`
+        // with "Failed to resolve import ./src/assets/ProductLogo.vue"), while
+        // production builds resolved it against the project root — absolute
+        // works identically in both.
+        './src/assets/ProductLogo.vue': fileURLToPath(new URL(`./src/assets/${env.VITE_APP_LOGO_NAME}.vue`, import.meta.url))
+      },
+      dedupe: ['vue', 'primevue']
+    },
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: tag => tag.includes('rapi-doc')
+          }
+        }
+      }),
+      svgLoader(),
+      // Gated to match the VITE_EXAMPLE_PLUGIN-gated route in src/main/main.ts
+      ...(env.VITE_EXAMPLE_PLUGIN === 'true'
+        ? [pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist'))]
+        : []),
+      // Dev harness for opennms-servicenow-plugin (MPLUG-100): point
+      // VITE_SERVICENOW_PLUGIN_DIST at that repo's built UI, e.g.
+      // /path/to/opennms-servicenow-plugin/plugin/src/main/ui/dist
+      // (any Vite env file works, e.g. .env.local).
+      ...(env.VITE_SERVICENOW_PLUGIN_DIST
+        ? [pluginDevServer('serviceNowUiExtension', resolve(env.VITE_SERVICENOW_PLUGIN_DIST))]
+        : [])
+    ],
+    test: {
+      dir: './tests',
+      globals: true,
+      environment: 'happy-dom',
+      css: {
+        include: /.+/
+      },
+      server: {
+        deps: {
+          // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
+          // https://github.com/vitest-dev/vitest/issues/3862
+          inline: [
+            /primevue/
+          ]
+        }
       }
-    }
-  },
-  root: './src/main',
-  // make sure we get environment variables from .env files in the main ui directory
-  // path is relative to 'root' defined just above
-  envDir: '../..',
-  build: {
-    emptyOutDir: true,
-    outDir: './dist',
-    target: 'esnext',
-    copyPublicDir: false,
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+    },
+    root: './src/main',
+    // make sure we get environment variables from .env files in the main ui directory
+    // path is relative to 'root' defined just above
+    envDir: '../..',
+    build: {
+      emptyOutDir: true,
+      outDir: './dist',
+      target: 'esnext',
+      copyPublicDir: false,
+      rollupOptions: {
+        output: {
+          entryFileNames: 'assets/[name].js',
+          chunkFileNames: 'assets/[name].js',
+          assetFileNames: 'assets/[name].[ext]'
+        }
       }
     }
   }
