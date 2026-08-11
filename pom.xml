@@ -130,6 +130,7 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
+    <module>opennms-openapi-docs</module>
     <module>opennms-config-dao</module>
   </modules>
   <build>
@@ -1971,7 +1972,7 @@
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.23.11</swaggerUIVersion>
+    <swaggerUIVersion>5.25.3</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>

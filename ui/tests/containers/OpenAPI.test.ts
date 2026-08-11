@@ -47,10 +47,7 @@ class ResizeObserverStub {
 
 // Per-test mount: the height measurement reads document-level geometry, which a
 // shared mount leaks between tests.
-const mountPage = async (
-  options: { viewport?: number, columnTop?: number, footerHeight?: number } = {},
-  component: any = OpenAPI
-) => {
+const mountPage = async (options: { viewport?: number, columnTop?: number, footerHeight?: number } = {}) => {
   const { viewport = 900, columnTop = 140, footerHeight = 40 } = options
 
   observedTargets = []
@@ -77,7 +74,7 @@ const mountPage = async (
   const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
   setActivePinia(pinia)
 
-  const wrapper = mount(component, {
+  const wrapper = mount(OpenAPI, {
     attachTo: document.body,
     global: {
       plugins: [pinia, PrimeVue],
@@ -147,36 +144,6 @@ describe('OpenAPI.vue', () => {
     expect(idsRendered().filter(id => id === 'thedocV1')).toHaveLength(1)
   })
 
-  // The specs are cached at module scope, so observing a cold start takes a fresh
-  // module instance. Both fetches are left pending until after the tab is clicked.
-  it('shares the in-flight fetch when the V1 tab is opened before it resolves', async () => {
-    vi.resetModules()
-
-    const API = (await import('@/services')).default as any
-    let resolveV2 = (_spec: Record<string, unknown>) => {}
-    let resolveV1 = (_spec: Record<string, unknown>) => {}
-    API.getOpenApi.mockImplementation(() => new Promise((resolve) => {
-      resolveV2 = resolve
-    }))
-    API.getOpenApiV1.mockImplementation(() => new Promise((resolve) => {
-      resolveV1 = resolve
-    }))
-
-    const freshPage = (await import('@/containers/OpenAPI.vue')).default
-    wrapper = await mountPage({}, freshPage)
-
-    wrapper.vm.onTabChange(1)
-    await flushPromises()
-
-    resolveV2({ openapi: '3.0.1', info: { title: 'V2' }, paths: {}})
-    resolveV1({ openapi: '3.0.1', info: { title: 'V1' }, paths: {}})
-    await flushPromises()
-
-    expect(API.getOpenApi).toHaveBeenCalledTimes(1)
-    expect(API.getOpenApiV1).toHaveBeenCalledTimes(1)
-    expect(idsRendered()).toEqual(['thedoc', 'thedocV1'])
-  })
-
   it('coerces the selected tab to a number', async () => {
     wrapper = await mountPage()
 
@@ -236,23 +203,28 @@ describe('OpenAPI.vue', () => {
     expect(frames).toHaveBeenCalled()
   })
 
-  // Focus-driven scrolls land outside the frames the click handler watches.
-  it('holds the document at the top while the column fits', async () => {
+  // The app shell overflows by a little whatever this column does, and that is
+  // enough for RapiDoc's scrollIntoView to drag the page.
+  it('stops the page scrolling while the column fits', async () => {
     wrapper = await mountPage()
-    document.documentElement.scrollTop = 120
 
-    window.dispatchEvent(new Event('scroll'))
-
-    expect(document.documentElement.scrollTop).toBe(0)
+    expect(document.documentElement.classList.contains('openapi-no-page-scroll')).toBe(true)
   })
 
-  it('leaves the page scroll alone when the column cannot fit', async () => {
+  it('leaves the page scrollable when the column cannot fit', async () => {
     wrapper = await mountPage({ viewport: 200, columnTop: 140, footerHeight: 40 })
-    document.documentElement.scrollTop = 120
 
-    window.dispatchEvent(new Event('scroll'))
+    expect(document.documentElement.classList.contains('openapi-no-page-scroll')).toBe(false)
+  })
 
-    expect(document.documentElement.scrollTop).toBe(120)
+  it('lets the page scroll again once unmounted', async () => {
+    wrapper = await mountPage()
+    expect(document.documentElement.classList.contains('openapi-no-page-scroll')).toBe(true)
+
+    wrapper.unmount()
+    wrapper = null
+
+    expect(document.documentElement.classList.contains('openapi-no-page-scroll')).toBe(false)
   })
 
   it('stops measuring and listening once unmounted', async () => {

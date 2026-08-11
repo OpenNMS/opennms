@@ -16,17 +16,23 @@
         <OnmsTab :value="0">V2 API</OnmsTab>
         <OnmsTab :value="1">V1 API</OnmsTab>
       </OnmsTabList>
+      <!-- show-info="false" so focused mode opens on the first operation rather than
+           the info section, which is also served with the document itself. -->
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
           <rapi-doc
             id="thedoc"
             ref="doc"
             class="doc"
-            render-style="read"
+            render-style="focused"
+            load-fonts="false"
+            regular-font="OpenSans, Helvetica, Arial, sans-serif"
+            mono-font="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
             fetch-credentials="include"
             update-route="false"
             allow-authentication="false"
             show-header="false"
+            show-info="false"
           />
         </OnmsTabPanel>
         <OnmsTabPanel :value="1">
@@ -34,11 +40,15 @@
             id="thedocV1"
             ref="docV1"
             class="doc"
-            render-style="read"
+            render-style="focused"
+            load-fonts="false"
+            regular-font="OpenSans, Helvetica, Arial, sans-serif"
+            mono-font="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
             fetch-credentials="include"
             update-route="false"
             allow-authentication="false"
             show-header="false"
+            show-info="false"
           />
         </OnmsTabPanel>
       </OnmsTabPanels>
@@ -156,7 +166,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Endpoints', to: '#', position: 'last' }
+    { label: 'OpenAPI Documentation', to: '#', position: 'last' }
   ]
 })
 
@@ -192,6 +202,8 @@ const fitColumnToViewport = () => {
   if (column.style.height !== next) {
     column.style.height = next
   }
+
+  lockPageScroll()
 }
 
 // Enough to stay usable if the measurement lands somewhere unexpected.
@@ -254,16 +266,31 @@ const preserveLayoutScroll = () => {
   })
 }
 
-// Focusing the newly shown tab scrolls it into view on its own, after the frames
-// the click handler watches. The column is clipped, so the document is all that is
-// left, and it has nowhere to go while the column fits.
-const pinDocumentScroll = () => {
-  if (!columnFits) {
-    return
-  }
+// The column already takes exactly the space left over, so the page has nothing
+// to scroll to, but it stays a scroll container and shows a second, dead scrollbar
+// next to the one RapiDoc renders. Take the overflow away rather than pinning the
+// offset, which also stops the tab strip scrolling the document as it takes focus.
+// Released while the viewport is too short for the column, where scrolling is the
+// only way to reach the rest of the page.
+// The app shell overflows the viewport by a little regardless of this column, and
+// that is enough for RapiDoc's scrollIntoView to drag the whole layout under a
+// scrollbar nothing else uses. Released while the viewport is too short, where
+// scrolling is the only way to reach the rest of the page.
+const PAGE_SCROLL_CLASS = 'openapi-no-page-scroll'
 
+const lockPageScroll = () => {
+  document.documentElement.classList.toggle(PAGE_SCROLL_CLASS, columnFits)
+}
+
+const releasePageScroll = () => {
+  document.documentElement.classList.remove(PAGE_SCROLL_CLASS)
+}
+
+// clip hides the scrollbar but the viewport still scrolls programmatically, and
+// RapiDoc calls scrollIntoView on the nav entry as the content passes a section.
+const pinPageScroll = () => {
   const scroller = document.scrollingElement
-  if (scroller && scroller.scrollTop !== 0) {
+  if (columnFits && scroller && scroller.scrollTop !== 0) {
     scroller.scrollTop = 0
   }
 }
@@ -274,6 +301,10 @@ let v1Rendered = false
 
 const renderV1 = async () => {
   const [, openApiSpecV1] = await fetchSpecs()
+
+  // RapiDoc sizes its scroll pane when it is handed the spec, so wait for the
+  // panel to be shown; loaded while hidden it measures zero and never scrolls.
+  await nextTick()
 
   if (!docV1.value) {
     return
@@ -349,7 +380,7 @@ onMounted(async () => {
   watchedColumn?.addEventListener('click', preserveLayoutScroll, true)
   watchedColumn?.addEventListener('keyup', preserveLayoutScroll, true)
   // capture, since scroll events do not bubble
-  window.addEventListener('scroll', pinDocumentScroll, true)
+  window.addEventListener('scroll', pinPageScroll, true)
 
   // App.vue fetches the menu in onMounted, so the header grows after this point
   // and pushes the column down.
@@ -365,10 +396,19 @@ onUnmounted(() => {
   bodyObserver = null
   watchedColumn?.removeEventListener('click', preserveLayoutScroll, true)
   watchedColumn?.removeEventListener('keyup', preserveLayoutScroll, true)
-  window.removeEventListener('scroll', pinDocumentScroll, true)
+  window.removeEventListener('scroll', pinPageScroll, true)
   watchedColumn = null
+  releasePageScroll()
 })
 </script>
+
+<!-- On <html>, so it cannot be scoped. Both axes, or the overflow-x:hidden in
+     App.vue coerces clip back to hidden, which still scrolls programmatically. -->
+<style lang="scss">
+html.openapi-no-page-scroll {
+  overflow: clip;
+}
+</style>
 
 <style scoped lang="scss">
 rapi-doc::part(section-tag) {
@@ -400,8 +440,11 @@ rapi-doc::part(section-tag) {
     overflow: clip;
   }
 
+  // RapiDoc puts an inline width:100vw/height:100vh on the panel holding it,
+  // which overflows the clipped column and takes its scrollbar below the fold.
   :deep(.p-tabpanel) {
-    height: 100%;
+    height: 100% !important;
+    width: 100% !important;
     overflow: clip;
   }
 
