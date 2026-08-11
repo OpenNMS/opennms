@@ -1,18 +1,19 @@
 <template>
-  <FeatherSelect
-    class="severity-select"
-    v-model="selectedSeverity"
-    :options="options"
-    text-prop="option"
-    @update:modelValue="onSeveritySelect"
-    label="Show Severity >="
-  />
+  <FormField label="Show Severity" class="severity-select">
+    <OnmsSelect
+      v-model="selectedSeverity"
+      :options="options"
+      optionLabel="option"
+      @update:modelValue="onSeveritySelect"
+    />
+  </FormField>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { FeatherSelect } from '@featherds/select'
+import { OnmsSelect } from '@opennms/onms-ui'
+import FormField from '@/components/Common/FormField.vue'
 import { useMapStore } from '@/stores/mapStore'
 
 const mapStore = useMapStore()
@@ -30,29 +31,22 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
 </script>
 
 <style lang="scss">
-@import "@featherds/styles/themes/variables";
-
 .severity-select {
   position: absolute;
   width: 250px;
-  right: 60px;
-  top: 80px;
-  /* z-index needs to be below $zindex-fixed (1030) which is the z-index of the FeatherAppBar component */
-  z-index: var($zindex-sticky);
+  right: 80px;
+  top: 2em;
+  /* below the app bar's z-index (1030) */
+  z-index: 1020;
+  /* Translucent panel so the control reads clearly over the map. Follows the
+     theme (light panel in light mode, dark in dark mode) like the rest of the
+     UI — the select itself just uses the default --p-* theme tokens. */
+  padding: 0.5em;
+  background-color: rgba(211, 211, 211, 0.8);
+  border-radius: 4px;
+}
 
-  .feather-input-wrapper {
-    background: var($primary-text-on-color);
-    border: 2px solid var($secondary);
-  }
-
-  .feather-input-label {
-    border: 2px solid var($secondary);
-    border-bottom: none;
-
-    // fix placement of severity dropdown label
-    // so it is aligned over top left of select dropdown
-    left: -0.025rem !important;
-    top: -1.25rem !important;
-  }
+.open-dark .severity-select {
+  background-color: rgba(30, 30, 40, 0.8);
 }
 </style>

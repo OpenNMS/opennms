@@ -9,14 +9,14 @@
             event description:
           </p>
         </div>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
           data-test="add-varbind-row-button"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
       <div
         v-for="(row, index) in varbindsDecodeElements"
@@ -29,7 +29,7 @@
               :for="`varbind-parmid-${index}`"
               :error="errors.varbindsDecode?.[index]?.parmId"
             >
-              <InputText
+              <OnmsInputText
                 :id="`varbind-parmid-${index}`"
                 :modelValue="row.parmId"
                 @update:model-value="$emit('setVarbindsDecode', 'setParmId', $event, index, -1)"
@@ -42,23 +42,23 @@
             </FormField>
           </div>
           <div class="action-btns">
-            <Button
+            <OnmsButton
               class="remove"
-              outlined
+              variant="outlined"
               severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeVarbindDecodeRow', null, index, -1)"
             >
-              <FeatherIcon :icon="Delete" />
-            </Button>
-            <Button
-              outlined
+              <OnmsIcon :icon="Delete" />
+            </OnmsButton>
+            <OnmsButton
+              variant="outlined"
               data-test="add-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'addDecodeRow', null, index, -1)"
             >
-              <FeatherIcon :icon="Add" />
+              <OnmsIcon :icon="Add" />
               Add Decode
-            </Button>
+            </OnmsButton>
           </div>
         </div>
         <div
@@ -71,7 +71,7 @@
               :for="`decode-value-${index}-${decodeIndex}`"
               :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`decode-value-${index}-${decodeIndex}`"
                 type="number"
                 min="0"
@@ -91,7 +91,7 @@
                 :for="`decode-key-${index}-${decodeIndex}`"
                 :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
               >
-                <InputText
+                <OnmsInputText
                   :id="`decode-key-${index}-${decodeIndex}`"
                   :modelValue="decodeRow.key"
                   @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
@@ -103,15 +103,15 @@
                 />
               </FormField>
             </div>
-            <Button
+            <OnmsButton
               class="remove"
-              outlined
+              variant="outlined"
               severity="danger"
               data-test="remove-varbind-row-button"
               @click="$emit('setVarbindsDecode', 'removeDecodeRow', null, index, decodeIndex)"
             >
-              <FeatherIcon :icon="Delete" />
-            </Button>
+              <OnmsIcon :icon="Delete" />
+            </OnmsButton>
           </div>
         </div>
       </div>
@@ -123,11 +123,9 @@
 import { ref, toRefs, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{

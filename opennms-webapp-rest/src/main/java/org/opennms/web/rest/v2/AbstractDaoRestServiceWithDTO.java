@@ -23,7 +23,6 @@ package org.opennms.web.rest.v2;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +72,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.ISO8601DateEditor;
-import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.DateCollection;
@@ -92,8 +90,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
@@ -317,7 +315,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
         }
 
         @Override
-        public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
+        public List<T> doInHibernate(Session session) throws HibernateException {
             final Query hql;
 
             // TODO: Sort by count?
@@ -468,8 +466,16 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                RestUtils.setBeanProperties(object, params);
-                doUpdateProperties(securityContext, uriInfo, object, params);
+                // Applying the params to the entity is doUpdateProperties' responsibility.
+                final Response response = doUpdateProperties(securityContext, uriInfo, object, params);
+                // A non-error status such as 304 Not Modified means this item was unchanged.
+                if (response != null) {
+                    final Response.Status.Family family = response.getStatusInfo().getFamily();
+                    if (family == Response.Status.Family.CLIENT_ERROR || family == Response.Status.Family.SERVER_ERROR) {
+                        // Throw, not return: transactional, and earlier items may be modified.
+                        throw new WebApplicationException(response);
+                    }
+                }
             }
             return Response.noContent().build();
         } finally {

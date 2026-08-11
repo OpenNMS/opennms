@@ -352,8 +352,11 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      *
      * Looks the HostSystem up explicitly by moid because
      * VmwareViJavaAccess.getManagedEntityByManagedObjectId returns the abstract
-     * base class. If the moid does not refer to a HostSystem on the server,
-     * getDatastores() will fail and the per-datastore loop is skipped.
+     * base class. The lookup itself never fails for a non-HostSystem moid: the
+     * client builds the reference without contacting the server, so a group that
+     * is misconfigured onto a VirtualMachine (or any non-HostSystem entity) only
+     * surfaces when getDatastores() is first called. Any such failure is logged
+     * and the group is skipped, leaving the rest of the collection intact.
      */
     private void collectDatastoreCapacity(final CollectionAgent agent,
                                           final CollectionSetBuilder builder,
@@ -372,12 +375,18 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
         try {
             datastores = hostSystem.getDatastores();
         } catch (final Exception e) {
-            logger.warn("VmwareCollector: error enumerating datastores for host '{}'.", hostSystem.getName(), e);
+            // Do not call hostSystem.getName() here. It issues another request that fails the
+            // same way (for example ManagedObjectNotFound when the group is configured against a
+            // VirtualMachine rather than a HostSystem), and that second exception would escape
+            // this handler and fail the entire collection. The managed object id needs no request.
+            logger.warn("VmwareCollector: could not enumerate datastores for managed object '{}'; "
+                    + "the '{}' group applies only to HostSystem entities and is being skipped. Reason: {}",
+                    vmwareManagedObjectId, vmwareGroup.getName(), e.getMessage());
             return;
         }
         if (datastores == null || datastores.length == 0) {
             logger.debug("VmwareCollector: host '{}' has no mounted datastores; skipping group '{}'.",
-                    hostSystem.getName(), vmwareGroup.getName());
+                    vmwareManagedObjectId, vmwareGroup.getName());
             return;
         }
 
@@ -388,7 +397,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             try {
                 summary = ds.getSummary();
             } catch (final Exception e) {
-                logger.warn("VmwareCollector: error reading summary for datastore '{}' ({}).", ds.getName(), moid, e);
+                logger.warn("VmwareCollector: error reading summary for datastore '{}'.", moid, e);
                 continue;
             }
             if (summary == null) {
@@ -420,7 +429,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
                         }
                     } catch (final Exception e) {
                         logger.debug("VmwareCollector: failed to extract '{}' from datastore '{}' ({}): {}",
-                                name, ds.getName(), moid, e.getMessage());
+                                name, label, moid, e.getMessage());
                     }
                 } else if (DATASTORE_STRING_EXTRACTORS.containsKey(name)) {
                     try {
@@ -429,7 +438,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
                                 attrib.getAlias(), value == null ? "" : value);
                     } catch (final Exception e) {
                         logger.debug("VmwareCollector: failed to extract '{}' from datastore '{}' ({}): {}",
-                                name, ds.getName(), moid, e.getMessage());
+                                name, label, moid, e.getMessage());
                     }
                 } else {
                     logger.warn("VmwareCollector: unknown datastore attribute '{}' configured in group '{}'; ignoring.",

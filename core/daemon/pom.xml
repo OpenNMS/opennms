@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -51,6 +51,8 @@
               org.opennms.features.activemq.broker.api;resolution:=optional,
               org.opennms.features.activemq.broker.impl;resolution:=optional,
               org.opennms.features.scv.jceks;resolution:=optional,
+              <!-- HA coordinator is loaded via reflection; optional so non-HA installs resolve cleanly -->
+              org.opennms.netmgt.ha;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>

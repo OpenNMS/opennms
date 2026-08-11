@@ -52,13 +52,15 @@ public interface TrapdRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Upload Trap configuration in JSON format.",
-            description = "Upload Trap configuration in JSON format and apply the changes.",
+            description = "Upload Trap configuration in JSON format and apply the changes. Requires ROLE_ADMIN.",
             operationId = "uploadTrapdConfiguration"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Trap configuration uploaded and applied successfully",
                 content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden – admin role required.",
                 content = @Content),
             @ApiResponse(responseCode = "500", description = "Failed to persist Trap configuration.",
                 content = @Content)
@@ -71,13 +73,15 @@ public interface TrapdRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Upload Trap configuration in XML format.",
-            description = "Upload Trap configuration in XML format and apply the changes.",
+            description = "Upload Trap configuration in XML format and apply the changes. Requires ROLE_ADMIN.",
             operationId = "uploadTrapdConfigurationXml"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Trap configuration uploaded and applied successfully",
                 content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden – admin role required.",
                 content = @Content),
             @ApiResponse(responseCode = "500", description = "Failed to persist Trap configuration.",
                 content = @Content)
@@ -89,16 +93,18 @@ public interface TrapdRestApi {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
             summary = "Download trapd configuration",
-            description = "Download trapd configuration in JSON or XML format.",
+            description = "Download trapd configuration in JSON or XML format. Requires ROLE_ADMIN.",
             operationId = "downloadConfig"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Trapd configuration in download format retrieved successfully",
                     content = { @Content(mediaType = "application/json"), @Content(mediaType = "application/xml") }),
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden – admin role required.",
                     content = @Content)
     })
-    Response downloadTrapdConfig(@QueryParam("format") String format);
+    Response downloadTrapdConfig(@QueryParam("format") String format, @Context SecurityContext securityContext);
 
     @GET
     @Path("config")

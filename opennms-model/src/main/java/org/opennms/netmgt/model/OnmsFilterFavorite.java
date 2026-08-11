@@ -38,7 +38,7 @@ public class OnmsFilterFavorite {
     }
 
     @Id
-    @SequenceGenerator(name="filterSequence", sequenceName="filternextid")
+    @SequenceGenerator(name="filterSequence", sequenceName="filternextid", allocationSize = 1)
     @GeneratedValue(generator="filterSequence")
     @Column(name="filterid", nullable=false)
     private Integer id;

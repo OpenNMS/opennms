@@ -58,6 +58,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Nms0123EnIT extends EnLinkdBuilderITCase {
 
@@ -84,15 +85,18 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
     })
     public void testItpnLldp() {
         
-        m_nodeDao.save(builder.getItpn0111());
-        m_nodeDao.save(builder.getItpn0112());
-        m_nodeDao.save(builder.getItpn0113());
-        m_nodeDao.save(builder.getItpn0114());
-        m_nodeDao.save(builder.getItpn0121());
-        m_nodeDao.save(builder.getItpn0123());
-        m_nodeDao.save(builder.getItpn0201());
-        m_nodeDao.save(builder.getItpn0202());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getItpn0111());
+            m_nodeDao.save(builder.getItpn0112());
+            m_nodeDao.save(builder.getItpn0113());
+            m_nodeDao.save(builder.getItpn0114());
+            m_nodeDao.save(builder.getItpn0121());
+            m_nodeDao.save(builder.getItpn0123());
+            m_nodeDao.save(builder.getItpn0201());
+            m_nodeDao.save(builder.getItpn0202());
+            m_nodeDao.flush();
+            return null;
+        });
 
         assertEquals(8,m_nodeDao.countAll());
 

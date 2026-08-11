@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -90,6 +90,12 @@
             <goals>
               <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <!-- Keep the TLS test key material out of the published test-jar -->
+              <excludes>
+                <exclude>tls/**</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>

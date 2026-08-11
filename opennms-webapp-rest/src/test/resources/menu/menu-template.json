@@ -47,13 +47,6 @@
           "roles": null
         },
         {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
           "id": "assets",
           "name": "Assets",
           "url": "asset/index.jsp",

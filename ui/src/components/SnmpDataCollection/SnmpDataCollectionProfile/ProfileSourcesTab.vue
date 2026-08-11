@@ -6,42 +6,43 @@
     <div class="section-header">Sources</div>
     <div>Add or remove sources from this profile.</div>
     <div class="autocomplete-row">
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="sourceSearchResults"
-        optionLabel="name"
-        @complete="onSourceSearch"
-        @option-select="onSourceSelected($event.value)"
-        placeholder="Add Source"
-        :forceSelection="true"
-        data-test="add-source-autocomplete"
-        dropdown
-        completeOnFocus
-        fluid
-      />
+      <FormField label="Add Source">
+        <OnmsAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="sourceSearchResults"
+          optionLabel="name"
+          @complete="onSourceSearch"
+          @optionSelect="(value) => onSourceSelected(value as SourceItem)"
+          placeholder="Search sources..."
+          :forceSelection="true"
+          data-test="add-source-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
     </div>
     <div class="sources-card">
-      <PDataTable
+      <OnmsTable
         :value="sortedSources"
         scrollable
         scrollHeight="400px"
         :size="'small'"
-        :virtualScrollerOptions="{ itemSize: 44 }"
+        :virtualScrollItemSize="44"
         tableStyle="min-width: 50rem"
       >
-        <PColumn field="name" style="width: 20%; height: 44px"></PColumn>
-        <PColumn style="width: 4rem">
+        <OnmsColumn field="name" style="width: 20%; height: 44px"></OnmsColumn>
+        <OnmsColumn style="width: 4rem">
           <template #body="{ data }">
-            <PButton
-              text
+            <OnmsIconButton
+              title="Delete source"
               data-test="delete-source-button"
+              :icon="Delete"
               @click="removeSource(data.name)"
-            >
-              <FeatherIcon :icon="Delete" />
-            </PButton>
+            />
           </template>
-        </PColumn>
-      </PDataTable>
+        </OnmsColumn>
+      </OnmsTable>
     </div>
   </div>
 </template>
@@ -50,17 +51,9 @@
 import { computed, ref } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import ButtonComponent from 'primevue/button'
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-
-const PAutoComplete = AutoCompleteComponent
-const PButton = ButtonComponent
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
+import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 
 interface SourceItem {
   name: string
@@ -83,8 +76,8 @@ const sortedSources = computed(() =>
   [...props.sources].sort((a, b) => a.localeCompare(b)).map(name => ({ name }))
 )
 
-const onSourceSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSourceSearch = (query: string) => {
+  const q = query.toLowerCase()
   sourceSearchResults.value = store.uploadedSourceNames
     .filter(s => !props.sources.includes(s.name))
     .filter(s => s.name.toLowerCase().includes(q))
@@ -105,15 +98,15 @@ const removeSource = (name: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .sources-box {
   padding: 20px 0;
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 

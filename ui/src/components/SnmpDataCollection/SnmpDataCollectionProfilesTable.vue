@@ -4,26 +4,21 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.profilesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Profile Name"
-                :aria-label="'Search by Profile Name'"
-              />
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.profilesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Profile Name"
+              :aria-label="'Search by Profile Name'"
+            />
           </FormField>
         </div>
       </div>
       <div class="section-right">
         <div class="add">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Create New Data Collection Profile"
             data-test="create-profile-button"
             @click="goToCreateProfile"
@@ -32,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="searchedProfiles.length"
       v-model:first="firstRow"
       :value="searchedProfiles"
@@ -43,55 +38,50 @@
       class="data-table"
       data-test="profiles-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Profile Name"
         sortable
       />
-      <Column
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsIconButton
               :title="`View ${data.name}`"
               data-test="view-button"
+              :icon="ViewDetails"
               @click="onProfileClick(data)"
-            >
-              <FeatherIcon :icon="ViewDetails" />
-            </Button>
-            <Button
-              text
+            />
+            <OnmsIconButton
               aria-haspopup="true"
               aria-controls="profile-row-menu"
               :title="`More actions for ${data.name}`"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <FeatherIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="profile-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!searchedProfiles.length">
@@ -101,7 +91,7 @@
       />
     </div>
   </TableCard>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
     title="Delete Profile"
     actionButtonText="Delete"
@@ -111,32 +101,21 @@
     <template #content>
       <p>Are you sure you want to delete the profile <strong>{{ profileToDelete?.name }}</strong>? This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
 
-import { FeatherIcon } from '@featherds/icon'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import FormField from '@/components/Common/FormField.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
@@ -168,7 +147,7 @@ const searchedProfiles = computed(() => {
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionProfile | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []

@@ -1,6 +1,7 @@
 // ui/tests/components/Nodes/AssetFilterPanel.test.ts
 import AssetFilterPanel from '@/components/Nodes/AssetFilterPanel.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { ALL_ASSET_COLUMN_OPTIONS, ASSET_COLUMN_OPTIONS } from '@/components/Nodes/hooks/queryStringParser'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -12,14 +13,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 describe('AssetFilterPanel.vue', () => {
-  let store: ReturnType<typeof useNodeStructureStore>
+  let store: ReturnType<typeof useNodeListStore>
 
   const mountPanel = () =>
     mount(AssetFilterPanel, {
       global: {
         plugins: [PrimeVue],
         stubs: {
-          FeatherIcon: { name: 'FeatherIcon', template: '<span />', props: ['icon'] }
+          OnmsIcon: { name: 'OnmsIcon', template: '<span />', props: ['icon'] }
         }
       }
     })
@@ -27,7 +28,7 @@ describe('AssetFilterPanel.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
-    store = useNodeStructureStore()
+    store = useNodeListStore()
     store.setFilterWithAssetFilters = vi.fn()
     store.queryFilter = {
       ...store.queryFilter,
@@ -113,7 +114,7 @@ describe('AssetFilterPanel.vue', () => {
 
   // ── resetFromStore ─────────────────────────────────────────────────────────
 
-  it('resetFromStore() seeds grid rows from nodeStructureStore.queryFilter.assetFilters', async () => {
+  it('resetFromStore() seeds grid rows from nodeListStore.queryFilter.assetFilters', async () => {
     const wrapper = mountPanel()
 
     store.queryFilter = {
@@ -126,5 +127,81 @@ describe('AssetFilterPanel.vue', () => {
 
     expect(wrapper.vm.gridItems.length).toBe(1)
     expect(wrapper.vm.gridItems[0]).toMatchObject({ column: 'room', value: 'B204' })
+  })
+
+  // ── Featured Fields Only toggle ─────────────────────────────────────────────
+  // Driven through the real OnmsToggleSwitch's update:modelValue emit (not direct ref
+  // mutation), mirroring NodeAdvancedFiltersDrawer.test.ts's "Toggles" describe block
+  // (down-only/with-assets/with-outages) so a broken v-model binding or prop-name typo
+  // on the switch would actually be caught.
+
+  it('renders a Featured Fields Only toggle, defaulted on, backing the featured (curated) options', () => {
+    const wrapper = mountPanel()
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+    expect(toggle.exists()).toBe(true)
+    expect(wrapper.vm.featuredOnly).toBe(true)
+    expect(wrapper.vm.assetOptions).toHaveLength(ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('emitting update:modelValue(false) on the ToggleSwitch swaps the dropdown to every ASSET_COLUMN_FIQL_MAP column', async () => {
+    const wrapper = mountPanel()
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+    expect(toggle.exists()).toBe(true)
+
+    toggle.vm.$emit('update:modelValue', false)
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(false)
+    expect(wrapper.vm.assetOptions).toHaveLength(ALL_ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('emitting update:modelValue(true) after toggling off restores the featured-only options', async () => {
+    const wrapper = mountPanel()
+    const toggle = wrapper.find('[data-test="featured-fields-only"]').findComponent({ name: 'ToggleSwitch' })
+
+    toggle.vm.$emit('update:modelValue', false)
+    await nextTick()
+    toggle.vm.$emit('update:modelValue', true)
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(true)
+    expect(wrapper.vm.assetOptions).toHaveLength(ASSET_COLUMN_OPTIONS.length)
+    expect(wrapper.vm.assetOptions.map((o: { value: string }) => o.value).sort())
+      .toEqual(ASSET_COLUMN_OPTIONS.map(o => o.value).sort())
+  })
+
+  it('resetFromStore() auto-switches featuredOnly off when an existing filter uses a non-featured column', async () => {
+    const wrapper = mountPanel()
+
+    store.queryFilter = {
+      ...store.queryFilter,
+      assetFilters: [{ column: 'city', value: 'Pittsboro' }]
+    } as any
+
+    wrapper.vm.resetFromStore()
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(false)
+    expect(wrapper.vm.gridItems[0]).toMatchObject({ column: 'city', label: 'City', value: 'Pittsboro' })
+    // The dropdown must include the non-featured column so re-selecting it is never blank.
+    expect(wrapper.vm.assetOptions.some((o: { value: string }) => o.value === 'city')).toBe(true)
+  })
+
+  it('resetFromStore() keeps featuredOnly on when all existing filters use featured columns', async () => {
+    const wrapper = mountPanel()
+
+    store.queryFilter = {
+      ...store.queryFilter,
+      assetFilters: [{ column: 'building', value: 'HQ' }]
+    } as any
+
+    wrapper.vm.resetFromStore()
+    await nextTick()
+
+    expect(wrapper.vm.featuredOnly).toBe(true)
   })
 })

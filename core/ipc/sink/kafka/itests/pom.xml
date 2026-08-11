@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.kafka</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink.kafka</groupId>
@@ -76,6 +76,25 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring-xml</artifactId>
+      <version>${camelVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.sun.xml.bind</groupId>

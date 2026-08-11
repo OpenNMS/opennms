@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -172,17 +172,17 @@
               -->
               org.eclipse.jetty.servlet,
               org.opennms.core.soa.config,
-              org.springframework.beans.factory.config;version="[4.0,5)",
-              org.springframework.context.config;version="[4.0,5)",
-              org.springframework.context.support;version="[4.0,5)",
+              org.springframework.beans.factory.config;version="[5.3,6)",
+              org.springframework.context.config;version="[5.3,6)",
+              org.springframework.context.support;version="[5.3,6)",
               org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
-              org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              org.springframework.orm.hibernate5.support;version="[5.3,6)",
               <!-- Spring Security namespace handler -->
-              org.springframework.security.config;version="[3.2,4)",
-              org.springframework.security.web.authentication;version="[3.2,4)",
-              org.springframework.transaction.config;version="[4.0,5)",
-              org.springframework.web.context;version="[4.0,5)",
-              org.springframework.web.filter;version="[4.0,5)",
+              org.springframework.security.config;version="[5.8,6)",
+              org.springframework.security.web.authentication;version="[5.8,6)",
+              org.springframework.transaction.config;version="[5.3,6)",
+              org.springframework.web.context;version="[5.3,6)",
+              org.springframework.web.filter;version="[5.3,6)",
 
               <!-- Mark some packages that dependency JARs rely on as optional -->
               <!-- Optional dependencies of jdom -->

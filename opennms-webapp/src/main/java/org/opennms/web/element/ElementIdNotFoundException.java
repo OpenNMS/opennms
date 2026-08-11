@@ -66,6 +66,7 @@ public class ElementIdNotFoundException extends RuntimeException {
         this.elemType = elemType;
         this.detailUri = detailUri;
         this.detailParam = detailParam;
+        this.browseUri = browseUri;
     }
     
     /**

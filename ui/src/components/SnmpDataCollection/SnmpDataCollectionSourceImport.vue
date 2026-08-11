@@ -31,27 +31,27 @@
             data-test="snmp-data-collection-folder-input"
             ref="sourceFolderInput"
           />
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             data-test="choose-file-button"
             @click="openFileDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="UploadFile" />
+            <OnmsIcon :icon="UploadFile" />
             Choose files to upload
-          </Button>
-          <Button
-            outlined
+          </OnmsButton>
+          <OnmsButton
+            variant="outlined"
             data-test="choose-folder-button"
             @click="openFolderDialog"
             :disabled="isLoading"
           >
-            <FeatherIcon :icon="FolderAdd" />
+            <OnmsIcon :icon="FolderAdd" />
             Choose folder to upload
-          </Button>
+          </OnmsButton>
         </div>
         <div class="section-right">
-          <Button
+          <OnmsButton
             label="Upload Files"
             :disabled="shouldUploadDisabled"
             :loading="isLoading"
@@ -89,9 +89,8 @@
             :key="profile.id"
             class="profile-checkbox"
           >
-            <Checkbox
+            <OnmsCheckbox
               :inputId="`profile-checkbox-${profile.id}`"
-              binary
               :modelValue="selectedProfileNames.includes(profile.name)"
               :disabled="hasConfigFile"
               :data-test="`profile-checkbox-${profile.name}`"
@@ -132,7 +131,7 @@
       </div>
     </div>
     <div class="container">
-      <DataTable
+      <OnmsTable
         v-if="orderedSourceFiles.length"
         v-model:first="firstRow"
         v-model:rows="rowsPerPage"
@@ -142,68 +141,66 @@
         class="data-table"
         data-test="import-files-table"
       >
-        <Column
+        <OnmsColumn
           header="Source"
           style="width: 85%"
         >
           <template #body="{ data }">
             <div class="file">
-              <FeatherIcon :icon="Apps" />
+              <OnmsIcon :icon="Apps" />
               <span>{{ ellipsify(data.file.name, 39) }}</span>
-              <Tag
+              <OnmsTag
                 v-if="data.kind === 'config'"
                 class="kind-chip kind-config"
                 :value="`Profiles config${data.profileNames?.length ? ` (${data.profileNames.length})` : ''}`"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-else-if="data.kind === 'group'"
                 class="kind-chip kind-source"
                 value="Source"
                 :data-test="`kind-chip-${data.file.name}`"
               />
-              <Tag
+              <OnmsTag
                 v-if="!data.isValid"
                 class="error-chip"
                 :value="data.errors.join('. ')"
               />
-              <Tag
+              <OnmsTag
                 v-if="data.isDuplicate"
                 class="update-chip"
                 :value="`Will update existing source '${data.groupName}'`"
                 :data-test="`update-chip-${data.file.name}`"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="!data.isValid"
                 :icon="Error"
                 class="error-icon"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="data.isValid && data.isDuplicate"
                 :icon="Refresh"
                 class="update-icon"
               />
-              <FeatherIcon
+              <OnmsIcon
                 v-if="data.isValid && !data.isDuplicate"
                 :icon="CheckCircle"
                 class="success-icon"
               />
             </div>
           </template>
-        </Column>
-        <Column header="Action">
+        </OnmsColumn>
+        <OnmsColumn header="Action">
           <template #body="{ data }">
-            <Button
-              text
+            <OnmsIconButton
               title="Remove"
               data-test="remove-files-button"
+              :icon="Delete"
               @click="removeFile(data)"
-            >
-              <FeatherIcon :icon="Delete" />
-            </Button>
+            />
           </template>
-        </Column>
-      </DataTable>
+        </OnmsColumn>
+      </OnmsTable>
       <div v-if="!orderedSourceFiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -220,14 +217,14 @@
         <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
         <li>
           Files that are valid and ready for upload will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="CheckCircle"
             class="success-icon-text"
           />.
         </li>
         <li>
           Files with duplicate names (excluding the .xml extension) will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Warning"
             class="warning-icon-text"
           />
@@ -235,7 +232,7 @@
         </li>
         <li>
           Invalid files will be flagged with icon
-          <FeatherIcon
+          <OnmsIcon
             :icon="Error"
             class="error-icon-text"
           />
@@ -269,20 +266,15 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
-import UploadFile from '@featherds/icon/action/UploadFile'
-import FolderAdd from '@featherds/icon/file/FolderAdd'
-import Apps from '@featherds/icon/navigation/Apps'
-import Refresh from '@featherds/icon/navigation/Refresh'
-import Error from '@featherds/icon/notification/Error'
-import Warning from '@featherds/icon/notification/Warning'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
+import { OnmsButton, OnmsCheckbox, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import CheckCircle from '@/components/icons/action/CheckCircle.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import UploadFile from '@/components/icons/action/UploadFile.vue'
+import FolderAdd from '@/components/icons/file/FolderAdd.vue'
+import Apps from '@/components/icons/navigation/Apps.vue'
+import Refresh from '@/components/icons/navigation/Refresh.vue'
+import Error from '@/components/icons/notification/Error.vue'
+import Warning from '@/components/icons/notification/Warning.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
@@ -623,7 +615,7 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .data-collection-source-import-container {
   margin-top: 10px;
@@ -635,7 +627,7 @@ defineExpose({
       .title {
         h2 {
           margin: 0;
-          @include typography.headline3;
+          @include onms-headline3;
         }
       }
 
@@ -701,7 +693,7 @@ defineExpose({
       }
 
       .profiles-label {
-        @include typography.subtitle2;
+        @include onms-subtitle2;
         color: var(--p-text-color);
 
         .required-marker {
@@ -711,7 +703,7 @@ defineExpose({
       }
 
       .profiles-count {
-        @include typography.caption;
+        @include onms-caption;
         color: var(--p-text-muted-color);
       }
 
@@ -729,7 +721,7 @@ defineExpose({
       }
 
       .profiles-hint {
-        @include typography.body-small;
+        @include onms-body-small;
         color: var(--p-text-muted-color);
       }
 
@@ -780,21 +772,21 @@ defineExpose({
       }
 
       .success-icon {
-        color: var(--feather-success);
+        color: var(--onms-success);
         cursor: pointer;
         height: 2em;
         width: 2em;
       }
 
       .error-icon {
-        color: var(--feather-error);
+        color: var(--onms-error);
         cursor: pointer;
         height: 2em;
         width: 2em;
       }
 
       .warning-icon {
-        color: var(--feather-major);
+        color: var(--onms-major);
         cursor: pointer;
         height: 2em;
         width: 2em;
@@ -804,21 +796,21 @@ defineExpose({
 
   .info-section {
     .success-icon-text {
-      color: var(--feather-success);
+      color: var(--onms-success);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .error-icon-text {
-      color: var(--feather-error);
+      color: var(--onms-error);
       vertical-align: middle;
       height: 2em;
       width: 2em;
     }
 
     .warning-icon-text {
-      color: var(--feather-major);
+      color: var(--onms-major);
       vertical-align: middle;
       height: 2em;
       width: 2em;

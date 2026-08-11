@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +53,7 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -89,13 +88,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      */
     @Override
     public String getLabelForId(Integer id) {
-        List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
+        List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?1", id);
         return list == null || list.isEmpty() ? null : list.get(0);
     }
 
     @Override
     public String getLocationForId(Integer id) {
-        List<OnmsMonitoringLocation> list = findObjects(OnmsMonitoringLocation.class, "select n.location from OnmsNode as n where n.id = ?", id);
+        List<OnmsMonitoringLocation> list = findObjects(OnmsMonitoringLocation.class, "select n.location from OnmsNode as n where n.id = ?1", id);
         return list == null || list.isEmpty() ? null : list.get(0).getLocationName();
     }
 
@@ -132,7 +131,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
         Set<String> set = new TreeSet<String>();
-        List<String> rows = findObjects(String.class, "select n.foreignId from OnmsNode as n where n.foreignSource = ?", foreignSource);
+        List<String> rows = findObjects(String.class, "select n.foreignId from OnmsNode as n where n.foreignSource = ?1", foreignSource);
         for (String foreignId : rows) {
             if (foreignId != null) {
                 set.add(foreignId);
@@ -144,13 +143,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByForeignId(String foreignId) {
-        return find("from OnmsNode as n where n.foreignId = ?", foreignId);
+        return find("from OnmsNode as n where n.foreignId = ?1", foreignId);
     }
     
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
-        return find("from OnmsNode as n where n.foreignId = ? and n.location.locationName = ?", foreignId, location);
+        return find("from OnmsNode as n where n.foreignId = ?1 and n.location.locationName = ?2", foreignId, location);
     }
     
     /** {@inheritDoc} */
@@ -159,7 +158,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         OnmsNode node = findUnique(
                                    "select distinct n from OnmsNode as n "
                                            + "left join fetch n.assetRecord "
-                                           + "where n.id = ?", id);
+                                           + "where n.id = ?1", id);
 
         initialize(node.getIpInterfaces());
         for (OnmsIpInterface i : node.getIpInterfaces()) {
@@ -178,13 +177,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByLabel(String label) {
-        return find("from OnmsNode as n where n.label = ?", label);
+        return find("from OnmsNode as n where n.label = ?1", label);
     }
 
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByLabelForLocation(String label, String location) {
-        return find("from OnmsNode as n where n.label = ? and n.location.locationName = ?", label, location);
+        return find("from OnmsNode as n where n.label = ?1 and n.location.locationName = ?2", label, location);
     }
     
     /** {@inheritDoc} */
@@ -192,7 +191,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public List<OnmsNode> findAllByVarCharAssetColumn(
                                                       String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord." + columnName
-                    + " = ?", columnValue);
+                    + " = ?1", columnValue);
     }
 
     /** {@inheritDoc} */
@@ -208,7 +207,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 + "left join fetch ipInterface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
-                + "where n.assetRecord." + columnName + " = ? "
+                + "where n.assetRecord." + columnName + " = ?1 "
                 + "and c.name in ("+categoryListToNameList(categories)+")", columnValue);
     }
 
@@ -222,7 +221,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 + "left join fetch ipInterface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
-                + "where c.name = ?",
+                + "where c.name = ?1",
                 category.getName());
     }
 
@@ -244,7 +243,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 + "join n.categories c " 
                 + "left join fetch n.assetRecord "
                 + "left join fetch n.ipInterfaces as ipInterface "
-                + "left join fetch n.snmpInterfaces as snmpIface"
+                + "left join fetch n.snmpInterfaces as snmpIface "
                 + "left join fetch ipInterface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
@@ -260,14 +259,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
             @SuppressWarnings("unchecked")
             @Override
-            public List<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<OnmsNode> doInHibernate(Session session) throws HibernateException {
 
                 return (List<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
                         + "join n.categories c1 "
                         + "join n.categories c2 "
                         + "left join fetch n.assetRecord "
                         + "left join fetch n.ipInterfaces as iface "
-                        + "left join fetch n.snmpInterfaces as snmpIface"
+                        + "left join fetch n.snmpInterfaces as snmpIface "
                         + "left join fetch iface.monitoredServices as monSvc "
                         + "left join fetch monSvc.serviceType "
                         + "left join fetch monSvc.currentOutages "
@@ -328,8 +327,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return getHibernateTemplate().execute(new HibernateCallback<SurveillanceStatus>() {
 
             @Override
-            public SurveillanceStatus doInHibernate(Session session) throws HibernateException, SQLException {
-                return (SimpleSurveillanceStatus)session.createSQLQuery("select" +
+            public SurveillanceStatus doInHibernate(Session session) throws HibernateException {
+                return (SimpleSurveillanceStatus)session.createNativeQuery("select" +
                         " count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as svcCount," +
                         " count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as upNodeCount," +
                         " count(distinct node.nodeid) as nodeCount" +
@@ -377,7 +376,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = findObjects(Object[].class, "select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?1", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -388,29 +387,29 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByForeignSource(String foreignSource) {
-        return find("from OnmsNode n where n.foreignSource = ?", foreignSource);
+        return find("from OnmsNode n where n.foreignSource = ?1", foreignSource);
     }
 
     /** {@inheritDoc} */
     @Override
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
-        return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
+        return findUnique("from OnmsNode n where n.foreignSource = ?1 and n.foreignId = ?2", foreignSource, foreignId);
     }
 
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
         if (foreignSource == null) {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.ipAddress = ?", ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.ipAddress = ?1", ipAddress);
         } else {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource = ? and ipInterface.ipAddress = ?", foreignSource, ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource = ?1 and ipInterface.ipAddress = ?2", foreignSource, ipAddress);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public int getNodeCountForForeignSource(String foreignSource) {
-        return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
+        return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?1", foreignSource);
     }
 
     /**
@@ -456,14 +455,33 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
         // we exclude the primary interface from the obsolete list since the only way for them to be obsolete is when we have snmp
-        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ?1 and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?2)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
     @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        final HibernateCallback<Integer> callback1 = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ?1 and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?2)");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, scanStamp);
+                return query.executeUpdate();
+            }
+        };
+        getHibernateTemplate().execute(callback1);
+        
+        final HibernateCallback<Integer> callback2 = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ?1 and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?2)");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, scanStamp);
+                return query.executeUpdate();
+            }
+        };
+        getHibernateTemplate().execute(callback2);
     }
 
     /** {@inheritDoc} */
@@ -488,7 +506,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Long> getNumberOfNodesBySysOid() {
-        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
+        List<Object[]> pairs = findObjects(Object[].class, "select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
         Map<String, Long> numberOfNodesBySysOid = new HashMap<String, Long>();
         for (Object[] pair : pairs) {
             numberOfNodesBySysOid.put((String)pair[0], (Long)pair[1]);
@@ -498,16 +516,34 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     @Override
     public Integer getNextNodeId (Integer nodeId) {
-        Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != ? order by n.id asc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
-        return nextNodeId;
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("select n.id from OnmsNode as n where n.id > ?1 and n.type != ?2 order by n.id asc");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, String.valueOf(NodeType.DELETED.value()));
+                query.setMaxResults(1);
+                List<Integer> results = query.list();
+                return results.isEmpty() ? null : results.get(0);
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
     @Override
     public Integer getPreviousNodeId (Integer nodeId) {
-        Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
-        return nextNodeId;
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("select n.id from OnmsNode as n where n.id < ?1 and n.type != ?2 order by n.id desc");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, String.valueOf(NodeType.DELETED.value()));
+                query.setMaxResults(1);
+                List<Integer> results = query.list();
+                return results.isEmpty() ? null : results.get(0);
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
     @Override
@@ -516,12 +552,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
             int results = 0;
 
             if (!ingressIds.isEmpty()) {
-                results += session.createSQLQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
+                results += session.createNativeQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
                         .setParameterList("ids", ingressIds)
                         .executeUpdate();
             }
             if (!egressIds.isEmpty()) {
-                results += session.createSQLQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
+                results += session.createNativeQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
                         .setParameterList("ids", egressIds)
                         .executeUpdate();
             }
@@ -551,7 +587,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     @Override
     public List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId) {
-        return find("from OnmsNode as n where n.sysName in (select l.lldpRemSysname from LldpLink l where l.node.id = ?)", nodeId);
+        return find("from OnmsNode as n where n.sysName in (select l.lldpRemSysname from LldpLink l where l.node.id = ?1)", nodeId);
     }
 
     @Override
@@ -561,7 +597,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
         // is there already a node?
         OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-            public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
+            public OnmsNode doInHibernate(Session session) throws HibernateException {
                 Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
                 return getNode(nodeId, session);
             }
@@ -583,7 +619,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         // what is happening here?
         // 1. in the case matchEnumeration is set to true, we try to find the given value by using the following regular expression: (?:^[ ,]*|,[ ]*)stringToSearchFor(?=[ ]*,|,?[ ]*$)
         // 2. of course the value to search for needs to be escaped, so we use REGEXP_REPLACE(:value, '([\.\+\*\?\^\$\(\)\[\]\{\}\|\\])', '\\\1', 'g') here
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY n.nodeid")
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createNativeQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY n.nodeid")
                 .setString("context", context)
                 .setString("key", key)
                 .setString("value", value)

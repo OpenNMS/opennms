@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -185,6 +185,16 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!--
+      The generated OpenAPI documents live here rather than in opennms-webapp-rest
+      because they describe every ReST module merged into this war, and several of
+      those depend on opennms-webapp-rest.
+    -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-openapi-docs</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>

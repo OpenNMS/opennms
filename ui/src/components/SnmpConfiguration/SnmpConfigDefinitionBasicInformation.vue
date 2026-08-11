@@ -2,22 +2,22 @@
   <div class="main-content">
     <div class="header">
       <div>
-        <PButton
-          text
+        <OnmsButton
+          variant="text"
           class="back-button"
           data-test="back-button"
           @click="onDetailsCancel"
         >
-          <FeatherIcon :icon="ArrowBack" />
+          <OnmsIcon :icon="ArrowBack" />
           Go Back
-        </PButton>
+        </OnmsButton>
       </div>
       <div>
         <h3>
           {{ isCreate ? 'Create New SNMP Definition' : 'Edit SNMP Definition Details' }}
         </h3>
       </div>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         @click="isMessageDialogVisible = true"
@@ -29,7 +29,7 @@
       <div class="section-content">
         <h4>Configuration applies to these IP Ranges:</h4>
         <div class="chip-list" v-if="badgeItems.length">
-          <PChip
+          <OnmsChip
             v-for="item of badgeItems"
             :key="createBadgeKey(item)"
             class="definition-chip"
@@ -63,7 +63,7 @@
         />
       </div>
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -96,28 +96,22 @@
           <p>Click on the SCV icon next to those fields to open the SCV drawer which allows you to select a credential from the vault. This will enter a reference to that credential in the field, which OpenNMS will resolve to the actual credential value when it needs to use it. A typical expression looks like <code>${scv:snmp-read-community}</code>, where <code>snmp-read-community</code> is the name of the credential stored in the vault. Note, you can also enter the reference expression directly into the field without using the SCV drawer, as long as you use the correct syntax.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Chip from 'primevue/chip'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
-import MessageDialog from '../Common/MessageDialog.vue'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsMessageDialog } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinition, SnmpConfigFormErrors, IpAddressRange } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 import { checkForDuplicateDefinitionItems } from '@/lib/snmpValidator'
-
-const PButton = Button
-const PChip = Chip
 
 const props = defineProps<{
   isCreate: boolean,

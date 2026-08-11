@@ -91,6 +91,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -162,7 +164,10 @@ public class ThresholdingIT {
     
     @Autowired
     private NoOpBlobStore noOpBlobStore;
-    
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
@@ -176,7 +181,12 @@ public class ThresholdingIT {
                 .setType(OnmsNode.NodeType.ACTIVE);
         nb.addInterface("192.0.2.1").setIsSnmpPrimary("P").setIsManaged("P");
         nb.addInterface("172.23.2.12").setIsSnmpPrimary("P").setIsManaged("P");
-        nodeDao.save(nb.getCurrentNode());
+        final OnmsNode node = nb.getCurrentNode();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            nodeDao.save(node);
+            nodeDao.flush();
+            return null;
+        });
 
         // Resync after adding nodes/interfaces
         interfaceToNodeCache.dataSourceSync();

@@ -38,18 +38,23 @@ describe('IpInterfacesTable.vue', () => {
   let wrapper: VueWrapper<any>
   let nodeStore: ReturnType<typeof useNodeStore>
 
-  const mountTable = () =>
-    mount(IpInterfacesTable, {
+  // The store action must be mocked BEFORE mounting — the component fetches in
+  // onMounted, and an unmocked action would fire a real network request.
+  const mountTable = () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    nodeStore = useNodeStore(pinia)
+    nodeStore.getNodeIpInterfaces = vi.fn().mockResolvedValue(undefined)
+
+    return mount(IpInterfacesTable, {
       global: {
-        plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue]
+        plugins: [pinia, PrimeVue]
       }
     })
+  }
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountTable()
-    nodeStore = useNodeStore()
-    nodeStore.getNodeIpInterfaces = vi.fn().mockResolvedValue(undefined)
     nodeStore.ipInterfaces = []
     nodeStore.ipInterfacesTotalCount = 0
     await flushPromises()

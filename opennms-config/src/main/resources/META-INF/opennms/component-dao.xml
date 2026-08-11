@@ -21,11 +21,6 @@
 		<constructor-arg value="file:${opennms.home}/etc/actiond-configuration.xml" />
 	</bean>
 
-	<bean name="ami-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
-		<constructor-arg value="org.opennms.netmgt.config.ami.AmiConfig" />
-		<constructor-arg value="file:${opennms.home}/etc/ami-config.xml" />
-	</bean>
-
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
 		<constructor-arg value="file:${opennms.home}/etc/collectd-configuration.xml" />

@@ -1,34 +1,24 @@
 <template>
-  <Button
-    text
+  <OnmsIconButton
     title="Download"
     aria-label="Download"
     aria-haspopup="true"
     aria-controls="node-download-menu"
     class="node-download-dropdown"
     data-test="download-button"
+    :icon="downloadIcon"
     @click="toggle"
-  >
-    <FeatherIcon
-      :icon="downloadIcon"
-      class="download-actions-icon"
-      title="Download"
-    />
-  </Button>
-  <Menu
+  />
+  <OnmsMenu
     id="node-download-menu"
     ref="menu"
-    :model="items"
-    popup
+    :items="items"
   />
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import Download from '@/components/icons/action/DownloadFile.vue'
+import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, ref, PropType } from 'vue'
 
 const props = defineProps({
@@ -45,7 +35,7 @@ const props = defineProps({
 const downloadIcon = markRaw(Download)
 const menu = ref()
 
-const items = ref<MenuItem[]>([
+const items = ref<OnmsMenuItem[]>([
   { label: 'Download CSV...', command: () => props.onCsvDownload() },
   { label: 'Download JSON...', command: () => props.onJsonDownload() }
 ])
@@ -56,9 +46,3 @@ const toggle = (event: Event) => {
 
 defineExpose({ items })
 </script>
-
-<style lang="scss" scoped>
-.download-actions-icon {
-  font-size: 1.1rem;
-}
-</style>

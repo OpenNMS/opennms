@@ -4,7 +4,7 @@
       <div>
         <h3>SNMP Configuration Default Overrides</h3>
         <span>View and set "global" default override values for SNMP configuration parameters.</span>
-        <FeatherIcon
+        <OnmsIcon
           :icon="InfoIcon"
           class="info-icon"
           @click="isMessageDialogVisible = true"
@@ -40,7 +40,7 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PSelect
+            <OnmsSelect
               class="snmp-config-defaults-select"
               :data-test="`snmp-config-default-${param.key}`"
               :aria-label="param.label"
@@ -60,7 +60,7 @@
                 :error="(formErrors as any)[param.key]"
                 :hint="param.hint"
               >
-                <PInputText
+                <OnmsInputText
                   class="snmp-config-defaults-input"
                   :data-test="`snmp-config-default-${param.key}`"
                   :aria-label="param.label"
@@ -84,10 +84,9 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PInputNumber
+            <OnmsInputNumber
               class="snmp-config-defaults-input"
               :inputProps="{ 'data-test': `snmp-config-default-${param.key}`, 'aria-label': param.label }"
-              :useGrouping="false"
               :invalid="!!(formErrors as any)[param.key]"
               :modelValue="(formConfig[param.key] as number)"
               @update:modelValue="(val) => handleInputUpdate(param.key, val ?? undefined)"
@@ -100,7 +99,7 @@
             :error="(formErrors as any)[param.key]"
             :hint="param.hint"
           >
-            <PInputText
+            <OnmsInputText
               class="snmp-config-defaults-input"
               :data-test="`snmp-config-default-${param.key}`"
               :aria-label="param.label"
@@ -115,12 +114,12 @@
 
       <div class="onms-row button-row">
         <div class="onms-col-12">
-          <PButton
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Reset to System Defaults"
             @click="onReset"
           />
-           <PButton
+           <OnmsButton
             label="Save"
             @click="onSave"
           />
@@ -133,7 +132,7 @@
       @hidden="scvSearchDrawerOpen = false"
       @itemSelected="scvItemSelected"
     />
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       title="SNMP Configuration Defaults"
       @close="isMessageDialogVisible = false"
@@ -150,20 +149,16 @@
           <p>To reset all overrides and return to using the system defaults, click the "Reset to System Defaults" button and then click Save to apply the reset.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
-import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
-import { ISelectItemType } from '@featherds/select'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
+import InfoIcon from '@/components/icons/action/Info.vue'
+import { ISelectItemType } from '@/types'
 
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
@@ -192,12 +187,6 @@ import { saveSnmpConfigDefaultOverrides } from '@/services/snmpConfigService'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { ScvSearchItem } from '@/types/scv'
 import { SnmpConfigFormErrors, type SnmpBaseConfiguration } from '@/types/snmpConfig'
-import MessageDialog from '../Common/MessageDialog.vue'
-
-const PButton = Button
-const PInputNumber = InputNumber
-const PInputText = InputText
-const PSelect = Select
 
 // SNMP Version options
 const SnmpVersions: ISelectItemType[] = [

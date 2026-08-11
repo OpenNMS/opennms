@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -54,6 +54,41 @@
         <build.assembly.type>full</build.assembly.type>
         <build.assembly.format>dir</build.assembly.format>
       </properties>
+    </profile>
+    <profile>
+      <id>build-meridian</id>
+      <activation>
+        <property>
+          <name>build.meridian</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>karaf-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>features-add-to-repository-ha</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>features-add-to-repository</goal>
+                </goals>
+                <configuration>
+                  <descriptors>
+                    <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                  </descriptors>
+                  <features>
+                    <feature>opennms-ha-shell</feature>
+                    <feature>opennms-ha-rest</feature>
+                  </features>
+                  <repository>${project.build.directory}/opennms-repo</repository>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
   <build>
@@ -322,18 +357,15 @@
                 <feature>spring-jms/4.1.9.RELEASE_1</feature>
                 <feature>spring/4.2.9.RELEASE_1</feature>
                 <feature>spring/4.3.30.RELEASE_1</feature>
-                <feature>spring/${springVersion}</feature>
-                <feature>spring-aspects/${springVersion}</feature>
-                <feature>spring-instrument/${springVersion}</feature>
-                <feature>spring-jdbc/${springVersion}</feature>
-                <feature>spring-jms/${springVersion}</feature>
-                <feature>spring-orm/${springVersion}</feature>
-                <feature>spring-oxm/${springVersion}</feature>
-                <feature>spring-test/${springVersion}</feature>
-                <feature>spring-tx/${springVersion}</feature>
-                <feature>spring-web/${springVersion}</feature>
-                <feature>spring-web-portlet/${springVersion}</feature>
-                <feature>spring-websocket/${springVersion}</feature>
+                <feature>spring/${springOsgiVersion}</feature>
+                <feature>spring-aspects/${springOsgiVersion}</feature>
+                <feature>spring-instrument/${springOsgiVersion}</feature>
+                <feature>spring-jdbc/${springOsgiVersion}</feature>
+                <feature>spring-jms/${springOsgiVersion}</feature>
+                <feature>spring-orm/${springOsgiVersion}</feature>
+                <feature>spring-oxm/${springOsgiVersion}</feature>
+                <feature>spring-test/${springOsgiVersion}</feature>
+                <feature>spring-tx/${springOsgiVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
                 <feature>activemq-broker-noweb</feature>
@@ -396,15 +428,13 @@
                 <feature>dropwizard-metrics</feature>
                 <feature>fop</feature>
                 <feature>guava</feature>
-                <feature>hibernate36</feature>
-                <feature>hibernate-validator4</feature>
+                <feature>hibernate5</feature>
+                <feature>hibernate-validator6</feature>
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>
                 <feature>json-lib</feature>
-                <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
                 <feature>opennms-activemq-shell</feature>
-                <feature>opennms-bootstrap</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
@@ -458,9 +488,6 @@
                 <feature>opennms-osgi-core-rest</feature>
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
-                <feature>smack</feature>
-                <feature>spring-security-opennms</feature>
-                <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>
                 <feature>opennms-amqp-event-forwarder</feature>
@@ -573,7 +600,6 @@
                 <feature>opennms-discovery</feature>
                 <feature>opennms-events-daemon</feature>
                 <feature>opennms-reporting</feature>
-                <feature>opennms-webapp</feature>
               </features>
               <repository>${project.build.directory}/experimental-repo</repository>
             </configuration>
@@ -706,6 +732,23 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
           <execution>
             <phase>verify</phase>
             <goals>

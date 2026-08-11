@@ -81,7 +81,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/** identifier field */
 	@Id
 	@Column(name="eventId", nullable=false)
-	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
+	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId", allocationSize = 1)
 	@GeneratedValue(generator="eventSequence")
 	private Long eventId;
 

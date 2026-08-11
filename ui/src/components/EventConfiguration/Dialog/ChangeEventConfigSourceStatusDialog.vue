@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="store.changeEventConfigSourceStatusDialogState.visible"
     title="Change Event Configuration Source Status"
     action-button-text="Save"
@@ -13,11 +13,11 @@
       </p>
       <p><strong>Are you sure you want to proceed?</strong></p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 

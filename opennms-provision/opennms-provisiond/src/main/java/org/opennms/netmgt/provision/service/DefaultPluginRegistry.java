@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.Valid;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
@@ -117,7 +116,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     /** {@inheritDoc} */
     @Override
-    public <T> T getPluginInstance(Class<T> pluginClass, @Valid PluginConfig pluginConfig) {
+    public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {
             return null;

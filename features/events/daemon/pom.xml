@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -27,6 +27,12 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <!-- TcpListener/UdpListener; camel-netty4 2.x used to provide this transitively -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-xml</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>

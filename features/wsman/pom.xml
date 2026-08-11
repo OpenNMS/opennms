@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -23,11 +23,16 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <!-- Don't export any packages, expose services only. -->
             <Export-Package></Export-Package>
+            <!-- jakarta.mail is optional: this bundle accidentally embeds all of
+                 poller-monitors-core's org.opennms.netmgt.poller.monitors package
+                 (split package with WsManMonitor) and the mail imports come from
+                 those foreign classes, which are never used here -->
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.opennms.core.network,
               org.opennms.netmgt.collection.adapters,
+              jakarta.mail*;resolution:=optional,
               *
             </Import-Package>
           </instructions>

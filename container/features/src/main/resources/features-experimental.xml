@@ -65,10 +65,10 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
-      <feature>camel-netty4</feature>
+      <feature>camel-netty</feature>
       <feature>commons-beanutils</feature>
       <feature>guava</feature>
-      <feature>gemini-blueprint</feature>
+      <feature>opennms-spring-extender</feature>
 
       <feature>opennms-core-daemon</feature>
       <feature>opennms-dao-api</feature>
@@ -101,46 +101,5 @@
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
-      <feature>war</feature>
-
-      <feature>commons-beanutils</feature>
-      <feature>commons-configuration</feature>
-      <feature>commons-jexl</feature>
-      <feature>fop</feature>
-      <feature>hibernate-validator4</feature>
-      <feature>joda-time</feature>
-      <feature>opennms-rrd-util</feature>
-      <feature>json-lib</feature>
-      <feature>quartz</feature>
-
-      <feature>opennms-config</feature>
-      <feature>opennms-dao</feature>
-      <feature>opennms-provisioning</feature>
-      <feature>opennms-reporting</feature>
-
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>
-      <bundle>wrap:mvn:org.w3c.css/sac/1.3$Bundle-SymbolicName=org.w3c.css.sac&amp;Bundle-Version=1.3</bundle>
-      <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
-      <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11$Bundle-SymbolicName=net.sourceforge.cssparser&amp;Bundle-Version=0.9.11</bundle>
-      <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}$Bundle-SymbolicName=com.google.gwt.servlet&amp;Bundle-Version=${gwtVersion}</bundle> -->
-
-      <feature>commons-cli</feature>
-      <feature>commons-exec</feature>
-      <feature>commons-net</feature>
-      <bundle>mvn:org.opennms.features/org.opennms.features.system-report/${project.version}</bundle>
-
-      <feature>opennms-core-web</feature>
-      <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
-
-      <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-
-      <feature>spring-security-opennms</feature>
-      <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
-
-      <!-- The main webapp WAR file -->
-      <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
-    </feature>
 
 </features>
