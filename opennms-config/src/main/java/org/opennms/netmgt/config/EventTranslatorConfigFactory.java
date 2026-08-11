@@ -23,19 +23,14 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyEditorSupport;
 import java.beans.PropertyVetoException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,6 +52,7 @@ import org.opennms.netmgt.config.translator.EventTranslationSpec;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
 import org.opennms.netmgt.config.translator.Value;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -89,7 +85,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      */
     private EventTranslatorConfiguration m_config;
 
-    private List<TranslationSpec> m_translationSpecs;
+    /** Volatile because update() clears it while translateEvent() reads it unsynchronized. */
+    private volatile List<TranslationSpec> m_translationSpecs;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -360,18 +357,26 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         }
 
         public Event translate(Event srcEvent) {
-            Event targetEvent = cloneEvent(srcEvent);
+            final List<AssignmentSpec> assignmentSpecs = getAssignmentSpecs();
 
-            for (AssignmentSpec assignSpec : getAssignmentSpecs()) {
-                if (assignSpec.matches(srcEvent)) {
-                    assignSpec.apply(srcEvent, targetEvent);
+            /* Resolving before cloning is safe because value specs only ever read the source
+             * event, and it keeps a mapping that rejects the event from paying for a clone. */
+            final String[] values = new String[assignmentSpecs.size()];
+            for (int i = 0; i < values.length; i++) {
+                final AssignmentSpec assignSpec = assignmentSpecs.get(i);
+                final EvaluationResult result = assignSpec.evaluate(srcEvent);
+                if (result.matched()) {
+                    values[i] = result.value();
+                } else if (assignSpec.getAssignment().hasDefault()) {
+                    values[i] = assignSpec.getAssignment().getDefault();
                 } else {
-                    if (assignSpec.getAssignment().hasDefault()) {
-                        assignSpec.setValue(targetEvent, assignSpec.getAssignment().getDefault());
-                    } else {
-                        return null;
-                    }
+                    return null;
                 }
+            }
+
+            final Event targetEvent = cloneEvent(srcEvent);
+            for (int i = 0; i < values.length; i++) {
+                assignmentSpecs.get(i).setValue(targetEvent, values[i]);
             }
 
             targetEvent.setSource(TRANSLATOR_NAME);
@@ -426,12 +431,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         private Assignment m_assignment;
         private ValueSpec m_valueSpec;
         AssignmentSpec(Assignment assignment) {
-            m_assignment = assignment; 
+            m_assignment = assignment;
             m_valueSpec = null; // lazy init
-        }
-
-        public void apply(Event srcEvent, Event targetEvent) {
-            setValue(targetEvent, getValueSpec().getResult(srcEvent));
         }
 
         private Assignment getAssignment() { return m_assignment; }
@@ -451,8 +452,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 m_valueSpec = constructValueSpec();
             return m_valueSpec;
         }
-        boolean matches(Event e) {
-            return getValueSpec().matches(e);
+
+        EvaluationResult evaluate(Event srcEvent) {
+            return getValueSpec().evaluate(srcEvent);
         }
     }
 
@@ -521,12 +523,47 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             return new ValueSpecUnspecified();
     }
 
+    /**
+     * Outcome of evaluating a {@link ValueSpec} against an event: either no match, or a match
+     * carrying a value. A matched value may legitimately be null (a SQL lookup that found a row
+     * with a null column), so this cannot collapse into an Optional.
+     */
+    static final class EvaluationResult {
+        private static final EvaluationResult NO_MATCH = new EvaluationResult(null, false);
+
+        private final String m_value;
+        private final boolean m_matched;
+
+        private EvaluationResult(String value, boolean matched) {
+            m_value = value;
+            m_matched = matched;
+        }
+
+        static EvaluationResult noMatch() {
+            return NO_MATCH;
+        }
+
+        static EvaluationResult of(String value) {
+            return new EvaluationResult(value, true);
+        }
+
+        boolean matched() {
+            return m_matched;
+        }
+
+        String value() {
+            return m_value;
+        }
+    }
 
     abstract class ValueSpec {
 
-        public abstract boolean matches(Event e);
-
-        public abstract String getResult(Event srcEvent);
+        /**
+         * Evaluates this value against the source event exactly once, yielding both whether it
+         * matched and the value to assign. Callers must not re-evaluate to obtain the value:
+         * for sql values each evaluation is a database round trip.
+         */
+        public abstract EvaluationResult evaluate(Event srcEvent);
     }
 
     class ConstantValueSpec extends ValueSpec {
@@ -536,20 +573,13 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             m_constant = constant;
         }
 
-
         @Override
-        public boolean matches(Event e) {
+        public EvaluationResult evaluate(Event srcEvent) {
             if (m_constant.getMatches().isPresent()) {
-                LOG.warn("ConstantValueSpec.matches: matches not allowed for constant value.");
+                LOG.warn("ConstantValueSpec.evaluate: matches not allowed for constant value.");
                 throw new IllegalStateException("Illegal to use matches with constant type values");
             }
-            return true;
-        }
-
-
-        @Override
-        public String getResult(Event srcEvent) {
-            return m_constant.getResult();
+            return EvaluationResult.of(m_constant.getResult());
         }
 
     }
@@ -557,14 +587,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     class ValueSpecUnspecified extends ValueSpec {
 
         @Override
-        public boolean matches(Event e) {
+        public EvaluationResult evaluate(Event srcEvent) {
             // TODO: this should probably throw an exception since it makes no sense
-            return true;
-        }
-
-        @Override
-        public String getResult(Event srcEvent) {
-            return "value unspecified";
+            return EvaluationResult.of("value unspecified");
         }
 
     }
@@ -592,130 +617,63 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         }
 
         @Override
-        public boolean matches(Event e) {
-            for (ValueSpec nestedVal : getNestedValues()) {
-                if (!nestedVal.matches(e))
-                    return false;
-            }
-
-            Query query = createQuery(e);
-            int rowCount = query.execute();
-
-            if (rowCount < 1) {
-                LOG.info("No results found for query {}. No match.", query.reproduceStatement());
-                return false;
-            }
-
-            return true;
-        }
-
-        private class Query {
-            SingleResultQuerier m_querier;
-            Object[] m_args;
-
-            Query(SingleResultQuerier querier, Object[] args) {
-                m_querier = querier;
-                m_args = Arrays.copyOf(args, args.length);
-            }
-
-            public int getRowCount() {
-                return m_querier.getCount();
-            }
-
-            public int execute() {
-                m_querier.execute(m_args);
-                return getRowCount();
-            }
-
-            public String reproduceStatement() {
-                return m_querier.reproduceStatement(m_args);
-            }
-
-            public Object getResult() {
-                return m_querier.getResult();
-            }
-
-        }
-
-        public Query createQuery(Event srcEvent) {
-            Object[] args = new Object[getNestedValues().size()];
-            SingleResultQuerier querier = new SingleResultQuerier(m_dbConnFactory, m_val.getResult());
+        public EvaluationResult evaluate(Event srcEvent) {
+            final List<ValueSpec> nestedValues = getNestedValues();
+            final Object[] args = new Object[nestedValues.size()];
             for (int i = 0; i < args.length; i++) {
-                args[i] = (getNestedValues().get(i)).getResult(srcEvent);
-            }
-
-            return new Query(querier, args);
-        }
-
-        @Override
-        public String getResult(Event srcEvent) {
-            Query query = createQuery(srcEvent);
-            query.execute();
-            if (query.getRowCount() < 1) {
-                LOG.info("No results found for query {}. Returning null", query.reproduceStatement());
-                return null;
-            }
-            else {
-                Object result = query.getResult();
-                LOG.debug("getResult: result of single result querier is: {}", result);
-                if (result != null) {
-                    return result.toString();
-                } else {
-                    return null;
+                final EvaluationResult nested = nestedValues.get(i).evaluate(srcEvent);
+                if (!nested.matched()) {
+                    return EvaluationResult.noMatch();
                 }
+                args[i] = nested.value();
             }
+
+            final SingleResultQuerier querier = new SingleResultQuerier(m_dbConnFactory, m_val.getResult());
+            querier.execute(args);
+
+            if (querier.getCount() < 1) {
+                LOG.info("No results found for query {}. No match.", querier.reproduceStatement(args));
+                return EvaluationResult.noMatch();
+            }
+
+            final Object result = querier.getResult();
+            LOG.debug("evaluate: result of single result querier is: {}", result);
+            return EvaluationResult.of(result == null ? null : result.toString());
         }
 
     }
 
     abstract class AttributeValueSpec extends ValueSpec {
         Value m_val;
-        AttributeValueSpec(Value val) { m_val = val; }
+        /** Compiled once at construction; null when the value has no 'matches' attribute. */
+        private final Pattern m_pattern;
 
-        @Override
-        public boolean matches(Event e) {
-
-            String attributeValue = getAttributeValue(e);
-            if (attributeValue == null) {
-                LOG.debug("AttributeValueSpec.matches: Event attributeValue doesn't match because attributeValue itself is null");
-                return false;
-            }
-
-            if (!m_val.getMatches().isPresent()) {
-                LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} matches because pattern is null", attributeValue);
-                return true;
-            }
-
-            Pattern p = Pattern.compile(m_val.getMatches().get());
-            Matcher m = p.matcher(attributeValue);
-
-            LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} {} pattern: {}", attributeValue, (m.matches()? "matches" : "doesn't match"), m_val.getMatches());
-            if (m.matches()) {
-                return true;
-            } else {
-                return false;
-            }
+        AttributeValueSpec(Value val) {
+            m_val = val;
+            m_pattern = val.getMatches().map(Pattern::compile).orElse(null);
         }
 
         @Override
-        public String getResult(Event srcEvent) {
-            if (!m_val.getMatches().isPresent()) return m_val.getResult();
-
-            String attributeValue = getAttributeValue(srcEvent);
-
+        public EvaluationResult evaluate(Event srcEvent) {
+            final String attributeValue = getAttributeValue(srcEvent);
             if (attributeValue == null) {
-                throw new TranslationFailedException("failed to match null against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
+                LOG.debug("AttributeValueSpec.evaluate: no match because attribute {} is null", getAttributeName());
+                return EvaluationResult.noMatch();
             }
 
-            Pattern p = Pattern.compile(m_val.getMatches().get());
-            final Matcher m = p.matcher(attributeValue);
+            if (m_pattern == null) {
+                LOG.debug("AttributeValueSpec.evaluate: Event attributeValue: {} matches because pattern is null", attributeValue);
+                return EvaluationResult.of(m_val.getResult());
+            }
+
+            final Matcher m = m_pattern.matcher(attributeValue);
             if (!m.matches()) {
-                throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches().get()+"' for attribute "+getAttributeName());
+                LOG.debug("AttributeValueSpec.evaluate: Event attributeValue: {} doesn't match pattern: {}", attributeValue, m_pattern);
+                return EvaluationResult.noMatch();
             }
 
-            MatchTable matches = new MatchTable(m);
-
-            return PropertiesUtils.substitute(m_val.getResult(), matches);
+            LOG.debug("AttributeValueSpec.evaluate: Event attributeValue: {} matches pattern: {}", attributeValue, m_pattern);
+            return EvaluationResult.of(PropertiesUtils.substitute(m_val.getResult(), new MatchTable(m)));
         }
 
         public String getAttributeName() { return m_val.getName().orElse(null); }
@@ -777,7 +735,16 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     class ParameterValueSpec extends AttributeValueSpec {
-        ParameterValueSpec(Value val) { super(val); }
+        /** A '~' prefix makes the name a regex matched against each parm name; null otherwise. */
+        private final Pattern m_namePattern;
+
+        ParameterValueSpec(Value val) {
+            super(val);
+            final String attrName = val.getName().orElse(null);
+            m_namePattern = (attrName != null && attrName.startsWith("~"))
+                    ? Pattern.compile(StringUtils.removeStart(attrName, "~"))
+                    : null;
+        }
 
         @Override
         public String getAttributeValue(Event e) {
@@ -790,10 +757,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
                 }
 
-                String trimmedAttrName = StringUtils.removeStart(attrName, "~");
-
-                if (attrName.startsWith("~") && (parm.getParmName().matches(trimmedAttrName))) {
-                    LOG.debug("getAttributeValue: eventParm name: '{} matches translation parameter name expression: ' {}", trimmedAttrName, parm.getParmName());
+                if (m_namePattern != null && m_namePattern.matcher(parm.getParmName()).matches()) {
+                    LOG.debug("getAttributeValue: eventParm name: '{} matches translation parameter name expression: ' {}", parm.getParmName(), m_namePattern);
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
                 }
             }
@@ -809,27 +774,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event cloneEvent(Event orig) {
-        Event copy = null;
-        try {
-            // Write the object out to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(orig);
-            out.flush();
-            out.close();
-
-            // Make an input stream from the byte array and read
-            // a copy of the object back in.
-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-            copy = (Event)in.readObject();
-        }
-        catch(IOException e) {
-            LOG.error("Exception cloning event", e);
-        }
-        catch(ClassNotFoundException cnfe) {
-            LOG.error("Exception cloning event", cnfe);
-        }
-        return copy;
-    }	
+        // Event doesn't implement IEvent, so the deep copy has to go via the immutable model.
+        return Event.copyFrom(ImmutableMapper.fromMutableEvent(orig));
+    }
 
 }
