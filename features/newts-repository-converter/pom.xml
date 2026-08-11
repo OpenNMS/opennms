@@ -12,6 +12,8 @@
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- cassandra-unit runs Cassandra 3.11 in-process, and it cannot serve requests on Netty 4.2 -->
+    <netty4Version>4.1.132.Final</netty4Version>
   </properties>
   <dependencies>
     <dependency>
