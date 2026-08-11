@@ -266,10 +266,47 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         try {
             sendRequest(GET, "/notification-config/status", 403);
             sendRequest(GET, "/notification-config/event-notifications", 403);
+            sendRequest(GET, "/notification-config/services", 403);
             sendData(PUT, MediaType.APPLICATION_JSON, "/notification-config/status", "{\"status\":\"on\"}", 403);
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/rule/validate",
+                    "{\"rule\":\"IPADDR IPLIKE *.*.*.*\"}", 403);
+            sendRequest(DELETE, "/notification-config/event-notifications/junitNotification", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
+    }
+
+    @Test
+    public void testGetServiceNames() throws Exception {
+        // Admin can read the service list; the value depends on the fixture, so
+        // assert only that the endpoint returns a well-formed JSON array.
+        final JSONArray services = new JSONArray(getJson("/notification-config/services"));
+        Assert.assertNotNull(services);
+    }
+
+    @Test
+    public void testValidateRule() throws Exception {
+        // Valid rule, default (no preview): valid true and the expensive match
+        // map is not built.
+        final JSONObject validated = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON,
+                "/notification-config/rule/validate", "{\"rule\":\"IPADDR IPLIKE *.*.*.*\"}", 200)
+                .getContentAsString());
+        Assert.assertTrue(validated.getBoolean("valid"));
+        Assert.assertEquals(0, validated.optInt("matchCount", 0));
+
+        // Same rule with preview requested: still valid, and the match count is
+        // now populated (>= 0).
+        final JSONObject previewed = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON,
+                "/notification-config/rule/validate", "{\"rule\":\"IPADDR IPLIKE *.*.*.*\",\"preview\":true}", 200)
+                .getContentAsString());
+        Assert.assertTrue(previewed.getBoolean("valid"));
+        Assert.assertTrue(previewed.getInt("matchCount") >= 0);
+
+        // A blank rule is rejected as invalid input, not an error.
+        final JSONObject blank = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON,
+                "/notification-config/rule/validate", "{\"rule\":\"\"}", 200)
+                .getContentAsString());
+        Assert.assertFalse(blank.getBoolean("valid"));
     }
 
     private String getJson(final String url) throws Exception {
