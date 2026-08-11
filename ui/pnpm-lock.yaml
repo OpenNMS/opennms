@@ -252,6 +252,9 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^5.2.4
         version: 5.2.4(vite@6.4.3(@types/node@25.6.0)(sass@1.99.0))(vue@3.5.33(typescript@5.4.5))
+      rollup:
+        specifier: ^4.59.0
+        version: 4.62.2
       rollup-plugin-external-globals:
         specifier: ^0.13.0
         version: 0.13.0(rollup@4.62.2)
@@ -3292,7 +3295,7 @@ snapshots:
 
   '@rollup/pluginutils@5.3.0(rollup@4.62.2)':
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       estree-walker: 2.0.2
       picomatch: 4.0.4
     optionalDependencies:
@@ -4847,7 +4850,7 @@ snapshots:
   eslint-scope@9.1.2:
     dependencies:
       '@types/esrecurse': 4.3.1
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       esrecurse: 4.3.0
       estraverse: 5.3.0
 
