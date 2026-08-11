@@ -29,11 +29,12 @@
 
       <span
         class="date-icon-wrapper"
-        v-onms-tooltip="`${formattedTime} ${formattedDate}`"
-        tabindex="0"
-        :aria-label="`${formattedTime} ${formattedDate}`"
+        v-onms-tooltip="dateTimeLabel"
       >
-        <OnmsIcon :icon="CalendarIcon" />
+        <OnmsIcon
+          :icon="CalendarIcon"
+          :title="dateTimeLabel"
+        />
       </span>
 
        <span title="Toggle Light/Dark Mode">
@@ -93,6 +94,11 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
+
+// Empty (falsy) until the menu data loads, which keeps the tooltip unbound —
+// PrimeVue's string-form tooltip does not trim whitespace-only values and
+// would otherwise show an empty box.
+const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()
@@ -232,11 +238,14 @@ onUnmounted(() => {
 }
 
 // The logo is a wide wordmark SVG (viewBox 624x69). Size by height and let
-// width follow; override the SVG's own max-width so it isn't clamped/distorted.
+// width follow. The max-width is a guard for rebranded logos substituted via
+// VITE_APP_LOGO_NAME: since the left column refuses to shrink below the logo,
+// an unbounded ultra-wide asset would crowd out the rest of the bar. An SVG
+// wider than the cap letterboxes (scales down) rather than distorts.
 .onms-menubar__logo {
   height: 1.75rem;
   width: auto;
-  max-width: none;
+  max-width: 18rem;
 }
 
 // Notification-status colors stay on their light-mode values so the indicator
@@ -289,6 +298,7 @@ onUnmounted(() => {
   flex-direction: column;
   font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
+  margin-left: 1em;
   margin-right: 1em;
   // Keep time/date each on one line; without this the text word-wraps and
   // spills out of the fixed-height bar when the right column is squeezed.
@@ -321,14 +331,8 @@ onUnmounted(() => {
     display: inline-flex;
     align-items: center;
     font-size: 24px;
+    margin-left: 1em;
     margin-right: 1em;
-    outline: none;
-
-    &:focus-visible {
-      outline: 2px solid var(--onms-primary);
-      outline-offset: 2px;
-      border-radius: 4px;
-    }
   }
 }
 </style>
