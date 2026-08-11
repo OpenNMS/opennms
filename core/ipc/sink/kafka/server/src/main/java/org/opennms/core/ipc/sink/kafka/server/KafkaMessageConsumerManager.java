@@ -267,7 +267,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             for (int i = 0; i < numConsumerThreads; i++) {
                 final KafkaConsumerRunner consumerRunner = new KafkaConsumerRunner(module);
                 executor.execute(consumerRunner);
-                consumerRunners.add(new KafkaConsumerRunner(module));
+                consumerRunners.add(consumerRunner);
             }
 
             consumerRunnersByModule.put(module, consumerRunners);
