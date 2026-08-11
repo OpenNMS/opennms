@@ -61,7 +61,7 @@
     >
       <OnmsMultiSelect
         v-model="row.commands"
-        :labelId="`target-methods-${row.key}`"
+        :inputId="`target-methods-${row.key}`"
         :options="rowMethodOptions"
         optionLabel="label"
         optionValue="value"
