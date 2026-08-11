@@ -61,24 +61,36 @@ public final class OpenApiDocGenerator {
 
     public enum Api {
         V1("OpenNMS V1 RESTful API",
+           "The original OpenNMS ReST API. Endpoints accept and return XML or JSON, "
+                   + "and authenticate with HTTP basic.",
            "org.opennms.web.rest.v1",
            "openapi-v1.json"),
         V2("OpenNMS V2 RESTful API",
+           "The newer OpenNMS ReST API, where collection endpoints share a common query layer: "
+                   + "`_s` takes a FIQL search expression, and `limit`, `offset`, `orderBy` and `order` "
+                   + "page and sort the result. Endpoints accept and return XML or JSON, and "
+                   + "authenticate with HTTP basic.",
            "org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status",
            "openapi-v2.json");
 
         private final String title;
+        private final String description;
         private final String basePackages;
         private final String fileName;
 
-        Api(final String title, final String basePackages, final String fileName) {
+        Api(final String title, final String description, final String basePackages, final String fileName) {
             this.title = title;
+            this.description = description;
             this.basePackages = basePackages;
             this.fileName = fileName;
         }
 
         public String getTitle() {
             return title;
+        }
+
+        public String getDescription() {
+            return description;
         }
 
         public String getBasePackages() {
@@ -97,7 +109,7 @@ public final class OpenApiDocGenerator {
         final OpenAPI seed = new OpenAPI()
                 .info(new Info()
                         .title(api.getTitle())
-                        .description(api.getTitle())
+                        .description(api.getDescription())
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("OpenNMS")

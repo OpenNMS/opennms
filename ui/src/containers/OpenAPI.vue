@@ -16,6 +16,8 @@
         <OnmsTab :value="0">V2 API</OnmsTab>
         <OnmsTab :value="1">V1 API</OnmsTab>
       </OnmsTabList>
+      <!-- show-info="false" so focused mode opens on the first operation rather than
+           the info section, which is also served with the document itself. -->
       <OnmsTabPanels>
         <OnmsTabPanel :value="0">
           <rapi-doc
@@ -30,6 +32,7 @@
             update-route="false"
             allow-authentication="false"
             show-header="false"
+            show-info="false"
           />
         </OnmsTabPanel>
         <OnmsTabPanel :value="1">
@@ -45,6 +48,7 @@
             update-route="false"
             allow-authentication="false"
             show-header="false"
+            show-info="false"
           />
         </OnmsTabPanel>
       </OnmsTabPanels>
