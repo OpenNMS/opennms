@@ -272,13 +272,17 @@ export const configIsQueryable = (config: AdhocGraphConfig): boolean =>
  * The parts of a config that change the server response. Style, colour, title,
  * vertical label and stacking are re-rendered from data already in hand, so they
  * deliberately do not appear here and never trigger a refetch.
+ *
+ * For a relative window the identity is the RANGE, not the instants it currently
+ * resolves to. Re-resolving "last two days" against a newer clock is not a change
+ * of query — and treating it as one would make every Refresh fire twice, once
+ * explicitly and once from the watcher that observes this.
  */
 export const querySignature = (config: AdhocGraphConfig, time: StartEndTime): string => JSON.stringify([
   config.series.map(entry => [entry.resourceId, entry.attribute, entry.aggregation, entry.label, entry.hidden]),
   config.expressions.map(expression => [expression.label, expression.value]),
   config.resolution,
-  time.startTime,
-  time.endTime
+  time.range ? ['range', time.range.unit, time.range.amount] : [time.startTime, time.endTime]
 ])
 
 /**

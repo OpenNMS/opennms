@@ -277,6 +277,121 @@ describe('AdhocGraphBuilder', () => {
     })
   })
 
+  describe('relative time ranges', () => {
+    const selectOne = async (store: ReturnType<typeof useAdhocGraphStore>) => {
+      await store.setSelectedNodes([{ id: '1', label: 'switch-01' }])
+      await flushPromises()
+      await store.setSelectedResources([store.resourceOptions[0]])
+      await flushPromises()
+      store.setSelectedDatasources([store.datasourceOptions[0]])
+      await flushPromises()
+    }
+
+    const windowOf = (call: number) => {
+      const payload = getGraphMetrics.mock.calls[call][0]
+      return { start: payload.start, end: payload.end, span: payload.end - payload.start }
+    }
+
+    it('defaults to a relative window rather than a frozen one', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await selectOne(store)
+
+      await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
+      await flushPromises()
+
+      expect(getGraphMetrics).toHaveBeenCalled()
+      // 24h default.
+      expect(windowOf(getGraphMetrics.mock.calls.length - 1).span).toBe(24 * 3600 * 1000)
+    })
+
+    // The reported bug: a bookmark held the instants current when it was made.
+    it('resolves a bookmarked range against the clock now, not when it was saved', async () => {
+      routeQuery = {
+        s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`,
+        range: 'hours:2'
+      }
+
+      const before = Date.now()
+      mountBuilder()
+      await flushPromises()
+
+      const { start, end, span } = windowOf(0)
+      expect(span).toBe(2 * 3600 * 1000)
+      // The window ends about now — not at some timestamp baked into the link.
+      expect(end).toBeGreaterThanOrEqual(before - 5000)
+      expect(start).toBe(end - span)
+    })
+
+    it('still honours an absolute range from a custom-time link', async () => {
+      routeQuery = {
+        s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`,
+        start: '1704067200',
+        end: '1704070800'
+      }
+
+      mountBuilder()
+      await flushPromises()
+
+      expect(windowOf(0).start).toBe(1_704_067_200_000)
+      expect(windowOf(0).end).toBe(1_704_070_800_000)
+    })
+
+    // Also broken before: Refresh re-sent the window captured at selection time.
+    it('slides the window forward on Refresh', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await selectOne(store)
+      await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
+      await flushPromises()
+
+      const first = windowOf(getGraphMetrics.mock.calls.length - 1)
+
+      vi.setSystemTime(new Date(Date.now() + 3_600_000))
+      await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
+      await flushPromises()
+
+      const second = windowOf(getGraphMetrics.mock.calls.length - 1)
+      expect(second.end - first.end).toBeGreaterThanOrEqual(3_500_000)
+      expect(second.span).toBe(first.span)
+      vi.useRealTimers()
+    })
+
+    it('does not slide an absolute window on Refresh', async () => {
+      routeQuery = {
+        s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`,
+        start: '1704067200',
+        end: '1704070800'
+      }
+
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      vi.setSystemTime(new Date(Date.now() + 3_600_000))
+      await wrapper.find('[data-test="toolbar-refresh"]').trigger('click')
+      await flushPromises()
+
+      const last = windowOf(getGraphMetrics.mock.calls.length - 1)
+      expect(last.start).toBe(1_704_067_200_000)
+      expect(last.end).toBe(1_704_070_800_000)
+      vi.useRealTimers()
+    })
+
+    it('shares a relative link as a range, not as instants', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+      await selectOne(store)
+
+      await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+      await flushPromises()
+
+      const url = decodeURIComponent(copyToClipboard.mock.calls[0][0] as string)
+      expect(url).toContain('range=hours:24')
+      expect(url).not.toContain('start=')
+    })
+  })
+
   describe('the Series and Expressions panels', () => {
     const panels = (wrapper: ReturnType<typeof mount>) =>
       Object.fromEntries(wrapper.findAllComponents({ name: 'OnmsPanel' })

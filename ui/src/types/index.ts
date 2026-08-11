@@ -423,10 +423,24 @@ export interface AppInfo {
   version: string
 }
 
+/**
+ * A window anchored to "now" rather than to fixed instants — the thing a user
+ * actually picks when they choose "Last two days". Carried alongside the resolved
+ * timestamps so the window can be recomputed later: a bookmarked link, or a
+ * Refresh minutes after the selection, both need the LATEST two days, not the two
+ * days that were current when the choice was made.
+ */
+export interface RelativeTimeRange {
+  unit: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years'
+  amount: number
+}
+
 export interface StartEndTime {
   startTime: string | number
   endTime: string | number
   format: string
+  /** Present when the window came from a relative range and can be re-resolved. */
+  range?: RelativeTimeRange
 }
 
 export interface ResourceDefinitionsApiResponse extends ApiResponse {

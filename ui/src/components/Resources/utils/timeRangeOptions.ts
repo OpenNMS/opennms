@@ -20,7 +20,9 @@
 /// License.
 ///
 
+import { getUnixTime, sub } from 'date-fns'
 import type { Duration } from 'date-fns'
+import { RelativeTimeRange, StartEndTime } from '@/types'
 
 export interface TimeOption {
   label: string
@@ -78,3 +80,42 @@ export const HOUR_OPTIONS: TimeOption[] = [
   { label: '10 PM', time: { hours: 22 }},
   { label: '11 PM', time: { hours: 23 }}
 ]
+
+/** Units a relative range may use; anything else is rejected when decoding a link. */
+export const RANGE_UNITS: RelativeTimeRange['unit'][] =
+  ['minutes', 'hours', 'days', 'weeks', 'months', 'years']
+
+/** The window shown before anything is picked. */
+export const DEFAULT_RANGE: RelativeTimeRange = { unit: 'hours', amount: 24 }
+
+/**
+ * Reduce a picker option to a relative range.
+ *
+ * Every option carries exactly one duration field (there is a test for it), so a
+ * single unit/amount pair describes any of them without loss. Returns null for
+ * anything that does not fit, so a malformed option degrades to an absolute
+ * window rather than a wrong relative one.
+ */
+export const relativeRangeOf = (option: TimeOption): RelativeTimeRange | null => {
+  const fields = Object.entries(option.time)
+    .filter(([, amount]) => typeof amount === 'number' && amount > 0)
+
+  if (fields.length !== 1) {
+    return null
+  }
+
+  const [unit, amount] = fields[0] as [RelativeTimeRange['unit'], number]
+  return RANGE_UNITS.includes(unit) ? { unit, amount } : null
+}
+
+/**
+ * Resolve a relative range against the clock. `now` is injectable so callers can
+ * be tested without freezing time globally.
+ */
+export const resolveRelativeRange = (range: RelativeTimeRange, now: Date = new Date()): StartEndTime => ({
+  startTime: getUnixTime(sub(now, { [range.unit]: range.amount })),
+  endTime: getUnixTime(now),
+  // The unit doubles as the axis-label granularity, as it always has.
+  format: range.unit,
+  range
+})

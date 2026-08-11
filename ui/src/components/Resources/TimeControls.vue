@@ -65,7 +65,13 @@ import { OnmsButton, OnmsDatePicker, OnmsIcon, OnmsPopover, OnmsSelect } from '@
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours, fromUnixTime } from 'date-fns'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-import { HOUR_OPTIONS, TIME_RANGE_OPTIONS, TimeOption } from './utils/timeRangeOptions'
+import {
+  HOUR_OPTIONS,
+  relativeRangeOf,
+  resolveRelativeRange,
+  TIME_RANGE_OPTIONS,
+  TimeOption
+} from './utils/timeRangeOptions'
 
 const emit = defineEmits(['updateTime'])
 
@@ -75,23 +81,35 @@ const startTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: 13 }})
 const endDateRef = ref()
 const endTimeRef = ref<TimeOption>({ label: '1 PM', time: { hours: 13 }})
 
-const selectedTime = ref('Last Day')
+const selectedTime = ref('Last day')
 
 const disableCustomTimeBtn = computed(() => Boolean(!startDateRef.value || !startTimeRef.value || !endDateRef.value || !endTimeRef.value))
 
 const toggleMenu = (event: Event) => menu.value.toggle(event)
 
+/**
+ * A preset range is relative: it is emitted as a unit/amount alongside the resolved
+ * window so the consumer can re-resolve it later. Only "Apply custom time" below
+ * produces a genuinely absolute window, matching the legacy graph pages.
+ */
 const selectOption = (option: TimeOption) => {
   selectedTime.value = option.label
+
+  const range = relativeRangeOf(option)
+
+  if (range) {
+    emit('updateTime', resolveRelativeRange(range))
+    menu.value.hide()
+    return
+  }
+
+  // Fallback for an option that is not a single unit/amount; treated as absolute.
   const now = new Date()
-  const startTime = getUnixTime(sub(now, option.time))
-  const endTime = getUnixTime(now)
-  const format = Object.keys(option.time)[0]
 
   emit('updateTime', {
-    startTime,
-    endTime,
-    format
+    startTime: getUnixTime(sub(now, option.time)),
+    endTime: getUnixTime(now),
+    format: Object.keys(option.time)[0]
   })
 
   menu.value.hide()
@@ -117,6 +135,8 @@ const applyCustomTime = () => {
     format = 'years'
   }
 
+  // No `range`: an explicit start and end is absolute by definition, and must not
+  // slide when the graph is refreshed or the link is reopened.
   emit('updateTime', {
     startTime,
     endTime,

@@ -88,6 +88,52 @@ describe('encodeAdhocState / decodeAdhocState', () => {
   })
 })
 
+describe('relative time ranges in the URL', () => {
+  const relative: StartEndTime = { startTime: 1704067200, endTime: 1704153600, format: 'hours', range: { unit: 'hours', amount: 24 }}
+
+  // The bug this fixes: absolute instants freeze a bookmark to whenever it was made.
+  it('writes the range instead of the instants it resolved to', () => {
+    const query = encodeAdhocState(fullConfig, relative)
+
+    expect(query.range).toBe('hours:24')
+    expect(query.start).toBeUndefined()
+    expect(query.end).toBeUndefined()
+  })
+
+  it('round-trips the range unresolved, for the caller to anchor to now', () => {
+    const restored = decodeAdhocState(encodeAdhocState(fullConfig, relative))
+
+    expect(restored?.time.range).toEqual({ unit: 'hours', amount: 24 })
+  })
+
+  it('still writes absolute instants for a custom range', () => {
+    const query = encodeAdhocState(fullConfig, time)
+
+    expect(query.range).toBeUndefined()
+    expect(query.start).toBe('1704067200')
+    expect(query.end).toBe('1704070800')
+  })
+
+  it('decodes a range-only link, with no start or end present', () => {
+    const restored = decodeAdhocState({ range: 'days:7' })
+
+    expect(restored).not.toBeNull()
+    expect(restored?.time.range).toEqual({ unit: 'days', amount: 7 })
+  })
+
+  it('ignores a nonsense range rather than sliding by something arbitrary', () => {
+    for (const value of ['fortnights:2', 'hours:0', 'hours:-3', 'hours', 'hours:abc', '']) {
+      expect(decodeAdhocState({ range: value, start: '1704067200' })?.time.range, value).toBeUndefined()
+    }
+  })
+
+  it('prefers the range when a link somehow carries both', () => {
+    const restored = decodeAdhocState({ range: 'hours:2', start: '1704067200', end: '1704070800' })
+
+    expect(restored?.time.range).toEqual({ unit: 'hours', amount: 2 })
+  })
+})
+
 describe('decodeAdhocState is defensive', () => {
   it('drops entries with no resource id or attribute rather than throwing', () => {
     const restored = decodeAdhocState({

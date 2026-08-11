@@ -22,7 +22,8 @@
 
 import { AdhocExpression, AdhocGraphConfig, AdhocSeries, AdhocSeriesStyle } from '@/types/adhocGraph'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { StartEndTime } from '@/types'
+import { RelativeTimeRange, StartEndTime } from '@/types'
+import { RANGE_UNITS } from '@/components/Resources/utils/timeRangeOptions'
 import { DEFAULT_RESOLUTION } from './adhocQuery'
 
 /**
@@ -80,6 +81,28 @@ const asAggregation = (value: string): ConsolidationFunctionType =>
 const asColor = (value: string): string =>
   (/^#[0-9a-fA-F]{6}$/.test(value) ? value.toLowerCase() : '')
 
+/**
+ * Parse `range=<unit>:<amount>`, e.g. `range=hours:24`.
+ *
+ * Spelled out rather than encoded as an ISO-8601 duration so the link stays
+ * readable, and so `minutes` can never be confused with `months` the way `PT1M`
+ * and `P1M` can.
+ */
+const asRange = (value: string): RelativeTimeRange | null => {
+  const [unit, rawAmount] = value.split(':')
+  const amount = Number.parseInt(rawAmount ?? '', 10)
+
+  if (!RANGE_UNITS.includes(unit as RelativeTimeRange['unit'])) {
+    return null
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return null
+  }
+
+  return { unit: unit as RelativeTimeRange['unit'], amount }
+}
+
 const asPositiveInt = (value: string, fallback: number): number => {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
@@ -93,11 +116,17 @@ const asPositiveInt = (value: string, fallback: number): number => {
  * of this state is that a user can copy the address bar and send it to someone.
  */
 export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime): RouteQuery => {
-  const query: RouteQuery = {
-    start: String(time.startTime),
-    end: String(time.endTime),
-    fmt: time.format
-  }
+  // A relative window travels as the range itself, NOT as the instants it happened
+  // to resolve to — otherwise a bookmarked "last two days" is frozen to the two
+  // days that were current when the link was made. Only an explicit custom range
+  // is written as absolute start/end.
+  const query: RouteQuery = time.range ?
+    { range: `${time.range.unit}:${time.range.amount}` } :
+    {
+      start: String(time.startTime),
+      end: String(time.endTime),
+      fmt: time.format
+    }
 
   if (config.series.length) {
     query.s = config.series.map(series => [
@@ -162,8 +191,9 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
   const rawExpressions = many(query.e)
   const start = first(query.start)
   const end = first(query.end)
+  const range = asRange(first(query.range))
 
-  if (!rawSeries.length && !rawExpressions.length && !start) {
+  if (!rawSeries.length && !rawExpressions.length && !start && !range) {
     return null
   }
 
@@ -227,10 +257,13 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
       stacked: first(query.stacked) === '1',
       resolution: asPositiveInt(first(query.res), DEFAULT_RESOLUTION)
     },
+    // A range is returned unresolved: the caller resolves it against the clock at
+    // the moment the page loads, which is the whole point.
     time: {
       startTime,
       endTime,
-      format: first(query.fmt) || 'hours'
+      format: first(query.fmt) || 'hours',
+      ...(range ? { range } : {})
     }
   }
 }

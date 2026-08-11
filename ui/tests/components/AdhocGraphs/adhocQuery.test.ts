@@ -9,6 +9,7 @@ import {
   labelForDatasource,
   MAX_RESOLUTION,
   plottedSeries,
+  querySignature,
   sanitizeLabel,
   seriesLabelIssues,
   stepForRange,
@@ -270,6 +271,33 @@ describe('expressionIssues', () => {
   it('reports a blank name against the label field', () => {
     const issues = expressionIssues(config({ series: [series()], expressions: [expression({ label: '' })] }))
     expect(issues['expr-1']).toEqual({ field: 'label', message: 'A name is required.' })
+  })
+})
+
+describe('querySignature', () => {
+  const relative = { startTime: 1704067200, endTime: 1704153600, format: 'hours', range: { unit: 'hours' as const, amount: 24 }}
+
+  // Re-resolving a relative window is not a change of query. If it were, every
+  // Refresh would fire twice — once explicitly, once from the watcher.
+  it('is unchanged when a relative window slides forward', () => {
+    const later = { ...relative, startTime: 1704070800, endTime: 1704157200 }
+
+    expect(querySignature(config({ series: [series()] }), later))
+      .toBe(querySignature(config({ series: [series()] }), relative))
+  })
+
+  it('changes when the range itself changes', () => {
+    const other = { ...relative, range: { unit: 'hours' as const, amount: 2 }}
+
+    expect(querySignature(config({ series: [series()] }), other))
+      .not.toBe(querySignature(config({ series: [series()] }), relative))
+  })
+
+  it('still tracks the instants of an absolute window', () => {
+    const later = { startTime: 1704070800, endTime: 1704157200, format: 'hours' }
+
+    expect(querySignature(config({ series: [series()] }), later))
+      .not.toBe(querySignature(config({ series: [series()] }), time))
   })
 })
 

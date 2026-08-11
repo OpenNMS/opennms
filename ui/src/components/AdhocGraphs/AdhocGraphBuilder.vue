@@ -199,7 +199,6 @@
 <script setup lang="ts">
 import { OnmsIconButton, OnmsMessageDialog, OnmsPanel } from '@opennms/onms-ui'
 import { onKeyStroke, useDebounceFn } from '@vueuse/core'
-import { getUnixTime, sub } from 'date-fns'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -218,6 +217,7 @@ import { useAppStore } from '@/stores/appStore'
 import { useAdhocGraphStore } from '@/stores/adhocGraphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, StartEndTime } from '@/types'
+import { DEFAULT_RANGE, resolveRelativeRange } from '@/components/Resources/utils/timeRangeOptions'
 import {
   AdhocDatasourceOption,
   AdhocExpression,
@@ -299,12 +299,8 @@ const config = reactive<AdhocGraphConfig>({
   resolution: DEFAULT_RESOLUTION
 })
 
-const now = new Date()
-const time = reactive<StartEndTime>({
-  startTime: getUnixTime(sub(now, { hours: 24 })),
-  endTime: getUnixTime(now),
-  format: 'hours'
-})
+// Relative by default, so an unbookmarked page and a bookmarked one behave alike.
+const time = reactive<StartEndTime>(resolveRelativeRange(DEFAULT_RANGE))
 
 const breadcrumbs = computed<BreadCrumb[]>(() => (props.viewOnly ?
   [
@@ -403,6 +399,27 @@ const updateTime = (value: StartEndTime) => {
   time.startTime = value.startTime
   time.endTime = value.endTime
   time.format = value.format
+  // Deleted rather than left stale: a custom range carries no `range`, and keeping
+  // the previous one would make an absolute window silently start sliding.
+  if (value.range) {
+    time.range = value.range
+  } else {
+    delete time.range
+  }
+}
+
+/**
+ * Slide a relative window up to the present. A no-op for a custom range, which is
+ * absolute by definition.
+ */
+const refreshRelativeWindow = () => {
+  if (!time.range) {
+    return
+  }
+
+  const resolved = resolveRelativeRange(time.range)
+  time.startTime = resolved.startTime
+  time.endTime = resolved.endTime
 }
 
 const runQuery = () => {
@@ -410,6 +427,9 @@ const runQuery = () => {
     return
   }
 
+  // "Last hour" must mean the hour ending now, not the hour that ended whenever the
+  // range was chosen — which may have been a long time ago on a page left open.
+  refreshRelativeWindow()
   store.runQuery(buildMeasurementsPayload(config, time))
 }
 
@@ -595,7 +615,11 @@ onMounted(async () => {
 
   Object.assign(config, restored.config)
 
-  if (restored.time.startTime && restored.time.endTime) {
+  if (restored.time.range) {
+    // Resolved against the clock now, so the link shows current data however old
+    // the bookmark is.
+    updateTime(resolveRelativeRange(restored.time.range))
+  } else if (restored.time.startTime && restored.time.endTime) {
     updateTime(restored.time)
   }
 

@@ -1,7 +1,13 @@
 import { differenceInCalendarDays, differenceInCalendarMonths, sub } from 'date-fns'
 import { describe, expect, it } from 'vitest'
 
-import { HOUR_OPTIONS, TIME_RANGE_OPTIONS } from '@/components/Resources/utils/timeRangeOptions'
+import {
+  DEFAULT_RANGE,
+  HOUR_OPTIONS,
+  relativeRangeOf,
+  resolveRelativeRange,
+  TIME_RANGE_OPTIONS
+} from '@/components/Resources/utils/timeRangeOptions'
 
 // A date well away from a DST boundary or month end, so the arithmetic below is
 // unambiguous.
@@ -95,5 +101,59 @@ describe('HOUR_OPTIONS', () => {
     for (const option of HOUR_OPTIONS) {
       expect(typeof option.time.hours, option.label).toBe('number')
     }
+  })
+})
+
+describe('relativeRangeOf', () => {
+  it('reduces every preset to a single unit and amount', () => {
+    for (const option of TIME_RANGE_OPTIONS) {
+      const range = relativeRangeOf(option)
+      expect(range, option.label).not.toBeNull()
+      expect(range!.amount).toBeGreaterThan(0)
+    }
+  })
+
+  it('reads the unit and amount the label promises', () => {
+    const byLabel = (label: string) => relativeRangeOf(TIME_RANGE_OPTIONS.find(o => o.label === label)!)
+
+    expect(byLabel('Last hour')).toEqual({ unit: 'hours', amount: 1 })
+    expect(byLabel('Last two days')).toEqual({ unit: 'hours', amount: 48 })
+    expect(byLabel('Last week')).toEqual({ unit: 'days', amount: 7 })
+    expect(byLabel('Last six months')).toEqual({ unit: 'months', amount: 6 })
+  })
+
+  it('refuses a duration that is not one clean unit', () => {
+    expect(relativeRangeOf({ label: 'mixed', time: { hours: 1, minutes: 30 }})).toBeNull()
+    expect(relativeRangeOf({ label: 'empty', time: {}})).toBeNull()
+  })
+})
+
+describe('resolveRelativeRange', () => {
+  it('anchors the window to the clock it is given', () => {
+    const resolved = resolveRelativeRange({ unit: 'hours', amount: 2 }, NOW)
+
+    expect(resolved.endTime).toBe(Math.floor(NOW.getTime() / 1000))
+    expect(Number(resolved.endTime) - Number(resolved.startTime)).toBe(7200)
+  })
+
+  // The point of the whole exercise: the same range resolved later must move.
+  it('slides forward when resolved against a later clock', () => {
+    const range = { unit: 'hours', amount: 24 } as const
+    const earlier = resolveRelativeRange(range, NOW)
+    const later = resolveRelativeRange(range, new Date(NOW.getTime() + 3_600_000))
+
+    expect(Number(later.endTime) - Number(earlier.endTime)).toBe(3600)
+    expect(Number(later.startTime) - Number(earlier.startTime)).toBe(3600)
+    // Same width, different position.
+    expect(Number(later.endTime) - Number(later.startTime))
+      .toBe(Number(earlier.endTime) - Number(earlier.startTime))
+  })
+
+  it('carries the range along so it can be resolved again', () => {
+    expect(resolveRelativeRange(DEFAULT_RANGE, NOW).range).toEqual(DEFAULT_RANGE)
+  })
+
+  it('uses the unit as the axis-label granularity', () => {
+    expect(resolveRelativeRange({ unit: 'days', amount: 7 }, NOW).format).toBe('days')
   })
 })
