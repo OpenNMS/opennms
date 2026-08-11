@@ -141,7 +141,6 @@ public class FlowQueryIT {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
-
         documentEnricher = new DocumentEnricherImpl(metricRegistry,
                                                     new MockNodeDao(),
                                                     new MockIpInterfaceDao(),
