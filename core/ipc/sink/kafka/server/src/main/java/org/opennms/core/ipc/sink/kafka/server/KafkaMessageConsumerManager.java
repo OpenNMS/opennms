@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -86,6 +87,8 @@ import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
     private static final Duration CONSUMER_POLL_DURATION = Duration.ofMillis(100);
+
+    private static final long SHUTDOWN_TIMEOUT_MS = 30000;
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumerManager.class);
 
@@ -307,7 +310,26 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public void shutdown() {
+        // The runners only leave their poll loop via shutdown(); executor.shutdown() on its own
+        // does not interrupt them, so wake them before waiting on the executor.
+        for (List<KafkaConsumerRunner> consumerRunners : consumerRunnersByModule.values()) {
+            for (KafkaConsumerRunner consumerRunner : consumerRunners) {
+                consumerRunner.shutdown();
+            }
+        }
+        consumerRunnersByModule.clear();
+
         executor.shutdown();
+        try {
+            if (!executor.awaitTermination(SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                LOG.warn("Sink consumers did not stop within {}ms. Interrupting them.", SHUTDOWN_TIMEOUT_MS);
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
         if (jmxReporter != null) {
             jmxReporter.close();
         }
