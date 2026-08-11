@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.awaitility.core.ConditionFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -176,27 +177,34 @@ public class HeartbeatSinkIT {
             }
         };
 
-        // Other tests in this class share the group, so wait for it to drain first
-        await().atMost(30, SECONDS).until(this::countConsumerGroupMembers, equalTo(0));
-
-        try {
-            consumerManager.registerConsumer(heartbeatConsumer);
-            await().atMost(30, SECONDS).until(this::countConsumerGroupMembers, equalTo(numConsumerThreads));
-        } finally {
-            consumerManager.unregisterConsumer(heartbeatConsumer);
-        }
-
-        await().atMost(30, SECONDS).until(this::countConsumerGroupMembers, equalTo(0));
-    }
-
-    private int countConsumerGroupMembers() throws Exception {
         final Properties adminConfig = new Properties();
         adminConfig.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
-        final String groupId = SystemInfoUtils.getInstanceId();
+
         try (AdminClient admin = AdminClient.create(adminConfig)) {
-            return admin.describeConsumerGroups(Collections.singleton(groupId))
-                    .describedGroups().get(groupId).get().members().size();
+            // describeConsumerGroups fails until the broker has a coordinator for the group, which
+            // it may not have yet on a freshly started server
+            final ConditionFactory groupMembership = await().atMost(30, SECONDS)
+                    .pollInterval(1, SECONDS)
+                    .ignoreExceptions();
+
+            // Other tests in this class share the group, so wait for it to drain first
+            groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(0));
+
+            try {
+                consumerManager.registerConsumer(heartbeatConsumer);
+                groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(numConsumerThreads));
+            } finally {
+                consumerManager.unregisterConsumer(heartbeatConsumer);
+            }
+
+            groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(0));
         }
+    }
+
+    private int countConsumerGroupMembers(final AdminClient admin) throws Exception {
+        final String groupId = SystemInfoUtils.getInstanceId();
+        return admin.describeConsumerGroups(Collections.singleton(groupId))
+                .describedGroups().get(groupId).get().members().size();
     }
 
     @Test(timeout=60000)

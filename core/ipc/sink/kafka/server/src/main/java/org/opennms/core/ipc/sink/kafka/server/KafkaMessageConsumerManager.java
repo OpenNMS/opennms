@@ -90,6 +90,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
     private static final long SHUTDOWN_TIMEOUT_MS = 30000;
 
+    // Starting a consumer is quick, so this only has to cover a task that is already in flight
+    private static final long STARTUP_SHUTDOWN_TIMEOUT_MS = 5000;
+
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumerManager.class);
 
     private final Map<SinkModule<?, Message>, List<KafkaConsumerRunner>> consumerRunnersByModule = new ConcurrentHashMap<>();
@@ -310,6 +313,14 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public void shutdown() {
+        // Drain the starter threads first: startConsumingForModule() otherwise races us and can
+        // register consumers that nothing is left to stop.
+        final ExecutorService startupExecutor = getStartupExecutor();
+        if (startupExecutor != null) {
+            startupExecutor.shutdown();
+            awaitTermination(startupExecutor, STARTUP_SHUTDOWN_TIMEOUT_MS, "Sink consumer starters");
+        }
+
         // The runners only leave their poll loop via shutdown(); executor.shutdown() on its own
         // does not interrupt them, so wake them before waiting on the executor.
         for (List<KafkaConsumerRunner> consumerRunners : consumerRunnersByModule.values()) {
@@ -320,21 +331,22 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         consumerRunnersByModule.clear();
 
         executor.shutdown();
-        try {
-            if (!executor.awaitTermination(SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                LOG.warn("Sink consumers did not stop within {}ms. Interrupting them.", SHUTDOWN_TIMEOUT_MS);
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+        awaitTermination(executor, SHUTDOWN_TIMEOUT_MS, "Sink consumers");
 
         if (jmxReporter != null) {
             jmxReporter.close();
         }
-        if(getStartupExecutor() != null) {
-            getStartupExecutor().shutdown();
+    }
+
+    private static void awaitTermination(ExecutorService executorService, long timeoutMs, String description) {
+        try {
+            if (!executorService.awaitTermination(timeoutMs, TimeUnit.MILLISECONDS)) {
+                LOG.warn("{} did not stop within {}ms. Interrupting them.", description, timeoutMs);
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 
