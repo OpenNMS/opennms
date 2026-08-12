@@ -191,11 +191,45 @@ public class AbstractXmlCollectionHandlerTest {
         Assert.assertEquals("xslt-ran", doc.getElementsByTagName("val").item(0).getTextContent());
     }
 
-    /**
-     * NMS-20206: the XXE hardening must not break collection of normal, entity-free XML.
-     *
-     * @throws Exception the exception
-     */
+    /** NMS-20206: XXE in the collected source must be blocked during XSLT too (Xalan ignores ACCESS_EXTERNAL_*). */
+    @Test
+    public void testXsltSourceExternalEntityIsNotResolved() throws Exception {
+        final File secret = File.createTempFile("nms20206-xslt-src", ".txt");
+        secret.deleteOnExit();
+        Files.write(secret.toPath(), "XSLT_SRC_SENTINEL".getBytes(StandardCharsets.UTF_8));
+
+        // Copy-through stylesheet: a resolved source entity would surface in the output.
+        final File xslt = File.createTempFile("nms20206-xslt-src", ".xsl");
+        xslt.deleteOnExit();
+        Files.write(xslt.toPath(), (
+                "<?xml version=\"1.0\"?>\n" +
+                "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n" +
+                "  <xsl:template match=\"/\">\n" +
+                "    <stats><val><xsl:value-of select=\"/stats/val\"/></val></stats>\n" +
+                "  </xsl:template>\n" +
+                "</xsl:stylesheet>").getBytes(StandardCharsets.UTF_8));
+
+        final String malicious =
+                "<?xml version=\"1.0\"?>\n" +
+                "<!DOCTYPE stats [ <!ENTITY xxe SYSTEM \"" + secret.toURI() + "\"> ]>\n" +
+                "<stats><val>&xxe;</val></stats>";
+
+        final Request request = new Request();
+        request.addParameter("xslt-source-file", xslt.getAbsolutePath());
+
+        final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
+        try {
+            final Document doc = handler.getXmlDocument(
+                    new ByteArrayInputStream(malicious.getBytes(StandardCharsets.UTF_8)), request);
+            final String text = doc.getElementsByTagName("val").item(0).getTextContent();
+            Assert.assertFalse("Source entity resolved during XSLT - XXE not blocked (leaked: " + text + ")",
+                    text.contains("XSLT_SRC_SENTINEL"));
+        } catch (Exception expected) {
+            // Rejecting the entity outright is equally safe.
+        }
+    }
+
+    /** NMS-20206: the XXE hardening must not break collection of normal, entity-free XML. */
     @Test
     public void testWellFormedXmlStillParses() throws Exception {
         final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();

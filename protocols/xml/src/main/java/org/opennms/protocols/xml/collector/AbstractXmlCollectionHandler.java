@@ -50,15 +50,20 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -532,9 +537,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (!xsltFile.exists())
             return is;
         TransformerFactory factory = TransformerFactory.newInstance();
-        // Block XXE/SSRF via external DTDs/stylesheets. Best-effort: some factories
-        // (e.g. Xalan) reject these attributes with IllegalArgumentException.
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        // Best-effort; Xalan rejects these. The SAXSource readers below are the real guard.
         try {
             factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         } catch (IllegalArgumentException e) {
@@ -545,15 +549,31 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         } catch (IllegalArgumentException e) {
             LOG.debug("TransformerFactory {} does not support {}; skipping", factory.getClass().getName(), XMLConstants.ACCESS_EXTERNAL_STYLESHEET);
         }
-        Source xslt = new StreamSource(xsltFile);
+        // Parse the stylesheet and the (attacker-controlled) source with hardened readers so
+        // XXE is blocked even when the factory (e.g. Xalan) ignores the attributes above.
+        Source xslt = new SAXSource(newSecureXmlReader(), new InputSource(xsltFile.toURI().toString()));
         Transformer transformer = factory.newTransformer(xslt);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            transformer.transform(new StreamSource(is), new StreamResult(baos));
+            Source source = new SAXSource(newSecureXmlReader(), new InputSource(is));
+            transformer.transform(source, new StreamResult(baos));
             return new ByteArrayInputStream(baos.toByteArray());
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * Builds a namespace-aware XMLReader with external entity/DTD resolution disabled (XXE-safe).
+     */
+    private static XMLReader newSecureXmlReader() throws Exception {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
+        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        return spf.newSAXParser().getXMLReader();
     }
 
     /**
