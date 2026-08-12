@@ -10,6 +10,10 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container</name>
   <modules>
+    <!-- these two must come before "karaf" and "shared": they patch the Karaf
+         pax-url-aether bundle both assemblies pull into their system/ directory -->
+    <module>plexus-utils-relocated</module>
+    <module>pax-url-aether-patch</module>
     <module>branding</module>
     <module>features</module>
     <module>karaf</module>
