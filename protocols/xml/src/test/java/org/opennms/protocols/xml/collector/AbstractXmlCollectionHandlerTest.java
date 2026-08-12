@@ -229,6 +229,41 @@ public class AbstractXmlCollectionHandlerTest {
         }
     }
 
+    /** NMS-20206: XSLT document() on a URI from collected data must not read files / issue requests. */
+    @Test
+    public void testXsltDocumentFunctionIsBlocked() throws Exception {
+        final File secret = File.createTempFile("nms20206-doc", ".xml");
+        secret.deleteOnExit();
+        Files.write(secret.toPath(), "<r>DOC_SECRET_SENTINEL</r>".getBytes(StandardCharsets.UTF_8));
+
+        // Stylesheet resolves document() using a URI taken from the (attacker-controlled) source.
+        final File xslt = File.createTempFile("nms20206-doc", ".xsl");
+        xslt.deleteOnExit();
+        Files.write(xslt.toPath(), (
+                "<?xml version=\"1.0\"?>\n" +
+                "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n" +
+                "  <xsl:template match=\"/\">\n" +
+                "    <stats><val><xsl:value-of select=\"document(/stats/uri)\"/></val></stats>\n" +
+                "  </xsl:template>\n" +
+                "</xsl:stylesheet>").getBytes(StandardCharsets.UTF_8));
+
+        final String source = "<stats><uri>" + secret.toURI() + "</uri></stats>";
+
+        final Request request = new Request();
+        request.addParameter("xslt-source-file", xslt.getAbsolutePath());
+
+        final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
+        try {
+            final Document doc = handler.getXmlDocument(
+                    new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)), request);
+            final String text = doc.getElementsByTagName("val").item(0).getTextContent();
+            Assert.assertFalse("document() resolved a source URI - SSRF/file-read not blocked (leaked: " + text + ")",
+                    text.contains("DOC_SECRET_SENTINEL"));
+        } catch (Exception expected) {
+            // A rejecting URIResolver aborting the transform is equally safe.
+        }
+    }
+
     /** NMS-20206: the XXE hardening must not break collection of normal, entity-free XML. */
     @Test
     public void testWellFormedXmlStillParses() throws Exception {

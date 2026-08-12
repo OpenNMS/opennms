@@ -53,17 +53,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -102,6 +100,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * The Abstract Class XML Collection Handler.
@@ -494,14 +494,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected Document getXmlDocument(InputStream is, Request request) throws Exception {
         is = preProcessHtml(request, is);
         is = applyXsltTransformation(request, is);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        // Block XXE: forbid external entities/DTDs. Not disallow-doctype-decl, since
-        // pre-parse-html produces a benign <!DOCTYPE html>.
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        factory.setXIncludeAware(false);
+        DocumentBuilderFactory factory = newSecureDocumentBuilderFactory();
         factory.setIgnoringComments(true);
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -536,23 +529,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         File xsltFile = new File(xsltFilename);
         if (!xsltFile.exists())
             return is;
+        // The collected source XML is untrusted, so block XXE/SSRF: deny external URI
+        // resolution (xsl:import/include and document()) and parse with an entity-hardened reader.
         TransformerFactory factory = TransformerFactory.newInstance();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        // Best-effort; Xalan rejects these. The SAXSource readers below are the real guard.
-        try {
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        } catch (IllegalArgumentException e) {
-            LOG.debug("TransformerFactory {} does not support {}; skipping", factory.getClass().getName(), XMLConstants.ACCESS_EXTERNAL_DTD);
-        }
-        try {
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-        } catch (IllegalArgumentException e) {
-            LOG.debug("TransformerFactory {} does not support {}; skipping", factory.getClass().getName(), XMLConstants.ACCESS_EXTERNAL_STYLESHEET);
-        }
-        // Parse the stylesheet and the (attacker-controlled) source with hardened readers so
-        // XXE is blocked even when the factory (e.g. Xalan) ignores the attributes above.
+        final URIResolver denyExternal = (href, base) -> {
+            throw new TransformerException("External resource resolution disabled for collector XSLT: " + href);
+        };
+        factory.setURIResolver(denyExternal);
         Source xslt = new SAXSource(newSecureXmlReader(), new InputSource(xsltFile.toURI().toString()));
         Transformer transformer = factory.newTransformer(xslt);
+        transformer.setURIResolver(denyExternal);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             Source source = new SAXSource(newSecureXmlReader(), new InputSource(is));
@@ -561,6 +548,22 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * Builds a namespace-aware DocumentBuilderFactory with external entity/DTD resolution disabled (XXE-safe).
+     */
+    private static DocumentBuilderFactory newSecureDocumentBuilderFactory() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Block XXE: forbid external entities/DTDs. Not disallow-doctype-decl, since
+        // pre-parse-html produces a benign <!DOCTYPE html>.
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        factory.setNamespaceAware(true);
+        return factory;
     }
 
     /**
