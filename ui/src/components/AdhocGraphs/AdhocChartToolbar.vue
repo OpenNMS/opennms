@@ -1,20 +1,36 @@
 <template>
   <div class="chart-toolbar">
     <div class="toolbar-row">
-      <TimeControls @updateTime="(value: StartEndTime) => emit('updateTime', value)" />
+      <!--
+        A visible label: the range button shows only the current selection ("Last
+        day"), so without this there is nothing saying what it selects. Not wired up
+        with aria-labelledby, because TimeControls' fallthrough target is a plain
+        div and the attribute would be inert there — associating it properly means
+        changing the shared component, which Resource Graphs needs too.
+      -->
+      <div class="time-range">
+        <span class="time-range-label">Time Range:</span>
+        <TimeControls
+          data-test="toolbar-time-range"
+          @updateTime="(value: StartEndTime) => emit('updateTime', value)"
+        />
+      </div>
 
       <div class="toolbar-actions">
-        <OnmsButton
+        <OnmsIconButton
           variant="outlined"
-          :disabled="!canQuery"
-          :loading="loading"
+          :icon="RefreshIcon"
+          title="Refresh"
+          v-onms-tooltip="'Redraw the graph with the latest data'"
+          :disabled="!canQuery || loading"
           data-test="toolbar-refresh"
           @click="emit('refresh')"
-        >Refresh</OnmsButton>
+        />
         <OnmsIconButton
           variant="outlined"
           :icon="DownloadFile"
-          title="Download this graph's data as CSV"
+          title="Download the graph data as CSV"
+          v-onms-tooltip="'Download the graph data as CSV'"
           :disabled="!hasData"
           data-test="toolbar-csv"
           @click="emit('exportCsv')"
@@ -23,6 +39,7 @@
           variant="outlined"
           :icon="PdfIcon"
           title="Download this graph as a PDF"
+          v-onms-tooltip="'Download this graph as a PDF'"
           :disabled="!hasData"
           data-test="toolbar-pdf"
           @click="emit('exportPdf')"
@@ -31,6 +48,7 @@
           variant="outlined"
           :icon="LinkIcon"
           title="Copy a link to this graph"
+          v-onms-tooltip="'Copy a link to this graph'"
           :disabled="!canQuery"
           data-test="toolbar-share"
           @click="emit('share')"
@@ -40,6 +58,7 @@
           variant="outlined"
           :icon="CodeIcon"
           title="Show this graph as an RRDtool graph definition"
+          v-onms-tooltip="'Show this graph as an RRDtool graph definition'"
           :disabled="!canQuery"
           data-test="toolbar-definition"
           @click="emit('showDefinition')"
@@ -49,6 +68,7 @@
           variant="outlined"
           :icon="expanded ? FullscreenExitIcon : FullscreenIcon"
           :title="expanded ? 'Show the selectors again' : 'Expand the graph, hiding the selectors'"
+          v-onms-tooltip="expanded ? 'Show the selectors again' : 'Expand the graph, hiding the selectors'"
           data-test="toolbar-expand"
           @click="emit('toggleExpand')"
         />
@@ -57,16 +77,20 @@
           variant="outlined"
           :icon="PopOutIcon"
           title="Open this graph on its own, in a new tab"
+          v-onms-tooltip="'Open this graph on its own, in a new tab'"
           :disabled="!canQuery"
           data-test="toolbar-popout"
           @click="emit('popOut')"
         />
-        <OnmsButton
+        <OnmsIconButton
           v-if="!viewOnly"
-          variant="ghost"
+          variant="outlined"
+          :icon="CancelIcon"
+          title="Clear all"
+          v-onms-tooltip="'Clear every selection and start again'"
           data-test="toolbar-clear"
           @click="emit('clear')"
-        >Clear all</OnmsButton>
+        />
       </div>
     </div>
 
@@ -82,7 +106,7 @@
         <OnmsInputText
           id="adhoc-title"
           :modelValue="config.title"
-          placeholder="Untitled ad-hoc graph"
+          placeholder="Untitled custom performance graph"
           data-test="toolbar-title"
           @update:modelValue="value => emit('update', { title: (value ?? '') as string })"
         />
@@ -135,9 +159,11 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsButton, OnmsIconButton, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 
+import CancelIcon from '@/components/icons/action/Cancel.vue'
 import DownloadFile from '@/components/icons/action/DownloadFile.vue'
+import RefreshIcon from '@/components/icons/navigation/Refresh.vue'
 import CodeIcon from '@/components/icons/action/Code.vue'
 import PopOutIcon from '@/components/icons/action/Expand.vue'
 import FullscreenIcon from '@/components/icons/navigation/Fullscreen.vue'
@@ -196,6 +222,19 @@ const emit = defineEmits<{
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+}
+
+// Every control on this row is now the same height, so the label sits beside the
+// range button rather than above it.
+.time-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .time-range-label {
+    font-weight: 700;
+    white-space: nowrap;
+  }
 }
 
 .toolbar-fields {

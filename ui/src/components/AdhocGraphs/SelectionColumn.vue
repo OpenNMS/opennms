@@ -18,13 +18,13 @@
 
     <div class="column-actions">
       <OnmsButton
-        variant="text"
+        variant="ghost"
         :disabled="!visibleOptions.length"
         :data-test="`${dataTest}-select-all`"
         @click="selectAllVisible"
       >Select all</OnmsButton>
       <OnmsButton
-        variant="text"
+        variant="ghost"
         :disabled="!modelValue.length"
         :data-test="`${dataTest}-clear`"
         @click="emit('update:modelValue', [])"

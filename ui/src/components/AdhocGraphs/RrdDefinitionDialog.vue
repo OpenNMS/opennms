@@ -14,9 +14,9 @@
       <p class="blocked-help">
         A prefab graph definition is a template bound to one resource: the
         <code>{{ '{rrd1}' }}</code>&hellip;<code>{{ '{rrdN}' }}</code> placeholders are all
-        resolved against the resource the graph is rendered for. Ad-hoc graphs have no
-        such restriction, so only those drawing on a single resource can be expressed
-        this way.
+        resolved against the resource the graph is rendered for. Custom performance graphs
+        have no such restriction, so only those drawing on a single resource can be
+        expressed this way.
       </p>
     </div>
 
@@ -44,7 +44,7 @@
     <template #footer>
       <OnmsButton
         v-if="definition"
-        variant="outlined"
+        variant="filled"
         data-test="rrd-definition-copy"
         @click="copy"
       >Copy definition</OnmsButton>

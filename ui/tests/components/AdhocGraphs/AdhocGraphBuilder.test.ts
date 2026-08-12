@@ -228,6 +228,34 @@ describe('AdhocGraphBuilder', () => {
 
   // Blanking the address bar silently meant a large graph quietly stopped being
   // bookmarkable, with no signal until someone tried to copy the link.
+  describe('the toolbar', () => {
+    it('labels the time range control, which otherwise only shows its value', async () => {
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Time Range:')
+      expect(wrapper.find('[data-test="toolbar-time-range"]').exists()).toBe(true)
+    })
+
+    // OnmsIconButton has no loading state, so an in-flight query disables Refresh
+    // rather than spinning it; the chart shows the spinner.
+    it('disables Refresh while a query is in flight', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      const refreshDisabled = () =>
+        wrapper.find('[data-test="toolbar-refresh"]').attributes('disabled') !== undefined
+
+      store.queryLoading = true
+      await flushPromises()
+      expect(refreshDisabled()).toBe(true)
+
+      store.queryLoading = false
+      await flushPromises()
+      expect(refreshDisabled()).toBe(true) // still disabled: no series selected yet
+    })
+  })
+
   describe('outgrowing the URL', () => {
     /**
      * Overflow MAX_QUERY_LENGTH (6000) with as few series as possible: a handful of

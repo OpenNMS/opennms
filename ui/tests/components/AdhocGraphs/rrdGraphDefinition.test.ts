@@ -262,7 +262,7 @@ describe('buildRrdGraphDefinition', () => {
   it('still names an untitled graph after its datasources', () => {
     const definition = build(config({ title: '' }))
     expect(definition.reportName).toBe('adhoc.interfaceSnmp.ifInOctets')
-    expect(definition.command).toContain('--title="Ad-hoc graph"')
+    expect(definition.command).toContain('--title="Custom performance graph"')
   })
 
   it('names a multi-datasource report after all of them', () => {

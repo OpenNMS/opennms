@@ -212,7 +212,7 @@
         },
         {
           "id": "adhocGraphs",
-          "name": "Ad-Hoc Graphs",
+          "name": "Custom Performance Graphs (Preview)",
           "url": "ui/index.html#/adhoc-graphs",
           "locationMatch": "performance",
           "roles": null

@@ -211,7 +211,7 @@ export const buildRrdGraphDefinition = (config: AdhocGraphConfig): RrdGraphDefin
     return { reason: ineligible }
   }
 
-  const title = config.title.trim() || 'Ad-hoc graph'
+  const title = config.title.trim() || 'Custom performance graph'
   const type = resourceTypeOf(config.series[0].resourceId) as string
 
   // {rrdN} is positional over `columns`, so two series reading the same attribute

@@ -11,10 +11,10 @@
 
     <div class="onms-row">
       <div class="onms-col-12 page-heading">
-        <h1 class="headline3">{{ config.title || 'Ad-Hoc Graphs' }}</h1>
+        <h1 class="headline3">{{ config.title || 'Custom Performance Graphs' }}</h1>
         <OnmsIconButton
           v-if="!viewOnly"
-          title="Ad-Hoc Graphs Help"
+          title="Custom Performance Graphs Help"
           data-test="adhoc-info-icon"
           :icon="InfoIcon"
           @click="isHelpMessageDialogVisible = true"
@@ -177,7 +177,7 @@
       :relative="true"
       maxHeight="26em"
       maxWidth="50em"
-      title="Ad-Hoc Graphs"
+      title="Custom Performance Graphs"
       @close="isHelpMessageDialogVisible = false"
     >
       <template #content>
@@ -312,12 +312,12 @@ const time = reactive<StartEndTime>(resolveRelativeRange(DEFAULT_RANGE))
 const breadcrumbs = computed<BreadCrumb[]>(() => (props.viewOnly ?
   [
     { label: 'Home', to: menuStore.mainMenu.homeUrl, isAbsoluteLink: true },
-    { label: 'Ad-Hoc Graphs', to: ADHOC_ROUTE_PATH },
+    { label: 'Custom Performance Graphs', to: ADHOC_ROUTE_PATH },
     { label: 'Graph', to: '#', position: 'last' }
   ] :
   [
     { label: 'Home', to: menuStore.mainMenu.homeUrl, isAbsoluteLink: true },
-    { label: 'Ad-Hoc Graphs', to: '#', position: 'last' }
+    { label: 'Custom Performance Graphs', to: '#', position: 'last' }
   ]))
 
 const canQuery = computed<boolean>(() => configIsQueryable(config))
@@ -461,7 +461,7 @@ const exportCsv = () => {
 const exportPdf = () => {
   const target = chartRef.value?.exportTarget()
 
-  if (!target || !exportGraphsToPdf(target, config.title || 'Ad-Hoc Graph')) {
+  if (!target || !exportGraphsToPdf(target, config.title || 'Custom Performance Graph')) {
     showSnackBar({ msg: 'There is no rendered graph to export yet.' })
   }
 }
