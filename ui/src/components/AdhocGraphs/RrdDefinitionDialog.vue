@@ -25,11 +25,11 @@
       class="definition-body"
     >
       <p class="definition-intro">
-        Save this as a <code>.properties</code> file under
-        <code>$OPENNMS_HOME/etc/snmp-graph.properties.d/</code>, add
-        <code>{{ definition.reportName }}</code> to that file's <code>reports=</code> list,
-        and reload the graph definitions. It will then appear for every
-        <code>{{ definition.type }}</code> resource.
+        Save this as a new <code>.properties</code> file under
+        <code>$OPENNMS_HOME/etc/snmp-graph.properties.d/</code> and reload the graph
+        definitions &mdash; the <code>reports=</code> line is included, so it works as
+        it stands. It will then appear for every <code>{{ definition.type }}</code>
+        resource. To add it to an existing file instead, follow the note in the block.
       </p>
       <pre
         class="definition-text"

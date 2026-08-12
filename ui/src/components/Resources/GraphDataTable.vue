@@ -63,9 +63,20 @@ import { format as formatDate } from 'date-fns'
 import { computed, PropType, ref } from 'vue'
 
 /**
- * Full local date and time for a table row, matching what the legacy graph view
- * shows — Backshift renders its Date/Time column with d3's `%c`, which in the
- * default locale is exactly this: `Mon Aug 10 11:54:25 2026`.
+ * Fixed date and time pattern for a table row: `Mon Aug 10 11:54:25 2026`.
+ *
+ * This reproduces what the legacy graph view renders for an en-US browser, where
+ * Backshift's `d3.time.format("%c")` expands to `%a %b %e %X %Y`. It is NOT the
+ * same mechanism: `%c` is locale-adaptive and resolves differently under a
+ * non-en-US d3 locale, whereas this pattern is the same everywhere. That is
+ * deliberate — one stable, unambiguous rendering is what a data table wants, and
+ * it is the format that was asked for — but it means "matches the legacy view"
+ * holds for the default locale only.
+ *
+ * Rendered in the browser's zone, like the graph's own axis labels
+ * (`Resources/utils/LegendFormatter.ts`), so the Data tab and the Graph tab always
+ * agree. Note this differs from the `v-date` directive used elsewhere in the app,
+ * which honours the server's configured `datetimeformatConfig`.
  *
  * Deliberately NOT `graphData.formattedTimestamps`. Those are AXIS labels, chosen
  * for the granularity of the range, and they are wrong on a table: a week-long

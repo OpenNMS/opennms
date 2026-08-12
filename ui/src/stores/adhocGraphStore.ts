@@ -36,6 +36,28 @@ export const nodeCriteriaOf = (resourceId: string): string | null => {
   return match?.[1] ?? null
 }
 
+/**
+ * Characters that are FIQL syntax rather than data: the boolean separators, the
+ * comparison operators, grouping parentheses and the wildcard.
+ */
+const FIQL_SYNTAX = /[,;()=!<>~*]/g
+
+/**
+ * Make a free-text search box safe to interpolate into a FIQL filter.
+ *
+ * `label==*<term>*` is string concatenation, so a comma or semicolon typed in the
+ * box used to terminate the comparison and produce a malformed filter — the
+ * request failed and the picker simply went empty with nothing to explain it.
+ *
+ * The offending characters are dropped rather than escaped: they are FIQL
+ * grammar, not values, and node labels are host names that do not contain them.
+ * Dropping them searches for the rest of what was typed, which is what a search
+ * box is expected to do. (If CXF's FIQL parser turns out to support quoted
+ * values, quoting would be strictly better — this is a guard, not real escaping.)
+ */
+export const toFiqlSearchTerm = (term: string): string =>
+  term.replace(FIQL_SYNTAX, ' ').trim().replace(/\s+/g, ' ')
+
 /** Page size for the node picker's server-side search. */
 const NODE_SEARCH_LIMIT = 100
 
@@ -46,19 +68,32 @@ const NODE_SEARCH_LIMIT = 100
  */
 const FETCH_CONCURRENCY = 6
 
-/** Run `worker` over `items`, at most `limit` in flight, preserving input order. */
+/**
+ * Run `worker` over `items`, at most `limit` in flight, preserving input order.
+ *
+ * Each item is isolated: a worker that rejects yields `null` for that item and the
+ * rest still complete. Without this the whole batch rides on the service functions
+ * never throwing — and one rejection would escape Promise.all, propagate out of
+ * loadResources, and strand `resourcesLoading` at true with a spinner that never
+ * stops. One unreachable resource should cost that resource, not the page.
+ */
 const mapWithConcurrency = async <T, R>(
   items: T[],
   limit: number,
   worker: (item: T) => Promise<R>
-): Promise<R[]> => {
-  const results = new Array<R>(items.length)
+): Promise<(R | null)[]> => {
+  const results = new Array<R | null>(items.length).fill(null)
   let cursor = 0
 
   const runner = async () => {
     while (cursor < items.length) {
       const index = cursor++
-      results[index] = await worker(items[index])
+
+      try {
+        results[index] = await worker(items[index])
+      } catch (_error) {
+        results[index] = null
+      }
     }
   }
 
@@ -111,10 +146,10 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       order: SORT.ASCENDING
     }
 
-    const trimmed = term.trim()
+    const searchable = toFiqlSearchTerm(term)
 
-    if (trimmed) {
-      queryParameters._s = `label==*${trimmed}*`
+    if (searchable) {
+      queryParameters._s = `label==*${searchable}*`
     }
 
     const resp = await API.getNodes(queryParameters)
@@ -156,11 +191,19 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
     resourcesLoading.value = true
 
-    const responses = await mapWithConcurrency(
-      nodes,
-      FETCH_CONCURRENCY,
-      node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
-    )
+    let responses
+    try {
+      responses = await mapWithConcurrency(
+        nodes,
+        FETCH_CONCURRENCY,
+        node => API.getResourceForNode(node.id).then(resource => ({ node, resource }))
+      )
+    } catch (_error) {
+      // mapWithConcurrency isolates per item, so this is unreachable in practice —
+      // it is here so no future change can leave the spinner running forever.
+      resourcesLoading.value = false
+      return
+    }
 
     if (requestId !== resourceRequestId) {
       return
@@ -168,7 +211,13 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
     const options: AdhocResourceOption[] = []
 
-    for (const { node, resource } of responses) {
+    for (const response of responses) {
+      // null means that node's lookup failed; the others still populate.
+      if (!response) {
+        continue
+      }
+
+      const { node, resource } = response
       const children = (resource as Resource | null)?.children?.resource ?? []
 
       for (const child of children) {
@@ -212,11 +261,17 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
     datasourcesLoading.value = true
 
-    const responses = await mapWithConcurrency(
-      resources,
-      FETCH_CONCURRENCY,
-      resource => API.getResourceById(resource.id).then(detail => ({ resource, detail }))
-    )
+    let responses
+    try {
+      responses = await mapWithConcurrency(
+        resources,
+        FETCH_CONCURRENCY,
+        resource => API.getResourceById(resource.id).then(detail => ({ resource, detail }))
+      )
+    } catch (_error) {
+      datasourcesLoading.value = false
+      return
+    }
 
     if (requestId !== datasourceRequestId) {
       return
@@ -224,7 +279,12 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
 
     const options: AdhocDatasourceOption[] = []
 
-    for (const { resource, detail } of responses) {
+    for (const response of responses) {
+      if (!response) {
+        continue
+      }
+
+      const { resource, detail } = response
       const attributes = Object.keys((detail as Resource | null)?.rrdGraphAttributes ?? {}).sort()
 
       for (const attribute of attributes) {
@@ -335,10 +395,12 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     const nodes: AdhocNodeOption[] = []
     const options: AdhocResourceOption[] = []
 
-    for (const { criterion, resource } of responses) {
-      if (!resource) {
+    for (const response of responses) {
+      if (!response?.resource) {
         continue
       }
+
+      const { criterion, resource } = response
 
       nodes.push({ id: criterion, label: resource.label })
 

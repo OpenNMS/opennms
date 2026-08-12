@@ -26,6 +26,11 @@ vi.mock('@/services', () => ({
 let routeQuery: Record<string, unknown> = {}
 const routerReplace = vi.fn()
 const copyToClipboard = vi.fn()
+const showSnackBar = vi.fn()
+
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar, hideSnackbar: vi.fn() })
+}))
 
 vi.mock('@/composables/useClipboard', () => ({
   copyToClipboard: (text: string) => copyToClipboard(text),
@@ -219,6 +224,78 @@ describe('AdhocGraphBuilder', () => {
     await flushPromises()
 
     expect(routerReplace).not.toHaveBeenCalled()
+  })
+
+  // Blanking the address bar silently meant a large graph quietly stopped being
+  // bookmarkable, with no signal until someone tried to copy the link.
+  describe('outgrowing the URL', () => {
+    /**
+     * Overflow MAX_QUERY_LENGTH (6000) with as few series as possible: a handful of
+     * very long resource ids rather than a hundred short ones, so the reconcile and
+     * encode work stays small enough not to time out under full-suite load.
+     */
+    const manySeries = (store: ReturnType<typeof useAdhocGraphStore>, count: number) =>
+      store.setSelectedDatasources(Array.from({ length: count }, (_unused, index) => {
+        const resourceId = `node[${index}].interfaceSnmp[${'Gigabit0-0-'.repeat(30)}${index}]`
+        return {
+          key: `${resourceId}|ifHCInOctets`,
+          resourceId,
+          resourceLabel: `interface-${index}`,
+          nodeId: String(index),
+          nodeLabel: `switch-${index}`,
+          attribute: 'ifHCInOctets'
+        }
+      }))
+
+    /**
+     * Poll until `check` holds. The URL writer is debounced behind real promises,
+     * so fake timers make this test depend on how many microtask turns the machine
+     * happens to need — it passed alone and failed under full-suite load.
+     */
+    const waitFor = async (check: () => boolean, timeoutMs = 3000) => {
+      const deadline = Date.now() + timeoutMs
+      while (Date.now() < deadline) {
+        await flushPromises()
+        if (check()) {
+          return
+        }
+        await new Promise(resolve => setTimeout(resolve, 25))
+      }
+      throw new Error('condition never held')
+    }
+
+    const warnings = () => showSnackBar.mock.calls
+      .filter(call => String((call[0] as { msg?: string })?.msg ?? '').includes('too many series'))
+
+    it('clears the query and says so once the graph will not fit', async () => {
+      // Something in the address bar to clear, but not enough to trigger hydration.
+      routeQuery = { title: 'WAN traffic' }
+      const { store } = mountBuilder()
+      await flushPromises()
+
+      manySeries(store, 20)
+      await waitFor(() => warnings().length > 0)
+
+      // The address bar is cleared rather than left describing a stale graph...
+      expect(routerReplace).toHaveBeenCalledWith({ query: {}})
+      // ...and the user is told, rather than discovering it at copy time.
+      expect(warnings()[0][0]).toEqual(expect.objectContaining({ error: true }))
+    }, 20000)
+
+    it('warns once, not on every edit', async () => {
+      const { store } = mountBuilder()
+      await flushPromises()
+
+      manySeries(store, 20)
+      await waitFor(() => warnings().length > 0)
+
+      manySeries(store, 22)
+      await waitFor(() => routerReplace.mock.calls.length > 0 || true)
+      await new Promise(resolve => setTimeout(resolve, 600))
+      await flushPromises()
+
+      expect(warnings()).toHaveLength(1)
+    }, 20000)
   })
 
   describe('the copy-link button', () => {

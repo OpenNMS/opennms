@@ -279,7 +279,17 @@ export const buildRrdGraphDefinition = (config: AdhocGraphConfig): RrdGraphDefin
   // legibility, since leading whitespace is stripped when the file is read.
   const propertiesCommand = lines.map(escapeForProperties).join(' \\\n ')
 
+  // A report is only rendered if its name appears in the file's `reports=` list.
+  // Emitting the block alone produced a file that parsed fine and drew nothing —
+  // so the list comes with it, ready to use as a standalone file, with a note for
+  // the other case, since a second `reports=` key would override the first rather
+  // than extend it.
   const properties = [
+    `reports=${reportName}`,
+    '',
+    '# Appending to an existing file? Do not paste the line above — add',
+    `# ${reportName} to that file's existing reports= list instead.`,
+    '',
     `report.${reportName}.name=${escapeForProperties(title)}`,
     `report.${reportName}.columns=${columns.join(',')}`,
     `report.${reportName}.type=${type}`,

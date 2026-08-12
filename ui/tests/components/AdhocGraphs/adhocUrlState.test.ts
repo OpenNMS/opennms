@@ -88,6 +88,67 @@ describe('encodeAdhocState / decodeAdhocState', () => {
   })
 })
 
+// `~` separates the fields inside an entry, and users type it: `=~` is JEXL's
+// match operator. Before these fields were escaped, `a =~ [1,2] ? 1 : 0` decoded
+// back as `a =` — silently, taking the style and color with it.
+describe('the field separator survives values that contain it', () => {
+  const withExpression = (value: string, label = 'bits'): AdhocGraphConfig => ({
+    ...fullConfig,
+    expressions: [{ id: 'e1', label, value, color: '#eb6834', style: 'line' }]
+  })
+
+  const roundTrip = (input: AdhocGraphConfig) => decodeAdhocState(encodeAdhocState(input, time))
+
+  it('round-trips a JEXL match operator without truncating it', () => {
+    const value = 'in_octets =~ [1,2] ? 1 : 0'
+    const restored = roundTrip(withExpression(value))
+
+    expect(restored?.config.expressions[0].value).toBe(value)
+    // The fields after the tilde used to be shifted out of place.
+    expect(restored?.config.expressions[0].style).toBe('line')
+    expect(restored?.config.expressions[0].color).toBe('#eb6834')
+  })
+
+  it('round-trips a bare tilde and several of them', () => {
+    expect(roundTrip(withExpression('~in_octets'))?.config.expressions[0].value).toBe('~in_octets')
+    expect(roundTrip(withExpression('a ~ b ~ c'))?.config.expressions[0].value).toBe('a ~ b ~ c')
+  })
+
+  it('round-trips a tilde in an expression name', () => {
+    expect(roundTrip(withExpression('in_octets * 8', 'od~d'))?.config.expressions[0].label).toBe('od~d')
+  })
+
+  // A literal percent must not be mistaken for the escape it produces.
+  it('round-trips a literal percent, and a literal %7E', () => {
+    expect(roundTrip(withExpression('in_octets % 100'))?.config.expressions[0].value).toBe('in_octets % 100')
+    expect(roundTrip(withExpression('a %7E b'))?.config.expressions[0].value).toBe('a %7E b')
+    expect(roundTrip(withExpression('a %25 b'))?.config.expressions[0].value).toBe('a %25 b')
+  })
+
+  // Storage resources can carry a Windows short name.
+  it('round-trips a tilde in a resource id', () => {
+    const resourceId = 'node[1].hrStorageIndex[C:\\PROGRA~1]'
+    const restored = roundTrip({
+      ...fullConfig,
+      series: [{ ...fullConfig.series[0], resourceId, key: `${resourceId}|ifInOctets` }],
+      expressions: []
+    })
+
+    expect(restored?.config.series[0].resourceId).toBe(resourceId)
+    expect(restored?.config.series[0].attribute).toBe('ifHCInOctets')
+    expect(restored?.config.series[0].color).toBe('#2a78d6')
+  })
+
+  it('leaves an ordinary link unchanged, so URLs do not grow', () => {
+    const query = encodeAdhocState(fullConfig, time)
+    const entries = Array.isArray(query.s) ? query.s : [query.s]
+
+    for (const entry of entries) {
+      expect(entry).not.toContain('%')
+    }
+  })
+})
+
 describe('relative time ranges in the URL', () => {
   const relative: StartEndTime = { startTime: 1704067200, endTime: 1704153600, format: 'hours', range: { unit: 'hours', amount: 24 }}
 

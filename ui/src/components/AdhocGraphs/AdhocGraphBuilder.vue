@@ -281,6 +281,13 @@ const chartIsExpanded = computed<boolean>(() => props.viewOnly || expanded.value
 
 /** Guards the URL writer while hydrating, so restoring a link doesn't rewrite it. */
 let hydrating = false
+
+/**
+ * Whether the user has already been told this graph outgrew its link. Latched so
+ * the debounced writer says it once per episode rather than on every keystroke,
+ * and re-arms if the graph shrinks back under the cap.
+ */
+let warnedUnshareable = false
 let expressionSeq = 0
 
 /**
@@ -562,13 +569,25 @@ const syncUrl = useDebounceFn(() => {
 
   if (encodedQueryLength(query) > MAX_QUERY_LENGTH) {
     // Past this size the link stops being pasteable and some proxies truncate it.
-    // The graph keeps working from in-memory state; only sharing is lost.
+    // The graph keeps working from in-memory state; only sharing is lost — so say
+    // so. Blanking the address bar silently meant a large graph quietly stopped
+    // being bookmarkable, and nothing revealed it until someone tried to copy.
     if (Object.keys(route.query).length) {
       router.replace({ query: {}})
     }
+
+    if (!warnedUnshareable) {
+      warnedUnshareable = true
+      showSnackBar({
+        msg: 'This graph now has too many series to keep in the page address — it still works, but the link no longer captures it.',
+        error: true
+      })
+    }
+
     return
   }
 
+  warnedUnshareable = false
   router.replace({ query: query as Record<string, string | string[]> })
 }, 400)
 

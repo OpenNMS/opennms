@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { nodeCriteriaOf, useAdhocGraphStore } from '@/stores/adhocGraphStore'
+import { nodeCriteriaOf, toFiqlSearchTerm, useAdhocGraphStore } from '@/stores/adhocGraphStore'
 import { AdhocDatasourceOption, AdhocResourceOption } from '@/types/adhocGraph'
 
 const getNodes = vi.fn()
@@ -72,6 +72,81 @@ describe('useAdhocGraphStore', () => {
       await store.searchNodes('nope')
 
       expect(store.nodeOptions).toEqual([])
+    })
+  })
+
+  // `label==*<term>*` is string concatenation: a comma or semicolon typed in the
+  // search box used to terminate the comparison, producing a malformed filter, a
+  // failed request and an empty picker with nothing to explain it.
+  describe('toFiqlSearchTerm', () => {
+    it('leaves an ordinary host name alone', () => {
+      expect(toFiqlSearchTerm('core-switch-01.example.com')).toBe('core-switch-01.example.com')
+    })
+
+    it('drops every character that is FIQL grammar', () => {
+      for (const char of [',', ';', '(', ')', '=', '!', '<', '>', '~', '*']) {
+        expect(toFiqlSearchTerm(`a${char}b`), char).toBe('a b')
+      }
+    })
+
+    it('collapses the whitespace it leaves behind and trims', () => {
+      expect(toFiqlSearchTerm('  core,,;;switch  ')).toBe('core switch')
+    })
+
+    it('reduces a term of pure syntax to nothing, so no filter is sent', () => {
+      expect(toFiqlSearchTerm(',;()')).toBe('')
+    })
+  })
+
+  describe('searchNodes escapes the filter', () => {
+    it('does not let a comma break out of the comparison', async () => {
+      await store.searchNodes('core,switch')
+
+      expect(getNodes.mock.calls[0][0]._s).toBe('label==*core switch*')
+    })
+
+    it('sends no filter at all when nothing searchable remains', async () => {
+      await store.searchNodes(';;;')
+
+      expect(getNodes.mock.calls[0][0]._s).toBeUndefined()
+    })
+  })
+
+  describe('a failing lookup is isolated', () => {
+    // Without per-item isolation one rejection escapes Promise.all, propagates out
+    // of loadResources and strands resourcesLoading at true.
+    it('keeps the other nodes when one rejects, and stops the spinner', async () => {
+      getResourceForNode.mockImplementation((id: string) => (id === '1' ?
+        Promise.reject(new Error('boom')) :
+        Promise.resolve(nodeResource(`switch-${id}`, [`node[${id}].interfaceSnmp[eth0]`]))))
+
+      await store.setSelectedNodes([{ id: '1', label: 'a' }, { id: '2', label: 'b' }])
+
+      expect(store.resourceOptions.map(option => option.id)).toEqual(['node[2].interfaceSnmp[eth0]'])
+      expect(store.resourcesLoading).toBe(false)
+    })
+
+    it('keeps the other resources when a datasource lookup rejects', async () => {
+      getResourceById.mockImplementation((id: string) => (id.includes('eth0') ?
+        Promise.reject(new Error('boom')) :
+        Promise.resolve({ rrdGraphAttributes: { ifHCInOctets: {}}})))
+
+      await store.setSelectedResources([
+        resourceOption('node[1].interfaceSnmp[eth0]'),
+        resourceOption('node[1].interfaceSnmp[eth1]')
+      ])
+
+      expect(store.datasourceOptions.map(option => option.resourceId)).toEqual(['node[1].interfaceSnmp[eth1]'])
+      expect(store.datasourcesLoading).toBe(false)
+    })
+
+    it('does not strand the spinner when every lookup rejects', async () => {
+      getResourceForNode.mockRejectedValue(new Error('boom'))
+
+      await store.setSelectedNodes([{ id: '1', label: 'a' }])
+
+      expect(store.resourceOptions).toEqual([])
+      expect(store.resourcesLoading).toBe(false)
     })
   })
 

@@ -26,11 +26,29 @@ import { RelativeTimeRange, StartEndTime } from '@/types'
 import { RANGE_UNITS } from '@/components/Resources/utils/timeRangeOptions'
 import { DEFAULT_RESOLUTION } from './adhocQuery'
 
-/**
- * Field separator inside one series entry. `~` is not legal in a resource id, a
- * sanitized label or a hex color, so entries never need inner escaping.
- */
+/** Field separator inside one entry. */
 const FIELD = '~'
+
+/**
+ * Escape a field so the separator survives the round trip.
+ *
+ * An earlier version assumed `~` could not appear inside a field. That is false
+ * for anything the user types: `=~` is JEXL's match operator, so the perfectly
+ * ordinary expression `a =~ [1,2] ? 1 : 0` used to split into extra fields and
+ * decode back as `a =`, silently, taking the style and color with it. Resource ids
+ * can carry one too (a Windows short name such as `PROGRA~1` in a storage path).
+ *
+ * Only `%` and `~` are touched, so a normal link is byte-for-byte what it was —
+ * running whole fields through encodeURIComponent would escape every bracket in
+ * every resource id and inflate the URL against its shareable-length budget for no
+ * benefit. `%` must be escaped first, and unescaped last, or a literal `%7E` would
+ * come back as a separator.
+ */
+const escapeField = (value: string): string =>
+  value.replace(/%/g, '%25').replace(/~/g, '%7E')
+
+const unescapeField = (value: string): string =>
+  value.replace(/%7E/gi, '~').replace(/%25/gi, '%')
 
 /**
  * Above this many characters the query string stops being something a person can
@@ -137,7 +155,7 @@ export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime): 
       series.style,
       series.color,
       series.hidden ? '1' : '0'
-    ].join(FIELD))
+    ].map(escapeField).join(FIELD))
   }
 
   if (config.expressions.length) {
@@ -146,7 +164,7 @@ export const encodeAdhocState = (config: AdhocGraphConfig, time: StartEndTime): 
       expression.value,
       expression.style,
       expression.color
-    ].join(FIELD))
+    ].map(escapeField).join(FIELD))
   }
 
   if (config.title) {
@@ -201,7 +219,8 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
   const takenKeys = new Set<string>()
 
   for (const entry of rawSeries) {
-    const [resourceId, attribute, aggregation, label, style, color, hidden] = entry.split(FIELD)
+    const [resourceId, attribute, aggregation, label, style, color, hidden] =
+      entry.split(FIELD).map(unescapeField)
 
     // resourceId + attribute identify the series; without both there is nothing to query.
     if (!resourceId || !attribute) {
@@ -230,7 +249,7 @@ export const decodeAdhocState = (query: RouteQuery): AdhocUrlState | null => {
   const expressions: AdhocExpression[] = []
 
   for (const [index, entry] of rawExpressions.entries()) {
-    const [label, value, style, color] = entry.split(FIELD)
+    const [label, value, style, color] = entry.split(FIELD).map(unescapeField)
 
     if (!label || !value) {
       continue

@@ -164,6 +164,16 @@ describe('describeIneligibility', () => {
 })
 
 describe('buildRrdGraphDefinition', () => {
+  // Without a reports= entry the file parses and draws nothing, which is a
+  // particularly unhelpful failure: no error, just no graph.
+  it('includes the reports= line so a pasted file works as it stands', () => {
+    const definition = build(config())
+
+    expect(definition.properties.split('\n')[0]).toBe(`reports=${definition.reportName}`)
+    expect(definition.properties).toContain('# Appending to an existing file?')
+    expect(definition.properties).toContain(`# ${definition.reportName} to that file's existing reports= list`)
+  })
+
   it('emits the four report properties', () => {
     const definition = build(config())
 
