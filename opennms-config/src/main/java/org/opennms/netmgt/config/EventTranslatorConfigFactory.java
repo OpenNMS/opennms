@@ -283,10 +283,15 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List<TranslationSpec> getTranslationSpecs() {
-        if (m_translationSpecs == null)
-            m_translationSpecs = constructTranslationSpecs();
+        // Read the field once. Returning it directly would hand back null when update()
+        // clears it after the check, and translateEvent() iterates the result.
+        List<TranslationSpec> specs = m_translationSpecs;
+        if (specs == null) {
+            specs = constructTranslationSpecs();
+            m_translationSpecs = specs;
+        }
 
-        return m_translationSpecs;
+        return specs;
     }
 
     private List<TranslationSpec> constructTranslationSpecs() {
@@ -753,12 +758,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             for (Parm parm : e.getParmCollection()) {
 
                 if (parm.getParmName().equals(attrName)) {
-                    LOG.debug("getAttributeValue: eventParm name: '{} equals translation parameter name: ' {}", attrName, parm.getParmName());
+                    LOG.debug("getAttributeValue: eventParm name: '{}' equals translation parameter name: '{}'", attrName, parm.getParmName());
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
                 }
 
                 if (m_namePattern != null && m_namePattern.matcher(parm.getParmName()).matches()) {
-                    LOG.debug("getAttributeValue: eventParm name: '{} matches translation parameter name expression: ' {}", parm.getParmName(), m_namePattern);
+                    LOG.debug("getAttributeValue: eventParm name: '{}' matches translation parameter name expression: '{}'", parm.getParmName(), m_namePattern);
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
                 }
             }
