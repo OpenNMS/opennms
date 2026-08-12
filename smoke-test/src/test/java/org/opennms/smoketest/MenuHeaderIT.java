@@ -129,6 +129,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs (Preview)");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'search-field')]//label[contains(text()[normalize-space()], 'Search/Filter Resources')]")));
 
+        // Vue Custom Performance Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Custom Performance Graphs (Preview)");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Custom Performance Graphs']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Custom Performance Graphs']")));
+
         // Distributed Monitoring
         clickMenuItem("Distributed Monitoring", "Manage Minions");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage Minions')]")));

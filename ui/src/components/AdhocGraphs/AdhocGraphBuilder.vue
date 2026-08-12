@@ -9,9 +9,14 @@
       </div>
     </div>
 
-    <div class="onms-row">
-      <div class="onms-col-12 page-heading">
-        <h1 class="headline3">{{ config.title || 'Custom Performance Graphs' }}</h1>
+    <div class="header">
+      <div class="heading page-heading">
+        <!--
+          A fixed page title, not the graph's own title: the graph title is already
+          shown on the plot itself and is editable in the toolbar, and a heading
+          that changes with it stops naming the page you are on.
+        -->
+        <h2>Custom Performance Graphs</h2>
         <OnmsIconButton
           v-if="!viewOnly"
           title="Custom Performance Graphs Help"
@@ -702,12 +707,19 @@ onMounted(async () => {
   }
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .page-heading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
-  h1 {
+  h2 {
     margin: 0;
     overflow-wrap: anywhere;
   }

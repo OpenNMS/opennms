@@ -229,6 +229,18 @@ describe('AdhocGraphBuilder', () => {
   // Blanking the address bar silently meant a large graph quietly stopped being
   // bookmarkable, with no signal until someone tried to copy the link.
   describe('the toolbar', () => {
+    // MenuHeaderIT locates this page by //div[@id='app']//h2[text()='Custom
+    // Performance Graphs']; if the tag or the text changes, that smoke test breaks
+    // in CI rather than here, so pin it.
+    it('renders the page title as an h2 with the exact text the smoke test matches', async () => {
+      const { wrapper } = mountBuilder()
+      await flushPromises()
+
+      const headings = wrapper.findAll('h2').map(h => h.text())
+      expect(headings).toContain('Custom Performance Graphs')
+      expect(wrapper.find('.header .heading h2').exists()).toBe(true)
+    })
+
     it('labels the time range control, which otherwise only shows its value', async () => {
       const { wrapper } = mountBuilder()
       await flushPromises()
@@ -691,7 +703,10 @@ describe('AdhocGraphBuilder', () => {
       // Still a graph, still refreshable and exportable, and titled.
       expect(wrapper.findComponent({ name: 'AdhocChart' }).props('expanded')).toBe(true)
       expect(wrapper.find('[data-test="toolbar-refresh"]').exists()).toBe(true)
-      expect(wrapper.text()).toContain('WAN traffic')
+      // The page heading names the page; the graph's own title is drawn on the plot.
+      expect(wrapper.text()).toContain('Custom Performance Graphs')
+      expect(wrapper.findComponent({ name: 'AdhocChart' }).props('config'))
+        .toEqual(expect.objectContaining({ title: 'WAN traffic' }))
       expect(getGraphMetrics).toHaveBeenCalled()
     })
 
