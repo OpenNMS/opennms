@@ -49,11 +49,14 @@ const targetUrl = (message) => {
 };
 
 const show = (message) => {
+    // A command without -subject leaves head unset, and org.json drops null keys.
+    const title = message.head || 'OpenNMS';
     const options = {
         body: message.body,
         icon: Util.getBaseHref() + 'images/o-512.png',
         badge: Util.getBaseHref() + 'favicon.ico',
-        // Collapses repeat deliveries of one notice, including across tabs.
+        // Collapses one delivery across tabs; the dispatcher hands the same message,
+        // and so the same id, to every subscriber.
         tag: 'opennms:notification:' + message.id,
         data: { url: targetUrl(message) }
     };
@@ -61,7 +64,7 @@ const show = (message) => {
     if (serviceWorker !== null) {
         // Two-arg then() rather than catch(), and no reference to the Promise global anywhere in
         // this module: the corejs transform swaps Promise for a build that lacks resolve().
-        serviceWorker.showNotification(message.head, options).then(null, (e) => {
+        serviceWorker.showNotification(title, options).then(null, (e) => {
             console.warn('unable to show notification', e); // eslint-disable-line no-console
         });
         return;
@@ -69,7 +72,7 @@ const show = (message) => {
 
     // Throws on Chrome for Android, so this is a fallback only.
     try {
-        const notification = new Notification(message.head, options);
+        const notification = new Notification(title, options);
         notification.onclick = () => {
             window.focus();
             window.location.assign(options.data.url);
@@ -89,17 +92,24 @@ const disconnect = () => {
 };
 
 const connect = () => {
-    if (!connectionWanted) {
+    // A pending reconnect timer and a fresh start() could otherwise each open one.
+    if (!connectionWanted || socket !== null) {
         return;
     }
 
-    socket = new WebSocket((Util.getBaseHref() + STREAM_PATH).replace(/^http/, 'ws'));
+    // A socket that disconnect() has already dropped still delivers its close, and may still
+    // deliver messages, so every handler checks that this socket is the current one first.
+    const ws = new WebSocket((Util.getBaseHref() + STREAM_PATH).replace(/^http/, 'ws'));
+    socket = ws;
 
-    socket.onopen = () => {
+    ws.onopen = () => {
         reconnectDelayMs = RECONNECT_MIN_MS;
     };
 
-    socket.onmessage = (event) => {
+    ws.onmessage = (event) => {
+        if (socket !== ws) {
+            return;
+        }
         // Permission can be revoked while the socket is open.
         if (permission() !== 'granted') {
             disconnect();
@@ -108,7 +118,10 @@ const connect = () => {
         show(JSON.parse(event.data));
     };
 
-    socket.onclose = () => {
+    ws.onclose = () => {
+        if (socket !== ws) {
+            return;
+        }
         socket = null;
         // Back off with jitter so that every open tab does not retry once a
         // second for the duration of an OpenNMS restart.
