@@ -22,9 +22,9 @@
 
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import { createTestingPinia } from '@pinia/testing'
-import { mount } from '@vue/test-utils'
+import { mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('vue-router', () => ({
   useRoute: () => ({ params: { id: '42' }})
@@ -39,14 +39,25 @@ vi.mock('@/components/Nodes/SnmpInterfacesTable.vue', () => ({
   default: { name: 'SnmpInterfacesTable', template: '<div data-test="snmp-interfaces-table-stub" />' }
 }))
 
-const mountComponent = () =>
-  mount(InterfacesTabs, {
+let wrapper: VueWrapper<any>
+const mountComponent = () => {
+  wrapper = mount(InterfacesTabs, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn }), PrimeVue]
     }
   })
+  return wrapper
+}
 
 describe('InterfacesTabs.vue', () => {
+  afterEach(() => {
+    // Unmount so PrimeVue TabList's template refs are cleared before its
+    // orphaned mounted() setTimeout(updateInkBar, 150) fires. Without this the
+    // timer outlives the test file and runs against the torn-down happy-dom
+    // environment, throwing "HTMLElement is not defined" (flaky on CI).
+    wrapper?.unmount()
+  })
+
   describe('Tab labels', () => {
     it('renders two tabs with correct labels', () => {
       const wrapper = mountComponent()

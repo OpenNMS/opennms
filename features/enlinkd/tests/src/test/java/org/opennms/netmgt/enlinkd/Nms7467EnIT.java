@@ -35,6 +35,7 @@ import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
 import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_NAME;
@@ -51,8 +52,11 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
     })
     public void testCisco01Links() {
         
-        m_nodeDao.save(builder.getCiscoWsC2948());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getCiscoWsC2948());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);

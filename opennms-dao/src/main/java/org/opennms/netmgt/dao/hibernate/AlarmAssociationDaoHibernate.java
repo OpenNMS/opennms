@@ -33,6 +33,6 @@ public class AlarmAssociationDaoHibernate extends AbstractDaoHibernate<AlarmAsso
 
     @Override
     public List<AlarmAssociation> getAssociationsForSituation(int situationId) {
-        return find("from AlarmAssociation as a where a.situationAlarm.id = ?", situationId);
+        return find("from AlarmAssociation as a where a.situationAlarm.id = ?1", situationId);
     }
 }

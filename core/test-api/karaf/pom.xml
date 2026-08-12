@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -138,18 +138,15 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
-                <feature>spring/${springVersion}</feature>
-                <feature>spring-aspects/${springVersion}</feature>
-                <feature>spring-instrument/${springVersion}</feature>
-                <feature>spring-jdbc/${springVersion}</feature>
-                <feature>spring-jms/${springVersion}</feature>
-                <feature>spring-orm/${springVersion}</feature>
-                <feature>spring-oxm/${springVersion}</feature>
-                <feature>spring-test/${springVersion}</feature>
-                <feature>spring-tx/${springVersion}</feature>
-                <feature>spring-web/${springVersion}</feature>
-                <feature>spring-web-portlet/${springVersion}</feature>
-                <feature>spring-websocket/${springVersion}</feature>
+                <feature>spring/${springOsgiVersion}</feature>
+                <feature>spring-aspects/${springOsgiVersion}</feature>
+                <feature>spring-instrument/${springOsgiVersion}</feature>
+                <feature>spring-jdbc/${springOsgiVersion}</feature>
+                <feature>spring-jms/${springOsgiVersion}</feature>
+                <feature>spring-orm/${springOsgiVersion}</feature>
+                <feature>spring-oxm/${springOsgiVersion}</feature>
+                <feature>spring-test/${springOsgiVersion}</feature>
+                <feature>spring-tx/${springOsgiVersion}</feature>
 
               </features>
               <repository>${project.build.directory}/paxexam/test-repo</repository>

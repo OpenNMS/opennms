@@ -1,11 +1,19 @@
 <template>
-  <FeatherButton class="compare-btn" icon="Compare configs" @click="emit('onCompare')">
-    <FeatherIcon :icon="Compare" />
-  </FeatherButton>
+  <OnmsIconButton
+    class="compare-btn"
+    aria-label="Compare configs"
+    v-onms-tooltip="'Compare configs'"
+    :icon="Compare"
+    @click="emit('onCompare')"
+  />
 
-  <FeatherButton class="dwnld-btn" icon="Download config" @click="onDownload">
-    <FeatherIcon :icon="Download" />
-  </FeatherButton>
+  <OnmsIconButton
+    class="dwnld-btn"
+    aria-label="Download config"
+    v-onms-tooltip="'Download config'"
+    :icon="Download"
+    @click="onDownload"
+  />
 
   <span class="title">
     {{ selectedConfig?.configName }}
@@ -35,9 +43,8 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import { OnmsIconButton } from '@opennms/onms-ui'
+import Download from '@/components/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
@@ -67,11 +74,10 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .title {
-  @include subtitle1;
+  @include onms-subtitle1;
 }
 .flex {
   display: flex;
@@ -90,8 +96,8 @@ onMounted(() => deviceStore.getHistoryByIpInterface())
     margin-top: 12px;
 
     .history-date {
-      @include body-small;
-      color: var($primary);
+      @include onms-body-small;
+      color: var(--p-primary-color);
       margin-top: 5px;
 
       &.selected {

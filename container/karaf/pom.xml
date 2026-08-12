@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.2</version>
+        <version>36.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -155,6 +155,32 @@
                                     <destFileName>overrides.properties</destFileName>
                                 </artifactItem>
                             </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>remove-superseded-jline</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/jline/jline"
+                                             excludes="${jlineVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
+                                               replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

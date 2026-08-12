@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -27,10 +27,13 @@
           </exclusion>
       </exclusions>
     </dependency>
-    <!-- MOXy relies on javax.mail classes for Base64 decoding -->
+    <!-- EclipseLink 2.5.1's XMLBinaryDataHelper hard-references javax.mail.internet.MimeMultipart
+         (constant-pool ldc, NoClassDefFoundError without it). mailapi is the javax.mail-namespace
+         API without any transport providers, so it can't collide with jakarta.mail/angus-mail.
+         Do not remove until EclipseLink is upgraded to a jakarta-namespace (3.x+) release. -->
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>mailapi</artifactId>
     </dependency>
   </dependencies>
 </project>

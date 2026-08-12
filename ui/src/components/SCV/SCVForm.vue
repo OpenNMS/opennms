@@ -9,7 +9,7 @@
       :error="aliasError"
       v-slot="{ errorId, invalid }"
     >
-      <PInputText
+      <OnmsInputText
         id="scv-alias"
         :disabled="isEditing"
         :modelValue="scvStore.credentials.alias"
@@ -26,7 +26,7 @@
         label="Username"
         for="scv-username"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-username"
           autocomplete="new-username"
           :modelValue="scvStore.credentials.username"
@@ -42,7 +42,7 @@
         :error="passwordError"
         v-slot="{ errorId, invalid }"
       >
-        <PInputText
+        <OnmsInputText
           id="scv-password"
           autocomplete="new-password"
           :modelValue="scvStore.credentials.password"
@@ -55,7 +55,7 @@
 
     <div class="large-spacer"></div>
     <div class="add-btn" @click="addAttribute" data-test="add-attr-btn">
-      <FeatherIcon :icon="Add" aria-hidden="true" focusable="false" />
+      <OnmsIcon :icon="Add" aria-hidden="true" focusable="false" />
       Add attribute
     </div>
 
@@ -69,7 +69,7 @@
 
     <div class="large-spacer"></div>
     <div class="btns">
-      <PButton
+      <OnmsButton
         v-if="!isEditing"
         data-test="add-creds-btn"
         :disabled="disabled"
@@ -77,7 +77,7 @@
         @click="addCredentials"
       />
 
-      <PButton
+      <OnmsButton
         v-if="isEditing"
         data-test="update-creds-btn"
         :disabled="disabled"
@@ -85,7 +85,7 @@
         @click="updateCredentials"
       />
 
-      <PButton
+      <OnmsButton
         data-test="clear-btn"
         label="Clear Form"
         @click="clearCredentials"
@@ -97,19 +97,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
+import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
-
-const PInputText = InputText
-const PButton = Button
 
 const scvStore = useScvStore()
 const keyError = ref(false)
@@ -173,11 +168,11 @@ const addAttribute = () => scvStore.addAttribute()
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-elevation';
+@import '@/styles/onms-typography';
 
 .form-container {
-  @include elevation(1);
+  @include onms-elevation(1);
   background: var(--p-content-background);
   height: calc(100vh - 149px);
   display: flex;
@@ -186,7 +181,7 @@ const addAttribute = () => scvStore.addAttribute()
   overflow-y: auto;
 
   .title {
-    @include headline3;
+    @include onms-headline3;
     margin-top: 11px;
     margin-bottom: 9px;
   }
@@ -210,7 +205,7 @@ const addAttribute = () => scvStore.addAttribute()
 
   .add-btn {
     cursor: pointer;
-    @include body-small;
+    @include onms-body-small;
     margin-bottom: 10px;
   }
 

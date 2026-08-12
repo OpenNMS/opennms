@@ -44,7 +44,7 @@ public class BmpGlobalIpRib implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpUnicastSequence")
-    @SequenceGenerator(name = "bmpUnicastSequence", sequenceName = "bmpunicastnxtid")
+    @SequenceGenerator(name = "bmpUnicastSequence", sequenceName = "bmpunicastnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

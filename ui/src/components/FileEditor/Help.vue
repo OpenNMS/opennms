@@ -1,6 +1,6 @@
 <template>
   <div class="help-bar">
-    <FeatherIcon :icon="Close" @click="triggerHelp" class="pointer" />
+    <OnmsIcon :icon="Close" @click="triggerHelp" class="pointer" />
     <div class="snippets" v-html="snippets"></div>
   </div>
 </template>
@@ -9,8 +9,8 @@
 import { computed } from 'vue'
 
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-import { FeatherIcon } from '@featherds/icon'
-import Close from '@featherds/icon/navigation/Cancel'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Close from '@/components/icons/navigation/Cancel.vue'
 
 const fileEditorStore = useFileEditorStore()
 const snippets = computed(() => fileEditorStore.snippets)
@@ -18,20 +18,19 @@ const triggerHelp = () => fileEditorStore.setIsHelpOpen(false)
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
 .help-bar {
   height: calc(100vh - 200px);
-  border: 1px solid var($border-on-surface);
+  border: 1px solid var(--p-content-border-color);
   padding: 10px;
   overflow: auto;
-  .feather-icon {
+  .onms-icon {
     position: absolute;
     right: 35px;
-    color: var($primary-text-on-surface)
+    color: var(--p-text-color)
   }
   .snippets {
     padding: 15px;
-    color: var($primary-text-on-surface);
+    color: var(--p-text-color);
   }
 }
 </style>

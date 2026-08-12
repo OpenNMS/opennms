@@ -11,11 +11,10 @@
         :error="errors.rrdStep"
         hint="RRD step size in seconds"
       >
-        <PInputNumber
-          :id="rrdStepId"
+        <OnmsInputNumber
+          :inputId="rrdStepId"
           :modelValue="rrdSettings.rrdStep === '' ? null : Number(rrdSettings.rrdStep)"
           @update:modelValue="update('rrdStep', $event == null ? '' : String($event))"
-          :useGrouping="false"
           :min="1"
           :invalid="!!errors.rrdStep"
           data-test="rrd-step"
@@ -26,17 +25,17 @@
     <div class="rra-section">
       <div class="rra-header">
         <span class="rra-title">RRAs</span>
-        <PButton
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="add-rra-button"
           class="add-rra-button"
           @click="addRRA"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add RRA
-        </PButton>
+        </OnmsButton>
       </div>
-      <PDataTable
+      <OnmsTable
         v-model:editingRows="editingRows"
         :value="rrdSettings.rras"
         editMode="row"
@@ -44,7 +43,7 @@
         @row-edit-save="onRowEditSave"
         data-test="rra-table"
       >
-        <PColumn
+        <OnmsColumn
           header="RRA"
           style="width: 4rem"
         >
@@ -54,71 +53,70 @@
           <template #editor>
             <span>RRA</span>
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="cf"
           header="Consolidation Function"
         >
           <template #editor="{ data }">
-            <PSelect
+            <OnmsSelect
               v-model="data.cf"
               :options="cfOptions"
               optionLabel="label"
               optionValue="value"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="xff"
           header="XFF"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.xff"
               :min="0"
               :maxFractionDigits="6"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="steps"
           header="Step"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.steps"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           field="rows"
           header="Rows"
         >
           <template #editor="{ data }">
-            <PInputNumber
+            <OnmsInputNumber
               v-model="data.rows"
               :min="1"
               :step="1"
             />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           header=""
           style="width: 4rem"
         >
           <template #body="{ data }">
-            <PButton
-              text
+            <OnmsIconButton
+              title="Delete RRA"
               data-test="delete-rra-button"
+              :icon="Delete"
               @click="deleteRRA(data._id)"
-            >
-              <FeatherIcon :icon="Delete" />
-            </PButton>
+            />
           </template>
-        </PColumn>
-        <PColumn
+        </OnmsColumn>
+        <OnmsColumn
           :rowEditor="true"
           style="width: 8rem"
           bodyStyle="text-align: center"
@@ -128,7 +126,7 @@
             }
           }"
         />
-      </PDataTable>
+      </OnmsTable>
     </div>
     <span
       v-if="errors.rrdRras"
@@ -142,22 +140,19 @@ import { ref, useId, watch } from 'vue'
 
 import type { EditableRRA, ProfileFormErrors, RrdSettingsModel } from '@/types/snmpDataCollection'
 import { ConsolidationFunctionType } from '@/types/timeSeries'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
-import ButtonComponent from 'primevue/button'
-import DataTableComponent from 'primevue/datatable'
-import type { DataTableRowEditSaveEvent } from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import InputNumberComponent from 'primevue/inputnumber'
-import SelectComponent from 'primevue/select'
+import {
+  OnmsButton,
+  OnmsColumn,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsInputNumber,
+  OnmsSelect,
+  OnmsTable,
+  type OnmsTableRowEditSaveEvent
+} from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-
-const PButton = ButtonComponent
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-const PInputNumber = InputNumberComponent
-const PSelect = SelectComponent
 
 const rrdStepId = useId()
 
@@ -209,7 +204,7 @@ const deleteRRA = (id: number) => {
   })
 }
 
-const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
+const onRowEditSave = (event: OnmsTableRowEditSaveEvent) => {
   const rras = [...props.rrdSettings.rras]
   rras[event.index] = { ...event.newData } as EditableRRA
   emit('update:rrdSettings', { ...props.rrdSettings, rras })
@@ -217,15 +212,15 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .rrd-settings-box {
   padding: 20px 0;
 }
 
 .section-header {
-  @include headline3;
+  @include onms-headline3;
   margin-bottom: 16px;
 }
 
@@ -250,8 +245,8 @@ const onRowEditSave = (event: DataTableRowEditSaveEvent) => {
     margin-bottom: 12px;
 
     .rra-title {
-      @include headline4;
-      color: var(--feather-secondary-text-on-surface);
+      @include onms-headline4;
+      color: var(--onms-secondary-text-on-surface);
     }
   }
 }

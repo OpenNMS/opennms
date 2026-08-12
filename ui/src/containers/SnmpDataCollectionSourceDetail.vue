@@ -6,15 +6,15 @@
     <div class="header">
       <div class="title-container">
         <div class="back">
-          <PButton
-            text
+          <OnmsButton
+            variant="text"
             class="back-button"
             data-test="back-button"
             @click="router.push({ name: 'SNMP Data Collection' })"
           >
-            <FeatherIcon :icon="ArrowBack" />
+            <OnmsIcon :icon="ArrowBack" />
             Go Back
-          </PButton>
+          </OnmsButton>
         </div>
         <div class="title">
           <h1>{{ isCreateMode ? 'Create New Source' : `Source Details for ${store.selectedCollectionSource.name}` }}</h1>
@@ -23,13 +23,13 @@
           v-if="!isCreateMode"
           class="tag"
         >
-          <PTag
+          <OnmsTag
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
             value="Enabled"
             data-test="status-tag"
           />
-          <PTag
+          <OnmsTag
             v-if="!store.selectedCollectionSource.enabled"
             class="disabled-tag"
             value="Disabled"
@@ -41,23 +41,23 @@
         v-if="!isCreateMode"
         class="action-container"
       >
-        <PButton
+        <OnmsButton
           v-if="!store.selectedCollectionSource.enabled"
-          outlined
+          variant="outlined"
           label="Enable Source"
           data-test="enable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
         />
-        <PButton
+        <OnmsButton
           v-if="store.selectedCollectionSource.enabled"
-          outlined
+          variant="outlined"
           label="Disable Source"
           data-test="disable-source"
           @click="openChangeStatusDialog(store.selectedCollectionSource)"
         />
-        <PButton
+        <OnmsButton
           v-if="!isPluginSourced(store.selectedCollectionSource)"
-          outlined
+          variant="outlined"
           label="Delete Source"
           data-test="delete-source"
           @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
@@ -77,7 +77,7 @@
               v-if="isCreateMode"
               class="source-name-input"
             >
-              <InputText
+              <OnmsInputText
                 v-model="localSourceName"
                 :invalid="!!sourceNameError"
                 placeholder="Source Name"
@@ -116,7 +116,7 @@
             <span class="field-label">Profiles:</span>
             <div class="profiles-field-content">
               <span class="field-value profiles-chips">
-                <PChip
+                <OnmsChip
                   v-for="profile in drawerProfiles"
                   :key="profile.id"
                   :label="profile.name"
@@ -133,15 +133,12 @@
             </div>
           </div>
           <div class="config-field">
-            <PButton
-              outlined
-              label="Edit Profiles..."
-              icon="pi pi-pen-to-square"
-              iconPos="right"
+            <OnmsButton
+              variant="outlined"
               class="edit-profiles-btn"
               data-test="edit-profiles-button"
               @click="isProfilesDrawerVisible = true"
-            />
+            >Edit Profiles...<i class="pi pi-pen-to-square" /></OnmsButton>
           </div>
         </div>
       </div>
@@ -149,32 +146,32 @@
         v-if="!isCreateMode"
         class="tab-container"
       >
-        <PTabs
+        <OnmsTabs
           class="tabs"
           v-model:value="store.activeTab">
-          <PTabList>
-            <PTab :value="0">System Definitions</PTab>
-            <PTab :value="1">MIB Groups</PTab>
-            <PTab :value="2">Resource Types</PTab>
-          </PTabList>
-          <PTabPanels>
-            <PTabPanel :value="0">
+          <OnmsTabList>
+            <OnmsTab :value="0">System Definitions</OnmsTab>
+            <OnmsTab :value="1">MIB Groups</OnmsTab>
+            <OnmsTab :value="2">Resource Types</OnmsTab>
+          </OnmsTabList>
+          <OnmsTabPanels>
+            <OnmsTabPanel :value="0">
               <SystemDefinitionsTable />
-            </PTabPanel>
-            <PTabPanel :value="1">
+            </OnmsTabPanel>
+            <OnmsTabPanel :value="1">
               <MibGroupsTable />
-            </PTabPanel>
-            <PTabPanel :value="2">
+            </OnmsTabPanel>
+            <OnmsTabPanel :value="2">
               <ResourceTypesTable />
-            </PTabPanel>
-          </PTabPanels>
-        </PTabs>
+            </OnmsTabPanel>
+          </OnmsTabPanels>
+        </OnmsTabs>
       </div>
       <div
         v-if="isCreateMode"
         class="create-action-row"
       >
-        <PButton
+        <OnmsButton
           data-test="create-source-button"
           label="Create Source"
           @click="onSaveSource"
@@ -187,7 +184,7 @@
     class="not-found-container"
   >
     <p>No data found.</p>
-    <PButton
+    <OnmsButton
       label="Go Back"
       @click="router.push({ name: 'SNMP Data Collection' })"
     />
@@ -234,27 +231,9 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionProfile, SnmpCollectionSource } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowBack from '@featherds/icon/navigation/ArrowBack'
+import { OnmsButton, OnmsChip, OnmsIcon, OnmsInputText, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs, OnmsTag } from '@opennms/onms-ui'
+import ArrowBack from '@/components/icons/navigation/ArrowBack.vue'
 import { format } from 'date-fns-tz'
-import ButtonComponent from 'primevue/button'
-import ChipComponent from 'primevue/chip'
-import InputText from 'primevue/inputtext'
-import TabComponent from 'primevue/tab'
-import TabListComponent from 'primevue/tablist'
-import TabPanelComponent from 'primevue/tabpanel'
-import TabPanelsComponent from 'primevue/tabpanels'
-import TabsComponent from 'primevue/tabs'
-import TagComponent from 'primevue/tag'
-
-const PChip = ChipComponent
-const PButton = ButtonComponent
-const PTag = TagComponent
-const PTabs = TabsComponent
-const PTabList = TabListComponent
-const PTab = TabComponent
-const PTabPanels = TabPanelsComponent
-const PTabPanel = TabPanelComponent
 
 const router = useRouter()
 const route = useRoute()
@@ -471,8 +450,8 @@ watch(() => route.params.id, (id: string | string[]) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .snmp-data-collection-detail-container {
   margin: 0 auto;
@@ -491,7 +470,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
       .title {
         h1 {
-          @include headline1;
+          @include onms-headline1;
           margin: 0;
         }
       }
@@ -537,7 +516,7 @@ watch(() => route.params.id, (id: string | string[]) => {
 
     .config-details-box {
       .header {
-        @include headline3;
+        @include onms-headline3;
         margin-bottom: 20px;
       }
 
@@ -551,14 +530,14 @@ watch(() => route.params.id, (id: string | string[]) => {
           margin-right: 40px;
 
           .field-label {
-            @include headline4;
+            @include onms-headline4;
             margin-right: 10px;
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
             min-width: 80px;
           }
 
           .field-value {
-            @include body-large;
+            @include onms-body-large;
           }
 
           .profiles-chips {
@@ -568,7 +547,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .no-profiles-text {
-            color: var(--feather-secondary-text-on-surface);
+            color: var(--onms-secondary-text-on-surface);
           }
 
           .profiles-field-content {
@@ -578,7 +557,7 @@ watch(() => route.params.id, (id: string | string[]) => {
           }
 
           .profiles-error {
-            @include body-small;
+            @include onms-body-small;
             color: var(--p-red-500);
           }
 
@@ -607,12 +586,6 @@ watch(() => route.params.id, (id: string | string[]) => {
     .tab-container {
       margin-top: 25px;
       padding: 10px;
-
-      .tabs {
-        :deep(.p-tab) {
-          text-transform: uppercase;
-        }
-      }
     }
 
     .create-action-row {
@@ -640,7 +613,7 @@ watch(() => route.params.id, (id: string | string[]) => {
   padding: 25px;
 
   p {
-    @include headline3;
+    @include onms-headline3;
     margin: 0;
   }
 }

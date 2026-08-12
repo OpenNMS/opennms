@@ -1,14 +1,14 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <BreadCrumbs :items="breadcrumbs" />
     </div>
   </div>
-  <div class="feather-row">
-    <div class="feather-col-3">
+  <div class="onms-row">
+    <div class="onms-col-3">
       <ResourceList />
     </div>
-    <div class="feather-col-8">
+    <div class="onms-col-8">
       <NodeResourceList />
     </div>
   </div>

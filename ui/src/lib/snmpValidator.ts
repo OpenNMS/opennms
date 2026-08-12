@@ -23,7 +23,7 @@
 import { isIP } from 'is-ip'
 import { IpAddressRange, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpDefinition, SnmpProfileFormErrors, SnmpSecurityLevel } from '@/types/snmpConfig'
 import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from './constants'
-import { SCV_PREFIX_REGEX, validateScvPattern } from './scvValidator'
+import { hasScvPrefix, validateScvPattern } from './scvValidator'
 
 const SNMP_VERSIONS = ['v1', 'v2c', 'v3']
 const VALID_SECURITY_LEVELS = [SnmpSecurityLevel.NoAuthNoPriv, SnmpSecurityLevel.AuthNoPriv, SnmpSecurityLevel.AuthPriv]
@@ -63,7 +63,7 @@ export const validateSnmpConfiguration = (config: SnmpBaseConfiguration, snmpVer
   scvEnabledKeys.forEach((key) => {
     const value = (config as any)[key]
 
-    if (typeof value === 'string' && SCV_PREFIX_REGEX.test(value)) {
+    if (typeof value === 'string' && hasScvPrefix(value)) {
       if (!validateScvPattern(value)) {
         (errors as any)[key] = 'Invalid SCV expression'
       }

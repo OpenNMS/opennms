@@ -155,6 +155,41 @@ public class VmwareCollectorDatastoreCollectTest {
         assertEquals(0, collect(result).resources.size());
     }
 
+    /**
+     * Reproduces NMS-19977. When the datastore group is evaluated against a
+     * VirtualMachine (moid {@code vm-*}), {@code getHostSystemByManagedObjectId}
+     * still returns a non-null HostSystem wrapper — the client builds the
+     * reference without contacting the server — so the {@code == null} guard does
+     * not fire. Both {@code getDatastores()} and {@code getName()} then fail with
+     * the server's {@code ManagedObjectNotFound}. Before the fix, the
+     * {@code getName()} call inside the {@code getDatastores()} catch block threw
+     * a second time and escaped, failing the entire VirtualMachine collection.
+     * The group must instead be logged and skipped, leaving the collection
+     * SUCCEEDED (matching the documented contract in vmware-datastore.adoc).
+     */
+    @Test
+    public void datastoreGroupAgainstVirtualMachineIsSkippedNotFatal() throws Exception {
+        final String vmMoid = "vm-173941";
+
+        // The typed lookup never returns null for a VirtualMachine moid: it just
+        // wraps the reference. The server error only surfaces on the first call.
+        final HostSystem phantomHost = mock(HostSystem.class);
+        final RuntimeException notFound =
+                new RuntimeException("com.vmware.vim25.ManagedObjectNotFound: HostSystem:" + vmMoid);
+        when(phantomHost.getDatastores()).thenThrow(notFound);
+        when(phantomHost.getName()).thenThrow(notFound);
+        when(mockAccess.getHostSystemByManagedObjectId(vmMoid)).thenReturn(phantomHost);
+        when(mockAccess.getManagedEntityByManagedObjectId(vmMoid)).thenReturn(phantomHost);
+
+        final Map<String, Object> params = buildParameters();
+        params.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmMoid);
+
+        final CollectionSet result = collector.collect(agent, params);
+
+        assertEquals(CollectionStatus.SUCCEEDED, result.getStatus());
+        assertEquals(0, collect(result).resources.size());
+    }
+
     @Test
     public void happyPathCollectsAllHostMountedDatastoresWithExpectedAttributes() throws Exception {
         final Datastore small = mockDatastore("datastore-1003", "iso-library",

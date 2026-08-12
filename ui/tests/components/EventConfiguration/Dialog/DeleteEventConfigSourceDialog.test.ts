@@ -5,11 +5,11 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events),
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
+  name: 'OnmsConfirmationDialog',
   template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
@@ -59,7 +59,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          ConfirmationDialog: ConfirmationDialogStub
+          OnmsConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -68,8 +68,8 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('renders the dialog when visible is true', () => {
-    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('title')).toBe('Delete Event Configuration Source')
+    expect(wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).props('title')).toBe('Delete Event Configuration Source')
   })
 
   it('displays the correct event configuration source name and event count', () => {
@@ -133,7 +133,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          ConfirmationDialog: ConfirmationDialogStub
+          OnmsConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -151,6 +151,6 @@ describe('DeleteEventConfigSourceDialog', () => {
   it('hides the dialog when visible is false', async () => {
     store.$state.deleteEventConfigSourceDialogState.visible = false
     await wrapper.vm.$nextTick()
-    expect(wrapper.findComponent({ name: 'ConfirmationDialog' }).props('visible')).toBe(false)
+    expect(wrapper.findComponent({ name: 'OnmsConfirmationDialog' }).props('visible')).toBe(false)
   })
 })

@@ -1,17 +1,22 @@
 <template>
-  <FeatherAutocomplete
-    v-model="searchStr"
-    type="multi"
-    :results="results"
-    label="Search"
-    class="map-search"
-    @search="resetLabelsAndSearch"
-    :loading="loading"
-    :hideLabel="true"
-    text-prop="label"
-    @update:modelValue="selectItem"
-    :labels="labels"
-  ></FeatherAutocomplete>
+  <div class="map-search">
+    <i class="pi pi-search map-search__icon" aria-hidden="true" />
+    <OnmsAutoComplete
+      v-model="searchStr"
+      multiple
+      :suggestions="results"
+      optionLabel="label"
+      class="map-search__input"
+      aria-label="Search"
+      placeholder="Search"
+      @complete="resetLabelsAndSearch"
+      @update:modelValue="selectItem"
+    >
+      <template #empty>
+        <div class="autocomplete-empty">{{ labels.noResults }}</div>
+      </template>
+    </OnmsAutoComplete>
+  </div>
 </template>
 
 <script
@@ -21,7 +26,7 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 
 import { debounce } from 'lodash'
-import { FeatherAutocomplete } from '@featherds/autocomplete'
+import { OnmsAutoComplete } from '@opennms/onms-ui'
 import { useMapStore } from '@/stores/mapStore'
 import { useSearchStore } from '@/stores/searchStore'
 
@@ -118,13 +123,35 @@ watch(results, (newResults) => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
-
 .map-search {
-  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  /* Translucent panel + padding, matching the Show Severity control; follows
+     the theme (light in light mode, dark in dark mode). */
+  padding: 0.5em;
+  background-color: rgba(211, 211, 211, 0.8);
+  border-radius: 4px;
+}
+.map-search__icon {
+  flex: 0 0 auto;
+  color: var(--p-text-color);
+  font-size: 1.1rem;
+}
+.map-search__input {
   width: 290px !important;
-  :deep(.feather-input-border) {
-    background: var($surface);
-  }
+}
+.autocomplete-empty {
+  padding: 0.5rem 0.75rem;
+}
+</style>
+
+<style lang="scss">
+/* Dark-mode panel tint, matching the Show Severity control. Kept in a separate
+   unscoped block because .open-dark lives on <html>, outside this component's
+   scope; html.open-dark raises specificity above the scoped base .map-search
+   rule so it reliably wins. */
+html.open-dark .map-search {
+  background-color: rgba(30, 30, 40, 0.8);
 }
 </style>

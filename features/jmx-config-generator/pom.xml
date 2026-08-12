@@ -6,7 +6,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>36.0.2</version>
+        <version>36.0.3</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
@@ -19,10 +19,6 @@
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src/main/filtered</directory>
-            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -31,26 +27,6 @@
                 <extensions>true</extensions>
             </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-features-xml</id>
-                        <phase>package</phase>
-                        <goals><goal>attach-artifact</goal></goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.outputDirectory}/features.xml</file>
-                                    <type>xml</type>
-                                    <classifier>features</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- We generate a big onejar.jar file to make Deployment easier -->
             <plugin>
                 <groupId>org.dstovall</groupId>

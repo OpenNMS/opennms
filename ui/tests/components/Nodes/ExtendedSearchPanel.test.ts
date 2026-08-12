@@ -1,6 +1,6 @@
 // ui/tests/components/Nodes/ExtendedSearchPanel.test.ts
 import ExtendedSearchPanel from '@/components/Nodes/ExtendedSearchPanel.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -12,14 +12,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 describe('ExtendedSearchPanel.vue', () => {
-  let store: ReturnType<typeof useNodeStructureStore>
+  let store: ReturnType<typeof useNodeListStore>
 
   const mountPanel = () =>
     mount(ExtendedSearchPanel, {
       global: {
         plugins: [PrimeVue],
         stubs: {
-          FeatherIcon: { name: 'FeatherIcon', template: '<span />', props: ['icon'] }
+          OnmsIcon: { name: 'OnmsIcon', template: '<span />', props: ['icon'] }
         }
       }
     })
@@ -27,7 +27,7 @@ describe('ExtendedSearchPanel.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
-    store = useNodeStructureStore()
+    store = useNodeListStore()
     store.setExtendedSearchParams = vi.fn()
     store.queryFilter = {
       ...store.queryFilter,
@@ -159,7 +159,7 @@ describe('ExtendedSearchPanel.vue', () => {
 
   // ── resetFromStore ─────────────────────────────────────────────────────────
 
-  it('resetFromStore() seeds grid rows from nodeStructureStore.queryFilter.extendedSearch', async () => {
+  it('resetFromStore() seeds grid rows from nodeListStore.queryFilter.extendedSearch', async () => {
     const wrapper = mountPanel()
 
     // Simulate a store with a pre-existing foreignSource param

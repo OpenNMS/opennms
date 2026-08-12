@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
@@ -22,6 +22,8 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
+    "packages/onms-ui/src/**/*.ts",
+    "packages/onms-ui/src/**/*.vue",
     "vite.config.ts",
     "tests"
   ],

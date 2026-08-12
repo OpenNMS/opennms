@@ -10,11 +10,11 @@
         <h1>Manage Event Configurations</h1>
       </div>
       <div class="action">
-        <Button
+        <OnmsButton
           label="Create New Event Source"
           @click="store.showCreateEventConfigSourceDialog"
         />
-        <Button
+        <OnmsButton
           label="Create New Event Config"
           @click="goToCreateEventConfig()"
         />
@@ -39,7 +39,7 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb, CreateEditMode } from '@/types'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 const store = useEventConfigStore()
 const router = useRouter()

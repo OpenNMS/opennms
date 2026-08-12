@@ -3,11 +3,11 @@ import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events).
 // The action button maps to "View Uploaded Files", cancel maps to "Close".
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
+  name: 'OnmsConfirmationDialog',
   template: '<div class="confirmation-dialog"><div class="dialog-content"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
@@ -19,12 +19,12 @@ describe('DataCollectionFilesUploadReportDialog.vue', () => {
     return mount(DataCollectionFilesUploadReportDialog, {
       props: { report: report as EventConfigFilesUploadResponse, dialogVisible },
       global: {
-        stubs: { ConfirmationDialog: ConfirmationDialogStub }
+        stubs: { OnmsConfirmationDialog: ConfirmationDialogStub }
       }
     })
   }
 
-  const confirmationDialog = () => wrapper.findComponent({ name: 'ConfirmationDialog' })
+  const confirmationDialog = () => wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
 
   beforeEach(async () => {
     wrapper = mountComponent()
@@ -38,7 +38,7 @@ describe('DataCollectionFilesUploadReportDialog.vue', () => {
   })
 
   describe('Initial Rendering', () => {
-    it('renders the ConfirmationDialog', () => {
+    it('renders the OnmsConfirmationDialog', () => {
       expect(confirmationDialog().exists()).toBe(true)
     })
 

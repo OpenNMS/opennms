@@ -1,5 +1,5 @@
 <template>
-  <DataTable
+  <OnmsTable
     lazy
     :value="nodeStore.outages"
     paginator
@@ -10,21 +10,19 @@
     data-test="outages-table"
     @page="onPage"
   >
-    <Column field="ipAddress" header="IP Address" />
-    <Column field="hostname" header="Host Name" />
-    <Column field="serviceName" header="Service Name" />
+    <OnmsColumn field="ipAddress" header="IP Address" />
+    <OnmsColumn field="hostname" header="Host Name" />
+    <OnmsColumn field="serviceName" header="Service Name" />
     <template #empty>
       <EmptyList :content="emptyListContent" data-test="empty-list" />
     </template>
-  </DataTable>
+  </OnmsTable>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { type DataTablePageEvent } from 'primevue/datatable'
+import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 
@@ -40,7 +38,7 @@ const queryParameters = ref({
   offset: 0
 })
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
   pageSize.value = event.rows
   queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }

@@ -21,7 +21,7 @@
  */
 package org.opennms.core.rpc.camel;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,11 +29,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.After;
 import org.junit.Test;
-import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
@@ -41,84 +43,75 @@ import org.opennms.core.rpc.api.RpcResponse;
 import io.opentracing.Span;
 
 /**
- * NMS-19951 — regression test for the local-execution timeout backstop.
- *
- * <p>{@link CamelRpcClientFactory#getClient(RpcModule)}'s {@code execute()} short-circuits a request
- * for the current location directly to the module. Previously that direct path applied no timeout,
- * so a local {@link RpcModule} whose future never completed (e.g. a detector/SNMP async op whose
- * completion callback is lost) returned a future that hung forever — the mechanism behind the
- * provisiond scan wedge. The fix bounds the direct path to the request TTL (or the default RPC
- * timeout when none is set), mirroring the remote/Minion branch.</p>
- *
- * <p>These tests assert the fixed behavior: a local request with a TTL whose module never completes
- * is completed exceptionally with a {@link TimeoutException} at ~TTL, and a module that does complete
- * still returns its result.</p>
+ * NMS-20006 — local (same-location) RPC execution is bounded by a fixed,
+ * configurable timeout instead of the request TTL.
  */
 public class LocalRpcTimeoutTest {
 
     private static final String LOCAL_LOCATION = "Default";
 
-    /**
-     * The fix: a local request whose module future never completes is bounded by the TTL and
-     * completes exceptionally with a {@link TimeoutException}, rather than hanging forever.
-     */
-    @Test
-    public void localExecutionAppliesTtlTimeoutWhenModuleNeverCompletes() throws Exception {
-        // A module whose execute() returns a future that is never completed — models a local
-        // detector/SNMP async op whose completion callback is lost.
-        final CompletableFuture<StubResponse> neverCompletes = new CompletableFuture<>();
-        final RpcModule<StubRequest, StubResponse> hangingModule = stubModule(req -> neverCompletes);
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-        final CamelRpcClientFactory factory = new CamelRpcClientFactory();
-        factory.setLocation(LOCAL_LOCATION); // NB: start() intentionally NOT called — the local branch needs no Camel.
-
-        // Request targets the local location and carries a 1s TTL.
-        final StubRequest request = new StubRequest(LOCAL_LOCATION, 1_000L);
-
-        final long start = System.currentTimeMillis();
-        final CompletableFuture<StubResponse> future = factory.getClient(hangingModule).execute(request);
-
-        try {
-            // Generous ceiling; the ~1s TTL bound should fire well before this.
-            future.get(10, TimeUnit.SECONDS);
-            fail("Expected the local future to be bounded by the TTL and time out");
-        } catch (ExecutionException expected) {
-            assertTrue("expected a TimeoutException cause but was: " + expected.getCause(),
-                    expected.getCause() instanceof TimeoutException);
-        }
-        final long elapsedMs = System.currentTimeMillis() - start;
-        assertTrue("timeout should fire near the 1s TTL, but took " + elapsedMs + "ms", elapsedMs < 5_000L);
+    @After
+    public void tearDown() {
+        System.clearProperty(CamelRpcClientFactory.LOCAL_EXEC_TIMEOUT_PROPERTY);
+        scheduler.shutdownNow();
     }
 
     /**
-     * Control: when the module's future DOES complete, the local path returns it (a null location is
-     * also treated as local by the factory).
+     * Regression guard for NMS-20006: a local operation that completes after its
+     * request TTL has expired must still return its result. Enforcing the TTL on
+     * local execution is what broke slow-but-healthy SNMP collections in 36.0.2 /
+     * Meridian 2024.3.11 — this test fails if that behavior is ever reintroduced.
      */
     @Test
-    public void localExecutionReturnsModuleResultWhenItCompletes() throws Exception {
-        final RpcModule<StubRequest, StubResponse> okModule =
-                stubModule(req -> CompletableFuture.completedFuture(new StubResponse(null)));
+    public void slowLocalExecutionCompletesDespiteExpiredTtl() throws Exception {
+        final CompletableFuture<StubResponse> completesLate = new CompletableFuture<>();
+        scheduler.schedule(() -> completesLate.complete(new StubResponse(null)), 1_500, TimeUnit.MILLISECONDS);
+        final RpcModule<StubRequest, StubResponse> slowModule = stubModule(completesLate);
 
         final CamelRpcClientFactory factory = new CamelRpcClientFactory();
         factory.setLocation(LOCAL_LOCATION);
 
-        final StubRequest request = new StubRequest(null, 1_000L);
+        // TTL far below the module's completion time.
+        final StubRequest request = new StubRequest(LOCAL_LOCATION, 200L);
 
-        final StubResponse response = factory.getClient(okModule).execute(request).get(5, TimeUnit.SECONDS);
-        assertEquals(null, response.getErrorMessage());
+        final StubResponse response = factory.getClient(slowModule).execute(request).get(10, TimeUnit.SECONDS);
+        assertNull(response.getErrorMessage());
+    }
+
+    /**
+     * A custom timeout is honored: with a 5 ms timeout configured, a module future
+     * that never completes fails promptly with a TimeoutException instead of
+     * wedging the caller.
+     */
+    @Test
+    public void customLocalTimeoutIsHonored() throws Exception {
+        System.setProperty(CamelRpcClientFactory.LOCAL_EXEC_TIMEOUT_PROPERTY, "5");
+        final CompletableFuture<StubResponse> neverCompletes = new CompletableFuture<>();
+        final RpcModule<StubRequest, StubResponse> hangingModule = stubModule(neverCompletes);
+
+        final CamelRpcClientFactory factory = new CamelRpcClientFactory();
+        factory.setLocation(LOCAL_LOCATION); // start() intentionally NOT called — the local branch needs no Camel.
+
+        final StubRequest request = new StubRequest(LOCAL_LOCATION, null);
+
+        try {
+            factory.getClient(hangingModule).execute(request).get(10, TimeUnit.SECONDS);
+            fail("Expected the local timeout to fail the hung execution");
+        } catch (ExecutionException e) {
+            assertTrue("expected a TimeoutException cause but was: " + e.getCause(),
+                    e.getCause() instanceof TimeoutException);
+        }
     }
 
     // -----------------------------------------------------------------------
     // Minimal stubs (no Camel/Spring/Mockito needed for the local branch).
     // -----------------------------------------------------------------------
 
-    private interface Exec {
-        CompletableFuture<StubResponse> execute(StubRequest request);
-    }
-
-    private static RpcModule<StubRequest, StubResponse> stubModule(final Exec exec) {
+    private static RpcModule<StubRequest, StubResponse> stubModule(final CompletableFuture<StubResponse> future) {
         return new RpcModule<StubRequest, StubResponse>() {
-            @Override public CompletableFuture<StubResponse> execute(StubRequest request) { return exec.execute(request); }
+            @Override public CompletableFuture<StubResponse> execute(StubRequest request) { return future; }
             @Override public String getId() { return "stub"; }
             @Override public String marshalRequest(StubRequest request) { return ""; }
             @Override public StubRequest unmarshalRequest(String request) { return new StubRequest(LOCAL_LOCATION, null); }

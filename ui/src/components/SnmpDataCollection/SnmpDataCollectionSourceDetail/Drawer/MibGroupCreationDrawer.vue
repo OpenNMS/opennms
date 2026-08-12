@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="mib-group-drawer"
     v-model:visible="store.mibGroupDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '80rem' }"
+    width="80rem"
     @hide="closeMibGroupDrawer"
     class="mib-group-drawer"
   >
     <div class="container">
       <div class="content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -26,7 +25,7 @@
           :for="nameId"
           :error="errors.name"
         >
-          <InputText
+          <OnmsInputText
             :id="nameId"
             v-model.trim="name"
             :invalid="!!errors.name"
@@ -41,10 +40,10 @@
           :for="ifTypeId"
           :error="errors.ifType"
         >
-          <Select
+          <OnmsSelect
             :inputId="ifTypeId"
             :modelValue="ifType"
-            @update:modelValue="ifType = $event"
+            @update:modelValue="ifType = $event as ISelectItemType"
             :options="IF_TYPE_FILTERS_OPTIONS"
             optionLabel="_text"
             :invalid="!!errors.ifType"
@@ -60,63 +59,59 @@
               <h3>MIB Objects</h3>
             </div>
             <div class="action">
-              <Button
-                outlined
+              <OnmsButton
+                variant="outlined"
                 label="Add MIB Object"
                 data-test="add-mib-object-button"
                 @click="openMibObjectDrawer(-1, null, CreateEditMode.Create)"
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="mibObjects"
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 15, 20]"
             data-test="mib-objects-table"
           >
-            <Column
+            <OnmsColumn
               field="oid"
               header="OID"
             />
-            <Column
+            <OnmsColumn
               field="instance"
               header="Instance"
             />
-            <Column
+            <OnmsColumn
               field="alias"
               header="Alias"
             />
-            <Column
+            <OnmsColumn
               field="type"
               header="Type"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
-                  <Button
-                    text
+                  <OnmsIconButton
                     title="Edit MIB Object"
                     data-test="edit-mib-object-button"
+                    :icon="Edit"
                     @click="openMibObjectDrawer(mibObjects.indexOf(data), data, CreateEditMode.Edit)"
-                  >
-                    <FeatherIcon :icon="Edit" />
-                  </Button>
-                  <Button
-                    text
+                  />
+                  <OnmsIconButton
                     title="Delete MIB Object"
                     data-test="delete-mib-object-button"
+                    :icon="Delete"
                     @click="deleteMibObject(mibObjects.indexOf(data))"
-                  >
-                    <FeatherIcon :icon="Delete" />
-                  </Button>
+                  />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No MIB Objects added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -133,7 +128,7 @@
             :for="oidId"
             :error="mibObjectErrors.oid"
           >
-            <InputText
+            <OnmsInputText
               :id="oidId"
               v-model.trim="oid"
               :invalid="!!mibObjectErrors.oid"
@@ -148,10 +143,10 @@
             :for="instanceId"
             :error="mibObjectErrors.instance"
           >
-            <Select
+            <OnmsSelect
               :inputId="instanceId"
               :modelValue="instance"
-              @update:modelValue="instance = $event"
+              @update:modelValue="instance = $event as ISelectItemType"
               :options="instancesOptions"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.instance"
@@ -166,7 +161,7 @@
             :for="aliasId"
             :error="mibObjectErrors.alias"
           >
-            <InputText
+            <OnmsInputText
               :id="aliasId"
               v-model.trim="alias"
               :invalid="!!mibObjectErrors.alias"
@@ -181,10 +176,10 @@
             :for="dataTypeId"
             :error="mibObjectErrors.type"
           >
-            <Select
+            <OnmsSelect
               :inputId="dataTypeId"
               :modelValue="dataType"
-              @update:modelValue="dataType = $event"
+              @update:modelValue="dataType = $event as ISelectItemType"
               :options="MIB_OBJECT_DATA_TYPE_OPTIONS"
               optionLabel="_text"
               :invalid="!!mibObjectErrors.type"
@@ -195,13 +190,13 @@
         </div>
         <div class="spacer"></div>
         <div class="footer">
-          <Button
-            text
+          <OnmsButton
+            variant="ghost"
             label="Cancel"
             data-test="cancel-mib-object-button"
             @click="closeMibObjectDrawer"
           />
-          <Button
+          <OnmsButton
             label="Save MIB Object"
             data-test="save-mib-object-button"
             @click="saveMibObject"
@@ -213,13 +208,13 @@
         class="footer"
         v-if="!mibObjectDrawerState.visible"
       >
-        <Button
-          text
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           data-test="cancel-mib-group"
           @click="closeMibGroupDrawer"
         />
-        <Button
+        <OnmsButton
           label="Save MIB Group"
           data-test="save-mib-group"
           :disabled="isSaveDisabled"
@@ -227,7 +222,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -241,18 +236,11 @@ import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionSer
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupErrors, MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
-import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
-import Edit from '@featherds/icon/action/Edit'
-import { ISelectItemType } from '@featherds/select'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import ToggleSwitch from 'primevue/toggleswitch'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
@@ -531,7 +519,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import '@featherds/styles/mixins/typography';
+@import '@/styles/onms-typography';
 
 .container {
   margin-top: 10px;
@@ -553,7 +541,7 @@ watch(
     }
 
     .label {
-      @include headline4;
+      @include onms-headline4;
       margin-bottom: 0.5em;
     }
 
@@ -566,7 +554,7 @@ watch(
 
         .title {
           h3 {
-            @include headline3;
+            @include onms-headline3;
           }
         }
       }
@@ -589,7 +577,7 @@ watch(
       margin: 0;
 
       h4 {
-        @include headline4;
+        @include onms-headline4;
       }
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <DataTable
+  <OnmsTable
     lazy
     :value="nodeStore.snmpInterfaces"
     paginator
@@ -10,31 +10,29 @@
     data-test="snmp-interfaces-table"
     @page="onPage"
   >
-    <Column field="ifIndex" header="SNMP ifIndex" />
-    <Column field="ifDescr" header="SNMP ifDescr">
+    <OnmsColumn field="ifIndex" header="SNMP ifIndex" />
+    <OnmsColumn field="ifDescr" header="SNMP ifDescr">
       <template #body="{ data }">{{ data.ifDescr || 'N/A' }}</template>
-    </Column>
-    <Column field="ifName" header="SNMP ifName">
+    </OnmsColumn>
+    <OnmsColumn field="ifName" header="SNMP ifName">
       <template #body="{ data }">{{ data.ifName || 'N/A' }}</template>
-    </Column>
-    <Column field="ifAlias" header="SNMP ifAlias">
+    </OnmsColumn>
+    <OnmsColumn field="ifAlias" header="SNMP ifAlias">
       <template #body="{ data }">{{ data.ifAlias || 'N/A' }}</template>
-    </Column>
-    <Column field="ifSpeed" header="SNMP ifSpeed">
+    </OnmsColumn>
+    <OnmsColumn field="ifSpeed" header="SNMP ifSpeed">
       <template #body="{ data }"><span v-html="data.ifSpeed" /></template>
-    </Column>
+    </OnmsColumn>
     <template #empty>
       <EmptyList :content="emptyListContent" data-test="empty-list" />
     </template>
-  </DataTable>
+  </OnmsTable>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { type DataTablePageEvent } from 'primevue/datatable'
+import { OnmsColumn, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 
@@ -50,7 +48,7 @@ const queryParameters = ref({
   offset: 0
 })
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   first.value = event.first
   pageSize.value = event.rows
   queryParameters.value = { ...queryParameters.value, offset: event.first, limit: event.rows }

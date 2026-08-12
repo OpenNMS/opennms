@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -55,7 +55,6 @@
     <module>kafka</module>
 
     <!-- Executor factories -->
-    <module>executor-factory</module>
 
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
@@ -194,5 +193,6 @@
     
     <module>grpc</module>
     <module>elastic</module>
+    <module>ha-management</module>
   </modules>
 </project>

@@ -20,16 +20,11 @@
 /// License.
 ///
 
-@import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
-
-.open-light {
-  @include open-light;
-}
-
-.open-dark {
-  @include open-dark;
-}
+// Owned token layer (replaces the FeatherDS theme). Light/dark switching is
+// driven by the `.open-light` / `.open-dark` class (on <html>/<body>) that
+// onms-theme + PrimeVue's darkModeSelector key off.
+@import "@/styles/onms-theme";
+@import "@/styles/onms-tokens";
 
 body {
   background: var($background);

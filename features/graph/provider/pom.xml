@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.graph</artifactId>
-        <version>36.0.2</version>
+        <version>36.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graph</groupId>
@@ -16,6 +16,7 @@
         <module>bsm</module>
         <module>graphml</module>
         <module>legacy</module>
+        <module>pathoutage</module>
         <module>persistence-test</module>
         <module>topology</module>
     </modules>

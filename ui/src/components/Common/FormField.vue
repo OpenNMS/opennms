@@ -86,17 +86,11 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   display: flex;
   flex-direction: column;
 
-  // Pilot-only: shorter controls inside FormField. Once every screen is
-  // converted off IftaLabel/FloatLabel, promote 3rem to the global
-  // .p-inputtext / .p-select rule in primevue-overrides.scss and delete
-  // this block.
-  :deep(.p-inputtext),
-  :deep(.p-select) {
-    height: 3rem;
-  }
-
-  // MultiSelect grows with its chip display, so normalize via min-height to
-  // match the other controls when empty while still allowing it to grow.
+  // Input/Select height (3rem) is now the global default (see
+  // primevue-overrides.scss .p-inputtext / .p-select), so no per-field height
+  // override is needed here. MultiSelect grows with its chip display, so
+  // normalize via min-height to match the other controls when empty while
+  // still allowing it to grow.
   :deep(.p-multiselect) {
     min-height: 3rem;
   }

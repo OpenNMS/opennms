@@ -1,13 +1,13 @@
 <template>
   <div class="top-bar">
     <div class="icon subtitle2 pointer" @click="triggerHelp">
-      Files<FeatherIcon :icon="ChevronRight" />
+      Files<OnmsIcon :icon="ChevronRight" />
     </div>
     <div class="save">
-      <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>
+      <OnmsButton :disabled="disableBtn" @click="save">Save</OnmsButton>
     </div>
     <div class="reset">
-      <FeatherButton :disabled="disableBtn" primary @click="reset">Reset</FeatherButton>
+      <OnmsButton :disabled="disableBtn" @click="reset">Reset</OnmsButton>
     </div>
     <div class="filename headline3">{{ filename }}</div>
   </div>
@@ -17,9 +17,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 
 const fileEditorStore = useFileEditorStore()

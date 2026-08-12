@@ -50,10 +50,12 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Parameter;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -72,7 +74,10 @@ public class DefaultReportService implements ReportService,InitializingBean {
 
     private ReportCatalogDao m_reportCatalogDao;
 
-    /** {@inheritDoc} 
+    @Autowired
+    private SessionUtils m_sessionUtils;
+
+    /** {@inheritDoc}
      * @throws ReportRunException */
     @Override
     public synchronized String runReport(Report report,String reportDirectory) throws ReportRunException {
@@ -125,7 +130,10 @@ public class DefaultReportService implements ReportService,InitializingBean {
         catalogEntry.setTitle(report.getReportName());
         catalogEntry.setLocation(fileName);
         try {
-            m_reportCatalogDao.save(catalogEntry);
+            m_sessionUtils.withTransaction(() -> {
+                m_reportCatalogDao.save(catalogEntry);
+                return null;
+            });
         } catch (Exception e) {
             throw new ReportRunException("Can't save a report catalog entry, " + e.getMessage());
         }

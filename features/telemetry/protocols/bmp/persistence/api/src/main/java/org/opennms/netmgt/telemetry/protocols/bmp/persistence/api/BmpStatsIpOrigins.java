@@ -43,7 +43,7 @@ public class BmpStatsIpOrigins implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpStatsIpOriginsSequence")
-    @SequenceGenerator(name = "bmpStatsIpOriginsSequence", sequenceName = "bmpstatsiporiginsnxtid")
+    @SequenceGenerator(name = "bmpStatsIpOriginsSequence", sequenceName = "bmpstatsiporiginsnxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

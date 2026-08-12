@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -30,8 +30,6 @@
     <flexjson.version>2.0</flexjson.version>
   </properties>
   <modules>
-    <module>system-exports</module>
-    <module>commander</module>
     <module>api</module>
     <module>broker</module>
     <module>nrtbroker-jms</module>
@@ -39,7 +37,6 @@
     <module>nrtcollector</module>
     <module>protocolcollector</module>
     <module>web</module>
-    <module>jar</module>
   </modules>
   <build>
     <plugins>

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-javamail</artifactId>
     <groupId>org.opennms</groupId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-javamail-api</artifactId>
@@ -17,7 +17,6 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
           </instructions>
@@ -31,8 +30,26 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+    </dependency>
+    <!-- runtime providers (SMTP/IMAP/POP3); flows transitively to every mail consumer
+         and the assembly. The shaded variant strips angus-mail's javax-era resource
+         names, which would otherwise poison the javax.activation/javax.mail lookup
+         tables on the flat classpath (see dependencies/angus-mail-shaded). -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>angus-mail-shaded</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-activation</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -45,6 +62,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

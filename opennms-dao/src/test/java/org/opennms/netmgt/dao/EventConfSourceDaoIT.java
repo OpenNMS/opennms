@@ -154,6 +154,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testEventConfFilesExists() throws IOException {
         String[] xmlFiles = {
                 "eventconf-test-1.xml",
@@ -278,7 +279,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         }
 
         List<EventConfEvent> allEvents = m_eventDao.findAll();
-        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
+        assertEquals("Total event count mismatch across all files", defaultEventSize + totalExpectedEventCount, allEvents.size());
     }
 
     @Test
@@ -486,6 +487,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testFilterEventConfSource_ReturnsValidRecords() {
         EventConfSource source1 = new EventConfSource();
         source1.setName("opennms.test.events");
@@ -570,6 +572,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testFilterEventConfSource_ReturnsEmptyMap() {
         Map<String, Object> result = m_dao.filterEventConfSource(
                 null, null, null, null, 0, 5);

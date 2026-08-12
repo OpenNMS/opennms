@@ -21,12 +21,15 @@
  */
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -39,9 +42,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +80,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -248,6 +259,83 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
+
+    /**
+     * The v2 node update must ignore provisioning-ownership fields, however the request spells
+     * them and whether or not they are reached through a nested path.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateNodeCannotReassignProtectedFields() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysName", "TestMachine1");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        // Separator keys are what reach a camelCase property (foreign_source -> foreignSource).
+        sendPut("/nodes/1", "sys_contact=LegitContact&foreign_source=AttackerReq&foreign_id=999&Type=D"
+                + "&asset_record.node.foreign_source=NestedReq", 204);
+
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertEquals("foreignSource must not be reassignable", "JUnit", updated.getForeignSource());
+        assertEquals("foreignId must not be reassignable", "TestMachine1", updated.getForeignId());
+        assertEquals("type must not be reassignable", NodeType.ACTIVE, updated.getType());
+        assertEquals("legitimate fields still update", "LegitContact", updated.getSysContact());
+    }
+
+    /**
+     * The child endpoints bind to entities that hold a back-reference to their node, so none of
+     * them may be used as a route to the node's protected properties.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void subResourceUpdatesCannotReachNodeForeignSource() throws Exception {
+        final JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysName", "TestMachine1");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+
+        final JSONObject ipInterface = new JSONObject();
+        ipInterface.put("snmpPrimary", "P");
+        ipInterface.put("ipAddress", "10.10.10.10");
+        ipInterface.put("hostName", "TestMachine");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces", ipInterface.toString(), 201);
+
+        final JSONObject service = new JSONObject();
+        service.put("status", "A");
+        final JSONObject serviceType = new JSONObject();
+        serviceType.put("name", "ICMP");
+        service.put("serviceType", serviceType);
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces/10.10.10.10/services", service.toString(), 201);
+
+        final JSONObject snmpInterface = new JSONObject();
+        snmpInterface.put("ifIndex", 6);
+        snmpInterface.put("ifDescr", "en1");
+        snmpInterface.put("ifName", "en1");
+        snmpInterface.put("ifType", 6);
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/snmpinterfaces", snmpInterface.toString(), 201);
+
+        final String attack = "node.foreign_source=AttackerReq&node.foreign_id=666";
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10", attack, 204);
+        sendPut("/nodes/1/snmpinterfaces/6", attack, 204);
+        // this one reports 304 Not Modified because the service status did not change
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", attack, 304);
+
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertEquals("foreignSource must not be reachable from a child endpoint", "JUnit", updated.getForeignSource());
+        assertEquals("foreignId must not be reachable from a child endpoint", "TestMachine1", updated.getForeignId());
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testSnmpInterfaceStringSearchIsCaseInsensitive() throws Exception {
@@ -346,6 +434,155 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearch() throws Exception {
+        // DatabasePopulator seeds node1's SNMP service with a resolved outage, an unresolved outage
+        // with null perspective and null suppressTime (a current outage), and a resolved + unresolved
+        // perspective outage pair (excluded by "perspective is null"). Only the unresolved,
+        // non-perspective outage should make node1 match nodesWithOutages.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Has-outages: at least node1 matches
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true"), 200);
+
+        // Precise: node1 HAS a current outage, node2 does NOT
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true;node.label==node1"), 200);
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==true;node.label==node2"), 204);
+
+        // Excluding nodes with outages: node1 drops out, node2 remains
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==false;node.label==node1"), 204);
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages==false;node.label==node2"), 200);
+
+        // NOT_EQUALS true is equivalent to ==false (exclude nodes with outages)
+        sendRequest(GET, url, parseParamData("_s=nodesWithOutages!=true;node.label==node1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchExcludesPerspectiveOnlyOutages() throws Exception {
+        // DatabasePopulator seeds node1 with an unresolved non-perspective outage AND an
+        // unresolved perspective outage (see DatabasePopulator ~L401-451). Resolve the
+        // non-perspective outage here so only the perspective-unresolved one remains open.
+        // NodeRestService#currentOutagesSubquery's "perspective is null" clause must still
+        // exclude node1 -- without that clause, node1 would wrongly match via the surviving
+        // perspective outage.
+        m_databasePopulator.populateDatabase();
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsOutage nonPerspectiveOutage = m_databasePopulator.getOutageDao().currentOutages().stream()
+                    .filter(o -> "node1".equals(o.getNodeLabel()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("expected node1 to have a current non-perspective outage"));
+            nonPerspectiveOutage.setIfRegainedService(new Date(1436881648292L));
+            m_databasePopulator.getOutageDao().update(nonPerspectiveOutage);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchResolvedSuppressedOutageDoesNotCount() throws Exception {
+        // Kills the legacy mis-parenthesized "perspective is null and ifregainedservice is null
+        // or suppresstime < now()" shape: a RESOLVED outage with a PAST suppressTime satisfies
+        // the dangling "or suppresstime < now()" disjunct regardless of ifregainedservice, so the
+        // legacy shape would wrongly match node2. The corrected SQL parenthesizes the
+        // suppresstime OR so it is ANDed with (not OR'd around) ifregainedservice is null, so a
+        // resolved outage must never count as current, no matter its suppressTime.
+        m_databasePopulator.populateDatabase();
+
+        final Date lostService = new Date(1436881548292L);
+        final Date regainedService = new Date(1436881648292L);
+        final Date pastSuppressTime = new Date(1436881448292L);
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsMonitoredService svc = m_databasePopulator.getMonitoredServiceDao()
+                    .get(m_databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "SNMP");
+            final OnmsOutage resolvedSuppressed = new OnmsOutage(lostService, regainedService, svc);
+            resolvedSuppressed.setSuppressTime(pastSuppressTime);
+            m_databasePopulator.getOutageDao().save(resolvedSuppressed);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node2"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodesWithOutagesSearchExpiredSuppressionStillCounts() throws Exception {
+        // Locks the OR inside the parens: an UNRESOLVED, non-perspective outage whose
+        // suppressTime is in the PAST must still count as a current outage. A naive
+        // "suppresstime is null"-only version of the clause would wrongly exclude it.
+        m_databasePopulator.populateDatabase();
+
+        final Date lostService = new Date(1436881548292L);
+        final Date pastSuppressTime = new Date(1436881448292L);
+
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            final OnmsMonitoredService svc = m_databasePopulator.getMonitoredServiceDao()
+                    .get(m_databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "SNMP");
+            final OnmsOutage unresolvedExpiredSuppression = new OnmsOutage(lostService, svc);
+            unresolvedExpiredSuppression.setSuppressTime(pastSuppressTime);
+            m_databasePopulator.getOutageDao().save(unresolvedExpiredSuppression);
+            m_databasePopulator.getOutageDao().flush();
+            return null;
+        });
+
+        sendRequest(GET, "/nodes", parseParamData("_s=nodesWithOutages==true;node.label==node2"), 200);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testComposedFiqlWireShapes() throws Exception {
+        // Locks in the composed FIQL wire shapes the Vue node-list page emits: a grouped/parenthesized
+        // clause intersected (';') with the mandatory node.type!=D guard (see
+        // buildNodeStructureQuery in useNodeQuery.ts, which always wraps its assembled query in
+        // parens before appending the guard). A server-side FIQL parser regression in any of these
+        // shapes would otherwise only surface client-side as an empty/"No interfaces" result.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Grouped label OR (mirrors buildCategoryQuery/buildServiceQuery-style multi-item groups)
+        // intersected with the node.type!=D guard.
+        sendRequest(GET, url, parseParamData("_s=((node.label==node1,node.label==node2));node.type!=D"), 200);
+
+        // Grouped nodesWithOutages filter (mirrors buildNodeStructureQuery always wrapping the
+        // assembled query, even a single term, in its own parens) intersected with the guard.
+        sendRequest(GET, url, parseParamData("_s=(nodesWithOutages==true);node.type!=D"), 200);
+
+        // Grouped searchTerm-as-IP union (label OR ipInterface.ipAddress) intersected with the
+        // guard -- mirrors buildNodeStructureQuery's searchTerm-looks-like-an-IP union branch.
+        // node1 is seeded with ipAddress 192.168.1.1 (see DatabasePopulator#buildNode1).
+        sendRequest(GET, url, parseParamData("_s=(label==*node*,ipInterface.ipAddress==192.168.1.1);node.type!=D"), 200);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodeTypeSearch() throws Exception {
+        // DatabasePopulator's nodes are all type "A" (active), which suffices to exercise both
+        // branches of the node.type filter. This locks in the FIQL "type" filtering used by the
+        // Vue node-list page.
+        m_databasePopulator.populateDatabase();
+
+        String url = "/nodes";
+
+        // Active nodes: the populator's nodes match
+        sendRequest(GET, url, parseParamData("_s=node.type==A"), 200);
+
+        // Deleted nodes: none of the populator's nodes are type D
+        sendRequest(GET, url, parseParamData("_s=node.type==D"), 204);
+
+        // NOT_EQUALS: excluding deleted nodes still returns the active ones
+        sendRequest(GET, url, parseParamData("_s=node.type!=D"), 200);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testNodesWithAssetsSearch() throws Exception {
         // DatabasePopulator seeds alternate-node1 with asset info (assetNumber, plus building "HQ"
         // carried over by NetworkBuilder). A bare node created via REST has no asset fields set
@@ -380,8 +617,13 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         builder.addNode("AssetCommaNode").setForeignSource("JUnit").setForeignId("AssetComma").setType(OnmsNode.NodeType.ACTIVE);
         builder.setBuilding("A,B;C");
         final OnmsNode node = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(node);
-        m_databasePopulator.getNodeDao().flush();
+        // Commit the fixture so the separate-session REST reads below can see it
+        // (a bare test-instance save is rejected in read-only FlushMode.MANUAL under Hibernate 5).
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
 
         String url = "/nodes";
 
@@ -433,13 +675,18 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("Parent").setForeignSource("JUnit").setForeignId("Parent").setType(OnmsNode.NodeType.ACTIVE);
         final OnmsNode parent = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(parent);
 
-        builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
-                .setParent(parent).setNodeParentId(parent.getId());
-        final OnmsNode child = builder.getCurrentNode();
-        m_databasePopulator.getNodeDao().save(child);
-        m_databasePopulator.getNodeDao().flush();
+        // Commit the fixture so the separate-session REST reads below can see the nodes.
+        final OnmsNode child = m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(parent);
+
+            builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
+                    .setParent(parent).setNodeParentId(parent.getId());
+            final OnmsNode newChild = builder.getCurrentNode();
+            m_databasePopulator.getNodeDao().save(newChild);
+            m_databasePopulator.getNodeDao().flush();
+            return newChild;
+        });
 
         Assert.assertNotNull(child.getId());
         Assert.assertNotNull(parent.getId());

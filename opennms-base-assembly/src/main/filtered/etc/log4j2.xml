@@ -187,10 +187,6 @@
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
     </logger>
-    <logger name="org.asteriskjava" additivity="false" level="WARN">
-      <appender-ref ref="RoutingAppender"/>
-      <appender-ref ref="\${console.daemon.output}"/>
-    </logger>
     <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
@@ -296,7 +292,6 @@
         <KeyValuePair key="ackd"                 value="WARN" />
         <KeyValuePair key="actiond"              value="WARN" />
         <KeyValuePair key="alarmd"               value="WARN" />
-        <KeyValuePair key="asterisk-gateway"     value="WARN" />
         <KeyValuePair key="archiver"             value="WARN" />
         <KeyValuePair key="bsmd"                 value="WARN" />
         <KeyValuePair key="collectd"             value="WARN" />

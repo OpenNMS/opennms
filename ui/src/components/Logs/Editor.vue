@@ -1,27 +1,23 @@
 <template>
   <div class="editor">
     <div class="toolbar">
-      <PButton
+      <OnmsIconButton
         v-if="reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display oldest first."
+        :icon="KeyboardArrowDown"
         @click="getLog(false)"
-      >
-        <FeatherIcon :icon="KeyboardArrowDown" />
-      </PButton>
+      />
 
-      <PButton
+      <OnmsIconButton
         v-if="!reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display newest first."
+        :icon="KeyboardArrowUp"
         @click="getLog(true)"
-      >
-        <FeatherIcon :icon="KeyboardArrowUp" />
-      </PButton>
+      />
     </div>
     <VAceEditor
       v-model:value="content"
@@ -38,11 +34,10 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import { FeatherIcon } from '@featherds/icon'
-import Button from 'primevue/button'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { onKeyStroke } from '@vueuse/core'
-import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
-import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
+import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
+import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'
@@ -50,8 +45,6 @@ import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import { useAppStore } from '@/stores/appStore'
 import { useLogStore } from '@/stores/logStore'
-
-const PButton = Button
 
 const appStore = useAppStore()
 const logStore = useLogStore()
@@ -99,7 +92,7 @@ const init = (editor: any) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 .editor {
   height: calc(100vh - 120px);
   display: flex;
@@ -120,9 +113,6 @@ const init = (editor: any) => {
       min-width: 25px !important;
       margin-right: 5px;
       margin-top: 2px;
-      :deep(svg) {
-        font-size: 20px !important;
-      }
     }
   }
 }

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>36.0.2</version>
+    <version>36.0.3</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -64,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-netty4</artifactId>
+      <artifactId>camel-netty</artifactId>
       <version>${camelVersion}</version>
       <exclusions>
         <exclusion>

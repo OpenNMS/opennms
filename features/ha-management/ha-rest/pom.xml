@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.ha-management</artifactId>
+        <version>36.0.3</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.opennms.features.ha-management</groupId>
+    <artifactId>org.opennms.features.ha-management.ha-rest</artifactId>
+    <packaging>bundle</packaging>
+    <name>OpenNMS :: Features :: HA Management :: REST</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <!-- HA classes live on the system classpath (lib/) and are
+                             reached through the system-packages export, exactly as
+                             ha-shell does. -->
+                        <Import-Package>
+                            org.opennms.netmgt.ha;resolution:=optional,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.ha-management</groupId>
+            <artifactId>org.opennms.features.ha-management.ha-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.ha-management</groupId>
+            <artifactId>org.opennms.features.ha-management.ha-daemon</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jaxb-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

@@ -92,7 +92,10 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
 
   describe('MIB groups search', () => {
     it('filters the available MIB group names', () => {
-      wrapper.vm.search({ query: 'cisco' })
+      // NMS-20029: search now receives the query string directly
+      // (OnmsAutoComplete's `complete` event emits the raw string, not
+      // PrimeVue's `{ query }` event object).
+      wrapper.vm.search('cisco')
       expect(wrapper.vm.results).toEqual([{ _text: 'cisco-cpu', _value: 'cisco-cpu' }])
     })
   })

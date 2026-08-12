@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename)
 export default tseslint.config(
   // Replaces --ignore-path ../.gitignore on the CLI
   includeIgnoreFile(path.resolve(__dirname, '../.gitignore')),
-  { ignores: ['dist/**', 'src/main/dist/**', 'src/menu/dist-menu/**', '**/*.d.ts'] },
+  { ignores: ['dist/**', 'src/main/dist/**', 'src/menu/dist-menu/**', 'packages/onms-ui-example-plugin/dist/**', '**/*.d.ts', 'scripts/**'] },
 
   // Base recommended rule sets
   eslint.configs.recommended,
@@ -83,5 +83,86 @@ export default tseslint.config(
       // ── General ───────────────────────────────────────────────────────────
       curly: ['error', 'all'],
     },
+  },
+
+  // ── Node build/CI scripts ─────────────────────────────────────────────────
+  // e.g. packages/onms-ui-example-plugin/scripts/verify-dist.mjs — these run
+  // under Node, not the browser. (Top-level scripts/** stays ignored above.)
+  {
+    files: ['**/scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2025,
+      },
+    },
+  },
+
+  // ── Seam layer ────────────────────────────────────────────────────────────
+  // Direct PrimeVue imports are banned in app code once an Onms- wrapper
+  // exists. The @opennms/onms-ui package itself (packages/onms-ui) and tests
+  // are exempt. Entries are appended as each wrapper lands.
+  {
+    files: ['src/**/*.ts', 'src/**/*.vue'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          { name: 'primevue/autocomplete', message: 'Use OnmsAutoComplete from @opennms/onms-ui.' },
+          { name: 'primevue/button', message: 'Use OnmsButton / OnmsIconButton from @opennms/onms-ui.' },
+          { name: 'primevue/card', message: 'Use OnmsCard from @opennms/onms-ui.' },
+          { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui.' },
+          { name: 'primevue/chip', message: 'Use OnmsChip from @opennms/onms-ui.' },
+          { name: 'primevue/column', message: 'Use OnmsColumn from @opennms/onms-ui.' },
+          { name: 'primevue/datatable', message: 'Use OnmsTable from @opennms/onms-ui.' },
+          { name: 'primevue/datepicker', message: 'Use OnmsDatePicker from @opennms/onms-ui.' },
+          { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui.' },
+          { name: 'primevue/drawer', message: 'Use OnmsDrawer from @opennms/onms-ui.' },
+          { name: 'primevue/iconfield', message: 'Use OnmsSearchInput from @opennms/onms-ui.' },
+          { name: 'primevue/inputicon', message: 'Use OnmsSearchInput from @opennms/onms-ui.' },
+          { name: 'primevue/inputnumber', message: 'Use OnmsInputNumber from @opennms/onms-ui.' },
+          { name: 'primevue/inputtext', message: 'Use OnmsInputText from @opennms/onms-ui.' },
+          { name: 'primevue/listbox', message: 'Use OnmsListbox from @opennms/onms-ui.' },
+          { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui.' },
+          { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui.' },
+          { name: 'primevue/multiselect', message: 'Use OnmsMultiSelect from @opennms/onms-ui.' },
+          { name: 'primevue/panel', message: 'Use OnmsPanel from @opennms/onms-ui.' },
+          { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui.' },
+          { name: 'primevue/popover', message: 'Use OnmsPopover from @opennms/onms-ui.' },
+          { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui.' },
+          { name: 'primevue/radiobutton', message: 'Use OnmsRadioButton from @opennms/onms-ui.' },
+          { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui.' },
+          { name: 'primevue/tab', message: 'Use OnmsTab from @opennms/onms-ui.' },
+          { name: 'primevue/tablist', message: 'Use OnmsTabList from @opennms/onms-ui.' },
+          { name: 'primevue/tabpanel', message: 'Use OnmsTabPanel from @opennms/onms-ui.' },
+          { name: 'primevue/tabpanels', message: 'Use OnmsTabPanels from @opennms/onms-ui.' },
+          { name: 'primevue/tabs', message: 'Use OnmsTabs from @opennms/onms-ui.' },
+          { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui.' },
+          { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui.' },
+          { name: 'primevue/tieredmenu', message: 'No seam wrapper yet — SideMenu.vue is the only sanctioned use (inline-disabled). Talk to the UI team.' },
+          { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui.' },
+          { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui.' },
+          { name: 'primevue/toggleswitch', message: 'Use OnmsToggleSwitch from @opennms/onms-ui.' },
+          { name: 'primevue/tooltip', message: 'Use the OnmsTooltip directive from @opennms/onms-ui, registered as v-onms-tooltip.' }
+        ]
+      }]
+    }
+  },
+
+  // ── Plugin contract ───────────────────────────────────────────────────────
+  // Plugins compile against the host's window globals (vue, pinia,
+  // vue-router, @opennms/onms-ui). PrimeVue is not one of them, so ANY
+  // primevue import in a plugin either bloats the bundle or breaks at
+  // runtime — blanket ban, unlike the per-wrapper list above.
+  {
+    files: ['packages/onms-ui-example-plugin/src/**/*.ts', 'packages/onms-ui-example-plugin/src/**/*.vue'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          // primevue/**, not primevue/*: these are gitignore-style globs
+          // where * stops at /, and the intent is ANY primevue subpath
+          { group: ['primevue', 'primevue/**'], message: 'Plugins must use @opennms/onms-ui — PrimeVue is not part of the host plugin contract.' }
+        ]
+      }]
+    }
   }
 )
