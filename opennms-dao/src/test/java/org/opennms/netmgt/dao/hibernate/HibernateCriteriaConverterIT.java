@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
@@ -202,6 +204,63 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
             assertFalse("nodes should be ordered by label descending",
                         nodes.get(i - 1).getLabel().compareTo(nodes.get(i).getLabel()) < 0);
         }
+    }
+
+    /**
+     * A to-many association cannot be join-fetched by a distinct() criteria: the
+     * join would return one outer row per element and undo the rewrite. Such a
+     * fetch is dropped, leaving the association to load lazily as it did before
+     * fetch modes reached the outer criteria.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDistinctDropsToManyEagerFetch() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.fetch("ipInterfaces", FetchType.EAGER);
+        cb.distinct();
+
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+        assertEquals(6, nodes.size());
+        assertFalse("the interfaces should still be reachable, just not join-fetched",
+                    nodes.get(0).getIpInterfaces().isEmpty());
+    }
+
+    /**
+     * limit() becomes setMaxResults() on the outer criteria, so it counts rows.
+     * Dropping the to-many fetch is what keeps those rows one-per-entity.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDistinctWithToManyEagerFetchStillPages() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.fetch("ipInterfaces", FetchType.EAGER);
+        cb.orderBy("label").desc();
+        cb.distinct();
+        cb.limit(2);
+
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+        assertEquals(2, nodes.size());
+        assertEquals("limit should count nodes, not joined interface rows", 2, idsOf(nodes).size());
+    }
+
+    /**
+     * Only the distinct() path drops the fetch. Without it, a to-many join fetch
+     * multiplies the rows as it always has.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testToManyEagerFetchSurvivesWithoutDistinct() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.fetch("ipInterfaces", FetchType.EAGER);
+
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+        assertEquals(6, idsOf(nodes).size());
+        assertTrue("the join fetch should return one row per interface",
+                   nodes.size() > idsOf(nodes).size());
+    }
+
+    private Set<Integer> idsOf(final List<OnmsNode> nodes) {
+        return nodes.stream().map(OnmsNode::getId).collect(Collectors.toSet());
     }
 
     /**
