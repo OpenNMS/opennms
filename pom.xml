@@ -1783,7 +1783,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.11</cxfVersion>
+    <cxfVersion>3.6.12</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1910,6 +1910,9 @@
     <paxLoggingVersion>2.3.0</paxLoggingVersion>
     <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
+    <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
+         container/pax-url-aether-patch to replace the plexus-utils it shades
+         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
     <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
     <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
@@ -1932,6 +1935,9 @@
     <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
+    <!-- used to replace the vulnerable plexus-utils shaded into pax-url-aether,
+         see container/pax-url-aether-patch -->
+    <plexusUtilsVersion>3.6.1</plexusUtilsVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
     <postgresqlVersion>42.7.13</postgresqlVersion>
