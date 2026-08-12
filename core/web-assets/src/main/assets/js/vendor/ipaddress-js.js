@@ -52,9 +52,11 @@ const checkIpRange = function(ip1, ip2){
         return b >= a;
     }
     if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
+        // bigInt() returns a native BigInt (since ip-address 9 dropped jsbn),
+        // which has no compareTo — the old call threw and killed validation
         const a = new Address6(ip1).bigInt();
         const b = new Address6(ip2).bigInt();
-        return b.compareTo(a) >= 0;
+        return b >= a;
     }
     return false;
 };

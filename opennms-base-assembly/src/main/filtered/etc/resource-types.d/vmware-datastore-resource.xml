@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!--
+  Resource type for the VmwareCollector.
+
+  Datastore properties retrieved via Datastore.summary do not vary across
+  vCenter API versions, so this resource type is intentionally not
+  version-prefixed (unlike the vmware6*/vmware7* per-counter groups).
+-->
+
+<resource-types>
+
+  <resourceType name="vmwareDatastoreCapacity"
+                label="VMware Datastore Capacity"
+                resourceLabel="${vmwareDatastoreCapacityName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+</resource-types>

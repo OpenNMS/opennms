@@ -22,16 +22,28 @@
 package org.opennms.web.rest.v2.model;
 
 import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.web.rest.support.MaskedCredential;
 
 public class Snmpv3UserDto {
+    private String id;
     private String engineId;
     private String securityName;
     private Integer securityLevel;
     private String authProtocol;
+    @MaskedCredential
     private String authPassphrase;
     private String privacyProtocol;
+    @MaskedCredential
     private String privacyPassphrase;
 
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getEngineId() {
         return engineId;
@@ -94,6 +106,7 @@ public class Snmpv3UserDto {
             return null;
         }
         Snmpv3UserDto dto = new Snmpv3UserDto();
+        dto.setId(user.getId());
         dto.setEngineId(user.getEngineId());
         dto.setSecurityName(user.getSecurityName());
         dto.setSecurityLevel(user.getSecurityLevel());
@@ -106,6 +119,7 @@ public class Snmpv3UserDto {
 
     public Snmpv3User toEntity() {
         Snmpv3User user = new Snmpv3User();
+        user.setId(id);
         user.setEngineId(engineId);
         user.setSecurityName(securityName);
         if (securityLevel != null) user.setSecurityLevel(securityLevel);

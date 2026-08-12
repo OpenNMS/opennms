@@ -1,4 +1,4 @@
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 
 export const MAX_MASK_ELEMENTS = 12
 
@@ -111,4 +111,3 @@ export const AlarmTypeOptions: ISelectItemType[] = [
   { _text: AlarmTypeName.Two, _value: AlarmTypeValue.Two },
   { _text: AlarmTypeName.Three, _value: AlarmTypeValue.Three }
 ]
-

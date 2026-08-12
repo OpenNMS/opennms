@@ -22,13 +22,41 @@
 == PUT (modifying data)
 
 [caption=]
-.KSC Reports API PUT function
+.KSC Reports API PUT functions
 [options="autowidth"]
 |===
 | Resource  | Description
 
+| /ksc/reloadConfig
+| Reload the KSC report configuration from disk.
+
 | /ksc/\{reportid}
-| Modify a report with the given ID.
+| Add a graph to the existing report with the given ID.
+The graph is built from the query string parameters below; the report is then saved to disk.
+|===
+
+The following query string parameters apply to `PUT /ksc/\{reportid}`:
+
+[caption=]
+[cols="1,1,3"]
+|===
+| Name  | Required | Comment
+
+| reportName
+| Yes
+| The graph definition's `report.name` from `snmp-graph.properties.d` (stored as the graph type).
+
+| resourceId
+| Yes
+| The timeseries xref:rest/resources.adoc#gets-reading-data[resourceId] to graph.
+
+| title
+| No
+| Title for the graph.
+
+| timespan
+| No
+| One of the valid timespan options; defaults to `7_day` if omitted or invalid.
 |===
 
 == POSTs (Creating Data)

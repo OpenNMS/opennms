@@ -85,6 +85,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private String alarmTopic;
     private boolean alarmSync;
+    private boolean alarmSyncClear;
     private boolean startWithCleanState = false;
 
     private KafkaStreams streams;
@@ -109,8 +110,23 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
      * @throws IOException when an error occurs in loading/parsing the Kafka client/stream configuration
      */
     public void init() throws IOException {
+        if (alarmSyncClear && !alarmSync) {
+            // alarmSyncClear is a strategy for reconciliation, so it has no effect while alarmSync is off.
+            LOG.warn("alarmSyncClear is set but alarmSync is disabled, so alarm synchronization is not "
+                    + "running and alarmSyncClear has no effect. Set alarmSync=true to use it.");
+        }
+
         if (!isEnabled()) {
             LOG.info("Alarm synchronization disabled. Skipping initialization.");
+            return;
+        }
+
+        if (kafkaProducer.isStreamMode() && !alarmSyncClear) {
+            // In stream mode the producer suppresses tombstones, so reconciliation cannot express
+            // orphan removal at all: it would silently never clean up orphaned keys. Rather than run
+            // an incomplete reconciliation, disable it and require an explicit choice.
+            LOG.warn("alarmStream is enabled without alarmSyncClear; the alarm synchronization stream "
+                    + "will not be initialized this run. Enable alarmSyncClear or set alarmSync=false.");
             return;
         }
 
@@ -231,12 +247,30 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             // Grab a reference to the state tracker
             final AlarmCallbackStateTracker stateTracker = kafkaProducer.getAlarmCallbackStateTracker();
 
-            // Push deletes for keys that are in the ktable, but not in the database
+            // Reconcile keys that are in the ktable, but not in the database: either tombstone them
+            // or, when alarmSyncClear is set, republish them as CLEARED.
             final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb).stream()
                     // Only remove it if the alarm we have dates before the snapshot
                     .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
                     .collect(Collectors.toSet());
-            reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm((int)alarmsInKtableByReductionKey.get(rkey).getId(), rkey));
+            reductionKeysNotInDb.forEach(rkey -> {
+                final OpennmsModelProtos.Alarm onTopic = alarmsInKtableByReductionKey.get(rkey);
+                if (onTopic == null) {
+                    // Unparseable topic value (getAlarms() already logged the parse failure); nothing
+                    // actionable here since we have no alarm to clear or a valid id to tombstone.
+                    LOG.debug("Skipping reconciliation for reduction key with no readable topic value: {}", rkey);
+                    return;
+                }
+                if (alarmSyncClear) {
+                    // Clear instead of tombstone; skip if already cleared so we converge without re-emitting.
+                    if (onTopic.getSeverity() == OpennmsModelProtos.Severity.CLEARED) {
+                        return;
+                    }
+                    kafkaProducer.forwardSyncClearedAlarm(onTopic);
+                } else {
+                    kafkaProducer.handleDeletedAlarm((int) onTopic.getId(), rkey);
+                }
+            });
 
             // Push new entries for keys that are in the database, but not in the ktable
             final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable).stream()
@@ -359,6 +393,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         this.alarmSync = alarmSync;
     }
 
+    public void setAlarmSyncClear(boolean alarmSyncClear) {
+        this.alarmSyncClear = alarmSyncClear;
+    }
+
     @Override
     public void setStartWithCleanState(boolean startWithCleanState) {
         this.startWithCleanState = startWithCleanState;
@@ -375,6 +413,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     @Override
     public boolean isReady() {
+        if (streams == null) {
+            // Not initialized, or reconciliation was disabled (e.g. alarmSync off, or stream mode
+            // without alarmSyncClear).
+            return false;
+        }
         try {
             getAlarmTableNow();
             return true;

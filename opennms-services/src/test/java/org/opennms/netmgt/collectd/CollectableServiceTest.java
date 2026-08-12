@@ -24,8 +24,10 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,6 +77,7 @@ public class CollectableServiceTest {
     private CollectionSpecification spec;
     private Scheduler scheduler;
     private CollectableService service;
+    private ThresholdingService thresholdingService;
 
     private File snmpDirectory;
     private FileAnticipator fileAnticipator;
@@ -219,7 +222,39 @@ public class CollectableServiceTest {
                 lastUpdateTimeInSecs < (afterInSecs - (collectionDelayInSecs / 2d)));
     }
 
+    @Test
+    public void thresholdingSessionIsNotCreatedWhenExplicitlyDisabled() throws Exception {
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", "false");
+        createCollectableService(paramsMap);
+
+        verify(thresholdingService, never()).createSession(anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void thresholdingSessionIsCreatedWhenParameterIsAbsent() throws Exception {
+        createCollectableService(new HashMap<>());
+
+        verify(thresholdingService, times(1)).createSession(anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void thresholdingSessionIsCreatedWhenExplicitlyEnabled() throws Exception {
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", "true");
+        createCollectableService(paramsMap);
+
+        verify(thresholdingService, times(1)).createSession(anyInt(), any(), any(), any());
+    }
+
     private void createCollectableService() throws CollectionInitializationException, IOException {
+        // Disable thresholding
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("thresholding-enabled", Boolean.FALSE.toString());
+        createCollectableService(paramsMap);
+    }
+
+    private void createCollectableService(Map<String, Object> paramsMap) throws CollectionInitializationException, IOException {
         // Mock it all!
         OnmsIpInterface iface = mock(OnmsIpInterface.class, RETURNS_DEEP_STUBS);
         IpInterfaceDao ifaceDao = mock(IpInterfaceDao.class);
@@ -231,9 +266,6 @@ public class CollectableServiceTest {
         persisterFactory.setRrdStrategy(rrdStrategy);
         ResourceStorageDao resourceStorageDao = mock(ResourceStorageDao.class);
 
-        // Disable thresholding
-        Map<String, Object> paramsMap = new HashMap<>();
-        paramsMap.put("thresholding-enabled", Boolean.FALSE.toString());
         ServiceParameters params = new ServiceParameters(paramsMap);
 
         when(iface.getNode().getId()).thenReturn(1);
@@ -242,9 +274,9 @@ public class CollectableServiceTest {
         when(ifaceDao.load(any())).thenReturn(iface);
         when(iface.getIpAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
 
-        ThresholdingService mockThresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
+        thresholdingService = mock(ThresholdingService.class, RETURNS_DEEP_STUBS);
 
-        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, mockThresholdingService);
+        service = new CollectableService(iface, ifaceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService);
     }
 
     private RrdRepository createRrdRepository() throws IOException {

@@ -26,10 +26,10 @@
         <feature>minion-core</feature>
         <feature>geronimo-jms-api</feature>
 
-        <!-- Needed by activemq-camel -->
+        <!-- Needed by the camel/activemq bundles -->
         <bundle>mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
+        <!-- Aggregator feature: pulls activemq-client plus the camel-jms/camel-spring/camel-blueprint features -->
         <feature>activemq-camel</feature>
-        <bundle>mvn:org.apache.activemq/activemq-camel/${activemqCamelVersion}</bundle>
 
         <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>

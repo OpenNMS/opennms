@@ -478,32 +478,6 @@ public abstract class UserManager implements UserConfig {
         }
     }
     
-    /**
-     * Get a user's microblog username by username
-     *
-     * @param name
-     *            the username of the user whose microblog username should be returned
-     * @return the microblog username of the specified user
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public String getMicroblogName(final String name) throws FileNotFoundException, IOException {
-        return getContactInfo(name, ContactType.microblog.toString());
-    }
-
-    /**
-     * Get a user's microblog username by User
-     *
-     * @param user
-     *            the user object of the user whose microblog username should be returned
-     * @return the microblog username of the specified user
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public String getMicroblogName(final User user) throws FileNotFoundException, IOException {
-        return getContactInfo(user, ContactType.microblog.toString());
-    }
-    
     public void setContactInfo(final String userId, final ContactType contactType, final String contactValue) throws Exception {
     	 update();
          m_writeLock.lock();
@@ -718,56 +692,6 @@ public abstract class UserManager implements UserConfig {
         return getContactInfo(user, ContactType.numericPage.toString());
     }
 
-    /**
-     * Get an XMPP address by name
-     *
-     * @param userID
-     *            the user ID of the user to return
-     * @return String the XMPP address
-     * @throws java.io.IOException if any.
-     */
-    public String getXMPPAddress(final String userID) throws IOException {
-        update();
-        
-        m_readLock.lock();
-        try {
-            final User user = m_users.get(userID);
-            return _getXMPPAddress(user);
-        } finally {
-            m_readLock.unlock();
-        }
-    }
-
-    /**
-     * Get an XMPP address by name
-     *
-     * @param user a {@link org.opennms.netmgt.config.users.User} object.
-     * @return String the XMPP address
-     * @throws java.io.IOException if any.
-     */
-    public String getXMPPAddress(final User user) throws IOException {
-        update();
-
-        m_readLock.lock();
-        try {
-            return _getXMPPAddress(user);
-        } finally {
-            m_readLock.unlock();
-        }
-    }
-
-    private String _getXMPPAddress(final User user) {
-        if (user == null)
-            return "";
-        
-        for (final Contact contact : user.getContacts()) {
-        	if (contact != null && contact.getType().equals(ContactType.xmppAddress.toString())) {
-        		return contact.getInfo().orElse("");
-        	}
-        }
-        
-        return "";
-    }
 
     /**
      * Get a numeric service provider

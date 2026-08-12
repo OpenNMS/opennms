@@ -47,13 +47,6 @@
         {
           "id": "nodes",
           "name": "Nodes",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },
-        {
-          "id": "structuredNodeList",
-          "name": "Structured Node List",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
           "roles": null
@@ -219,7 +212,7 @@
         },
         {
           "id": "kscReports",
-          "name": "KSC Reports",
+          "name": "Graph Collections",
           "url": "KSC/index.jsp",
           "locationMatch": "ksc",
           "roles": null
@@ -260,13 +253,6 @@
           "name": "Dashboard",
           "url": "dashboard.jsp",
           "locationMatch": "dashboard",
-          "roles": null
-        },
-        {
-          "id": "opsBoard",
-          "name": "Ops Board",
-          "url": "vaadin-wallboard",
-          "locationMatch": "vaadin-wallboard",
           "roles": null
         }
       ]

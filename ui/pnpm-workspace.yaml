@@ -1,3 +1,4 @@
 packages:
   # include packages in subfolders
   - 'src/**'
+  - 'packages/*'

@@ -62,6 +62,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
     }
 
     @Override
+    @Transactional
     public void delete(int nodeid) {
         m_cdpElementDao.deleteByNodeId(nodeid);
         m_cdpLinkDao.deleteByNodeId(nodeid);
@@ -70,6 +71,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
     }
 
     @Override
+    @Transactional
     public void reconcile(int nodeId, Date now) {
         CdpElement element = m_cdpElementDao.findByNodeId(nodeId);
         if (element != null
@@ -204,6 +206,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
     }
 
     @Override
+    @Transactional
     public void deletePersistedData() {
         m_cdpElementDao.deleteAll();
         m_cdpElementDao.flush();

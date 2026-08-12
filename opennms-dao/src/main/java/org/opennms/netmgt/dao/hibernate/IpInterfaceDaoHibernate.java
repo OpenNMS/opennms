@@ -56,40 +56,40 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
         
         m_findByServiceTypeQuery = System.getProperty("org.opennms.dao.ipinterface.findByServiceType", 
-                                                      "select distinct ipInterface from OnmsIpInterface as ipInterface join ipInterface.monitoredServices as monSvc where monSvc.serviceType.name = ?");
+                                                      "select distinct ipInterface from OnmsIpInterface as ipInterface join ipInterface.monitoredServices as monSvc where monSvc.serviceType.name = ?1");
         
     }
 
     /** {@inheritDoc} */
     @Override
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
-        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ? and ipInterface.ipAddress = ?", node, ipAddress);
+        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ?1 and ipInterface.ipAddress = ?2", node, ipAddress);
     }
 
     /** {@inheritDoc} */
     @Override
     public List<OnmsIpInterface> findByIpAddress(String ipAddress) {
-        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress = ?", ipAddress);
+        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress = ?1", ipAddress);
     }
     
     /** {@inheritDoc} */
     @Override
     public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
+        return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?1", nodeId);
     }
 
     /** {@inheritDoc} */
     @Override
     public List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress in (select ipNetToMedia.netAddress from IpNetToMedia ipNetToMedia where ipNetToMedia.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?))", nodeId);
+        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress in (select ipNetToMedia.netAddress from IpNetToMedia ipNetToMedia where ipNetToMedia.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?1))", nodeId);
     }
 
     /** {@inheritDoc} */
     @Override
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
-        return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ?1 and ipInterface.ipAddress = ?2", 
                           nodeId, 
                           ipAddress);
         
@@ -98,7 +98,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     /** {@inheritDoc} */
     @Override
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
-        return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ? and node.foreignId = ? and ipInterface.ipAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ?1 and node.foreignId = ?2 and ipInterface.ipAddress = ?3", 
                           foreignSource, 
                           foreignId, 
                           ipAddress);
@@ -122,7 +122,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
                     "left join fetch ipInterface.node.snmpInterfaces as snmpIf " +
                     "left join fetch snmpIf.ipInterfaces " +
                     "join ipInterface.monitoredServices as monSvc " +
-                    "where monSvc.serviceType.name = ?", svcName);
+                    "where monSvc.serviceType.name = ?1", svcName);
     }
 
     /**
@@ -169,12 +169,12 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
                     "join ipInterface.node as node " +
                     "where node.foreignSource is NULL " +
-                    "and ipInterface.ipAddress = ? ", ipAddress) > 0;
+                    "and ipInterface.ipAddress = ?1 ", ipAddress) > 0;
         } else {
             return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
                     "join ipInterface.node as node " +
-                    "where node.foreignSource = ? " +
-                    "and ipInterface.ipAddress = ? ", foreignSource, ipAddress) > 0;
+                    "where node.foreignSource = ?1 " +
+                    "and ipInterface.ipAddress = ?2 ", foreignSource, ipAddress) > 0;
         }
     }
 
@@ -186,7 +186,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         Assert.notNull(nodeId, "nodeId cannot be null");
         // SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
 
-        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
+        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ?1 and ipInterface.snmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
         if (primaryInterfaces.size() < 1) {
             return null;
         } else {
@@ -203,7 +203,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         // what is happening here?
         // 1. in the case matchEnumeration is set to true, we try to find the given value by using the following regular expression: (?:^[ ,]*|,[ ]*)stringToSearchFor(?=[ ]*,|,?[ ]*$)
         // 2. of course the value to search for needs to be escaped, so we use REGEXP_REPLACE(:value, '([\.\+\*\?\^\$\(\)\[\]\{\}\|\\])', '\\\1', 'g') here
-        return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY ip.id")
+        return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createNativeQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY ip.id")
             .setString("context", context)
             .setString("key", key)
             .setString("value", value)
@@ -224,7 +224,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     @Override
     public List<OnmsIpInterface> findByIpAddressAndLocation(String address, String location) {
         return find(
-                "from OnmsIpInterface i where i.ipAddress = ? and exists (from OnmsNode n where n.id = i.node.id AND n.location.locationName = ?)",
+                "from OnmsIpInterface i where i.ipAddress = ?1 and exists (from OnmsNode n where n.id = i.node.id AND n.location.locationName = ?2)",
                 address, location
         );
     }

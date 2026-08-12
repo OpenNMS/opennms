@@ -66,6 +66,16 @@ public class Interpolator {
         return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> pleaseInterpolate(e.getValue())));
     }
 
+    public static boolean isPleaseInterpolate(final Object value) {
+        return value instanceof ToBeInterpolated;
+    }
+
+    public static Object unwrap(final Object value) {
+        return value instanceof ToBeInterpolated
+                ? ((ToBeInterpolated) value).value
+                : value;
+    }
+
     public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final Scope scope) {
         return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
     }

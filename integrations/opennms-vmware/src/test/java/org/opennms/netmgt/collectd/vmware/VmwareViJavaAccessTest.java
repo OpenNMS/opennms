@@ -158,6 +158,11 @@ public class VmwareViJavaAccessTest {
             @Override
             protected void relax() {
             }
+
+            @Override
+            protected void checkCimReachable(String cimAgentAddress, int timeout) {
+                // Skip the real TCP reachability probe; the CIM client is mocked in this test.
+            }
         };
 
         // setup PerformanceManager

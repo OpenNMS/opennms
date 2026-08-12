@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.status</artifactId>
-        <version>36.0.1-SNAPSHOT</version>
+        <version>36.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.status</groupId>
@@ -52,6 +52,21 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-webapp-rest</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- The shared CXF v2 context instantiates every REST resource; these
+             provide the topology-views module (view + asset models) + the
+             jsonStore bean, which webapp-rest declares as provided (non-transitive). -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>org.opennms.features.topology-views</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

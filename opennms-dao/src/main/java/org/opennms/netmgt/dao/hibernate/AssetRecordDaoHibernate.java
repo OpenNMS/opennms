@@ -21,10 +21,14 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.ProjectionList;
@@ -54,7 +58,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
      */
     @Override
     public OnmsAssetRecord findByNodeId(Integer id) {
-        return (OnmsAssetRecord) findUnique("from OnmsAssetRecord rec where rec.node.id = ?", id);
+        return (OnmsAssetRecord) findUnique("from OnmsAssetRecord rec where rec.node.id = ?1", id);
     }
 
     /**
@@ -139,10 +143,26 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("geolocation.zip"), "zip"));
 
         criteria.setProjection(Projections.distinct(projList));
-        criteria.setResultTransformer(Transformers.aliasToBean(OnmsAssetRecord.class));
+        // Hibernate 5's aliasToBean resolves property access getter-first and skips @Transient
+        // getters; the geolocation.* aliases map to @Transient delegating getters on
+        // OnmsAssetRecord, so aliasToBean throws PropertyNotFoundException. Instead transform to
+        // a map of alias->value and populate via a Spring BeanWrapper, which uses the setters
+        // (and is exactly how AssetSuggestionsRestService reads these values back).
+        criteria.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 
-        @SuppressWarnings("unchecked") 
-        List<OnmsAssetRecord> result = (List<OnmsAssetRecord>)getHibernateTemplate().findByCriteria(criteria);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) getHibernateTemplate().findByCriteria(criteria);
+        final List<OnmsAssetRecord> result = new ArrayList<>(rows.size());
+        for (final Map<String, Object> row : rows) {
+            final OnmsAssetRecord record = new OnmsAssetRecord();
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(record);
+            for (final Map.Entry<String, Object> entry : row.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    wrapper.setPropertyValue(entry.getKey(), entry.getValue());
+                }
+            }
+            result.add(record);
+        }
         return result;
     }
 }

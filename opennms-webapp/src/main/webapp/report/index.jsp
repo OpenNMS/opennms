@@ -66,8 +66,8 @@
                     <div class="pull-right">
                         <form class="form-inline" role="form" name="kscReports">
                             <div class="form-group">
-                                <label class="sr-only">KSC Reports</label>
-                                <p class="form-control-static">KSC Reports</p>
+                                <label class="sr-only">Graph Collections</label>
+                                <p class="form-control-static">Graph Collections</p>
                             </div>
                             <onms-search-ksc />
                         </form>
@@ -79,7 +79,7 @@
                     <ul class="list-unstyled">
                         <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
-                        <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
+                        <li><a href="KSC/index.jsp">Graph Collections (Performance, Nodes, Domains)</a></li>
                         <li><a href="report/database/index.jsp">Database Reports</a></li>
                         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
                     </ul>
@@ -104,15 +104,15 @@
                 string in the "Name contains" field. This will invoke a case-insensitive
                 substring match on resource names.
             </p>
-            <p><b>Key SNMP Customized (KSC) Performance Reports</b>, <b>Node Reports</b>
-                and <b>Domain Reports</b>. KSC reports allow the user to create and view
-                SNMP performance data using prefabricated graph types. The reports
-                provide a great deal of flexibility in timespans and graphtypes. KSC
-                report configurations may be saved allowing the user to define key reports
+            <p><b>Graph Collections</b> (formerly KSC reports), <b>Node Reports</b>
+                and <b>Domain Reports</b>. Graph collections allow the user to create and view
+                SNMP performance data using prefabricated graph types. The collections
+                provide a great deal of flexibility in timespans and graphtypes. Graph
+                collection configurations may be saved allowing the user to define key reports
                 that may be referred to at future dates. Node reports show SNMP data for
                 all SNMP interfaces on a node. Domain reports show SNMP data for all SNMP
                 interfaces in a domain. Node reports and domain reports may be loaded into
-                the customizer and saved as a KSC report.
+                the customizer and saved as a graph collection.
             </p>
             <p>You may narrow your selection of resources by entering a search string
                 in the "Name contains" field. This will invoke a case-insensitive substring

@@ -21,12 +21,14 @@
 ///
 
 import {
+  AssetFilter,
   Category,
   MatchType,
   MonitoringLocation,
   NodeQueryForeignSourceParams,
   NodeQuerySnmpParams,
   NodeQuerySysParams,
+  ServiceType,
   SetOperator
 } from '@/types'
 import { isIP } from 'is-ip'
@@ -38,50 +40,77 @@ export const parseNodeLabel = (queryObject: any) => {
 
 /**
  * Parse categories from a vue-router route.query object.
- * The route.query 'categories' string can be a comma- or semicolon-separated list of either
- * numeric Category ids or names.
- * comma: Union; semicolon: Intersection
- * 
- * @returns The category mode and categories parsed from the queryObject. If 'selectedCategories' is empty,
- * it means no categories were present.
+ *
+ * Two formats are supported:
+ * - 'categories': flat comma- or semicolon-separated list (comma=Union, semicolon=Intersection).
+ *   Returns a single group in selectedCategories with selectedCategories2 empty.
+ * - 'category1' / 'category2': legacy format from surveillance-view links. Each param may be a
+ *   single string or an array (vue-router repeats params as arrays). Each group is union internally;
+ *   when both groups are non-empty, intersection is applied between them via selectedCategories2.
+ *   If only one of the two is present, all items go into selectedCategories.
+ *
+ * @returns categoryMode, selectedCategories (group 1), selectedCategories2 (group 2, may be empty)
  */
-export const parseCategories = (queryObject: any, categories: Category[]) => {
+export const parseCategories = (queryObject: any, categories: Category[]): {
+  categoryMode: SetOperator
+  selectedCategories: Category[]
+  selectedCategories2: Category[]
+} => {
   let categoryMode: SetOperator = SetOperator.Union
   const selectedCategories: Category[] = []
+  const selectedCategories2: Category[] = []
 
-  const queryCategories = queryObject.categories as string ?? ''
+  if (categories.length === 0) {
+    return { categoryMode, selectedCategories, selectedCategories2 }
+  }
 
-  if (categories.length > 0) {
-    categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
-
-    const cats: string[] = queryCategories.replace(/;/g, ',').split(',')
-
-    // add any valid categories
-    cats.forEach(c => {
-      if (/\d+/.test(c)) {
-        // category id number
-        const id = parseInt(c)
-
-        const item = categories.find(x => x.id === id)
-
+  const resolveCategory = (vals: string[]): Category[] => {
+    const result: Category[] = []
+    vals.forEach((c) => {
+      if (!c) {
+        return
+      }
+      if (/^\d+$/.test(c)) {
+        const item = categories.find(x => x.id === parseInt(c))
         if (item) {
-          selectedCategories.push(item)
+          result.push(item)
         }
       } else {
-        // category name, case insensitive
         const item = categories.find(x => x.name.toLowerCase() === c.toLowerCase())
-
         if (item) {
-          selectedCategories.push(item)
+          result.push(item)
         }
       }
     })
+    return result
   }
 
-  return {
-    categoryMode,
-    selectedCategories
+  if (queryObject.categories) {
+    // Flat 'categories' string: comma=union, semicolon=intersection
+    const queryCategories = queryObject.categories as string
+    categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
+    const cats = queryCategories.replace(/;/g, ',').split(',')
+    selectedCategories.push(...resolveCategory(cats))
+  } else if (queryObject.category1 || queryObject.category2) {
+    // Legacy category1/category2: union within each group, intersection between groups.
+    // Vue-router gives a string for a single occurrence, array for multiple occurrences.
+    const toArray = (v: any): string[] =>
+      Array.isArray(v) ? (v as string[]) : v ? [v as string] : []
+
+    const group1 = resolveCategory(toArray(queryObject.category1))
+    const group2 = resolveCategory(toArray(queryObject.category2))
+
+    if (group1.length > 0 && group2.length > 0) {
+      selectedCategories.push(...group1)
+      selectedCategories2.push(...group2)
+    } else {
+      // Only one group present — treat as a flat union (backwards compat)
+      selectedCategories.push(...group1, ...group2)
+    }
+    categoryMode = SetOperator.Union
   }
+
+  return { categoryMode, selectedCategories, selectedCategories2 }
 }
 
 export const parseMonitoringLocation = (queryObject: any, monitoringLocations: MonitoringLocation[]) => {
@@ -103,21 +132,58 @@ export const parseFlows = (queryObject: any) => {
     return ['Ingress']
   } else if (flows === 'egress') {
     return ['Egress']
+  } else if (flows === 'false') {
+    return ['No Flows']
   }
-
-  // TODO: we don't yet have support for excluding flows, i.e. if queryObject.flows === 'false'
 
   return []
 }
 
 /**
- * Currently this accepts anything in any valid IPv4 or IPv6 format (see `is-ip`), but
- * some formats may not actually be supported by our FIQL search.
+ * Returns true if value looks like an IPv4 or IPv6 iplike pattern (wildcard, range, or list).
+ *
+ * IPv4: 1-4 dot-separated segments, each being * | N | N-M | N,M | N-M,P-Q,...
+ *   Examples: 192.168.1.*, 10.9.1-3.*, 10.0.0.1-255, 192.168.0,1,2.*
+ * IPv6: 1-8 colon-separated hextets, each being * | H | H-H | H,H,...  (hex values)
+ *   Examples: 2001:db8:*:*:*:*:*:*, fe80:*:*:*:*:*:*:*, 2001:0-ffff:*:*:*:*:*:*
+ *
+ * Returns false for plain exact IPs (use isIP() for those) and for garbage.
+ * Compressed IPv6 notation (::) is not supported in patterns — only in exact addresses.
+ * Ranges are per-segment only; cross-segment notation like 10.0.0.1-10.0.0.255 is invalid.
+ */
+export const isIplikePattern = (value: string): boolean => {
+  // Normalize spaces around commas so "1, 2, 3" is treated the same as "1,2,3"
+  const v = value.replace(/\s*,\s*/g, ',')
+  // Must contain at least one pattern character to be an iplike pattern (not a plain IP)
+  if (!v.includes('*') && !v.includes('-') && !v.includes(',')) {
+    return false
+  }
+  if (v.includes('.')) {
+    // IPv4: each octet is * | N | N-M | list of those
+    const seg = '(\\*|\\d+(?:-\\d+)?(?:,\\d+(?:-\\d+)?)*)'
+    return new RegExp(`^${seg}(\\.${seg}){0,3}$`).test(v)
+  }
+  if (v.includes(':')) {
+    // IPv6: each hextet is * | H | H-H | list of those (hex digits only)
+    const seg = '(\\*|[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?(?:,[0-9a-fA-F]{1,4}(?:-[0-9a-fA-F]{1,4})?)*)'
+    return new RegExp(`^${seg}(:${seg}){0,7}$`).test(v)
+  }
+  return false
+}
+
+/**
+ * Parses an IP address or iplike pattern from a URL query object.
+ * Accepts exact IPv4/IPv6 addresses and IPv4 iplike wildcard patterns like 192.168.1.*.
+ * Priority: `iplike` param over `ipAddress` param.
  */
 export const parseIplike = (queryObject: any) => {
   const ip = queryObject.iplike as string || queryObject.ipAddress as string || ''
 
-  if (ip && isIP(ip)) {
+  if (!ip) {
+    return null
+  }
+
+  if (isIP(ip) || isIplikePattern(ip)) {
     return ip
   }
 
@@ -125,7 +191,7 @@ export const parseIplike = (queryObject: any) => {
 }
 
 export const parseForeignSource = (queryObject: any) => {
-  const foreignSource = queryObject.foreignSource || ''
+  const foreignSource = queryObject.foreignSource || queryObject.foreignsource || ''
   const foreignId = queryObject.foreignId || ''
   const foreignSourceId = queryObject.foreignSourceId || queryObject.fsfid || ''
 
@@ -180,4 +246,372 @@ export const parseSysParams = (queryObject: any) => {
   }
 
   return null
+}
+
+const snmpParmToFieldMap: Record<string, keyof NodeQuerySnmpParams> = {
+  ifAlias: 'snmpIfAlias',
+  ifName: 'snmpIfName',
+  ifDescr: 'snmpIfDescription'
+}
+
+/**
+ * Maps legacy snmpParm/snmpParmValue/snmpParmMatchType params to NodeQuerySnmpParams.
+ * snmpParm must be one of: ifAlias, ifName, ifDescr.
+ * snmpParmMatchType=contains applies wildcard matching; default is exact match.
+ */
+export const parseSnmpParmParams = (queryObject: any): NodeQuerySnmpParams | null => {
+  const parm = queryObject.snmpParm as string || ''
+  const value = queryObject.snmpParmValue as string || ''
+  const matchTypeStr = (queryObject.snmpParmMatchType as string || '').toLowerCase()
+
+  if (!parm || !value || !snmpParmToFieldMap[parm]) {
+    return null
+  }
+
+  const snmpMatchType = matchTypeStr === 'contains' ? MatchType.Contains : MatchType.Equals
+
+  return {
+    snmpIfAlias: '',
+    snmpIfDescription: '',
+    snmpIfIndex: '',
+    snmpIfName: '',
+    snmpIfType: '',
+    snmpMatchType,
+    [snmpParmToFieldMap[parm]]: value
+  } as NodeQuerySnmpParams
+}
+
+/**
+ * Maps the legacy mib2Parm/mib2ParmValue/mib2ParmMatchType params to NodeQuerySysParams.
+ * mib2Parm must be one of: sysDescription, sysObjectId, sysContact, sysName, sysLocation.
+ */
+export const parseMib2Params = (queryObject: any): NodeQuerySysParams | null => {
+  const parm = queryObject.mib2Parm as string || ''
+  const value = queryObject.mib2ParmValue as string || ''
+  const matchTypeStr = (queryObject.mib2ParmMatchType as string || '').toLowerCase()
+
+  const validParms: Array<keyof NodeQuerySysParams> = [
+    'sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId'
+  ]
+
+  if (!parm || !value || !validParms.includes(parm as keyof NodeQuerySysParams)) {
+    return null
+  }
+
+  const sysMatchType = matchTypeStr === 'equals' ? MatchType.Equals : MatchType.Contains
+
+  return {
+    sysContact: '',
+    sysDescription: '',
+    sysLocation: '',
+    sysName: '',
+    sysObjectId: '',
+    sysMatchType,
+    [parm]: value
+  } as NodeQuerySysParams
+}
+
+/**
+ * Maps legacy maclike/snmpphysaddr params to a stripped, lowercase MAC address string
+ * suitable for matching against snmpInterface.physAddr.
+ * All non-hex characters (separators like ':' and '-', plus any stray FIQL characters such as
+ * ',' or ';') are stripped, both to match the format stored in the database and to keep the value
+ * safe for the FIQL expression.
+ */
+export const parseMaclike = (queryObject: any): string | null => {
+  const mac = queryObject.maclike as string || queryObject.snmpphysaddr as string || ''
+
+  if (!mac) {
+    return null
+  }
+
+  return mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+}
+
+/**
+ * OnmsAssetRecord string columns curated as the "Featured Fields" set for the Asset Filter panel
+ * dropdown UI (AssetFilterPanel.vue), with human-readable labels. This is intentionally a small
+ * subset of ASSET_COLUMN_FIQL_MAP (below) — every value here must also be a key in
+ * ASSET_COLUMN_FIQL_MAP. When the panel's "Featured Fields Only" toggle is off, the dropdown uses
+ * ALL_ASSET_COLUMN_OPTIONS instead, which covers every ASSET_COLUMN_FIQL_MAP key.
+ */
+export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
+  { value: 'building', label: 'Building' },
+  { value: 'floor', label: 'Floor' },
+  { value: 'room', label: 'Room' },
+  { value: 'rack', label: 'Rack' },
+  { value: 'region', label: 'Region' },
+  { value: 'division', label: 'Division' },
+  { value: 'department', label: 'Department' },
+  { value: 'category', label: 'Category' },
+  { value: 'displayCategory', label: 'Display Category' },
+  { value: 'circuitId', label: 'Circuit ID' }
+]
+
+/**
+ * Maps every filterable OnmsAssetRecord string column (i.e. every STRING-typed property under
+ * `assetRecord.` in SearchProperties.java's ASSET_RECORD_PROPERTIES) to the FIQL property name
+ * used in an `assetRecord.<property>` query. This is the full whitelist of columns accepted from
+ * inbound `assetColumn`/`assetValue` query params (e.g. site-status-view drill-down links), which
+ * can reference any OnmsAssetRecord column, not just the curated ASSET_COLUMN_OPTIONS dropdown
+ * list above.
+ *
+ * Most entries are identity mappings — the column name is already the FIQL property name.
+ * The geolocation-backed columns (address1, address2, city, state, zip, country) are exceptions:
+ * they map to their nested `geolocation.<field>` FIQL property, matching the legacy OnmsAssetRecord
+ * bean property names used by legacy site-status filtering.
+ *
+ * Excluded (non-STRING search properties per SearchProperties.java): `id` (INTEGER) and
+ * `lastModifiedDate` (TIMESTAMP). Everything else STRING-typed is included here, including
+ * `password`/`enable`/`username`/`connection`/`snmpcommunity`: this map (and ALLOWED_ASSET_COLUMNS
+ * below) is the whitelist for INBOUND `assetColumn`/`assetValue` query params — i.e. URL
+ * drill-down parity, such as site-status-view links — not the UI-facing dropdown, so these columns
+ * still need to be valid/queryable here. UI_HIDDEN_ASSET_COLUMNS (below) is what keeps them out of
+ * the dropdown itself: advertising an exact-match filter UI on a credential-ish column would turn
+ * the Asset Filter panel into a guessing oracle against stored secrets.
+ */
+export const ASSET_COLUMN_FIQL_MAP: Record<string, string> = {
+  additionalhardware: 'additionalhardware',
+  address1: 'geolocation.address1',
+  address2: 'geolocation.address2',
+  admin: 'admin',
+  assetNumber: 'assetNumber',
+  autoenable: 'autoenable',
+  building: 'building',
+  category: 'category',
+  circuitId: 'circuitId',
+  city: 'geolocation.city',
+  comment: 'comment',
+  connection: 'connection',
+  country: 'geolocation.country',
+  cpu: 'cpu',
+  dateInstalled: 'dateInstalled',
+  department: 'department',
+  description: 'description',
+  displayCategory: 'displayCategory',
+  division: 'division',
+  enable: 'enable',
+  floor: 'floor',
+  hdd1: 'hdd1',
+  hdd2: 'hdd2',
+  hdd3: 'hdd3',
+  hdd4: 'hdd4',
+  hdd5: 'hdd5',
+  hdd6: 'hdd6',
+  inputpower: 'inputpower',
+  lastModifiedBy: 'lastModifiedBy',
+  lease: 'lease',
+  leaseExpires: 'leaseExpires',
+  maintcontract: 'maintcontract',
+  maintContractExpiration: 'maintContractExpiration',
+  managedObjectInstance: 'managedObjectInstance',
+  managedObjectType: 'managedObjectType',
+  manufacturer: 'manufacturer',
+  modelNumber: 'modelNumber',
+  notifyCategory: 'notifyCategory',
+  numpowersupplies: 'numpowersupplies',
+  operatingSystem: 'operatingSystem',
+  password: 'password',
+  pollerCategory: 'pollerCategory',
+  port: 'port',
+  rack: 'rack',
+  rackunitheight: 'rackunitheight',
+  ram: 'ram',
+  region: 'region',
+  room: 'room',
+  serialNumber: 'serialNumber',
+  slot: 'slot',
+  snmpcommunity: 'snmpcommunity',
+  state: 'geolocation.state',
+  storagectrl: 'storagectrl',
+  supportPhone: 'supportPhone',
+  thresholdCategory: 'thresholdCategory',
+  username: 'username',
+  vendor: 'vendor',
+  vendorAssetNumber: 'vendorAssetNumber',
+  vendorFax: 'vendorFax',
+  vendorPhone: 'vendorPhone',
+  zip: 'geolocation.zip'
+}
+
+/** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
+export const ALLOWED_ASSET_COLUMNS = new Set(Object.keys(ASSET_COLUMN_FIQL_MAP))
+
+/**
+ * Human-readable title for every ASSET_COLUMN_FIQL_MAP key, taken verbatim from the display-name
+ * strings in `SearchProperties.java`'s `ASSET_RECORD_PROPERTIES` (server-side search-property
+ * registry — the source of truth, since it correctly handles abbreviations/oddities like "CPU",
+ * "HDD 1", "RAM", "SNMP Community", "ZIP or Postal Code" that a runtime camelCase-to-Title-Case
+ * conversion would get wrong). Every key in ASSET_COLUMN_FIQL_MAP must have an entry here.
+ */
+export const ASSET_COLUMN_TITLES: Record<string, string> = {
+  additionalhardware: 'Additional Hardware',
+  address1: 'Address 1',
+  address2: 'Address 2',
+  admin: 'Admin',
+  assetNumber: 'Asset Number',
+  autoenable: 'Auto-enable',
+  building: 'Building',
+  category: 'Category',
+  circuitId: 'Circuit ID',
+  city: 'City',
+  comment: 'Comment',
+  connection: 'Connection',
+  country: 'Country',
+  cpu: 'CPU',
+  dateInstalled: 'Date Installed',
+  department: 'Department',
+  description: 'Description',
+  displayCategory: 'Display Category',
+  division: 'Division',
+  enable: 'Enable',
+  floor: 'Floor',
+  hdd1: 'HDD 1',
+  hdd2: 'HDD 2',
+  hdd3: 'HDD 3',
+  hdd4: 'HDD 4',
+  hdd5: 'HDD 5',
+  hdd6: 'HDD 6',
+  inputpower: 'Input Power',
+  lastModifiedBy: 'Last Modified By',
+  lease: 'Lease',
+  leaseExpires: 'Lease Expires',
+  maintcontract: 'Maintenance Contract',
+  maintContractExpiration: 'Maintenance Contract Expiration',
+  managedObjectInstance: 'Managed Object Instance',
+  managedObjectType: 'Managed Object Type',
+  manufacturer: 'Manufacturer',
+  modelNumber: 'Model Number',
+  notifyCategory: 'Notify Category',
+  numpowersupplies: 'Number of Power Supplies',
+  operatingSystem: 'Operating System',
+  password: 'Password',
+  pollerCategory: 'Poller Category',
+  port: 'Port',
+  rack: 'Rack',
+  rackunitheight: 'Rack Unit Height',
+  ram: 'RAM',
+  region: 'Region',
+  room: 'Room',
+  serialNumber: 'Serial Number',
+  slot: 'Slot',
+  snmpcommunity: 'SNMP Community',
+  state: 'State or Province',
+  storagectrl: 'Storage Controller',
+  supportPhone: 'Support Phone',
+  thresholdCategory: 'Threshold Category',
+  username: 'Username',
+  vendor: 'Vendor',
+  vendorAssetNumber: 'Vendor Asset Number',
+  vendorFax: 'Vendor Fax',
+  vendorPhone: 'Vendor Phone',
+  zip: 'ZIP or Postal Code'
+}
+
+/**
+ * Asset columns kept queryable (ASSET_COLUMN_FIQL_MAP/ALLOWED_ASSET_COLUMNS) and labelable
+ * (ASSET_COLUMN_TITLES) for URL drill-down parity, but hidden from the UI-facing dropdown options
+ * below (ALL_ASSET_COLUMN_OPTIONS; ASSET_COLUMN_OPTIONS's curated "Featured Fields" set already
+ * excludes them by simply never having included them). Advertising an exact-match filter control
+ * for these in the Asset Filter panel would let a user brute-force-probe a node's stored
+ * credentials (SNMP community string, device password, etc.) column-by-value, since a FIQL
+ * `assetRecord.<column>==<guess>` filter is itself an oracle: it tells the caller whether the
+ * guessed value is an exact match. These columns are already readable/writable via the Asset page
+ * and the v2 REST API, but that's a very different exposure than a searchable filter UI.
+ */
+export const UI_HIDDEN_ASSET_COLUMNS = new Set(['password', 'enable', 'username', 'connection', 'snmpcommunity'])
+
+/**
+ * Every ASSET_COLUMN_FIQL_MAP column (except UI_HIDDEN_ASSET_COLUMNS -- see its comment) as a
+ * dropdown option, titled from ASSET_COLUMN_TITLES and sorted alphabetically by title. Used by the
+ * Asset Filter panel dropdown when its "Featured Fields Only" toggle is off (see
+ * AssetFilterPanel.vue).
+ */
+export const ALL_ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = Object.keys(ASSET_COLUMN_FIQL_MAP)
+  .filter(value => !UI_HIDDEN_ASSET_COLUMNS.has(value))
+  .map(value => ({ value, label: ASSET_COLUMN_TITLES[value] ?? value }))
+  .sort((a, b) => a.label.localeCompare(b.label))
+
+/** Display label for an asset column key (falls back to the key itself). Resolves from the full
+ * ASSET_COLUMN_TITLES registry regardless of the panel's "Featured Fields Only" toggle state, so
+ * chip labels (NodesTable.vue) show a proper title even for non-featured columns. */
+export const getAssetColumnLabel = (column: string): string =>
+  ASSET_COLUMN_TITLES[column] ?? column
+
+/** Maps an asset column key to its FIQL property under `assetRecord.` (identity if not in the map). */
+export const getAssetColumnFiqlProperty = (column: string): string => ASSET_COLUMN_FIQL_MAP[column] ?? column
+
+/**
+ * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.
+ */
+export const parseDownAggregateStatus = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithDownAggregateStatus ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Returns true if the `nodesWithAssets` query param requests only nodes that have asset info.
+ */
+export const parseNodesWithAssets = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithAssets ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Returns true if the `nodesWithOutages` query param requests only nodes with current outages.
+ */
+export const parseNodesWithOutages = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithOutages ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Parses asset-field filters from `assetColumn` + `assetValue` query params.
+ * Each param may be a single value (vue-router string) or repeated (array); the two are paired
+ * by index. Pairs with an empty value or a column not in ALLOWED_ASSET_COLUMNS are skipped, and
+ * duplicate columns keep the last value. Returns [] when none are valid.
+ */
+export const parseAssetFilters = (queryObject: any): AssetFilter[] => {
+  const toArray = (v: any): string[] =>
+    Array.isArray(v) ? (v as string[]) : v ? [v as string] : []
+
+  const columns = toArray(queryObject.assetColumn)
+  const values = toArray(queryObject.assetValue)
+
+  const byColumn = new Map<string, string>()
+  const count = Math.min(columns.length, values.length)
+  for (let i = 0; i < count; i++) {
+    const column = columns[i]
+    const value = values[i]
+    if (column && value && ALLOWED_ASSET_COLUMNS.has(column)) {
+      byColumn.set(column, value)
+    }
+  }
+
+  return Array.from(byColumn, ([column, value]) => ({ column, value }))
+}
+
+/**
+ * Maps monitoredService or service query params to canonical service names for FIQL filtering.
+ * Resolves by exact or case-insensitive name match, or by numeric ID lookup via serviceTypes.
+ * monitoredService takes precedence over service when both are present.
+ */
+export const parseMonitoredServices = (
+  queryObject: any,
+  serviceTypes: ServiceType[]
+): string[] => {
+  const raw = queryObject.monitoredService ?? queryObject.service
+  if (!raw) {
+    return []
+  }
+
+  const resolve = (val: string): string | null => {
+    if (/^\d+$/.test(val)) {
+      const found = serviceTypes.find(s => s.id === parseInt(val))
+      return found ? found.name : null
+    }
+    const lower = val.toLowerCase()
+    const found = serviceTypes.find(s => s.name.toLowerCase() === lower)
+    return found ? found.name : null
+  }
+
+  const values: string[] = Array.isArray(raw) ? raw : [raw as string]
+  return values.map(v => resolve(v)).filter((n): n is string => n !== null)
 }

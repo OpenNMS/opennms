@@ -8,6 +8,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0000NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,25 +44,28 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS19_IP, port = 161, resource = MS19_SNMP_RESOURCE)
     })
     public void networkAllTest() throws InterruptedException {
-        m_nodeDao.save(builder.getMs01());
-        m_nodeDao.save(builder.getMs02());
-        m_nodeDao.save(builder.getMs03());
-        m_nodeDao.save(builder.getMs04());
-        m_nodeDao.save(builder.getMs05());
-        m_nodeDao.save(builder.getMs06());
-        m_nodeDao.save(builder.getMs07());
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.save(builder.getMs09());
-        m_nodeDao.save(builder.getMs10());
-        m_nodeDao.save(builder.getMs11());
-        m_nodeDao.save(builder.getMs12());
-        m_nodeDao.save(builder.getMs14());
-        m_nodeDao.save(builder.getMs15());
-        m_nodeDao.save(builder.getMs16());
-        m_nodeDao.save(builder.getMs17());
-        m_nodeDao.save(builder.getMs18());
-        m_nodeDao.save(builder.getMs19());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMs01());
+            m_nodeDao.save(builder.getMs02());
+            m_nodeDao.save(builder.getMs03());
+            m_nodeDao.save(builder.getMs04());
+            m_nodeDao.save(builder.getMs05());
+            m_nodeDao.save(builder.getMs06());
+            m_nodeDao.save(builder.getMs07());
+            m_nodeDao.save(builder.getMs08());
+            m_nodeDao.save(builder.getMs09());
+            m_nodeDao.save(builder.getMs10());
+            m_nodeDao.save(builder.getMs11());
+            m_nodeDao.save(builder.getMs12());
+            m_nodeDao.save(builder.getMs14());
+            m_nodeDao.save(builder.getMs15());
+            m_nodeDao.save(builder.getMs16());
+            m_nodeDao.save(builder.getMs17());
+            m_nodeDao.save(builder.getMs18());
+            m_nodeDao.save(builder.getMs19());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -213,9 +217,12 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS08_IP, port = 161, resource = MS08_SNMP_RESOURCE)
     })
     public void networkTwoConnectedNodeTest() throws InterruptedException {
-        m_nodeDao.save(builder.getMs07());
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMs07());
+            m_nodeDao.save(builder.getMs08());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -272,10 +279,13 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host = MS10_IP, port = 161, resource = MS10_SNMP_RESOURCE)
     })
     public void networkThreeConnectedNodeTest() throws InterruptedException {
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.save(builder.getMs09());
-        m_nodeDao.save(builder.getMs10());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMs08());
+            m_nodeDao.save(builder.getMs09());
+            m_nodeDao.save(builder.getMs10());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -334,8 +344,11 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
     })
     public void microsenseTest() {
 
-        m_nodeDao.save(builder.getMs08());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMs08());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -419,8 +432,11 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
     })
     public void ms16Test() {
 
-        m_nodeDao.save(builder.getMs16());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getMs16());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -459,8 +475,11 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
     })
     public void planetTest() {
 
-        m_nodeDao.save(builder.getPlanet());
-        m_nodeDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            m_nodeDao.save(builder.getPlanet());
+            m_nodeDao.flush();
+            return null;
+        });
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);

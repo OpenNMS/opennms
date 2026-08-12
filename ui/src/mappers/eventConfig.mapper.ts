@@ -52,7 +52,7 @@ const extractSeverity = (xmlContent: string): string | null => {
       const severityElement = xmlDoc.getElementsByTagName('severity')[0]
       severity = severityElement ? severityElement.textContent : null
       return severity
-    } catch (e) {
+    } catch (_e) {
       severity = null
       return severity
     }
@@ -97,4 +97,3 @@ export const mapUploadedSourceNamesFromServer = (content: any): Array<UploadedSo
     name: source.name
   } as UploadedSourceNamesResponse))
 }
-

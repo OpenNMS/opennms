@@ -34,7 +34,7 @@ const getResources = async (): Promise<ResourcesApiResponse | null> => {
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return null
   }
 }
@@ -48,7 +48,7 @@ const getResourceForNode = async (name: string): Promise<Resource | null> => {
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return null
   }
 }

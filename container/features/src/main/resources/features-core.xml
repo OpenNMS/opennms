@@ -194,8 +194,20 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
     </feature>
 
-    <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
-        <bundle start-level="${systemStartLevel}" dependency="true">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
+    <!-- javax.mail-namespace API only (no transport providers and no com.sun.mail.* exports),
+         kept for EclipseLink MOXy 2.5.1. CXF's cxf-specs feature installs the same bundle
+         coordinates (at start-level 10), so only one bundle ends up installed and the last
+         deployer's start level wins - harmless for an API-only bundle.
+         Actual mail transport lives in the jakarta.mail feature. -->
+    <feature name="javax.mail" version="${javaxMailApiShimVersion}" description="javax.mail API (MOXy shim)">
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.mail/jakarta.mail-api/${javaxMailApiShimVersion}</bundle>
+    </feature>
+
+    <feature name="jakarta.mail" version="${jakartaMailApiVersion}" description="Jakarta Mail API + Eclipse Angus implementation">
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.activation/jakarta.activation-api/${jakartaActivationApiVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:org.eclipse.angus/angus-activation/${angusActivationVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:jakarta.mail/jakarta.mail-api/${jakartaMailApiVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:org.eclipse.angus/angus-mail/${angusMailVersion}</bundle>
     </feature>
 
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
@@ -304,6 +316,7 @@ org.jolokia.authMode=jaas
         <bundle>mvn:org.opennms.dependencies/eclipse-npn-alpn/${project.version}</bundle>
 
         <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle dependency="true">mvn:io.netty/netty-codec-base/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle dependency="true">wrap:mvn:io.netty/netty-common/${netty4Version}$overwrite=merge&amp;Import-Package=com.oracle.svm.core.annotate;resolution:=optional</bundle>

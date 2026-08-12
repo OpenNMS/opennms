@@ -22,6 +22,7 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
+import { ref } from 'vue'
 import {
   ZenithConnectRegistrationResponse,
   ZenithConnectRegistration,
@@ -49,7 +50,7 @@ export const useZenithConnectStore = defineStore('zenithConnectStore', () => {
         registrations.value = {
           registrations: [newRegistration]
         }
-      
+
         return true
       }
     }

@@ -33,8 +33,8 @@ import org.opennms.netmgt.dao.api.CountedObject;
 import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.SessionFactoryUtils;
 
 public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> implements EventCountDao {
 
@@ -50,7 +50,6 @@ public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long
             public List<CountedObject<String>> doInHibernate(Session session) throws HibernateException {
                 Query queryObject = session.createQuery("SELECT event.eventUei, COUNT(event.eventUei) FROM OnmsEvent event GROUP BY event.eventUei ORDER BY COUNT(event.eventUei) desc");
                 queryObject.setMaxResults(limit);
-                SessionFactoryUtils.applyTransactionTimeout(queryObject, getSessionFactory());
                 List<CountedObject<String>> ueis = new ArrayList<CountedObject<String>>();
                 @SuppressWarnings("unchecked")
                 final List<Object[]> l = queryObject.list();

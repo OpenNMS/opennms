@@ -1,16 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-24T12:03:44 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_Availability_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="69e17009-e2e1-4692-bdcd-77b25f4ab7fd">
+<jasperReport name="ResponseTimeSummary_Availability_subreport" language="java" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="69e17009-e2e1-4692-bdcd-77b25f4ab7fd">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Detail" hAlign="Center" vAlign="Middle"/>
-	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Detail" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle"/>
+	<style name="Interface_Header" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
@@ -26,8 +23,7 @@
 	<parameter name="START_TIME_STRING" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
-	<queryString language="SQL">
-		<![CDATA[SELECT
+	<query language="SQL"><![CDATA[SELECT
 	node_outages.categoryname,
 	node_outages.nodelabel,
 	node_outages.nodesyslocation,
@@ -117,8 +113,7 @@ GROUP BY
 	node_outages.avail_total
 ORDER BY
 	node_outages.categoryname ASC,
-	node_outages.nodelabel]]>
-	</queryString>
+	node_outages.nodelabel]]></query>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodesyslocation" class="java.lang.String"/>
@@ -131,67 +126,37 @@ ORDER BY
 	<field name="avail_percent" class="java.lang.Double"/>
 	<field name="outages_percent" class="java.lang.Double"/>
 	<field name="avail_total" class="java.lang.Double"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band splitType="Stretch">
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="136" splitType="Stretch">
-			<stackedBarChart>
-				<chart>
-					<reportElement x="339" y="0" width="200" height="136" uuid="4348aa59-6f10-480e-98f0-fbf32f64b6d3"/>
-					<chartTitle>
-						<titleExpression><![CDATA["Total Available Time in Seconds"]]></titleExpression>
-					</chartTitle>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<categorySeries>
-						<seriesExpression><![CDATA["Outage Time"]]></seriesExpression>
-						<categoryExpression><![CDATA[""]]></categoryExpression>
-						<valueExpression><![CDATA[$F{outages_seconds}]]></valueExpression>
-					</categorySeries>
-					<categorySeries>
-						<seriesExpression><![CDATA["Availability Time"]]></seriesExpression>
-						<categoryExpression><![CDATA[""]]></categoryExpression>
-						<valueExpression><![CDATA[$F{avail_total} - $F{outages_seconds}]]></valueExpression>
-					</categorySeries>
-				</categoryDataset>
-				<barPlot>
-					<plot/>
-					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
-					<categoryAxisFormat>
-						<axisFormat/>
-					</categoryAxisFormat>
-					<valueAxisFormat>
-						<axisFormat/>
-					</valueAxisFormat>
-				</barPlot>
-			</stackedBarChart>
-		</band>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary height="136" splitType="Stretch">
+		<element kind="chart" chartType="stackedBar" uuid="4348aa59-6f10-480e-98f0-fbf32f64b6d3" x="339" y="0" width="200" height="136">
+			<titleExpression><![CDATA["Total Available Time in Seconds"]]></titleExpression>
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["Outage Time"]]></seriesExpression>
+					<categoryExpression><![CDATA[""]]></categoryExpression>
+					<valueExpression><![CDATA[$F{outages_seconds}]]></valueExpression>
+				</series>
+				<series>
+					<seriesExpression><![CDATA["Availability Time"]]></seriesExpression>
+					<categoryExpression><![CDATA[""]]></categoryExpression>
+					<valueExpression><![CDATA[$F{avail_total} - $F{outages_seconds}]]></valueExpression>
+				</series>
+			</dataset>
+			<plot>
+				<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+			</plot>
+		</element>
 	</summary>
-	<noData>
-		<band/>
-	</noData>
+	<noData/>
 </jasperReport>

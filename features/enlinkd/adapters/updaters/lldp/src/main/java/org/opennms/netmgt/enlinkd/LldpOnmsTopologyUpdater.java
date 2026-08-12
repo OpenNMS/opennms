@@ -97,11 +97,11 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
         Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
         for (LldpElementTopologyEntity element: m_lldpTopologyService.findAllLldpElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId())));
+            topology.addVertex(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId())));
         }
         
     for (TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity> pair : m_lldpTopologyService.match()) {
-            topology.getEdges().add(
+            topology.addEdge(
                                     OnmsTopologyEdge.create(
                                                             Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                                             create(

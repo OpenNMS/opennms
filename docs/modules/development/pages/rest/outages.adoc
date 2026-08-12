@@ -18,6 +18,36 @@
 | /outages/\{id}
 | Get the outage specified by the given ID.
 
-| /outages/forNode/\{nodeid}
-| Get the outages that match the given node ID.
+| /outages/summaries?limit=\{n}
+| Get a list of node outage summaries (JSON). The `limit` parameter caps the number of summaries returned and defaults to `10`.
+
+| /outages/forNode/\{nodeId}?dateRange=\{ms}&start=\{epochMs}&end=\{epochMs}
+| Get the outages for the given node ID.
+Supply `start` and `end` (epoch milliseconds) to bound the window explicitly, or `dateRange` (milliseconds, default `604800000`, i.e. 7 days) to return outages from `now - dateRange` to the present.
+|===
+
+== Version 2 (/api/v2/outages)
+
+The v2 Outages API supports FIQL search expressions on `GET /api/v2/outages`.
+
+[caption=]
+.Outages API V2 GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/outages
+| Get a list of outages, optionally filtered with a FIQL search expression.
+
+| /api/v2/outages/count
+| Get the number of outages (returns plaintext).
+
+| /api/v2/outages/\{id}
+| Get the outage specified by the given ID.
+
+| /api/v2/outages/properties
+| Get the list of queryable outage properties. Accepts an optional `q` query parameter.
+
+| /api/v2/outages/properties/\{propertyId}
+| Get the set of values for the given property. Accepts optional `q` and `limit` query parameters.
 |===

@@ -5,7 +5,7 @@
       <br />
       <div class="marker-cluster-header-info">
         <div class="col">
-          <span class="larger-icon"><FeatherIcon :icon="Location" /></span>
+          <span class="larger-icon"><OnmsIcon :icon="Location" /></span>
           <span>{{ latitude }}, {{ longitude }}</span>
         </div>
         <div class="col">
@@ -40,11 +40,11 @@
 </template>
 
 <script setup lang ="ts">
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 import { orderBy } from 'lodash'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
-import { FeatherIcon } from '@featherds/icon'
-import Location from '@featherds/icon/action/Location'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Location from '@/components/icons/action/Location.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'
@@ -60,7 +60,9 @@ interface ClusterInfo {
 }
 
 const props = defineProps({
-  cluster: { type: Object as PropType<Cluster>, default: () => { return }},
+  cluster: { type: Object as PropType<Cluster>, default: () => {
+    return
+  } },
   ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true }
 })
 
@@ -98,7 +100,7 @@ const getItems = () => {
   const children = props.cluster.getAllChildMarkers()
   const currentNodes = children.map(m => nodeFromMarker(m)).filter(n => n !== null)
 
-  const items = currentNodes.map(node => {
+  const items = currentNodes.map((node) => {
     const nodeId = node?.id || ''
     const nodeLink = (nodeId && `${baseNodeUrl.value}${nodeId}`) || '#'
     const description = node?.assetRecord?.description || 'N/A'
@@ -120,8 +122,8 @@ const getItems = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-table";
+@import "@/styles/onms-tokens";
 
 .marker-cluster-header-info {
   display: flex;
@@ -145,13 +147,13 @@ const getItems = () => {
   table {
     margin-top: 0px !important;
     font-size: 12px !important;
-    @include table;
+    @include onms-table;
   }
 
   thead {
     z-index: 2;
     position: relative;
-    background: var($surface);
+    background: var(--p-content-background);
   }
 
   td {
@@ -162,7 +164,7 @@ const getItems = () => {
 
       &.NORMAL {
         background: var($success);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
       &.WARNING,
       &.MINOR,
@@ -171,10 +173,9 @@ const getItems = () => {
       }
       &.CRITICAL {
         background: var($error);
-        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+        color: var($state-text-color-on-surface-dark);
       }
     }
    }
 }
 </style>
- 

@@ -34,9 +34,9 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Performance ")
           .headTitle("Reports")
-          .headTitle("KSC")
+          .headTitle("Graph Collections")
           .breadcrumb("Reports", "report/index.jsp")
-          .breadcrumb("KSC Reports", "KSC/index.jsp")
+          .breadcrumb("Graph Collections", "KSC/index.jsp")
           .breadcrumb("Custom Graph")
           .flags("renderGraphs")
           .build(request);

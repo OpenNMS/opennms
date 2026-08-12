@@ -106,7 +106,9 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private MeasurementsService service;
 
-    
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.springframework.transaction.PlatformTransactionManager m_transactionManager;
+
     public MeasurementRestServiceIT() {
         super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml");
     }
@@ -119,14 +121,17 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(restService);
         assertNotNull(service);
 
-        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
-        node.setId(1);
+        new org.springframework.transaction.support.TransactionTemplate(m_transactionManager).execute(status -> {
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+            node.setId(1);
 
-        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 12);
-        snmpInterface.setIfName("eth0");
-        snmpInterface.setPhysAddr("04013f75f101");
-        m_nodeDao.save(node);
-        m_nodeDao.flush();
+            OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 12);
+            snmpInterface.setIfName("eth0");
+            snmpInterface.setPhysAddr("04013f75f101");
+            m_nodeDao.save(node);
+            m_nodeDao.flush();
+            return null;
+        });
 
         File rrdDirectory = new File("src/test/resources/share/rrd");
         assertTrue(rrdDirectory.canRead());

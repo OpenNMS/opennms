@@ -42,7 +42,7 @@ const getEvents = async (queryParameters?: QueryParameters): Promise<EventApiRes
     }
 
     return resp.data
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }

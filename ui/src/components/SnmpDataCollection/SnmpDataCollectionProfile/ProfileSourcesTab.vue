@@ -1,0 +1,123 @@
+<template>
+  <div
+    class="sources-box"
+    data-test="sources-box"
+  >
+    <div class="section-header">Sources</div>
+    <div>Add or remove sources from this profile.</div>
+    <div class="autocomplete-row">
+      <FormField label="Add Source">
+        <OnmsAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="sourceSearchResults"
+          optionLabel="name"
+          @complete="onSourceSearch"
+          @optionSelect="(value) => onSourceSelected(value as SourceItem)"
+          placeholder="Search sources..."
+          :forceSelection="true"
+          data-test="add-source-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
+    </div>
+    <div class="sources-card">
+      <OnmsTable
+        :value="sortedSources"
+        scrollable
+        scrollHeight="400px"
+        :size="'small'"
+        :virtualScrollItemSize="44"
+        tableStyle="min-width: 50rem"
+      >
+        <OnmsColumn field="name" style="width: 20%; height: 44px"></OnmsColumn>
+        <OnmsColumn style="width: 4rem">
+          <template #body="{ data }">
+            <OnmsIconButton
+              title="Delete source"
+              data-test="delete-source-button"
+              :icon="Delete"
+              @click="removeSource(data.name)"
+            />
+          </template>
+        </OnmsColumn>
+      </OnmsTable>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
+import Delete from '@/components/icons/action/Delete.vue'
+import FormField from '@/components/Common/FormField.vue'
+import { OnmsAutoComplete, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+
+interface SourceItem {
+  name: string
+  id: number
+}
+
+const props = defineProps<{
+  sources: string[]
+}>()
+
+const emit = defineEmits<{
+  'update:sources': [value: string[]]
+}>()
+
+const store = useSnmpDataCollectionStore()
+const autocompleteQuery = ref<string | SourceItem>('')
+const sourceSearchResults = ref<SourceItem[]>([])
+
+const sortedSources = computed(() =>
+  [...props.sources].sort((a, b) => a.localeCompare(b)).map(name => ({ name }))
+)
+
+const onSourceSearch = (query: string) => {
+  const q = query.toLowerCase()
+  sourceSearchResults.value = store.uploadedSourceNames
+    .filter(s => !props.sources.includes(s.name))
+    .filter(s => s.name.toLowerCase().includes(q))
+    .map(s => ({ name: s.name, id: s.id }))
+}
+
+const onSourceSelected = (source: SourceItem | undefined) => {
+  if (source) {
+    emit('update:sources', [...props.sources, source.name])
+    autocompleteQuery.value = ''
+    sourceSearchResults.value = []
+  }
+}
+
+const removeSource = (name: string) => {
+  emit('update:sources', props.sources.filter(s => s !== name))
+}
+</script>
+
+<style lang="scss" scoped>
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
+
+.sources-box {
+  padding: 20px 0;
+}
+
+.section-header {
+  @include onms-headline3;
+  margin-bottom: 16px;
+}
+
+.autocomplete-row {
+  max-width: 300px;
+  margin-top: 16px;
+}
+
+.sources-card {
+  :deep(.p-datatable-thead) {
+    display: none;
+  }
+}
+</style>

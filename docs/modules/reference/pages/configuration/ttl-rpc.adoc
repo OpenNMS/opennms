@@ -48,6 +48,16 @@ This value can be configured.
 When using the JMS-based RPC implementation, set value of the `org.opennms.jms.timeout` system property to the desired number of milliseconds.
 When using the Kafka-based RPC implementation, set the value of the `org.opennms.core.ipc.rpc.kafka.ttl` system property to the desired number of milliseconds.
 
+== Local execution timeout
+
+TTLs abort requests that are dispatched to a remote Minion.
+Requests for the Core instance's own location run in place; their TTL does not abort them.
+
+When using the JMS-based RPC implementation, local execution is instead bounded by a separate timeout that guards against operations that never complete.
+It defaults to 30 minutes.
+To change it, set the `org.opennms.core.ipc.rpc.local.timeout` system property to the desired number of milliseconds; a value of `0` disables it.
+If legitimately long-running local operations (for example, large SNMP table walks) exceed the limit, raise this property; the TTL settings above do not need to be changed.
+
 [[metadata-ttls]]
 == Using metadata for TTLs
 

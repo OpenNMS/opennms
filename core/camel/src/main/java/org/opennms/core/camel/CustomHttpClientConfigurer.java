@@ -28,9 +28,11 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.apache.camel.component.http.HttpClientConfigurer;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +45,16 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     private String m_password = "admin";
 
     @Override
-    public void configureHttpClient(final HttpClient client) {
+    public void configureHttpClient(final HttpClientBuilder builder) {
         try {
             final SSLContext ctx = SSLContext.getInstance("SSL");
             ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new AnyServerX509TrustManager() }, new SecureRandom());
             SSLContext.setDefault(ctx);
 
-            final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());
-            client.getState().setCredentials(AuthScope.ANY, credentials);
-            client.getParams().setAuthenticationPreemptive(true);
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(getUsername(), getPassword()));
+            builder.setDefaultCredentialsProvider(credentialsProvider);
+            builder.setSSLContext(ctx);
             LOG.debug("Configuring HTTP client with modified trust manager, username={}, password=xxxxxxxx", getUsername());
         } catch (final Exception e) {
             throw new CustomConfigurerException(e);

@@ -4,6 +4,10 @@
   xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
 >
 
+  <bundleReplacements>
+    <bundle originalUri="mvn:org.jline/jline/[3,4)" replacement="mvn:org.jline/jline/${jlineVersion}" mode="maven"/>
+  </bundleReplacements>
+
   <featureReplacements>
     <replacement mode="replace">
       <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">

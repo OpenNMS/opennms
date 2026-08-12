@@ -77,6 +77,24 @@
 <%
   final String __baseHref = Util.calculateUrlBase( request );
   final String oldMenuValue = request.getParameter("oldmenu");
+
+  // Cache-buster for the Vue menu bundle links below. The bundle is built with
+  // fixed filenames (ui/vite.config.menu.ts), so without a version param a
+  // browser (notably Safari) can keep a stale index.css while fetching a fresh
+  // index.js — the Vue scoped-CSS data-v hashes then no longer match and the
+  // menu renders unstyled (NMS-20174). Mirror the ?v= busting load-assets.jsp
+  // applies to legacy assets, using the deployed files' modification time so
+  // both files bust together on every deploy. Must be identical on the
+  // modulepreload link and the module script tag: the browser's module map is
+  // keyed by the full URL, so differing queries would fetch the bundle twice.
+  long __menuAssetsLastModified = 0;
+  for (final String __menuAsset : new String[] { "/ui-components/assets/index.js", "/ui-components/assets/index.css" }) {
+      final String __menuAssetPath = application.getRealPath(__menuAsset);
+      if (__menuAssetPath != null) {
+          __menuAssetsLastModified = Math.max(__menuAssetsLastModified, new java.io.File(__menuAssetPath).lastModified());
+      }
+  }
+  final String __menuAssetsVersion = "?v=" + __menuAssetsLastModified;
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -200,7 +218,32 @@
   </c:if>
 
   <%-- Vue side menu --%>
-  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css" media="screen" />
+  <%--
+    Apply the persisted UI theme class to <html> before first paint so
+    theme-dependent styles (PrimeVue's .open-dark darkModeSelector, the menu
+    token overrides in the Vue menu's stylesheet) are correct from the very
+    first frame instead of flipping when the menu bundle mounts (NMS-19975).
+    Storage key and class names mirror ui/src/services/themeService.ts; the
+    menu app re-asserts the class (and adds it to <body>) via initTheme().
+  --%>
+  <script type="text/javascript">
+    (function () {
+      var theme = 'open-light';
+      try {
+        var stored = window.localStorage.getItem('theme');
+        if (stored === 'open-light' || stored === 'open-dark') {
+          theme = stored;
+        }
+      } catch (e) {
+        // localStorage unavailable; fall through to the default theme
+      }
+      document.documentElement.classList.add(theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
+  <%-- Start fetching/compiling the menu bundle now rather than when the parser
+       reaches its <script type="module"> tag near the end of the body. --%>
+  <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -247,9 +290,6 @@
 <%--
     Note, if 'fromVaadin' is true, we display the menu anyway, even if 'superQuiet' is true.
     This means this is a Vaadin page loaded at the top level and should have the menu.
-    For Vaadin pages that are actually dashlets loaded inside a Wallboard, they will have
-    'fromVaadinDashlet=true', which we treat the same as 'superQuiet', i.e. do not display a menu.
-    'fromVaadinDashlet' might be used to add additional code to fix margins, etc.
     See header-component_connector.js and org.opennms.features.vaadin.components.header.HeaderComponent.java for more.
 --%>
 <c:choose>
@@ -259,7 +299,7 @@
         <!-- both superQuiet and fromVaadin are true -->
         <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
-          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
+          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
       </c:when>
     </c:choose>
@@ -276,15 +316,20 @@
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
-    <%-- Vue menus: do not display if 'quiet' is true, or if 'oldmenu' query string param is true --%>
+    <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
+         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
+         if 'oldmenu' query string param is true. On unauthenticated quiet pages
+         the menu app must not execute at all: its REST calls would trigger the
+         browser's basic-auth prompt and poison SPRING_SECURITY_SAVED_REQUEST
+         with a REST URL (NMS-20174). --%>
     <c:choose>
-      <c:when test='${param.quiet == "true"}'>
+      <c:when test='${param.quiet == "true" or __bs_flags.contains("quiet")}'>
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
         <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
-          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
+          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
       </c:otherwise>
     </c:choose>

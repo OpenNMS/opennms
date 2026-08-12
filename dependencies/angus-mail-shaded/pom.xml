@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>36.0.4-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>angus-mail-shaded</artifactId>
+  <name>OpenNMS :: Dependencies :: Angus Mail :: Shaded</name>
+  <description>
+    angus-mail with its javax-era resource names removed for use on the flat
+    $OPENNMS_HOME/lib classpath. angus-mail ships META-INF/mailcap and
+    META-INF/javamail(.default).providers naming jakarta-namespace classes;
+    the javax.activation/javax.mail code still on the classpath (the MOXy
+    shim and its consumers) reads those resource names from every jar and
+    would instantiate jakarta-namespace handlers, failing with an uncaught
+    ClassCastException. The jakarta runtime does not need them: it discovers
+    providers via META-INF/services/jakarta.mail.Provider and content
+    handlers via META-INF/jakarta.mailcap, both of which are retained.
+    The Karaf features keep the vanilla org.eclipse.angus:angus-mail bundle,
+    where bundle isolation makes the resources harmless. No classes are
+    relocated.
+  </description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.eclipse.angus:angus-mail</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>org.eclipse.angus:angus-mail</artifact>
+                  <excludes>
+                    <exclude>META-INF/mailcap</exclude>
+                    <exclude>META-INF/javamail.providers</exclude>
+                    <exclude>META-INF/javamail.default.providers</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+    </dependency>
+  </dependencies>
+</project>

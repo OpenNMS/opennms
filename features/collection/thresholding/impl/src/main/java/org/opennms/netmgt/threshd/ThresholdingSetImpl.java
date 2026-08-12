@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -253,13 +254,15 @@ public class ThresholdingSetImpl implements ThresholdingSet {
      * @return a {@link java.util.List} object.
      */
     protected final List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
+        return applyThresholds(resourceWrapper, attributesMap, buildScope());
+    }
+
+    protected final List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap, Scope scope) {
         List<Event> eventsList = new LinkedList<>();
         if (attributesMap == null || attributesMap.size() == 0) {
             LOG.debug("applyThresholds: Ignoring resource {} because required attributes map is empty.", resourceWrapper);
             return eventsList;
         }
-        // compute scope here, see NMS-16966
-        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resourceWrapper);
 
         LOG.debug("applyThresholds: Applying thresholds on {} using {} attributes.", resourceWrapper, attributesMap.size());
         Date date = new Date();
@@ -271,7 +274,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                         final String key = entry.getKey();
                         final Set<ThresholdEntity> value = entry.getValue();
                         for (final ThresholdEntity thresholdEntity : value) {
-                            if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
+                            if (passedThresholdFilters(resourceWrapper, thresholdEntity, scope)) {
                                 LOG.info("applyThresholds: Processing threshold {} : {} on resource {}", key, thresholdEntity, resourceWrapper);
                                 Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
                                 final Map<String, Double> values = new HashMap<String,Double>();
@@ -290,7 +293,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
                                     resourceWrapper.setDsLabel(Interpolator.interpolate(thresholdEntity.getDatasourceLabel(), scope).output);
                                     try {
-                                        List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
+                                        List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date, scope);
                                         eventsList.addAll(thresholdEvents);
                                     } catch (Exception e) {
                                         LOG.warn("applyThresholds: Can't evaluate {} on {} because {}", key, resourceWrapper, e.getMessage());
@@ -308,15 +311,16 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     }
 
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
+        return passedThresholdFilters(resource, thresholdEntity, ThresholdEntity.getScopeForResource(m_entityScopeProvider, resource));
+    }
+
+    protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity, Scope scope) {
         // Check Valid Interface Resource based on suggestions from Bug 2711
         if (resource.isAnInterfaceResource() && !resource.isValidInterfaceResource()) {
             LOG.info("passedThresholdFilters: Could not get data interface information for '{}' or this interface has an invalid ifIndex.  Not evaluating threshold.",
                      resource.getIfLabel());
             return false;
         }
-
-        // compute scope here, see NMS-16966
-        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resource);
 
         // Find the filters for threshold definition for selected group/dataSource
         final List<ResourceFilter> filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilters();
@@ -494,6 +498,11 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap,
                                        Date collectionTimestamp, Long sequenceNumber) {
+        return applyThresholds(resource, attributesMap, collectionTimestamp, sequenceNumber, buildScope());
+    }
+
+    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap,
+                                       Date collectionTimestamp, Long sequenceNumber, Scope scope) {
         if (!isCollectionEnabled(resource)) {
             LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
             return new LinkedList<>();
@@ -501,7 +510,15 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(collectionTimestamp, m_nodeId,
                 m_hostAddress, m_serviceName, resource, attributesMap, m_ifLabelDao, sequenceNumber);
         resourceWrapper.setCounterReset(m_counterReset);
-        return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
+        return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap, scope));
+    }
+
+    /**
+     * The scope only depends on session-level state (node, host address, service), never on the
+     * individual resource, so one instance can be shared across a whole collection set (NMS-16966).
+     */
+    public Scope buildScope() {
+        return ThresholdEntity.getScope(m_entityScopeProvider, m_nodeId, m_hostAddress, m_serviceName);
     }
 
     public List<ThresholdGroup> getThresholdGroups() {

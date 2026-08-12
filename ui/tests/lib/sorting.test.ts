@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { sortPredicate } from '@/lib/sorting'
-import { SORT } from '@featherds/table'
-import { FeatherSortObject } from '@/types'
+import { SORT } from '@/types'
+import { ISortObject } from '@/types'
 
 describe('sorting', () => {
   describe('sortPredicate', () => {
-    const createSortObject = (property: string, value: string): FeatherSortObject => ({
+    const createSortObject = (property: string, value: string): ISortObject => ({
       property,
       value
     })
@@ -60,7 +60,7 @@ describe('sorting', () => {
         it(description, () => {
           const sortObj = createSortObject(property, SORT.ASCENDING)
           const result = sortPredicate(a, b, sortObj)
-          
+
           if (expected === 'lessThan') {
             expect(result).toBeLessThan(0)
           } else if (expected === 'equal') {
@@ -115,7 +115,7 @@ describe('sorting', () => {
         it(description, () => {
           const sortObj = createSortObject(property, SORT.DESCENDING)
           const result = sortPredicate(a, b, sortObj)
-          
+
           if (expected === 'lessThan') {
             expect(result).toBeLessThan(0)
           } else if (expected === 'equal') {
@@ -153,8 +153,8 @@ describe('sorting', () => {
         {
           description: 'should handle object values',
           property: 'data',
-          a: { data: { value: 1 } },
-          b: { data: { value: 2 } },
+          a: { data: { value: 1 }},
+          b: { data: { value: 2 }},
           assertion: (result: number) => expect(typeof result).toBe('number')
         }
       ]
@@ -190,7 +190,7 @@ describe('sorting', () => {
         it(description, () => {
           const sortObj = createSortObject(property, SORT.ASCENDING)
           const result = sortPredicate(a, b, sortObj)
-          
+
           if (expected === 'lessThan') {
             expect(result).toBeLessThan(0)
           } else if (expected === 'greaterThan') {

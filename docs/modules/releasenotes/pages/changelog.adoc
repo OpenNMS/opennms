@@ -2,6 +2,219 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.3]]
+
+== Release 36.0.3
+
+=== Bug
+
+* ActiveMQ security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-20087[NMS-20087])
+* Collectd shutdown can block for several minutes waiting for active collection RPCs (Issue https://issues.opennms.org/browse/NMS-20046[NMS-20046])
+* Dangling nodeParentID references in node table (Issue https://issues.opennms.org/browse/NMS-19971[NMS-19971])
+* Discovery REST scan (a provisioning operation) is reachable by low-privilege ROLE_REST (Issue https://issues.opennms.org/browse/NMS-20056[NMS-20056])
+* Filter evaluation fails entirely when an ipinterface row holds an unparseable IP address (Issue https://issues.opennms.org/browse/NMS-20004[NMS-20004])
+* Forced Rescan vs Scheduled Rescan not removing old interfaces (Issue https://issues.opennms.org/browse/NMS-19096[NMS-19096])
+* Horizon container health.sh always fails: curl -sSF is not a valid invocation (Issue https://issues.opennms.org/browse/NMS-20116[NMS-20116])
+* Lock jackson-databind and netty versions in OSGi to Maven (Issue https://issues.opennms.org/browse/NMS-20164[NMS-20164])
+* Menu issues in Firefox and Safari (Issue https://issues.opennms.org/browse/NMS-20174[NMS-20174])
+* NMS-19951 regression: local RPC TTL bound kills long-running SNMP collections at scale (36.0.2) (Issue https://issues.opennms.org/browse/NMS-20006[NMS-20006])
+* Newts `delete()` is broken (Issue https://issues.opennms.org/browse/NMS-20047[NMS-20047])
+* Notifid - Remove MicroblogNotificationStrategy  (Twitter 1.0) (Issue https://issues.opennms.org/browse/NMS-20098[NMS-20098])
+* Notifid - Remove XMPPNotificationStrategy (Jabber) (Issue https://issues.opennms.org/browse/NMS-20099[NMS-20099])
+* Notifid - Replace IrcCatNotificationStrategy - Make it native or remove (Issue https://issues.opennms.org/browse/NMS-20112[NMS-20112])
+* Notifid - Rework JavaMailNotificationStrategy (Issue https://issues.opennms.org/browse/NMS-20102[NMS-20102])
+* Notifid - Rework of the TicketNotificationStrategy (Issue https://issues.opennms.org/browse/NMS-20101[NMS-20101])
+* Poller builds the metadata scope twice per poll (Issue https://issues.opennms.org/browse/NMS-20009[NMS-20009])
+* PostgreSQL JDBC security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-20090[NMS-20090])
+* REST update endpoints lets ROLE_REST users set protected fields (Issue https://issues.opennms.org/browse/NMS-20055[NMS-20055])
+* Remove the Asterisk notification strategy and AGI gateway (Issue https://issues.opennms.org/browse/NMS-20114[NMS-20114])
+* Screen flickers between JSP pages (Issue https://issues.opennms.org/browse/NMS-19975[NMS-19975])
+* Smoke test logins intermittently fail on a CSRF/session race (Issue https://issues.opennms.org/browse/NMS-20049[NMS-20049])
+* Thresholding builds metadata scopes per resource and per threshold (Issue https://issues.opennms.org/browse/NMS-20007[NMS-20007])
+* Update Netty to 4.2.16.Final (Issue https://issues.opennms.org/browse/NMS-20168[NMS-20168])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-20132[NMS-20132])
+* Update com.fasterxml.jackson.core:jackson-databind library (Issue https://issues.opennms.org/browse/NMS-19931[NMS-19931])
+* Update commons-io:commons-io library (Issue https://issues.opennms.org/browse/NMS-20183[NMS-20183])
+* Update glib2 library (Issue https://issues.opennms.org/browse/NMS-19956[NMS-19956])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-19995[NMS-19995])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-19996[NMS-19996])
+* Update io.netty:netty-codec-stomp library (Issue https://issues.opennms.org/browse/NMS-20037[NMS-20037])
+* Update libacl library (Issue https://issues.opennms.org/browse/NMS-19957[NMS-19957])
+* Update libpng library (Issue https://issues.opennms.org/browse/NMS-19937[NMS-19937])
+* Update log4j library (Issue https://issues.opennms.org/browse/NMS-20089[NMS-20089])
+* Update openssh library (Issues https://issues.opennms.org/browse/NMS-19819[NMS-19819], https://issues.opennms.org/browse/NMS-19984[NMS-19984])
+* Update openssh-clients library (Issue https://issues.opennms.org/browse/NMS-19985[NMS-19985])
+* Update org.apache.mina:mina-core library (Issue https://issues.opennms.org/browse/NMS-20034[NMS-20034])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-19961[NMS-19961])
+* Update org.eclipse.jetty:jetty-security library (Issue https://issues.opennms.org/browse/NMS-20060[NMS-20060])
+* Update org.jline:jline-remote-telnet library (Issue https://issues.opennms.org/browse/NMS-19934[NMS-19934])
+* Update org.json:json library (Issue https://issues.opennms.org/browse/NMS-20186[NMS-20186])
+* Update python3 library (Issue https://issues.opennms.org/browse/NMS-19986[NMS-19986])
+* Update python3-libs library (Issue https://issues.opennms.org/browse/NMS-19987[NMS-19987])
+* Update rsync library (Issue https://issues.opennms.org/browse/NMS-19930[NMS-19930])
+* Update tar library (Issue https://issues.opennms.org/browse/NMS-19988[NMS-19988])
+* Vmware VirtualMachine datacollection fail with com.vmware.vim25.ManagedObjectNotFound (Issue https://issues.opennms.org/browse/NMS-19977[NMS-19977])
+* thresholding-enabled parameter is ignored by collectd (Issue https://issues.opennms.org/browse/NMS-20008[NMS-20008])
+
+=== Enhancement
+
+* Add a close-ticket notification strategy to complement TicketNotificationStrategy (Issue https://issues.opennms.org/browse/NMS-20105[NMS-20105])
+* Add a way for AlarmSync to clear alarms (Issue https://issues.opennms.org/browse/NMS-19954[NMS-19954])
+* Add a way to "stream" alarms to Kafka (Issue https://issues.opennms.org/browse/NMS-19955[NMS-19955])
+* Add startup time metrics for OpenNMS services (Issue https://issues.opennms.org/browse/NMS-19036[NMS-19036])
+* Improve UI for API Docs (Issue https://issues.opennms.org/browse/NMS-20166[NMS-20166])
+* Make Swagger/API Docs as part of build/repo (Issue https://issues.opennms.org/browse/NMS-20163[NMS-20163])
+* Mutual TLS support for collectors (XML/Prometheus/HTTPS) (Issue https://issues.opennms.org/browse/NMS-19974[NMS-19974])
+* Remove EOL BouncyCastle jdk15on and orphaned SAML dependencies from spring-security aggregator (Issue https://issues.opennms.org/browse/NMS-20092[NMS-20092])
+* Remove GWT sandbox under topology-map plugins (Issue https://issues.opennms.org/browse/NMS-20079[NMS-20079])
+* Remove OTRS ticketer orphan directories and packaging tombstones (Issue https://issues.opennms.org/browse/NMS-20084[NMS-20084])
+* Remove orphaned Karaf feature definitions (Issue https://issues.opennms.org/browse/NMS-20095[NMS-20095])
+* Remove sample REST response dumps served as static content from opennms-webapp (Issue https://issues.opennms.org/browse/NMS-20082[NMS-20082])
+* Remove unreferenced images from the webapp images directory (Issue https://issues.opennms.org/browse/NMS-20091[NMS-20091])
+* Remove unused dependencyManagement entries from the root pom (Issue https://issues.opennms.org/browse/NMS-20085[NMS-20085])
+* Remove vendored legacy OpenLayers and Leaflet copies from core/web-assets (Issue https://issues.opennms.org/browse/NMS-20080[NMS-20080])
+* Restore xstream and kotlin-stdlib dependencyManagement pins removed in NMS-20085 (Issue https://issues.opennms.org/browse/NMS-20093[NMS-20093])
+* Topology (Preview): graph-service provider for the path outage hierarchy (Issue https://issues.opennms.org/browse/NMS-19877[NMS-19877])
+
+=== Epic
+
+* Integrate a widely used UI framework to enhance or replace FeatherDS (Issue https://issues.opennms.org/browse/NMS-19188[NMS-19188])
+
+=== New Feature
+
+* Active/passive HA for OpenNMS core (Issue https://issues.opennms.org/browse/NMS-20109[NMS-20109])
+
+=== Story
+
+* Mask passphrases in Trap Configuration (Issue https://issues.opennms.org/browse/NMS-19723[NMS-19723])
+* Upgrade Hibernate to 5.x (Issue https://issues.opennms.org/browse/NMS-18185[NMS-18185])
+* Upgrade Spring from 4.3.x to Spring 5.x (Issue https://issues.opennms.org/browse/NMS-19858[NMS-19858])
+
+=== Task
+
+* Dependabot updates for Vue UI, August 2026 (Issue https://issues.opennms.org/browse/NMS-19725[NMS-19725])
+* Dependabot updates for core/web-assets, August 2026 (Issue https://issues.opennms.org/browse/NMS-20181[NMS-20181])
+* FE: Make new node list page the default in the menu, remove legacy node list page (Issue https://issues.opennms.org/browse/NMS-18217[NMS-18217])
+* Fix issues after plugin UI component library Phase 1 (Issue https://issues.opennms.org/browse/NMS-20150[NMS-20150])
+* Fix styling and PR review issues after Feather cleanup (Issue https://issues.opennms.org/browse/NMS-20033[NMS-20033])
+* Make top menubar more responsive (Issue https://issues.opennms.org/browse/NMS-20201[NMS-20201])
+* More Node List parity enhancements (Issue https://issues.opennms.org/browse/NMS-20125[NMS-20125])
+* More Side Menu fixes (Issue https://issues.opennms.org/browse/NMS-20171[NMS-20171])
+* Move Resource graphs to Resource Graphs (Preview) (Issue https://issues.opennms.org/browse/NMS-20176[NMS-20176])
+* Node List UI enhancements: Default columns, IP sorting, Indentation (Issue https://issues.opennms.org/browse/NMS-20175[NMS-20175])
+* PrimeVue Migration: Convert screens including Device Config (Issue https://issues.opennms.org/browse/NMS-19948[NMS-19948])
+* PrimeVue Migration: Feather cleanup, replace icons (Issue https://issues.opennms.org/browse/NMS-19981[NMS-19981])
+* PrimeVue Migration: Menubar (Issue https://issues.opennms.org/browse/NMS-19976[NMS-19976])
+* Shared core/plugin UI component library architecture: Phase 1 (Issue https://issues.opennms.org/browse/NMS-20054[NMS-20054])
+* Side Menu: Fix flicker, overlap (Issue https://issues.opennms.org/browse/NMS-20167[NMS-20167])
+* TicketNotificationStrategy is not functional (Issue https://issues.opennms.org/browse/NMS-20026[NMS-20026])
+* UI component seam layer: Phase 1 (Issue https://issues.opennms.org/browse/NMS-20029[NMS-20029])
+* UI component seam layer: Phase 2 (Issue https://issues.opennms.org/browse/NMS-20081[NMS-20081])
+* Update the links to documentation in our menu (Issue https://issues.opennms.org/browse/NMS-20202[NMS-20202])
+
+[[releasenotes-changelog-36.0.2]]
+
+== Release 36.0.2
+
+=== Bug
+
+* Improve the URL parsing from requests (Issue https://issues.opennms.org/browse/NMS-19905[NMS-19905])
+* Allow unknown properties when deserializing CM configurations (Issue https://issues.opennms.org/browse/NMS-19970[NMS-19970])
+* Filter are missing on the Alarm page (Issue https://issues.opennms.org/browse/NMS-19852[NMS-19852])
+* Filter rules with a top-level OR ignore appended constraints, causing over-matching and full-table scans (Issue https://issues.opennms.org/browse/NMS-19928[NMS-19928])
+* Help API Page in UI loads very slowly (Issue https://issues.opennms.org/browse/NMS-19883[NMS-19883])
+* Make scvcli prompt for password (Issue https://issues.opennms.org/browse/NMS-19033[NMS-19033])
+* Minion will start without a valid id (Issue https://issues.opennms.org/browse/NMS-19882[NMS-19882])
+* Rescan gets stuck on new nodes (Issue https://issues.opennms.org/browse/NMS-19547[NMS-19547])
+* Resolve potential wedge in CamelRpcClientFactory for local (Issue https://issues.opennms.org/browse/NMS-19951[NMS-19951])
+* Startup deadlock in SnmpPeerFactory::getSecureCredentialsScope() (Issue https://issues.opennms.org/browse/NMS-19901[NMS-19901])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-19786[NMS-19786])
+* Update commons-io:commons-io library (Issue https://issues.opennms.org/browse/NMS-17997[NMS-17997])
+* Update java-21-openjdk-headless library (Issue https://issues.opennms.org/browse/NMS-19633[NMS-19633])
+* Update net.sf.jasperreports:jasperreports library (Issue https://issues.opennms.org/browse/NMS-19379[NMS-19379])
+* Update org.apache.activemq:activemq-broker library (Issue https://issues.opennms.org/browse/NMS-19844[NMS-19844])
+* Update org.apache.neethi:neethi library (Issue https://issues.opennms.org/browse/NMS-19784[NMS-19784])
+* Update org.json:json library (Issue https://issues.opennms.org/browse/NMS-17999[NMS-17999])
+* Update rsync library (Issues https://issues.opennms.org/browse/NMS-19859[NMS-19859], https://issues.opennms.org/browse/NMS-19912[NMS-19912])
+* Update uglify-js library (Issue https://issues.opennms.org/browse/NMS-19704[NMS-19704])
+* Upgrade Netty to 4.2.15 to resolve CVEs (Issue https://issues.opennms.org/browse/NMS-19880[NMS-19880])
+* VMware Importer fails when ESXi Host CIM can't be directly reached (Issue https://issues.opennms.org/browse/NMS-19902[NMS-19902])
+
+=== Enhancement
+
+* Add Datastore Monitoring for VMware (Issue https://issues.opennms.org/browse/NMS-19849[NMS-19849])
+* Add SSH Key support for Karaf on Core (Issue https://issues.opennms.org/browse/NMS-19953[NMS-19953])
+* Log startup success at info instead of debug for manager.log (Issue https://issues.opennms.org/browse/NMS-19881[NMS-19881])
+* Remove unmaintainted activemq-camel (Issue https://issues.opennms.org/browse/NMS-19879[NMS-19879])
+* Rename KSC Reports Feature (Issue https://issues.opennms.org/browse/NMS-19771[NMS-19771])
+* Topology (Preview): REST API for operator-defined info-panel templates (node and edge scoped) (Issue https://issues.opennms.org/browse/NMS-19876[NMS-19876])
+* Topology (Preview): REST API for persisting custom topology views (Issue https://issues.opennms.org/browse/NMS-19874[NMS-19874])
+
+=== Task
+
+* Add remaining searches from Search Inventory to Vue Node List (Issue https://issues.opennms.org/browse/NMS-19855[NMS-19855])
+* Fix issues re node list filtering: deleted interfaces, UI service filters (Issue https://issues.opennms.org/browse/NMS-19850[NMS-19850])
+* Migrate Vue Nodes page to use PrimeVue (Issue https://issues.opennms.org/browse/NMS-19620[NMS-19620])
+* NodeDetailPageIT#verifyTimeline is flaky (Issue https://issues.opennms.org/browse/NMS-16980[NMS-16980])
+* PrimeVue Migration: Convert Screens including SNMP Data Collection and Trap Config (Issue https://issues.opennms.org/browse/NMS-19909[NMS-19909])
+* PrimeVue Migration: Convert common components (Issue https://issues.opennms.org/browse/NMS-19904[NMS-19904])
+* PrimeVue Migration: Convert initial easy set of screens (Issue https://issues.opennms.org/browse/NMS-19906[NMS-19906])
+* PrimeVue Migration: Foundation and styling presets (Issue https://issues.opennms.org/browse/NMS-19843[NMS-19843])
+* Small issues after eslint 10 update (Issue https://issues.opennms.org/browse/NMS-19868[NMS-19868])
+* Update to eslint 10 in /ui, remove auto-imports (Issue https://issues.opennms.org/browse/NMS-19842[NMS-19842])
+
+[[releasenotes-changelog-36.0.1]]
+
+== Release 36.0.1
+
+=== Bug
+
+* "Requisition" misspelled as "requistion" in code and documentation (Issue https://issues.opennms.org/browse/NMS-14656[NMS-14656])
+* 36.0.0: Some find-java.sh still search for Java between 11.0 17.9999 (Issue https://issues.opennms.org/browse/NMS-19801[NMS-19801])
+* 36.0.0: Wrong HOME directories set in Minion (Issue https://issues.opennms.org/browse/NMS-19800[NMS-19800])
+* Update expat library (Issue https://issues.opennms.org/browse/NMS-19817[NMS-19817])
+* Update glibc library (Issue https://issues.opennms.org/browse/NMS-19655[NMS-19655])
+* Update glibc-common library (Issue https://issues.opennms.org/browse/NMS-19656[NMS-19656])
+* Update glibc-minimal-langpack library (Issue https://issues.opennms.org/browse/NMS-19657[NMS-19657])
+* Update gnutls library (Issue https://issues.opennms.org/browse/NMS-19755[NMS-19755])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-19777[NMS-19777])
+* Update io.netty:netty-codec-dns library (Issue https://issues.opennms.org/browse/NMS-19778[NMS-19778])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-19787[NMS-19787])
+* Update io.netty:netty-codec-http2 library (Issue https://issues.opennms.org/browse/NMS-19788[NMS-19788])
+* Update io.netty:netty-transport-native-epoll library (Issue https://issues.opennms.org/browse/NMS-19779[NMS-19779])
+* Update jq library (Issue https://issues.opennms.org/browse/NMS-19732[NMS-19732])
+* Update krb5-libs library (Issue https://issues.opennms.org/browse/NMS-19756[NMS-19756])
+* Update libcap library (Issue https://issues.opennms.org/browse/NMS-19818[NMS-19818])
+* Update openssh-clients library (Issue https://issues.opennms.org/browse/NMS-19820[NMS-19820])
+* Update org.apache.activemq:activemq-broker library (Issues https://issues.opennms.org/browse/NMS-19789[NMS-19789], https://issues.opennms.org/browse/NMS-19827[NMS-19827])
+* Update org.apache.activemq:activemq-client library (Issue https://issues.opennms.org/browse/NMS-19698[NMS-19698])
+* Update org.apache.mina:mina-core library (Issue https://issues.opennms.org/browse/NMS-19780[NMS-19780])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-19781[NMS-19781])
+* Update org.eclipse.jetty:jetty-http library (Issue https://issues.opennms.org/browse/NMS-19742[NMS-19742])
+* Update org.postgresql:postgresql library (Issue https://issues.opennms.org/browse/NMS-19782[NMS-19782])
+* Update python3 library (Issue https://issues.opennms.org/browse/NMS-19821[NMS-19821])
+* Update python3-libs library (Issue https://issues.opennms.org/browse/NMS-19822[NMS-19822])
+* Update rsync library (Issues https://issues.opennms.org/browse/NMS-19739[NMS-19739], https://issues.opennms.org/browse/NMS-19823[NMS-19823])
+* Update vim-minimal library (Issue https://issues.opennms.org/browse/NMS-19824[NMS-19824])
+
+=== Enhancement
+
+* Add the 64bit memory gauges in UCD-SNMP-MIB to default config (Issue https://issues.opennms.org/browse/NMS-18291[NMS-18291])
+* Deprecate OpsBoard/OpsPanel and Wallboard Vaadin UI Components (Issue https://issues.opennms.org/browse/NMS-19853[NMS-19853])
+* Support for Token Based Authentication with XML/JSON Collector (and HTTP collector) (Issue https://issues.opennms.org/browse/NMS-19751[NMS-19751])
+
+=== Story
+
+* Improve login page directive (Issue https://issues.opennms.org/browse/NMS-19799[NMS-19799])
+* Support SNMP data collection config updates from Plugins (Issue https://issues.opennms.org/browse/NMS-19719[NMS-19719])
+
+=== Task
+
+* Disable flaky smoke tests (Issue https://issues.opennms.org/browse/NMS-17889[NMS-17889])
+* FE: Improve UI for SNMP Data Collection Profiles and Create Source (Issue https://issues.opennms.org/browse/NMS-19796[NMS-19796])
+* Update Jetty 9.4.x (Issue https://issues.opennms.org/browse/NMS-19722[NMS-19722], https://issues.opennms.org/browse/NMS-19774[NMS-19774] and https://issues.opennms.org/browse/NMS-19684[NMS-19684])
+* Update existing links to Node page to go to Node Structure page instead (Issue https://issues.opennms.org/browse/NMS-16118[NMS-16118])
+
 [[releasenotes-changelog-36.0.0]]
 
 == Release 36.0.0

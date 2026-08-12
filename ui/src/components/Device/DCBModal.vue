@@ -1,14 +1,20 @@
 <template>
-  <!-- eslint-disable-next-line vue/no-mutating-props -->
-  <FeatherDialog :modelValue="visible" relative :labels="labels" @update:modelValue="$emit('close')">
+  <OnmsDialog
+    :visible="visible"
+    :header="title"
+    modal
+    @update:visible="onVisibleChange"
+  >
     <div class="content">
       <slot name="content" />
     </div>
-  </FeatherDialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
-import { FeatherDialog } from '@featherds/dialog'
+import { computed } from 'vue'
+
+import { OnmsDialog } from '@opennms/onms-ui'
 import { useDeviceStore } from '@/stores/deviceStore'
 
 const deviceStore = useDeviceStore()
@@ -20,12 +26,15 @@ defineProps({
   }
 })
 
-const labels = reactive({
-  title: 'DCB',
-  close: 'Close'
-})
+const emit = defineEmits(['close'])
 
-watchEffect(() => labels.title = `Device Name: ${deviceStore.modalDeviceConfigBackup.deviceName}`)
+const title = computed(() => `Device Name: ${deviceStore.modalDeviceConfigBackup.deviceName}`)
+
+const onVisibleChange = (val: boolean) => {
+  if (!val) {
+    emit('close')
+  }
+}
 </script>
 
 <style scoped lang="scss">

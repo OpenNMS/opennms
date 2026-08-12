@@ -22,16 +22,33 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  ALL_ASSET_COLUMN_OPTIONS,
+  ALLOWED_ASSET_COLUMNS,
+  ASSET_COLUMN_FIQL_MAP,
+  ASSET_COLUMN_OPTIONS,
+  ASSET_COLUMN_TITLES,
+  UI_HIDDEN_ASSET_COLUMNS,
+  getAssetColumnFiqlProperty,
+  getAssetColumnLabel,
+  parseAssetFilters,
   parseCategories,
+  parseDownAggregateStatus,
+  parseNodesWithAssets,
+  parseNodesWithOutages,
   parseFlows,
   parseForeignSource,
   parseIplike,
+  isIplikePattern,
+  parseMaclike,
+  parseMib2Params,
+  parseMonitoredServices,
   parseMonitoringLocation,
   parseNodeLabel,
   parseSnmpParams,
+  parseSnmpParmParams,
   parseSysParams
 } from '@/components/Nodes/hooks/queryStringParser'
-import { categories, monitoringLocations } from './utils'
+import { categories, monitoringLocations, serviceTypes } from './utils'
 import { MatchType, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
@@ -39,12 +56,12 @@ describe('Nodes queryStringParser test', () => {
   describe('queryStringParser, parseNodeLabel', () => {
     test.each([
       ['empty', {}, ''],
-      ['nodename', { nodename: 'NodeName'}, 'NodeName'],
-      ['nodename takes priority over nodeLabel', { nodename: 'NodeName', nodeLabel: 'NodeLabel'}, 'NodeName'],
-      ['nodeLabel with nodename being invalid', { nodeName: 'NodeName', nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['nodeLabel with empty nodename', { nodename: '', nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['nodeLabel only', { nodeLabel: 'NodeLabel'}, 'NodeLabel'],
-      ['invalid nodeLabel', { nodelabel: 'NodeLabel'}, ''],
+      ['nodename', { nodename: 'NodeName' }, 'NodeName'],
+      ['nodename takes priority over nodeLabel', { nodename: 'NodeName', nodeLabel: 'NodeLabel' }, 'NodeName'],
+      ['nodeLabel with nodename being invalid', { nodeName: 'NodeName', nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['nodeLabel with empty nodename', { nodename: '', nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['nodeLabel only', { nodeLabel: 'NodeLabel' }, 'NodeLabel'],
+      ['invalid nodeLabel', { nodelabel: 'NodeLabel' }, ''],
       ['nodename with another property', { nodename: 'NodeName', a: 'Whatever' }, 'NodeName']
     ]) (
       'parseNodeLabel: %s',
@@ -70,7 +87,7 @@ describe('Nodes queryStringParser test', () => {
       'parseCategories: %s',
       (title, queryObject, expectedCategoryMode, expectedCategories) => {
         const result = parseCategories(queryObject, categories)
-        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories })
+        expect(result).toEqual({ categoryMode: expectedCategoryMode, selectedCategories: expectedCategories, selectedCategories2: [] })
       }
     )
   })
@@ -97,7 +114,7 @@ describe('Nodes queryStringParser test', () => {
       ['true', { flows: 'true' }, ['Ingress', 'Egress']],
       ['ingress', { flows: 'ingress' }, ['Ingress']],
       ['egress', { flows: 'egress' }, ['Egress']],
-      ['false', { flows: 'false' }, []]
+      ['false', { flows: 'false' }, ['No Flows']]
     ]) (
       'parseFlows: %s',
       (title, queryObject, expected) => {
@@ -109,30 +126,77 @@ describe('Nodes queryStringParser test', () => {
 
   describe('queryStringParser, parseIpLike', () => {
     test.each([
-      ['valid ipAddress IPv4 1', { ipAddress: '0.0.0.0'}, '0.0.0.0'],
-      ['valid ipAddress IPv4 2', { ipAddress: '192.168.0.1'}, '192.168.0.1'],
-      ['valid ipAddress IPv6', { ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'}, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
+      ['valid ipAddress IPv4 1', { ipAddress: '0.0.0.0' }, '0.0.0.0'],
+      ['valid ipAddress IPv4 2', { ipAddress: '192.168.0.1' }, '192.168.0.1'],
+      ['valid ipAddress IPv6', { ipAddress: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
 
-      ['valid iplike IPv4 1', { iplike: '0.0.0.0'}, '0.0.0.0'],
-      ['valid iplike IPv4 2', { iplike: '192.168.0.1'}, '192.168.0.1'],
-      ['valid iplike IPv6', { iplike: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'}, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
+      ['valid iplike IPv4 1', { iplike: '0.0.0.0' }, '0.0.0.0'],
+      ['valid iplike IPv4 2', { iplike: '192.168.0.1' }, '192.168.0.1'],
+      ['valid iplike IPv6', { iplike: 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329' }, 'FE80:0000:0000:0000:0202:B3FF:FE1E:8329'],
 
-      ['empty ipAddress', { ipAddress: ''}, null],
-      ['invalid ipAddress', { ipAddress: 'abc'}, null],
-      ['invalid ipAddress localhost', { ipAddress: 'localhost'}, null],
-      ['invalid partial ipAddress', { ipAddress: '192.168.'}, null],
-      ['invalid ipAddress', { ipAddress: 'A.B.C.D'}, null],
+      ['empty ipAddress', { ipAddress: '' }, null],
+      ['invalid ipAddress', { ipAddress: 'abc' }, null],
+      ['invalid ipAddress localhost', { ipAddress: 'localhost' }, null],
+      ['invalid partial ipAddress', { ipAddress: '192.168.' }, null],
+      ['invalid ipAddress', { ipAddress: 'A.B.C.D' }, null],
 
-      ['empty iplike', { iplike: ''}, null],
-      ['invalid iplike', { iplike: 'abc'}, null],
-      ['invalid iplike localhost', { iplike: 'localhost'}, null],
-      ['invalid partial iplike', { iplike: '192.168.'}, null],
-      ['invalid iplike', { iplike: 'A.B.C.D'}, null]
+      ['empty iplike', { iplike: '' }, null],
+      ['invalid iplike', { iplike: 'abc' }, null],
+      ['invalid iplike localhost', { iplike: 'localhost' }, null],
+      ['invalid partial iplike', { iplike: '192.168.' }, null],
+      ['invalid iplike', { iplike: 'A.B.C.D' }, null],
+
+      ['iplike wildcard pattern from iplike param', { iplike: '192.168.1.*' }, '192.168.1.*'],
+      ['iplike wildcard pattern from ipAddress param', { ipAddress: '10.*.*.*' }, '10.*.*.*'],
+      ['iplike prefers iplike param over ipAddress', { iplike: '10.*.*.*', ipAddress: '192.168.1.1' }, '10.*.*.*'],
+      ['iplike all wildcards', { iplike: '*.*.*.*' }, '*.*.*.*'],
+      ['iplike IPv6 wildcard from iplike param', { iplike: '2001:db8:*:*:*:*:*:*' }, '2001:db8:*:*:*:*:*:*'],
+      ['iplike IPv6 wildcard from ipAddress param', { ipAddress: 'fe80:*:*:*:*:*:*:*' }, 'fe80:*:*:*:*:*:*:*']
     ]) (
       'parseIpLike: %s',
       (title, queryObject, expected) => {
         const result = parseIplike(queryObject)
         expect(result).toEqual(expected)
+      }
+    )
+  })
+
+  describe('isIplikePattern', () => {
+    test.each([
+      // wildcard patterns
+      ['accepts 192.168.1.*', '192.168.1.*', true],
+      ['accepts *.*.*.*', '*.*.*.*', true],
+      ['accepts 10.*.*.*', '10.*.*.*', true],
+      ['accepts 2001:db8:*:*:*:*:*:*', '2001:db8:*:*:*:*:*:*', true],
+      ['accepts *:*:*:*:*:*:*:*', '*:*:*:*:*:*:*:*', true],
+      ['accepts fe80:*:*:*:*:*:*:*', 'fe80:*:*:*:*:*:*:*', true],
+      ['accepts 2001:db8:85a3:*:*:8a2e:*:7334', '2001:db8:85a3:*:*:8a2e:*:7334', true],
+      // IPv4 range patterns (hyphen per-octet)
+      ['accepts 10.0.0.1-255 — range in last octet', '10.0.0.1-255', true],
+      ['accepts 10.9.1-3.* — range in third octet with wildcard', '10.9.1-3.*', true],
+      ['accepts 10.0-255.0-255.0-255 — ranges in multiple octets', '10.0-255.0-255.0-255', true],
+      // IPv4 comma list patterns
+      ['accepts 192.168.0,1.* — list in third octet', '192.168.0,1.*', true],
+      ['accepts 192.168.1,2,3-255.* — list with ranges', '192.168.1,2,3-255.*', true],
+      ['accepts 10.0.0.1,5,10-20 — comma list without wildcard', '10.0.0.1,5,10-20', true],
+      ['accepts 192.168.1,2,3-255.* — list with ranges and wildcard in last octet', '192.168.1,2,3-255.*', true],
+      // space normalization: spaces around commas are stripped before matching
+      ['accepts 192.168.0, 1.* — space after comma is normalized', '192.168.0, 1.*', true],
+      ['accepts 192.168.1, 2, 3-255.* — spaces after commas normalized', '192.168.1, 2, 3-255.*', true],
+      // IPv6 range patterns
+      ['accepts 2001:0-ffff:*:*:*:*:*:* — range in second hextet', '2001:0-ffff:*:*:*:*:*:*', true],
+      // rejection cases
+      ['rejects plain text', 'notanip', false],
+      ['rejects exact IP without wildcard', '192.168.1.100', false],
+      ['rejects empty string', '', false],
+      ['rejects exact IPv6, no * — handled by isIP() not isIplikePattern', '2001:db8::1', false],
+      ['rejects invalid hex group gggg (g is not hex)', '2001:db8:gggg:*:*:*:*:*', false],
+      ['rejects 9 groups (too many)', '2001:db8:*:*:*:*:*:*:extra', false],
+      ['rejects cross-octet range notation (not valid iplike)', '10.0.0.1-10.0.0.255', false]
+    ]) (
+      'isIplikePattern: %s',
+      (title, value, expected) => {
+        expect(isIplikePattern(value)).toBe(expected)
       }
     )
   })
@@ -236,5 +300,362 @@ describe('Nodes queryStringParser test', () => {
         }
       }
     )
+  })
+
+  describe('parseMib2Params', () => {
+    test.each([
+      ['sysDescription contains', { mib2Parm: 'sysDescription', mib2ParmValue: 'Linux', mib2ParmMatchType: 'contains' },
+        { sysContact: '', sysDescription: 'Linux', sysLocation: '', sysName: '', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysContact equals', { mib2Parm: 'sysContact', mib2ParmValue: 'admin', mib2ParmMatchType: 'equals' },
+        { sysContact: 'admin', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '', sysMatchType: MatchType.Equals }],
+      ['sysName, match type defaults to Contains when omitted', { mib2Parm: 'sysName', mib2ParmValue: 'router' },
+        { sysContact: '', sysDescription: '', sysLocation: '', sysName: 'router', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysLocation', { mib2Parm: 'sysLocation', mib2ParmValue: 'datacenter', mib2ParmMatchType: 'contains' },
+        { sysContact: '', sysDescription: '', sysLocation: 'datacenter', sysName: '', sysObjectId: '', sysMatchType: MatchType.Contains }],
+      ['sysObjectId', { mib2Parm: 'sysObjectId', mib2ParmValue: '.1.3.6.1', mib2ParmMatchType: 'equals' },
+        { sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '.1.3.6.1', sysMatchType: MatchType.Equals }]
+    ]) ('parseMib2Params: %s', (title, queryObject, expected) => {
+      expect(parseMib2Params(queryObject)).toEqual(expected)
+    })
+
+    test.each([
+      ['empty parm', { mib2Parm: '', mib2ParmValue: 'Linux' }],
+      ['empty value', { mib2Parm: 'sysDescription', mib2ParmValue: '' }],
+      ['invalid parm name', { mib2Parm: 'badField', mib2ParmValue: 'Linux' }],
+      ['both empty', {}]
+    ]) ('parseMib2Params: returns null for invalid input: %s', (title, queryObject) => {
+      expect(parseMib2Params(queryObject)).toBeNull()
+    })
+  })
+
+  describe('parseSnmpParmParams', () => {
+    test.each([
+      ['ifAlias equals', { snmpParm: 'ifAlias', snmpParmValue: 'Uplink', snmpParmMatchType: 'equals' },
+        { snmpIfAlias: 'Uplink', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }],
+      ['ifName contains', { snmpParm: 'ifName', snmpParmValue: 'eth', snmpParmMatchType: 'contains' },
+        { snmpIfAlias: '', snmpIfDescription: '', snmpIfIndex: '', snmpIfName: 'eth', snmpIfType: '', snmpMatchType: MatchType.Contains }],
+      ['ifDescr, match type defaults to Equals when omitted', { snmpParm: 'ifDescr', snmpParmValue: 'GigabitEthernet' },
+        { snmpIfAlias: '', snmpIfDescription: 'GigabitEthernet', snmpIfIndex: '', snmpIfName: '', snmpIfType: '', snmpMatchType: MatchType.Equals }]
+    ]) ('parseSnmpParmParams: %s', (title, queryObject, expected) => {
+      expect(parseSnmpParmParams(queryObject)).toEqual(expected)
+    })
+
+    test.each([
+      ['empty parm', { snmpParm: '', snmpParmValue: 'value' }],
+      ['empty value', { snmpParm: 'ifAlias', snmpParmValue: '' }],
+      ['unsupported parm (ifIndex)', { snmpParm: 'ifIndex', snmpParmValue: '1' }],
+      ['unknown parm', { snmpParm: 'badField', snmpParmValue: 'value' }],
+      ['both empty', {}]
+    ]) ('parseSnmpParmParams: returns null for invalid input: %s', (title, queryObject) => {
+      expect(parseSnmpParmParams(queryObject)).toBeNull()
+    })
+  })
+
+  describe('parseCategories: category1/category2 aliases', () => {
+    test('category1 alone maps as union in group 1', () => {
+      const result = parseCategories({ category1: 'Routers' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('category2 alone maps as union in group 1 (backwards compat)', () => {
+      const result = parseCategories({ category2: 'Switches' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[1]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('category1 and category2 populate separate groups', () => {
+      const result = parseCategories({ category1: 'Routers', category2: 'Switches' }, categories)
+      expect(result.categoryMode).toBe(SetOperator.Union)
+      expect(result.selectedCategories).toEqual([categories[0]])
+      expect(result.selectedCategories2).toEqual([categories[1]])
+    })
+
+    test('category1 array and category2 array populate two groups with union within each', () => {
+      const result = parseCategories(
+        { category1: ['Routers', 'Switches'], category2: ['Production', 'Servers'] },
+        categories
+      )
+      expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([categories[3], categories[2]])
+    })
+
+    test('category1 array alone (no category2) puts all in group 1', () => {
+      const result = parseCategories({ category1: ['Routers', 'Switches'] }, categories)
+      expect(result.selectedCategories).toEqual([categories[0], categories[1]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('categories param takes precedence over category1/category2', () => {
+      const result = parseCategories({ categories: 'Servers', category1: 'Routers', category2: 'Switches' }, categories)
+      expect(result.selectedCategories).toEqual([categories[2]])
+      expect(result.selectedCategories2).toEqual([])
+    })
+
+    test('unknown category1 value returns empty', () => {
+      const result = parseCategories({ category1: 'NonExistent' }, categories)
+      expect(result.selectedCategories).toEqual([])
+      expect(result.selectedCategories2).toEqual([])
+    })
+  })
+
+  describe('parseForeignSource: lowercase alias', () => {
+    test('foreignsource (lowercase) maps to foreignSource', () => {
+      const result = parseForeignSource({ foreignsource: 'MyFS' })
+      expect(result).toEqual({ foreignSource: 'MyFS', foreignId: '', foreignSourceId: '' })
+    })
+
+    test('foreignSource (camelCase) still works', () => {
+      const result = parseForeignSource({ foreignSource: 'MyFS' })
+      expect(result).toEqual({ foreignSource: 'MyFS', foreignId: '', foreignSourceId: '' })
+    })
+
+    test('foreignSource takes precedence over foreignsource', () => {
+      const result = parseForeignSource({ foreignSource: 'CamelFS', foreignsource: 'LowerFS' })
+      expect(result).toEqual({ foreignSource: 'CamelFS', foreignId: '', foreignSourceId: '' })
+    })
+  })
+
+  describe('parseMaclike', () => {
+    test.each([
+      ['empty', {}, null],
+      ['maclike with colons', { maclike: 'AA:BB:CC:DD:EE:FF' }, 'aabbccddeeff'],
+      ['maclike with dashes', { maclike: 'AA-BB-CC-DD-EE-FF' }, 'aabbccddeeff'],
+      ['maclike no separators', { maclike: 'AABBCCDDEEFF' }, 'aabbccddeeff'],
+      ['maclike already lowercase', { maclike: 'aabbccddeeff' }, 'aabbccddeeff'],
+      ['snmpphysaddr', { snmpphysaddr: 'AA:BB:CC:DD:EE:FF' }, 'aabbccddeeff'],
+      ['maclike takes precedence over snmpphysaddr', { maclike: '112233445566', snmpphysaddr: 'aabbccddeeff' }, '112233445566'],
+      ['partial MAC still stripped', { maclike: 'AA:BB:CC' }, 'aabbcc'],
+      ['empty maclike', { maclike: '' }, null]
+    ]) ('parseMaclike: %s', (title, queryObject, expected) => {
+      expect(parseMaclike(queryObject)).toEqual(expected)
+    })
+  })
+
+  describe('parseDownAggregateStatus', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithDownAggregateStatus: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithDownAggregateStatus: 'TRUE' }, true],
+      ['boolean true', { nodesWithDownAggregateStatus: true }, true],
+      ['false', { nodesWithDownAggregateStatus: 'false' }, false],
+      ['garbage', { nodesWithDownAggregateStatus: 'yes' }, false]
+    ]) ('parseDownAggregateStatus: %s', (title, queryObject, expected) => {
+      expect(parseDownAggregateStatus(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseNodesWithAssets', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithAssets: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithAssets: 'TRUE' }, true],
+      ['boolean true', { nodesWithAssets: true }, true],
+      ['false', { nodesWithAssets: 'false' }, false],
+      ['garbage', { nodesWithAssets: 'yes' }, false]
+    ]) ('parseNodesWithAssets: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithAssets(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseNodesWithOutages', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithOutages: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithOutages: 'TRUE' }, true],
+      ['boolean true', { nodesWithOutages: true }, true],
+      ['false', { nodesWithOutages: 'false' }, false],
+      ['garbage', { nodesWithOutages: 'yes' }, false]
+    ]) ('parseNodesWithOutages: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithOutages(queryObject)).toBe(expected)
+    })
+  })
+
+  describe('parseAssetFilters', () => {
+    test.each([
+      ['empty', {}, []],
+      ['column only', { assetColumn: 'building' }, []],
+      ['value only', { assetValue: 'HQ' }, []],
+      ['single valid building', { assetColumn: 'building', assetValue: 'HQ' }, [{ column: 'building', value: 'HQ' }]],
+      ['single valid region', { assetColumn: 'region', assetValue: 'East' }, [{ column: 'region', value: 'East' }]],
+      ['formerly-rejected geolocation column (city) now accepted', { assetColumn: 'city', assetValue: 'Pittsburgh' }, [{ column: 'city', value: 'Pittsburgh' }]],
+      ['formerly-rejected non-curated column (assetNumber) now accepted', { assetColumn: 'assetNumber', assetValue: 'A-123' }, [{ column: 'assetNumber', value: 'A-123' }]],
+      ['unknown column skipped', { assetColumn: 'bogus', assetValue: 'X' }, []]
+    ]) ('parseAssetFilters: %s', (title, queryObject, expected) => {
+      expect(parseAssetFilters(queryObject)).toEqual(expected)
+    })
+
+    test('pairs repeated column/value params by index', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'region'],
+        assetValue: ['HQ', 'East']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'region', value: 'East' }
+      ])
+    })
+
+    test('skips disallowed (unknown) columns within a repeated set', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'bogus', 'rack'],
+        assetValue: ['HQ', 'Whatever', 'R1']
+      })
+      expect(result).toEqual([
+        { column: 'building', value: 'HQ' },
+        { column: 'rack', value: 'R1' }
+      ])
+    })
+
+    test('duplicate columns keep the last value', () => {
+      const result = parseAssetFilters({
+        assetColumn: ['building', 'building'],
+        assetValue: ['HQ', 'DC2']
+      })
+      expect(result).toEqual([{ column: 'building', value: 'DC2' }])
+    })
+  })
+
+  describe('ASSET_COLUMN_FIQL_MAP / getAssetColumnFiqlProperty', () => {
+    test('getAssetColumnFiqlProperty maps geolocation-backed columns to nested properties', () => {
+      expect(getAssetColumnFiqlProperty('city')).toBe('geolocation.city')
+      expect(getAssetColumnFiqlProperty('state')).toBe('geolocation.state')
+      expect(getAssetColumnFiqlProperty('zip')).toBe('geolocation.zip')
+      expect(getAssetColumnFiqlProperty('country')).toBe('geolocation.country')
+      expect(getAssetColumnFiqlProperty('address1')).toBe('geolocation.address1')
+      expect(getAssetColumnFiqlProperty('address2')).toBe('geolocation.address2')
+    })
+
+    test('getAssetColumnFiqlProperty is identity for direct columns', () => {
+      expect(getAssetColumnFiqlProperty('building')).toBe('building')
+      expect(getAssetColumnFiqlProperty('assetNumber')).toBe('assetNumber')
+    })
+
+    test('getAssetColumnFiqlProperty falls back to identity for an unmapped column', () => {
+      expect(getAssetColumnFiqlProperty('notARealColumn')).toBe('notARealColumn')
+    })
+
+    test('every ASSET_COLUMN_OPTIONS dropdown value is a key in ASSET_COLUMN_FIQL_MAP (identity)', () => {
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(ASSET_COLUMN_FIQL_MAP[option.value]).toBe(option.value)
+      }
+    })
+
+    test('every ASSET_COLUMN_OPTIONS label stays in sync with ASSET_COLUMN_TITLES', () => {
+      // ASSET_COLUMN_OPTIONS hardcodes its 10 featured labels independently of
+      // ASSET_COLUMN_TITLES — this guards against the two silently drifting apart.
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(option.label).toBe(ASSET_COLUMN_TITLES[option.value])
+      }
+    })
+  })
+
+  describe('ASSET_COLUMN_TITLES / ALL_ASSET_COLUMN_OPTIONS / getAssetColumnLabel', () => {
+    test('every ASSET_COLUMN_FIQL_MAP key has a title', () => {
+      for (const column of Object.keys(ASSET_COLUMN_FIQL_MAP)) {
+        expect(ASSET_COLUMN_TITLES[column]).toBeTruthy()
+      }
+    })
+
+    test('every non-hidden ASSET_COLUMN_FIQL_MAP key appears exactly once in ALL_ASSET_COLUMN_OPTIONS', () => {
+      // UI_HIDDEN_ASSET_COLUMNS keys need a title (asserted below) but must NOT get a dropdown
+      // option -- see UI_HIDDEN_ASSET_COLUMNS's own describe block for that half of the contract.
+      const mapKeys = Object.keys(ASSET_COLUMN_FIQL_MAP).filter(k => !UI_HIDDEN_ASSET_COLUMNS.has(k)).sort()
+      const optionValues = ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort()
+      expect(optionValues).toEqual(mapKeys)
+
+      const counts = new Map<string, number>()
+      for (const option of ALL_ASSET_COLUMN_OPTIONS) {
+        counts.set(option.value, (counts.get(option.value) ?? 0) + 1)
+      }
+      for (const count of counts.values()) {
+        expect(count).toBe(1)
+      }
+    })
+
+    test('ALL_ASSET_COLUMN_OPTIONS is sorted alphabetically by label', () => {
+      const labels = ALL_ASSET_COLUMN_OPTIONS.map(o => o.label)
+      const sorted = [...labels].sort((a, b) => a.localeCompare(b))
+      expect(labels).toEqual(sorted)
+    })
+
+    test('getAssetColumnLabel resolves titles for curated and non-curated columns', () => {
+      expect(getAssetColumnLabel('city')).toBe('City')
+      expect(getAssetColumnLabel('assetNumber')).toBe('Asset Number')
+      expect(getAssetColumnLabel('building')).toBe('Building')
+      expect(getAssetColumnLabel('cpu')).toBe('CPU')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('getAssetColumnLabel falls back to the raw key for an unknown column', () => {
+      expect(getAssetColumnLabel('notARealColumn')).toBe('notARealColumn')
+    })
+  })
+
+  describe('UI_HIDDEN_ASSET_COLUMNS: credential-ish asset columns are hidden from the dropdown but kept for URL drill-down', () => {
+    const hiddenColumns = ['password', 'enable', 'username', 'connection', 'snmpcommunity']
+
+    test('the hidden set matches exactly the five credential-ish columns', () => {
+      expect(Array.from(UI_HIDDEN_ASSET_COLUMNS).sort()).toEqual([...hiddenColumns].sort())
+    })
+
+    test.each(hiddenColumns)('%s is absent from ALL_ASSET_COLUMN_OPTIONS', (column) => {
+      expect(ALL_ASSET_COLUMN_OPTIONS.some(o => o.value === column)).toBe(false)
+    })
+
+    test.each(hiddenColumns)('%s is still allowed by ALLOWED_ASSET_COLUMNS / parseAssetFilters (URL drill-down parity)', (column) => {
+      expect(ALLOWED_ASSET_COLUMNS.has(column)).toBe(true)
+      expect(parseAssetFilters({ assetColumn: column, assetValue: 'x' })).toEqual([{ column, value: 'x' }])
+    })
+
+    test('getAssetColumnLabel still resolves a proper title for a hidden column (chip labeling)', () => {
+      expect(getAssetColumnLabel('password')).toBe('Password')
+      expect(getAssetColumnLabel('enable')).toBe('Enable')
+      expect(getAssetColumnLabel('username')).toBe('Username')
+      expect(getAssetColumnLabel('connection')).toBe('Connection')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('hidden columns still have identity ASSET_COLUMN_FIQL_MAP entries (URL drill-down parity)', () => {
+      for (const column of hiddenColumns) {
+        expect(ASSET_COLUMN_FIQL_MAP[column]).toBe(column)
+      }
+    })
+  })
+
+  describe('parseMonitoredServices', () => {
+    test('returns [] when no service param present', () => {
+      expect(parseMonitoredServices({}, serviceTypes)).toEqual([])
+    })
+
+    test('resolves monitoredService by exact name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves monitoredService case-insensitively', () => {
+      expect(parseMonitoredServices({ monitoredService: 'https' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by exact name', () => {
+      expect(parseMonitoredServices({ service: 'HTTPS' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('resolves service param by numeric ID', () => {
+      expect(parseMonitoredServices({ service: '8' }, serviceTypes)).toEqual(['HTTPS'])
+    })
+
+    test('returns [] for unknown name', () => {
+      expect(parseMonitoredServices({ monitoredService: 'UNKNOWN' }, serviceTypes)).toEqual([])
+    })
+
+    test('returns [] for unknown numeric ID', () => {
+      expect(parseMonitoredServices({ service: '999' }, serviceTypes)).toEqual([])
+    })
+
+    test('monitoredService takes precedence over service when both present', () => {
+      expect(parseMonitoredServices({ monitoredService: 'HTTP', service: 'ICMP' }, serviceTypes)).toEqual(['HTTP'])
+    })
   })
 })

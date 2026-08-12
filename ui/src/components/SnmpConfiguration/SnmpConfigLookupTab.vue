@@ -25,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+
 import { useRoute, useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { ActiveTabs, getDefaultSnmpDefinition, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -138,9 +140,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@/styles/onms-tokens' as variables;
+@use '@/styles/onms-typography' as *;
 @use '@/styles/vars.scss';
 
 .snmp-config-lookup-tab {
@@ -167,7 +168,7 @@ onMounted(() => {
         gap: 20px;
       }
     }
-  
+
     .large-spacer {
       min-height: 1em;
     }

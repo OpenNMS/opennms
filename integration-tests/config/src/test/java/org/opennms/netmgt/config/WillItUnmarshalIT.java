@@ -61,10 +61,10 @@ import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfi
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
-import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.tokenauth.TokenAuthConfiguration;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -84,7 +84,6 @@ import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
-import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -205,12 +204,12 @@ public class WillItUnmarshalIT {
 
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, false, null);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, true, null);
-        addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, true, null);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, false, null);
         addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, false, null);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, true, null);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "token-auth-configuration.xml", TokenAuthConfiguration.class, true, null);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, false, null);
         addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
@@ -233,7 +232,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
-        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, false, null);
         addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, true, null);
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.poller</groupId>
     <artifactId>org.opennms.features.poller.monitors</artifactId>
-    <version>36.0.1-SNAPSHOT</version>
+    <version>36.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller.monitors</groupId>
@@ -147,6 +147,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

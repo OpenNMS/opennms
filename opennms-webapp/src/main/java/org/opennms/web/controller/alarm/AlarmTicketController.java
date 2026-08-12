@@ -33,7 +33,7 @@ import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.opennms.web.controller.OnmsMultiActionController;
 
 /**
  * <p>AlarmTicketController class.</p>
@@ -43,7 +43,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AlarmTicketController extends MultiActionController {
+public class AlarmTicketController extends OnmsMultiActionController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AlarmTicketController.class);
 
