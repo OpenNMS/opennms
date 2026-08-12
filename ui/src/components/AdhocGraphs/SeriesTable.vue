@@ -13,12 +13,12 @@
         data-test="series-empty"
       >
         Pick one or more datasources above and they will appear here, ready to label,
-        recolour and reference from an expression.
+        recolor and reference from an expression.
       </p>
     </template>
 
     <OnmsColumn
-      header="Colour"
+      header="Color"
       style="width: 5rem"
     >
       <template #body="{ data }">
@@ -26,7 +26,7 @@
           type="color"
           class="color-swatch"
           :value="data.color"
-          :aria-label="`Colour for ${data.label}`"
+          :aria-label="`Color for ${data.label}`"
           :data-test="`series-color-${data.key}`"
           @input="patch(data.key, { color: ($event.target as HTMLInputElement).value })"
         >

@@ -32,7 +32,7 @@
       data-test="expression-table"
     >
       <OnmsColumn
-        header="Colour"
+        header="Color"
         style="width: 5rem"
       >
         <template #body="{ data }">
@@ -40,7 +40,7 @@
             type="color"
             class="color-swatch"
             :value="data.color"
-            :aria-label="`Colour for ${data.label}`"
+            :aria-label="`Color for ${data.label}`"
             :data-test="`expression-color-${data.id}`"
             @input="patch(data.id, { color: ($event.target as HTMLInputElement).value })"
           >

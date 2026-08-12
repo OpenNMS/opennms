@@ -28,7 +28,7 @@ import { DEFAULT_RESOLUTION } from './adhocQuery'
 
 /**
  * Field separator inside one series entry. `~` is not legal in a resource id, a
- * sanitized label or a hex colour, so entries never need inner escaping.
+ * sanitized label or a hex color, so entries never need inner escaping.
  */
 const FIELD = '~'
 

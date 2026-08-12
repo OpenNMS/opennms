@@ -323,7 +323,7 @@ describe('AdhocGraphBuilder', () => {
       expect(start).toBe(end - span)
     })
 
-    it('still honours an absolute range from a custom-time link', async () => {
+    it('still honors an absolute range from a custom-time link', async () => {
       routeQuery = {
         s: `${RESOURCE_ID}~ifHCInOctets~AVERAGE~in_octets~line~#2a78d6~0`,
         start: '1704067200',

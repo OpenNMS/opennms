@@ -177,7 +177,7 @@ const isStacked = computed<boolean>(() =>
   props.config.stacked || props.config.series.some(entry => entry.style === 'stack'))
 
 /**
- * Translucent companion to a series colour, for area/stack fills. Overlapping
+ * Translucent companion to a series color, for area/stack fills. Overlapping
  * opaque fills hide each other; 22% alpha keeps every band readable while the
  * 2px stroke still carries the line itself.
  */
@@ -185,7 +185,7 @@ const fillColor = (color: string): string => `${color}38`
 
 /**
  * Every configured series in a stable order, whether plotted or not. Both the
- * colour slot and the dash pattern are looked up here rather than by position in
+ * color slot and the dash pattern are looked up here rather than by position in
  * the plotted list, so hiding one series never repaints the survivors.
  */
 const slotIndexOf = computed<Map<string, number>>(() => new Map(

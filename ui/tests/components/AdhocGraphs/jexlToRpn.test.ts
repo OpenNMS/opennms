@@ -49,7 +49,7 @@ describe('jexlToRpn', () => {
     expect(result.identifiers).toEqual(['a', 'b'])
   })
 
-  it('honours operator precedence', () => {
+  it('honors operator precedence', () => {
     expect(rpnOf('a + b * c')).toBe('a,b,c,*,+')
     expect(rpnOf('(a + b) * c')).toBe('a,b,+,c,*')
   })

@@ -183,7 +183,7 @@
       <template #content>
         <div class="adhoc-help">
           <p>Build a graph from any combination of datasources, across any number of nodes, without a pre-defined graph definition.</p>
-          <p>Pick nodes, then their resources, then the datasources you want to plot. Each selected datasource becomes a series you can label, recolour and restyle.</p>
+          <p>Pick nodes, then their resources, then the datasources you want to plot. Each selected datasource becomes a series you can label, recolor and restyle.</p>
           <h3>Expressions</h3>
           <p>Expressions are evaluated server-side with JEXL. Reference a source series by its label &mdash; for example <code>ifHCInOctets_eth0 * 8</code> to convert octets to bits &mdash; and the result is plotted as a series of its own.</p>
           <p>Labels are JEXL identifiers, so they may contain only letters, digits and underscores, and must be unique across the graph.</p>
@@ -332,7 +332,7 @@ const searchNodes = useDebounceFn((term: string) => store.searchNodes(term), 350
 /**
  * Keep `config.series` in step with the datasource selection.
  *
- * Existing entries are carried over by key so a label, colour, style or aggregation
+ * Existing entries are carried over by key so a label, color, style or aggregation
  * the user set is never lost when an unrelated datasource is ticked or unticked —
  * that regression is the whole reason this is a reconcile rather than a rebuild.
  */
@@ -358,8 +358,8 @@ const reconcileSeries = (datasources: AdhocDatasourceOption[]) => {
       resourceId: datasource.resourceId,
       attribute: datasource.attribute,
       aggregation: ConsolidationFunctionType.AVERAGE,
-      // Slot by final position, so an existing series keeps its colour when a new
-      // one is added — colour identifies the series, not its place in the list.
+      // Slot by final position, so an existing series keeps its color when a new
+      // one is added — color identifies the series, not its place in the list.
       color: seriesColor(next.length + config.expressions.length, appStore.theme),
       style: 'line',
       hidden: false
@@ -576,7 +576,7 @@ const debouncedQuery = useDebounceFn(runQuery, 600)
 
 watch(() => store.selectedDatasources, value => reconcileSeries([...value]), { deep: true })
 
-// Only a change to what the server would return re-queries; style, colour and
+// Only a change to what the server would return re-queries; style, color and
 // title changes re-render from the data already in hand.
 watch(() => querySignature(config, time), () => {
   syncUrl()
@@ -586,7 +586,7 @@ watch(() => querySignature(config, time), () => {
 // Non-query config still belongs in the URL.
 watch(() => [config.title, config.verticalLabel, config.stacked, config.series, config.expressions], syncUrl, { deep: true })
 
-// A shared link carries the colours of the theme it was built in; move any colour
+// A shared link carries the colors of the theme it was built in; move any color
 // still sitting on a palette slot to that slot's step for the current theme.
 watch(() => appStore.theme, (theme) => {
   config.series = config.series.map(entry => ({ ...entry, color: restepColorForTheme(entry.color, theme) }))
@@ -623,7 +623,7 @@ onMounted(async () => {
     updateTime(restored.time)
   }
 
-  // Fill in anything the link left out: colours are optional in the encoding, and
+  // Fill in anything the link left out: colors are optional in the encoding, and
   // an expression id is regenerated rather than carried.
   config.series = config.series.map((entry, index) => ({
     ...entry,

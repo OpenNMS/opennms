@@ -94,7 +94,7 @@ export const labelForDatasource = (
  * Word boundaries alone are not enough: `ifInOctets` is a prefix of
  * `ifInOctets_2`, and a substring match would wrongly mark the shorter series as
  * consumed. Underscore counts as an identifier character, so the guard rejects a
- * neighbouring `_` as well as alphanumerics.
+ * neighboring `_` as well as alphanumerics.
  */
 export const expressionReferences = (expression: string, label: string): boolean => {
   if (!label) {
@@ -115,7 +115,7 @@ export const stepForRange = (startMs: number, endMs: number, resolution: number)
 /**
  * Build the POST /rest/measurements body for an ad-hoc graph.
  *
- * Two behaviours worth calling out:
+ * Two behaviors worth calling out:
  *  - `relaxed: true`. An ad-hoc selection goes stale the moment a resource is
  *    deleted or an interface is renamed, and a strict query fails the *whole*
  *    request over one missing source. Relaxed returns the rest with NaNs.
@@ -269,7 +269,7 @@ export const configIsQueryable = (config: AdhocGraphConfig): boolean =>
   !Object.keys(expressionIssues(config)).length
 
 /**
- * The parts of a config that change the server response. Style, colour, title,
+ * The parts of a config that change the server response. Style, color, title,
  * vertical label and stacking are re-rendered from data already in hand, so they
  * deliberately do not appear here and never trigger a refetch.
  *

@@ -18,7 +18,7 @@ const hoursBack = (duration: Parameters<typeof sub>[1]) =>
 
 const optionFor = (label: string) => {
   const option = TIME_RANGE_OPTIONS.find(entry => entry.label === label)
-  expect(option, `no option labelled ${label}`).toBeDefined()
+  expect(option, `no option labeled ${label}`).toBeDefined()
   return option!
 }
 

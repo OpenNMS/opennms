@@ -202,7 +202,7 @@ const emit = defineEmits<{
   justify-content: flex-start;
   // flex-start, not flex-end: every field is a label above a control, so they line
   // up at the top. Aligning to the bottom made a field whose hint wrapped onto a
-  // second line drag its neighbours down with it.
+  // second line drag its neighbors down with it.
   align-items: flex-start;
   margin-bottom: 0.75rem;
 

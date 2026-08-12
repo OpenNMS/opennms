@@ -154,7 +154,7 @@ describe('decodeAdhocState is defensive', () => {
     expect(restored?.config.series[0].style).toBe('line2')
   })
 
-  it('falls back on unrecognised aggregations, styles and colours', () => {
+  it('falls back on unrecognized aggregations, styles and colors', () => {
     const restored = decodeAdhocState({ s: 'node[1]~ifInOctets~BOGUS~in~spiral~red~0' })
     const entry = restored?.config.series[0]
 

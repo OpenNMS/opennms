@@ -33,7 +33,7 @@ describe('the palette itself', () => {
   })
 
   // Slots 1-8 are the validated base set; the four added for ad-hoc graphs must
-  // not disturb them, or every existing graph silently changes colour.
+  // not disturb them, or every existing graph silently changes color.
   it('leaves the original eight slots untouched', () => {
     expect(ADHOC_PALETTE_LIGHT.slice(0, 8)).toEqual([
       '#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'
@@ -43,7 +43,7 @@ describe('the palette itself', () => {
     ])
   })
 
-  it('has no duplicate slots, so no two series share a colour by accident', () => {
+  it('has no duplicate slots, so no two series share a color by accident', () => {
     expect(new Set(ADHOC_PALETTE_LIGHT).size).toBe(ADHOC_PALETTE_LIGHT.length)
     expect(new Set(ADHOC_PALETTE_DARK).size).toBe(ADHOC_PALETTE_DARK.length)
   })
@@ -77,12 +77,12 @@ describe('strokeWidthFor', () => {
 })
 
 describe('restepColorForTheme', () => {
-  it('moves a palette colour to the other mode\'s step', () => {
+  it('moves a palette color to the other mode\'s step', () => {
     expect(restepColorForTheme(ADHOC_PALETTE_LIGHT[1], DARK_THEME)).toBe(ADHOC_PALETTE_DARK[1])
     expect(restepColorForTheme(ADHOC_PALETTE_DARK[1], LIGHT_THEME)).toBe(ADHOC_PALETTE_LIGHT[1])
   })
 
-  it('leaves a hand-picked colour alone', () => {
+  it('leaves a hand-picked color alone', () => {
     expect(restepColorForTheme('#123456', DARK_THEME)).toBe('#123456')
   })
 })

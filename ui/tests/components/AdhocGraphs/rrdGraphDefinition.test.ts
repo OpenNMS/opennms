@@ -108,7 +108,7 @@ describe('reportNameFor', () => {
     expect(name).not.toContain('Gigabit')
   })
 
-  it('summarises rather than listing every datasource once there are many', () => {
+  it('summarizes rather than listing every datasource once there are many', () => {
     const name = reportNameFor(RESOURCE, ['a', 'b', 'c', 'd', 'e', 'f'])
 
     expect(name).toBe('adhoc.interfaceSnmp.a_b_c_d_and_2_more')
@@ -302,7 +302,7 @@ describe('round-trips through RrdGraphConverter', () => {
     expect(model.metrics[0].resourceId).toBe(RESOURCE)
   })
 
-  it('recovers the drawn series, their colours and their order', () => {
+  it('recovers the drawn series, their colors and their order', () => {
     const model = parseBack(build(config({
       series: [
         series({ style: 'area', color: '#1baf7a' }),

@@ -32,7 +32,7 @@ import { DARK_THEME, Theme } from '@/services/themeService'
  *
  * Slots 1-8 are the validated base set. Slots 9-12 were added so that an ad-hoc
  * graph — which routinely carries more than eight series — gets twelve distinct
- * hues instead of a second, non-colour encoding channel. They were chosen by
+ * hues instead of a second, non-color encoding channel. They were chosen by
  * search against the same validator and each sits at least ΔE 14.6 (normal
  * vision) from every earlier slot, so the gate numbers are unchanged from the
  * base eight: worst adjacent CVD ΔE 9.1 light / 8.4 dark, worst adjacent
@@ -44,7 +44,7 @@ import { DARK_THEME, Theme } from '@/services/themeService'
  *
  * Three light slots sit below 3:1 against the light surface; the relief for that
  * is already built into the page — every series is named in the legend with a
- * colour swatch, and the Data tab shows the same numbers as a table.
+ * color swatch, and the Data tab shows the same numbers as a table.
  */
 export const ADHOC_PALETTE_LIGHT: readonly string[] = [
   '#2a78d6', // blue
@@ -88,7 +88,7 @@ export const ADHOC_PALETTE_DARK: readonly string[] = [
  * reads as a different KIND of series (forecast, threshold, projection) rather
  * than simply another one. Past the twelfth series the hues repeat and the
  * rendering stays put; identity then comes from the legend, the hover readout and
- * the Data tab, and any series can be recoloured by hand.
+ * the Data tab, and any series can be recolored by hand.
  */
 export const SERIES_STROKE_WIDTHS: Readonly<Record<AdhocSeriesStyle, number>> = {
   line: 2,
@@ -104,21 +104,21 @@ export const strokeWidthFor = (style: AdhocSeriesStyle): number => SERIES_STROKE
 const paletteFor = (theme: Theme): readonly string[] =>
   (theme === DARK_THEME ? ADHOC_PALETTE_DARK : ADHOC_PALETTE_LIGHT)
 
-/** The default colour for the series at `index`, in the given theme. */
+/** The default color for the series at `index`, in the given theme. */
 export const seriesColor = (index: number, theme: Theme): string => {
   const palette = paletteFor(theme)
   return palette[Math.abs(index) % palette.length]
 }
 
-/** How many series can be told apart by colour alone. */
+/** How many series can be told apart by color alone. */
 export const ADHOC_PALETTE_SIZE = ADHOC_PALETTE_LIGHT.length
 
 /**
- * Re-step a colour for the target theme.
+ * Re-step a color for the target theme.
  *
- * Colours are persisted as hex (so a colour the user picked by hand survives a
+ * Colors are persisted as hex (so a color the user picked by hand survives a
  * reload or a shared link), which means a config built in light mode carries the
- * light steps. Any colour still sitting on a palette slot is moved to that slot's
+ * light steps. Any color still sitting on a palette slot is moved to that slot's
  * step for `theme`; anything else is a deliberate override and is left alone.
  */
 export const restepColorForTheme = (color: string, theme: Theme): string => {

@@ -121,7 +121,7 @@ const applyCustomTime = () => {
   const endTime = getUnixTime(add(endDateRef.value, endTimeRef.value.time))
 
   // end - start, as Dates. This previously passed unix SECONDS in the wrong order,
-  // so the difference was always negative and every custom range was labelled as
+  // so the difference was always negative and every custom range was labeled as
   // minutes.
   const difference = differenceInHours(fromUnixTime(endTime), fromUnixTime(startTime))
 

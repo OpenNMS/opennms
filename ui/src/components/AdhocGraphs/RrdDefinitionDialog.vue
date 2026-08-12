@@ -37,7 +37,7 @@
       >{{ definition.properties }}</pre>
       <p class="definition-note">
         The time range is not part of a definition &mdash; the viewer chooses it.
-        Consolidation, colours, styles and expressions are carried over as-is.
+        Consolidation, colors, styles and expressions are carried over as-is.
       </p>
     </div>
 
