@@ -490,18 +490,13 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         is = preProcessHtml(request, is);
         is = applyXsltTransformation(request, is);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        // Harden against XXE: the parsed content comes from a collected (potentially
-        // attacker-controlled) source. We do not use disallow-doctype-decl here because the
-        // pre-parse-html feature legitimately produces documents with a <!DOCTYPE html>;
-        // instead we forbid resolving any external entities/DTDs, which blocks both the
-        // in-band (external general entity) and out-of-band (external parameter entity /
-        // external DTD) XXE vectors while still allowing benign, entity-free DOCTYPEs.
+        // Block XXE: forbid external entities/DTDs. Not disallow-doctype-decl, since
+        // pre-parse-html produces a benign <!DOCTYPE html>.
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         factory.setXIncludeAware(false);
-        factory.setExpandEntityReferences(false);
         factory.setIgnoringComments(true);
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -537,11 +532,19 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (!xsltFile.exists())
             return is;
         TransformerFactory factory = TransformerFactory.newInstance();
-        // Harden against XXE/SSRF: the input being transformed is collected (potentially
-        // attacker-controlled) content, so forbid resolution of external DTDs/stylesheets.
+        // Block XXE/SSRF via external DTDs/stylesheets. Best-effort: some factories
+        // (e.g. Xalan) reject these attributes with IllegalArgumentException.
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        try {
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        } catch (IllegalArgumentException e) {
+            LOG.debug("TransformerFactory {} does not support {}; skipping", factory.getClass().getName(), XMLConstants.ACCESS_EXTERNAL_DTD);
+        }
+        try {
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        } catch (IllegalArgumentException e) {
+            LOG.debug("TransformerFactory {} does not support {}; skipping", factory.getClass().getName(), XMLConstants.ACCESS_EXTERNAL_STYLESHEET);
+        }
         Source xslt = new StreamSource(xsltFile);
         Transformer transformer = factory.newTransformer(xslt);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

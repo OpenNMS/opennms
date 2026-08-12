@@ -35,10 +35,15 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.protocols.xml.config.Request;
 import org.w3c.dom.Document;
 
 /**
@@ -74,14 +79,7 @@ public class AbstractXmlCollectionHandlerTest {
         Assert.assertEquals(jsonContent, json);
     }
 
-    /**
-     * NMS-20206: collected XML can be attacker-controlled. An external general entity that
-     * points at a local file (the in-band XXE file-read vector) must never be resolved into
-     * the parsed document. We assert the secret file content never reaches the DOM (the
-     * parser may instead reject the reference outright - either outcome is safe).
-     *
-     * @throws Exception the exception
-     */
+    /** NMS-20206: in-band XXE - an external general entity must not read a local file into the DOM. */
     @Test
     public void testInBandExternalEntityIsNotResolved() throws Exception {
         final File secret = File.createTempFile("nms20206-secret", ".txt");
@@ -100,29 +98,32 @@ public class AbstractXmlCollectionHandlerTest {
             Assert.assertFalse("External entity was resolved - XXE not blocked (leaked: " + text + ")",
                     text.contains("TOP_SECRET_SENTINEL"));
         } catch (Exception expected) {
-            // The parser rejecting the disabled external entity is equally acceptable.
+            // Rejecting the entity outright is equally safe.
         }
     }
 
-    /**
-     * NMS-20206: the out-of-band vector uses an external parameter entity that pulls an
-     * external DTD. With external-parameter-entities and load-external-dtd disabled, the
-     * local file referenced through the parameter entity must not be read into the document.
-     *
-     * @throws Exception the exception
-     */
+    /** NMS-20206: out-of-band XXE - an external parameter entity / external DTD must not be fetched. */
     @Test
     public void testOutOfBandParameterEntityIsNotResolved() throws Exception {
         final File secret = File.createTempFile("nms20206-oob", ".txt");
         secret.deleteOnExit();
         Files.write(secret.toPath(), "OOB_SECRET_SENTINEL".getBytes(StandardCharsets.UTF_8));
 
+        // The nested parameter-entity trick is only well-formed in an EXTERNAL DTD, which is
+        // exactly what the real attack fetches. An unhardened parser loads this and expands
+        // &exfil; to the file contents; the hardening must prevent the external DTD load.
+        final File dtd = File.createTempFile("nms20206-oob", ".dtd");
+        dtd.deleteOnExit();
+        Files.write(dtd.toPath(), (
+                "<!ENTITY % file SYSTEM \"" + secret.toURI() + "\">\n" +
+                "<!ENTITY % eval \"<!ENTITY exfil '%file;'>\">\n" +
+                "%eval;\n").getBytes(StandardCharsets.UTF_8));
+
         final String malicious =
                 "<?xml version=\"1.0\"?>\n" +
                 "<!DOCTYPE stats [\n" +
-                "  <!ENTITY % file SYSTEM \"" + secret.toURI() + "\">\n" +
-                "  <!ENTITY % eval \"<!ENTITY exfil '%file;'>\">\n" +
-                "  %eval;\n" +
+                "  <!ENTITY % dtd SYSTEM \"" + dtd.toURI() + "\">\n" +
+                "  %dtd;\n" +
                 "]>\n" +
                 "<stats><val>&exfil;</val></stats>";
         final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
@@ -130,20 +131,14 @@ public class AbstractXmlCollectionHandlerTest {
             final Document doc = handler.getXmlDocument(
                     new ByteArrayInputStream(malicious.getBytes(StandardCharsets.UTF_8)), null);
             final String text = doc.getElementsByTagName("val").item(0).getTextContent();
-            Assert.assertFalse("Parameter entity was resolved - OOB XXE not blocked (leaked: " + text + ")",
+            Assert.assertFalse("External DTD was fetched - OOB XXE not blocked (leaked: " + text + ")",
                     text.contains("OOB_SECRET_SENTINEL"));
         } catch (Exception expected) {
-            // Rejecting the disabled parameter entity is equally acceptable.
+            // Rejecting the undefined entity (because the external DTD was not loaded) is safe.
         }
     }
 
-    /**
-     * NMS-20206: the hardening must not use disallow-doctype-decl, because the pre-parse-html
-     * feature legitimately produces documents that begin with a benign, entity-free DOCTYPE
-     * (e.g. &lt;!DOCTYPE html&gt;). Such documents must still parse.
-     *
-     * @throws Exception the exception
-     */
+    /** NMS-20206: a benign DOCTYPE (e.g. pre-parse-html's &lt;!DOCTYPE html&gt;) must still parse. */
     @Test
     public void testBenignDoctypeStillParses() throws Exception {
         final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
@@ -152,6 +147,48 @@ public class AbstractXmlCollectionHandlerTest {
                 new ByteArrayInputStream(withDoctype.getBytes(StandardCharsets.UTF_8)), null);
         Assert.assertNotNull(doc);
         Assert.assertEquals("ok", doc.getElementsByTagName("val").item(0).getTextContent());
+    }
+
+    /** NMS-20206: internal entities must still expand (read via XPath string(), as collection does). */
+    @Test
+    public void testInternalEntityIsExpanded() throws Exception {
+        final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
+        final String xml =
+                "<?xml version=\"1.0\"?>\n" +
+                "<!DOCTYPE stats [ <!ENTITY ver \"1.2.3\"> ]>\n" +
+                "<stats><val>v&ver;</val></stats>";
+        final Document doc = handler.getXmlDocument(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), null);
+        final XPath xpath = XPathFactory.newInstance().newXPath();
+        final String value = (String) xpath.evaluate("string(/stats/val)", doc, XPathConstants.STRING);
+        Assert.assertEquals("v1.2.3", value);
+    }
+
+    /** NMS-20206: XSLT collection must still work (TransformerFactory hardening is best-effort). */
+    @Test
+    public void testXsltTransformationStillWorks() throws Exception {
+        // Stylesheet rewrites <val> to a fixed marker, so the assertion fails if the
+        // transform is skipped (rather than a no-op identity transform that proves nothing).
+        final File xslt = File.createTempFile("nms20206-xslt", ".xsl");
+        xslt.deleteOnExit();
+        final String stylesheet =
+                "<?xml version=\"1.0\"?>\n" +
+                "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n" +
+                "  <xsl:template match=\"/\">\n" +
+                "    <stats><val>xslt-ran</val></stats>\n" +
+                "  </xsl:template>\n" +
+                "</xsl:stylesheet>";
+        Files.write(xslt.toPath(), stylesheet.getBytes(StandardCharsets.UTF_8));
+
+        final Request request = new Request();
+        request.addParameter("xslt-source-file", xslt.getAbsolutePath());
+
+        final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
+        final String xml = "<stats><val>raw</val></stats>";
+        final Document doc = handler.getXmlDocument(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), request);
+        Assert.assertNotNull(doc);
+        Assert.assertEquals("xslt-ran", doc.getElementsByTagName("val").item(0).getTextContent());
     }
 
     /**
