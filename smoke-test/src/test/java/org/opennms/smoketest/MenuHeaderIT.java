@@ -235,8 +235,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
-        foundElement = findMenuItemLink("API Documentation", "REST Open API Documentation");
-        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
+        foundElement = findMenuItemLink("API Documentation", "OpenAPI Documentation");
+        assertNotNull("apiDocumentationMenu / OpenAPI Documentation", foundElement);
 
         foundElement = findMenuItemLink("API Documentation", "REST API Reference Documentation");
         assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
@@ -325,7 +325,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Nodes')]]")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
-        // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");
+        // clickMenuItem("apiDocumentationMenu", "OpenAPI Documentation");
         // final WebDriverWait longerWait = new WebDriverWait(getDriver(), Duration.ofSeconds(2));
         // longerWait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Endpoints']")));

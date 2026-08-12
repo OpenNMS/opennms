@@ -10,7 +10,9 @@ replaced without rewriting consumers.
 
 1. **Never import `primevue/*` outside this package.** ESLint
    (`no-restricted-imports` in `ui/eslint.config.js`) enforces this per
-   wrapped module.
+   wrapped module in app code (`ui/src/`), and bans `primevue/*` entirely
+   in plugin code (`packages/onms-ui-example-plugin/src/`). Tests and
+   build tooling are exempt from the rule, not from the convention.
 2. **The public API is the declared props/slots/emits only.** DOM attrs
    (`class`, `style`, `data-*`, `aria-*`) and native events fall through to
    the root element and are supported. Anything else that happens to fall
@@ -135,7 +137,7 @@ app.directive('onms-tooltip', OnmsTooltip)
 
 Templates use it as `v-onms-tooltip`, not PrimeVue's own `v-tooltip` —
 ESLint's `no-restricted-imports` bans importing `primevue/tooltip` directly
-outside this package, pointing call sites at `OnmsTooltip` instead. The
+in app and plugin code, pointing call sites at `OnmsTooltip` instead. The
 rename is behavior-neutral: PrimeVue keys the directive's internals (the
 `pt` name, `data-pc-name`, the tooltip z-index bucket) off
 `BaseTooltip.extend('tooltip', ...)`, not off the name it's registered under,
@@ -155,8 +157,9 @@ import * as OnmsUI from '@opennms/onms-ui'
 
 exactly as it already does for `vue`/`pinia`/`vue-router` on `window.Vue`/
 `window.Pinia`/`window.VueRouter`. A plugin's build externalizes
-`@opennms/onms-ui` to `OnmsUI` (see
-[`vite-plugin-externals`](https://www.npmjs.com/package/vite-plugin-externals)),
+`@opennms/onms-ui` to `window.OnmsUI` (see
+[`rollup-plugin-external-globals`](https://www.npmjs.com/package/rollup-plugin-external-globals)
+in the example plugin's `vite.config.ts`),
 so `import { OnmsButton } from '@opennms/onms-ui'` in plugin source resolves
 to `window.OnmsUI.OnmsButton` at runtime instead of being bundled — one Vue
 runtime, one component library, shared between host and plugin.
