@@ -23,10 +23,6 @@ package org.opennms.web.rest.v2.model;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A group as exposed by the v2 user management API. Field names mirror
@@ -35,20 +31,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * preserved server-side on update; list fields default to null (not empty) so
  * a request body that omits them means "preserve".
  */
-@XmlRootElement(name = "group")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class GroupDto {
 
-    @XmlElement(name = "name")
     private String name;
 
-    @XmlElement(name = "comments")
     private String comments;
 
-    @XmlElement(name = "user")
     private List<String> users;
 
-    @XmlElement(name = "duty-schedule")
     private List<String> dutySchedules;
 
     public String getName() {

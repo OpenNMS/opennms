@@ -28,8 +28,8 @@
 export interface ManagedGroup {
   name: string
   comments?: string | null
-  user?: string[]
-  'duty-schedule'?: string[]
+  users?: string[]
+  dutySchedules?: string[]
 }
 
 // The server refuses to delete or rename this group; mirrored here so the UI

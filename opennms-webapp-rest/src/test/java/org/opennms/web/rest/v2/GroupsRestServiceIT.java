@@ -98,7 +98,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("Admin", groups.getJSONObject(0).getString("name"));
 
         final JSONObject admin = new JSONObject(getJson("/groups/Admin", 200));
-        assertEquals("admin", admin.getJSONArray("user").getString(0));
+        assertEquals("admin", admin.getJSONArray("users").getString(0));
 
         sendRequest(GET, "/groups/idontexist", 404);
     }
@@ -108,15 +108,15 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ensureUser("alpha");
         ensureUser("beta");
         final String body = "{\"name\":\"junitgroup\",\"comments\":\"a junit group\","
-                + "\"user\":[\"beta\",\"alpha\"],\"duty-schedule\":[\"MoWeFr800-1700\"]}";
+                + "\"users\":[\"beta\",\"alpha\"],\"dutySchedules\":[\"MoWeFr800-1700\"]}";
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", body, 201);
 
         final JSONObject created = new JSONObject(getJson("/groups/junitgroup", 200));
         assertEquals("a junit group", created.getString("comments"));
         // the member order drives notification escalation and must round-trip
-        assertEquals("beta", created.getJSONArray("user").getString(0));
-        assertEquals("alpha", created.getJSONArray("user").getString(1));
-        assertEquals("MoWeFr800-1700", created.getJSONArray("duty-schedule").getString(0));
+        assertEquals("beta", created.getJSONArray("users").getString(0));
+        assertEquals("alpha", created.getJSONArray("users").getString(1));
+        assertEquals("MoWeFr800-1700", created.getJSONArray("dutySchedules").getString(0));
 
         // creating the same group again must be rejected
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", body, 400);
@@ -134,13 +134,13 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // markup in the comments
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"badc\",\"comments\":\"<script>\"}", 400);
         // unknown member
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"badu\",\"user\":[\"nosuchuser\"]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"badu\",\"users\":[\"nosuchuser\"]}", 400);
         // duplicate member
         ensureUser("dupuser");
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"badd\",\"user\":[\"dupuser\",\"dupuser\"]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"badd\",\"users\":[\"dupuser\",\"dupuser\"]}", 400);
         // broken duty schedules
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"bads\",\"duty-schedule\":[\"garbage\"]}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"bads\",\"duty-schedule\":[\"Mo899-999\"]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"bads\",\"dutySchedules\":[\"garbage\"]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"bads\",\"dutySchedules\":[\"Mo899-999\"]}", 400);
         // none of the rejects may have been created
         sendRequest(GET, "/groups/badc", 404);
         sendRequest(GET, "/groups/badu", 404);
@@ -154,7 +154,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // overnight range never matches — accepting it would silently put the
         // group permanently off duty
         sendData(POST, MediaType.APPLICATION_JSON, "/groups",
-                "{\"name\":\"nightgroup\",\"duty-schedule\":[\"MoTu2000-800\"]}", 400);
+                "{\"name\":\"nightgroup\",\"dutySchedules\":[\"MoTu2000-800\"]}", 400);
         sendRequest(GET, "/groups/nightgroup", 404);
     }
 
@@ -168,13 +168,13 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_groupManager.saveGroup("legacynight", group);
 
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacynight",
-                "{\"name\":\"legacynight\",\"comments\":\"touched\",\"duty-schedule\":[\"MoTu2000-800\"]}", 204);
+                "{\"name\":\"legacynight\",\"comments\":\"touched\",\"dutySchedules\":[\"MoTu2000-800\"]}", 204);
         final JSONObject after = new JSONObject(getJson("/groups/legacynight", 200));
-        assertEquals("MoTu2000-800", after.getJSONArray("duty-schedule").getString(0));
+        assertEquals("MoTu2000-800", after.getJSONArray("dutySchedules").getString(0));
 
         // but ADDING another overnight entry is still rejected
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacynight",
-                "{\"name\":\"legacynight\",\"duty-schedule\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", 400);
+                "{\"name\":\"legacynight\",\"dutySchedules\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", 400);
 
         sendRequest(DELETE, "/groups/legacynight", 204);
     }
@@ -197,10 +197,10 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_groupManager.saveGroup("legacycomment", group);
 
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacycomment",
-                "{\"name\":\"legacycomment\",\"comments\":\"Bob's R&D team\",\"user\":[\"admin\"]}", 204);
+                "{\"name\":\"legacycomment\",\"comments\":\"Bob's R&D team\",\"users\":[\"admin\"]}", 204);
         final JSONObject after = new JSONObject(getJson("/groups/legacycomment", 200));
         assertEquals("Bob's R&D team", after.getString("comments"));
-        assertEquals("admin", after.getJSONArray("user").getString(0));
+        assertEquals("admin", after.getJSONArray("users").getString(0));
 
         // but CHANGING the comment to new markup is still rejected
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/legacycomment",
@@ -219,14 +219,14 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_groupManager.saveGroup("stalemember", group);
 
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/stalemember",
-                "{\"name\":\"stalemember\",\"comments\":\"touched\",\"user\":[\"ghostuser\"]}", 204);
+                "{\"name\":\"stalemember\",\"comments\":\"touched\",\"users\":[\"ghostuser\"]}", 204);
         final JSONObject after = new JSONObject(getJson("/groups/stalemember", 200));
         assertEquals("touched", after.getString("comments"));
-        assertEquals("ghostuser", after.getJSONArray("user").getString(0));
+        assertEquals("ghostuser", after.getJSONArray("users").getString(0));
 
         // but ADDING a different unknown user is still rejected
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/stalemember",
-                "{\"name\":\"stalemember\",\"user\":[\"ghostuser\",\"anotherghost\"]}", 400);
+                "{\"name\":\"stalemember\",\"users\":[\"ghostuser\",\"anotherghost\"]}", 400);
 
         sendRequest(DELETE, "/groups/stalemember", 204);
     }
@@ -254,14 +254,14 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ensureUser("first");
         ensureUser("second");
         sendData(POST, MediaType.APPLICATION_JSON, "/groups",
-                "{\"name\":\"ordergroup\",\"user\":[\"first\",\"second\"]}", 201);
+                "{\"name\":\"ordergroup\",\"users\":[\"first\",\"second\"]}", 201);
 
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/ordergroup",
-                "{\"name\":\"ordergroup\",\"user\":[\"second\",\"first\"]}", 204);
+                "{\"name\":\"ordergroup\",\"users\":[\"second\",\"first\"]}", 204);
 
         final JSONObject after = new JSONObject(getJson("/groups/ordergroup", 200));
-        assertEquals("second", after.getJSONArray("user").getString(0));
-        assertEquals("first", after.getJSONArray("user").getString(1));
+        assertEquals("second", after.getJSONArray("users").getString(0));
+        assertEquals("first", after.getJSONArray("users").getString(1));
 
         sendRequest(DELETE, "/groups/ordergroup", 204);
     }
@@ -270,16 +270,16 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testPartialUpdatePreservesOmittedLists() throws Exception {
         ensureUser("keepme");
         sendData(POST, MediaType.APPLICATION_JSON, "/groups",
-                "{\"name\":\"partialgroup\",\"user\":[\"keepme\"],\"duty-schedule\":[\"MoWeFr800-1700\"]}", 201);
+                "{\"name\":\"partialgroup\",\"users\":[\"keepme\"],\"dutySchedules\":[\"MoWeFr800-1700\"]}", 201);
 
-        // a body that omits the user and duty-schedule keys must preserve both
+        // a body that omits the user and dutySchedules keys must preserve both
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/partialgroup",
                 "{\"name\":\"partialgroup\",\"comments\":\"updated\"}", 204);
 
         final JSONObject after = new JSONObject(getJson("/groups/partialgroup", 200));
         assertEquals("updated", after.getString("comments"));
-        assertEquals("keepme", after.getJSONArray("user").getString(0));
-        assertEquals("MoWeFr800-1700", after.getJSONArray("duty-schedule").getString(0));
+        assertEquals("keepme", after.getJSONArray("users").getString(0));
+        assertEquals("MoWeFr800-1700", after.getJSONArray("dutySchedules").getString(0));
 
         sendRequest(DELETE, "/groups/partialgroup", 204);
     }
@@ -306,7 +306,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // new comments arrive with an unknown member; nothing may be applied
         sendData(PUT, MediaType.APPLICATION_JSON, "/groups/atomicgroup",
-                "{\"name\":\"atomicgroup\",\"comments\":\"changed\",\"user\":[\"nosuchuser\"]}", 400);
+                "{\"name\":\"atomicgroup\",\"comments\":\"changed\",\"users\":[\"nosuchuser\"]}", 400);
 
         final JSONObject after = new JSONObject(getJson("/groups/atomicgroup", 200));
         assertEquals("original", after.getString("comments"));
@@ -326,10 +326,10 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"renamegroup\"}", 201);
         sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"occupiedgroup\"}", 201);
 
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"new-name\":\"occupiedgroup\"}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"new-name\":\"bad<b>\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"newName\":\"occupiedgroup\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"newName\":\"bad<b>\"}", 400);
 
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"new-name\":\"renamedgroup\"}", 204);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/renamegroup/rename", "{\"newName\":\"renamedgroup\"}", 204);
         sendRequest(GET, "/groups/renamegroup", 404);
         sendRequest(GET, "/groups/renamedgroup", 200);
 
@@ -346,7 +346,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         role.setSupervisor("admin");
         m_groupManager.saveRole(role);
 
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups/rolegroup/rename", "{\"new-name\":\"rolegroup2\"}", 204);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/rolegroup/rename", "{\"newName\":\"rolegroup2\"}", 204);
 
         assertEquals("rolegroup2", m_groupManager.getRole("junit-oncall-role").getMembershipGroup());
 
@@ -359,7 +359,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testAdminGroupProtections() throws Exception {
         sendRequest(DELETE, "/groups/Admin", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/groups/Admin/rename", "{\"new-name\":\"Admins2\"}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/Admin/rename", "{\"newName\":\"Admins2\"}", 400);
         sendRequest(GET, "/groups/Admin", 200);
     }
 

@@ -52,7 +52,7 @@ const getManagedGroups = async (): Promise<ManagedGroup[] | null> => {
 const getGroupMemberCandidates = async (): Promise<string[]> => {
   try {
     const resp = await rest.get('/users?limit=0')
-    const users = resp.data?.user ?? []
+    const users = resp.data?.users ?? []
     return (Array.isArray(users) ? users : [users]).map((u: any) => u['user-id']).filter(Boolean)
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load users.' })
@@ -93,7 +93,7 @@ const updateManagedGroup = async (group: ManagedGroup): Promise<string | null> =
 const renameManagedGroup = async (name: string, newName: string): Promise<string | null> => {
   try {
     startSpinner()
-    await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { 'new-name': newName })
+    await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { newName })
     showSnackBar({ msg: `Group '${name}' renamed to '${newName}'.` })
     return null
   } catch (err: any) {

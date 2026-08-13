@@ -186,7 +186,7 @@ watch(
     if (props.group) {
       name.value = props.group.name
       comments.value = props.group.comments ?? ''
-      members.value = [...(props.group.user ?? [])]
+      members.value = [...(props.group.users ?? [])]
     } else {
       name.value = ''
       comments.value = ''
@@ -223,7 +223,7 @@ const save = async () => {
       ...base,
       name: isEditing.value ? originalName.value : name.value.trim(),
       comments: comments.value.trim(),
-      user: [...members.value]
+      users: [...members.value]
     }
     const error = isEditing.value ? await store.updateGroup(payload) : await store.createGroup(payload)
     if (error === null) {

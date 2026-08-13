@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -127,7 +128,7 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     public Response createGroup(final SecurityContext securityContext, final GroupDto dto) {
         assertAdmin(securityContext);
-        if (dto == null || isBlank(dto.getName())) {
+        if (dto == null || StringUtils.isBlank(dto.getName())) {
             return Response.status(Status.BAD_REQUEST).entity("A group name is required.").build();
         }
         final String name = dto.getName().trim();
@@ -183,8 +184,8 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     public Response renameGroup(final SecurityContext securityContext, final String name, final GroupRenameRequest request) {
         assertAdmin(securityContext);
-        if (request == null || isBlank(request.getNewName())) {
-            return Response.status(Status.BAD_REQUEST).entity("A new-name is required.").build();
+        if (request == null || StringUtils.isBlank(request.getNewName())) {
+            return Response.status(Status.BAD_REQUEST).entity("A newName is required.").build();
         }
         if (PROTECTED_GROUPS.contains(name)) {
             return Response.status(Status.BAD_REQUEST).entity("The system group " + name + " cannot be renamed.").build();
@@ -309,7 +310,7 @@ public class GroupsRestService implements GroupsRestApi {
                     ? Set.of() : new LinkedHashSet<>(existing.getUsers());
             final Set<String> seen = new LinkedHashSet<>();
             for (final String user : dto.getUsers()) {
-                if (isBlank(user)) {
+                if (StringUtils.isBlank(user)) {
                     throw new IllegalArgumentException("Group members must not be blank.");
                 }
                 if (!seen.add(user)) {
@@ -342,7 +343,7 @@ public class GroupsRestService implements GroupsRestApi {
      */
     private static void applyDto(final Group group, final GroupDto dto) {
         if (dto.getComments() != null) {
-            group.setComments(trimToNull(dto.getComments()));
+            group.setComments(StringUtils.trimToNull(dto.getComments()));
         }
         if (dto.getUsers() != null) {
             group.setUsers(new ArrayList<>(dto.getUsers()));
@@ -398,17 +399,5 @@ public class GroupsRestService implements GroupsRestApi {
         }
         LOG.error(String.format(format, e.getMessage()), e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(String.format(format, e.getMessage())).build();
-    }
-
-    private static boolean isBlank(final String value) {
-        return value == null || value.isBlank();
-    }
-
-    private static String trimToNull(final String value) {
-        if (value == null) {
-            return null;
-        }
-        final String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }

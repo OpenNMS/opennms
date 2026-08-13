@@ -44,7 +44,7 @@
       />
       <OnmsColumn header="Members">
         <template #body="{ data }">
-          <span class="members">{{ (data.user ?? []).join(', ') || '-' }}</span>
+          <span class="members">{{ (data.users ?? []).join(', ') || '-' }}</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Actions">

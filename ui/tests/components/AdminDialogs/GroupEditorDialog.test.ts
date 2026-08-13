@@ -59,7 +59,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('keeps a group with a pre-existing markup comment editable', async () => {
-    await mountDialog({ name: 'Legacy', comments: 'Bob\'s R&D team', user: [] })
+    await mountDialog({ name: 'Legacy', comments: 'Bob\'s R&D team', users: [] })
 
     expect(wrapper.find('#group-editor-comments-error').exists()).toBe(false)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()

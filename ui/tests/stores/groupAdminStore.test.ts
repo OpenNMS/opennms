@@ -19,8 +19,8 @@ describe('useGroupAdminStore', () => {
   let store: ReturnType<typeof useGroupAdminStore>
 
   const mockGroups: ManagedGroup[] = [
-    { name: 'Admin', comments: 'The administrators', user: ['admin'] },
-    { name: 'NOC', user: ['second', 'first'] }
+    { name: 'Admin', comments: 'The administrators', users: ['admin'] },
+    { name: 'NOC', users: ['second', 'first'] }
   ]
 
   beforeEach(() => {
@@ -62,12 +62,12 @@ describe('useGroupAdminStore', () => {
     vi.mocked(API.createManagedGroup).mockResolvedValue(null)
     vi.mocked(API.getManagedGroups).mockResolvedValue(mockGroups)
 
-    const group: ManagedGroup = { name: 'NOC', user: ['second', 'first'] }
+    const group: ManagedGroup = { name: 'NOC', users: ['second', 'first'] }
     const ok = await store.createGroup(group)
 
     expect(ok).toBe(null)
     expect(API.createManagedGroup).toHaveBeenCalledWith(group)
-    expect(vi.mocked(API.createManagedGroup).mock.calls[0][0].user).toEqual(['second', 'first'])
+    expect(vi.mocked(API.createManagedGroup).mock.calls[0][0].users).toEqual(['second', 'first'])
     expect(API.getManagedGroups).toHaveBeenCalledTimes(1)
   })
 
