@@ -392,6 +392,24 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testRenameCarriesOnCallRoleSupervisor() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"user-id\":\"superrename\",\"password\":\"pw\"}", 201);
+        final org.opennms.netmgt.config.groups.Role role = new org.opennms.netmgt.config.groups.Role();
+        role.setName("carry-role");
+        role.setMembershipGroup("Admin");
+        role.setSupervisor("superrename");
+        m_groupManager.saveRole(role);
+
+        // renaming must follow the supervisor over to the new id, not leave the rota dangling
+        sendData(POST, MediaType.APPLICATION_JSON, "/users/superrename/rename", "{\"new-user-id\":\"superrenamed\"}", 204);
+        assertEquals("superrenamed", m_groupManager.getRole("carry-role").getSupervisor());
+
+        m_groupManager.deleteRole("carry-role");
+        sendRequest(DELETE, "/users/superrenamed", 204);
+    }
+
+    @Test
     public void testBodyPathUserIdMismatchRejected() throws Exception {
         sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
                 "{\"user-id\":\"somebody-else\",\"full-name\":\"X\"}", 400);

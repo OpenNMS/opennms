@@ -517,13 +517,16 @@ public abstract class GroupManager implements GroupConfig {
         	m_groups.putAll(map);
 
             for (Role role : m_roles.values()) {
+                if (oldName.equals(role.getSupervisor())) {
+                    role.setSupervisor(newName);
+                }
             	for (Schedule sched : role.getSchedules()) {
                     if (oldName.equals(sched.getName())) {
                         sched.setName(newName);
                     }
                 }
             }
-            
+
             saveGroups();
         }
     }
