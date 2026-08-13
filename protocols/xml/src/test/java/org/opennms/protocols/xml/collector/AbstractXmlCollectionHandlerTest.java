@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.protocols.xml.config.Request;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * The Test Class for AbstractXmlCollectionHandler.
@@ -97,7 +99,7 @@ public class AbstractXmlCollectionHandlerTest {
             final String text = doc.getElementsByTagName("val").item(0).getTextContent();
             Assert.assertFalse("External entity was resolved - XXE not blocked (leaked: " + text + ")",
                     text.contains("TOP_SECRET_SENTINEL"));
-        } catch (Exception expected) {
+        } catch (SAXException | TransformerException expected) {
             // Rejecting the entity outright is equally safe.
         }
     }
@@ -133,7 +135,7 @@ public class AbstractXmlCollectionHandlerTest {
             final String text = doc.getElementsByTagName("val").item(0).getTextContent();
             Assert.assertFalse("External DTD was fetched - OOB XXE not blocked (leaked: " + text + ")",
                     text.contains("OOB_SECRET_SENTINEL"));
-        } catch (Exception expected) {
+        } catch (SAXException | TransformerException expected) {
             // Rejecting the undefined entity (because the external DTD was not loaded) is safe.
         }
     }
@@ -224,7 +226,7 @@ public class AbstractXmlCollectionHandlerTest {
             final String text = doc.getElementsByTagName("val").item(0).getTextContent();
             Assert.assertFalse("Source entity resolved during XSLT - XXE not blocked (leaked: " + text + ")",
                     text.contains("XSLT_SRC_SENTINEL"));
-        } catch (Exception expected) {
+        } catch (SAXException | TransformerException expected) {
             // Rejecting the entity outright is equally safe.
         }
     }
@@ -259,7 +261,7 @@ public class AbstractXmlCollectionHandlerTest {
             final String text = doc.getElementsByTagName("val").item(0).getTextContent();
             Assert.assertFalse("document() resolved a source URI - SSRF/file-read not blocked (leaked: " + text + ")",
                     text.contains("DOC_SECRET_SENTINEL"));
-        } catch (Exception expected) {
+        } catch (SAXException | TransformerException expected) {
             // A rejecting URIResolver aborting the transform is equally safe.
         }
     }

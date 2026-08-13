@@ -135,6 +135,13 @@ Configure the system proxy settings via <<operation:deep-dive/admin/configuratio
 | n/a
 |===
 
+[NOTE]
+====
+The XSLT stylesheet must be self-contained.
+Because the collected XML can come from an untrusted endpoint, the transformer blocks all external references to prevent XML External Entity (XXE) and server-side request forgery attacks: `xsl:include`, `xsl:import`, the `document()` function, and external DTDs referenced by the collected XML are not resolved.
+Secure processing is also enabled, which disables XSLT extension functions (for example, EXSLT or `java:` extensions).
+====
+
 === HTTP headers
 
 If the endpoint being collected requires additional headers, you can add them as part of the `<request>` object.

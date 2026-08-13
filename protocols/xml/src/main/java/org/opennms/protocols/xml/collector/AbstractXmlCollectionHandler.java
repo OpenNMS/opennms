@@ -496,7 +496,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         is = applyXsltTransformation(request, is);
         DocumentBuilderFactory factory = newSecureDocumentBuilderFactory();
         factory.setIgnoringComments(true);
-        factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         StringWriter writer = new StringWriter();
         IOUtils.copy(is, writer, StandardCharsets.UTF_8);
@@ -557,10 +556,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         // Block XXE: forbid external entities/DTDs. Not disallow-doctype-decl, since
         // pre-parse-html produces a benign <!DOCTYPE html>.
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        disableExternalEntities(factory::setFeature);
         factory.setXIncludeAware(false);
         factory.setNamespaceAware(true);
         return factory;
@@ -572,11 +568,29 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     private static XMLReader newSecureXmlReader() throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
-        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        disableExternalEntities(spf::setFeature);
         return spf.newSAXParser().getXMLReader();
+    }
+
+    @FunctionalInterface
+    private interface FeatureSetter {
+        void setFeature(String name, boolean value) throws Exception;
+    }
+
+    /**
+     * Applies the XXE hardening features shared by the DOM and SAX parsers.
+     * external-general/parameter-entities are SAX-standard and required; load-external-dtd is
+     * Xerces-specific and set best-effort so a non-Xerces provider does not fail parsing outright.
+     */
+    private static void disableExternalEntities(FeatureSetter parser) throws Exception {
+        parser.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        try {
+            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (Exception e) {
+            LOG.debug("XML parser does not support the load-external-dtd feature; skipping");
+        }
     }
 
     /**
