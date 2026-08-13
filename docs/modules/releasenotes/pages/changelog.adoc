@@ -7,6 +7,7 @@
 == Release 36.0.3
 
 Thanks to the following researchers for responsibly disclosing security issues in this release:
+
 * Santosh Kumar Puppala reported issue https://issues.opennms.org/browse/NMS-20030[NMS-20030]
 * Xanlar Agamalizade and tinyb0y reported issue https://issues.opennms.org/browse/NMS-20051[NMS-20051]
 
