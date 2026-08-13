@@ -2,13 +2,18 @@
   <TableCard class="users-table">
     <div class="header">
       <div class="card-title">Users</div>
-      <OnmsButton
-        variant="outlined"
-        label="Add New User"
-        icon="pi pi-plus"
-        data-test="add-user-button"
-        @click="openEditor(null)"
-      />
+      <div class="header-actions">
+        <OnmsButton
+          variant="outlined"
+          label="Add New User"
+          icon="pi pi-plus"
+          data-test="add-user-button"
+          @click="openEditor(null)"
+        />
+        <AboutDialogButton title="Users">
+          <UsersAbout />
+        </AboutDialogButton>
+      </div>
     </div>
 
     <OnmsTable
@@ -65,41 +70,38 @@
             data-test="unaddressable-note"
           >file-managed</span>
           <div v-else class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :icon="Edit"
+              :title="`Edit ${data.userId}`"
               :aria-label="`Edit ${data.userId}`"
               data-test="edit-user-button"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Password"
-              :aria-label="`Change password for ${data.userId}`"
-              data-test="password-user-button"
-              @click="openPassword(data)"
-            />
-            <OnmsButton
-              variant="text"
-              label="Rename"
-              :disabled="isProtected(data.userId)"
-              :aria-label="`Rename ${data.userId}`"
-              data-test="rename-user-button"
-              @click="openRename(data)"
-            />
-            <OnmsButton
-              variant="text"
-              label="Delete"
+            <OnmsIconButton
+              :icon="Delete"
               severity="danger"
               :disabled="isProtected(data.userId)"
+              :title="`Delete ${data.userId}`"
               :aria-label="`Delete ${data.userId}`"
               data-test="delete-user-button"
               @click="askDelete(data)"
+            />
+            <OnmsIconButton
+              :icon="MoreVert"
+              title="More actions"
+              :aria-label="`More actions for ${data.userId}`"
+              data-test="user-actions-menu-button"
+              @click="toggleRowMenu($event, data)"
             />
           </div>
         </template>
       </OnmsColumn>
     </OnmsTable>
+
+    <OnmsMenu
+      ref="rowMenu"
+      :items="rowMenuItems"
+    />
 
     <div v-if="!store.users.length">
       <EmptyList
@@ -138,15 +140,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
+import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import MoreVert from '@/components/icons/navigation/MoreVert.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
@@ -187,6 +194,26 @@ const askDelete = (user: ManagedUser) => {
   showDeleteConfirmation.value = true
 }
 
+// Secondary row actions live in a single shared overflow menu (Edit and Delete
+// stay inline); the target is captured on open so one menu serves every row.
+const rowMenu = ref()
+const rowMenuTarget = ref<ManagedUser | null>(null)
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  return [
+    { label: 'Change Password', command: () => openPassword(target) },
+    { label: 'Rename', disabled: isProtected(target.userId), command: () => openRename(target) }
+  ]
+})
+
+const toggleRowMenu = (event: Event, user: ManagedUser) => {
+  rowMenuTarget.value = user
+  rowMenu.value?.toggle(event)
+}
+
 const confirmDelete = async () => {
   if (userToDelete.value) {
     await store.deleteUser(userToDelete.value.userId)
@@ -216,6 +243,12 @@ const cancelDelete = () => {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .user-id {

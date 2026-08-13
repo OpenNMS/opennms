@@ -6,7 +6,6 @@
   </div>
   <div class="manage-users-container">
     <h1 class="page-title">Manage Users</h1>
-    <UsersHelpPanel />
     <UsersTable />
   </div>
 </template>
@@ -14,7 +13,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import UsersHelpPanel from '@/components/ManageUsers/UsersHelpPanel.vue'
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useMenuStore } from '@/stores/menuStore'
