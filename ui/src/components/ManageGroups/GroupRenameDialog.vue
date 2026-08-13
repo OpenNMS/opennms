@@ -9,28 +9,25 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
+        class="dialog-error"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="group-rename-new-name"
-            v-model="newName"
-            :invalid="!!nameProblem"
-            data-test="new-name-input"
-          />
-          <label for="group-rename-new-name">New Group Name *</label>
-        </IftaLabel>
-        <small
-          v-if="nameProblem"
-          class="field-error"
-          data-test="name-error"
-        >{{ nameProblem }}</small>
-        <small class="hint">On-call roles referencing this group follow the rename.</small>
+      >{{ errorText }}</div>
+      <FormField
+        label="New Group Name"
+        for="group-rename-new-name"
+        required
+        :error="nameProblem || undefined"
+        hint="On-call roles referencing this group follow the rename."
+      >
+        <OnmsInputText
+          id="group-rename-new-name"
+          v-model="newName"
+          :invalid="!!nameProblem"
+          data-test="new-name-input"
+        />
       </FormField>
     </div>
 
@@ -54,8 +51,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -114,15 +109,12 @@ const save = async () => {
   }
 }
 
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500, #e24c4c);
-}
-
-.hint {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-text-muted-color);
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--p-red-500, #ef4444);
+  background: color-mix(in srgb, var(--p-red-500, #ef4444) 10%, transparent);
+  color: var(--p-red-600, #dc2626);
+  font-size: 0.9rem;
 }
 </style>

@@ -9,43 +9,37 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
+        class="dialog-error"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
-      <FormField v-if="!isEditing">
-        <IftaLabel>
-          <OnmsInputText
-            id="group-editor-name"
-            v-model="name"
-            :invalid="!!nameProblem"
-            data-test="group-name-input"
-          />
-          <label for="group-editor-name">Group Name *</label>
-        </IftaLabel>
-        <small
-          v-if="nameProblem"
-          class="field-error"
-          data-test="name-error"
-        >{{ nameProblem }}</small>
+      >{{ errorText }}</div>
+      <FormField
+        v-if="!isEditing"
+        label="Group Name"
+        for="group-editor-name"
+        required
+        :error="nameProblem || undefined"
+      >
+        <OnmsInputText
+          id="group-editor-name"
+          v-model="name"
+          :invalid="!!nameProblem"
+          data-test="group-name-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="group-editor-comments"
-            v-model="comments"
-            :invalid="!!commentsProblem"
-            data-test="group-comments-input"
-          />
-          <label for="group-editor-comments">Comments</label>
-        </IftaLabel>
-        <small
-          v-if="commentsProblem"
-          class="field-error"
-          data-test="comments-error"
-        >{{ commentsProblem }}</small>
+      <FormField
+        label="Comments"
+        for="group-editor-comments"
+        :error="commentsProblem || undefined"
+      >
+        <OnmsInputText
+          id="group-editor-comments"
+          v-model="comments"
+          :invalid="!!commentsProblem"
+          data-test="group-comments-input"
+        />
       </FormField>
 
       <div class="members-section">
@@ -54,7 +48,10 @@
           <span class="members-hint">Order matters: it is the notification escalation order.</span>
         </div>
         <div class="add-member-row">
-          <IftaLabel>
+          <FormField
+            label="Add user"
+            for="group-editor-add-member"
+          >
             <OnmsSelect
               v-model="memberToAdd"
               labelId="group-editor-add-member"
@@ -62,8 +59,7 @@
               filter
               data-test="add-member-select"
             />
-            <label for="group-editor-add-member">Add user</label>
-          </IftaLabel>
+          </FormField>
           <OnmsIconButton
             variant="outlined"
             :icon="Add"
@@ -137,8 +133,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -256,10 +250,13 @@ const save = async () => {
   }
 }
 
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500, #e24c4c);
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--p-red-500, #ef4444);
+  background: color-mix(in srgb, var(--p-red-500, #ef4444) 10%, transparent);
+  color: var(--p-red-600, #dc2626);
+  font-size: 0.9rem;
 }
 
 .members-section {
@@ -282,10 +279,10 @@ const save = async () => {
   .add-member-row {
     display: flex;
     gap: 0.5rem;
-    align-items: stretch;
+    align-items: flex-end;
     margin-bottom: 0.5rem;
 
-    :deep(.p-iftalabel) {
+    .form-field {
       flex: 1;
     }
   }

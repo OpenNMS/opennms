@@ -44,7 +44,7 @@ describe('GroupEditorDialog.vue', () => {
     await mountDialog()
     await wrapper.find('[data-test="group-name-input"]').setValue('Test Group')
 
-    expect(wrapper.find('[data-test="name-error"]').text()).toContain('must not contain')
+    expect(wrapper.find('#group-editor-name-error').text()).toContain('must not contain')
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
     expect(store.createGroup).not.toHaveBeenCalled()
   })
@@ -54,18 +54,18 @@ describe('GroupEditorDialog.vue', () => {
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="group-comments-input"]').setValue('<b>styled</b>')
 
-    expect(wrapper.find('[data-test="comments-error"]').exists()).toBe(true)
+    expect(wrapper.find('#group-editor-comments-error').exists()).toBe(true)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
   it('keeps a group with a pre-existing markup comment editable', async () => {
-    await mountDialog({ name: 'Legacy', comments: "Bob's R&D team", user: [] })
+    await mountDialog({ name: 'Legacy', comments: 'Bob\'s R&D team', user: [] })
 
-    expect(wrapper.find('[data-test="comments-error"]').exists()).toBe(false)
+    expect(wrapper.find('#group-editor-comments-error').exists()).toBe(false)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
 
     await wrapper.find('[data-test="group-comments-input"]').setValue('<b>changed</b>')
-    expect(wrapper.find('[data-test="comments-error"]').exists()).toBe(true)
+    expect(wrapper.find('#group-editor-comments-error').exists()).toBe(true)
   })
 
   it('submits a valid group and closes', async () => {
