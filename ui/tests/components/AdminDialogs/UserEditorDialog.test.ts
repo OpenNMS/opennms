@@ -76,7 +76,7 @@ describe('UserEditorDialog.vue', () => {
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
-    expect(store.createUser).toHaveBeenCalledWith(expect.objectContaining({ 'user-id': 'jose', password: 'secret' }))
+    expect(store.createUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jose', password: 'secret' }))
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
 

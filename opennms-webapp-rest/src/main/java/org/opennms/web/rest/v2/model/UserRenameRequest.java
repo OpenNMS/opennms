@@ -21,16 +21,9 @@
  */
 package org.opennms.web.rest.v2.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "user-rename-request")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class UserRenameRequest {
 
-    @XmlElement(name = "new-user-id")
     private String newUserId;
 
     public String getNewUserId() {

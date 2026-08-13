@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.users.Contact;
@@ -141,15 +142,15 @@ public class UsersRestService implements UsersRestApi {
     @Override
     public Response createUser(final SecurityContext securityContext, final UserWriteRequest request) {
         assertAdmin(securityContext);
-        if (request == null || isBlank(request.getUserId())) {
-            return Response.status(Status.BAD_REQUEST).entity("A user-id is required.").build();
+        if (request == null || StringUtils.isBlank(request.getUserId())) {
+            return Response.status(Status.BAD_REQUEST).entity("A userId is required.").build();
         }
         final String userId = request.getUserId().trim();
         final String userIdProblem = validateUserId(userId);
         if (userIdProblem != null) {
             return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
         }
-        if (isBlank(request.getPassword())) {
+        if (StringUtils.isBlank(request.getPassword())) {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
@@ -188,7 +189,7 @@ public class UsersRestService implements UsersRestApi {
         }
         if (dto.getUserId() != null && !userId.equals(dto.getUserId())) {
             return Response.status(Status.BAD_REQUEST)
-                    .entity("The user-id in the body does not match the request path; use the rename endpoint to change ids.").build();
+                    .entity("The userId in the body does not match the request path; use the rename endpoint to change ids.").build();
         }
         // stripping ROLE_ADMIN from the admin account would lock every
         // administrator out of the web UI until users.xml is hand-edited
@@ -220,7 +221,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     public Response setPassword(final SecurityContext securityContext, final String userId, final UserPasswordRequest request) {
         assertAdmin(securityContext);
-        if (request == null || isBlank(request.getPassword())) {
+        if (request == null || StringUtils.isBlank(request.getPassword())) {
             return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
         }
         try {
@@ -243,8 +244,8 @@ public class UsersRestService implements UsersRestApi {
     @Override
     public Response renameUser(final SecurityContext securityContext, final String userId, final UserRenameRequest request) {
         assertAdmin(securityContext);
-        if (request == null || isBlank(request.getNewUserId())) {
-            return Response.status(Status.BAD_REQUEST).entity("A new-user-id is required.").build();
+        if (request == null || StringUtils.isBlank(request.getNewUserId())) {
+            return Response.status(Status.BAD_REQUEST).entity("A newUserId is required.").build();
         }
         if (PROTECTED_USERS.contains(userId)) {
             return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be renamed.").build();
@@ -352,12 +353,12 @@ public class UsersRestService implements UsersRestApi {
                 && (existing == null || !dto.getUserComments().equals(existing.getUserComments().orElse(null)))) {
             throw new IllegalArgumentException("The comments must not contain any HTML markup.");
         }
-        final String timeZoneId = trimToNull(dto.getTimeZoneId());
+        final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
                 java.time.ZoneId.of(timeZoneId);
             } catch (final RuntimeException e) {
-                throw new IllegalArgumentException("Invalid time-zone-id: " + timeZoneId);
+                throw new IllegalArgumentException("Invalid timeZoneId: " + timeZoneId);
             }
         }
         if (dto.getRoles() != null) {
@@ -392,16 +393,16 @@ public class UsersRestService implements UsersRestApi {
         // omitted (null) fields are preserved, matching the groups and
         // on-call services; an empty string clears a field
         if (dto.getFullName() != null) {
-            user.setFullName(trimToNull(dto.getFullName()));
+            user.setFullName(StringUtils.trimToNull(dto.getFullName()));
         }
         if (dto.getUserComments() != null) {
-            user.setUserComments(trimToNull(dto.getUserComments()));
+            user.setUserComments(StringUtils.trimToNull(dto.getUserComments()));
         }
         if (dto.getTuiPin() != null) {
-            user.setTuiPin(trimToNull(dto.getTuiPin()));
+            user.setTuiPin(StringUtils.trimToNull(dto.getTuiPin()));
         }
         if (dto.getTimeZoneId() != null) {
-            final String timeZoneId = trimToNull(dto.getTimeZoneId());
+            final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
             if (timeZoneId == null) {
                 user.setTimeZoneId((java.time.ZoneId) null);
             } else {
@@ -440,10 +441,10 @@ public class UsersRestService implements UsersRestApi {
     /** Returns a problem description, or null when the user id is acceptable. */
     private static String validateUserId(final String userId) {
         if (INVALID_USER_ID.matcher(userId).find()) {
-            return "The user-id must not contain markup, whitespace, or the characters : / \\ % ? #";
+            return "The userId must not contain markup, whitespace, or the characters : / \\ % ? #";
         }
         if (".".equals(userId) || "..".equals(userId)) {
-            return "The user-id must not be a dot segment.";
+            return "The userId must not be a dot segment.";
         }
         return null;
     }
@@ -484,7 +485,7 @@ public class UsersRestService implements UsersRestApi {
         final Optional<Contact> existing = user.getContacts().stream()
                 .filter(c -> type.name().equals(c.getType()))
                 .findFirst();
-        final String trimmed = trimToNull(value);
+        final String trimmed = StringUtils.trimToNull(value);
         if (existing.isPresent()) {
             existing.get().setInfo(trimmed == null ? "" : trimmed);
         } else if (trimmed != null) {
@@ -513,15 +514,4 @@ public class UsersRestService implements UsersRestApi {
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(String.format(format, e.getMessage())).build();
     }
 
-    private static boolean isBlank(final String value) {
-        return value == null || value.isBlank();
-    }
-
-    private static String trimToNull(final String value) {
-        if (value == null) {
-            return null;
-        }
-        final String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
-    }
 }

@@ -158,7 +158,7 @@ const saving = ref(false)
 const errorText = ref('')
 
 const isEditing = computed(() => props.user !== null)
-const originalUserId = computed(() => props.user?.['user-id'] ?? '')
+const originalUserId = computed(() => props.user?.userId ?? '')
 
 const userIdProblem = computed(() => (isEditing.value ? null : validateAdminName(form.userId, 'user-id')))
 
@@ -170,9 +170,9 @@ const changedOnly = (value: string, original: string | undefined, problem: strin
 const emailProblem = computed(() =>
   changedOnly(form.email, props.user?.email ?? '', validateEmailShape(form.email, 'email')))
 const pagerEmailProblem = computed(() =>
-  changedOnly(form.pagerEmail, props.user?.['pager-email'] ?? '', validateEmailShape(form.pagerEmail, 'pager email')))
+  changedOnly(form.pagerEmail, props.user?.pagerEmail ?? '', validateEmailShape(form.pagerEmail, 'pager email')))
 const commentsProblem = computed(() =>
-  changedOnly(form.comments, props.user?.['user-comments'] ?? '', validateAdminComments(form.comments)))
+  changedOnly(form.comments, props.user?.userComments ?? '', validateAdminComments(form.comments)))
 
 const isValid = computed(() => {
   if (userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {
@@ -193,13 +193,13 @@ watch(
     errorText.value = ''
     if (props.user) {
       Object.assign(form, {
-        userId: props.user['user-id'],
+        userId: props.user.userId,
         password: '',
-        fullName: props.user['full-name'] ?? '',
-        comments: props.user['user-comments'] ?? '',
+        fullName: props.user.fullName ?? '',
+        comments: props.user.userComments ?? '',
         email: props.user.email ?? '',
-        pagerEmail: props.user['pager-email'] ?? '',
-        roles: [...(props.user.role ?? [])]
+        pagerEmail: props.user.pagerEmail ?? '',
+        roles: [...(props.user.roles ?? [])]
       })
     } else {
       Object.assign(form, { userId: '', password: '', fullName: '', comments: '', email: '', pagerEmail: '', roles: [] })
@@ -216,12 +216,12 @@ const save = async () => {
     const base = props.user ?? {}
     const payload: ManagedUser = {
       ...base,
-      'user-id': isEditing.value ? originalUserId.value : form.userId.trim(),
-      'full-name': form.fullName.trim(),
-      'user-comments': form.comments.trim(),
+      userId: isEditing.value ? originalUserId.value : form.userId.trim(),
+      fullName: form.fullName.trim(),
+      userComments: form.comments.trim(),
       email: form.email.trim(),
-      'pager-email': form.pagerEmail.trim(),
-      role: [...form.roles]
+      pagerEmail: form.pagerEmail.trim(),
+      roles: [...form.roles]
     }
     const error = isEditing.value
       ? await store.updateUser(payload)

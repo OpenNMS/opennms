@@ -23,10 +23,6 @@ package org.opennms.web.rest.v2.model;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A user as exposed by the v2 user management API. Field names mirror
@@ -34,40 +30,28 @@ import javax.xml.bind.annotation.XmlRootElement;
  * of this representation, and contact types the API does not expose (XMPP,
  * microblog, phones, pager PINs) are preserved server-side on update.
  */
-@XmlRootElement(name = "user")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class UserDto {
 
-    @XmlElement(name = "user-id")
     private String userId;
 
-    @XmlElement(name = "full-name")
     private String fullName;
 
-    @XmlElement(name = "user-comments")
     private String userComments;
 
-    @XmlElement(name = "email")
     private String email;
 
-    @XmlElement(name = "pager-email")
     private String pagerEmail;
 
-    @XmlElement(name = "tui-pin")
     private String tuiPin;
 
-    @XmlElement(name = "time-zone-id")
     private String timeZoneId;
 
     // null (not empty) defaults: a request body that omits these keys
     // deserializes to null, which update semantics treat as "preserve"
-    @XmlElement(name = "duty-schedule")
     private List<String> dutySchedules;
 
-    @XmlElement(name = "role")
     private List<String> roles;
 
-    @XmlElement(name = "read-only")
     private Boolean readOnly;
 
     public String getUserId() {

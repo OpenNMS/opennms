@@ -62,10 +62,10 @@ const createManagedUser = async (user: ManagedUserCreate): Promise<string | null
   try {
     startSpinner()
     await v2.post(endpoint, user)
-    showSnackBar({ msg: `User '${user['user-id']}' created.` })
+    showSnackBar({ msg: `User '${user.userId}' created.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to create user '${user['user-id']}'.`)
+    const msg = errorMessage(err, `Failed to create user '${user.userId}'.`)
     showSnackBar({ msg, error: true })
     return msg
   } finally {
@@ -76,11 +76,11 @@ const createManagedUser = async (user: ManagedUserCreate): Promise<string | null
 const updateManagedUser = async (user: ManagedUser): Promise<string | null> => {
   try {
     startSpinner()
-    await v2.put(`${endpoint}/${encodeURIComponent(user['user-id'])}`, user)
-    showSnackBar({ msg: `User '${user['user-id']}' updated.` })
+    await v2.put(`${endpoint}/${encodeURIComponent(user.userId)}`, user)
+    showSnackBar({ msg: `User '${user.userId}' updated.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update user '${user['user-id']}'.`)
+    const msg = errorMessage(err, `Failed to update user '${user.userId}'.`)
     showSnackBar({ msg, error: true })
     return msg
   } finally {
@@ -106,7 +106,7 @@ const setManagedUserPassword = async (userId: string, password: string): Promise
 const renameManagedUser = async (userId: string, newUserId: string): Promise<string | null> => {
   try {
     startSpinner()
-    await v2.post(`${endpoint}/${encodeURIComponent(userId)}/rename`, { 'new-user-id': newUserId })
+    await v2.post(`${endpoint}/${encodeURIComponent(userId)}/rename`, { newUserId })
     showSnackBar({ msg: `User '${userId}' renamed to '${newUserId}'.` })
     return null
   } catch (err: any) {

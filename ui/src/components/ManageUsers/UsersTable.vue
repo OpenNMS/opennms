@@ -15,21 +15,21 @@
       v-if="store.users.length"
       :value="store.users"
       paginator
-      dataKey="user-id"
+      dataKey="userId"
       :rows="10"
       :rowsPerPageOptions="[10, 20, 50, 100]"
       class="data-table"
       data-test="users-table"
     >
       <OnmsColumn
-        field="user-id"
+        field="userId"
         header="User ID"
         sortable
       >
         <template #body="{ data }">
-          <span class="user-id">{{ data['user-id'] }}</span>
+          <span class="userId">{{ data.userId }}</span>
           <OnmsTag
-            v-if="isProtected(data['user-id'])"
+            v-if="isProtected(data.userId)"
             value="system"
             severity="secondary"
             class="system-tag"
@@ -53,13 +53,13 @@
       />
       <OnmsColumn header="Roles">
         <template #body="{ data }">
-          <span class="roles">{{ (data.role ?? []).join(', ') || '-' }}</span>
+          <span class="roles">{{ (data.roles ?? []).join(', ') || '-' }}</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <span
-            v-if="!isPathAddressable(data['user-id'])"
+            v-if="!isPathAddressable(data.userId)"
             class="unaddressable"
             v-tooltip.top="'This user-id contains / \\ or %, which the API cannot address; manage it by editing users.xml.'"
             data-test="unaddressable-note"
@@ -68,22 +68,22 @@
             <OnmsButton
               variant="text"
               label="Edit"
-              :aria-label="`Edit ${data['user-id']}`"
+              :aria-label="`Edit ${data.userId}`"
               data-test="edit-user-button"
               @click="openEditor(data)"
             />
             <OnmsButton
               variant="text"
               label="Password"
-              :aria-label="`Change password for ${data['user-id']}`"
+              :aria-label="`Change password for ${data.userId}`"
               data-test="password-user-button"
               @click="openPassword(data)"
             />
             <OnmsButton
               variant="text"
               label="Rename"
-              :disabled="isProtected(data['user-id'])"
-              :aria-label="`Rename ${data['user-id']}`"
+              :disabled="isProtected(data.userId)"
+              :aria-label="`Rename ${data.userId}`"
               data-test="rename-user-button"
               @click="openRename(data)"
             />
@@ -91,8 +91,8 @@
               variant="text"
               label="Delete"
               severity="danger"
-              :disabled="isProtected(data['user-id'])"
-              :aria-label="`Delete ${data['user-id']}`"
+              :disabled="isProtected(data.userId)"
+              :aria-label="`Delete ${data.userId}`"
               data-test="delete-user-button"
               @click="askDelete(data)"
             />
@@ -130,7 +130,7 @@
   >
     <template #content>
       <p>
-        Are you sure you want to delete the user <strong>{{ userToDelete?.['user-id'] }}</strong>?
+        Are you sure you want to delete the user <strong>{{ userToDelete?.userId }}</strong>?
         The user is also removed from all groups. This action cannot be undone.
       </p>
     </template>
@@ -173,12 +173,12 @@ const openEditor = (user: ManagedUser | null) => {
 }
 
 const openPassword = (user: ManagedUser) => {
-  actionUserId.value = user['user-id']
+  actionUserId.value = user.userId
   showPassword.value = true
 }
 
 const openRename = (user: ManagedUser) => {
-  actionUserId.value = user['user-id']
+  actionUserId.value = user.userId
   showRename.value = true
 }
 
@@ -189,7 +189,7 @@ const askDelete = (user: ManagedUser) => {
 
 const confirmDelete = async () => {
   if (userToDelete.value) {
-    await store.deleteUser(userToDelete.value['user-id'])
+    await store.deleteUser(userToDelete.value.userId)
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null

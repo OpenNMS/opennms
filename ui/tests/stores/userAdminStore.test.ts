@@ -20,8 +20,8 @@ describe('useUserAdminStore', () => {
   let store: ReturnType<typeof useUserAdminStore>
 
   const mockUsers: ManagedUser[] = [
-    { 'user-id': 'admin', 'full-name': 'Administrator', role: ['ROLE_ADMIN'] },
-    { 'user-id': 'noc', 'full-name': 'NOC Operator', email: 'noc@example.com', role: ['ROLE_USER'] }
+    { userId: 'admin', fullName: 'Administrator', roles: ['ROLE_ADMIN'] },
+    { userId: 'noc', fullName: 'NOC Operator', email: 'noc@example.com', roles: ['ROLE_USER'] }
   ]
 
   beforeEach(() => {
@@ -53,7 +53,7 @@ describe('useUserAdminStore', () => {
     vi.mocked(API.createManagedUser).mockResolvedValue(null)
     vi.mocked(API.getManagedUsers).mockResolvedValue(mockUsers)
 
-    const ok = await store.createUser({ 'user-id': 'noc', password: 'secret' })
+    const ok = await store.createUser({ userId: 'noc', password: 'secret' })
 
     expect(ok).toBe(null)
     expect(API.getManagedUsers).toHaveBeenCalledTimes(1)
@@ -62,7 +62,7 @@ describe('useUserAdminStore', () => {
   it('createUser should not refresh on failure', async () => {
     vi.mocked(API.createManagedUser).mockResolvedValue('it failed')
 
-    const ok = await store.createUser({ 'user-id': 'noc', password: 'secret' })
+    const ok = await store.createUser({ userId: 'noc', password: 'secret' })
 
     expect(ok).toBe('it failed')
     expect(API.getManagedUsers).not.toHaveBeenCalled()

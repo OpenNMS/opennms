@@ -26,16 +26,16 @@
 // server-side on update.
 
 export interface ManagedUser {
-  'user-id': string
-  'full-name'?: string | null
-  'user-comments'?: string | null
+  userId: string
+  fullName?: string | null
+  userComments?: string | null
   email?: string | null
-  'pager-email'?: string | null
-  'tui-pin'?: string | null
-  'time-zone-id'?: string | null
-  'duty-schedule'?: string[]
-  role?: string[]
-  'read-only'?: boolean
+  pagerEmail?: string | null
+  tuiPin?: string | null
+  timeZoneId?: string | null
+  dutySchedules?: string[]
+  roles?: string[]
+  readOnly?: boolean
 }
 
 export interface ManagedUserCreate extends ManagedUser {

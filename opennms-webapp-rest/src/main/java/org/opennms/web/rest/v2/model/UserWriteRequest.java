@@ -21,10 +21,6 @@
  */
 package org.opennms.web.rest.v2.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Create request for the v2 user management API: the UserDto fields plus the
@@ -32,11 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Password changes on existing users go through the dedicated password
  * endpoint instead.
  */
-@XmlRootElement(name = "user-create-request")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class UserWriteRequest extends UserDto {
 
-    @XmlElement(name = "password")
     private String password;
 
     public String getPassword() {
