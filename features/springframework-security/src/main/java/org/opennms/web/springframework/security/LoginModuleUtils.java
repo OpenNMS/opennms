@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -158,7 +159,9 @@ public abstract class LoginModuleUtils {
             return true;
         }
 
-        String urlLower = url.toLowerCase();
+        // Locale.ROOT: under a Turkish default locale, "I".toLowerCase() is a
+        // dotless ı, so "/API" would no longer match the "/api" prefix.
+        String urlLower = url.toLowerCase(Locale.ROOT);
 
         return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith)
                 || Arrays.stream(INVALID_SAVED_REQUEST_URL_PREFIXES)
