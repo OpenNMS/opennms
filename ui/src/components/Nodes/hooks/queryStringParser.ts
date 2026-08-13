@@ -329,10 +329,11 @@ export const parseMaclike = (queryObject: any): string | null => {
 }
 
 /**
- * OnmsAssetRecord string columns that can be filtered directly via `assetRecord.<col>` FIQL,
- * with human-readable labels for the asset-filter dropdown. Geolocation-backed fields
- * (city/state/zip/country) are intentionally excluded — they are not direct assetRecord properties,
- * so an `assetRecord.city` query would be invalid.
+ * OnmsAssetRecord string columns curated as the "Featured Fields" set for the Asset Filter panel
+ * dropdown UI (AssetFilterPanel.vue), with human-readable labels. This is intentionally a small
+ * subset of ASSET_COLUMN_FIQL_MAP (below) — every value here must also be a key in
+ * ASSET_COLUMN_FIQL_MAP. When the panel's "Featured Fields Only" toggle is off, the dropdown uses
+ * ALL_ASSET_COLUMN_OPTIONS instead, which covers every ASSET_COLUMN_FIQL_MAP key.
  */
 export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
   { value: 'building', label: 'Building' },
@@ -347,12 +348,198 @@ export const ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = [
   { value: 'circuitId', label: 'Circuit ID' }
 ]
 
-/** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
-export const ALLOWED_ASSET_COLUMNS = new Set(ASSET_COLUMN_OPTIONS.map(o => o.value))
+/**
+ * Maps every filterable OnmsAssetRecord string column (i.e. every STRING-typed property under
+ * `assetRecord.` in SearchProperties.java's ASSET_RECORD_PROPERTIES) to the FIQL property name
+ * used in an `assetRecord.<property>` query. This is the full whitelist of columns accepted from
+ * inbound `assetColumn`/`assetValue` query params (e.g. site-status-view drill-down links), which
+ * can reference any OnmsAssetRecord column, not just the curated ASSET_COLUMN_OPTIONS dropdown
+ * list above.
+ *
+ * Most entries are identity mappings — the column name is already the FIQL property name.
+ * The geolocation-backed columns (address1, address2, city, state, zip, country) are exceptions:
+ * they map to their nested `geolocation.<field>` FIQL property, matching the legacy OnmsAssetRecord
+ * bean property names used by legacy site-status filtering.
+ *
+ * Excluded (non-STRING search properties per SearchProperties.java): `id` (INTEGER) and
+ * `lastModifiedDate` (TIMESTAMP). Everything else STRING-typed is included here, including
+ * `password`/`enable`/`username`/`connection`/`snmpcommunity`: this map (and ALLOWED_ASSET_COLUMNS
+ * below) is the whitelist for INBOUND `assetColumn`/`assetValue` query params — i.e. URL
+ * drill-down parity, such as site-status-view links — not the UI-facing dropdown, so these columns
+ * still need to be valid/queryable here. UI_HIDDEN_ASSET_COLUMNS (below) is what keeps them out of
+ * the dropdown itself: advertising an exact-match filter UI on a credential-ish column would turn
+ * the Asset Filter panel into a guessing oracle against stored secrets.
+ */
+export const ASSET_COLUMN_FIQL_MAP: Record<string, string> = {
+  additionalhardware: 'additionalhardware',
+  address1: 'geolocation.address1',
+  address2: 'geolocation.address2',
+  admin: 'admin',
+  assetNumber: 'assetNumber',
+  autoenable: 'autoenable',
+  building: 'building',
+  category: 'category',
+  circuitId: 'circuitId',
+  city: 'geolocation.city',
+  comment: 'comment',
+  connection: 'connection',
+  country: 'geolocation.country',
+  cpu: 'cpu',
+  dateInstalled: 'dateInstalled',
+  department: 'department',
+  description: 'description',
+  displayCategory: 'displayCategory',
+  division: 'division',
+  enable: 'enable',
+  floor: 'floor',
+  hdd1: 'hdd1',
+  hdd2: 'hdd2',
+  hdd3: 'hdd3',
+  hdd4: 'hdd4',
+  hdd5: 'hdd5',
+  hdd6: 'hdd6',
+  inputpower: 'inputpower',
+  lastModifiedBy: 'lastModifiedBy',
+  lease: 'lease',
+  leaseExpires: 'leaseExpires',
+  maintcontract: 'maintcontract',
+  maintContractExpiration: 'maintContractExpiration',
+  managedObjectInstance: 'managedObjectInstance',
+  managedObjectType: 'managedObjectType',
+  manufacturer: 'manufacturer',
+  modelNumber: 'modelNumber',
+  notifyCategory: 'notifyCategory',
+  numpowersupplies: 'numpowersupplies',
+  operatingSystem: 'operatingSystem',
+  password: 'password',
+  pollerCategory: 'pollerCategory',
+  port: 'port',
+  rack: 'rack',
+  rackunitheight: 'rackunitheight',
+  ram: 'ram',
+  region: 'region',
+  room: 'room',
+  serialNumber: 'serialNumber',
+  slot: 'slot',
+  snmpcommunity: 'snmpcommunity',
+  state: 'geolocation.state',
+  storagectrl: 'storagectrl',
+  supportPhone: 'supportPhone',
+  thresholdCategory: 'thresholdCategory',
+  username: 'username',
+  vendor: 'vendor',
+  vendorAssetNumber: 'vendorAssetNumber',
+  vendorFax: 'vendorFax',
+  vendorPhone: 'vendorPhone',
+  zip: 'geolocation.zip'
+}
 
-/** Display label for an asset column key (falls back to the key itself). */
+/** Set of allowed asset column keys, used to validate inbound `assetColumn` params. */
+export const ALLOWED_ASSET_COLUMNS = new Set(Object.keys(ASSET_COLUMN_FIQL_MAP))
+
+/**
+ * Human-readable title for every ASSET_COLUMN_FIQL_MAP key, taken verbatim from the display-name
+ * strings in `SearchProperties.java`'s `ASSET_RECORD_PROPERTIES` (server-side search-property
+ * registry — the source of truth, since it correctly handles abbreviations/oddities like "CPU",
+ * "HDD 1", "RAM", "SNMP Community", "ZIP or Postal Code" that a runtime camelCase-to-Title-Case
+ * conversion would get wrong). Every key in ASSET_COLUMN_FIQL_MAP must have an entry here.
+ */
+export const ASSET_COLUMN_TITLES: Record<string, string> = {
+  additionalhardware: 'Additional Hardware',
+  address1: 'Address 1',
+  address2: 'Address 2',
+  admin: 'Admin',
+  assetNumber: 'Asset Number',
+  autoenable: 'Auto-enable',
+  building: 'Building',
+  category: 'Category',
+  circuitId: 'Circuit ID',
+  city: 'City',
+  comment: 'Comment',
+  connection: 'Connection',
+  country: 'Country',
+  cpu: 'CPU',
+  dateInstalled: 'Date Installed',
+  department: 'Department',
+  description: 'Description',
+  displayCategory: 'Display Category',
+  division: 'Division',
+  enable: 'Enable',
+  floor: 'Floor',
+  hdd1: 'HDD 1',
+  hdd2: 'HDD 2',
+  hdd3: 'HDD 3',
+  hdd4: 'HDD 4',
+  hdd5: 'HDD 5',
+  hdd6: 'HDD 6',
+  inputpower: 'Input Power',
+  lastModifiedBy: 'Last Modified By',
+  lease: 'Lease',
+  leaseExpires: 'Lease Expires',
+  maintcontract: 'Maintenance Contract',
+  maintContractExpiration: 'Maintenance Contract Expiration',
+  managedObjectInstance: 'Managed Object Instance',
+  managedObjectType: 'Managed Object Type',
+  manufacturer: 'Manufacturer',
+  modelNumber: 'Model Number',
+  notifyCategory: 'Notify Category',
+  numpowersupplies: 'Number of Power Supplies',
+  operatingSystem: 'Operating System',
+  password: 'Password',
+  pollerCategory: 'Poller Category',
+  port: 'Port',
+  rack: 'Rack',
+  rackunitheight: 'Rack Unit Height',
+  ram: 'RAM',
+  region: 'Region',
+  room: 'Room',
+  serialNumber: 'Serial Number',
+  slot: 'Slot',
+  snmpcommunity: 'SNMP Community',
+  state: 'State or Province',
+  storagectrl: 'Storage Controller',
+  supportPhone: 'Support Phone',
+  thresholdCategory: 'Threshold Category',
+  username: 'Username',
+  vendor: 'Vendor',
+  vendorAssetNumber: 'Vendor Asset Number',
+  vendorFax: 'Vendor Fax',
+  vendorPhone: 'Vendor Phone',
+  zip: 'ZIP or Postal Code'
+}
+
+/**
+ * Asset columns kept queryable (ASSET_COLUMN_FIQL_MAP/ALLOWED_ASSET_COLUMNS) and labelable
+ * (ASSET_COLUMN_TITLES) for URL drill-down parity, but hidden from the UI-facing dropdown options
+ * below (ALL_ASSET_COLUMN_OPTIONS; ASSET_COLUMN_OPTIONS's curated "Featured Fields" set already
+ * excludes them by simply never having included them). Advertising an exact-match filter control
+ * for these in the Asset Filter panel would let a user brute-force-probe a node's stored
+ * credentials (SNMP community string, device password, etc.) column-by-value, since a FIQL
+ * `assetRecord.<column>==<guess>` filter is itself an oracle: it tells the caller whether the
+ * guessed value is an exact match. These columns are already readable/writable via the Asset page
+ * and the v2 REST API, but that's a very different exposure than a searchable filter UI.
+ */
+export const UI_HIDDEN_ASSET_COLUMNS = new Set(['password', 'enable', 'username', 'connection', 'snmpcommunity'])
+
+/**
+ * Every ASSET_COLUMN_FIQL_MAP column (except UI_HIDDEN_ASSET_COLUMNS -- see its comment) as a
+ * dropdown option, titled from ASSET_COLUMN_TITLES and sorted alphabetically by title. Used by the
+ * Asset Filter panel dropdown when its "Featured Fields Only" toggle is off (see
+ * AssetFilterPanel.vue).
+ */
+export const ALL_ASSET_COLUMN_OPTIONS: { value: string, label: string }[] = Object.keys(ASSET_COLUMN_FIQL_MAP)
+  .filter(value => !UI_HIDDEN_ASSET_COLUMNS.has(value))
+  .map(value => ({ value, label: ASSET_COLUMN_TITLES[value] ?? value }))
+  .sort((a, b) => a.label.localeCompare(b.label))
+
+/** Display label for an asset column key (falls back to the key itself). Resolves from the full
+ * ASSET_COLUMN_TITLES registry regardless of the panel's "Featured Fields Only" toggle state, so
+ * chip labels (NodesTable.vue) show a proper title even for non-featured columns. */
 export const getAssetColumnLabel = (column: string): string =>
-  ASSET_COLUMN_OPTIONS.find(o => o.value === column)?.label ?? column
+  ASSET_COLUMN_TITLES[column] ?? column
+
+/** Maps an asset column key to its FIQL property under `assetRecord.` (identity if not in the map). */
+export const getAssetColumnFiqlProperty = (column: string): string => ASSET_COLUMN_FIQL_MAP[column] ?? column
 
 /**
  * Returns true if the `nodesWithDownAggregateStatus` query param requests down-only nodes.
@@ -366,6 +553,13 @@ export const parseDownAggregateStatus = (queryObject: any): boolean => {
  */
 export const parseNodesWithAssets = (queryObject: any): boolean => {
   return String(queryObject.nodesWithAssets ?? '').toLowerCase() === 'true'
+}
+
+/**
+ * Returns true if the `nodesWithOutages` query param requests only nodes with current outages.
+ */
+export const parseNodesWithOutages = (queryObject: any): boolean => {
+  return String(queryObject.nodesWithOutages ?? '').toLowerCase() === 'true'
 }
 
 /**

@@ -88,10 +88,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // Inventory Menu
-        // Note, some items are below under Vue UI checks
-        clickMenuItem("Inventory", "Nodes (Legacy)");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li[contains(text()[normalize-space()], 'Node List')]")));
-
+        // Note, the Vue "Nodes" item is checked below under Vue UI checks
         clickMenuItem("Inventory", "Assets");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
 
@@ -124,9 +121,13 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // Metrics Menu
+        // JSP Resource Graphs page
         clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//li[contains(text()[normalize-space()], 'Resources')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Resource Graphs')]")));
+
+        // Vue Resource Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs (Preview)");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'search-field')]//label[contains(text()[normalize-space()], 'Search/Filter Resources')]")));
 
         // Distributed Monitoring
         clickMenuItem("Distributed Monitoring", "Manage Minions");
@@ -234,8 +235,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
-        foundElement = findMenuItemLink("API Documentation", "REST Open API Documentation");
-        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
+        foundElement = findMenuItemLink("API Documentation", "OpenAPI Documentation");
+        assertNotNull("apiDocumentationMenu / OpenAPI Documentation", foundElement);
 
         foundElement = findMenuItemLink("API Documentation", "REST API Reference Documentation");
         assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
@@ -324,7 +325,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Nodes')]]")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
-        // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");
+        // clickMenuItem("apiDocumentationMenu", "OpenAPI Documentation");
         // final WebDriverWait longerWait = new WebDriverWait(getDriver(), Duration.ofSeconds(2));
         // longerWait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Endpoints']")));

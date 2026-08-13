@@ -12,7 +12,7 @@
     <description>OSGi wrapper for the Jira Client API.</description>
 
     <properties>
-        <jiraClientVersion>5.2.7</jiraClientVersion>
+        <jiraClientVersion>7.0.2</jiraClientVersion>
     </properties>
 
     <build>

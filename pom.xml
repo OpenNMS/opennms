@@ -130,7 +130,7 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
-    <module>opennms-asterisk</module>
+    <module>opennms-openapi-docs</module>
     <module>opennms-config-dao</module>
   </modules>
   <build>
@@ -1252,7 +1252,11 @@
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
-                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: javax.mail:mail -->
+                   <exclude>javax.mail:mail</exclude>                <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>com.sun.mail:javax.mail</exclude>        <!-- use: jakarta.mail:jakarta.mail-api + org.eclipse.angus:angus-mail -->
+                   <exclude>org.eclipse.angus:jakarta.mail</exclude> <!-- merged API+impl jar, duplicates jakarta.mail-api + angus-mail classes -->
+                   <exclude>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</exclude> <!-- use: com.sun.mail:mailapi (MOXy shim) -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
@@ -1828,6 +1832,7 @@
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.18.9</jackson2Version>
+    <cxfJackson2Version>2.21.5</cxfJackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>2.3</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
@@ -1843,7 +1848,13 @@
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
-    <javaxMailVersion>1.4.7</javaxMailVersion>
+    <jakartaMailApiVersion>2.1.5</jakartaMailApiVersion>
+    <angusMailVersion>2.0.5</angusMailVersion>
+    <jakartaActivationApiVersion>2.1.4</jakartaActivationApiVersion>
+    <angusActivationVersion>2.0.3</angusActivationVersion>
+    <!-- javax.mail-namespace API only, kept solely for EclipseLink MOXy 2.5.1; see dependencies/jaxb -->
+    <javaxMailApiShimVersion>1.6.7</javaxMailApiShimVersion>
+    <greenmailVersion>2.1.9</greenmailVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
@@ -1894,7 +1905,7 @@
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.2</jansiVersion>
-    <jlineVersion>3.30.6</jlineVersion>
+    <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
     <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
     <paxLoggingVersion>2.3.0</paxLoggingVersion>
@@ -1962,7 +1973,7 @@
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.23.11</swaggerUIVersion>
+    <swaggerUIVersion>5.25.3</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>
@@ -3159,12 +3170,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>javamail-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3693,17 +3698,6 @@
      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>newts-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-asterisk</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>asterisk-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -4643,9 +4637,44 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javaxMailVersion}</version>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakartaMailApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
+        <version>${angusMailVersion}</version>
+      </dependency>
+      <!-- angus-mail minus its javax-era resource names; use this on the flat classpath, see dependencies/angus-mail-shaded -->
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>angus-mail-shaded</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+        <version>${angusActivationVersion}</version>
+      </dependency>
+      <!-- javax.mail-namespace API classes only, no impl/providers; MOXy shim, see dependencies/jaxb -->
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>mailapi</artifactId>
+        <version>${javaxMailApiShimVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.icegreen</groupId>
+        <artifactId>greenmail</artifactId>
+        <version>${greenmailVersion}</version>
+        <scope>test</scope>
+        <exclusions>
+          <!-- merged API+impl jar is banned; the split jakarta.mail-api + angus-mail provide the same classes -->
+          <exclusion>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
@@ -4654,10 +4683,11 @@
         <artifactId>jakarta.activation</artifactId>
         <version>1.2.1</version>
       </dependency>
+      <!-- 2.x = jakarta.activation namespace (for jakarta.mail); javax.activation classes come from com.sun.activation:jakarta.activation 1.2.1 above -->
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
-        <version>1.2.2</version>
+        <version>${jakartaActivationApiVersion}</version>
       </dependency>
       <!-- Using JPA 2.2 API for Hibernate 5.6.15 compatibility -->
       <dependency>

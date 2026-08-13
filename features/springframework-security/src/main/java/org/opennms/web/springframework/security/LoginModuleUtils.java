@@ -50,6 +50,14 @@ public abstract class LoginModuleUtils {
         ".css", ".js", ".ttf"
     };
 
+    // NMS-20174: REST/API requests captured in the request cache (e.g. an XHR that fired
+    // while unauthenticated) must never become the post-login redirect target — navigating
+    // to them top-level makes the browser download the response instead of showing a page.
+    // Matched against the servlet path, so the bare prefix ("/rest") counts as well.
+    private static final String[] INVALID_SAVED_REQUEST_URL_PREFIXES = new String[] {
+        "/rest", "/api"
+    };
+
     protected LoginModuleUtils() {}
 
     public static boolean doLogin(final OpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
@@ -141,7 +149,9 @@ public abstract class LoginModuleUtils {
     }
 
     /**
-     * Do not save asset files in the saved request cache.
+     * Whether a URL from the saved request cache must not be used as a
+     * post-login redirect target: asset files (by suffix) and REST/API
+     * endpoints (by servlet-path prefix), neither of which is a navigable page.
      */
     public static boolean isInvalidSavedRequestUrl(String url) {
         if (StringUtils.isEmpty(url)) {
@@ -150,6 +160,8 @@ public abstract class LoginModuleUtils {
 
         String urlLower = url.toLowerCase();
 
-        return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith);
+        return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith)
+                || Arrays.stream(INVALID_SAVED_REQUEST_URL_PREFIXES)
+                        .anyMatch(prefix -> urlLower.equals(prefix) || urlLower.startsWith(prefix + "/"));
     }
 }

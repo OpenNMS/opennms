@@ -79,7 +79,8 @@ Contains readmail-host, readmail-protocol, and user-auth.
 | false
 
 | use-jmta
-| Use the JavaMail Mail Transport Agent.
+| Deprecated; the JMTA transport has been removed.
+The attribute is still accepted (and still defaults to `true`), but the test always sends through the configured sendmail-host.
 | true
 
 | attempt-interval

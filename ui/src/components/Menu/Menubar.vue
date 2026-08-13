@@ -27,6 +27,17 @@
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
 
+      <span
+        v-if="dateTimeLabel"
+        class="date-icon-wrapper"
+        v-onms-tooltip.bottom="dateTimeLabel"
+      >
+        <OnmsIcon
+          :icon="CalendarIcon"
+          :title="dateTimeLabel"
+        />
+      </span>
+
        <span title="Toggle Light/Dark Mode">
         <OnmsIcon
             :icon="LightDarkMode"
@@ -61,6 +72,7 @@ import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
 import LightDarkMode from '@/components/icons/action/LightDarkMode.vue'
+import CalendarIcon from '@/components/icons/action/Calendar.vue'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -83,6 +95,13 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
+
+// Empty until the menu data loads. The calendar icon is v-if'd on this:
+// PrimeVue's tooltip captures the configured z-index only when the directive
+// mounts with a non-empty value (an empty value both binds a blank tooltip
+// and falls back to z-index ~1000, behind this fixed header's 1030), so the
+// element must not mount until the label is ready.
+const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()
@@ -193,11 +212,13 @@ onUnmounted(() => {
   color: var(--onms-state-text-color-on-surface-dark);
 }
 
+// No `min-width: 0` here: the flex-item default of `min-width: auto` keeps
+// this column from collapsing below the logo's intrinsic width, so the
+// (rigid) center column can never paint over the logo (NMS-20201).
 .onms-menubar__left {
   flex: 1 1 0;
   display: flex;
   align-items: center;
-  min-width: 0;
 }
 
 .onms-menubar__center {
@@ -220,11 +241,14 @@ onUnmounted(() => {
 }
 
 // The logo is a wide wordmark SVG (viewBox 624x69). Size by height and let
-// width follow; override the SVG's own max-width so it isn't clamped/distorted.
+// width follow. The max-width is a guard for rebranded logos substituted via
+// VITE_APP_LOGO_NAME: since the left column refuses to shrink below the logo,
+// an unbounded ultra-wide asset would crowd out the rest of the bar. An SVG
+// wider than the cap letterboxes (scales down) rather than distorts.
 .onms-menubar__logo {
   height: 1.75rem;
   width: auto;
-  max-width: none;
+  max-width: 18rem;
 }
 
 // Notification-status colors stay on their light-mode values so the indicator
@@ -277,7 +301,11 @@ onUnmounted(() => {
   flex-direction: column;
   font-family: var(--onms-header-font-family);
   font-size: 0.875rem;
+  margin-left: 1em;
   margin-right: 1em;
+  // Keep time/date each on one line; without this the text word-wraps and
+  // spills out of the fixed-height bar when the right column is squeezed.
+  white-space: nowrap;
 
   .date-formatted-date {
     display: flex;
@@ -288,6 +316,26 @@ onUnmounted(() => {
     display: flex;
     justify-content: right;
     font-weight: 800;
+  }
+}
+
+// Compact date representation: below 1024px the two-line date text is
+// replaced by a calendar icon whose tooltip carries the full date/time.
+.date-icon-wrapper {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .date-wrapper {
+    display: none;
+  }
+
+  .date-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    font-size: 24px;
+    margin-left: 1em;
+    margin-right: 1em;
   }
 }
 </style>
