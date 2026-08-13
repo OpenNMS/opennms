@@ -9,27 +9,24 @@
     @click="toggleMenu"
   >
     Backup Status
-    <FeatherIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
+    <OnmsIcon :icon="ArrowDown" aria-hidden="true" focusable="false" />
   </span>
-  <PMenu ref="menu" :model="menuItems" :popup="true" class="dcb-table-status-dropdown">
+  <OnmsMenu ref="menu" :items="menuItems" class="dcb-table-status-dropdown">
     <template #item="{ item, props }">
       <a v-bind="props.action">
         <div class="option" :class="item.statusClass">{{ item.label }}</div>
       </a>
     </template>
-  </PMenu>
+  </OnmsMenu>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import Menu from 'primevue/menu'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
+import { OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
+import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
-
-const PMenu = Menu
 
 const deviceStore = useDeviceStore()
 const menu = ref()
@@ -43,8 +40,9 @@ const menuItems = computed(() => deviceStore.backupStatusOptions.map((option: st
 const toggleMenu = (event: Event) => menu.value.toggle(event)
 
 const filterByStatus = (value: status) => {
+  // omit limit: updateDeviceConfigBackupQueryParams merges, so the store's
+  // current page size (set by the paginator, or the 20 default) survives.
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: 20,
     offset: 0,
     status: value
   }

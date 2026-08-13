@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>36.0.3-SNAPSHOT</version>
+    <version>36.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.config</artifactId>
@@ -81,10 +81,11 @@
       <artifactId>org.opennms.core.test-api.xml</artifactId>
     </dependency>
 
-    <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
+    <!-- Daemon classes named by service-configuration.xml, which
+         ServiceConfigurationPublicConstructorIT instantiates by name -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-asterisk</artifactId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

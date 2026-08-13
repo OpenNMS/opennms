@@ -189,6 +189,19 @@ const router = createRouter({
       component: () => import('@/containers/NodeDetails.vue')
     },
     {
+      path: '/adhoc-graphs',
+      name: 'AdhocGraphs',
+      component: () => import('@/containers/AdhocGraphs.vue')
+    },
+    {
+      // Graph-only view of an ad-hoc graph, rendered entirely from the query
+      // string. This is what the builder's pop-out button opens in a new tab.
+      path: '/adhoc-graphs/view',
+      name: 'AdhocGraphsView',
+      component: () => import('@/containers/AdhocGraphs.vue'),
+      props: { viewOnly: true }
+    },
+    {
       path: '/resource-graphs',
       name: 'ResourceGraphs',
       component: () => import('@/containers/ResourceGraphs.vue'),
@@ -370,11 +383,6 @@ const router = createRouter({
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
-    },
-    {
-      path: '/primevue-test',
-      name: 'PrimeVueTest',
-      component: () => import('@/components/PrimeVueTest.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

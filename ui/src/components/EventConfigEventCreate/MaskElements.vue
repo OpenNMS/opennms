@@ -3,14 +3,14 @@
     <div class="section-content">
       <div class="mask-elements-header">
         <h3>Mask Elements</h3>
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           @click="$emit('setMaskElements', 'addMaskRow', null, -1)"
           data-test="add-mask-row-button"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
       <div
         v-for="(row, index) in maskElements"
@@ -22,7 +22,7 @@
             :for="`mask-element-name-${index}`"
             :error="errors.maskElements?.[index]?.name"
           >
-            <Select
+            <OnmsSelect
               :inputId="`mask-element-name-${index}`"
               :options="availableMaskOptions(index)"
               optionLabel="_text"
@@ -45,7 +45,7 @@
               :for="`mask-element-value-${index}`"
               :error="errors.maskElements?.[index]?.value"
             >
-              <InputText
+              <OnmsInputText
                 :id="`mask-element-value-${index}`"
                 :modelValue="row.value"
                 :invalid="!!errors.maskElements?.[index]?.value"
@@ -57,14 +57,14 @@
               />
             </FormField>
           </div>
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             severity="danger"
             data-test="remove-mask-row-button"
             @click="$emit('setMaskElements', 'removeMaskRow', null, index)"
           >
-            <FeatherIcon :icon="Delete" />
-          </Button>
+            <OnmsIcon :icon="Delete" />
+          </OnmsButton>
         </div>
       </div>
     </div>
@@ -75,13 +75,10 @@
 import { ref, watch } from 'vue'
 
 import { EventFormErrors } from '@/types/eventConfig'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import Delete from '@featherds/icon/action/Delete'
-import { ISelectItemType } from '@featherds/select'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsIcon, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import { MaskElementNameOptions } from './constants'
 

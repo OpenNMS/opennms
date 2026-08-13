@@ -20,9 +20,11 @@
 /// License.
 ///
 
-import { TrapConfig, TrapdValidationError, TrapdValidationResult } from '@/types/trapConfig'
-import { ISelectItemType } from '@featherds/select'
+import { SnmpV3UserError, TrapConfig, TrapdValidationError, TrapdValidationResult } from '@/types/trapConfig'
+import { ISelectItemType } from '@/types'
 import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
+import { hasScvPrefix, validateScvPattern } from './scvValidator'
+import { isMaskedPassword } from './securityHelper'
 import { isConvertibleToInteger } from './utils'
 
 export const MIN_PORT = 1
@@ -106,6 +108,82 @@ export const PRIVACY_PROTOCOL_OPTIONS: ISelectItemType[] = PrivacyProtocols.map(
   _text: protocol,
   _value: protocol
 }))
+
+export const validateSnmpV3UserForm = (
+  securityName: string,
+  securityLevel: ISelectItemType | undefined,
+  authProtocol: ISelectItemType | undefined,
+  authPassphrase: string,
+  privacyProtocol: ISelectItemType | undefined,
+  privacyPassphrase: string
+): SnmpV3UserError => {
+  const newError: SnmpV3UserError = {}
+  const levelValue = Number(securityLevel?._value)
+  const authProtocolVisible = levelValue === SecurityLevel.AuthNoPriv || levelValue === SecurityLevel.AuthPriv
+  const privacyProtocolVisible = levelValue === SecurityLevel.AuthPriv
+
+  if (!securityName) {
+    newError.securityName = 'Security Name is required'
+  }
+
+  if (levelValue === SecurityLevel.NoAuthNoPriv && (authProtocol || authPassphrase || privacyProtocol || privacyPassphrase)) {
+    newError.securityLevel = 'Security level 1 does not allow auth or privacy credentials'
+  }
+
+  if (levelValue === SecurityLevel.AuthNoPriv && (privacyProtocol || privacyPassphrase)) {
+    newError.privacyProtocol = 'Security level 2 does not allow privacy credentials'
+  }
+
+  if (authProtocolVisible) {
+    if (!authProtocol) {
+      newError.authProtocol = 'Auth Protocol is required for selected security level'
+    }
+
+    if (authPassphrase && !authProtocol) {
+      newError.authPassphrase = 'Auth Passphrase requires an Auth Protocol to be selected'
+    }
+
+    if (!!authProtocol && !authPassphrase) {
+      newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
+    }
+
+    if (!!authProtocol && authPassphrase && !isMaskedPassword(authPassphrase)) {
+      if (hasScvPrefix(authPassphrase) && !validateScvPattern(authPassphrase)) {
+        newError.authPassphrase = 'Invalid SCV expression'
+      } else if (authPassphrase.startsWith('*')) {
+        newError.authPassphrase = 'Auth Passphrase should not start with a \'*\' character.'
+      } else if (!hasScvPrefix(authPassphrase) && passphraseByteLength(authPassphrase) < MIN_PASSPHRASE_CHARACTERS) {
+        newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
+      }
+    }
+  }
+
+  if (privacyProtocolVisible) {
+    if (!privacyProtocol) {
+      newError.privacyProtocol = 'Privacy Protocol is required for selected security level'
+    }
+
+    if (privacyPassphrase && !privacyProtocol) {
+      newError.privacyPassphrase = 'Privacy Passphrase requires a Privacy Protocol to be selected'
+    }
+
+    if (!!privacyProtocol && !privacyPassphrase) {
+      newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
+    }
+
+    if (!!privacyProtocol && privacyPassphrase && !isMaskedPassword(privacyPassphrase)) {
+      if (hasScvPrefix(privacyPassphrase) && !validateScvPattern(privacyPassphrase)) {
+        newError.privacyPassphrase = 'Invalid SCV expression'
+      } else if (privacyPassphrase.startsWith('*')) {
+        newError.privacyPassphrase = 'Privacy Passphrase should not start with a \'*\' character.'
+      } else if (!hasScvPrefix(privacyPassphrase) && passphraseByteLength(privacyPassphrase) < MIN_PASSPHRASE_CHARACTERS) {
+        newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
+      }
+    }
+  }
+
+  return newError
+}
 
 export const getDefaultTrapdConfig = (): TrapConfig => ({
   snmpTrapAddress: DEFAULT_TRAPD_BIND_ADDRESS,
@@ -217,10 +295,10 @@ const validateSnmpV3UserValues = (
   const privacyProtocolVal = privacyProtocol ?? null
   const privacyPassphraseVal = privacyPassphrase ?? null
 
-  if (authPassphraseVal && authPassphraseVal.trim() !== '' && passphraseByteLength(authPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
+  if (authPassphraseVal && authPassphraseVal.trim() !== '' && !isMaskedPassword(authPassphraseVal) && passphraseByteLength(authPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
     addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
   }
-  if (privacyPassphraseVal && privacyPassphraseVal.trim() !== '' && passphraseByteLength(privacyPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
+  if (privacyPassphraseVal && privacyPassphraseVal.trim() !== '' && !isMaskedPassword(privacyPassphraseVal) && passphraseByteLength(privacyPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
     addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
   }
 

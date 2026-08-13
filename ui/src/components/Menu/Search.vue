@@ -5,7 +5,7 @@
   >
     <div class="onms-search-input-wrapper">
       <div class="search-icon">
-        <FeatherIcon :icon="SearchIcon" />
+        <OnmsIcon :icon="SearchIcon" />
       </div>
       <input
         ref="searchInputRef"
@@ -23,7 +23,7 @@
       @mousedown.prevent
     >
       <div class="search-results-toolbar">
-        <FeatherIcon
+        <OnmsIcon
           :icon="CancelIcon"
           class="search-results-close"
           role="button"
@@ -71,9 +71,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import SearchIcon from '@featherds/icon/action/Search'
-import CancelIcon from '@featherds/icon/navigation/Cancel'
+import { OnmsIcon } from '@opennms/onms-ui'
+import SearchIcon from '@/components/icons/action/Search.vue'
+import CancelIcon from '@/components/icons/navigation/Cancel.vue'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -279,14 +279,23 @@ const onKeyDown = async (event: KeyboardEvent) => {
 <style lang="scss" scoped>
 .onms-search-control-wrapper {
   position: relative;
-  min-width: 30em;
+  // Fluid width: 24em on wide viewports, shrinking down to a 10em floor so
+  // the menubar degrades gracefully as the window narrows (NMS-20201).
+  min-width: clamp(10em, 28vw, 24em);
 }
 
 .search-results-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  // Anchor to the input's right edge: when min-width exceeds the input's
+  // width the dropdown grows leftward (over the logo area, still on-screen)
+  // instead of rightward past the viewport edge, where the fixed header
+  // provides no scrollbar to reach it.
+  left: auto;
+  right: 0;
   width: 100%;
+  // Keep results readable even when the input has shrunk to its floor width.
+  min-width: 24em;
   background: var(--p-content-background);
   color: var(--p-text-muted-color);
   border: 1px solid var(--p-content-border-color);

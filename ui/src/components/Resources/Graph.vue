@@ -6,21 +6,21 @@
         :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
         target="_blank"
       >
-        <PButton outlined class="single-graph-btn">Open</PButton>
+        <OnmsButton variant="outlined" class="single-graph-btn">Open</OnmsButton>
       </router-link>
-      <PTabs value="0" class="graph-data-tabs">
-        <PTabList>
-          <PTab value="0">Graph</PTab>
-          <PTab value="1">Data</PTab>
-        </PTabList>
-        <PTabPanels>
-          <PTabPanel value="0">
+      <OnmsTabs value="0" class="graph-data-tabs">
+        <OnmsTabList>
+          <OnmsTab value="0">Graph</OnmsTab>
+          <OnmsTab value="1">Data</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel value="0">
             <div class="canvas-wrapper">
               <canvas :id="`${label}-${definition}`"></canvas>
               <div ref="legendRef" class="lc" :id="`${label}-${definition}-lc`"></div>
             </div>
-          </PTabPanel>
-          <PTabPanel value="1">
+          </OnmsTabPanel>
+          <OnmsTabPanel value="1">
             <div class="canvas-wrapper" v-if="graphData">
               <GraphDataTable
                 :id="`${label}-${definition}`"
@@ -28,9 +28,9 @@
                 :graphData="graphData"
               />
             </div>
-          </PTabPanel>
-        </PTabPanels>
-      </PTabs>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
   </div>
 </template>
@@ -47,20 +47,9 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import Button from 'primevue/button'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
-import { PropType, computed, onMounted, ref, watch } from 'vue'
+import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const PButton = Button
-const PTabs = Tabs
-const PTabList = TabList
-const PTab = Tab
-const PTabPanels = TabPanels
-const PTabPanel = TabPanel
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
@@ -100,7 +89,7 @@ const convertedGraphDataRef = ref<ConvertedGraphData>({
   printStatements: [],
   properties: {}
 })
-let chart: any = {}
+let chart: any = null
 const legendRef = ref()
 const { height } = useElementSize(legendRef)
 const yAxisFormatter = format('.3s')
@@ -288,11 +277,17 @@ const render = async (update?: boolean) => {
     formattedGraphData = getFormattedLegendStatements(graphMetrics, rrdGraphConverterModel)
     graphData.value = formattedGraphData
 
-    if (update) {
+    if (update && chart) {
       chart.data = chartData.value
       chart.update()
     } else {
       const ctx: any = document.getElementById(`${props.label}-${props.definition}`)
+      // Chart.js throws "Canvas is already in use" if a chart still owns this
+      // canvas — e.g. a stale instance left on a reused canvas after navigating
+      // away and back. Destroy any prior chart on it before creating the new one.
+      if (ctx) {
+        Chart.getChart(ctx)?.destroy()
+      }
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -310,10 +305,20 @@ const render = async (update?: boolean) => {
 watch(props.time, () => render(true))
 
 onMounted(() => render())
+
+// Release the canvas when the graph is torn down (navigation away, infinite-
+// scroll replacement) so Chart.js doesn't report it "already in use" on the
+// next render.
+onBeforeUnmount(() => {
+  if (chart && typeof chart.destroy === 'function') {
+    chart.destroy()
+    chart = null
+  }
+})
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 .container {
   position: relative;
 }
@@ -332,7 +337,7 @@ onMounted(() => render())
   z-index: 1;
 }
 .lc {
-  @include body-small;
+  @include onms-body-small;
 }
 .graph-data-tabs {
   :deep(.p-tablist-tab-list) {

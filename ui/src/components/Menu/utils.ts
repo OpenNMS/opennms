@@ -20,11 +20,9 @@
 /// License.
 ///
 
-import { DefineComponent, markRaw } from 'vue'
-import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
-import { FeatherIcon } from '@featherds/icon'
-import IconHome from '@featherds/icon/action/Home'
-import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
+import { Component } from 'vue'
+import IconHome from '@/components/icons/action/Home.vue'
+import { OnmsMenuItem as PrimeMenuItem } from '@opennms/onms-ui'
 import { Plugin } from '@/types'
 import { MenuItem } from '@/types/mainMenu'
 
@@ -85,56 +83,10 @@ const getMenuLink = (menuItem: MenuItem, baseHref?: string | null) => {
   return '#'
 }
 
-const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => DefineComponent | null) => {
-  const icon: (DefineComponent | null) = getIcon(menuItem.icon)
+const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => Component | null) => {
+  const icon: (Component | null) = getIcon(menuItem.icon)
 
-  return (icon ?? IconHome) as typeof FeatherIcon
-}
-
-const createMenuListEntry = (
-  menuItem: MenuItem,
-  baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
-  onLogout: () => void
-) => {
-  let onClick = menuItem.onClick
-
-  if (menuItem.action === 'logout') {
-    onClick = onLogout
-  }
-
-  const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
-
-  let icon: typeof FeatherIcon | undefined = undefined
-
-  if (menuItem.icon) {
-    icon = createMenuIcon(menuItem, getIcon)
-  }
-
-  return {
-    id: menuItem.id ?? menuItem.name,
-    type: 'item',
-    title: menuItem.name,
-    href: getMenuLink(menuItem, baseHref),
-    icon: icon,
-    target,
-    onClick
-  } as MenuListEntry
-}
-
-const createMenuListSeparator = () => {
-  return {
-    id: '',
-    type: 'separator'
-  } as MenuListEntry
-}
-
-const createMenuListHeader = (item: MenuItem) => {
-  return {
-    id: '',
-    type: 'header',
-    title: item.name
-  } as MenuListEntry
+  return (icon ?? IconHome) as Component
 }
 
 const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
@@ -159,55 +111,15 @@ const createPluginsMenu = (plugins: Plugin[], menuItem?: MenuItem) => {
   return topMenuItem
 }
 
-const createTopMenuListEntry = (
-  topMenuItem: MenuItem,
-  baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
-  onLogout: () => void
-) => {
-  if (topMenuItem.type === 'separator') {
-    return createMenuListSeparator()
-  }
-
-  if (topMenuItem.type === 'header') {
-    return createMenuListHeader(topMenuItem)
-  }
-
-  // 'item'
-  let entry = {
-    id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
-    type: 'item',
-    title: topMenuItem.name,
-    content: '',
-    icon: createMenuIcon(topMenuItem, getIcon),
-    component: markRaw(FeatherMenuList),
-    componentProps: {
-      items: topMenuItem.items?.map(item => createMenuListEntry(item, baseHref, getIcon, onLogout)) ?? []
-    }
-  } as MenuListEntry
-
-  if (topMenuItem.action && topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
-    const url = getMenuLink(topMenuItem, baseHref)
-
-    entry = {
-      ...entry,
-      href: url,
-      onClick: () => window.location.assign(url)
-    } as any as MenuListEntry
-  }
-
-  return entry
-}
-
 // ---------------------------------------------------------------------------
 // PrimeVue menu model
 //
-// The side menu now renders with a PrimeVue TieredMenu instead of Feather's
-// FeatherMenuList/Sidenav. TieredMenu consumes PrimeVue `MenuItem[]`, so the
-// functions below transform our raw `MenuItem` data into that shape. We keep
-// the Feather transform (createTopMenuListEntry above) untouched for now.
+// The side menu renders with a PrimeVue TieredMenu. TieredMenu consumes
+// PrimeVue `MenuItem[]`, so the functions below transform our raw `MenuItem`
+// data into that shape. Separators are preserved; the dummy top-level header
+// is dropped.
 //
-// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Feather
+// PrimeVue's `MenuItem.icon` is a CSS class string, but we keep the Onms
 // icon *components*, so the icon component is stashed on a custom
 // `iconComponent` field (MenuItem allows arbitrary keys) and rendered via the
 // TieredMenu `#item` slot.
@@ -216,7 +128,7 @@ const createTopMenuListEntry = (
 const createPrimeChildItem = (
   menuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem => {
   const item: PrimeMenuItem = {
@@ -251,7 +163,7 @@ const createPrimeChildItem = (
 const createPrimeTopItem = (
   topMenuItem: MenuItem,
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem | null => {
   if (topMenuItem.type === 'separator') {
@@ -268,7 +180,10 @@ const createPrimeTopItem = (
   const item: PrimeMenuItem = {
     key: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
     label: topMenuItem.name ?? undefined,
-    iconComponent: createMenuIcon(topMenuItem, getIcon)
+    iconComponent: createMenuIcon(topMenuItem, getIcon),
+    // Marks root items so the side menu can show label tooltips for them while
+    // the rail is collapsed (submenu items keep their visible labels).
+    topLevel: true
   }
 
   const children = topMenuItem.items ?? []
@@ -293,7 +208,7 @@ const createPrimeTopItem = (
 const createPrimeMenuModel = (
   menus: MenuItem[],
   baseHref: string | null | undefined,
-  getIcon: (iconId?: string | null) => DefineComponent | null,
+  getIcon: (iconId?: string | null) => Component | null,
   onLogout: () => void
 ): PrimeMenuItem[] => {
   return menus
@@ -344,7 +259,6 @@ export {
   createPluginsMenu,
   createPrimeMenuModel,
   createTopMenuItem,
-  createTopMenuListEntry,
   getMenuLink,
   updateWithPluginsMenuItems
 }

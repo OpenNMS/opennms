@@ -8,19 +8,25 @@
               <strong>Use caution</strong> when uploading Trap configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
+        <div class="onms-row" v-if="!adminRole">
+          <div class="onms-col-12">
+            <span class="label">You need Admin access to upload/download Trap configuration files.</span>
+          </div>
+        </div>
         <div class="onms-row">
           <div class="onms-col-6">
             <label class="label">Download file in XML format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="download-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(true)"
             >
-              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download XML
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
         <div class="onms-row">
@@ -28,14 +34,15 @@
             <label class="label">Download file in JSON format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="download-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="onDownload(false)"
             >
-              <FeatherIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconDownload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Download JSON
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
          <div class="onms-row">
@@ -43,14 +50,15 @@
             <label class="label">Upload file in XML format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="upload-xml-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(true)"
             >
-              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload XML
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
          <div class="onms-row">
@@ -58,18 +66,19 @@
             <label class="label">Upload file in JSON format:</label>
           </div>
           <div class="onms-col-6">
-            <PButton
+            <OnmsButton
               data-test="upload-json-button"
               class="upload-download-button"
+              :disabled="!adminRole"
               @click="initiateUpload(false)"
             >
-              <FeatherIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
+              <OnmsIcon :icon="IconUpload" aria-hidden="true" focusable="false" class="upload-download-icon" />
               Upload JSON
-            </PButton>
+            </OnmsButton>
            </div>
         </div>
     </div>
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="confirmationDialogVisible"
       title="Upload Trap Configuration"
       actionButtonText="Upload"
@@ -79,28 +88,26 @@
       <template v-slot:content>
         <p>Are you sure you want to upload the Trap configuration? This will overwrite any existing configuration.</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import IconDownload from '@featherds/icon/action/DownloadFile'
-import IconUpload from '@featherds/icon/action/UploadFile'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
+import IconDownload from '@/components/icons/action/DownloadFile.vue'
+import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
+import useRole from '@/composables/useRole'
 import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
-
-const PButton = Button
 
 const { downloadFile } = useDownload()
+const { adminRole } = useRole()
 const snackbar = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const trapdConfigStore = useTrapdConfigStore()
@@ -109,6 +116,10 @@ const uploadType = ref<'xml' | 'json' | null>(null)
 const uploadFile = ref<File | null>(null)
 
 const onDownload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   try {
     startSpinner()
     const response = await downloadTrapdConfig(isXml)
@@ -127,9 +138,14 @@ const onDownload = async (isXml: boolean) => {
 }
 
 const initiateUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   uploadType.value = isXml ? 'xml' : 'json'
 
   const file = await new Promise<File | null>((resolve) => {
+
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = isXml ? '.xml' : '.json'
@@ -179,6 +195,10 @@ const onUploadConfirm = async () => {
 }
 
 const performUpload = async (isXml: boolean) => {
+  if (!adminRole.value) {
+    return
+  }
+
   if (!uploadFile.value) {
     return
   }

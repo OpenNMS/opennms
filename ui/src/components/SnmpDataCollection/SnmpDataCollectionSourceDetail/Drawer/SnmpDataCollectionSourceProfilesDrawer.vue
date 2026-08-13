@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="source-profiles-drawer"
     data-test="source-profiles-drawer"
     v-model:visible="isVisible"
-    position="right"
     :header="`Edit Profiles for ${props.sourceName}`"
-    :style="{ width: '40rem' }"
+    width="40rem"
     @hide="close"
     class="source-profiles-drawer"
   >
     <div class="container">
       <div class="section-label">Assigned Profiles</div>
       <div class="chips-container">
-        <PChip
+        <OnmsChip
           v-for="profile in localProfiles"
           :key="profile.id"
           :label="profile.name"
@@ -25,33 +24,35 @@
         >No profiles assigned</span>
       </div>
       <div class="spacer" />
-      <div class="section-label">Add Profile</div>
-      <PAutoComplete
-        v-model="autocompleteQuery"
-        :suggestions="filteredSuggestions"
-        optionLabel="name"
-        @complete="onSearch"
-        @option-select="addProfile($event.value)"
-        placeholder="Search profiles..."
-        :forceSelection="true"
-        data-test="profile-autocomplete"
-        dropdown
-        completeOnFocus
-      />
+      <FormField label="Add Profile">
+        <OnmsAutoComplete
+          v-model="autocompleteQuery"
+          :suggestions="filteredSuggestions"
+          optionLabel="name"
+          @complete="onSearch"
+          @optionSelect="(value) => addProfile(value as SnmpCollectionProfile)"
+          placeholder="Search profiles..."
+          :forceSelection="true"
+          data-test="profile-autocomplete"
+          dropdown
+          completeOnFocus
+          fluid
+        />
+      </FormField>
       <div class="button-row">
-        <Button
-          text
+        <OnmsButton
+          variant="ghost"
           label="Cancel"
           @click="close"
         />
-        <Button
+        <OnmsButton
           data-test="save-profiles-button"
           label="Save"
           @click="save"
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -59,13 +60,8 @@ import { computed, ref, watch } from 'vue'
 
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import type { SnmpCollectionProfile } from '@/types/snmpDataCollection'
-import AutoCompleteComponent from 'primevue/autocomplete'
-import Button from 'primevue/button'
-import ChipComponent from 'primevue/chip'
-import Drawer from 'primevue/drawer'
-
-const PChip = ChipComponent
-const PAutoComplete = AutoCompleteComponent
+import { OnmsAutoComplete, OnmsButton, OnmsChip, OnmsDrawer } from '@opennms/onms-ui'
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   visible: boolean
@@ -98,8 +94,8 @@ const onOpen = async () => {
   filteredSuggestions.value = [...availableProfiles.value]
 }
 
-const onSearch = (event: { query: string }) => {
-  const q = event.query.toLowerCase()
+const onSearch = (query: string) => {
+  const q = query.toLowerCase()
   if (q.length > 0) {
     filteredSuggestions.value = availableProfiles.value.filter(p =>
       p.name.toLowerCase().includes(q)
@@ -137,8 +133,8 @@ watch(() => props.visible, async (visible) => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .container {
   padding: 20px;
@@ -148,8 +144,8 @@ watch(() => props.visible, async (visible) => {
 }
 
 .section-label {
-  @include headline4;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-headline4;
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .chips-container {
@@ -160,8 +156,8 @@ watch(() => props.visible, async (visible) => {
 }
 
 .empty-text {
-  @include body-large;
-  color: var(--feather-secondary-text-on-surface);
+  @include onms-body-large;
+  color: var(--onms-secondary-text-on-surface);
   font-style: italic;
 }
 
@@ -178,4 +174,5 @@ watch(() => props.visible, async (visible) => {
     margin-left: 0 !important;
   }
 }
+
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="main-wrapper">
-    <PDataTable
+    <OnmsTable
       :value="tableData"
       dataKey="originalIndex"
       stripedRows
@@ -11,56 +11,52 @@
       @page="onPage"
       aria-label="External Requisitions"
     >
-      <PColumn :field="RequisitionData.ImportName" header="Name" sortable :pt="columnHeaderPt">
+      <OnmsColumn :field="RequisitionData.ImportName" header="Name" sortable>
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay :text="data[RequisitionData.ImportName]" />
         </template>
-      </PColumn>
-      <PColumn :field="RequisitionData.ImportURL" header="URL" sortable :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn :field="RequisitionData.ImportURL" header="URL" sortable>
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay :text="data[RequisitionData.ImportURL]" />
         </template>
-      </PColumn>
-      <PColumn header="Schedule Frequency" :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn header="Schedule Frequency">
         <template #body="{ data }">
           <ConfigurationCopyPasteDisplay
             :showCopyBtn="false"
             :text="ConfigurationHelper.cronToEnglish(data[RequisitionData.CronSchedule])"
           />
         </template>
-      </PColumn>
-      <PColumn :field="RequisitionData.RescanExisting" header="Rescan Behavior" sortable :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn :field="RequisitionData.RescanExisting" header="Rescan Behavior" sortable>
         <template #body="{ data }">
           {{ rescanToEnglish(data[RequisitionData.RescanExisting]) }}
         </template>
-      </PColumn>
-      <PColumn :pt="columnHeaderPt">
+      </OnmsColumn>
+      <OnmsColumn>
         <template #body="{ data }">
           <div class="flex">
-            <PButton
+            <OnmsIconButton
+              variant="filled"
               aria-label="Edit"
-              v-tooltip="'Edit'"
-              @click="() => props.editClicked(data.originalIndex)"
+              v-onms-tooltip="'Edit'"
               :disabled="Boolean(data[RequisitionData.ImportURL].startsWith('requisition://'))"
               data-test="edit-btn"
-            >
-              <FeatherIcon :icon="Edit" />
-            </PButton>
-            <PButton
-              text
+              :icon="Edit"
+              @click="() => props.editClicked(data.originalIndex)"
+            />
+            <OnmsIconButton
+              class="delete-icon"
               aria-label="Delete"
-              v-tooltip="'Delete'"
+              v-onms-tooltip="'Delete'"
+              :icon="Delete"
               @click="() => props.deleteClicked(data.originalIndex)"
-            >
-              <FeatherIcon
-                class="delete-icon"
-                :icon="Delete"
-              />
-            </PButton>
+            />
           </div>
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
@@ -69,27 +65,16 @@
   lang="ts"
 >
 import { computed, PropType } from 'vue'
-import DataTable, { DataTablePageEvent } from 'primevue/datatable'
-import Column from 'primevue/column'
-import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
+import { OnmsColumn, OnmsIconButton, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 
-import Edit from '@featherds/icon/action/Edit'
-import Delete from '@featherds/icon/action/Delete'
+import Edit from '@/components/icons/action/Edit.vue'
+import Delete from '@/components/icons/action/Delete.vue'
 
 import { RequisitionData } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import ConfigurationCopyPasteDisplay from './ConfigurationCopyPasteDisplay.vue'
 import { ProvisionDServerConfiguration } from './configuration.types'
 import { rescanCopy } from './copy/rescanItems'
-
-const PDataTable = DataTable
-const PColumn = Column
-const PButton = Button
-
-// PrimeVue Column doesn't emit scope="col" on the header <th>; restore it via the
-// passthrough so header cells stay associated with their columns for screen readers.
-const columnHeaderPt = { headerCell: { scope: 'col' }}
 
 /**
  * Props
@@ -115,7 +100,7 @@ const tableData = computed(() => {
 /**
  * When the user changes the page number.
  */
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (props.setNewPage) {
     props.setNewPage(event.page + 1)
   }
@@ -137,11 +122,6 @@ const rescanToEnglish = (rescanVal: string) => {
 }
 .flex {
   display: flex;
-
-  // Enlarge the edit/delete glyphs (FeatherIcon scales with font-size)
-  :deep(svg) {
-    font-size: 1.25em;
-  }
 }
 .delete-icon {
   color: var(--p-red-500);

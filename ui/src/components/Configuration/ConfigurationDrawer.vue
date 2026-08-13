@@ -22,16 +22,11 @@
             Requisition
           </div>
           <div class="icon">
-            <PButton
-              text
+            <OnmsIconButton
               aria-label="Cancel"
+              :icon="cancelIcon"
               @click="props.closePanel"
-            >
-              <FeatherIcon
-                class="close-icon"
-                :icon="cancelIcon"
-              />
-            </PButton>
+            />
           </div>
         </div>
       </div>
@@ -64,7 +59,7 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button flex button-align-right mt-20">
-          <PButton
+          <OnmsButton
             label="Save & Close"
             :loading="loading"
             :disabled="loading"
@@ -82,18 +77,15 @@
 >
 import { PropType, computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
-import Cancel from '@featherds/icon/navigation/Cancel'
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
 import ConfigurationHelpPanel from './ConfigurationHelpPanel.vue'
 import ProvisionDForm from './ProvisionDForm.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
-
-const PButton = Button
 
 /**
  * Props
@@ -196,8 +188,8 @@ const toggleHelp = () => {
   lang="scss"
   scoped
 >
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
+@import '@/styles/onms-typography';
+@import '@/styles/onms-elevation';
 
 
 .flex {
@@ -249,7 +241,7 @@ const toggleHelp = () => {
 .slide-inner-body {
   padding: 20px 20px 4px;
   background-color: var(--p-content-background);
-  @include elevation(1);
+  @include onms-elevation(1);
 }
 .side-inner-title {
   display: flex;
@@ -264,7 +256,7 @@ const toggleHelp = () => {
   border-bottom: 1px solid #d7d7dc;
 }
 .title {
-  @include headline2();
+  @include onms-headline2();
   color: var(--p-primary-color);
   min-height: 40px;
   display: flex;
@@ -274,9 +266,6 @@ const toggleHelp = () => {
   :deep(.p-button) {
     margin: 0;
   }
-}
-.close-icon {
-  font-size: 32px;
 }
 .sideshared {
   z-index: 2;

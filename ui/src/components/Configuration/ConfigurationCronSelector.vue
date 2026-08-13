@@ -5,7 +5,7 @@
       v-if="!props.config.advancedCrontab"
     >
       <FormField label="Schedule Type" class="occurance" :error="props.errors.occurance">
-        <PSelect
+        <OnmsSelect
           data-test="schedule-type-select"
           optionLabel="name"
           :options="scheduleTypes"
@@ -20,7 +20,7 @@
         class="occurance-day"
         :error="props.errors.occuranceDay"
       >
-        <PSelect
+        <OnmsSelect
           optionLabel="name"
           :options="dayTypes"
           :invalid="Boolean(props.errors.occuranceDay)"
@@ -34,7 +34,7 @@
         class="occurance-week"
         :error="props.errors.occuranceWeek"
       >
-        <PSelect
+        <OnmsSelect
           optionLabel="name"
           :options="weekTypes"
           :invalid="Boolean(props.errors.occuranceWeek)"
@@ -43,7 +43,7 @@
         />
       </FormField>
       <FormField label="Schedule Time" class="time">
-        <PInputText
+        <OnmsInputText
           type="time"
           @update:modelValue="(val: unknown) => updateFormValue('time', val as string)"
           :modelValue="props.config.time"
@@ -56,7 +56,7 @@
       v-if="props.config.advancedCrontab"
     >
       <FormField label="Advanced (Cron) Schedule" class="advanced-entry" :error="props.errors.occuranceAdvanced">
-        <PInputText
+        <OnmsInputText
           :invalid="Boolean(props.errors.occuranceAdvanced)"
           @update:modelValue="(val: unknown) => updateFormValue('occuranceAdvanced', val as string)"
           :modelValue="props.config.occuranceAdvanced"
@@ -64,15 +64,14 @@
       </FormField>
     </div>
     <div
-      :class="`feather-input-hint-custom
+      :class="`input-hint-custom
       ${advancedCronTabHasErrorInHint}`"
     >
       {{ !hasCronValidationError ? scheduledTime : '' }}
     </div>
     <div class="flex">
       <div class="checkbox-field">
-        <PCheckbox
-          binary
+        <OnmsCheckbox
           inputId="advanced-crontab-checkbox"
           :modelValue="props.config.advancedCrontab"
           @update:modelValue="(val: unknown) => updateFormValue('advancedCrontab', val as string)"
@@ -94,9 +93,7 @@
   lang="ts"
   setup
 >
-import Select from 'primevue/select'
-import InputText from 'primevue/inputtext'
-import Checkbox from 'primevue/checkbox'
+import { OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { scheduleTypes, weekTypes, dayTypes } from './copy/scheduleTypes'
 import { computed, PropType } from 'vue'
@@ -104,10 +101,6 @@ import { LocalConfiguration, LocalErrors } from './configuration.types'
 import { ErrorStrings } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
 import cronstrue from 'cronstrue'
-
-const PSelect = Select
-const PInputText = InputText
-const PCheckbox = Checkbox
 
 const updateFormValue = (type: string, value: string) => {
   props.updateValue(type, value)
@@ -155,12 +148,17 @@ const hasCronValidationError = computed(() => props.errors.occuranceAdvanced || 
   lang="scss"
   scoped
 >
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
+@import "@/styles/onms-tokens";
+@import '@/styles/onms-typography';
 
-.feather-input-hint-custom {
+// Local replacement for the removed FeatherDS global spacing utility
+// (--onms-spacing-m mirrors the original FeatherDS value).
+.mb-m {
+    margin-bottom: var(--onms-spacing-m);
+}
+.input-hint-custom {
     flex: 1;
-    @include caption();
+    @include onms-caption();
     color: var(--p-text-muted-color);
     margin-top: -24px;
     display: flex;

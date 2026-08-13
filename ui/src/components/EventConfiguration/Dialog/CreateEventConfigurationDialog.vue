@@ -1,9 +1,8 @@
 <template>
-  <Dialog
+  <OnmsDialog
     v-model:visible="store.createEventConfigSourceDialogState.visible"
     :header="labels.title"
     :modal="true"
-    :draggable="false"
     :closable="false"
     :closeOnEscape="false"
   >
@@ -16,7 +15,7 @@
         :for="nameInputId"
         :error="error?.name"
       >
-        <InputText
+        <OnmsInputText
           :id="nameInputId"
           v-model="configName"
           :invalid="!!error?.name"
@@ -28,7 +27,7 @@
         :for="vendorInputId"
         :error="error?.vendor"
       >
-        <InputText
+        <OnmsInputText
           :id="vendorInputId"
           v-model="vendor"
           :invalid="!!error?.vendor"
@@ -49,24 +48,24 @@
       <p>The event configuration source has been created successfully.</p>
     </div>
     <template #footer>
-      <Button
-        text
+      <OnmsButton
+        variant="ghost"
         label="Cancel"
         @click="handleCancel"
       />
-      <Button
+      <OnmsButton
         v-if="!successMessage"
         label="Create"
         @click="handleSave"
         :disabled="Object.keys(error || {}).length > 0"
       />
-      <Button
+      <OnmsButton
         v-else
         label="View Source"
         @click="visitCreatedEventConfigSource"
       />
     </template>
-  </Dialog>
+  </OnmsDialog>
 </template>
 
 <script lang="ts" setup>
@@ -76,9 +75,7 @@ import { useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { addEventConfigSource } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
+import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 
 const router = useRouter()

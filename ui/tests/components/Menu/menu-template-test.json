@@ -14,7 +14,7 @@
   "displayAddNodeButton": false,
   "sideMenuInitialExpand": false,
   "copyrightDates": "2002-2026",
-  "version": "36.0.3-SNAPSHOT",
+  "version": "36.0.4-SNAPSHOT",
   "menus": [
     {
       "id": "testHeader",
@@ -36,13 +36,6 @@
           "locationMatch": "configurationManagement",
           "roles": null
         },
-        {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
-          "roles": null
-        },        
         {
           "id": "deviceConfigs",
           "name": "Device Configs",

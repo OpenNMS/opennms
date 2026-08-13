@@ -2,51 +2,44 @@
   <Search />
   <div class="sidebar-relative-container">
     <div class="file-tools">
-     <PButton
+     <OnmsIconButton
         v-if="changedFilesOnly"
-        text
         class="btn"
         aria-label="Click to show all files."
-        v-tooltip="'Click to show all files.'"
+        v-onms-tooltip="'Click to show all files.'"
+        :icon="FilterAlt"
+        :icon-size="'2em'"
         @click="getFiles(false)"
-      >
-        <FeatherIcon :icon="FilterAlt" />
-      </PButton>
+      />
 
-      <PButton
+      <OnmsIconButton
         v-if="!changedFilesOnly"
-        text
         class="btn unfiltered"
         aria-label="Click to show modified files only."
-        v-tooltip="'Click to show modified files only.'"
+        v-onms-tooltip="'Click to show modified files only.'"
+        :icon="FilterAlt"
+        :icon-size="'2em'"
         @click="getFiles(true)"
-      >
-        <FeatherIcon :icon="FilterAlt" />
-      </PButton>
+      />
 
-      <PButton
-        text
+      <OnmsIconButton
         class="btn"
         :disabled="!selectedFileName"
         aria-label="Scroll to selected file."
-        v-tooltip="'Scroll to selected file.'"
+        v-onms-tooltip="'Scroll to selected file.'"
+        :icon="SupportCenter"
+        :icon-size="'2em'"
         @click="scrollToSelectedFile"
-      >
-        <FeatherIcon :icon="SupportCenter" />
-      </PButton>
+      />
 
-      <PButton
-        text
-        class="btn"
+      <OnmsIconButton
+        class="btn info-icon"
         aria-label="Click for info."
-        v-tooltip="'Click for info.'"
+        v-onms-tooltip="'Click for info.'"
+        :icon="InfoIcon"
+        :icon-size="'2em'"
         @click="showInfo"
-      >
-        <FeatherIcon
-          :icon="InfoIcon"
-          class="info-icon"
-        />
-      </PButton>
+      />
     </div>
     <div class="file-sidebar">
       <ul>
@@ -54,7 +47,7 @@
       </ul>
     </div>
   </div>
-  <MessageDialog
+  <OnmsMessageDialog
     :visible="isMessageDialogVisible"
     :relative="true"
     maxHeight="22em"
@@ -77,22 +70,18 @@
         <p>Use the Save button to save changes to the selected file. Use the Reset button to discard changes and revert the file to its previous state.</p>
       </div>
     </template>
-  </MessageDialog>
+  </OnmsMessageDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import FilterAlt from '@featherds/icon/action/FilterAlt'
-import SupportCenter from '@featherds/icon/action/SupportCenter'
-import InfoIcon from '@featherds/icon/action/Info'
-import Button from 'primevue/button'
-import MessageDialog from '../Common/MessageDialog.vue'
+import { OnmsIconButton, OnmsMessageDialog } from '@opennms/onms-ui'
+import FilterAlt from '@/components/icons/action/FilterAlt.vue'
+import SupportCenter from '@/components/icons/action/SupportCenter.vue'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'
-
-const PButton = Button
 
 const isMessageDialogVisible = ref(false)
 const fileEditorStore = useFileEditorStore()
@@ -150,9 +139,6 @@ const scrollToSelectedFile = () => {
       width: 2.8em !important;
       min-width: 2.8em !important;
       margin-top: 2px;
-      svg {
-        font-size: 2em !important;
-      }
 
       &.unfiltered {
         color: var(--p-text-muted-color);
@@ -162,7 +148,6 @@ const scrollToSelectedFile = () => {
 
   .info-icon {
     cursor: pointer;
-    font-size: 1.5em;
     margin-left: 0.5em;
 
     &:hover {

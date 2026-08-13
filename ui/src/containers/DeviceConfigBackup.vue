@@ -51,7 +51,7 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 @mixin status-bar($color) {
   background: $color;
@@ -83,13 +83,13 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
         justify-content: space-between;
 
         .title {
-          @include headline1;
+          @include onms-headline1;
           margin: 24px 0px 24px 19px;
           display: block;
         }
 
         .dcb-search {
-          width: 250px;
+          width: 30rem;
           margin-top: 16px;
         }
       }

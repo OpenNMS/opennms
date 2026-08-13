@@ -7,7 +7,7 @@
     </div>
     <div class="info-section">
       <span>Configure trap listener settings.</span>
-      <FeatherIcon
+      <OnmsIcon
         :icon="InfoIcon"
         class="info-icon"
         role="button"
@@ -24,12 +24,11 @@
         :error="trapConfigError.port"
         hint="Default: 10162"
       >
-        <PInputNumber
+        <OnmsInputNumber
           inputId="trap-port"
           v-model="port"
           :min="MIN_PORT"
           :max="MAX_PORT"
-          :useGrouping="false"
           :invalid="!!trapConfigError.port"
         />
       </FormField>
@@ -39,7 +38,7 @@
         :error="trapConfigError.bindAddress"
         hint="* for all, or specify IP address"
       >
-        <PInputText
+        <OnmsInputText
           id="trap-bind-address"
           v-model="bindAddress"
           :invalid="!!trapConfigError.bindAddress"
@@ -49,7 +48,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="switch-row">
-      <PToggleSwitch
+      <OnmsToggleSwitch
         v-model="newSuspectOnTrap"
         data-test="unknown-devices-input"
       />
@@ -66,7 +65,7 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-message-row">
-            <PToggleSwitch
+            <OnmsToggleSwitch
               v-model="trapMessageStatus"
               data-test="trap-message-input"
             />
@@ -75,7 +74,7 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="trap-source-address-row">
-            <PToggleSwitch
+            <OnmsToggleSwitch
               v-model="trapSourceAddressStatus"
               data-test="trap-source-address-input"
             />
@@ -89,11 +88,10 @@
             :error="trapConfigError.threads"
             hint="Default: 0"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-threads"
               v-model="threads"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.threads"
             />
           </FormField>
@@ -105,11 +103,10 @@
             :error="trapConfigError.queueSize"
             hint="Default: 10000"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-queue-size"
               v-model="queueSize"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.queueSize"
             />
           </FormField>
@@ -121,11 +118,10 @@
             :error="trapConfigError.batchSize"
             hint="Default: 1000"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-batch-size"
               v-model="batchSize"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.batchSize"
             />
           </FormField>
@@ -137,11 +133,10 @@
             :error="trapConfigError.batchInterval"
             hint="Default: 500ms"
           >
-            <PInputNumber
+            <OnmsInputNumber
               inputId="trap-batch-interval"
               v-model="batchInterval"
               :min="0"
-              :useGrouping="false"
               :invalid="!!trapConfigError.batchInterval"
             />
           </FormField>
@@ -153,14 +148,14 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="footer">
-      <PButton
+      <OnmsButton
         data-test="save-button"
         label="Update Changes"
         :disabled="isSaveDisabled || isSaving"
         @click="updateConfig"
       />
     </div>
-    <MessageDialog
+    <OnmsMessageDialog
       :visible="isMessageDialogVisible"
       maxHeight="22em"
       maxWidth="50em"
@@ -172,7 +167,7 @@
           <p>Configure trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
         </div>
       </template>
-    </MessageDialog>
+    </OnmsMessageDialog>
   </TableCard>
 </template>
 
@@ -180,27 +175,17 @@
 import { ref, watch, watchEffect } from 'vue'
 
 import { isEqual } from 'lodash'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
-import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
-import ToggleSwitch from 'primevue/toggleswitch'
-import { FeatherIcon } from '@featherds/icon'
-import InfoIcon from '@featherds/icon/action/Info'
+import InfoIcon from '@/components/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
-import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
-
-const PButton = Button
-const PInputNumber = InputNumber
-const PInputText = InputText
-const PToggleSwitch = ToggleSwitch
 
 const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
 const port = ref<number>(DEFAULT_TRAPD_PORT)
@@ -329,7 +314,7 @@ watch(() => store.trapdConfig, () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/onms-typography' as *;
 
 .general-configuration {
   margin-top: 10px;
@@ -343,12 +328,12 @@ watch(() => store.trapdConfig, () => {
 
     .section-left {
       h3 {
-        @include typography.headline3;
+        @include onms-headline3;
         color: var(--p-text-color);
       }
 
       p {
-        @include typography.body-large;
+        @include onms-body-large;
         color: var(--p-text-muted-color);
       }
     }
@@ -383,7 +368,7 @@ watch(() => store.trapdConfig, () => {
     gap: 0.75rem;
 
     .switch-label {
-      @include typography.body-small;
+      @include onms-body-small;
     }
   }
 
@@ -416,7 +401,7 @@ watch(() => store.trapdConfig, () => {
         gap: 0.75rem;
 
         .switch-label {
-          @include typography.body-small;
+          @include onms-body-small;
         }
       }
     }

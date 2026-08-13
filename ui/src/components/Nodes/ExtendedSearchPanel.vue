@@ -3,7 +3,7 @@
     <div class="onms-row add-row">
       <div class="onms-col-5">
         <FormField label="Search Type">
-          <Select
+          <OnmsSelect
             v-model="currentSelection"
             :options="searchOptions"
             optionLabel="title"
@@ -14,74 +14,64 @@
       </div>
       <div class="onms-col-5">
         <FormField label="Search Term">
-          <InputText
+          <OnmsInputText
             v-model="searchTerm"
             data-test="search-term-input"
           />
         </FormField>
       </div>
       <div class="onms-col-2 add-btn-col">
-        <Button
-          outlined
+        <OnmsButton
+          variant="outlined"
           data-test="add-search-term-button"
           class="add-search-term-button"
           @click="onAddSearchTerm"
         >
-          <FeatherIcon :icon="Add" />
+          <OnmsIcon :icon="Add" />
           Add
-        </Button>
+        </OnmsButton>
       </div>
     </div>
 
-    <PDataTable
+    <OnmsTable
       v-if="gridItems.length > 0"
       :value="gridItems"
       dataKey="key"
       class="extended-search-table"
     >
-      <PColumn field="label" header="Search Type" style="width: 40%" />
-      <PColumn field="value" header="Search Term">
+      <OnmsColumn field="label" header="Search Type" style="width: 40%" />
+      <OnmsColumn field="value" header="Search Term">
         <template #body="{ data }">
-          <PInputText
+          <OnmsInputText
             v-model="data.value"
             class="extended-search-input"
           />
         </template>
-      </PColumn>
-      <PColumn header="" style="width: 3.5rem">
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
-          <Button
-            text
+          <OnmsIconButton
+            :icon="DeleteIcon"
+            title="Remove search term"
             data-test="delete-search-term-button"
             @click="removeGridItem(data.key)"
-          >
-            <FeatherIcon :icon="DeleteIcon" />
-          </Button>
+          />
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Button from 'primevue/button'
-import { FeatherIcon } from '@featherds/icon'
-import Add from '@featherds/icon/action/Add'
-import DeleteIcon from '@featherds/icon/action/Delete'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import Add from '@/components/icons/action/Add.vue'
+import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodeQueryExtendedSearchParams } from '@/types'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
-const PInputText = InputText
 
 const {
   getExtendedSearchValues,
@@ -118,7 +108,7 @@ const foreignSourceKeys = ['foreignSource', 'foreignId', 'foreignSourceId']
 const snmpKeys = ['snmpIfAlias', 'snmpIfDescription', 'snmpIfIndex', 'snmpIfName', 'snmpIfType']
 const sysKeys = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId']
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const searchTerm = ref('')
 const currentSelection = ref<SearchOption | undefined>(undefined)
 const gridItems = ref<GridItem[]>([])
@@ -166,11 +156,11 @@ const applyToStore = () => {
       Object.assign(ext.sysParams, { [item.key]: item.value })
     }
   }
-  nodeStructureStore.setExtendedSearchParams(ext)
+  nodeListStore.setExtendedSearchParams(ext)
 }
 
 const resetFromStore = () => {
-  const values = getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+  const values = getExtendedSearchValues(nodeListStore.queryFilter.extendedSearch)
   gridItems.value = values.map(v => ({ key: v.key, label: v.name, value: v.value }))
   searchTerm.value = ''
   currentSelection.value = undefined
@@ -184,13 +174,13 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/styles/themes/variables';
+@use '@/styles/onms-typography' as *;
+@use '@/styles/onms-tokens' as variables;
 
 .extended-search-container {
   .add-search-term-button {
     border-radius: 0;
-    border: 1px solid var(--feather-primary);
+    border: 1px solid var(--onms-primary);
     width: auto;
     padding: 0.5em 1em;
   }

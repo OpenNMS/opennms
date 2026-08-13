@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     v-if="props.index !== null && store.snmpV3Users[props.index]"
     :visible="props.visible"
     title="Snmpv3 User Delete Confirmation"
@@ -11,11 +11,11 @@
       <p>Are you sure you want to delete this SNMPv3 user with security name "{{ store.snmpV3Users[props.index!]?.securityName }}"?</p>
       <p><strong>Note:</strong> This action cannot be undone.</p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 
 const store = useTrapdConfigStore()

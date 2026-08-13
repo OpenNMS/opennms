@@ -1,17 +1,17 @@
 <template>
   <div ref="triggerEl" class="self-service-menubar-icon-wrapper" @mouseenter="showMenu">
-    <Button
-      text
+    <OnmsButton
+      variant="text"
       class="self-service-menubar-dropdown-button-dark"
       aria-haspopup="true"
       aria-label="User self-service menu"
       @click="onTriggerClick"
     >
-      <FeatherIcon :icon="IconAccountCircle" class="self-service-top-icon" />
-      <FeatherIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
-    </Button>
+      <OnmsIcon :icon="IconAccountCircle" class="self-service-top-icon" />
+      <OnmsIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
+    </OnmsButton>
 
-    <Popover
+    <OnmsPopover
       ref="pop"
       appendTo="self"
       class="onms-user-dropdown-panel self-service-dropdown-panel"
@@ -19,7 +19,7 @@
     >
       <div class="self-service-menubar-dropdown-item-content" @click="onUserProfileMenuClick">
         <a :href="computeLink('')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" name="self-service-user">
-          <FeatherIcon :icon="IconAccountCircle" class="self-service-icon" />
+          <OnmsIcon :icon="IconAccountCircle" class="self-service-icon" />
           <span class="left-margin-small">
             {{ ellipsify(mainMenu.username || '', 40) }}
           </span>
@@ -30,29 +30,27 @@
         v-for="item in menuItems"
         :key="item?.id || ''"
         class="self-service-menubar-dropdown-item-content"
-        @click="onMenuItemClick(item)"
+        @click="onMenuItemClick(item, $event)"
       >
         <a :href="item.action === 'logout' ? '#' : computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
-          <FeatherIcon :icon="createIcon(item)" class="self-service-icon" />
+          <OnmsIcon :icon="createIcon(item)" class="self-service-icon" />
           <span class="left-margin-small">
             {{ item?.name || '' }}
           </span>
         </a>
       </div>
-    </Popover>
+    </OnmsPopover>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DefineComponent, computed, ref, watch } from 'vue'
-import { FeatherIcon } from '@featherds/icon'
-import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
-import IconAccountCircle from '@featherds/icon/action/AccountCircle'
-import IconHelp from '@featherds/icon/action/Help'
-import IconLogout from '@featherds/icon/action/LogOut'
-import IconSecurity from '@featherds/icon/network/Security'
-import Button from 'primevue/button'
-import Popover from 'primevue/popover'
+import { Component, computed, ref, watch } from 'vue'
+import { OnmsIcon, OnmsButton, OnmsPopover } from '@opennms/onms-ui'
+import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import IconAccountCircle from '@/components/icons/action/AccountCircle.vue'
+import IconHelp from '@/components/icons/action/Help.vue'
+import IconLogout from '@/components/icons/action/LogOut.vue'
+import IconSecurity from '@/components/icons/network/Security.vue'
 import { ellipsify } from '@/lib/utils'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -115,7 +113,7 @@ const menuItems = computed<MenuItem[]>(() => {
 })
 
 const createIcon = (menuItem: MenuItem) => {
-  let icon: DefineComponent | null = null
+  let icon: Component | null = null
 
   switch (menuItem.id) {
     case 'helpMenu':
@@ -126,7 +124,7 @@ const createIcon = (menuItem: MenuItem) => {
       icon = IconSecurity; break
   }
 
-  return (icon ?? IconHelp) as typeof FeatherIcon
+  return (icon ?? IconHelp) as Component
 }
 
 const computeLink = (url: string) => {
@@ -139,8 +137,14 @@ const onUserProfileMenuClick = () => {
   window.location.assign(link)
 }
 
-const onMenuItemClick = async (item: MenuItem) => {
+const onMenuItemClick = async (item: MenuItem, event?: Event) => {
   if (item.action === 'logout') {
+    // Cancel the anchor's default navigation: its '#' href resolves against the
+    // <base href> that embedding JSP pages set (includes/bootstrap.jsp), so an
+    // uncancelled click starts a full-page navigation that races the logout
+    // POST below — Firefox tears the request down before it is ever sent,
+    // leaving the user logged in (NMS-20174).
+    event?.preventDefault()
     await performLogout()
     return
   }
@@ -151,8 +155,8 @@ const onMenuItemClick = async (item: MenuItem) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@import '@/styles/onms-typography';
+@import "@/styles/onms-tokens";
 
 .self-service-menubar-icon-wrapper {
   position: relative;
@@ -195,10 +199,10 @@ const onMenuItemClick = async (item: MenuItem) => {
 
 div.self-service-menubar-icon-wrapper {
   .self-service-menubar-dropdown-button-dark {
-    svg.self-service-top-icon.feather-icon {
+    svg.self-service-top-icon.onms-icon {
       vertical-align: -0.5rem;
     }
-    svg.self-service-arrow-dropdown.feather-icon {
+    svg.self-service-arrow-dropdown.onms-icon {
       vertical-align: 0;
     }
   }
@@ -221,12 +225,12 @@ div.self-service-menubar-icon-wrapper {
   }
 }
 
-.feather-icon.self-service-top-icon {
+.onms-icon.self-service-top-icon {
   font-size: 2em;
   margin-right: 0.25rem;
 }
 
-.feather-icon.self-service-icon {
+.onms-icon.self-service-icon {
   font-size: 1.25em;
 }
 

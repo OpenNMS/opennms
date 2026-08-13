@@ -44,6 +44,7 @@ import {
   RequisitionHTTPTypes
 } from './copy/requisitionTypes'
 import { scheduleTypes, weekTypes, weekNameTypes, dayTypes } from './copy/scheduleTypes'
+import { copyToClipboard } from '@/composables/useClipboard'
 import cronstrue from 'cronstrue'
 import ipRegex from 'ip-regex'
 import isValidDomain from 'is-valid-domain'
@@ -674,21 +675,6 @@ const findSubType = (url: Array<string>) => {
 }
 
 /**
- * This is a workaround for FeatherInput
- * Attributes are not tracked reactively and
- * therefore do not update after the initial render.
- */
-const forceSetHint = (key: { hint: string }, index: number, wrapperClass = '.hint-label') => {
-  const labels = document.querySelectorAll(wrapperClass)
-  if (labels && labels[index]) {
-    const hintLabel = labels[index].querySelector('.feather-input-hint')
-    if (hintLabel) {
-      hintLabel.textContent = key.hint
-    }
-  }
-}
-
-/**
  *
  * @param type Currently set Type of Requisition
  * @returns The hint for the host field if there is one.
@@ -999,37 +985,6 @@ const validateType = (typeName: string) => {
   return !typeName ? ErrorStrings.Required('Type') : ''
 }
 
-/**
- * Allows for copying to clipboard in both HTTPS & HTTP
- * @param text text to copy
- * @returns promise
- */
-const copyToClipboard = (text: string) => {
-  // navigator clipboard api needs a secure context (https)
-  if (navigator.clipboard && window.isSecureContext) {
-    // navigator clipboard api method'
-    return navigator.clipboard.writeText(text)
-  } else {
-    // text area method
-    const textArea = document.createElement('textarea')
-    textArea.value = text
-    // make the textarea out of viewport
-    textArea.style.position = 'fixed'
-    textArea.style.left = '-999999px'
-    textArea.style.top = '-999999px'
-    document.body.appendChild(textArea)
-    textArea.focus()
-    textArea.select()
-    return new Promise<void>((res, rej) => {
-      if (document.execCommand('copy')) {
-        res()
-      } else {
-        rej()
-      }
-      textArea.remove()
-    })
-  }
-}
 
 export const ConfigurationHelper = {
   obfuscatePassword,
@@ -1043,7 +998,6 @@ export const ConfigurationHelper = {
   createBlankErrors,
   createBlankLocal,
   cronToEnglish,
-  forceSetHint,
   getHostHint,
   parseHint,
   stripOriginalIndexes,

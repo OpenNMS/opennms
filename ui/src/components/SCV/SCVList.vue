@@ -1,7 +1,7 @@
 <template>
   <div class="scv-list">
     <h3 class="title">Aliases</h3>
-    <PListbox
+    <OnmsListbox
       v-model="selectedAlias"
       :options="aliases"
       class="alias-listbox"
@@ -14,10 +14,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import Listbox from 'primevue/listbox'
+import { OnmsListbox } from '@opennms/onms-ui'
 import { useScvStore } from '@/stores/scvStore'
-
-const PListbox = Listbox
 
 const scvStore = useScvStore()
 const selectedAlias = ref<string | null>(null)
@@ -32,8 +30,9 @@ const listStyle = 'max-height: calc(100vh - 210px)'
 // FeatherListItem behavior that reloaded on every click.
 let loadedAlias: string | null = null
 
-const onChange = (event: { value: string | null }) => {
-  const alias = event.value ?? loadedAlias
+const onChange = (newValue: unknown) => {
+  const value = newValue as string | null
+  const alias = value ?? loadedAlias
   if (!alias) {
     return
   }
@@ -53,11 +52,11 @@ watch(isEditing, (editing) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .scv-list {
   .title {
-    @include headline3;
+    @include onms-headline3;
     margin: 0 0 0.5rem 0;
   }
 

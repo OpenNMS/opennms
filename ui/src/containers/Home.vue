@@ -1,6 +1,6 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12">
+  <div class="onms-row">
+    <div class="onms-col-12">
       <span>Please choose an option from the main menu.</span>
     </div>
   </div>

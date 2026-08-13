@@ -24,6 +24,7 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
@@ -58,6 +59,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -109,6 +111,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -311,6 +316,63 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
+    }
+
+    /**
+     * updateNode must ignore provisioning-ownership fields while still applying ordinary ones.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateNodeCannotReassignForeignSource() throws Exception {
+        createNode();
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        sendPut("/nodes/1", "sysContact=LegitContact&foreignSource=AttackerReq&foreignId=999"
+                + "&assetRecord.node.foreignSource=NestedReq", 204);
+        final OnmsNode updated = m_nodeDao.get(1);
+        assertNull("foreignSource must not be reassignable via updateNode", updated.getForeignSource());
+        assertEquals("legitimate fields still update", "LegitContact", updated.getSysContact());
+    }
+
+    /**
+     * The v1 sub-resources bind the raw request key, so a camelCase nested path reaches the
+     * node. None of them may be a route to its protected properties or primary key.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void v1SubResourceUpdatesCannotReachNode() throws Exception {
+        createSnmpInterface(); // node 1 + ipInterface 10.10.10.10 + snmpInterface 6
+        final String service = "<service status=\"A\"><serviceType><name>ICMP</name></serviceType></service>";
+        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 201,
+                "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+
+        // each request carries one legitimate field, so a 204 shows the update ran and only the
+        // protected properties were dropped
+        final String attack = "&node.foreignSource=AttackerReq&node.id=999";
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10", "isManaged=U" + attack, 204);
+        sendPut("/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", "status=F" + attack, 204);
+        sendPut("/nodes/1/snmpinterfaces/6", "ifAlias=legit" + attack, 204);
+
+        final OnmsNode node = m_nodeDao.get(1);
+        assertNotNull("the node must still exist under its original id", node);
+        assertNull("foreignSource must not be reachable from a v1 sub-resource", node.getForeignSource());
+        assertEquals("the node's primary key must not be overwritten", Integer.valueOf(1), node.getId());
+    }
+
+    /**
+     * The asset record holds a back-reference to its node, so the asset endpoint must not be a
+     * route to the node's protected properties.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void updateAssetRecordCannotReachNodeForeignSource() throws Exception {
+        createNode();
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        sendPut("/nodes/1/assetRecord", "description=LegitAsset&node.foreignSource=AttackerReq"
+                + "&node.foreign_source=AttackerReq2", 204);
+        assertTrue(sendRequest(GET, "/nodes/1/assetRecord", 200).contains("LegitAsset"));
+        assertNull("node.foreignSource must not be settable via the asset endpoint",
+                m_nodeDao.get(1).getForeignSource());
     }
 
     @Test

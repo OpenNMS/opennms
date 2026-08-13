@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     class="data-collection-files-upload-report-dialog"
     :visible="props.dialogVisible"
     title="Upload Report"
@@ -29,11 +29,11 @@
         </ul>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 
 const props = defineProps<{

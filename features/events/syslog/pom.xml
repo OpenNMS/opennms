@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>36.0.3-SNAPSHOT</version>
+    <version>36.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -79,6 +79,12 @@
         <groupId>org.apache.camel.karaf</groupId>
         <artifactId>camel-core-osgi</artifactId>
         <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
+      <!-- camel-core-osgi only pulls this in as scope=provided, which isn't transitive -->
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

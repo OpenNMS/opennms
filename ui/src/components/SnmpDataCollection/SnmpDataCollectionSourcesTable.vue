@@ -4,26 +4,21 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <InputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor or Description"
-                :aria-label="'Search by Source, Vendor or Description'"
-              />
-              <InputIcon>
-                <FeatherIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor or Description"
+              :aria-label="'Search by Source, Vendor or Description'"
+            />
           </FormField>
         </div>
       </div>
       <div class="section-right">
         <div class="add">
-          <Button
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Create New Data Collection Source"
             data-test="create-source-button"
             @click="goToCreateSource"
@@ -32,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -49,23 +44,23 @@
       class="data-table"
       data-test="sources-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column header="Profiles">
+      <OnmsColumn header="Profiles">
         <template #body="{ data }">
           <div
             class="profile-chips"
             :data-test="`profiles-cell-${data.name}`"
           >
-            <Chip
+            <OnmsChip
               v-for="profile in profilesForSource(data.name)"
               :key="profile.id"
               :label="profile.name"
               class="profile-tag clickable-chip"
-              v-tooltip="'Click to edit profile'"
+              v-onms-tooltip="'Click to edit profile'"
               @click="router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id } })"
             />
             <span
@@ -74,62 +69,55 @@
             >—</span>
           </div>
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
       >
         <template #body="{ data }">
-          <Tag
+          <OnmsTag
             :class="data.enabled ? 'enabled-tag' : 'disabled-tag'"
             :value="data.enabled ? 'Enabled' : 'Disabled'"
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
-            <Button
-              text
+            <OnmsIconButton
               :title="`View ${data.name}`"
               data-test="view-button"
+              :icon="ViewDetails"
               @click="onSourceClick(data)"
-            >
-              <FeatherIcon :icon="ViewDetails" />
-            </Button>
+            />
             <!-- Quick-download in XML (the round-trippable format the
                  /upload endpoint accepts). JSON is still reachable via
                  the row menu below for users who want it. -->
-            <Button
-              text
+            <OnmsIconButton
               :title="`Download ${data.name} XML`"
               data-test="download-xml-button"
+              :icon="DownloadIcon"
               @click="downloadCollectionSource(data, 'xml')"
-            >
-              <FeatherIcon :icon="DownloadIcon" />
-            </Button>
-            <Button
-              text
+            />
+            <OnmsIconButton
               aria-haspopup="true"
               aria-controls="source-row-menu"
               :title="`More actions for ${data.name}`"
               data-test="row-menu-button"
+              :icon="MenuIcon"
               @click="toggleRowMenu($event, data)"
-            >
-              <FeatherIcon :icon="MenuIcon" />
-            </Button>
+            />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -161,22 +149,22 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { FeatherIcon } from '@featherds/icon'
-import DownloadIcon from '@featherds/icon/action/DownloadFile'
-import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
-import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Button from 'primevue/button'
-import Chip from 'primevue/chip'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
-import Tag from 'primevue/tag'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
+import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
+import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
+import ViewDetails from '@/components/icons/action/ViewDetails.vue'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {
@@ -240,12 +228,12 @@ watch(
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: 'Download XML',
       command: () => downloadCollectionSource(target, 'xml')
@@ -287,7 +275,7 @@ const onSourceClick = (source: SnmpCollectionSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -295,7 +283,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {
@@ -494,11 +482,6 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     gap: 5px;
-
-    // enlarge the button icons (FeatherIcon scales with font-size)
-    :deep(.p-button) {
-      font-size: 1.3rem;
-    }
   }
 }
 </style>

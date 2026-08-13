@@ -3,24 +3,23 @@
     ref="navRef"
     id="opennms-sidemenu-vue-container"
     class="onms-side-menu"
-    :class="{ 'onms-side-menu--open': isOpen }"
-    @mouseenter="onRailEnter"
-    @mouseleave="onRailLeave"
+    :class="{ 'onms-side-menu--open': isPinned }"
   >
     <button
       type="button"
       class="onms-side-menu__toggle"
-      :title="isPinned ? 'Collapse menu' : 'Expand menu'"
+      v-onms-tooltip="{ value: isPinned ? 'Collapse menu (Ctrl+\\)' : 'Expand menu (Ctrl+\\)', showDelay: 300 }"
       :aria-label="isPinned ? 'Collapse menu' : 'Expand menu'"
       :aria-expanded="isPinned"
+      aria-keyshortcuts="Control+\"
       @click="togglePinned"
     >
-      <i class="pi" :class="isPinned ? 'pi-angle-double-left' : 'pi-angle-double-right'" aria-hidden="true" />
+      <OnmsIcon :icon="isPinned ? ChevronLeft : ChevronRight" />
     </button>
 
     <TieredMenu
       ref="tieredMenuRef"
-      :model="topPanels"
+      :model="topPanels as never"
       class="onms-side-menu__menu"
       breakpoint="0px"
     >
@@ -28,6 +27,7 @@
         <a
           class="onms-side-menu__link"
           v-bind="props.action"
+          v-onms-tooltip="{ value: item.label, disabled: isPinned || !item.topLevel, showDelay: 300 }"
           :href="item.url || undefined"
           :target="item.target || undefined"
         >
@@ -35,7 +35,7 @@
             <component :is="item.iconComponent" v-if="item.iconComponent" aria-hidden="true" />
           </span>
           <span class="onms-side-menu__label">{{ item.label }}</span>
-          <i v-if="hasSubmenu" class="pi pi-angle-right onms-side-menu__chevron" aria-hidden="true" />
+          <OnmsIcon v-if="hasSubmenu" :icon="ChevronRight" class="onms-side-menu__chevron" />
         </a>
       </template>
     </TieredMenu>
@@ -45,8 +45,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+// We are using PrimeVue TieredMenu directly here, rather than wrapping it in an OnmsUI component.
+// We are reaching into TieredMenu internals (DOM queries in positionFlyouts, hide() in togglePinned),
+// and also not using this anywhere else in the app, so we don't want to add a new OnmsUI component for it.
+// If we ever need to use TieredMenu elsewhere, we can wrap it in an OnmsUI component at that time.
+// eslint-disable-next-line no-restricted-imports
 import TieredMenu from 'primevue/tieredmenu'
-import type { MenuItem } from 'primevue/menuitem'
+import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
+import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -74,43 +81,21 @@ const { getIcon } = useMenuIcons()
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 
-// isPinned is the persisted expanded/collapsed state (toggle button).
-// isHovering expands the rail transiently (open-on-hover) without persisting.
+// isPinned is the persisted expanded/collapsed state (toggle button). The rail
+// no longer expands on hover (NMS-20167): submenus follow PrimeVue TieredMenu's
+// default interaction — click to open, hover-to-switch only after that first
+// click — and TieredMenu's own outside-click listener closes any open flyout.
 const isPinned = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
-const isHovering = ref<boolean>(false)
-const isOpen = computed<boolean>(() => isPinned.value || isHovering.value)
-
-const tieredMenuRef = ref<any>(null)
-
-const onRailEnter = () => {
-  isHovering.value = true
-
-  // PrimeVue's TieredMenu only opens submenus on hover once it is "dirty"
-  // (after an initial click / keyboard interaction). Enable that flag on entry
-  // so the rail behaves as open-on-hover from the first interaction, matching
-  // the previous FeatherSidenav. Guarded so it degrades to click-to-open if the
-  // internal flag ever changes.
-  if (tieredMenuRef.value) {
-    tieredMenuRef.value.dirty = true
-  }
-}
-
-const onRailLeave = () => {
-  isHovering.value = false
-
-  // The flyout submenus are position:fixed (see positionFlyouts) so they are
-  // visually detached from the rail. When the pointer leaves the rail+flyout,
-  // close any open flyout via TieredMenu's hide() (clears activeItemPath) so it
-  // doesn't linger orphaned after the rail collapses. hide() also resets the
-  // internal `dirty` flag, which onRailEnter re-enables on the next hover.
-  tieredMenuRef.value?.hide?.()
-}
 
 const onPerformLogout = async () => {
   await performLogout()
 }
 
-const topPanels = computed<MenuItem[]>(() => {
+// `as never` at the :model binding above: PrimeVue's own MenuItem.label
+// accepts a render function in addition to string, which our narrower
+// OnmsMenuItem.label doesn't — TS rejects the plain assignment even though
+// this is structurally what TieredMenu expects at runtime.
+const topPanels = computed<OnmsMenuItem[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
     return []
@@ -121,18 +106,53 @@ const topPanels = computed<MenuItem[]>(() => {
   return createPrimeMenuModel(allMenus, mainMenu.value.baseHref, getIcon, onPerformLogout)
 })
 
+const tieredMenuRef = ref<any>(null)
+
 const togglePinned = () => {
   isPinned.value = !isPinned.value
   menuStore.setSideMenuExpanded(isPinned.value)
+
+  // Close any open flyout. Clicking the toggle button already does this via
+  // TieredMenu's outside-click listener; this makes the keyboard shortcut
+  // behave the same — otherwise the flyout would be repositioned mid-way
+  // through the rail's 0.1s width transition and end up with a stale left
+  // offset once the transition finishes. Guarded on an actually-open flyout
+  // (activeItemPath non-empty) because hide() also resets TieredMenu's
+  // focusedItemInfo — calling it unconditionally would throw away a keyboard
+  // user's arrow-navigation position even when there was nothing to close.
+  if (tieredMenuRef.value?.activeItemPath?.length) {
+    tieredMenuRef.value.hide?.()
+  }
 }
 
-// Push the main content aside for the pinned (persisted) expanded rail only;
-// hover-expansion overlays the content instead of pushing it, to avoid
-// reflowing the whole page on every hover. The COLLAPSED/base left offset is
-// owned by each host's stylesheet (JSP #content, SPA .app-layout) so the two
-// contexts can differ; when not pinned we clear the inline padding-left so that
-// base applies. This keeps the collapsed gap "guaranteed" (JS never clobbers
-// it) while still widening the push when the rail is pinned open.
+// Global shortcut: Ctrl+\ toggles the rail expand/collapse, so the menu can be
+// pinned/unpinned without first tabbing to the toggle button. Ctrl+\ is free of
+// browser-shortcut conflicts in all major browsers (unlike e.g. Ctrl+Shift+M:
+// Firefox responsive design mode, Chrome/Edge profile switcher). Matched on
+// e.code (physical key) so it works regardless of keyboard layout; the other
+// modifiers are excluded so a larger chord doesn't also trigger it.
+const onGlobalKeydown = (e: KeyboardEvent) => {
+  if (e.code !== 'Backslash' || !e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || e.repeat) {
+    return
+  }
+
+  // Don't steal the shortcut while the user is typing in an editable element.
+  const target = e.target as HTMLElement | null
+
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+    return
+  }
+
+  e.preventDefault()
+  togglePinned()
+}
+
+// Push the main content aside when the rail is pinned (persisted) expanded.
+// The COLLAPSED/base left offset is owned by each host's stylesheet (JSP
+// #content, SPA .app-layout) so the two contexts can differ; when not pinned we
+// clear the inline padding-left so that base applies. This keeps the collapsed
+// gap "guaranteed" (JS never clobbers it) while still widening the push when
+// the rail is pinned open.
 const getPushedElement = (): HTMLElement | null => {
   try {
     return document.querySelector<HTMLElement>(props.pushedSelector)
@@ -225,6 +245,8 @@ const scheduleFlyoutPosition = () => {
 onMounted(() => {
   applyPush()
 
+  window.addEventListener('keydown', onGlobalKeydown)
+
   const nav = navRef.value
 
   if (nav) {
@@ -256,11 +278,12 @@ onBeforeUnmount(() => {
   }
 
   window.removeEventListener('resize', scheduleFlyoutPosition)
+  window.removeEventListener('keydown', onGlobalKeydown)
 })
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
+@import "@/styles/onms-tokens";
 
 // Fixed, collapsible side menu rail. Replaces FeatherSidenav/FeatherDock.
 // Pinned dark (independent of the active light/dark app theme) so it stays
@@ -274,8 +297,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   width: var(--onms-side-menu-collapsed, 3.75rem);
-  background-color: var(--feather-surface-dark);
-  color: var(--feather-state-text-color-on-surface-dark);
+  background-color: var(--onms-surface-dark);
+  color: var(--onms-state-text-color-on-surface-dark);
   transition: width 0.1s linear;
   // The nav itself does not scroll (the inner .p-tieredmenu list does); keep it
   // visible so the toggle button and rail chrome are never clipped.
@@ -283,16 +306,16 @@ onBeforeUnmount(() => {
 
   // Force the TieredMenu (and its flyout submenus, which are descendants of
   // this nav) onto the dark surface via PrimeVue design tokens.
-  --p-tieredmenu-background: var(--feather-surface-dark);
-  --p-tieredmenu-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-background: var(--onms-surface-dark);
+  --p-tieredmenu-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-border-color: transparent;
   --p-tieredmenu-border-radius: 0;
-  --p-tieredmenu-item-color: var(--feather-state-text-color-on-surface-dark);
-  --p-tieredmenu-item-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-color: var(--onms-state-text-color-on-surface-dark);
+  --p-tieredmenu-item-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-item-focus-color: #fff;
   --p-tieredmenu-item-icon-focus-color: #fff;
   --p-tieredmenu-item-focus-background: rgba(255, 255, 255, 0.12);
-  --p-tieredmenu-submenu-icon-color: var(--feather-state-text-color-on-surface-dark);
+  --p-tieredmenu-submenu-icon-color: var(--onms-state-text-color-on-surface-dark);
   --p-tieredmenu-submenu-icon-focus-color: #fff;
   --p-tieredmenu-separator-border-color: rgba(255, 255, 255, 0.2);
 }
@@ -319,7 +342,7 @@ onBeforeUnmount(() => {
   }
 
   &:focus-visible {
-    outline: 2px solid var(--feather-primary);
+    outline: 2px solid var(--onms-primary);
     outline-offset: -2px;
   }
 }

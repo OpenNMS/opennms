@@ -20,8 +20,8 @@
               <h3>Registration Results</h3>
             </div>
             <div class="results-container">
-              <PDataTable :value="resultRows">
-                <PColumn header="Result">
+              <OnmsTable :value="resultRows">
+                <OnmsColumn header="Result">
                   <template #body>
                     <div
                       v-if="zenithConnectStore.registerResponse?.success === true"
@@ -32,43 +32,43 @@
                       class="register-failed"
                     >Failed</div>
                   </template>
-                </PColumn>
-                <PColumn
+                </OnmsColumn>
+                <OnmsColumn
                   field="systemId"
                   header="System ID"
                 />
-                <PColumn
+                <OnmsColumn
                   field="displayName"
                   header="Display Name"
                 />
-                <PColumn header="Access Token">
+                <OnmsColumn header="Access Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.accessToken ?? '', 30) }}
-                    <PButton
+                    <OnmsIconButton
+                      variant="filled"
                       aria-label="Copy Access Token"
+                      :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(true)"
-                    >
-                      <FeatherIcon :icon="icons.ContentCopy" />
-                    </PButton>
+                    />
                   </template>
-                </PColumn>
-                <PColumn header="Refresh Token">
+                </OnmsColumn>
+                <OnmsColumn header="Refresh Token">
                   <template #body="{ data }">
                     {{ ellipsify(data.refreshToken ?? '', 30) }}
-                    <PButton
+                    <OnmsIconButton
+                      variant="filled"
                       aria-label="Copy Refresh Token"
+                      :icon="icons.ContentCopy"
                       @click.prevent="() => onCopyToken(false)"
-                    >
-                      <FeatherIcon :icon="icons.ContentCopy" />
-                    </PButton>
+                    />
                   </template>
-                </PColumn>
-              </PDataTable>
+                </OnmsColumn>
+              </OnmsTable>
             </div>
           </div>
           <div>
             <div class="spacer"></div>
-            <PButton
+            <OnmsButton
               label="View Zenith Connections"
               @click="gotoView"
             />
@@ -82,11 +82,8 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, ref } from 'vue'
 
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { FeatherIcon } from '@featherds/icon'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+import ContentCopy from '@/components/icons/action/ContentCopy.vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -96,10 +93,6 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useZenithConnectStore } from '@/stores/zenithConnectStore'
 import { BreadCrumb } from '@/types'
 import { ZenithConnectRegistration, ZenithConnectRegistrationResponse } from '@/types/zenithConnect'
-
-const PButton = Button
-const PDataTable = DataTable
-const PColumn = Column
 
 const menuStore = useMenuStore()
 const zenithConnectStore = useZenithConnectStore()
@@ -241,7 +234,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import '@/styles/onms-typography';
 
 .zc-container {
   display: flex;
@@ -255,7 +248,7 @@ onMounted(async () => {
       justify-content: space-between;
 
       .title {
-        @include headline1;
+        @include onms-headline1;
         margin: 16px 0px 16px 19px;
         display: block;
       }

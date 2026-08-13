@@ -1,4 +1,4 @@
-import { ISelectItemType } from '@featherds/select'
+import { ISelectItemType } from '@/types'
 
 export const MAX_MASK_ELEMENTS = 12
 
