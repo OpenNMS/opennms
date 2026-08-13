@@ -9,42 +9,40 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
+        class="dialog-error"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
-      <FormField>
-        <IftaLabel>
-          <OnmsPassword
-            v-model="password"
-            inputId="user-password-new"
-            :feedback="false"
-            toggleMask
-            fluid
-            data-test="new-password-input"
-          />
-          <label for="user-password-new">New Password *</label>
-        </IftaLabel>
+      >{{ errorText }}</div>
+      <FormField
+        label="New Password"
+        for="user-password-new"
+        required
+      >
+        <OnmsPassword
+          v-model="password"
+          inputId="user-password-new"
+          :feedback="false"
+          toggleMask
+          fluid
+          data-test="new-password-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsPassword
-            v-model="confirmation"
-            inputId="user-password-confirm"
-            :feedback="false"
-            toggleMask
-            fluid
-            data-test="confirm-password-input"
-          />
-          <label for="user-password-confirm">Confirm Password *</label>
-        </IftaLabel>
-        <small
-          v-if="confirmation && password !== confirmation"
-          class="mismatch"
-          data-test="password-mismatch"
-        >Passwords do not match</small>
+      <FormField
+        label="Confirm Password"
+        for="user-password-confirm"
+        required
+        :error="confirmation && password !== confirmation ? 'Passwords do not match' : undefined"
+      >
+        <OnmsPassword
+          v-model="confirmation"
+          inputId="user-password-confirm"
+          :feedback="false"
+          toggleMask
+          fluid
+          data-test="confirm-password-input"
+        />
       </FormField>
     </div>
 
@@ -68,8 +66,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -127,7 +123,12 @@ const save = async () => {
   }
 }
 
-.mismatch {
-  color: var(--p-red-500, #e24c4c);
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--p-red-500, #ef4444);
+  background: color-mix(in srgb, var(--p-red-500, #ef4444) 10%, transparent);
+  color: var(--p-red-600, #dc2626);
+  font-size: 0.9rem;
 }
 </style>

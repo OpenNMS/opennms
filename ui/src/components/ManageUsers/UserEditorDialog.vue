@@ -9,114 +9,102 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-grid">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
-        class="full-width"
+        class="dialog-error full-width"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
-      <FormField v-if="!isEditing">
-        <IftaLabel>
-          <OnmsInputText
-            id="user-editor-id"
-            v-model="form.userId"
-            :invalid="!!userIdProblem"
-            data-test="user-id-input"
-          />
-          <label for="user-editor-id">User ID *</label>
-        </IftaLabel>
-        <small
-          v-if="userIdProblem"
-          class="field-error"
-          data-test="user-id-error"
-        >{{ userIdProblem }}</small>
+      >{{ errorText }}</div>
+      <FormField
+        v-if="!isEditing"
+        label="User ID"
+        for="user-editor-id"
+        required
+        :error="userIdProblem || undefined"
+      >
+        <OnmsInputText
+          id="user-editor-id"
+          v-model="form.userId"
+          :invalid="!!userIdProblem"
+          data-test="user-id-input"
+        />
       </FormField>
-      <FormField v-if="!isEditing">
-        <IftaLabel>
-          <OnmsPassword
-            v-model="form.password"
-            inputId="user-editor-password"
-            :feedback="false"
-            toggleMask
-            fluid
-            data-test="password-input"
-          />
-          <label for="user-editor-password">Password *</label>
-        </IftaLabel>
+      <FormField
+        v-if="!isEditing"
+        label="Password"
+        for="user-editor-password"
+        required
+      >
+        <OnmsPassword
+          v-model="form.password"
+          inputId="user-editor-password"
+          :feedback="false"
+          toggleMask
+          fluid
+          data-test="password-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="user-editor-fullname"
-            v-model="form.fullName"
-            data-test="full-name-input"
-          />
-          <label for="user-editor-fullname">Full Name</label>
-        </IftaLabel>
+      <FormField
+        label="Full Name"
+        for="user-editor-fullname"
+      >
+        <OnmsInputText
+          id="user-editor-fullname"
+          v-model="form.fullName"
+          data-test="full-name-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="user-editor-comments"
-            v-model="form.comments"
-            :invalid="!!commentsProblem"
-            data-test="comments-input"
-          />
-          <label for="user-editor-comments">Comments</label>
-        </IftaLabel>
-        <small
-          v-if="commentsProblem"
-          class="field-error"
-          data-test="comments-error"
-        >{{ commentsProblem }}</small>
+      <FormField
+        label="Comments"
+        for="user-editor-comments"
+        :error="commentsProblem || undefined"
+      >
+        <OnmsInputText
+          id="user-editor-comments"
+          v-model="form.comments"
+          :invalid="!!commentsProblem"
+          data-test="comments-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="user-editor-email"
-            v-model="form.email"
-            :invalid="!!emailProblem"
-            data-test="email-input"
-          />
-          <label for="user-editor-email">Email</label>
-        </IftaLabel>
-        <small
-          v-if="emailProblem"
-          class="field-error"
-          data-test="email-error"
-        >{{ emailProblem }}</small>
+      <FormField
+        label="Email"
+        for="user-editor-email"
+        :error="emailProblem || undefined"
+      >
+        <OnmsInputText
+          id="user-editor-email"
+          v-model="form.email"
+          :invalid="!!emailProblem"
+          data-test="email-input"
+        />
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="user-editor-pager-email"
-            v-model="form.pagerEmail"
-            :invalid="!!pagerEmailProblem"
-            data-test="pager-email-input"
-          />
-          <label for="user-editor-pager-email">Pager Email</label>
-        </IftaLabel>
-        <small
-          v-if="pagerEmailProblem"
-          class="field-error"
-          data-test="pager-email-error"
-        >{{ pagerEmailProblem }}</small>
+      <FormField
+        label="Pager Email"
+        for="user-editor-pager-email"
+        :error="pagerEmailProblem || undefined"
+      >
+        <OnmsInputText
+          id="user-editor-pager-email"
+          v-model="form.pagerEmail"
+          :invalid="!!pagerEmailProblem"
+          data-test="pager-email-input"
+        />
       </FormField>
-      <FormField class="full-width">
-        <IftaLabel>
-          <OnmsMultiSelect
-            v-model="form.roles"
-            labelId="user-editor-roles"
-            :options="store.availableRoles"
-            display="chip"
-            :showToggleAll="false"
-            filter
-            fluid
-            data-test="roles-select"
-          />
-          <label for="user-editor-roles">Security Roles</label>
-        </IftaLabel>
+      <FormField
+        class="full-width"
+        label="Security Roles"
+        for="user-editor-roles"
+      >
+        <OnmsMultiSelect
+          v-model="form.roles"
+          labelId="user-editor-roles"
+          :options="store.availableRoles"
+          display="chip"
+          :showToggleAll="false"
+          filter
+          fluid
+          data-test="roles-select"
+        />
       </FormField>
     </div>
 
@@ -140,8 +128,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMultiSelect, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -269,9 +255,12 @@ const save = async () => {
   }
 }
 
-.field-error {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--p-red-500, #e24c4c);
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--p-red-500, #ef4444);
+  background: color-mix(in srgb, var(--p-red-500, #ef4444) 10%, transparent);
+  color: var(--p-red-600, #dc2626);
+  font-size: 0.9rem;
 }
 </style>

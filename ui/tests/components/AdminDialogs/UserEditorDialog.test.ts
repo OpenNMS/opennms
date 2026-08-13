@@ -47,7 +47,7 @@ describe('UserEditorDialog.vue', () => {
     await wrapper.find('[data-test="user-id-input"]').setValue('jose anes')
     await setPassword('secret')
 
-    expect(wrapper.find('[data-test="user-id-error"]').text()).toContain('must not contain')
+    expect(wrapper.find('#user-editor-id-error').text()).toContain('must not contain')
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
@@ -57,7 +57,7 @@ describe('UserEditorDialog.vue', () => {
     await setPassword('secret')
     await wrapper.find('[data-test="email-input"]').setValue('not-an-email')
 
-    expect(wrapper.find('[data-test="email-error"]').exists()).toBe(true)
+    expect(wrapper.find('#user-editor-email-error').exists()).toBe(true)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
