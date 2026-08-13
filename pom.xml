@@ -1098,7 +1098,7 @@
           <licenseSets>
             <licenseSet>
               <header>src/main/resources/license-header.txt</header>
-              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics -->
               <excludes>
                 <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
                 <exclude>**/*.css</exclude>
@@ -1741,8 +1741,7 @@
     <args4jVersion>2.33</args4jVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
-    <activemqVersion>5.19.5</activemqVersion>
-    <activemqCamelVersion>5.16.8</activemqCamelVersion>
+    <activemqVersion>5.19.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.84</bouncyCastleVersion>
@@ -1783,7 +1782,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.8</cxfVersion>
+    <cxfVersion>3.6.12</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1813,10 +1812,10 @@
     <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.75.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>31.1-jre</guavaVersion>
-    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
+    <guavaVersion>33.3.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
-    <guavaOsgiVersion>31.1</guavaOsgiVersion>
+    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
+    <guavaOsgiVersion>33.3.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1834,13 +1833,15 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.18.7</jackson2Version>
+    <jackson2Version>2.18.9</jackson2Version>
+    <cxfJackson2Version>2.21.5</cxfJackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>2.3</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
-    <jasperreportsVersion>6.20.0</jasperreportsVersion>
+    <jasperreportsVersion>7.0.7</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <openpdfVersion>1.3.43</openpdfVersion>
     <jasyptVersion>1.9.3</jasyptVersion>
     <javassistVersion>3.29.2-GA</javassistVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -1901,10 +1902,13 @@
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.0</jansiVersion>
-    <jlineVersion>3.21.0</jlineVersion>
+    <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
     <paxLoggingVersion>2.0.19</paxLoggingVersion>
     <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
+    <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
+         container/pax-url-aether-patch to replace the plexus-utils it shades
+         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
     <paxUrlAetherVersion>2.6.14</paxUrlAetherVersion>
     <paxWebVersion>7.3.29</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
@@ -1914,22 +1918,25 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.21.1</log4j2Version>
+    <log4j2Version>2.25.5</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
-    <minaVersion>2.2.7</minaVersion>
+    <minaVersion>2.2.9</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.2.13.Final</netty4Version>
-    <newtsVersion>3.0.0</newtsVersion>
-    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
+    <netty4Version>4.2.16.Final</netty4Version>
+    <newtsVersion>3.0.1</newtsVersion>
+    <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
+    <!-- used to replace the vulnerable plexus-utils shaded into pax-url-aether,
+         see container/pax-url-aether-patch -->
+    <plexusUtilsVersion>3.6.1</plexusUtilsVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
-    <postgresqlVersion>42.7.11</postgresqlVersion>
+    <postgresqlVersion>42.7.13</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
@@ -3083,6 +3090,11 @@
         <version>${activemqVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-spring</artifactId>
+        <version>${activemqVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>atomikos-dependencies</artifactId>
         <version>${project.version}</version>
@@ -3967,6 +3979,11 @@
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-api</artifactId>
         <version>${mavenResolverApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>openpdf</artifactId>
+        <version>${openpdfVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>

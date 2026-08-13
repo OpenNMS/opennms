@@ -136,7 +136,7 @@ public class Starter {
     }
 
     private void start() {
-        LOG.debug("Beginning startup");
+        LOG.info("Beginning startup");
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
@@ -174,6 +174,6 @@ public class Starter {
             }
         }
 
-        LOG.debug("Startup complete");
+        LOG.info("Startup complete");
     }
 }

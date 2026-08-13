@@ -1,0 +1,121 @@
+
+= Prometheus RemoteWrite Plugin
+:description: Configuration and deployment for the OpenNMS Prometheus RemoteWrite plugin via Karaf shell or CFG file.
+
+The Prometheus RemoteWrite plugin enables {page-component-title} to persist time series performance and latency data to any Prometheus remote-write compatible time series store (for example, https://victoriametrics.com/[VictoriaMetrics], https://grafana.com/oss/mimir/[Mimir], or https://cortexmetrics.io/[Cortex]).
+The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to the configured time series store.
+It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+
+.Prometheus RemoteWrite plugin architecture
+image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Prometheus RemoteWrite plugin and how it integrates with {page-component-title}", 600]
+
+== Requirements
+
+You must have the following before you start to use the Prometheus RemoteWrite plugin:
+
+* A Prometheus remote-write compatible time series store, such as VictoriaMetrics, Mimir, or Cortex 1.10.0+
+
+== Deployment
+
+To use the Prometheus RemoteWrite plugin, follow these steps:
+
+. Start your Prometheus remote-write compatible time series store (see the https://docs.victoriametrics.com/[VictoriaMetrics documentation], https://grafana.com/docs/mimir/latest/[Mimir documentation], or https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions).
+If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
+. Download the plugin's `.kar` file from https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin/releases[GitHub].
+. Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
+. Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
++
+[source, properties]
+----
+org.opennms.timeseries.strategy=integration <1> <2>
+org.opennms.timeseries.tin.metatags.tag.node=${node:label} <3>
+org.opennms.timeseries.tin.metatags.tag.location=${node:location}
+org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
+org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
+org.opennms.timeseries.tin.metatags.tag.ifName=${interface:if-name}
+----
+<1> Make sure that the `org.opennms.timeseries.strategy` property is set only once so you don't have conflicting values in multiple `properties` files.
+<2> If you are enabling the <<time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration, dual write plugin>> on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.
+<3> See the <<time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags, time series integration section>> for more information on defining metatags.
++
+NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
+
+. Configure the Prometheus RemoteWrite plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg`.
++
+The `writeUrl` and `readUrl` properties are required.
+All other properties shown here are example values to overwrite the defaults.
+Monitor your time series store's performance and adjust these properties as necessary.
+Substitute the correct host and port for your time series store.
++
+[{tabs}]
+====
+Karaf shell::
++
+.Configure the plugin's properties:
+[source, karaf]
+----
+config:edit org.opennms.plugins.tss.prometheus
+property-set writeUrl http://victoriametrics-host:8428/api/v1/write
+property-set readUrl http://victoriametrics-host:8428/prometheus/api/v1
+property-set maxConcurrentHttpConnections 100
+property-set writeTimeoutInMs 1000
+property-set readTimeoutInMs 1000
+property-set metricCacheSize 1000
+property-set externalTagsCacheSize 1000
+property-set bulkheadMaxWaitDurationInMs 9223372036854775807
+config:update
+----
+
+CFG file::
++
+.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.prometheus.cfg` file:
+[source, properties]
+----
+writeUrl=http://victoriametrics-host:8428/api/v1/write
+readUrl=http://victoriametrics-host:8428/prometheus/api/v1
+maxConcurrentHttpConnections=100
+writeTimeoutInMs=1000
+readTimeoutInMs=1000
+metricCacheSize=1000
+externalTagsCacheSize=1000
+bulkheadMaxWaitDurationInMs=9223372036854775807
+----
+====
++
+NOTE: The URL paths shown above are for VictoriaMetrics single-node. For Cortex, use `writeUrl=http://cortex-host:9009/api/prom/push` and `readUrl=http://cortex-host:9009/prometheus/api/v1`. For Mimir, follow the Mimir documentation for its remote-write endpoint.
+
+. Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot` to configure the plugin to remain installed after {page-component-title} restarts:
++
+[source, properties]
+opennms-plugins-prometheus-remotewrite wait-for-kar=opennms-prometheus-remotewrite-plugin
+
+. Restart the {page-component-title} service.
+
+== Validation
+
+After the first collection cycle (five minutes by default), query the time series store to confirm that metrics are arriving:
+
+[source, bash]
+----
+curl -s 'http://victoriametrics-host:8428/api/v1/series' \
+  --data-urlencode 'match[]={resourceId!=""}' \
+  --data-urlencode 'start=0' | jq '.data | length'
+----
+
+A non-zero result confirms the plugin is writing successfully.
+If the count is `0`, check `$\{OPENNMS_HOME}/logs/karaf.log` for errors (filter for `cortex`, `prometheus`, or `tss`).
+
+== Time series store tips
+
+=== VictoriaMetrics
+
+VictoriaMetrics ships with a built-in PromQL query UI at `\http://victoriametrics-host:8428/vmui`.
+The cardinality explorer at `\http://victoriametrics-host:8428/vmui/?#/cardinality` lists labels and series counts.
+
+=== Cortex
+
+When using Cortex as the time series store, navigate to the following URLs to view information about your Cortex server:
+
+* *Server status:* \http://cortex-host:9009
+* *Ring:* \http://cortex-host:9009/ring
+* *Internal metrics:* \http://cortex-host:9009/metrics

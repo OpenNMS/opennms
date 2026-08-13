@@ -199,6 +199,11 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresqlVersion}</version>
           </dependency>
+          <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${jackson2Version}</version>
+          </dependency>
         </dependencies>
       </plugin>
       <plugin>

@@ -21,6 +21,12 @@
  */
 package org.opennms.features.scv.cli.commands;
 
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,10 +50,10 @@ public class SetCommand implements Function<ScvCli, Integer> {
             usage = "the username to be set")
     private String username = null;
 
-    @Argument(required = true,
+    @Argument(required = false,
             index = 2,
             metaVar = "password",
-            usage = "the password to be set")
+            usage = "the password to be set; if omitted, it is read from --from-stdin or prompted for interactively")
     private String password = null;
 
     @Option(name="--attribute",
@@ -55,9 +61,81 @@ public class SetCommand implements Function<ScvCli, Integer> {
             handler = MapOptionHandler.class)
     Map<String,String> attributes = new HashMap<>();
 
+    @Option(name = "--from-stdin",
+            aliases = {"-S"},
+            usage = "read the password from standard input instead of the command line")
+    private boolean fromStdin = false;
+
     @Override
     public Integer apply(ScvCli scvCli) {
-        scvCli.getSecureCredentialsVault().setCredentials(alias, new Credentials(username, password, attributes));
+        scvCli.getSecureCredentialsVault().setCredentials(alias, new Credentials(username, resolvePassword(), attributes));
         return 0;
+    }
+
+    /**
+     * Determines the password to set, in order of precedence:
+     * <ol>
+     *   <li>the {@code password} positional argument, when supplied;</li>
+     *   <li>standard input, when {@code --from-stdin} is given;</li>
+     *   <li>an interactive prompt otherwise.</li>
+     * </ol>
+     *
+     * <p>Package-visible for testing.</p>
+     */
+    String resolvePassword() {
+        if (password != null) {
+            if (fromStdin) {
+                System.err.println("Warning: a password argument was provided; ignoring --from-stdin.");
+            }
+            return password;
+        }
+        if (fromStdin) {
+            return readPasswordFromStdin();
+        }
+        return promptForPassword();
+    }
+
+    private static String readPasswordFromStdin() {
+        try {
+            // Note: deliberately not closing the reader, as that would close System.in.
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+            final String line = reader.readLine();
+            if (line == null) {
+                throw new IllegalStateException("expected a password on standard input, but none was provided");
+            }
+            return line;
+        } catch (final IOException e) {
+            throw new RuntimeException("failed to read password from standard input", e);
+        }
+    }
+
+    private static String promptForPassword() {
+        final Console console = System.console();
+        int count = 0;
+        if (console == null) {
+            // No interactive console (e.g. input is piped/redirected); fall back to reading stdin.
+            return readPasswordFromStdin();
+        }
+        while (true) {
+            final char[] first = console.readPassword("Enter password: ");
+            final char[] second = console.readPassword("Confirm password: ");
+            if (first == null || second == null) {
+                throw new IllegalStateException("no password entered");
+            }
+            try {
+                if (Arrays.equals(first, second)) {
+                    return new String(first);
+                }
+                System.err.println("Passwords do not match. Please try again.");
+                count++;
+            } finally {
+                Arrays.fill(first, '\0');
+                Arrays.fill(second, '\0');
+            }
+            if (count >= 5) {
+                System.err.println("Too many mismatches, giving up!");
+                return null;
+            }
+        }
     }
 }

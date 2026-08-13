@@ -99,7 +99,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * The singleton instance of this factory
      */
-    private static SnmpPeerFactory s_singleton = null;
+    private static volatile SnmpPeerFactory s_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -121,9 +121,20 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private final Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
 
-    private static Scope secureCredentialsVaultScope;
+    private static volatile Scope secureCredentialsVaultScope;
 
     /**
+     * Dedicated lock for lazy {@link #secureCredentialsVaultScope} init. Must not use
+     * {@code synchronized (SnmpPeerFactory.class)} when calling {@link BeanUtils#getBean}:
+     * bean lookup can take {@code ContextRegistry}'s lock while Spring still holds that lock
+     * and invokes {@link #init()}, which needs the class monitor (deadlock with SNMP
+     * interface poller). The same applies to {@link #initializeTextEncryptor()} in
+     * {@link #encryptSnmpConfig()}; encrypt save is re-synchronized on the class monitor
+     * after the bean is resolved.
+     */
+    private static final Object secureCredentialsScopeInitLock = new Object();
+
+    /** 
      * <p>Constructor for SnmpPeerFactory.</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
@@ -160,25 +171,46 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return m_lock.writeLock();
     }
 
-    public static synchronized void init() throws IOException {
-        if (!s_loaded.get()) {
-            final File cfgFile = getFile();
-            LOG.debug("init: config file path: {}", cfgFile.getPath());
-            final FileSystemResource resource = new FileSystemResource(cfgFile);
+    public static void init() throws IOException {
+        loadSingletonIfNeeded();
+        encryptSingletonIfEnabled();
+    }
 
-            s_singleton = new SnmpPeerFactory(resource);
-            s_loaded.set(true);
+    private static void loadSingletonIfNeeded() throws IOException {
+        synchronized (SnmpPeerFactory.class) {
+            if (!s_loaded.get()) {
+                final File cfgFile = getFile();
+                LOG.debug("init: config file path: {}", cfgFile.getPath());
+                final FileSystemResource resource = new FileSystemResource(cfgFile);
+
+                s_singleton = new SnmpPeerFactory(resource);
+                s_loaded.set(true);
+            }
         }
-        if (s_singleton.encryptionEnabled) {
-            s_singleton.encryptSnmpConfig();
+    }
+
+    private static void encryptSingletonIfEnabled() {
+        final SnmpPeerFactory singleton;
+        synchronized (SnmpPeerFactory.class) {
+            singleton = s_singleton;
+            if (singleton == null || !singleton.encryptionEnabled) {
+                return;
+            }
         }
+        singleton.encryptSnmpConfig();
     }
 
     private void encryptSnmpConfig() {
         initializeTextEncryptor();
-        if (textEncryptor != null) {
+        if (textEncryptor == null) {
+            return;
+        }
+        synchronized (SnmpPeerFactory.class) {
+            if (this != s_singleton) {
+                return;
+            }
             try {
-                s_singleton.saveCurrent();
+                saveCurrent();
             } catch (IOException e) {
                 LOG.debug("Exception while saving encrypted credentials");
             }
@@ -194,7 +226,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be read
      */
-    public static synchronized SnmpPeerFactory getInstance() {
+    public static SnmpPeerFactory getInstance() {
         if (!s_loaded.get()) {
             try {
                 init();
@@ -278,8 +310,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    private static synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
+    private static Scope getSecureCredentialsScope() {
+        Scope scope = secureCredentialsVaultScope;
+        if (scope != null) {
+            return scope;
+        }
+        synchronized (secureCredentialsScopeInitLock) {
+            if (secureCredentialsVaultScope != null) {
+                return secureCredentialsVaultScope;
+            }
             try {
                 final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
 
@@ -291,9 +330,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             } catch (FatalBeanException e) {
                 LOG.warn("SnmpPeerFactory: Error retrieving EntityScopeProvider bean");
             }
+            return secureCredentialsVaultScope;
         }
-
-        return secureCredentialsVaultScope;
     }
 
     /**

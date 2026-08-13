@@ -19,7 +19,7 @@ NOTE: This API is v2-only.
 
 == Use examples with cURL
 
-.Retrieve snmp metadata status per location by a given _applicationId_.
+.Retrieve a node's SNMP metadata by node ID.
 [source,bash]
 ----
 curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/snmpmetadata/4"

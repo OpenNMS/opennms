@@ -2,7 +2,9 @@
 = SNMP Interface Policy
 :description: Learn how the SNMP Interface policy controls persistence discovered SNMP interface entities in OpenNMS {page-component-title} and SNMP collection parameters.
 
-This policy controls whether to persist the discovered SNMP interface entities and whether {page-component-title} should collect performance metrics from the SNMP agent for specific SNMP interfaces.
+This policy (`MatchingSnmpInterfacePolicy`) controls whether to persist the discovered SNMP interface entities and whether {page-component-title} collects performance metrics from the SNMP agent for specific SNMP interfaces.
+
+Set the `action` parameter to one of the values below.
 
 [options="header"]
 [cols="1,3"]
@@ -27,8 +29,58 @@ This policy controls whether to persist the discovered SNMP interface entities a
 | Allow SNMP polling on the interface.
 |===
 
-Another use of this policy is to mark interfaces for polling by the <<operation:deep-dive/snmp-poller/concepts.adoc#snmp-interface-poller, SNMP Interface Poller>>.
+NOTE: The web UI requires you to set both `action` and `matchBehavior` before it will save the policy.
+`matchBehavior` is otherwise optional and defaults to `ANY_PARAMETER`.
+
+This policy also accepts the common `matchBehavior` parameter.
+See xref:reference:provisioning/policies.adoc[Policies] for `matchBehavior` and the `~` regular-expression prefix.
+
+Enabling collection or polling here only marks the interface; a matching collection or poller package must also exist before any data is collected or polled.
+
+== Match criteria
+
+Match against the following SNMP interface properties.
+Values match as a substring unless prefixed with `~`, which evaluates the value as a regular expression.
+
+[options="header", cols="1,3"]
+|===
+| Property
+| Description
+
+| ifDescr
+| Interface description (`ifDescr`).
+
+| ifName
+| Interface name (`ifName`).
+
+| ifType
+| IANA interface type number (`ifType`).
+
+| ifAlias
+| Interface alias (`ifAlias`).
+
+| ifIndex
+| SNMP interface index.
+
+| ifAdminStatus
+| Administrative status (1 = up).
+
+| ifOperStatus
+| Operational status (1 = up).
+
+| ifSpeed
+| Interface speed.
+
+| physAddr
+| Physical (MAC) address.
+|===
+
+== SNMP Interface Poller
+
+Another use of this policy is to mark interfaces for polling by the xref:operation:deep-dive/snmp-poller/concepts.adoc#snmp-interface-poller[SNMP Interface Poller].
 The SNMP Interface Poller is a separate daemon that is disabled by default.
 For this daemon to do any work, some SNMP interfaces need to be selected for polling.
 
 Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions available in this policy to manage which SNMP interfaces this daemon polls.
+
+For configuration examples, see xref:reference:provisioning/policies/examples.adoc#control-management-polling-and-collection[Control management, polling, and collection].

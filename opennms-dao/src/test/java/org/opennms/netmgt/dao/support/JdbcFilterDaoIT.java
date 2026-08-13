@@ -281,6 +281,26 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testIsValidOrRuleResolvedByAddressDoesNotOverMatch() throws Exception {
+        // Regression test for the filter precedence bug. isValid()/getActiveIPAddress() append
+        // "AND ipInterface.ipaddr = ?" to the parsed rule. For a rule with a top-level OR, the
+        // unparenthesized form parsed as "<branchA> OR (<branchB> AND ipaddr = ?)", so an address
+        // that matched NEITHER branch was still reported valid whenever branchA matched some other
+        // interface in the system. With the rule parenthesized it becomes
+        // "(<branchA> OR <branchB>) AND ipaddr = ?", scoping the address to the whole rule.
+        final String orRule = "ipaddr == '192.168.1.1' | ipaddr == '192.168.1.2'";
+
+        // 192.168.1.1 is populated and satisfies the left branch -> valid (positive control).
+        assertTrue("address matching a branch of the OR should be valid",
+                m_dao.isValid("192.168.1.1", orRule));
+
+        // 1.1.1.1 matches neither branch; it must NOT be reported valid just because 192.168.1.1
+        // exists and satisfies the left branch. (Fails against the un-parenthesized rule.)
+        assertFalse("address matching no branch of the OR must not be valid",
+                m_dao.isValid("1.1.1.1", orRule));
+    }
+
+    @Test
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -324,12 +344,12 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Test
     public void testGetInterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*.*.*.*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
+        assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*.*.*.*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
     }
 
     @Test
     public void testGetIpv6InterfaceWithServiceStatement() throws Exception {
-        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
+        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE (IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*'))", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
     }
 
     @Test

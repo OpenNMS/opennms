@@ -1,5 +1,10 @@
 
 .Deployment
+* xref:architecture/introduction.adoc[]
+** xref:architecture/data-domains.adoc[]
+** xref:architecture/deployment-scenarios.adoc[]
+** xref:architecture/deployments-in-practice.adoc[]
+
 * xref:core/introduction.adoc[]
 ** xref:core/system-requirements.adoc[]
 ** xref:core/install.adoc[]
@@ -31,7 +36,7 @@
 
 ** xref:time-series-storage/timeseries/ts-integration-layer.adoc[]
 *** xref:time-series-storage/timeseries/configuration.adoc[]
-** xref:time-series-storage/timeseries/cortex.adoc[]
+** xref:time-series-storage/timeseries/prometheus-remotewrite.adoc[]
 
 * xref:upgrade/introduction.adoc[]
 ** xref:upgrade/diff.adoc[]

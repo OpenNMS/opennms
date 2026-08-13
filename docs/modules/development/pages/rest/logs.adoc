@@ -1,0 +1,44 @@
+
+= Logs API
+
+The `/logs` endpoint is read-only, produces `application/json`, and requires the `ADMIN` role.
+
+== GETs (reading data)
+
+[caption=]
+.Logs API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| `/logs`           | Lists the available log file names (files ending in `.log` in the OpenNMS logs directory).
+| `/logs/contents`  a|
+Returns the contents of a single log file.
+
+* `f` (String, required): the log file name. Must end in `.log` and reside directly in the logs directory.
+* `n` (Integer, optional): maximum number of lines to return. Default `5000`, clamped to the range `[1, 10000]`.
+* `reverse` (boolean, optional): return the most recent lines first. Default `true`.
+
+Returns `204 No Content` if the requested file does not exist.
+
+|===
+
+== Examples using cURL
+
+.List the available log files
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/logs"
+----
+
+.Response
+[source,json]
+----
+["manager.log","web.log","provisiond.log"]
+----
+
+.Fetch the last 100 lines of a log file
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/logs/contents?f=web.log&n=100&reverse=true"
+----

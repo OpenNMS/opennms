@@ -122,6 +122,7 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             try (final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword)) {
                 vmwareViJavaAccess.connect(tracker.getConnectionTimeout());
+                vmwareViJavaAccess.setCimTimeout(tracker.getConnectionTimeout());
                 final HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
                 String powerState = null;
                 if (hostSystem == null) {

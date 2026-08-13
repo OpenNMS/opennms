@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
-<!-- 2016-09-14T12:01:14 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Average and Peak Traffic Rates" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd0c0584-c0b6-4860-a6fd-62182c4d11a5">
+<jasperReport name="Average and Peak Traffic Rates" language="java" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd0c0584-c0b6-4860-a6fd-62182c4d11a5">
 	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -9,43 +6,41 @@
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="opennms"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
-	<style name="Report_Subtitle" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Detail" hTextAlign="Left" hImageAlign="Left" vTextAlign="Middle" vImageAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Report_Title" forecolor="#000000" fontSize="20.0"/>
+	<style name="Report_Subtitle" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<style name="Table_Detail" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" fontName="SansSerif" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" bold="false" italic="false" underline="false" strikeThrough="false">
 		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
 		<box>
 			<bottomPen lineWidth="1.0"/>
 		</box>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" forecolor="#999999">
+			<box style="Table_Grid">
+				<bottomPen lineWidth="1.0"/>
+			</box>
 			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
-			<style mode="Opaque" forecolor="#999999">
-				<box>
-					<bottomPen lineWidth="1.0"/>
-				</box>
-			</style>
 		</conditionalStyle>
 	</style>
-	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Page_Footer" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Table_Header" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
-	<style name="Table_Surveillance_Cat" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Surveillance_Cat" forecolor="#000000" vTextAlign="Middle" vImageAlign="Middle" fontSize="10.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
 	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
 	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
 		<pen lineWidth="1.0" lineStyle="Double"/>
 	</style>
-	<style name="Table_Surveillance_Cat_Footer" hTextAlign="Center" hImageAlign="Center" vTextAlign="Middle" vImageAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Table_Surveillance_Cat_Footer" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" fontSize="10.0" bold="true" italic="false" underline="false" strikeThrough="false">
 		<box>
 			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_Surveillance_Cat_Footer_Line" hTextAlign="Center" hImageAlign="Center" vTextAlign="Middle" vImageAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+	<style name="Table_Surveillance_Cat_Footer_Line" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" bold="true" italic="false" underline="false" strikeThrough="false">
 		<box>
 			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Surveillance_Category_Group" mode="Opaque" backcolor="#CCFFCC" hTextAlign="Left" hImageAlign="Left" vTextAlign="Middle" vImageAlign="Middle" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hTextAlign="Left" hImageAlign="Left" vTextAlign="Middle" vImageAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Surveillance_Category_Group" mode="Opaque" backcolor="#CCFFCC" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" fontSize="12.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -70,19 +65,18 @@
 		</box>
 	</style>
 	<style name="style1"/>
-	<style name="Interface_Header" hTextAlign="Center" hImageAlign="Center" vTextAlign="Middle" vImageAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+	<style name="Interface_Header" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<parameter name="ONMS_REPORT_DIR" forPrompting="false" class="java.lang.String">
+		<description><![CDATA[The directory where all reports can be found]]></description>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
+	<parameter name="COMPANY_LOGO" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[select
+	<query language="sql"><![CDATA[select
 n.nodeid, n.nodelabel, n.nodesyscontact, n.nodesysdescription, n.nodesyslocation, d.value
 from
 	node n, 
@@ -94,178 +88,107 @@ where
 	and s.name='TopN_IOWait'
 	and d.resourceid=r.id
 	and r.resourceid='nodeSource['||n.foreignsource||'%3A'||n.foreignid||'].nodeSnmp[]'
-order by d.value desc]]>
-	</queryString>
+order by d.value desc]]></query>
 	<field name="nodeid" class="java.lang.Integer"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodesyscontact" class="java.lang.String"/>
 	<field name="nodesysdescription" class="java.lang.String"/>
 	<field name="nodesyslocation" class="java.lang.String"/>
 	<field name="value" class="java.lang.Double"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="4" splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="80" splitType="Stretch">
-			<staticText>
-				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="e2bbd5aa-7bb3-4da8-9975-db0696053b3e">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font size="20" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Top 20 nodes by I/O Wait]]></text>
-			</staticText>
-			<image>
-				<reportElement x="360" y="0" width="194" height="50" uuid="7a2e4fd9-7cb3-4ee0-a739-39549ded3164">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement x="0" y="30" width="354" height="30" uuid="49028b4e-cd3b-4a4f-b33c-f70c20e4a543"/>
-				<text><![CDATA[Average for the last 24 hours.]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="4" splitType="Stretch"/>
+	<pageHeader height="80" splitType="Stretch">
+		<element kind="staticText" uuid="e2bbd5aa-7bb3-4da8-9975-db0696053b3e" x="0" y="0" width="355" height="30" fontSize="20.0" bold="true" vTextAlign="Middle" style="Title">
+			<text><![CDATA[Top 20 nodes by I/O Wait]]></text>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="image" uuid="7a2e4fd9-7cb3-4ee0-a739-39549ded3164" x="360" y="0" width="194" height="50">
+			<expression><![CDATA[$P{COMPANY_LOGO}]]></expression>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="49028b4e-cd3b-4a4f-b33c-f70c20e4a543" x="0" y="30" width="354" height="30">
+			<text><![CDATA[Average for the last 24 hours.]]></text>
+		</element>
 	</pageHeader>
-	<columnHeader>
-		<band height="19" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="0" width="555" height="1" uuid="c5cc50fc-34f3-4f66-a76a-c648728b32a8">
-					<property name="local_mesure_unitx" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<graphicElement>
-					<pen lineWidth="1.5"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement x="0" y="1" width="140" height="18" uuid="405bc934-e220-4d23-a4bd-64377740d5ca"/>
-				<textElement textAlignment="Center">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Node Label]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="140" y="1" width="280" height="18" uuid="42f8b403-c7e6-4aa3-9936-749fac94cb66"/>
-				<textElement textAlignment="Center">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Node details]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="440" y="1" width="114" height="18" uuid="b68e8040-9386-4658-b857-dc354a53b2dc"/>
-				<textElement textAlignment="Right">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[ I/O Wait (raw)]]></text>
-			</staticText>
-		</band>
+	<columnHeader height="19" splitType="Stretch">
+		<element kind="line" uuid="c5cc50fc-34f3-4f66-a76a-c648728b32a8" x="0" y="0" width="555" height="1">
+			<property name="local_mesure_unitx" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<pen lineWidth="1.5"/>
+		</element>
+		<element kind="staticText" uuid="405bc934-e220-4d23-a4bd-64377740d5ca" x="0" y="1" width="140" height="18" bold="true" hTextAlign="Center">
+			<text><![CDATA[Node Label]]></text>
+		</element>
+		<element kind="staticText" uuid="42f8b403-c7e6-4aa3-9936-749fac94cb66" x="140" y="1" width="280" height="18" bold="true" hTextAlign="Center">
+			<text><![CDATA[Node details]]></text>
+		</element>
+		<element kind="staticText" uuid="b68e8040-9386-4658-b857-dc354a53b2dc" x="440" y="1" width="114" height="18" bold="true" hTextAlign="Right">
+			<text><![CDATA[ I/O Wait (raw)]]></text>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="22" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="140" height="16" uuid="27a3911b-2cb4-4f8c-8113-cd87a3b7ddca"/>
-				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="140" y="0" width="280" height="16" forecolor="#9C9C9C" uuid="ee591f75-53af-49d4-96aa-ef1022246013"/>
-				<textFieldExpression><![CDATA[$F{nodesysdescription}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#0">
-				<reportElement x="440" y="0" width="114" height="16" uuid="127ebdb6-ffa0-4571-bfb9-ce004b14b246"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="27a3911b-2cb4-4f8c-8113-cd87a3b7ddca" x="0" y="0" width="140" height="16">
+				<expression><![CDATA[$F{nodelabel}]]></expression>
+			</element>
+			<element kind="textField" uuid="ee591f75-53af-49d4-96aa-ef1022246013" x="140" y="0" width="280" height="16" forecolor="#9C9C9C">
+				<expression><![CDATA[$F{nodesysdescription}]]></expression>
+			</element>
+			<element kind="textField" uuid="127ebdb6-ffa0-4571-bfb9-ce004b14b246" x="440" y="0" width="114" height="16" pattern="#0" hTextAlign="Right">
+				<expression><![CDATA[$F{value}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="259" splitType="Stretch">
-			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<lineChart>
-				<chart evaluationTime="Report">
-					<reportElement x="0" y="0" width="554" height="258" uuid="1418a549-330a-4a9e-87fb-0d2448131ef4"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<categorySeries>
-						<seriesExpression><![CDATA["I/O WAIT"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
-						<valueExpression><![CDATA[$F{value}]]></valueExpression>
-						<labelExpression><![CDATA[$F{nodelabel}]]></labelExpression>
-					</categorySeries>
-				</categoryDataset>
-				<linePlot>
-					<plot labelRotation="45.0"/>
-					<categoryAxisFormat labelRotation="45.0">
-						<axisFormat/>
-					</categoryAxisFormat>
-					<valueAxisFormat>
-						<axisFormat/>
-					</valueAxisFormat>
-				</linePlot>
-			</lineChart>
-		</band>
+	<columnFooter height="259" splitType="Stretch">
+		<element kind="chart" chartType="line" uuid="1418a549-330a-4a9e-87fb-0d2448131ef4" x="0" y="0" width="554" height="258" evaluationTime="Report">
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["I/O WAIT"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+					<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					<labelExpression><![CDATA[$F{nodelabel}]]></labelExpression>
+				</series>
+			</dataset>
+			<plot labelRotation="45.0" categoryAxisTickLabelRotation="45.0"/>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 	</columnFooter>
-	<pageFooter>
-		<band height="35" splitType="Stretch">
-			<property name="local_mesure_unitheight" value="pixel"/>
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<line>
-				<reportElement x="0" y="10" width="554" height="1" uuid="ec45ea9b-d9e4-4343-9cf9-512b9db8e881"/>
-				<graphicElement>
-					<pen lineWidth="1.5"/>
-				</graphicElement>
-			</line>
-			<textField>
-				<reportElement style="Paging-Footer" x="451" y="13" width="80" height="20" uuid="eb684bd0-d9e6-4a31-a516-b4edf17125d7"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement style="Paging-Footer" x="531" y="13" width="24" height="20" uuid="647f6ab1-e658-4c3c-b0d7-356b2366cba4"/>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField pattern="yyyy/MM/dd HH:mm:ss">
-				<reportElement style="Creation-Date" x="0" y="13" width="355" height="20" uuid="25086ab7-3068-458e-8feb-e35e07b2b9e5">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageFooter height="35" splitType="Stretch">
+		<element kind="line" uuid="ec45ea9b-d9e4-4343-9cf9-512b9db8e881" x="0" y="10" width="554" height="1">
+			<pen lineWidth="1.5"/>
+		</element>
+		<element kind="textField" uuid="eb684bd0-d9e6-4a31-a516-b4edf17125d7" x="451" y="13" width="80" height="20" hTextAlign="Right" style="Paging-Footer">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+		</element>
+		<element kind="textField" uuid="647f6ab1-e658-4c3c-b0d7-356b2366cba4" x="531" y="13" width="24" height="20" evaluationTime="Report" style="Paging-Footer">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="textField" uuid="25086ab7-3068-458e-8feb-e35e07b2b9e5" x="0" y="13" width="355" height="20" pattern="yyyy/MM/dd HH:mm:ss" style="Creation-Date">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+			<property name="local_mesure_unitwidth" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<property name="local_mesure_unitheight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</pageFooter>
-	<noData>
-		<band height="155">
-			<line>
-				<reportElement x="0" y="80" width="555" height="1" uuid="3904dc8d-463e-4824-b19c-5663db0bc38a">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<graphicElement>
-					<pen lineWidth="1.5"/>
-				</graphicElement>
-			</line>
-			<textField>
-				<reportElement x="0" y="85" width="555" height="59" uuid="5fa4caf7-f9b2-4ab4-8570-ecd5b55057fa">
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA["There is no data for this report yet."]]></textFieldExpression>
-			</textField>
-		</band>
+	<noData height="155">
+		<element kind="line" uuid="3904dc8d-463e-4824-b19c-5663db0bc38a" x="0" y="80" width="555" height="1">
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<pen lineWidth="1.5"/>
+		</element>
+		<element kind="textField" uuid="5fa4caf7-f9b2-4ab4-8570-ecd5b55057fa" x="0" y="85" width="555" height="59">
+			<expression><![CDATA["There is no data for this report yet."]]></expression>
+			<property name="local_mesure_unity" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+		</element>
 	</noData>
 </jasperReport>

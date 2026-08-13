@@ -173,6 +173,11 @@
     <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
 
+    <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
+         restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
+    <intercept-url pattern="/api/v2/discovery" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/discovery/**" method="POST" access="ROLE_PROVISION,ROLE_ADMIN"/>
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 

@@ -191,6 +191,13 @@ else:
 print("Build Trigger Override Found:", str(build_trigger_override_found))
 print()
 
+# Whether "integration" was forced on (as opposed to naturally detected from
+# src/test/ changes) determines whether integration tests should run against
+# the full suite instead of just the changed modules.
+integration_forced_by_override = build_trigger_override_found and build_mappings.get(
+    "integration", False
+)
+
 # Epoch file will force a build to run
 if ".circleci/epoch" in changed_files:
     print("`epoch` file detected")
@@ -365,8 +372,22 @@ if "trivy-analyze" in git_keywords:
 if "debs" in git_keywords:
     build_mappings["debs"] = True
 
-if "integration" in git_keywords or "Integration_tests" in What_to_build:
+integration_forced_by_keyword = "integration" in git_keywords
+
+if integration_forced_by_keyword or "Integration_tests" in What_to_build:
     build_mappings["integration"] = True
+
+# If integration was enabled naturally (src/test/ changes detected), only run
+# tests for the changed modules. If it was forced on via the override file or
+# the `!integration` commit keyword, run the full integration suite instead.
+integration_full_run = build_mappings["integration"] and (
+    integration_forced_by_override or integration_forced_by_keyword
+)
+mappings["trigger-integration-changes-only"] = not integration_full_run
+
+if integration_full_run:
+    print("Integration tests forced on, running full suite (changes-only=false)")
+    print()
 
 if "build" in What_to_build and not build_mappings["experimental"]:
     build_mappings["build-deploy"] = True
