@@ -2,13 +2,18 @@
   <TableCard class="groups-table">
     <div class="header">
       <div class="card-title">Groups</div>
-      <OnmsButton
-        variant="outlined"
-        label="Add New Group"
-        icon="pi pi-plus"
-        data-test="add-group-button"
-        @click="openEditor(null)"
-      />
+      <div class="header-actions">
+        <OnmsButton
+          variant="outlined"
+          label="Add New Group"
+          icon="pi pi-plus"
+          data-test="add-group-button"
+          @click="openEditor(null)"
+        />
+        <AboutDialogButton title="Groups">
+          <GroupsAbout />
+        </AboutDialogButton>
+      </div>
     </div>
 
     <OnmsTable
@@ -44,7 +49,7 @@
       />
       <OnmsColumn header="Members">
         <template #body="{ data }">
-          <span class="members">{{ (data.users ?? []).join(', ') || '-' }}</span>
+          <span class="members">{{ (data.users ?? []).join(', ') || '--' }}</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Actions">
@@ -56,34 +61,38 @@
             data-test="unaddressable-note"
           >file-managed</span>
           <div v-else class="action-container">
-            <OnmsButton
-              variant="text"
-              label="Edit"
+            <OnmsIconButton
+              :icon="Edit"
+              :title="`Edit ${data.name}`"
               :aria-label="`Edit ${data.name}`"
               data-test="edit-group-button"
               @click="openEditor(data)"
             />
-            <OnmsButton
-              variant="text"
-              label="Rename"
-              :disabled="isProtected(data.name)"
-              :aria-label="`Rename ${data.name}`"
-              data-test="rename-group-button"
-              @click="openRename(data)"
-            />
-            <OnmsButton
-              variant="text"
-              label="Delete"
+            <OnmsIconButton
+              :icon="Delete"
               severity="danger"
               :disabled="isProtected(data.name)"
+              :title="`Delete ${data.name}`"
               :aria-label="`Delete ${data.name}`"
               data-test="delete-group-button"
               @click="askDelete(data)"
+            />
+            <OnmsIconButton
+              :icon="MoreVert"
+              title="More actions"
+              :aria-label="`More actions for ${data.name}`"
+              data-test="group-actions-menu-button"
+              @click="toggleRowMenu($event, data)"
             />
           </div>
         </template>
       </OnmsColumn>
     </OnmsTable>
+
+    <OnmsMenu
+      ref="rowMenu"
+      :items="rowMenuItems"
+    />
 
     <div v-if="!store.groups.length">
       <EmptyList
@@ -118,14 +127,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
+import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
+import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
+import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@/components/icons/action/Edit.vue'
+import MoreVert from '@/components/icons/navigation/MoreVert.vue'
 import { isPathAddressable } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
@@ -160,6 +174,25 @@ const askDelete = (group: ManagedGroup) => {
   showDeleteConfirmation.value = true
 }
 
+// Secondary row actions live in a single shared overflow menu (Edit and Delete
+// stay inline); the target is captured on open so one menu serves every row.
+const rowMenu = ref()
+const rowMenuTarget = ref<ManagedGroup | null>(null)
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
+  const target = rowMenuTarget.value
+  if (!target) {
+    return []
+  }
+  return [
+    { label: 'Rename', disabled: isProtected(target.name), command: () => openRename(target) }
+  ]
+})
+
+const toggleRowMenu = (event: Event, group: ManagedGroup) => {
+  rowMenuTarget.value = group
+  rowMenu.value?.toggle(event)
+}
+
 const confirmDelete = async () => {
   if (groupToDelete.value) {
     await store.deleteGroup(groupToDelete.value.name)
@@ -189,6 +222,12 @@ const cancelDelete = () => {
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .group-name {
