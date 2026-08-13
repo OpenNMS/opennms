@@ -30,12 +30,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.awaitility.core.ConditionFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,6 +58,7 @@ import org.opennms.core.ipc.sink.kafka.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -147,6 +153,58 @@ public class HeartbeatSinkIT {
         } finally {
             consumerManager.unregisterConsumer(heartbeatConsumer);
         }
+    }
+
+    @Test(timeout=180000)
+    public void consumersLeaveTheGroupWhenUnregistered() throws Exception {
+        final int numConsumerThreads = 3;
+        final HeartbeatModule module = new HeartbeatModule() {
+            @Override
+            public int getNumConsumerThreads() {
+                return numConsumerThreads;
+            }
+        };
+
+        final MessageConsumer<Heartbeat,Heartbeat> heartbeatConsumer = new MessageConsumer<Heartbeat,Heartbeat>() {
+            @Override
+            public SinkModule<Heartbeat,Heartbeat> getModule() {
+                return module;
+            }
+
+            @Override
+            public void handleMessage(final Heartbeat heartbeat) {
+                // pass
+            }
+        };
+
+        final Properties adminConfig = new Properties();
+        adminConfig.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+
+        try (AdminClient admin = AdminClient.create(adminConfig)) {
+            // describeConsumerGroups fails until the broker has a coordinator for the group, which
+            // it may not have yet on a freshly started server
+            final ConditionFactory groupMembership = await().atMost(30, SECONDS)
+                    .pollInterval(1, SECONDS)
+                    .ignoreExceptions();
+
+            // Other tests in this class share the group, so wait for it to drain first
+            groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(0));
+
+            try {
+                consumerManager.registerConsumer(heartbeatConsumer);
+                groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(numConsumerThreads));
+            } finally {
+                consumerManager.unregisterConsumer(heartbeatConsumer);
+            }
+
+            groupMembership.until(() -> countConsumerGroupMembers(admin), equalTo(0));
+        }
+    }
+
+    private int countConsumerGroupMembers(final AdminClient admin) throws Exception {
+        final String groupId = SystemInfoUtils.getInstanceId();
+        return admin.describeConsumerGroups(Collections.singleton(groupId))
+                .describedGroups().get(groupId).get().members().size();
     }
 
     @Test(timeout=60000)
