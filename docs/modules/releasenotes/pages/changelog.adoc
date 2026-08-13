@@ -6,8 +6,14 @@
 
 == Release 36.0.3
 
+Thanks to the following researchers for responsibly disclosing security issues in this release:
+* Santosh Kumar Puppala reported issue https://issues.opennms.org/browse/NMS-20030[NMS-20030]
+* Xanlar Agamalizade and tinyb0y reported issue https://issues.opennms.org/browse/NMS-20051[NMS-20051]
+
 === Bug
 
+* v2 AlarmRestService ackUser credential check is inverted — allows audit-log impersonation and read-only bypass (Issue https://issues.opennms.org/browse/NMS-20030[NMS-20030])
+* JEXL sandbox bypass in Measurements REST API allows ROLE_USER to load arbitrary classes (Issue https://issues.opennms.org/browse/NMS-20051[NMS-20051])
 * ActiveMQ security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-20087[NMS-20087])
 * Collectd shutdown can block for several minutes waiting for active collection RPCs (Issue https://issues.opennms.org/browse/NMS-20046[NMS-20046])
 * Dangling nodeParentID references in node table (Issue https://issues.opennms.org/browse/NMS-19971[NMS-19971])
