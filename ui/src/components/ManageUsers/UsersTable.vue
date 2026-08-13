@@ -38,7 +38,7 @@
         </template>
       </OnmsColumn>
       <OnmsColumn
-        field="full-name"
+        field="fullName"
         header="Full Name"
         sortable
       />
@@ -48,12 +48,12 @@
         sortable
       />
       <OnmsColumn
-        field="pager-email"
+        field="pagerEmail"
         header="Pager Email"
       />
       <OnmsColumn header="Roles">
         <template #body="{ data }">
-          <span class="roles">{{ (data.roles ?? []).join(', ') || '-' }}</span>
+          <span class="roles">{{ (data.roles ?? []).join(', ') || '--' }}</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="Actions">
