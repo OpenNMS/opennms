@@ -51,6 +51,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -536,9 +537,28 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             throw new TransformerException("External resource resolution disabled for collector XSLT: " + href);
         };
         factory.setURIResolver(denyExternal);
+        // The default listener only logs to stderr and continues on error; fail the collection instead.
+        final ErrorListener failLoudly = new ErrorListener() {
+            @Override
+            public void warning(TransformerException e) {
+                LOG.warn("XSLT transform warning: {}", e.getMessage());
+            }
+            @Override
+            public void error(TransformerException e) throws TransformerException {
+                LOG.error("XSLT transform error, failing collection: {}", e.getMessage());
+                throw e;
+            }
+            @Override
+            public void fatalError(TransformerException e) throws TransformerException {
+                LOG.error("XSLT transform fatal error, failing collection: {}", e.getMessage());
+                throw e;
+            }
+        };
+        factory.setErrorListener(failLoudly);
         Source xslt = new SAXSource(newSecureXmlReader(), new InputSource(xsltFile.toURI().toString()));
         Transformer transformer = factory.newTransformer(xslt);
         transformer.setURIResolver(denyExternal);
+        transformer.setErrorListener(failLoudly);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             Source source = new SAXSource(newSecureXmlReader(), new InputSource(is));

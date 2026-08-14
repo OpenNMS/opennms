@@ -256,13 +256,11 @@ public class AbstractXmlCollectionHandlerTest {
 
         final DefaultXmlCollectionHandler handler = new DefaultXmlCollectionHandler();
         try {
-            final Document doc = handler.getXmlDocument(
-                    new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)), request);
-            final String text = doc.getElementsByTagName("val").item(0).getTextContent();
-            Assert.assertFalse("document() resolved a source URI - SSRF/file-read not blocked (leaked: " + text + ")",
-                    text.contains("DOC_SECRET_SENTINEL"));
+            handler.getXmlDocument(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)), request);
+            Assert.fail("Expected the blocked document() reference to fail the collection loudly");
         } catch (SAXException | TransformerException expected) {
-            // A rejecting URIResolver aborting the transform is equally safe.
+            // Fail-loud: the ErrorListener rethrows the denied reference instead of letting the
+            // transform continue with silent, corrupt output.
         }
     }
 
