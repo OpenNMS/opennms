@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.elastic.ProportionalSumQuery;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -53,11 +54,27 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
 
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
+    private final ProportionalSumQuery.Strategy proportionalSumStrategy;
+
     public AggregatedSearchQueryProvider() {
+        this(ProportionalSumQuery.Strategy.PAINLESS);
+    }
+
+    public AggregatedSearchQueryProvider(String proportionalSumStrategy) {
+        this(ProportionalSumQuery.Strategy.parse(proportionalSumStrategy));
+    }
+
+    public AggregatedSearchQueryProvider(ProportionalSumQuery.Strategy proportionalSumStrategy) {
+        this.proportionalSumStrategy = proportionalSumStrategy;
         // Setup Freemarker
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+    }
+
+    private String proportionalSumAgg(long step, long start, long end, String valueField) {
+        return ProportionalSumQuery.aggregationFor(proportionalSumStrategy, step, start, end,
+                "range_start", "range_end", valueField, null);
     }
 
     public String getFlowCountQuery(List<Filter> filters) {
@@ -90,6 +107,8 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
+                .put("proportionalSumIngress", proportionalSumAgg(step, start, end, "bytes_ingress"))
+                .put("proportionalSumEgress", proportionalSumAgg(step, start, end, "bytes_egress"))
                 .build());
     }
 
@@ -103,6 +122,8 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
+                .put("proportionalSumIngress", proportionalSumAgg(step, start, end, "bytes_ingress"))
+                .put("proportionalSumEgress", proportionalSumAgg(step, start, end, "bytes_egress"))
                 .build());
     }
 
