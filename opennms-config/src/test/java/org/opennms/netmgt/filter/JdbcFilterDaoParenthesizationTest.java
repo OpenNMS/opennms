@@ -76,10 +76,11 @@ public class JdbcFilterDaoParenthesizationTest {
 
     @Test
     public void plainRuleStillWorks() throws Exception {
+        // *.*.*.* translates to a native match-all (see JdbcFilterDaoNativeInetTest)
         final String sql = m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*");
         System.out.println("plain rule: " + sql);
         final String where = sql.substring(sql.indexOf("WHERE "));
-        assertTrue(where.startsWith("WHERE (IPLIKE("));
+        assertTrue(where.startsWith("WHERE (ipInterface.ipaddr IS NOT NULL"));
         assertTrue(where.endsWith(")"));
     }
 }
