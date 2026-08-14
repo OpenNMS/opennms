@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.3-SNAPSHOT</version>
+  <version>36.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -130,6 +130,7 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
+    <module>opennms-openapi-docs</module>
     <module>opennms-config-dao</module>
   </modules>
   <build>
@@ -1677,7 +1678,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.3.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>36.0.4.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1782,7 +1783,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.11</cxfVersion>
+    <cxfVersion>3.6.12</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1830,6 +1831,7 @@
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.18.9</jackson2Version>
+    <cxfJackson2Version>2.21.5</cxfJackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>2.3</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
@@ -1908,6 +1910,9 @@
     <paxLoggingVersion>2.3.0</paxLoggingVersion>
     <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
     <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
+    <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
+         container/pax-url-aether-patch to replace the plexus-utils it shades
+         (CVE-2025-67030); keep ${plexusUtilsVersion} in mind when bumping this -->
     <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
     <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
@@ -1930,6 +1935,9 @@
     <newtsOsgiVersion>3.0.1</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
+    <!-- used to replace the vulnerable plexus-utils shaded into pax-url-aether,
+         see container/pax-url-aether-patch -->
+    <plexusUtilsVersion>3.6.1</plexusUtilsVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
     <postgresqlVersion>42.7.13</postgresqlVersion>
@@ -1970,7 +1978,7 @@
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.23.11</swaggerUIVersion>
+    <swaggerUIVersion>5.25.3</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>

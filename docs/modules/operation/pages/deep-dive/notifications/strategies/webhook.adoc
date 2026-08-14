@@ -112,12 +112,12 @@ For more information, see the https://api.slack.com/messaging/webhooks[Slack API
   <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
   <comment>Send a notice to a Slack channel</comment>
   <argument streamed="false">
-    <switch>-url</switch>
     <substitution>https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution>
+    <switch>-url</switch>
   </argument>
   <argument streamed="false">
-    <switch>-body</switch>
     <substitution>{"text": "*${subject}*\n${textMessage}"}</substitution>
+    <switch>-body</switch>
   </argument>
   <argument streamed="false">
     <switch>-subject</switch>
@@ -143,12 +143,12 @@ For more information, see the https://docs.mattermost.com/developer/webhooks-inc
   <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
   <comment>Send a notice to a Mattermost channel</comment>
   <argument streamed="false">
-    <switch>-url</switch>
     <substitution>https://mattermost.example.org/hooks/bf980352b5f7232efe721dbf0626bee1</substitution>
+    <switch>-url</switch>
   </argument>
   <argument streamed="false">
-    <switch>-body</switch>
     <substitution>{"username": "opennms", "text": "**${subject}**\n${textMessage}"}</substitution>
+    <switch>-body</switch>
   </argument>
   <argument streamed="false">
     <switch>-subject</switch>
@@ -174,12 +174,12 @@ For more information, see the https://learn.microsoft.com/en-us/power-automate/[
   <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
   <comment>Send a notice to a Microsoft Teams channel</comment>
   <argument streamed="false">
-    <switch>-url</switch>
     <substitution>https://prod-00.westus.logic.azure.com:443/workflows/00000000/triggers/manual/paths/invoke?...</substitution>
+    <switch>-url</switch>
   </argument>
   <argument streamed="false">
-    <switch>-body</switch>
     <substitution>{"type": "message", "attachments": [{"contentType": "application/vnd.microsoft.card.adaptive", "content": {"type": "AdaptiveCard", "$schema": "http://adaptivecards.io/schemas/adaptive-card.json", "version": "1.4", "body": [{"type": "TextBlock", "weight": "Bolder", "text": "${subject}"}, {"type": "TextBlock", "wrap": true, "text": "${textMessage}"}]}}]}</substitution>
+    <switch>-body</switch>
   </argument>
   <argument streamed="false">
     <switch>-subject</switch>
@@ -206,12 +206,12 @@ For more information, see the https://discord.com/developers/docs/resources/webh
   <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
   <comment>Send a notice to a Discord channel</comment>
   <argument streamed="false">
-    <switch>-url</switch>
     <substitution>https://discord.com/api/webhooks/000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution>
+    <switch>-url</switch>
   </argument>
   <argument streamed="false">
-    <switch>-body</switch>
     <substitution>{"username": "OpenNMS", "content": "**${subject}**\n${textMessage}"}</substitution>
+    <switch>-body</switch>
   </argument>
   <argument streamed="false">
     <switch>-subject</switch>
@@ -236,19 +236,19 @@ This example posts to an internal service with a bearer token and treats the not
   <execute>org.opennms.netmgt.notifd.WebhookNotificationStrategy</execute>
   <comment>Raise an incident through an internal API</comment>
   <argument streamed="false">
-    <switch>-url</switch>
     <substitution>https://incidents.example.org/api/v1/incidents</substitution>
+    <switch>-url</switch>
   </argument>
   <argument streamed="false">
     <switch>-header-Authorization</switch>
   </argument>
   <argument streamed="false">
-    <switch>-success-match</switch>
     <substitution>"accepted"\s*:\s*true</substitution>
+    <switch>-success-match</switch>
   </argument>
   <argument streamed="false">
-    <switch>-body</switch>
     <substitution>{"title": "${subject}", "detail": "${textMessage}", "node": "${nodeid}", "source": "opennms"}</substitution>
+    <switch>-body</switch>
   </argument>
   <argument streamed="false">
     <switch>-subject</switch>

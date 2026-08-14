@@ -279,14 +279,23 @@ const onKeyDown = async (event: KeyboardEvent) => {
 <style lang="scss" scoped>
 .onms-search-control-wrapper {
   position: relative;
-  min-width: 30em;
+  // Fluid width: 24em on wide viewports, shrinking down to a 10em floor so
+  // the menubar degrades gracefully as the window narrows (NMS-20201).
+  min-width: clamp(10em, 28vw, 24em);
 }
 
 .search-results-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  // Anchor to the input's right edge: when min-width exceeds the input's
+  // width the dropdown grows leftward (over the logo area, still on-screen)
+  // instead of rightward past the viewport edge, where the fixed header
+  // provides no scrollbar to reach it.
+  left: auto;
+  right: 0;
   width: 100%;
+  // Keep results readable even when the input has shrunk to its floor width.
+  min-width: 24em;
   background: var(--p-content-background);
   color: var(--p-text-muted-color);
   border: 1px solid var(--p-content-border-color);
