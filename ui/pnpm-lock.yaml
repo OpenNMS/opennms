@@ -1563,8 +1563,8 @@ packages:
   core-js-pure@3.49.0:
     resolution: {integrity: sha512-XM4RFka59xATyJv/cS3O3Kml72hQXUeGRuuTmMYFxwzc9/7C8OYTaIR/Ji+Yt8DXzsFLNhat15cE/JP15HrCgw==}
 
-  core-js@3.49.0:
-    resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
+  core-js@3.50.0:
+    resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
 
   cronstrue@3.14.0:
     resolution: {integrity: sha512-XnW4vuK/jPJjmTyDWiej1Zq36Od7ITwxaV2O1pzHZuyMVvdy7NAvyvIBzybt+idqSpfqYuoDG7uf/ocGtJVWxA==}
@@ -4531,7 +4531,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.7
       '@types/raf': 3.4.3
-      core-js: 3.49.0
+      core-js: 3.50.0
       raf: 3.4.1
       regenerator-runtime: 0.13.11
       rgbcolor: 1.0.1
@@ -4614,7 +4614,7 @@ snapshots:
 
   core-js-pure@3.49.0: {}
 
-  core-js@3.49.0:
+  core-js@3.50.0:
     optional: true
 
   cronstrue@3.14.0: {}
@@ -5304,7 +5304,7 @@ snapshots:
       fflate: 0.8.3
     optionalDependencies:
       canvg: 3.0.11
-      core-js: 3.49.0
+      core-js: 3.50.0
       dompurify: 3.4.13
       html2canvas: 1.4.1
 
