@@ -98,7 +98,7 @@
 import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import Add from '@/components/icons/action/Add.vue'
+import Add from '@opennms/onms-ui/icons/action/Add.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'

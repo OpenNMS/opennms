@@ -72,8 +72,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
-import SearchIcon from '@/components/icons/action/Search.vue'
-import CancelIcon from '@/components/icons/navigation/Cancel.vue'
+import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
+import CancelIcon from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'

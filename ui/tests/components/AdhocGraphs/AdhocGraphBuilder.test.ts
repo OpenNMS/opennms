@@ -1,3 +1,4 @@
+import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -83,7 +84,10 @@ const mountBuilder = (props: Record<string, unknown> = {}) => {
     props,
     global: {
       plugins: [PrimeVue, pinia],
-      stubs: { BreadCrumbs: true, RouterLink: true }
+      stubs: { BreadCrumbs: true, RouterLink: true },
+      // AdhocChartToolbar uses v-onms-tooltip; the app registers it in
+      // src/theme/primevue-setup.ts, which tests don't run.
+      directives: { 'onms-tooltip': OnmsTooltip }
     }
   })
 
