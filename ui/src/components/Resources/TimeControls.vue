@@ -64,7 +64,7 @@ import { computed, ref } from 'vue'
 import { OnmsButton, OnmsDatePicker, OnmsIcon, OnmsPopover, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { add, sub, getUnixTime, differenceInHours, fromUnixTime } from 'date-fns'
-import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import ArrowDropDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 import {
   HOUR_OPTIONS,
   relativeRangeOf,

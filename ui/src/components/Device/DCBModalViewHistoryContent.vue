@@ -44,7 +44,7 @@ import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
 import { OnmsIconButton } from '@opennms/onms-ui'
-import Download from '@/components/icons/action/DownloadFile.vue'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'

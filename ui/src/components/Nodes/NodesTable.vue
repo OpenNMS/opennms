@@ -331,11 +331,11 @@ import {
   type OnmsTablePageEvent,
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
-import FilterAlt from '@/components/icons/action/FilterAlt.vue'
-import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import InfoIcon from '@/components/icons/action/Info.vue'
-import RowExpandedIcon from '@/components/icons/navigation/ExpandMore.vue'
-import RowCollapsedIcon from '@/components/icons/navigation/ChevronRight.vue'
+import FilterAlt from '@opennms/onms-ui/icons/action/FilterAlt.vue'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import RowExpandedIcon from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
+import RowCollapsedIcon from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { SORT } from '@/types'
 import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'

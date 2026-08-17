@@ -121,6 +121,75 @@ OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
   the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
   `unsafePt` if a real need for one of these appears.
 
+## Icons
+
+The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
+`OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
+in NMS-20243: under the old `@/components/icons/...` path it was reachable only
+through the core app's own Vite alias, so no plugin could import an icon at all.
+
+Icons are reached through a **subpath export**, not the barrel:
+
+```ts
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+// then: <OnmsIcon :icon="DeleteIcon" />
+```
+
+The 12 category directories (`account`, `action`, `communication`, `content`,
+`datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
+`notification`, `status`) are part of the path. They matter: 22 basenames
+(`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
+more than one category, so the category is what disambiguates them.
+
+### Why icons are NOT in the barrel
+
+Deliberate, and load-bearing. `ui/src/main/main.ts` does
+`import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
+namespace object cannot be tree-shaken — so **anything reachable from
+`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+barrel would force the entire set into the core bundle even though a typical
+screen uses a handful.
+
+Keeping them on a subpath preserves per-icon tree-shaking and code-splitting:
+each call site imports one module, and Rollup includes only what is reached.
+(Verified: an icon used only by the Adhoc Graphs screen lands in the
+`AdhocGraphs.js` chunk, not `index.js`.) A corollary worth remembering —
+`tests/onms-ui/exports.test.ts` needed no change when the icons moved, because
+the runtime contract genuinely did not change.
+
+### What this means for plugins
+
+Two different mechanisms, depending on how a plugin gets at an icon:
+
+| | Icon used *internally* by a seam component | Plugin imports an icon *directly* |
+|---|---|---|
+| Path | relative, inside this package | `@opennms/onms-ui/icons/action/Delete.vue` |
+| At runtime | in the **host** bundle, shared | **bundled into the plugin's own dist** (~1 KB) |
+| Externalized to `window.OnmsUI`? | n/a | **No.** `external: ['@opennms/onms-ui']` is an exact-string match, and `rollup-plugin-external-globals` maps exact ids — neither matches a subpath |
+| Plugin rebuild to pick up a change? | No — the host owns it | Yes, like any vendored asset |
+| Needs this package resolvable at plugin build time? | No | Yes |
+
+The first column is why this move is **invisible to the plugin ABI**. A plugin
+using `OnmsSearchInput` renders the *host's* compiled component, which carries
+its search glyph with it; the plugin's dist contains no icon data at all. So an
+already-built plugin keeps working across this change with no rebuild.
+
+The last row is the live caveat: this package is `"private": true` and is not
+published to a registry. In-repo consumers (the core app, the example plugin)
+resolve it through the pnpm workspace and work today. An **external** plugin
+repo compiles against the *bare* specifier and externalizes it, so it never
+resolves the package — but a subpath icon import *does* require real
+resolution. External plugins therefore can't use subpath icons until this
+package is installable (published, tarball, or vendored). That is strictly
+better than before, where icons were unreachable by any plugin.
+
+If sharing icons off `window.OnmsUI` is ever genuinely wanted, it does not
+require moving them again — widen the plugin externals contract to a
+regex/function matching `@opennms/onms-ui/icons/*` and expose a registry. That
+is a plugin-toolchain change, and it carries the bundle cost described above;
+it is declined for now, not foreclosed.
+
 ## OnmsTooltip
 
 `OnmsTooltip` (`packages/onms-ui/src/directives/OnmsTooltip.ts`) is a seam
