@@ -123,7 +123,7 @@ public abstract class LoginModuleUtils {
         if (handler.requiresAdminRole()) {
             allowed = false;
             for (final Principal principal : principals) {
-                final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
+                final String name = principal.getName().toLowerCase(Locale.ROOT).replaceAll("^role_", "");
                 if ("admin".equals(name)) {
                     allowed = true;
                 }

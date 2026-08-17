@@ -148,13 +148,16 @@ public class WebappIT {
    * JSP page after login.
    */
   @Test
-  public void verifyMenuBundleAssetsAreAnonymouslyAccessible() {
+  public void verifyMenuBundleJsAssetIsAnonymouslyAccessible() {
     given().redirects().follow(false)
         .get("ui-components/assets/index.js")
         .then().assertThat()
         .statusCode(200)
         .header("Content-Type", containsString("javascript"));
+  }
 
+  @Test
+  public void verifyMenuBundleCssAssetIsAnonymouslyAccessible() {
     given().redirects().follow(false)
         .get("ui-components/assets/index.css")
         .then().assertThat()
@@ -173,7 +176,8 @@ public class WebappIT {
     given().redirects().follow(false)
         .get("ui-components/index.html")
         .then().assertThat()
-        .statusCode(302);
+        .statusCode(302)
+        .header("Location", containsString("login.jsp"));
   }
 
   /**
