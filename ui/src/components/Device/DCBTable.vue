@@ -109,12 +109,13 @@
             @click="onNodeLinkClick(data.nodeId)"
           >
             {{ data.deviceName }}
-            <OnmsIcon
-              v-if="data.configType !== 'default'"
-              :icon="Speed"
-              v-onms-tooltip="data.configName"
-            />
           </a>
+          <OnmsIconButton
+            v-if="data.configType !== 'default'"
+            :icon="Speed"
+            :tooltip="data.configName"
+            @click="onNodeLinkClick(data.nodeId)"
+          />
         </template>
       </OnmsColumn>
 
@@ -189,7 +190,7 @@
 >
 import { computed, ref } from 'vue'
 
-import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsTable, OnmsColumn, type OnmsTablePageEvent, type OnmsTableSortEvent } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsIconButton, OnmsTable, OnmsColumn, type OnmsTablePageEvent, type OnmsTableSortEvent } from '@opennms/onms-ui'
 import { SORT } from '@/types'
 import History from '@opennms/onms-ui/icons/action/Restore.vue'
 import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
