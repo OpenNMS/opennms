@@ -71,6 +71,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
+    private static final int MINION_SYSLOG_TCP_PORT = 1601;
     private static final int MINION_SSH_PORT = 8201;
     private static final int MINION_SNMP_TRAP_PORT = 1162;
     private static final int MINION_TELEMETRY_FLOW_PORT = 50000;
@@ -101,6 +102,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         Integer[] tcpPorts = {
                 MINION_DEBUG_PORT,
                 MINION_SSH_PORT,
+                MINION_SYSLOG_TCP_PORT,
                 MINION_TELEMETRY_FLOW_PORT,
                 MINION_TELEMETRY_IPFIX_TCP_PORT,
                 MINION_JETTY_PORT,
@@ -236,6 +238,14 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
 
     public InetSocketAddress getSyslogAddress() {
         return new InetSocketAddress(getContainerIpAddress(), TestContainerUtils.getMappedUdpPort(this, MINION_SYSLOG_PORT));
+    }
+
+    /**
+     * Only reachable when syslog.tcp.listen.port is set in org.opennms.netmgt.syslog.cfg.
+     * The port is always exposed, since exposing it costs nothing when nothing listens.
+     */
+    public InetSocketAddress getSyslogTcpAddress() {
+        return new InetSocketAddress(getContainerIpAddress(), getMappedPort(MINION_SYSLOG_TCP_PORT));
     }
 
     @Override
