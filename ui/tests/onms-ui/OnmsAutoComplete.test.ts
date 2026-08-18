@@ -58,6 +58,27 @@ describe('OnmsAutoComplete', () => {
     expect(wrapper.findComponent({ name: 'AutoComplete' }).vm.$slots.empty).toBeTruthy()
   })
 
+  it('exposes clearInput() to wipe typed-but-unselected text, and focus()', async () => {
+    const wrapper = mount(OnmsAutoComplete, {
+      props: { suggestions: [], multiple: true },
+      attachTo: document.body,
+      global: globalPlugins
+    })
+    const input = wrapper.find('input')
+    await input.setValue('node1')
+    expect((input.element as HTMLInputElement).value).toBe('node1')
+
+    // multiple mode leaves the query in the DOM, so there is no model to reset
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+
+    wrapper.vm.clearInput()
+    expect((input.element as HTMLInputElement).value).toBe('')
+
+    wrapper.vm.focus()
+    expect(document.activeElement).toBe(input.element)
+    wrapper.unmount()
+  })
+
   it('forwards the option slot for custom suggestion rendering', () => {
     const wrapper = mount(OnmsAutoComplete, {
       props: { suggestions: [{ label: 'node1' }] },

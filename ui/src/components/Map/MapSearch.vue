@@ -1,7 +1,11 @@
 <template>
   <div class="map-search">
-    <i class="pi pi-search map-search__icon" aria-hidden="true" />
+    <OnmsIcon
+      :icon="IconSearch"
+      class="map-search__icon"
+    />
     <OnmsAutoComplete
+      ref="autoCompleteRef"
       v-model="searchStr"
       multiple
       :suggestions="results"
@@ -16,6 +20,15 @@
         <div class="autocomplete-empty">{{ labels.noResults }}</div>
       </template>
     </OnmsAutoComplete>
+    <OnmsIcon
+      :icon="IconCancel"
+      class="map-search__clear"
+      role="button"
+      tabindex="0"
+      title="Clear search"
+      @click="clearSearch"
+      @keydown.enter.space.prevent="clearSearch"
+    />
   </div>
 </template>
 
@@ -26,7 +39,9 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 
 import { debounce } from 'lodash'
-import { OnmsAutoComplete } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsIcon } from '@opennms/onms-ui'
+import IconCancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
+import IconSearch from '@opennms/onms-ui/icons/action/Search.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useSearchStore } from '@/stores/searchStore'
 
@@ -34,6 +49,7 @@ const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
 const mapStore = useMapStore()
 const searchStore = useSearchStore()
+const autoCompleteRef = ref<InstanceType<typeof OnmsAutoComplete> | null>(null)
 const searchStr = ref()
 const loading = ref(false)
 const outsideSearch = ref(false)
@@ -72,6 +88,24 @@ const search = debounce(async (value: string) => {
   labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
+
+/**
+ * Resets the field and everything a search left behind: the selected chips, the
+ * map's node filter, and the text typed but not yet selected (which lives in the
+ * DOM, not the model — see OnmsAutoComplete.clearInput).
+ */
+const clearSearch = () => {
+  search.cancel()
+  autoCompleteRef.value?.clearInput()
+  searchStr.value = []
+  labels.value = defaultLabels
+  outsideSearch.value = false
+  mapStore.setSearchedNodeLabels([])
+  // Also clear the term an outside component (MapNodesGrid) may have set:
+  // leaving it in place would stop a repeat click on that same node from
+  // re-running the search, since the watchEffect below only reacts to changes.
+  mapStore.setNodeSearchTerm('')
+}
 
 const results = computed(() => {
   if (searchStore.searchResults.length > 0 && searchStore.searchResults[0]) {
@@ -133,10 +167,24 @@ watch(results, (newResults) => {
   background-color: rgba(211, 211, 211, 0.8);
   border-radius: 4px;
 }
-.map-search__icon {
+.map-search__icon,
+.map-search__clear {
   flex: 0 0 auto;
   color: var(--p-text-color);
   font-size: 1.1rem;
+}
+.map-search__clear {
+  cursor: pointer;
+
+  &:hover {
+    color: var(--p-primary-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 .map-search__input {
   width: 290px !important;

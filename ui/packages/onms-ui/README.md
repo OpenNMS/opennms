@@ -89,6 +89,12 @@ Other tranche-2 notes:
 - **`OnmsListbox`**'s `change` event emits the selected value directly, not
   PrimeVue's `{ originalEvent, value }` event object, matching the
   `OnmsAutoComplete` `optionSelect` precedent.
+- **`OnmsAutoComplete`** exposes `clearInput()` and `focus()` for call sites that
+  render their own clear affordance (`MapSearch`). `clearInput()` exists because
+  in `multiple` mode PrimeVue's inner input is *uncontrolled* — it binds `value`
+  only in single mode — so text typed but not yet turned into a selection lives
+  in the DOM with no model to reset, and a caller cannot reach it through
+  `modelValue`. Clearing the selection itself is still done via `modelValue`.
 
 ## Components (tranche 3)
 
