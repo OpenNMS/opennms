@@ -57,6 +57,27 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
                         "    <hideMessage/>" +
                         "    <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>" +
                         "</syslogd-configuration>"
+            },
+            {
+                getTcpConfig(),
+                "<syslogd-configuration>\n" +
+                        "    <configuration\n" +
+                        "            syslog-port=\"10514\"\n" +
+                        "            syslog-tcp-port=\"10601\"\n" +
+                        "            tcp-listen-address=\"127.0.0.1\"\n" +
+                        "            tcp-framing=\"octet-counting\"\n" +
+                        "            tcp-max-message-size=\"32768\"\n" +
+                        "            tcp-max-connections=\"64\"\n" +
+                        "            tcp-idle-timeout=\"300\"\n" +
+                        "            tcp-tls-enabled=\"true\"\n" +
+                        "            tcp-tls-cert-filepath=\"/opt/opennms/etc/syslog-tls.crt\"\n" +
+                        "            tcp-tls-private-key-filepath=\"/opt/opennms/etc/syslog-tls.key\"\n" +
+                        "            tcp-tls-trust-cert-filepath=\"/opt/opennms/etc/syslog-tls-ca.crt\"\n" +
+                        "            tcp-tls-client-auth=\"require\"\n" +
+                        "            />\n" +
+                        "    <ueiList/>" +
+                        "    <hideMessage/>" +
+                        "</syslogd-configuration>"
             }
         });
     }
@@ -75,6 +96,27 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
         daemonConfig.setConfiguration(config);
 
         daemonConfig.addImportFile("syslog/ApacheHTTPD.syslog.xml");
+        return daemonConfig;
+    }
+
+    private static SyslogdConfiguration getTcpConfig() {
+        SyslogdConfiguration daemonConfig = new SyslogdConfiguration();
+
+        Configuration config = new Configuration();
+        config.setSyslogPort(10514);
+        config.setSyslogTcpPort(10601);
+        config.setTcpListenAddress("127.0.0.1");
+        config.setTcpFraming("octet-counting");
+        config.setTcpMaxMessageSize(32768);
+        config.setTcpMaxConnections(64);
+        config.setTcpIdleTimeout(300);
+        config.setTcpTlsEnabled(true);
+        config.setTcpTlsCertFilePath("/opt/opennms/etc/syslog-tls.crt");
+        config.setTcpTlsPrivateKeyFilePath("/opt/opennms/etc/syslog-tls.key");
+        config.setTcpTlsTrustCertFilePath("/opt/opennms/etc/syslog-tls-ca.crt");
+        config.setTcpTlsClientAuth("require");
+        daemonConfig.setConfiguration(config);
+
         return daemonConfig;
     }
 

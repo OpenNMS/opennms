@@ -28,6 +28,7 @@ import java.util.TimeZone;
 
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 
 /**
@@ -50,6 +51,8 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private int m_batchIntervalMs;
 	private TimeZone timeZone;
 	private boolean includeRawSyslogmessage;
+	/** Defaulted so that a blueprint that never sets it yields a disabled TCP listener. */
+	private SyslogTcpConfig m_tcpConfig = new SyslogTcpConfig();
 
 	@Override
 	public int getSyslogPort() {
@@ -188,6 +191,15 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	public void setBatchIntervalMs(int batchIntervalMs) {
         m_batchIntervalMs = batchIntervalMs;
+    }
+
+    @Override
+    public SyslogTcpConfig getTcpConfig() {
+        return m_tcpConfig;
+    }
+
+    public void setTcpConfig(SyslogTcpConfig tcpConfig) {
+        m_tcpConfig = tcpConfig == null ? new SyslogTcpConfig() : tcpConfig;
     }
 
     @Override
