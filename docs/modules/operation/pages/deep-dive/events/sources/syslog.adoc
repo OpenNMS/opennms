@@ -8,7 +8,131 @@ Syslog messages sent over the network to {page-component-title} can be transform
 IMPORTANT: xref:reference:daemons/daemon-config-files/syslogd.adoc[Syslogd], which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
 This daemon is disabled by default.
 
-IMPORTANT: {page-component-title} works natively with UDP syslog reception. If you need TCP syslog reception then receiving the data with a TCP compatible syslog receiver such as rsyslog and forwarding them to {page-component-title} as UDP is possible but may require the use of the xref:operation:deep-dive/events/event-translator.adoc[Event Translator] to assign events to the correct host.
+== Transports
+
+Syslogd listens on UDP by default.
+It can also accept messages over TCP, optionally wrapped in TLS, and both transports can run at the same time.
+
+=== UDP
+
+The `syslog-port` attribute in `$\{OPENNMS_HOME}/etc/syslogd-configuration.xml` sets the UDP port, and `listen-address` limits which interface it binds.
+Nothing needs to be configured to use UDP beyond enabling the daemon.
+
+=== TCP
+
+Setting `syslog-tcp-port` starts a TCP listener in addition to the UDP one.
+Leaving it unset, which is the default, means only UDP is used.
+
+[source, xml]
+----
+<configuration syslog-port="10514"
+               syslog-tcp-port="10601"
+               ... />
+----
+
+TCP carries a byte stream rather than discrete datagrams, so the sender has to mark where one message ends and the next begins.
+RFC 6587 describes two ways of doing this, and senders differ in which one they use by default:
+
+* Octet counting prefixes each message with its length, which keeps newlines inside a message intact.
+* Non-transparent framing separates messages with a newline, which is what rsyslog sends unless told otherwise.
+
+The `tcp-framing` attribute selects between them.
+The default, `auto`, reads the framing from the first message of each connection and then keeps it for the rest of that connection.
+Setting it to `octet-counting` or `non-transparent` may help if a sender is inconsistent, though it will then reject anything that arrives in the other framing.
+
+Non-transparent framing accepts either a newline or a NUL as the message separator, since senders differ, and strips a trailing carriage return.
+
+A framing mismatch shows up differently depending on which way round it is.
+
+Under `octet-counting` against a newline-delimited sender, the first byte is not a digit, so the connection is dropped and the reason is logged in `syslogd.log`.
+
+Under `non-transparent` against an octet-counting sender, the symptom depends on whether the sender's messages happen to contain a newline or a NUL.
+Octet-counted frames normally do not, in which case the listener never sees a message boundary: nothing arrives at all, and the connection is eventually dropped once the buffered stream passes `tcp-max-message-size`.
+If the messages do contain one, events arrive instead with the length prefix at the front of the body.
+
+[caption=]
+.Optional TCP attributes
+[options="autowidth"]
+|===
+| Attribute | Description | Default
+
+| tcp-listen-address
+| Interface to accept connections on.
+| The value of `listen-address`, then all addresses.
+
+| tcp-framing
+| `auto`, `octet-counting`, or `non-transparent`.
+| `auto`
+
+| tcp-max-message-size
+| Largest message accepted, in bytes.
+A sender that exceeds it has its connection closed, since the position of the next message is no longer known.
+| 65536
+
+| tcp-max-connections
+| Largest number of connections accepted at once.
+Connections that are still closing count towards it, so a sender that opens a fresh connection per message can be refused well below its apparent concurrency; refusals are logged at debug level.
+A sender that holds one connection open avoids this entirely.
+| 1024
+
+| tcp-idle-timeout
+| Seconds before a connection that has sent nothing is closed.
+A connection is not considered idle while a message it sent is still being handed to the sink, so a slow consumer should not cause connections to be dropped.
+Zero disables the timeout.
+| 0
+|===
+
+=== TCP with TLS
+
+Setting `tcp-tls-enabled` wraps the TCP listener in TLS, as described by RFC 5425.
+Certificates and keys are PEM encoded, and the private key cannot be password protected.
+
+[source, xml]
+----
+<configuration syslog-port="10514"
+               syslog-tcp-port="10601"
+               tcp-tls-enabled="true"
+               tcp-tls-cert-filepath="/opt/opennms/etc/syslog-tls.crt"
+               tcp-tls-private-key-filepath="/opt/opennms/etc/syslog-tls.key"
+               ... />
+----
+
+Setting `tcp-tls-client-auth` to `optional` or `require` also verifies sender certificates against `tcp-tls-trust-cert-filepath`.
+With `require`, a sender that presents no trusted certificate is rejected during the handshake; with `optional`, it is still accepted.
+
+If a certificate or key cannot be read, the listener does not start and logs why in `syslogd.log`.
+It does not fall back to accepting plaintext on that port.
+
+NOTE: RFC 5425 specifies octet counting for the TLS transport.
+Leaving `tcp-framing` at `auto` still works, and the framing that was detected is logged when the first message on a connection arrives.
+
+Syslogd runs one TCP listener, so `tcp-tls-enabled` applies to it as a whole rather than opening a second port.
+Senders that cannot use TLS would need to reach a different Syslogd, on a Minion for example, or keep using UDP.
+
+=== Sender configuration
+
+For rsyslog, the `omfwd` module sends over TCP, and its `TCP_Framing` parameter chooses the framing:
+
+[source]
+----
+# newline delimited, which matches tcp-framing="non-transparent"
+action(type="omfwd" target="opennms.example.com" port="10601" protocol="tcp" TCP_Framing="traditional")
+
+# length prefixed, which matches tcp-framing="octet-counting"
+action(type="omfwd" target="opennms.example.com" port="10601" protocol="tcp" TCP_Framing="octet-counted")
+----
+
+Adding `StreamDriver="gtls"` and `StreamDriverMode="1"` sends over TLS.
+
+For syslog-ng, a `network()` destination with `transport(tcp)` sends over TCP, and `transport(tls)` with a `tls()` block sends over TLS.
+Check which framing your version emits before assuming it matches, since this has changed between releases.
+
+=== Minion
+
+A Minion uses the same syslog listener feature either way.
+Set the `syslog.tcp.*` keys in `$\{MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg`, where `syslog.tcp.listen.port` defaults to `0`, meaning TCP is off.
+The keys mirror the attributes above.
+Messages still reach {page-component-title} through the same sink the UDP listener uses, so nothing downstream changes.
 
 == Parsers
 

@@ -36,6 +36,12 @@ Handles processing of xref:operation:deep-dive/events/sources/syslog.adoc[syslog
 | yes
 | no
 
+| syslogd-configuration.xml (`syslog-tcp-port` and the `tcp-*` attributes)
+| Configure the optional xref:operation:deep-dive/events/sources/syslog.adoc#_tcp[TCP listener], including RFC 6587 framing and TLS.
+Unset by default, in which case only UDP is used.
+| yes
+| no
+
 | syslog/*.xml
 | Defines individual mappings between message text and UEIs.
 Files in this folder must be specified as an include directive in `syslog-configuration.xml`.
