@@ -130,43 +130,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>io.github.olivierlemasle.maven</groupId>
-                <artifactId>plaintext-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>write</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <files>
-                        <file>
-                            <name>assembly/etc/org.ops4j.pax.logging.cfg</name>
-                            <append>true</append>
-                            <lines>
-                                <line>${line.separator}# Logging to be programmatically enabled when running in a container, disabled by default</line>
-                                <line>log4j2.rootLogger.appenderRef.container.ref = container</line>
-                                <line>log4j2.rootLogger.appenderRef.container.filter.threshold.type = ThresholdFilter</line>
-                                <line>log4j2.rootLogger.appenderRef.container.filter.threshold.level = ${karaf.log.container.threshold:-OFF}</line>
-
-                                <line>${line.separator}# Console appender to use when running in a container writing directly to stdout</line>
-                                <line>log4j2.appender.container.type = Console</line>
-                                <line>log4j2.appender.container.name = container</line>
-                                <line>log4j2.appender.container.layout.type = ${karaf.log.container.layout:-PatternLayout}</line>
-                                <line>log4j2.appender.container.layout.pattern = ${karaf.log.container.pattern}</line>
-
-                                <line>${line.separator}# OPENNMS: Display all INFO logs for OpenNMS code</line>
-                                <line>log4j2.logger.opennms.name = org.opennms</line>
-                                <line>log4j2.logger.opennms.level = INFO</line>
-                            </lines>
-                        </file>
-                    </files>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
                 <executions>
@@ -204,40 +167,6 @@
                                 <replacement>
                                     <token>rmiServerPort *=.*</token>
                                     <value>rmiServerPort = 46444</value>
-                                </replacement>
-                            </replacements>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>org.ops4j.pax.logging.cfg</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.build.directory}/assembly/etc/org.ops4j.pax.logging.cfg</file>
-                            <regex>false</regex>
-                            <replacements>
-                                <!-- change default audit logging -->
-                                <replacement>
-                                    <token>log4j2.appender.audit.layout.pattern = %m%n</token>
-                                    <value>log4j2.appender.audit.layout.pattern = ${log4j2.pattern}</value>
-                                </replacement>
-                                <replacement>
-                                    <token>log4j2.logger.audit.name = audit</token>
-                                    <value>log4j2.logger.audit.name = org.apache.karaf.jaas.modules.audit</value>
-                                </replacement>
-                                <replacement>
-                                    <token>log4j2.logger.audit.level = TRACE</token>
-                                    <value>log4j2.logger.audit.level = INFO</value>
-                                </replacement>
-                                <replacement>
-                                    <token>log4j2.appender.audit.fileName = ${karaf.log}/security.log</token>
-                                    <value>log4j2.appender.audit.fileName = ${karaf.data}/security/audit.log</value>
-                                </replacement>
-                                <replacement>
-                                    <token>log4j2.appender.audit.filePattern = ${karaf.log}/security-%i.log</token>
-                                    <value>log4j2.appender.audit.filePattern = ${karaf.data}/security/audit.log.%i</value>
                                 </replacement>
                             </replacements>
                         </configuration>

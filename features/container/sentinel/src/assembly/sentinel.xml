@@ -32,6 +32,15 @@
       <directory>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/featuresBoot.d</directory>
       <outputDirectory>etc/featuresBoot.d</outputDirectory>
     </fileSet>
+    <fileSet>
+      <!-- reuse container-shared's maintained pax-logging config instead of the raw Karaf default,
+           so fixes made there (e.g. log4j2 property-naming compatibility) apply here too -->
+      <directory>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc</directory>
+      <outputDirectory>etc</outputDirectory>
+      <includes>
+        <include>org.ops4j.pax.logging.cfg</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <files>
     <file>
