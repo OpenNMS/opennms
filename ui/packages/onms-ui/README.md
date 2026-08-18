@@ -204,7 +204,7 @@ it is declined for now, not foreclosed.
 ## OnmsTooltip
 
 `OnmsTooltip` (`packages/onms-ui/src/directives/OnmsTooltip.ts`) is a seam
-re-export of PrimeVue's `Tooltip` directive, exported from the package barrel
+wrapper around PrimeVue's `Tooltip` directive, exported from the package barrel
 alongside the components above. Unlike the components, it isn't installed by
 this package — directives are registered at the app level, the same way core
 already installs the PrimeVue plugin itself
@@ -223,6 +223,35 @@ rename is behavior-neutral: PrimeVue keys the directive's internals (the
 `BaseTooltip.extend('tooltip', ...)`, not off the name it's registered under,
 so `v-onms-tooltip` behaves identically to `v-tooltip` (verified against
 primevue@4.5.5) — only the vocabulary in the template changes.
+
+It is a thin wrapper rather than a bare re-export because of one upstream bug
+(NMS-20162): PrimeVue captures the configured tooltip z-index only in
+`beforeMount`, reading it from `binding.instance.$primevue`. Vue fills that in
+with `getComponentPublicInstance()`, which hands over the host's *exposeProxy*
+whenever the component has called `expose()` — which `<script setup>` always
+compiles to. That proxy resolves Vue's own `$`-properties but not app
+`globalProperties`, so `$primevue` came back undefined for every tooltip in the
+app, nothing was captured, and the ZIndex util fell back to ~1000 — behind the
+fixed menubar (1030) and the side-menu rail (2000), which reads as "the tooltip
+never opens". The wrapper hands the hook an instance that can resolve
+`$primevue` off the vnode's app context, the same fallback PrimeVue's own
+`BaseDirective._getConfig` uses for the rest of its config (which is why
+everything except the z-index worked). See `tests/onms-ui/OnmsTooltip.test.ts`.
+
+### Tooltips on `OnmsIconButton`
+
+Prefer the `tooltip` prop over putting `v-onms-tooltip` on the component:
+
+```vue
+<OnmsIconButton :icon="Delete" tooltip="Delete" />
+```
+
+The prop mounts the directive on the button itself. When `tooltip` is set the
+native `title` attribute is dropped, so the browser's own tooltip doesn't
+duplicate the rich one; `title`, if given, still names the button for assistive
+tech, and a `tooltip`-only button is named from the tooltip text. Positioning
+modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
+one keeps using the directive.
 
 ## Runtime exposure for plugins
 

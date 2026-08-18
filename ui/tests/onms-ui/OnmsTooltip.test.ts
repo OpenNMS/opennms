@@ -21,12 +21,15 @@
 ///
 
 import { OnmsTooltip } from '@opennms/onms-ui'
+import { mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
+import { defineComponent } from 'vue'
 
-// OnmsTooltip is a re-export of PrimeVue's Tooltip directive (see the
-// directive file's header comment). Pin that it is a real directive object
-// with lifecycle hooks, so a broken re-export fails fast rather than
-// rendering nothing at 14 call sites.
+// OnmsTooltip wraps PrimeVue's Tooltip directive (see the directive file's
+// header comment). Pin that it is a real directive object with lifecycle hooks,
+// so a broken re-export fails fast rather than rendering nothing at 14 call
+// sites.
 //
 // The hook names asserted below were confirmed against the installed
 // primevue@4.5.5 by inspecting Object.keys(await import('primevue/tooltip')
@@ -48,5 +51,48 @@ describe('OnmsTooltip', () => {
     expect(tooltip).toHaveProperty('updated')
     expect(tooltip).toHaveProperty('beforeUnmount')
     expect(tooltip).toHaveProperty('unmounted')
+  })
+
+  // The reason this is a wrapper and not a bare re-export. PrimeVue reads the
+  // configured z-index off `binding.instance.$primevue`, which Vue sets to the
+  // host's exposeProxy — present on every `<script setup>` component and unable
+  // to resolve app globalProperties, so upstream captured nothing and tooltips
+  // fell back to ~1000, behind the fixed menubar.
+  describe('z-index capture', () => {
+    const zIndexOf = (el: Element) => (el as never as Record<string, unknown>).$_ptooltipZIndex
+
+    const mountHost = (host: ReturnType<typeof defineComponent>) => mount(host, {
+      global: {
+        plugins: [[PrimeVue, { zIndex: { tooltip: 2100 }}]],
+        directives: { 'onms-tooltip': OnmsTooltip }
+      }
+    })
+
+    it('captures the configured z-index from a <script setup>-style host', () => {
+      // The bare `expose()` call is what the <script setup> compiler emits for a
+      // component with no defineExpose, and it is what defeats the upstream
+      // lookup: it gives the instance an exposeProxy, which Vue then hands to the
+      // directive as binding.instance.
+      const host = defineComponent({
+        template: '<span v-onms-tooltip="\'hello\'" class="host">hello</span>',
+        setup: (_props, { expose }) => {
+          expose()
+
+          return {}
+        }
+      })
+
+      expect(zIndexOf(mountHost(host).find('.host').element)).toBe(2100)
+    })
+
+    it('leaves an already-resolvable instance alone', () => {
+      // options-API host: binding.instance is the full proxy, so PrimeVue's own
+      // lookup works and the wrapper must not interfere
+      const host = defineComponent({
+        template: '<span v-onms-tooltip="\'hello\'" class="host">hello</span>'
+      })
+
+      expect(zIndexOf(mountHost(host).find('.host').element)).toBe(2100)
+    })
   })
 })

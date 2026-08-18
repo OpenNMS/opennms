@@ -1,7 +1,8 @@
 import { OnmsIconButton } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { describe, expect, it, vi } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 
 // Minimal stand-in for a vendored OnmsIcon svg component.
 const StubIcon = defineComponent({
@@ -67,6 +68,61 @@ describe('OnmsIconButton.vue', () => {
     expect(filled.props('text')).toBe(false)
     const danger = mount(OnmsIconButton, { props: { icon: StubIcon, severity: 'danger' }}).findComponent({ name: 'Button' })
     expect(danger.props('severity')).toBe('danger')
+  })
+
+  describe('tooltip prop', () => {
+    // PrimeVue's Tooltip directive stashes its state on the host element, so the
+    // element itself is the observable contract.
+    const tooltipState = (el: Element) => ({
+      value: (el as never as Record<string, unknown>).$_ptooltipValue,
+      zIndex: (el as never as Record<string, unknown>).$_ptooltipZIndex
+    })
+
+    const mountWithTooltip = (props: Record<string, unknown>) => mount(OnmsIconButton, {
+      props: { icon: StubIcon, ...props },
+      global: { plugins: [PrimeVue] }
+    })
+
+    it('mounts the tooltip directive with the prop text', () => {
+      const wrapper = mountWithTooltip({ tooltip: 'Redraw the graph' })
+      expect(tooltipState(wrapper.find('button').element).value).toBe('Redraw the graph')
+    })
+
+    it('leaves the directive inert when no tooltip is given', () => {
+      const wrapper = mountWithTooltip({ title: 'Refresh' })
+      expect(tooltipState(wrapper.find('button').element).value).toBeUndefined()
+    })
+
+    it('drops the native title attribute so the browser tooltip does not double up', () => {
+      const wrapper = mountWithTooltip({ title: 'Refresh', tooltip: 'Redraw the graph' })
+      expect(wrapper.find('button').attributes('title')).toBeUndefined()
+      // ...while title still names the button for assistive tech
+      expect(wrapper.find('svg').attributes('aria-label')).toBe('Refresh')
+    })
+
+    it('names the button from the tooltip when there is no title', () => {
+      const wrapper = mountWithTooltip({ tooltip: 'Clear every selection' })
+      expect(wrapper.find('svg').attributes('aria-label')).toBe('Clear every selection')
+    })
+
+    // Regression guard for the z-index capture: PrimeVue only reads the
+    // configured tooltip z-index in beforeMount, so a tooltip appearing after
+    // mount has to remount the host or it paints behind the fixed menubar.
+    it('captures the tooltip z-index when the tooltip arrives after mount', async () => {
+      const wrapper = mount(OnmsIconButton, {
+        props: { icon: StubIcon, tooltip: undefined as string | undefined },
+        global: { plugins: [PrimeVue, { install: () => {} }], config: {}}
+      })
+      expect(tooltipState(wrapper.find('button').element).value).toBeUndefined()
+
+      await wrapper.setProps({ tooltip: 'Now I have something to say' })
+      await nextTick()
+
+      const state = tooltipState(wrapper.find('button').element)
+      expect(state.value).toBe('Now I have something to say')
+      // set only by beforeMount — proves the host was remounted
+      expect(state.zIndex).toBeDefined()
+    })
   })
 
   it('supports the ghost variant (text + outlined both true)', () => {
