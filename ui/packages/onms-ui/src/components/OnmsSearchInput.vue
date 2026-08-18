@@ -22,7 +22,6 @@
         type="button"
         class="onms-search-input__clear-button"
         :aria-label="clearAriaLabel"
-        :title="clearAriaLabel"
         :data-test="dataTest ? `${dataTest}-clear` : undefined"
         @click="clear"
       >
@@ -144,7 +143,10 @@ defineExpose({ focus, blur })
   border-radius: 50%;
   background: transparent;
   color: var(--p-form-field-icon-color, var(--p-text-muted-color));
-  font-size: var(--p-icon-size, 1rem);
+  // Matches the leading search glyph, which primevue-overrides.scss normalizes
+  // to 1.5rem app-wide; the PrimeVue default (--p-icon-size, 1rem) would leave
+  // the two icons in the same field visibly different sizes.
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
 

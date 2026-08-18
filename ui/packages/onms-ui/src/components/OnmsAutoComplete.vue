@@ -101,11 +101,19 @@ const inputElement = () => {
 // uncontrolled there (it binds `value` only in single mode), so the query lives
 // in the DOM and a caller cannot reach it through `modelValue`. Resetting the
 // selection is still the caller's job, via `modelValue`.
+//
+// The input event is dispatched rather than just assigning `value`: PrimeVue
+// schedules its own suggestion fetch on a `delay` timer (300ms) from its `onInput`
+// handler, and only that handler cancels it. A silent assignment leaves the timer
+// armed, so a clear within the delay window still fires `complete` with the stale
+// query and the caller re-runs the search it just cancelled. Going through
+// `onInput` with an empty value clears the timer and closes the overlay too.
 const clearInput = () => {
   const input = inputElement()
 
   if (input) {
     input.value = ''
+    input.dispatchEvent(new Event('input', { bubbles: true }))
   }
 }
 

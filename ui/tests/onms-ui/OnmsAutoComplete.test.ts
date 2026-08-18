@@ -1,7 +1,7 @@
 import { OnmsAutoComplete } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 // NOTE (PrimeVue-reality rule): installed primevue@4.5.5's AutoComplete
 // extends BaseInput, whose computed properties (searchMessage,
@@ -77,6 +77,31 @@ describe('OnmsAutoComplete', () => {
     wrapper.vm.focus()
     expect(document.activeElement).toBe(input.element)
     wrapper.unmount()
+  })
+
+  // Regression: clearInput() has to go through PrimeVue's own onInput handler.
+  // Typing arms a `delay`-ms timer inside AutoComplete, and only that handler
+  // cancels it — assigning the DOM value silently would leave the timer running,
+  // so a clear inside the delay window still delivered the stale query to the
+  // caller, which then re-ran the search it had just cancelled.
+  it('cancels the pending suggestion fetch when clearInput() runs', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mount(OnmsAutoComplete, {
+        props: { suggestions: [], multiple: true },
+        global: globalPlugins
+      })
+      await wrapper.find('input').setValue('node1')
+
+      wrapper.vm.clearInput()
+      vi.advanceTimersByTime(1000)
+
+      expect(wrapper.emitted('complete')).toBeUndefined()
+      wrapper.unmount()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('forwards the option slot for custom suggestion rendering', () => {
