@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportDateParm;

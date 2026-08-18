@@ -123,6 +123,13 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
+    <!-- HA management. The sync endpoints serve raw credential stores, hence ADMIN.
+         Status has no rule on purpose: any authenticated user may read it. -->
+    <intercept-url pattern="/rest/ha/config/**" method="GET" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/config/**" method="PUT" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/failover/**" method="POST" access="ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/ha/sync/**" method="GET" access="ROLE_ADMIN"/>
+
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
@@ -266,10 +273,6 @@
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/element/nodeList.jsp"/>
-          <beans:constructor-arg name="httpMethod" value="POST"/>
-        </beans:bean>
-        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
           <beans:constructor-arg name="pattern" value="/admin/sched-outages/editoutage.jsp"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
@@ -337,6 +340,8 @@
     <intercept-url pattern="/favicon-16x16.png" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/site.webmanifest" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/safari-pinned-tab.svg" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <!-- Static script. Update checks happen outside any session, where a login redirect would fail them. -->
+    <intercept-url pattern="/notification-sw.js" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/logoff.jsp" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/login.jsp*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/accessDenied.jsp*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
@@ -346,6 +351,10 @@
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/assets/load-assets.jsp*" access="denyAll" /><!-- only used as include, shouldn't be accessible directly -->
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <!-- Vue menu bundle (static js/css/fonts). Must be anonymous: bootstrap.jsp preloads it from the
+         login page, and an auth redirect there gets cached by Safari/Firefox as text/html for the
+         asset URL, breaking the menu on all JSP pages after login (NMS-20174). -->
+    <intercept-url pattern="/ui-components/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />

@@ -38,18 +38,23 @@ describe('SnmpInterfacesTable.vue', () => {
   let wrapper: VueWrapper<any>
   let nodeStore: ReturnType<typeof useNodeStore>
 
-  const mountTable = () =>
-    mount(SnmpInterfacesTable, {
+  // The store action must be mocked BEFORE mounting — the component fetches in
+  // onMounted, and an unmocked action would fire a real network request.
+  const mountTable = () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    nodeStore = useNodeStore(pinia)
+    nodeStore.getNodeSnmpInterfaces = vi.fn().mockResolvedValue(undefined)
+
+    return mount(SnmpInterfacesTable, {
       global: {
-        plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue]
+        plugins: [pinia, PrimeVue]
       }
     })
+  }
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountTable()
-    nodeStore = useNodeStore()
-    nodeStore.getNodeSnmpInterfaces = vi.fn().mockResolvedValue(undefined)
     nodeStore.snmpInterfaces = []
     nodeStore.snmpInterfacesTotalCount = 0
     await flushPromises()

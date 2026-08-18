@@ -30,7 +30,7 @@
         v-for="item in menuItems"
         :key="item?.id || ''"
         class="self-service-menubar-dropdown-item-content"
-        @click="onMenuItemClick(item)"
+        @click="onMenuItemClick(item, $event)"
       >
         <a :href="item.action === 'logout' ? '#' : computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
           <OnmsIcon :icon="createIcon(item)" class="self-service-icon" />
@@ -137,8 +137,14 @@ const onUserProfileMenuClick = () => {
   window.location.assign(link)
 }
 
-const onMenuItemClick = async (item: MenuItem) => {
+const onMenuItemClick = async (item: MenuItem, event?: Event) => {
   if (item.action === 'logout') {
+    // Cancel the anchor's default navigation: its '#' href resolves against the
+    // <base href> that embedding JSP pages set (includes/bootstrap.jsp), so an
+    // uncancelled click starts a full-page navigation that races the logout
+    // POST below — Firefox tears the request down before it is ever sent,
+    // leaving the user logged in (NMS-20174).
+    event?.preventDefault()
     await performLogout()
     return
   }

@@ -112,7 +112,7 @@
             <OnmsIcon
               v-if="data.configType !== 'default'"
               :icon="Speed"
-              v-tooltip="data.configName"
+              v-onms-tooltip="data.configName"
             />
           </a>
         </template>
@@ -126,7 +126,7 @@
           <span
             class="last-backup-date pointer"
             @click="onLastBackupDateClick(data)"
-            v-tooltip="'View config'"
+            v-onms-tooltip="'View config'"
           >
             <span v-date>{{ data.lastBackupDate }}</span>
           </span>

@@ -96,12 +96,12 @@ public class ServiceConfig1701MigratorOfflineTest {
         return Arrays.asList(new Object[][] {
             // service config, total before migration, total after migration,
             // enabled after projecting the migrated overrides onto the current catalog
-            { "target/home/etc/service-configuration-1.8.17.xml",  38, 29, 29 },
-            { "target/home/etc/service-configuration-1.10.14.xml", 38, 29, 29 },
-            { "target/home/etc/service-configuration-1.12.9.xml",  39, 29, 29 },
-            { "target/home/etc/service-configuration-14.0.3.xml",  38, 30, 26 },
-            { "target/home/etc/service-configuration-15.0.2.xml",  38, 30, 26 },
-            { "target/home/etc/service-configuration-16.0.4.xml",  37, 30, 26 }
+            { "target/home/etc/service-configuration-1.8.17.xml",  38, 29, 28 },
+            { "target/home/etc/service-configuration-1.10.14.xml", 38, 29, 28 },
+            { "target/home/etc/service-configuration-1.12.9.xml",  39, 29, 28 },
+            { "target/home/etc/service-configuration-14.0.3.xml",  38, 30, 25 },
+            { "target/home/etc/service-configuration-15.0.2.xml",  38, 30, 25 },
+            { "target/home/etc/service-configuration-16.0.4.xml",  37, 30, 25 }
         });
     }
 

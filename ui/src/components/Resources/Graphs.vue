@@ -5,20 +5,26 @@
     </div>
   </div>
   <div class="onms-row">
-    <div class="onms-col-11">
+    <div class="onms-col-11" ref="graphsContainerRef">
       <div class="controls">
         <TimeControls @updateTime="updateTime" />
-        <FormField
-          v-if="!singleGraphDefinition"
-          class="search-input"
-        >
-          <OnmsInputText
-            placeholder="Search"
-            aria-label="Search"
-            :modelValue="searchVal"
-            @update:modelValue="(val) => searchHandler(val as string)"
+        <div class="controls-right" v-if="!singleGraphDefinition">
+          <OnmsIconButton
+            variant="outlined"
+            :icon="DownloadFile"
+            data-test="pdf-download-btn"
+            title="Download the graphs currently loaded on this page as a PDF"
+            @click="downloadPdf"
           />
-        </FormField>
+          <FormField class="search-input">
+            <OnmsInputText
+              placeholder="Search"
+              aria-label="Search"
+              :modelValue="searchVal"
+              @update:modelValue="(val) => searchHandler(val as string)"
+            />
+          </FormField>
+        </div>
       </div>
       <GraphContainer
         v-for="resource in resources"
@@ -34,13 +40,16 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import DownloadFile from '@/components/icons/action/DownloadFile.vue'
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
+import { exportGraphsToPdf } from './utils/graphExport'
+import useSnackbar from '@/composables/useSnackbar'
 import { sub, getUnixTime } from 'date-fns'
 import { StartEndTime } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
@@ -64,6 +73,22 @@ const { startSpinner, stopSpinner } = useSpinner()
 const now = new Date()
 const initNumOfGraphs = 4
 const searchVal = ref<string>('')
+const { showSnackBar } = useSnackbar()
+const graphsContainerRef = ref<HTMLElement | null>(null)
+
+const downloadPdf = () => {
+  if (!graphsContainerRef.value) {
+    return
+  }
+  const exported = exportGraphsToPdf(graphsContainerRef.value, 'Resource Graphs')
+  if (!exported) {
+    showSnackBar({ msg: 'No graphs are ready to export yet.' })
+  } else {
+    // only DOM-mounted graphs are captured; tell the user how many so a partially
+    // scrolled page isn't mistaken for the whole set
+    showSnackBar({ msg: `Exported ${exported} loaded graph${exported === 1 ? '' : 's'} to PDF.` })
+  }
+}
 
 const props = defineProps({
   singleGraphDefinition: {
@@ -185,6 +210,12 @@ onBeforeMount(() => {
 .controls {
   display: flex;
   justify-content: space-between;
+
+  .controls-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 
   .search-input {
     width: 230px;
