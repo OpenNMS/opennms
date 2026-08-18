@@ -165,6 +165,132 @@
                     </documentation>
                 </annotation>
             </attribute>
+            <attribute name="syslog-tcp-port" use="optional">
+                <annotation>
+                    <documentation>The port on which Syslogd accepts SYSLOG messages over TCP.
+                                   Leaving this unset switches TCP ingestion off, which is the
+                                   default. RFC 6587 names 601 for plain TCP and RFC 5425 names
+                                   6514 for TLS.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                    <maxInclusive value="65535"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="tcp-listen-address" type="string" use="optional">
+                <annotation>
+                    <documentation>The address on which Syslogd accepts TCP connections. Defaults
+                                   to the value of listen-address, and then to all addresses.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="tcp-framing" use="optional" default="auto">
+                <annotation>
+                    <documentation>The RFC 6587 framing to expect from TCP senders. With
+                                   octet-counting each message is prefixed by its length, and with
+                                   non-transparent framing messages are separated by a newline
+                                   or a NUL.
+                                   Senders differ in which they use by default, so auto detects the
+                                   framing from the first message of each connection and then keeps
+                                   it for the life of that connection.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                    <restriction base="string">
+                        <pattern value="auto|octet-counting|non-transparent"/>
+                    </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="tcp-max-message-size" use="optional" default="65536">
+                <annotation>
+                    <documentation>The largest TCP message accepted, in bytes. A sender that
+                                   exceeds it has its connection closed, because after an
+                                   overlong message the position of the next one is no longer
+                                   known. RFC 5425 asks receivers to accept at least 2048 bytes.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="tcp-max-connections" use="optional" default="1024">
+                <annotation>
+                    <documentation>The largest number of TCP connections accepted at once.
+                                   Connections beyond this are closed immediately.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="tcp-idle-timeout" use="optional" default="0">
+                <annotation>
+                    <documentation>Close a TCP connection that has sent nothing for this many
+                                   seconds. Zero disables the timeout.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="0"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="tcp-tls-enabled" type="boolean" use="optional" default="false">
+                <annotation>
+                    <documentation>Whether TCP connections are wrapped in TLS, as described by
+                                   RFC 5425. Requires tcp-tls-cert-filepath and
+                                   tcp-tls-private-key-filepath.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="tcp-tls-cert-filepath" type="string" use="optional">
+                <annotation>
+                    <documentation>Path to the PEM encoded certificate this listener presents to
+                                   senders.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="tcp-tls-private-key-filepath" type="string" use="optional">
+                <annotation>
+                    <documentation>Path to the PEM encoded private key matching
+                                   tcp-tls-cert-filepath. The key must not be password protected.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="tcp-tls-trust-cert-filepath" type="string" use="optional">
+                <annotation>
+                    <documentation>Path to the PEM encoded certificates used to verify sender
+                                   certificates. Only consulted when tcp-tls-client-auth asks for
+                                   them.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="tcp-tls-client-auth" use="optional" default="none">
+                <annotation>
+                    <documentation>Whether senders must present a trusted certificate. With
+                                   optional a sender that presents none is still accepted; with
+                                   require it is rejected.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                    <restriction base="string">
+                        <pattern value="none|optional|require"/>
+                    </restriction>
+                </simpleType>
+            </attribute>
         </complexType>
 
     </element>
