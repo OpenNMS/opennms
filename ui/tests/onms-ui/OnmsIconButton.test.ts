@@ -111,7 +111,7 @@ describe('OnmsIconButton.vue', () => {
     it('captures the tooltip z-index when the tooltip arrives after mount', async () => {
       const wrapper = mount(OnmsIconButton, {
         props: { icon: StubIcon, tooltip: undefined as string | undefined },
-        global: { plugins: [PrimeVue, { install: () => {} }], config: {}}
+        global: { plugins: [PrimeVue] }
       })
       expect(tooltipState(wrapper.find('button').element).value).toBeUndefined()
 
