@@ -87,6 +87,10 @@
                         <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
                     <installedBundles>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
+                        <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
+
                         <!-- override for security (see etc/overrides.properties) -->
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
@@ -129,7 +133,7 @@
                         <!-- OPENNMS: Add our custom branding JAR -->
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <javase>11</javase>
                     <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                 </configuration>
             </plugin>
@@ -176,6 +180,29 @@
                                 </delete>
                                 <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
                                                replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-superseded-pax-logging</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-logback"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="pax-logging-api[/\\][^/\\]+([/\\])pax-logging-api-[^/\\]+\.jar"
+                                               replace="pax-logging-api\1${paxLoggingVersion}\1pax-logging-api-${paxLoggingVersion}.jar"
                                                flags="g">
                                     <fileset dir="${project.build.directory}/assembly/bin"
                                              includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>

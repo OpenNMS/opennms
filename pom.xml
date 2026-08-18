@@ -1904,7 +1904,7 @@
     <jansiVersion>2.4.0</jansiVersion>
     <jlineVersion>3.30.16</jlineVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
-    <paxLoggingVersion>2.0.19</paxLoggingVersion>
+    <paxLoggingVersion>2.3.5</paxLoggingVersion>
     <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
     <!-- NOTE: the pax-url-aether uber-bundle shipped in the containers is patched by
          container/pax-url-aether-patch to replace the plexus-utils it shades
@@ -1918,7 +1918,7 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.25.5</log4j2Version>
+    <log4j2Version>2.26.1</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
