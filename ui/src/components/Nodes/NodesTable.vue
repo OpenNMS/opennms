@@ -908,20 +908,10 @@ defineExpose({ onSort, onPage, removeItem, isRowExpandable, isRowExpanded, toggl
   gap: 10px;
 
   .search-filter-column {
-    // Match the SNMP Configuration Definitions search box: right-aligned,
-    // enlarged search glyph inside a full-width input.
+    // Match the SNMP Configuration Definitions search box: right-aligned.
+    // OnmsSearchInput fills whatever width it is given.
     .search-field {
       width: 450px;
-
-      :deep(.p-iconfield) {
-        display: block;
-        width: 100%;
-      }
-
-      :deep(.p-inputtext) {
-        width: 100%;
-        padding-right: 2.75rem;
-      }
     }
   }
 

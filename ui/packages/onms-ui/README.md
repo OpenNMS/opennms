@@ -57,6 +57,11 @@ OpenNMS call site already passed explicitly:
 - **`OnmsMenu`** defaults `popup` to `true` (PrimeVue's own default is
   `false`) — every OpenNMS usage is a popup/dropdown menu; pass
   `:popup="false"` for an inline menu.
+- **`OnmsSearchInput`** is a fixed three-part composite: a leading search icon,
+  the input, and a trailing clear button that appears only when there is a value
+  (clicking it emits `update:modelValue` with `''` plus a `clear` event, then
+  returns focus to the input). Consumers do not supply the icons. It also
+  exposes `focus()`/`blur()` for callers that need to drive the field.
 - **`OnmsInputNumber`** defaults `useGrouping` to `false` (PrimeVue's own
   default is `true`) — OpenNMS numeric fields are ports/counts/intervals,
   not grouped quantities.
@@ -172,7 +177,7 @@ Two different mechanisms, depending on how a plugin gets at an icon:
 
 The first column is why this move is **invisible to the plugin ABI**. A plugin
 using `OnmsSearchInput` renders the *host's* compiled component, which carries
-its search glyph with it; the plugin's dist contains no icon data at all. So an
+its search and clear icons with it; the plugin's dist contains no icon data at all. So an
 already-built plugin keeps working across this change with no rebuild.
 
 The last row is the live caveat: this package is `"private": true` and is not

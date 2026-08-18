@@ -9,7 +9,11 @@
     </div>
 
     <div class="onms-menubar__center">
-      <Search class="search-left-margin" id="onms-central-search-control" />
+      <Search
+        ref="searchRef"
+        class="search-left-margin"
+        id="onms-central-search-control"
+      />
 
       <!-- Provision/Quick add node menu -->
       <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
@@ -67,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
@@ -88,6 +92,7 @@ const appStore = useAppStore()
 const menuStore = useMenuStore()
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const outsideClick = ref()
+const searchRef = ref<InstanceType<typeof Search> | null>(null)
 const currentDropdownMenu = ref<DropdownMenuType>(DropdownMenuType.None)
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
@@ -103,8 +108,16 @@ const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? ''
 // element must not mount until the label is ready.
 const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
-useOutsideClick(outsideClick.value, () => {
-  resetMenuItems()
+// `outsideClick`, not `outsideClick.value`: the composable stores the ref and
+// reads `.value` when the click arrives, so passing the (still-undefined) value
+// at setup time left it looking at nothing. It also stays dormant until its
+// returned `active` ref is set — enable it only while a dropdown is open, which
+// is the only time there is any state to reset. Both dropdowns are inline
+// Popovers (appendTo="self"), so clicks inside them count as inside the header.
+const outsideClickActive = useOutsideClick(outsideClick, () => resetMenuItems())
+
+watch(currentDropdownMenu, (menu) => {
+  outsideClickActive.value = menu !== DropdownMenuType.None
 })
 
 const resetMenuItems = () => {
@@ -165,11 +178,7 @@ const shiftCheck = (e: KeyboardEvent) => {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
 
-        const elem: HTMLInputElement | null = document.querySelector('.onms-search-input-wrapper input.search-input')
-
-        if (elem) {
-          elem.focus()
-        }
+        searchRef.value?.focus()
       } else {
         clearShiftCheck()
       }
