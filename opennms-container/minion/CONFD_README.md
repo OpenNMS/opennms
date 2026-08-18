@@ -120,6 +120,32 @@ netmgt:
 ```
 Config specified will be written to `etc/org.opennms.netmgt.syslog.cfg`.
 
+Syslog over TCP is served by the same listener feature and configured through the same
+file. `syslog.tcp.listen.port` defaults to `0`, which leaves TCP off:
+
+```yaml
+---
+netmgt:
+    syslog:
+        syslog.tcp.listen.interface: "0.0.0.0"
+        syslog.tcp.listen.port: 1601
+        # auto (default), octet-counting, or non-transparent. Senders differ in which
+        # RFC 6587 framing they use by default, so auto reads it from the first message
+        # of each connection and keeps it for that connection.
+        syslog.tcp.framing: "auto"
+        syslog.tcp.max.message.size: 65536
+        syslog.tcp.max.connections: 1024
+        syslog.tcp.idle.timeout: 0
+        # TLS, per RFC 5425. Certificates and keys are PEM encoded and the private key
+        # must not be password protected.
+        syslog.tcp.tls.enabled: false
+        syslog.tcp.tls.cert.filepath: ""
+        syslog.tcp.tls.private.key.filepath: ""
+        syslog.tcp.tls.trust.cert.filepath: ""
+        # none (default), optional, or require
+        syslog.tcp.tls.client.auth: "none"
+```
+
 ### Traps
 ```yaml
 --- 
