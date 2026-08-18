@@ -15,20 +15,25 @@
       placeholder="Search"
       @complete="resetLabelsAndSearch"
       @update:modelValue="selectItem"
+      @input="onQueryInput"
     >
       <template #empty>
         <div class="autocomplete-empty">{{ labels.noResults }}</div>
       </template>
     </OnmsAutoComplete>
-    <OnmsIcon
-      :icon="IconCancel"
-      class="map-search__clear"
-      role="button"
-      tabindex="0"
-      title="Clear search"
-      @click="clearSearch"
-      @keydown.enter.space.prevent="clearSearch"
-    />
+    <!-- The slot is always rendered so the panel does not resize on the first
+         keystroke; the button only exists when there is something to clear. -->
+    <span class="map-search__clear-slot">
+      <button
+        v-if="hasContent"
+        type="button"
+        class="map-search__clear"
+        aria-label="Clear search"
+        @click="clearSearch"
+      >
+        <OnmsIcon :icon="IconCancel" />
+      </button>
+    </span>
   </div>
 </template>
 
@@ -89,6 +94,31 @@ const search = debounce(async (value: string) => {
   loading.value = false
 }, 1000)
 
+// The AutoComplete's inner input is uncontrolled in `multiple` mode, so text
+// typed but not yet turned into a chip exists only in the DOM. Native events
+// fall through to the seam component's root element and `input` bubbles there,
+// so the query can be tracked without reaching into the DOM.
+const typedText = ref('')
+
+const onQueryInput = (event: Event) => {
+  if (event.target instanceof HTMLInputElement) {
+    typedText.value = event.target.value
+  }
+}
+
+const selectedCount = computed(() => Array.isArray(searchStr.value) ? searchStr.value.length : 0)
+
+// Something to clear: a selected chip, or text typed but not yet selected.
+const hasContent = computed(() => typedText.value !== '' || selectedCount.value > 0)
+
+watch(selectedCount, (count, previous) => {
+  // Taking a suggestion consumes the typed query: PrimeVue empties its inner
+  // input directly, without firing `input`. Removing a chip leaves it alone.
+  if (count > previous) {
+    typedText.value = ''
+  }
+})
+
 /**
  * Resets the field and everything a search left behind: the selected chips, the
  * map's node filter, and the text typed but not yet selected (which lives in the
@@ -97,6 +127,7 @@ const search = debounce(async (value: string) => {
 const clearSearch = () => {
   search.cancel()
   autoCompleteRef.value?.clearInput()
+  typedText.value = ''
   searchStr.value = []
   labels.value = defaultLabels
   outsideSearch.value = false
@@ -168,12 +199,32 @@ watch(results, (newResults) => {
   border-radius: 4px;
 }
 .map-search__icon,
-.map-search__clear {
+.map-search__clear-slot {
   flex: 0 0 auto;
   color: var(--p-text-color);
   font-size: 1.1rem;
 }
+// Holds the button's footprint open while it is absent, so showing and hiding
+// it does not resize the panel.
+.map-search__clear-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+}
+// A real <button>, so Enter/Space activation and focus come from the platform
+// rather than from hand-rolled key handling on a non-interactive element.
 .map-search__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
   cursor: pointer;
 
   &:hover {

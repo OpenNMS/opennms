@@ -38,14 +38,36 @@ describe('MapSearch', () => {
 
   afterEach(() => wrapper?.unmount())
 
-  it('renders the leading search icon and the trailing clear control', () => {
+  it('renders the leading search icon, with no clear control until there is something to clear', () => {
     wrapper = mountMapSearch()
     expect(wrapper.find('.map-search__icon').exists()).toBe(true)
+    expect(wrapper.find('.map-search__clear').exists()).toBe(false)
+    // the slot stays put so showing the button does not resize the panel
+    expect(wrapper.find('.map-search__clear-slot').exists()).toBe(true)
+  })
 
+  it('shows the clear control once text is typed, and hides it again when it goes', async () => {
+    wrapper = mountMapSearch()
+    const input = wrapper.find('input')
+
+    await input.setValue('node')
     const clear = wrapper.find('.map-search__clear')
     expect(clear.exists()).toBe(true)
-    expect(clear.attributes('tabindex')).toBe('0')
+    // a real button, so Enter/Space activation and focus come from the platform
+    expect(clear.element.tagName).toBe('BUTTON')
+    expect(clear.attributes('type')).toBe('button')
     expect(clear.attributes('aria-label')).toBe('Clear search')
+
+    await input.setValue('')
+    expect(wrapper.find('.map-search__clear').exists()).toBe(false)
+  })
+
+  it('shows the clear control for a selection with no typed text', async () => {
+    wrapper = mountMapSearch()
+    expect(wrapper.find('.map-search__clear').exists()).toBe(false)
+
+    await wrapper.findComponent({ name: 'OnmsAutoComplete' }).vm.$emit('update:modelValue', [{ label: 'node1' }])
+    expect(wrapper.find('.map-search__clear').exists()).toBe(true)
   })
 
   it('clears the selection, the typed text and the map filter', async () => {
@@ -66,15 +88,29 @@ describe('MapSearch', () => {
     expect((input.element as HTMLInputElement).value).toBe('')
     expect(mapStore.searchedNodeLabels).toEqual([])
     expect(mapStore.nodeSearchTerm).toBe('')
+    expect(wrapper.find('.map-search__clear').exists()).toBe(false)
   })
 
-  it('clears from the keyboard too', async () => {
+  // PrimeVue empties its inner input itself when a suggestion is taken, without
+  // firing `input`, so the tracked query has to be reset off the model change or
+  // the control would linger with nothing left to clear.
+  it('drops the typed text once it becomes a selection', async () => {
     wrapper = mountMapSearch()
-    const mapStore = useMapStore()
-    await wrapper.findComponent({ name: 'OnmsAutoComplete' }).vm.$emit('update:modelValue', [{ label: 'node1' }])
-    expect(mapStore.searchedNodeLabels).toEqual(['node1'])
+    const autoComplete = wrapper.findComponent({ name: 'OnmsAutoComplete' })
+    const input = wrapper.find('input')
 
-    await wrapper.find('.map-search__clear').trigger('keydown', { key: 'Enter' })
-    expect(mapStore.searchedNodeLabels).toEqual([])
+    await input.setValue('node1')
+    // PrimeVue's own selection handling, reproduced: the model gains the chip
+    // and the inner input is emptied without an input event
+    await autoComplete.vm.$emit('update:modelValue', [{ label: 'node1' }])
+    const inputElement = input.element as HTMLInputElement
+    inputElement.value = ''
+    await nextTick()
+
+    expect(wrapper.find('.map-search__clear').exists()).toBe(true)
+
+    // removing the chip leaves nothing typed, so the control goes away
+    await autoComplete.vm.$emit('update:modelValue', [])
+    expect(wrapper.find('.map-search__clear').exists()).toBe(false)
   })
 })
