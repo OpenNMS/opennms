@@ -13,8 +13,6 @@
       <excludes>
         <exclude>**/zookeeper/3.4.14</exclude>
         <exclude>**/zookeeper/3.4.14/*</exclude>
-        <exclude>**/com/fasterxml/jackson/**/2.21.3</exclude>
-        <exclude>**/com/fasterxml/jackson/**/2.21.3/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

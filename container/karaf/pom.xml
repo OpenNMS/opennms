@@ -88,7 +88,7 @@
                     </bootFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
-                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
