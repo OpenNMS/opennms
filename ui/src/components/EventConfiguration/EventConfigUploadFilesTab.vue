@@ -22,10 +22,11 @@
                     </span>
                   </div>
                   <div class="actions">
-                    <OnmsIcon
+                    <OnmsIconButton
                       v-if="element.isDuplicate"
                       :icon="Warning"
-                      v-onms-tooltip="'File is a duplicate of another file that has been already uploaded.'"
+                      title="Rename or overwrite duplicate file"
+                      tooltip="File is a duplicate of another file that has been already uploaded."
                       class="warning-icon"
                       @click="openFileRenameDialog(index)"
                     />
@@ -487,6 +488,7 @@ watch(
             margin: 0px;
           }
 
+          // Status indicators: plain icons, so these land on the <svg>.
           .success-icon {
             color: var(--onms-success);
             cursor: pointer;
@@ -501,11 +503,12 @@ watch(
             width: 2em;
           }
 
+          // The duplicate indicator IS actionable (it opens the rename dialog), so
+          // it is an icon button and this lands on the <button>. Colour only: the
+          // glyph inherits it via `fill: currentColor`, and the component sizes it
+          // to match the reorder/remove buttons beside it.
           .warning-icon {
             color: var(--onms-major);
-            cursor: pointer;
-            height: 2em;
-            width: 2em;
           }
         }
       }
