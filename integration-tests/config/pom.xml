@@ -81,10 +81,11 @@
       <artifactId>org.opennms.core.test-api.xml</artifactId>
     </dependency>
 
-    <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
+    <!-- Daemon classes named by service-configuration.xml, which
+         ServiceConfigurationPublicConstructorIT instantiates by name -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-asterisk</artifactId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

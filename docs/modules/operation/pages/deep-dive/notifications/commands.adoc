@@ -14,22 +14,6 @@ You can also create custom commands to send notifications to a platform of your 
 |===
 | Command       | Description
 
-| callHomePhone
-| Calls the home phone number configured in the user's contact information. +
-Uses the in-process Asterisk notification strategy.
-
-| callMobilePhone
-| Calls the mobile phone number configured in the user's contact information. +
-Uses the in-process Asterisk notification strategy.
-
-| callWorkPhone
-| Calls the work phone number configured in the user's contact information. +
-Uses the in-process Asterisk notification strategy.
-
-| ircCat
-| Conveys a notice to an instance of the IRCcat Internet Relay Chat bot. +
-Uses the in-process IRCcat notification strategy.
-
 | javaEmail
 | Delivers a notice to the email address listed in the user's `email` contact field. +
 Uses the in-process JavaMail notification strategy.
@@ -39,15 +23,6 @@ Uses the in-process JavaMail notification strategy.
 By configuring `pagerEmail` to target an email-to-SMS gateway, you can easily configure SMS notifications. +
 Uses the in-process JavaMail notification strategy.
 
-| microblogDM
-| Sends a notice to a user as a direct message via a microblog service with a Twitter v1-compatible API.
-
-| microblogReply
-| Sends a notice to a user as an at-reply via a microblog service with a Twitter v1-compatible API.
-
-| microblogUpdate
-| Sends a notice to everyone as an update via a microblog service with a Twitter v1-compatible API.
-
 | numericPage
 | Sends a notice to a user's numeric pager. +
 Implemented as an external command using the `qpage` utility.
@@ -56,13 +31,6 @@ Implemented as an external command using the `qpage` utility.
 | Sends a notice to a user's alphanumeric pager. +
 Implemented as an external command using the `qpage` utility.
 
-| xmppGroupMessage
-| Sends a message to an XMPP group. +
-Uses the in-process XMPP notification strategy.
-
-| xmppMessage
-| Sends a message to an XMPP user. +
-Uses the in-process XMPP notification strategy.
 |===
 
 == Custom notification commands
@@ -130,10 +98,6 @@ The `NotificationManager` class defines some special switches, providing data fo
 | -interface
 | From original event
 
-| PARAM_MICROBLOG_USERNAME
-| -ublog
-| From user profile
-
 | PARAM_MOBILE_PHONE
 | -mphone
 | From user profile
@@ -188,10 +152,6 @@ The `NotificationManager` class defines some special switches, providing data fo
 
 | PARAM_WORK_PHONE
 | -wphone
-| From user profile
-
-| PARAM_XMPP_ADDRESS
-| -xmpp
 | From user profile
 |===
 

@@ -134,4 +134,26 @@ describe('OnmsTable', () => {
     expect(wrapper.find('[aria-label="My table"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="my-table"]').exists()).toBe(true)
   })
+
+  it('forwards the #expansion slot with the row scope (object-form expandedRows)', () => {
+    const wrapper = mount(defineComponent({
+      components: { OnmsTable, OnmsColumn },
+      setup: () => ({ rows }),
+      template: `
+        <OnmsTable :value="rows" dataKey="id" :expandedRows="{ 1: true }">
+          <OnmsColumn expander style="width: 3rem" />
+          <OnmsColumn field="name" header="Name" />
+          <template #expansion="{ data }"><em class="exp">expanded-{{ data.name }}</em></template>
+        </OnmsTable>`
+    }), { global: globalPlugins })
+    const expanded = wrapper.findAll('em.exp')
+    expect(expanded).toHaveLength(1)
+    expect(expanded[0].text()).toBe('expanded-node-a')
+  })
+
+  it('re-emits update:expandedRows with the object form intact', () => {
+    const wrapper = mount(OnmsTable, { props: { value: rows, dataKey: 'id' }, global: globalPlugins })
+    wrapper.findComponent({ name: 'DataTable' }).vm.$emit('update:expandedRows', { 1: true, 2: true })
+    expect(wrapper.emitted('update:expandedRows')![0]).toEqual([{ 1: true, 2: true }])
+  })
 })

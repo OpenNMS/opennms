@@ -4,6 +4,25 @@
   xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
 >
 
+  <bundleReplacements>
+    <bundle originalUri="mvn:org.jline/jline/[3,4)" replacement="mvn:org.jline/jline/${jlineVersion}" mode="maven"/>
+    <bundle originalUri="mvn:com.fasterxml.jackson.core/jackson-core/[2.21,2.22)"
+            replacement="mvn:com.fasterxml.jackson.core/jackson-core/${cxfJackson2Version}"
+            mode="maven"/>
+    <bundle originalUri="mvn:com.fasterxml.jackson.core/jackson-databind/[2.21,2.22)"
+            replacement="mvn:com.fasterxml.jackson.core/jackson-databind/${cxfJackson2Version}"
+            mode="maven"/>
+    <bundle originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/[2.21,2.22)"
+            replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${cxfJackson2Version}"
+            mode="maven"/>
+    <bundle originalUri="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/[2.21,2.22)"
+            replacement="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${cxfJackson2Version}"
+            mode="maven"/>
+    <bundle originalUri="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/[2.21,2.22)"
+            replacement="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${cxfJackson2Version}"
+            mode="maven"/>
+  </bundleReplacements>
+
   <featureReplacements>
     <replacement mode="replace">
       <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">

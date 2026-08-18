@@ -29,17 +29,9 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | The acknowledge daemon is responsible for alarm acknowledgement.
 | `CORE_SERVICE_ACKD_ENABLED=true`
 
-| Actiond
-| Generates Java actions based on received events.
-| `CORE_SERVICE_ACTIOND_ENABLED=true`
-
 | Alarmd
 | Handles alarm workflows.
 | `CORE_SERVICE_ALARMD_ENABLED=true`
-
-| AsteriskGateway
-| Communicates with an Asterisk server for VOIP notification.
-| `CORE_SERVICE_ASTERISKGATEWAY_ENABLED=false`
 
 | Bsmd
 | Processes updates of Business Service Monitoring availability.

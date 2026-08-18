@@ -39,27 +39,9 @@
     </dependency>
     <!-- spring-security-openid + openid4java dropped: the OpenID 1.0 module was removed in Spring
          Security 5.x and was unwired in OpenNMS. spring-security-saml2-core (EOL 1.0.x extension,
-         incompatible with 5.x) likewise dropped; reintroduce via spring-security-saml2-service-provider
-         if SAML SSO is needed. -->
-    <dependency>
-      <groupId>org.owasp.esapi</groupId>
-      <artifactId>esapi</artifactId>
-      <version>${esapiVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.santuario</groupId>
-      <artifactId>xmlsec</artifactId>
-    </dependency>
+         incompatible with 5.x) was dropped for the same reason, and esapi, xmlsec, and the
+         BouncyCastle jdk15on artifacts existed only to support it, so they are gone too.
+         Reintroduce via spring-security-saml2-service-provider if SAML SSO is ever needed. -->
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.spring-security-config</artifactId>
@@ -159,21 +141,6 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-ext-jdk15on</artifactId>
-      <version>1.70</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.70</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk15on</artifactId>
-      <version>1.70</version>
     </dependency>
   </dependencies>
 </project>
