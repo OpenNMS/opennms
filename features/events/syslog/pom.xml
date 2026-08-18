@@ -121,6 +121,30 @@
       <version>${dropwizardMetricsVersion}</version>
     </dependency>
     <dependency>
+      <!-- The TCP listener uses Netty directly rather than through Camel, because the
+           Camel netty component has no codec for RFC 6587 octet-counted framing -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport</artifactId>
+    </dependency>
+    <dependency>
+      <!-- ByteToMessageDecoder moved here in Netty 4.2 -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-base</artifactId>
+    </dependency>
+    <dependency>
+      <!-- SslContextBuilder and IdleStateHandler -->
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
