@@ -101,11 +101,14 @@ const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButto
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
 
-// Empty until the menu data loads. The calendar icon is v-if'd on this:
-// PrimeVue's tooltip captures the configured z-index only when the directive
-// mounts with a non-empty value (an empty value both binds a blank tooltip
-// and falls back to z-index ~1000, behind this fixed header's 1030), so the
-// element must not mount until the label is ready.
+// Empty until the menu data loads. The calendar icon is v-if'd on this so the
+// tooltip directive never mounts without a label to show. (It used to also
+// matter for the z-index — an empty value at mount meant PrimeVue never captured
+// the configured 2100 and the tooltip painted behind this fixed header's 1030;
+// the OnmsTooltip seam wrapper handles that centrally now.) The `.bottom`
+// modifier on the directive is a placement choice, not a z-index workaround:
+// PrimeVue's default `right` puts the tooltip inside the header band, on top of
+// the neighbouring menubar items.
 const dateTimeLabel = computed<string>(() => [formattedTime.value, formattedDate.value].filter(Boolean).join(' '))
 
 // `outsideClick`, not `outsideClick.value`: the composable stores the ref and
