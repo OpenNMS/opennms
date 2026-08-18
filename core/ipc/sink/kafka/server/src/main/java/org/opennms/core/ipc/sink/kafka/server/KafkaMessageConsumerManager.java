@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -86,6 +87,11 @@ import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
     private static final Duration CONSUMER_POLL_DURATION = Duration.ofMillis(100);
+
+    private static final long SHUTDOWN_TIMEOUT_MS = 30000;
+
+    // Starting a consumer is quick, so this only has to cover a task that is already in flight
+    private static final long STARTUP_SHUTDOWN_TIMEOUT_MS = 5000;
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumerManager.class);
 
@@ -267,7 +273,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             for (int i = 0; i < numConsumerThreads; i++) {
                 final KafkaConsumerRunner consumerRunner = new KafkaConsumerRunner(module);
                 executor.execute(consumerRunner);
-                consumerRunners.add(new KafkaConsumerRunner(module));
+                consumerRunners.add(consumerRunner);
             }
 
             consumerRunnersByModule.put(module, consumerRunners);
@@ -307,12 +313,40 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public void shutdown() {
+        // Drain the starter threads first: startConsumingForModule() otherwise races us and can
+        // register consumers that nothing is left to stop.
+        final ExecutorService startupExecutor = getStartupExecutor();
+        if (startupExecutor != null) {
+            startupExecutor.shutdown();
+            awaitTermination(startupExecutor, STARTUP_SHUTDOWN_TIMEOUT_MS, "Sink consumer starters");
+        }
+
+        // The runners only leave their poll loop via shutdown(); executor.shutdown() on its own
+        // does not interrupt them, so wake them before waiting on the executor.
+        for (List<KafkaConsumerRunner> consumerRunners : consumerRunnersByModule.values()) {
+            for (KafkaConsumerRunner consumerRunner : consumerRunners) {
+                consumerRunner.shutdown();
+            }
+        }
+        consumerRunnersByModule.clear();
+
         executor.shutdown();
+        awaitTermination(executor, SHUTDOWN_TIMEOUT_MS, "Sink consumers");
+
         if (jmxReporter != null) {
             jmxReporter.close();
         }
-        if(getStartupExecutor() != null) {
-            getStartupExecutor().shutdown();
+    }
+
+    private static void awaitTermination(ExecutorService executorService, long timeoutMs, String description) {
+        try {
+            if (!executorService.awaitTermination(timeoutMs, TimeUnit.MILLISECONDS)) {
+                LOG.warn("{} did not stop within {}ms. Interrupting them.", description, timeoutMs);
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 

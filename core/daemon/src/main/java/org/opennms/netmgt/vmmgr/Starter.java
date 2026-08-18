@@ -24,6 +24,8 @@ package org.opennms.netmgt.vmmgr;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 
 import javax.management.MBeanServer;
 
@@ -138,9 +140,31 @@ public class Starter {
     private void start() {
         LOG.info("Beginning startup");
 
+        // Constructing the Invoker registers the SIGUSR1 status handler; it must
+        // exist before a lifecycle hook can block this thread, or a routine
+        // "opennms status" (which signals the process) kills a waiting standby.
+        Invoker invoker = new Invoker();
+
+        // Lifecycle hooks from optionally-installed modules (e.g. HA coordination:
+        // returns quickly on a primary, blocks until promotion on a standby; false
+        // means shutdown was requested while waiting — exit cleanly).
+        try {
+            for (StartupLifecycleHook hook : ServiceLoader.load(StartupLifecycleHook.class,
+                    StartupLifecycleHook.class.getClassLoader())) {
+                if (!hook.awaitReadyToStart()) {
+                    LOG.info("{} signalled clean shutdown; exiting without starting services",
+                            hook.getClass().getSimpleName());
+                    return;
+                }
+            }
+        } catch (Exception | ServiceConfigurationError e) {
+            // Fail closed: an unexpected error from an installed hook must not
+            // bypass its gate — for HA, both nodes could otherwise run concurrently.
+            die("Startup lifecycle hook failed; refusing to start services", e);
+        }
+
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
-        Invoker invoker = new Invoker();
         invoker.setServer(server);
         invoker.setAtType(InvokeAtType.START);
         List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());

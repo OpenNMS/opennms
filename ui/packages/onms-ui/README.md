@@ -10,7 +10,9 @@ replaced without rewriting consumers.
 
 1. **Never import `primevue/*` outside this package.** ESLint
    (`no-restricted-imports` in `ui/eslint.config.js`) enforces this per
-   wrapped module.
+   wrapped module in app code (`ui/src/`), and bans `primevue/*` entirely
+   in plugin code (`packages/onms-ui-example-plugin/src/`). Tests and
+   build tooling are exempt from the rule, not from the convention.
 2. **The public API is the declared props/slots/emits only.** DOM attrs
    (`class`, `style`, `data-*`, `aria-*`) and native events fall through to
    the root element and are supported. Anything else that happens to fall
@@ -119,6 +121,65 @@ OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
   the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
   `unsafePt` if a real need for one of these appears.
 
+## OnmsTooltip
+
+`OnmsTooltip` (`packages/onms-ui/src/directives/OnmsTooltip.ts`) is a seam
+re-export of PrimeVue's `Tooltip` directive, exported from the package barrel
+alongside the components above. Unlike the components, it isn't installed by
+this package — directives are registered at the app level, the same way core
+already installs the PrimeVue plugin itself
+(`ui/src/theme/primevue-setup.ts`):
+
+```ts
+import { OnmsTooltip } from '@opennms/onms-ui'
+app.directive('onms-tooltip', OnmsTooltip)
+```
+
+Templates use it as `v-onms-tooltip`, not PrimeVue's own `v-tooltip` —
+ESLint's `no-restricted-imports` bans importing `primevue/tooltip` directly
+in app and plugin code, pointing call sites at `OnmsTooltip` instead. The
+rename is behavior-neutral: PrimeVue keys the directive's internals (the
+`pt` name, `data-pc-name`, the tooltip z-index bucket) off
+`BaseTooltip.extend('tooltip', ...)`, not off the name it's registered under,
+so `v-onms-tooltip` behaves identically to `v-tooltip` (verified against
+primevue@4.5.5) — only the vocabulary in the template changes.
+
+## Runtime exposure for plugins
+
+This package's barrel export (`packages/onms-ui/src/index.ts`) **is** the
+`window.OnmsUI` runtime contract that externalized plugin bundles compile
+against. The host (`ui/src/main/main.ts`) does:
+
+```ts
+import * as OnmsUI from '@opennms/onms-ui'
+;(window as any).OnmsUI = OnmsUI
+```
+
+exactly as it already does for `vue`/`pinia`/`vue-router` on `window.Vue`/
+`window.Pinia`/`window.VueRouter`. A plugin's build externalizes
+`@opennms/onms-ui` to `window.OnmsUI` (see
+[`rollup-plugin-external-globals`](https://www.npmjs.com/package/rollup-plugin-external-globals)
+in the example plugin's `vite.config.ts`),
+so `import { OnmsButton } from '@opennms/onms-ui'` in plugin source resolves
+to `window.OnmsUI.OnmsButton` at runtime instead of being bundled — one Vue
+runtime, one component library, shared between host and plugin.
+
+Because the namespace object *is* the contract, `tests/onms-ui/exports.test.ts`
+asserts the exact set of runtime exports (`EXPECTED_RUNTIME_EXPORTS`): a
+name silently missing from the barrel breaks a plugin's import at load time
+with no build-time warning on either side. Any addition or removal to the
+barrel must update that list in the same commit. `ONMS_UI_VERSION` (mirrored
+onto `window.OnmsUI.ONMS_UI_VERSION`) lets a plugin confirm which
+component-library version the host is actually running.
+
+For the full plugin-developer walkthrough — the externals contract, the
+module contract (`window[extensionId]`, derived from the module URL's
+second-to-last path segment), the version handshake, and the dev harness
+(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/example-plugin`) — see
+[`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
+real externalized plugin built with the toolchain a third-party author would
+use.
+
 ## Sanctioned direct-PrimeVue exceptions
 
 Outside this package, importing `primevue/*` is banned by ESLint
@@ -126,11 +187,11 @@ Outside this package, importing `primevue/*` is banned by ESLint
 explicitly-listed set of exceptions exist today and are expected to shrink
 over time, not grow:
 
-- `primevue/config` and `primevue/tooltip` in `ui/src/theme/primevue-setup.ts`
-  — app bootstrap: installing the PrimeVue plugin and registering the
-  `v-tooltip` directive globally are host concerns, not seam-wrapped
-  components. `v-tooltip` itself is host-provided today; making it a
-  seam-owned directive is out of scope for this phase.
+- `primevue/config` in `ui/src/theme/primevue-setup.ts` — app bootstrap:
+  installing the PrimeVue plugin itself is a host concern, not a
+  seam-wrapped component. (Its tooltip directive is seam-wrapped — see
+  `OnmsTooltip` below — `primevue/tooltip` is banned outside this package by
+  the same ESLint rule.)
 - `primevue/tieredmenu` in `ui/src/components/Menu/SideMenu.vue` — the side
   navigation drives `TieredMenu` internals directly (dirty-flag tracking, DOM
   queries against `.p-tieredmenu-*` classes) that don't fit a thin prop/slot
@@ -140,6 +201,6 @@ over time, not grow:
 
 ## Planned next
 
-Theme tokens, the library build/`.d.ts` output, npm publishing, and
-`window.OnmsUI` runtime exposure arrive with the plugin-sharing phase (see
-NMS-20029).
+Theme tokens, the library build/`.d.ts` output, and npm publishing remain for
+a later phase of the plugin-sharing work (see NMS-20029). `window.OnmsUI`
+runtime exposure has landed — see "Runtime exposure for plugins" above.

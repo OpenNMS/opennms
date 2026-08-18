@@ -25,20 +25,20 @@
                     <OnmsIcon
                       v-if="element.isDuplicate"
                       :icon="Warning"
-                      v-tooltip="'File is a duplicate of another file that has been already uploaded.'"
+                      v-onms-tooltip="'File is a duplicate of another file that has been already uploaded.'"
                       class="warning-icon"
                       @click="openFileRenameDialog(index)"
                     />
                     <OnmsIcon
                       v-if="element.isValid && !element.isDuplicate"
                       :icon="CheckCircle"
-                      v-tooltip="'File is valid'"
+                      v-onms-tooltip="'File is valid'"
                       class="success-icon"
                     />
                     <OnmsIcon
                       v-if="!element.isValid"
                       :icon="Error"
-                      v-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
+                      v-onms-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
                       class="error-icon"
                     />
                     <OnmsIconButton

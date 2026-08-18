@@ -107,7 +107,7 @@
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>1.33</version>
+      <version>${snakeyamlVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

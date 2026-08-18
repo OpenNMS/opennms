@@ -1,14 +1,24 @@
 <template>
   <div class="onms-row">
     <div class="onms-col-12 container">
-      <div v-if="!isSingleGraph" class="graph-actions">
+      <div class="graph-actions">
+        <OnmsIconButton
+          v-if="graphData"
+          variant="outlined"
+          :icon="DownloadFile"
+          data-test="csv-download-btn"
+          title="Download this graph's data as CSV"
+          @click="downloadCsv"
+        />
         <router-link
+          v-if="!isSingleGraph"
           :to="`/resource-graphs/forecast/${label}/${definition}/${resourceId}`"
           target="_blank"
         >
           <OnmsButton variant="outlined" data-test="forecasting-btn">Forecasting</OnmsButton>
         </router-link>
         <router-link
+          v-if="!isSingleGraph"
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
           target="_blank"
         >
@@ -45,6 +55,7 @@
 <script setup lang="ts">
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
+import { downloadGraphCsv } from './utils/graphExport'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
 import { useGraphStore } from '@/stores/graphStore'
@@ -54,7 +65,8 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import DownloadFile from '@/components/icons/action/DownloadFile.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 Chart.register(...registerables)
@@ -307,6 +319,13 @@ const render = async (update?: boolean) => {
     console.log('Could not render graph for ', props.definition)
     emit('addGraphDefinition') // adds another to infinite scroll
   }
+}
+
+const downloadCsv = () => {
+  if (!graphData.value) {
+    return
+  }
+  downloadGraphCsv(graphData.value, convertedGraphDataRef.value, convertedGraphDataRef.value.title || props.definition)
 }
 
 watch(props.time, () => render(true))

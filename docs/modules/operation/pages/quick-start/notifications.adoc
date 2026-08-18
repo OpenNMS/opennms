@@ -98,4 +98,11 @@ The Admin group and the email address that you specified appear in the Initial T
 
 . Verify the settings, and click *Finish*.
 
-Users in the Admin group will see pop-up notifications in their browsers about events in {page-component-title}.
+The destination path is now configured, but each user also has to allow notifications in their own browser before any appear.
+Under menu:Administration[Notifications], find the Browser Notifications panel and click *Enable browser notifications*, then accept the prompt that the browser displays.
+
+A few limitations are worth noting:
+
+* The permission is granted per browser rather than per account, so it needs to be repeated in each browser a user signs in from.
+* Browsers generally only allow notifications on secure origins, so this is unlikely to work unless {page-component-title} is served over HTTPS.
+* Notices are delivered only while an {page-component-title} page is open in that browser; anything sent while it is closed is not shown later.
