@@ -17,6 +17,38 @@
             />
 
     <!--
+        SYSLOG OVER TCP
+
+        Syslogd listens on UDP only unless "syslog-tcp-port" is set. Setting it adds a TCP
+        listener; the UDP one keeps running on "syslog-port" either way.
+
+            <configuration syslog-port="10514" syslog-tcp-port="10601" ... />
+
+        The registered ports are 601 for TCP and 6514 for TLS, but both are privileged and
+        OpenNMS does not run as root, so reaching them needs a redirect or added capabilities.
+
+        Optional TCP attributes:
+
+        * tcp-listen-address: defaults to listen-address, then to all addresses.
+        * tcp-framing: "auto" (the default), "octet-counting" or "non-transparent". TCP has
+          no message boundaries and RFC 6587 defines two ways to mark them, so "auto" reads
+          the framing from the first message of a connection and keeps it for that connection.
+        * tcp-max-message-size: default 65536 bytes. A sender that exceeds it has its
+          connection closed, since the position of the next message is then unknown.
+        * tcp-max-connections: default 1024.
+        * tcp-idle-timeout: seconds before a silent connection is closed. 0 disables.
+
+        Optional TLS attributes, per RFC 5425. Certificates and keys are PEM encoded and the
+        private key must not be password protected:
+
+        * tcp-tls-enabled: default false.
+        * tcp-tls-cert-filepath, tcp-tls-private-key-filepath: what this listener presents
+          to senders. Both are required when TLS is enabled.
+        * tcp-tls-trust-cert-filepath: verifies sender certificates.
+        * tcp-tls-client-auth: "none" (default), "optional" or "require".
+    -->
+
+    <!--
         NOTE: This uses the CustomSyslogParser and forwarding-regexp for backwards compatibility.  If your
         syslog sources will always use a particular format, it's better to use one of the more specific parsers
         in the "parser" attribute, above.
