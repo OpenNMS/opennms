@@ -191,14 +191,23 @@ export const layoutDiscoveredGraph = (
  * Returns link id -> curvature (the @sigma/edge-curve attribute; sign picks
  * the bend side). Links with no obstruction are absent and stay straight.
  */
+/** ~2M node-link tests, about 55ms by the measurement above. */
+const CURVATURE_BUDGET = 2_000_000
+
 export const computeEdgeCurvatures = (
   nodes: CanvasNode[],
   links: CanvasLink[],
   clearance: number
 ): Map<string, number> => {
   const CURVATURE = 0.25
-  const pos = new Map(nodes.map(n => [n.id, { x: n.x, y: n.y }]))
   const out = new Map<string, number>()
+  // Every link is tested against every node, so cost is links x nodes: measured
+  // 325ms at 3454 nodes / 3501 links. Skipped past this budget, where links are
+  // hairline anyway and curving them buys no clarity.
+  if (links.length * nodes.length > CURVATURE_BUDGET) {
+    return out
+  }
+  const pos = new Map(nodes.map(n => [n.id, { x: n.x, y: n.y }]))
   for (const link of links) {
     const a = pos.get(link.sourceId)
     const b = pos.get(link.targetId)

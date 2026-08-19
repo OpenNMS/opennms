@@ -295,3 +295,22 @@ describe('graphSourceFor', () => {
     })
   })
 })
+
+// The `claimed` set keys a (container, namespace) pair into one string, so it
+// needs a separator that cannot appear in either. Without one, a container whose
+// id ends where a curated namespace begins keys to the same string as the curated
+// entry and its graphs are silently dropped from the menu.
+describe('buildSources claim-key separator', () => {
+  it('does not drop a container whose id+namespace collides with a curated pair', () => {
+    const sources = buildSources([
+      { id: 'enlinkd', label: 'Enlinkd', graphs: [{ namespace: 'nodes:Layer2', label: 'Layer2' }] },
+      // 'enlinkdnodes:' + 'Layer2' concatenates to 'enlinkdnodes:Layer2', the same
+      // as 'enlinkd' + 'nodes:Layer2'.
+      { id: 'enlinkdnodes:', label: 'Odd Container', graphs: [{ namespace: 'Layer2', label: 'L2' }] }
+    ] as never)
+
+    const odd = sources.find(s => s.container === 'enlinkdnodes:')
+    expect(odd, 'the colliding container was dropped from the menu').toBeTruthy()
+    expect(odd!.variants?.map(v => v.namespace)).toEqual(['Layer2'])
+  })
+})

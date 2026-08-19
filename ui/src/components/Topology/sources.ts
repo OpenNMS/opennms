@@ -233,6 +233,10 @@ export const buildSources = (containers: GraphContainerMeta[]): TopologySourceOp
   const namespacesByContainer = new Map(
     visible.map(c => [c.id, c.graphs] as const)
   )
+  // A separator that cannot occur in a container id or a namespace. Written as an
+  // escape rather than a literal NUL, which is invisible in source and easy for
+  // tooling to strip.
+  const CLAIM_SEP = '\u0000'
   const claimed = new Set<string>()
   const sources: TopologySourceOption[] = [CUSTOM_SOURCE]
 
@@ -246,7 +250,7 @@ export const buildSources = (containers: GraphContainerMeta[]): TopologySourceOp
     if (variants.length === 0) {
       continue
     }
-    variants.forEach(v => claimed.add(`${curated.container} ${v.namespace}`))
+    variants.forEach(v => claimed.add(`${curated.container}${CLAIM_SEP}${v.namespace}`))
     sources.push({ ...curated, variants })
   }
 
@@ -255,7 +259,7 @@ export const buildSources = (containers: GraphContainerMeta[]): TopologySourceOp
 
   for (const container of visible) {
     const unclaimed = container.graphs.filter(g =>
-      !claimed.has(`${container.id} ${g.namespace}`))
+      !claimed.has(`${container.id}${CLAIM_SEP}${g.namespace}`))
     if (unclaimed.length === 0) {
       continue
     }

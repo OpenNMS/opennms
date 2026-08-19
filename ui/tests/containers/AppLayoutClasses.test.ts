@@ -22,7 +22,7 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { defineComponent, h } from 'vue'
 import App from '@/main/App.vue'
@@ -61,6 +61,18 @@ const router = createRouter({
   ]
 })
 
+// Mounted wrappers are tracked and torn down: a live App keeps its router
+// watchers, and a later test's navigation would drive a stale instance.
+const mounted: { unmount: () => void }[] = []
+
+afterEach(() => {
+  while (mounted.length) {
+    mounted.pop()!.unmount()
+  }
+  document.body.innerHTML = ''
+  vi.clearAllMocks()
+})
+
 const mountAt = async (path: string) => {
   await router.push(path)
   await router.isReady()
@@ -72,6 +84,7 @@ const mountAt = async (path: string) => {
       stubs: { OnmsAppLayout: { template: '<div :class="$attrs.class"><slot /></div>' }}
     }
   })
+  mounted.push(wrapper)
   return wrapper
 }
 

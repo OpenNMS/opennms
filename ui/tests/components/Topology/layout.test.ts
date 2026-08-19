@@ -217,3 +217,31 @@ describe('layoutDiscoveredGraph (ForceAtlas2 path, > 300 nodes)', () => {
     expect(out[42].label).toBe('node 42')
   })
 })
+
+// Cost is links x nodes -- 325ms measured at 3454 nodes / 3501 links -- so it is
+// skipped past a budget, where links are hairline and curving them buys nothing.
+describe('computeEdgeCurvatures budget', () => {
+  const graph = (n: number, e: number) => ({
+    nodes: Array.from({ length: n }, (_, i) => ({
+      id: 'n' + i, label: 'n' + i, x: Math.cos(i) * 500, y: Math.sin(i * 1.7) * 500
+    })),
+    links: Array.from({ length: e }, (_, i) => ({
+      id: 'e' + i, sourceId: 'n' + (i % n), targetId: 'n' + ((i * 7 + 1) % n),
+      origin: 'discovered' as const
+    }))
+  })
+
+  it('still curves an ordinary graph', () => {
+    // A dense small graph: some link must pass close enough to a third node.
+    const g = graph(40, 120)
+    expect(computeEdgeCurvatures(g.nodes, g.links, 200).size).toBeGreaterThan(0)
+  })
+
+  it('skips a graph past the budget rather than spending seconds on it', () => {
+    const g = graph(3454, 3501)
+    const t0 = Date.now()
+    const out = computeEdgeCurvatures(g.nodes, g.links, 200)
+    expect(out.size).toBe(0)
+    expect(Date.now() - t0).toBeLessThan(50)
+  })
+})
