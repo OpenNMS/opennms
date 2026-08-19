@@ -19,11 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,13 +36,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
@@ -57,9 +57,13 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import com.googlecode.concurentlocks.ReadWriteUpdateLock;
+import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -83,7 +87,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Component("notificationConfigRestService")
 @Path("notification-config")
 @Tag(name = "Notification-config", description = "Notification Configuration API")
-public class NotificationConfigRestService extends OnmsRestService {
+public class NotificationConfigRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationConfigRestService.class);
 
@@ -91,24 +95,55 @@ public class NotificationConfigRestService extends OnmsRestService {
     @Qualifier("eventProxy")
     protected EventProxy m_eventProxy;
 
-    @XmlRootElement(name = "notification-status")
+    // Per-instance read/write/update lock serializing config mutations, carried
+    // over from the base REST service this was split out of when it moved to v2.
+    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock m_readLock = m_globalLock.updateLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+
+    private void readLock() {
+        m_readLock.lock();
+    }
+
+    private void readUnlock() {
+        m_readLock.unlock();
+    }
+
+    private void writeLock() {
+        m_writeLock.lock();
+    }
+
+    private void writeUnlock() {
+        m_writeLock.unlock();
+    }
+
+    private static WebApplicationException getException(final Status status, final String msg, final String... params) {
+        final String formatted = params != null ? MessageFormatter.arrayFormat(msg, params).getMessage() : msg;
+        LOG.error(formatted);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(formatted).build());
+    }
+
+    private static WebApplicationException getException(final Status status, final Throwable t) {
+        LOG.error(t.getMessage(), t);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+    }
+
     public static class NotificationStatus {
-        private String m_status;
+        private String status;
 
         public NotificationStatus() {
         }
 
         public NotificationStatus(final String status) {
-            m_status = status;
+            this.status = status;
         }
 
-        @XmlAttribute(name = "status")
         public String getStatus() {
-            return m_status;
+            return status;
         }
 
         public void setStatus(final String status) {
-            m_status = status;
+            this.status = status;
         }
     }
 

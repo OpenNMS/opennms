@@ -23,7 +23,7 @@
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { DestinationPath, NotifdStatus, NotificationCommand } from '@/types/notificationConfig'
-import { rest } from './axiosInstances'
+import { v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -32,7 +32,7 @@ const endpoint = '/notification-config'
 const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/status`)
+    const resp = await v2.get(`${endpoint}/status`)
     return resp.data?.status ?? null
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load notification status.' })
@@ -45,7 +45,7 @@ const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
 const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/status`, { status })
+    await v2.put(`${endpoint}/status`, { status })
     showSnackBar({ msg: `Notifications turned ${status}.` })
     return true
   } catch (_err) {
@@ -59,7 +59,7 @@ const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolea
 const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/destination-paths`)
+    const resp = await v2.get(`${endpoint}/destination-paths`)
     return resp.data?.path ?? []
   } catch (_err) {
     // null (not []) so a failed load is distinguishable from an empty one and the
@@ -74,7 +74,7 @@ const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
 const deleteDestinationPath = async (name: string): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.delete(`${endpoint}/destination-paths/${encodeURIComponent(name)}`)
+    await v2.delete(`${endpoint}/destination-paths/${encodeURIComponent(name)}`)
     showSnackBar({ msg: `Destination path '${name}' deleted.` })
     return true
   } catch (err: any) {
@@ -89,7 +89,7 @@ const deleteDestinationPath = async (name: string): Promise<boolean> => {
 const testDestinationPath = async (name: string): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
+    await v2.post(`/notifications/destination-paths/${encodeURIComponent(name)}/trigger`)
     showSnackBar({ msg: `Test notification triggered for '${name}'.` })
     return true
   } catch (_err) {
@@ -103,7 +103,7 @@ const testDestinationPath = async (name: string): Promise<boolean> => {
 const addDestinationPath = async (path: DestinationPath): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.post(`${endpoint}/destination-paths`, path)
+    await v2.post(`${endpoint}/destination-paths`, path)
     showSnackBar({ msg: `Destination path '${path.name}' added.` })
     return true
   } catch (err: any) {
@@ -118,7 +118,7 @@ const addDestinationPath = async (path: DestinationPath): Promise<boolean> => {
 const updateDestinationPath = async (originalName: string, path: DestinationPath): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/destination-paths/${encodeURIComponent(originalName)}`, path)
+    await v2.put(`${endpoint}/destination-paths/${encodeURIComponent(originalName)}`, path)
     showSnackBar({ msg: `Destination path '${path.name}' updated.` })
     return true
   } catch (err: any) {
@@ -133,7 +133,7 @@ const updateDestinationPath = async (originalName: string, path: DestinationPath
 // Users and groups for destination path target pickers (v1 users/groups REST).
 const getNotificationUsers = async (): Promise<string[] | null> => {
   try {
-    const resp = await rest.get('/users?limit=0')
+    const resp = await v2.get('/users?limit=0')
     const users = resp.data?.user ?? []
     return (Array.isArray(users) ? users : [users]).map((u: any) => u['user-id']).filter(Boolean)
   } catch (_err) {
@@ -144,7 +144,7 @@ const getNotificationUsers = async (): Promise<string[] | null> => {
 
 const getNotificationGroups = async (): Promise<string[] | null> => {
   try {
-    const resp = await rest.get('/groups?limit=0')
+    const resp = await v2.get('/groups?limit=0')
     const groups = resp.data?.group ?? []
     return (Array.isArray(groups) ? groups : [groups]).map((g: any) => g.name).filter(Boolean)
   } catch (_err) {
@@ -155,7 +155,7 @@ const getNotificationGroups = async (): Promise<string[] | null> => {
 
 const getOnCallRoles = async (): Promise<string[] | null> => {
   try {
-    const resp = await rest.get(`${endpoint}/on-call-roles`)
+    const resp = await v2.get(`${endpoint}/on-call-roles`)
     return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load on-call roles.' })
@@ -166,7 +166,7 @@ const getOnCallRoles = async (): Promise<string[] | null> => {
 const getNotificationCommands = async (): Promise<NotificationCommand[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/commands`)
+    const resp = await v2.get(`${endpoint}/commands`)
     return resp.data ?? []
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load notification commands.' })
