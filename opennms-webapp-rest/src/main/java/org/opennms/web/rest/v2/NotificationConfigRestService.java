@@ -43,6 +43,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
@@ -59,7 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -92,29 +92,28 @@ public class NotificationConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationConfigRestService.class);
 
     @Autowired
-    @Qualifier("eventProxy")
-    protected EventProxy m_eventProxy;
+    protected EventProxy eventProxy;
 
     // Per-instance read/write/update lock serializing config mutations, carried
     // over from the base REST service this was split out of when it moved to v2.
-    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-    private final Lock m_readLock = m_globalLock.updateLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    private final ReadWriteUpdateLock globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock readLock = globalLock.updateLock();
+    private final Lock writeLock = globalLock.writeLock();
 
     private void readLock() {
-        m_readLock.lock();
+        readLock.lock();
     }
 
     private void readUnlock() {
-        m_readLock.unlock();
+        readLock.unlock();
     }
 
     private void writeLock() {
-        m_writeLock.lock();
+        writeLock.lock();
     }
 
     private void writeUnlock() {
-        m_writeLock.unlock();
+        writeLock.unlock();
     }
 
     private static WebApplicationException getException(final Status status, final String msg, final String... params) {
@@ -386,7 +385,7 @@ public class NotificationConfigRestService {
             bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
             bldr.addParam("remoteHost", request.getRemoteHost());
             bldr.addParam("remoteAddr", request.getRemoteAddr());
-            m_eventProxy.send(bldr.getEvent());
+            eventProxy.send(bldr.getEvent());
         } catch (final Exception e) {
             LOG.warn("Can't send event {}", uei, e);
         }
@@ -405,7 +404,7 @@ public class NotificationConfigRestService {
     }
 
     private static void validateDestinationPath(final org.opennms.netmgt.config.destinationPaths.Path path) {
-        if (path == null || isBlank(path.getName())) {
+        if (path == null || StringUtils.isBlank(path.getName())) {
             throw getException(Status.BAD_REQUEST, "The destination path and its name are required");
         }
         if (path.getTargets().isEmpty()) {
@@ -413,7 +412,7 @@ public class NotificationConfigRestService {
         }
         validateTargets(path.getTargets());
         for (final org.opennms.netmgt.config.destinationPaths.Escalate escalate : path.getEscalates()) {
-            if (isBlank(escalate.getDelay())) {
+            if (StringUtils.isBlank(escalate.getDelay())) {
                 throw getException(Status.BAD_REQUEST, "Every escalation requires a delay");
             }
             if (escalate.getTargets().isEmpty()) {
@@ -425,17 +424,13 @@ public class NotificationConfigRestService {
 
     private static void validateTargets(final List<org.opennms.netmgt.config.destinationPaths.Target> targets) {
         for (final org.opennms.netmgt.config.destinationPaths.Target target : targets) {
-            if (isBlank(target.getName())) {
+            if (StringUtils.isBlank(target.getName())) {
                 throw getException(Status.BAD_REQUEST, "Every target requires a name");
             }
-            if (target.getCommands().isEmpty() || target.getCommands().stream().anyMatch(NotificationConfigRestService::isBlank)) {
+            if (target.getCommands().isEmpty() || target.getCommands().stream().anyMatch(StringUtils::isBlank)) {
                 throw getException(Status.BAD_REQUEST, "Every target requires at least one non-empty command");
             }
         }
-    }
-
-    private static boolean isBlank(final String value) {
-        return value == null || value.isBlank();
     }
 
     private static DestinationPathFactory getDestinationPathFactory() throws Exception {
