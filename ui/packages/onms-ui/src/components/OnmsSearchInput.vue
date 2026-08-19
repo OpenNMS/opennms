@@ -101,7 +101,22 @@ defineExpose({ focus, blur })
 // the field or the icons drift away from it. PrimeVue leaves that to the caller;
 // the seam owns it here, so the field behaves like one control (and every call
 // site stops re-declaring these two rules).
+//
+// One number drives the whole field: the leading glyph, the clear button, and
+// the space reserved for both. PrimeVue derives that reservation from
+// `--p-icon-size` (1rem) while primevue-overrides.scss renders IconField glyphs
+// at 1.5rem app-wide, so the stock reservation left the text all but touching
+// the glyph — and it is declared as `padding-inline-start` inside
+// `@layer primevue`, which any unlayered legacy `padding` shorthand on `input`
+// overrides outright, dropping the reservation and landing the glyph on top of
+// the placeholder (seen on the Vaadin topology page, where the menubar mounts
+// inside the Vaadin app's own stylesheets). Both paddings are re-asserted below,
+// unlayered and sized off what the seam actually renders.
 .p-iconfield {
+  --onms-search-input-icon-size: 1.5rem;
+  --onms-search-input-gutter: var(--p-form-field-padding-x, 0.75rem);
+  --onms-search-input-inset: calc((var(--onms-search-input-gutter) * 2) + var(--onms-search-input-icon-size));
+
   display: block;
   width: 100%;
 }
@@ -116,10 +131,17 @@ defineExpose({ focus, blur })
 .p-inputtext {
   width: 100%;
   color: var(--p-inputtext-color);
+  padding-inline-start: var(--onms-search-input-inset);
+  padding-inline-end: var(--onms-search-input-inset);
 }
 
+// Sized here rather than leaning on primevue-overrides.scss, so the glyph and
+// the space reserved for it can never disagree. The negative margin re-centers
+// it, the same way PrimeVue's own rule does against `--p-icon-size`.
 .p-inputicon {
   color: var(--p-iconfield-icon-color);
+  font-size: var(--onms-search-input-icon-size);
+  margin-top: calc(var(--onms-search-input-icon-size) / -2);
 }
 
 // Mirrors PrimeVue's own .p-inputicon placement (which we can't reuse: InputIcon
@@ -128,7 +150,7 @@ defineExpose({ focus, blur })
 .onms-search-input__clear {
   position: absolute;
   top: 50%;
-  inset-inline-end: var(--p-form-field-padding-x, 0.75rem);
+  inset-inline-end: var(--onms-search-input-gutter);
   transform: translateY(-50%);
   line-height: 1;
   z-index: 1;
@@ -143,10 +165,7 @@ defineExpose({ focus, blur })
   border-radius: 50%;
   background: transparent;
   color: var(--p-form-field-icon-color, var(--p-text-muted-color));
-  // Matches the leading search glyph, which primevue-overrides.scss normalizes
-  // to 1.5rem app-wide; the PrimeVue default (--p-icon-size, 1rem) would leave
-  // the two icons in the same field visibly different sizes.
-  font-size: 1.5rem;
+  font-size: var(--onms-search-input-icon-size);
   line-height: 1;
   cursor: pointer;
 
