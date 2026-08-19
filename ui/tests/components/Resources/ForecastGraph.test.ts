@@ -27,8 +27,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ForecastGraph from '@/components/Resources/ForecastGraph.vue'
 
 // Chart.js needs a real 2d canvas context that happy-dom lacks; the forecast
-// math is covered by resourceForecasting.test.ts. Stub both so what this test
-// exercises is the component's data wiring, not the chart or the statistics.
+// the forecast is computed server-side; stub the chart so what this test
+// exercises is the component's data wiring, not the canvas.
 vi.mock('chart.js', () => {
   class Chart {
     static register() {}
@@ -36,11 +36,6 @@ vi.mock('chart.js', () => {
   }
   return { Chart, registerables: [] }
 })
-
-const computeForecast = vi.fn()
-vi.mock('@/components/Resources/utils/forecasting', () => ({
-  computeForecast: (...args: unknown[]) => computeForecast(...args)
-}))
 
 const getDefinitionData = vi.fn()
 const getGraphMetrics = vi.fn()
@@ -94,7 +89,6 @@ describe('ForecastGraph.vue', () => {
     converterModel = forecastableModel()
     getDefinitionData.mockResolvedValue({})
     getGraphMetrics.mockResolvedValue(metricsResponse)
-    computeForecast.mockReturnValue({ timestamps: [], lower: [], upper: [], fit: [], trend: [], warning: null })
   })
 
   it('loads forecastable metrics and fetches the initial series', async () => {
@@ -130,16 +124,33 @@ describe('ForecastGraph.vue', () => {
     expect(getGraphMetrics).not.toHaveBeenCalled()
   })
 
-  it('runs a forecast: refetches the training window and computes', async () => {
+  it('runs a forecast: posts the server filter chain and renders its columns', async () => {
     const wrapper = mountGraph()
     await flushPromises()
     getGraphMetrics.mockClear()
+    // the server returns the forecast columns keyed by label
+    getGraphMetrics.mockResolvedValue({
+      timestamps: [1000, 2000, 3000],
+      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      columns: [
+        { values: [1, 2, NaN] },
+        { values: [NaN, NaN, 3] },
+        { values: [NaN, NaN, 2] },
+        { values: [NaN, NaN, 4] },
+        { values: [1, 2, 3] }
+      ]
+    })
 
     await wrapper.find('[data-test="forecast-run"]').trigger('click')
     await flushPromises()
 
     expect(getGraphMetrics).toHaveBeenCalledTimes(1)
-    expect(computeForecast).toHaveBeenCalledTimes(1)
+    const payload = getGraphMetrics.mock.calls[0][0]
+    const filterNames = payload.filter.map((f: { name: string }) => f.name)
+    expect(filterNames).toEqual(['Outlier', 'HoltWinters', 'Trend', 'Chomp'])
+    // every filter parameter value is serialized as a string
+    const hw = payload.filter.find((f: { name: string }) => f.name === 'HoltWinters')
+    expect(hw.parameter.every((p: { value: unknown }) => typeof p.value === 'string')).toBe(true)
     expect(wrapper.find('[data-test="forecast-warning"]').exists()).toBe(false)
   })
 })

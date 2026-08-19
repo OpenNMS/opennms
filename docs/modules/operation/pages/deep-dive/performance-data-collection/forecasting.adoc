@@ -119,28 +119,13 @@ The Gaussian-residual approximation also assumes the model's errors are roughly 
 Highly bursty metrics can violate that assumption and produce bounds that are too tight in calm periods or too loose during spikes.
 ====
 
-If the in-sample residuals are all zero (typical for a perfectly flat metric) sigma is zero, the bounds collapse onto the fit line, and a banner is shown explaining this.
+If the in-sample residuals are all zero (typical for a perfectly flat metric) sigma is zero and the bounds collapse onto the fit line, while the forecast itself still renders.
 
 == Limitations and warnings
 
-The forecast page surfaces a yellow banner above the graph when one of the following conditions is detected:
-
-[cols="1,3"]
-|===
-| Condition | What it means
-
-| Forecast could not be produced
-| The selected history window has fewer than two usable samples.
-This commonly happens when the graph is new, has gaps, or the window extends before collection started.
-
-| Forecast produced no valid values
-| {page-component-title} ran the filter pipeline but every output sample is `NaN`.
-Typical cause: the upstream `Chomp` and `Outlier` filters removed too many points.
-
-| Confidence bounds have zero width
-| The in-sample residuals had no variance, so the upper and lower bounds coincide with the fit line.
-The forecast is still rendered; the bounds simply aren't visually distinguishable.
-|===
+The forecast page surfaces a yellow banner above the graph, and draws no overlays, when the measurements query returns no data for the selected metric.
+This commonly happens when the graph is new, has gaps, or the history window extends before collection started — or when the upstream `Chomp` and `Outlier` filters remove too many points.
+Widen the *Training Start* window or pick a different metric.
 
 == Behind the scenes
 

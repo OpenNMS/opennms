@@ -81,8 +81,20 @@ import { OnmsButton, OnmsInputNumber, OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import API from '@/services'
 import RrdGraphConverter from './utils/RrdGraphConverter.class'
-import { computeForecast, ForecastOptions } from './utils/forecasting'
-import { Metric, Series } from '@/types'
+import { FilterDef, Metric, Series } from '@/types'
+
+// Forecast controls; each maps to a parameter of the server measurements filters.
+interface ForecastOptions {
+  trainingStart: number
+  graphStart: number
+  season: number
+  forecasts: number
+  outlierThreshold: number
+  confidenceLevel: number
+  trendOrder: number
+}
+
+const DAY_MS = 86400 * 1000
 
 Chart.register(...registerables)
 
@@ -251,27 +263,77 @@ const reset = async () => {
   drawChart([line(seriesName(), '#7EE600', toPoints(data.timestamps, data.values))])
 }
 
+// The forecast is computed server-side: the measurements query runs an Outlier
+// -> HoltWinters -> Trend -> Chomp filter chain and returns the extra HWFit/
+// HWLwr/HWUpr/Trend columns. Chomp runs last so training uses the full window
+// while only the graph-start..horizon range is returned for display.
+const forecastFilters = (label: string, o: ForecastOptions): FilterDef[] => {
+  const graphStartMs = Date.now() - Math.max(1, o.graphStart) * DAY_MS
+  const horizonSeconds = o.forecasts * o.season * 86400
+  return [
+    { name: 'Outlier', parameter: [
+      { key: 'inputColumn', value: label },
+      { key: 'quantile', value: String(o.outlierThreshold) }
+    ] },
+    { name: 'HoltWinters', parameter: [
+      { key: 'inputColumn', value: label },
+      { key: 'outputPrefix', value: 'HW' },
+      { key: 'periodInSeconds', value: String(Math.round(o.season * 86400)) },
+      { key: 'numPeriodsToForecast', value: String(o.forecasts) },
+      { key: 'confidenceLevel', value: String(o.confidenceLevel) }
+    ] },
+    { name: 'Trend', parameter: [
+      { key: 'inputColumn', value: label },
+      { key: 'outputColumn', value: 'Trend' },
+      { key: 'polynomialOrder', value: String(o.trendOrder) },
+      { key: 'secondsAhead', value: String(Math.round(horizonSeconds)) }
+    ] },
+    { name: 'Chomp', parameter: [
+      { key: 'cutoffDate', value: String(graphStartMs) }
+    ] }
+  ]
+}
+
+const columnByLabel = (resp: { labels?: string[], columns?: { values: number[] }[] }, name: string): number[] => {
+  const idx = (resp.labels ?? []).indexOf(name)
+  return idx < 0 ? [] : (resp.columns?.[idx]?.values ?? []).map(v => (typeof v === 'number' ? v : NaN))
+}
+
 const runForecast = async () => {
   warning.value = null
   forecasting.value = true
   try {
+    const metric = metricFor(selectedMetric.value)
+    if (!isFetchable(metric)) {
+      warning.value = 'Could not load data for the selected metric.'
+      drawChart([])
+      return
+    }
     const end = Date.now()
-    const trainStart = end - options.value.trainingStart * 86400 * 1000
-    const data = await fetchColumn(selectedMetric.value, trainStart, end)
-    if (!data) {
-      warning.value = 'Could not load data for the selected metric.'; drawChart([]); return
+    const start = end - options.value.trainingStart * DAY_MS
+    const step = Math.max(1, Math.floor((end - start) / 1000))
+    const resp = await API.getGraphMetrics({
+      start, end, step,
+      source: [{
+        aggregation: metric!.aggregation || 'AVERAGE',
+        attribute: metric!.attribute,
+        label: 'data',
+        resourceId: metric!.resourceId,
+        transient: false
+      }],
+      filter: forecastFilters('data', options.value)
+    } as any)
+    if (!resp || !(resp.timestamps ?? []).length) {
+      warning.value = 'Could not load data for the selected metric.'
+      drawChart([])
+      return
     }
-
-    const result = computeForecast(data.timestamps, data.values, data.stepMs, options.value)
-    warning.value = result.warning
-
-    const datasets: any[] = [line(seriesName(), '#7EE600', toPoints(data.timestamps, data.values))]
-    if (result.timestamps.length) {
-      datasets.push(line('HW Bounds (low)', '#ff0000', toPoints(result.timestamps, result.lower), true))
-      datasets.push({ ...line('HW Bounds (high)', 'rgba(255,0,0,0.12)', toPoints(result.timestamps, result.upper), true, true), borderColor: '#ff0000' })
-      datasets.push(line('HW Fit', '#9d4edd', toPoints(result.timestamps, result.fit)))
-      datasets.push(line('Trend', '#00b4d8', toPoints(result.timestamps, result.trend)))
-    }
+    const ts = resp.timestamps as number[]
+    const datasets: any[] = [line(seriesName(), '#7EE600', toPoints(ts, columnByLabel(resp, 'data')))]
+    datasets.push(line('HW Bounds (low)', '#ff0000', toPoints(ts, columnByLabel(resp, 'HWLwr')), true))
+    datasets.push({ ...line('HW Bounds (high)', 'rgba(255,0,0,0.12)', toPoints(ts, columnByLabel(resp, 'HWUpr')), true, true), borderColor: '#ff0000' })
+    datasets.push(line('HW Fit', '#9d4edd', toPoints(ts, columnByLabel(resp, 'HWFit'))))
+    datasets.push(line('Trend', '#00ffff', toPoints(ts, columnByLabel(resp, 'Trend'))))
     drawChart(datasets)
   } finally {
     forecasting.value = false
