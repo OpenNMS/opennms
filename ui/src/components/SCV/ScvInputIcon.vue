@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { OnmsIconButton } from '@opennms/onms-ui'
-import IconSecurity from '@/components/icons/network/Security.vue'
+import IconSecurity from '@opennms/onms-ui/icons/network/Security.vue'
 
 defineProps<{
   title?: string

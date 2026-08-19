@@ -76,9 +76,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { OnmsIconButton, OnmsMessageDialog } from '@opennms/onms-ui'
-import FilterAlt from '@/components/icons/action/FilterAlt.vue'
-import SupportCenter from '@/components/icons/action/SupportCenter.vue'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import FilterAlt from '@opennms/onms-ui/icons/action/FilterAlt.vue'
+import SupportCenter from '@opennms/onms-ui/icons/action/SupportCenter.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'

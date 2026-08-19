@@ -59,8 +59,8 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import Apps from '@/components/icons/navigation/Apps.vue'
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Apps from '@opennms/onms-ui/icons/navigation/Apps.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
 import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'

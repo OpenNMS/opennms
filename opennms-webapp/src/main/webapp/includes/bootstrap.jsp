@@ -242,7 +242,17 @@
   </script>
   <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
   <%-- Start fetching/compiling the menu bundle now rather than when the parser
-       reaches its <script type="module"> tag near the end of the body. --%>
+       reaches its <script type="module"> tag near the end of the body.
+
+       These two links are deliberately emitted on 'quiet' pages too, including
+       the unauthenticated login page: preloading there warms the cache while
+       the user types their credentials, so the menu mounts instantly on the
+       first post-login page. This is only safe because the bundle is
+       anonymously accessible (see the /ui-components/assets/** rule in
+       applicationContext-spring-security.xml) — without that rule the preload
+       would cache an auth redirect as text/html under the asset URL and break
+       the menu on every JSP page after login (NMS-20174). Keep the two in
+       sync. --%>
   <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
 </head>
 

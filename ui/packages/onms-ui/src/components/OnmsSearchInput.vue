@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import SearchGlyph from '../icons/SearchGlyph.vue'
+import SearchGlyph from '../icons/action/Search.vue'
 import OnmsIcon from './OnmsIcon.vue'
 import OnmsInputText from './OnmsInputText.vue'
 
