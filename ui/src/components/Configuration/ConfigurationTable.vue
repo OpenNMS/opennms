@@ -67,8 +67,8 @@
 import { computed, PropType } from 'vue'
 import { OnmsColumn, OnmsIconButton, OnmsTable, type OnmsTablePageEvent } from '@opennms/onms-ui'
 
-import Edit from '@/components/icons/action/Edit.vue'
-import Delete from '@/components/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 
 import { RequisitionData } from './copy/requisitionTypes'
 import { ConfigurationHelper } from './ConfigurationHelper'
