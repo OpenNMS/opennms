@@ -20,7 +20,7 @@
 /// License.
 ///
 
-// JSON mirrors of the JAXB config models behind /rest/notification-config.
+// JSON mirrors of the config models behind /api/v2/notification-config.
 // Field names follow the XML element/attribute names in notifications.xml,
 // destinationPaths.xml and notificationCommands.xml — the files stay the
 // system of record, this API is a 1:1 view of them.
@@ -47,7 +47,7 @@ export interface DestinationPath {
 }
 
 // Path outages (critical paths) — DB-backed (pathoutage table), unlike the
-// XML-backed config above. Wire shapes of /rest/notification-config/path-outages.
+// XML-backed config above. Wire shapes of /api/v2/notification-config/path-outages.
 export interface PathOutage {
   nodeId: number
   nodeLabel?: string | null

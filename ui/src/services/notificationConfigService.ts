@@ -23,7 +23,7 @@
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { DestinationPath, NotifdStatus, PathOutage, PathOutagePreview, PathOutageRequest } from '@/types/notificationConfig'
-import { rest } from './axiosInstances'
+import { v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -32,7 +32,7 @@ const endpoint = '/notification-config'
 const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/status`)
+    const resp = await v2.get(`${endpoint}/status`)
     return resp.data?.status ?? null
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load notification status.' })
@@ -45,7 +45,7 @@ const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
 const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/status`, { status })
+    await v2.put(`${endpoint}/status`, { status })
     showSnackBar({ msg: `Notifications turned ${status}.` })
     return true
   } catch (_err) {
@@ -59,7 +59,7 @@ const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolea
 const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/destination-paths`)
+    const resp = await v2.get(`${endpoint}/destination-paths`)
     return resp.data?.path ?? []
   } catch (_err) {
     // null (not []) so a failed load is distinguishable from an empty one and the
@@ -74,7 +74,7 @@ const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
 const getPathOutages = async (): Promise<PathOutage[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/path-outages`)
+    const resp = await v2.get(`${endpoint}/path-outages`)
     return resp.data ?? []
   } catch (_err) {
     // null (not []) so the caller can tell a failed load from an empty one and retry
@@ -88,7 +88,7 @@ const getPathOutages = async (): Promise<PathOutage[] | null> => {
 const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/path-outages/preview?rule=${encodeURIComponent(rule)}`)
+    const resp = await v2.get(`${endpoint}/path-outages/preview?rule=${encodeURIComponent(rule)}`)
     return resp.data ?? null
   } catch (err: any) {
     const detail = err?.response?.data
@@ -102,7 +102,7 @@ const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | 
 const applyPathOutage = async (request: PathOutageRequest): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.post(`${endpoint}/path-outages`, request)
+    await v2.post(`${endpoint}/path-outages`, request)
     showSnackBar({ msg: request.criticalIp ? 'Critical path applied.' : 'Critical path cleared.' })
     return true
   } catch (err: any) {
@@ -117,7 +117,7 @@ const applyPathOutage = async (request: PathOutageRequest): Promise<boolean> => 
 const deletePathOutage = async (nodeId: number): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.delete(`${endpoint}/path-outages/${nodeId}`)
+    await v2.delete(`${endpoint}/path-outages/${nodeId}`)
     showSnackBar({ msg: 'Critical path removed.' })
     return true
   } catch (err: any) {

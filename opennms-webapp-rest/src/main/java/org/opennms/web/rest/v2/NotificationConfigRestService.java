@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.concurrent.locks.Lock;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,13 +42,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -67,9 +67,13 @@ import org.springframework.dao.DataAccessException;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import com.googlecode.concurentlocks.ReadWriteUpdateLock;
+import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -91,13 +95,46 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Component("notificationConfigRestService")
 @Path("notification-config")
 @Tag(name = "Notification-config", description = "Notification Configuration API")
-public class NotificationConfigRestService extends OnmsRestService {
+public class NotificationConfigRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationConfigRestService.class);
 
     @Autowired
     @Qualifier("eventProxy")
     protected EventProxy m_eventProxy;
+
+    // Per-instance read/write/update lock serializing config mutations, carried
+    // over from the base REST service this was split out of when it moved to v2.
+    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock m_readLock = m_globalLock.updateLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+
+    private void readLock() {
+        m_readLock.lock();
+    }
+
+    private void readUnlock() {
+        m_readLock.unlock();
+    }
+
+    private void writeLock() {
+        m_writeLock.lock();
+    }
+
+    private void writeUnlock() {
+        m_writeLock.unlock();
+    }
+
+    private static WebApplicationException getException(final Status status, final String msg, final String... params) {
+        final String formatted = params != null ? MessageFormatter.arrayFormat(msg, params).getMessage() : msg;
+        LOG.error(formatted);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(formatted).build());
+    }
+
+    private static WebApplicationException getException(final Status status, final Throwable t) {
+        LOG.error(t.getMessage(), t);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+    }
 
     @Autowired
     private PathOutageDao m_pathOutageDao;
@@ -113,24 +150,22 @@ public class NotificationConfigRestService extends OnmsRestService {
     // in the persistence context.
     private static final int PATH_OUTAGE_BATCH = 200;
 
-    @XmlRootElement(name = "notification-status")
     public static class NotificationStatus {
-        private String m_status;
+        private String status;
 
         public NotificationStatus() {
         }
 
         public NotificationStatus(final String status) {
-            m_status = status;
+            this.status = status;
         }
 
-        @XmlAttribute(name = "status")
         public String getStatus() {
-            return m_status;
+            return status;
         }
 
         public void setStatus(final String status) {
-            m_status = status;
+            this.status = status;
         }
     }
 
@@ -254,96 +289,93 @@ public class NotificationConfigRestService extends OnmsRestService {
 
     private static final int PREVIEW_NODE_LIMIT = 200;
 
-    @XmlRootElement(name = "path-outage")
     public static class PathOutageDTO {
-        private Integer m_nodeId;
-        private String m_nodeLabel;
-        private String m_criticalPathIp;
-        private String m_criticalPathServiceName;
+        private Integer nodeId;
+        private String nodeLabel;
+        private String criticalPathIp;
+        private String criticalPathServiceName;
 
         public Integer getNodeId() {
-            return m_nodeId;
+            return nodeId;
         }
 
         public void setNodeId(final Integer nodeId) {
-            m_nodeId = nodeId;
+            this.nodeId = nodeId;
         }
 
         public String getNodeLabel() {
-            return m_nodeLabel;
+            return nodeLabel;
         }
 
         public void setNodeLabel(final String nodeLabel) {
-            m_nodeLabel = nodeLabel;
+            this.nodeLabel = nodeLabel;
         }
 
         public String getCriticalPathIp() {
-            return m_criticalPathIp;
+            return criticalPathIp;
         }
 
         public void setCriticalPathIp(final String criticalPathIp) {
-            m_criticalPathIp = criticalPathIp;
+            this.criticalPathIp = criticalPathIp;
         }
 
         public String getCriticalPathServiceName() {
-            return m_criticalPathServiceName;
+            return criticalPathServiceName;
         }
 
         public void setCriticalPathServiceName(final String criticalPathServiceName) {
-            m_criticalPathServiceName = criticalPathServiceName;
+            this.criticalPathServiceName = criticalPathServiceName;
         }
     }
 
-    @XmlRootElement(name = "path-outage-preview")
     public static class PathOutagePreviewDTO {
-        private int m_totalCount;
-        private List<PathOutageDTO> m_nodes = new ArrayList<>();
+        private int totalCount;
+        private List<PathOutageDTO> nodes = new ArrayList<>();
 
         public int getTotalCount() {
-            return m_totalCount;
+            return totalCount;
         }
 
         public void setTotalCount(final int totalCount) {
-            m_totalCount = totalCount;
+            this.totalCount = totalCount;
         }
 
         public List<PathOutageDTO> getNodes() {
-            return m_nodes;
+            return nodes;
         }
 
         public void setNodes(final List<PathOutageDTO> nodes) {
-            m_nodes = nodes;
+            this.nodes = nodes;
         }
     }
 
-    @XmlRootElement(name = "path-outage-request")
     public static class PathOutageRequestDTO {
-        private String m_rule;
-        private String m_criticalIp;
-        private String m_criticalSvc;
+        private String rule;
+        private String criticalIp;
+        private String criticalSvc;
 
         public String getRule() {
-            return m_rule;
+            return rule;
         }
 
         public void setRule(final String rule) {
-            m_rule = rule;
+            this.rule = rule;
         }
 
         public String getCriticalIp() {
-            return m_criticalIp;
+            return criticalIp;
         }
 
         public void setCriticalIp(final String criticalIp) {
-            m_criticalIp = criticalIp;
+            this.criticalIp = criticalIp;
         }
 
         public String getCriticalSvc() {
-            return m_criticalSvc;
+            return criticalSvc;
         }
 
         public void setCriticalSvc(final String criticalSvc) {
-            m_criticalSvc = criticalSvc;
+            this.criticalSvc = criticalSvc;
         }
     }
 
