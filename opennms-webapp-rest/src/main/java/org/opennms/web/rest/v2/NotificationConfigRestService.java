@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -63,7 +64,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -97,29 +97,28 @@ public class NotificationConfigRestService {
     private static final int RULE_PREVIEW_LIMIT = 250;
 
     @Autowired
-    @Qualifier("eventProxy")
-    protected EventProxy m_eventProxy;
+    protected EventProxy eventProxy;
 
     // Per-instance read/write/update lock serializing config mutations, carried
     // over from the base REST service this was split out of when it moved to v2.
-    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-    private final Lock m_readLock = m_globalLock.updateLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    private final ReadWriteUpdateLock globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock readLock = globalLock.updateLock();
+    private final Lock writeLock = globalLock.writeLock();
 
     private void readLock() {
-        m_readLock.lock();
+        readLock.lock();
     }
 
     private void readUnlock() {
-        m_readLock.unlock();
+        readLock.unlock();
     }
 
     private void writeLock() {
-        m_writeLock.lock();
+        writeLock.lock();
     }
 
     private void writeUnlock() {
-        m_writeLock.unlock();
+        writeLock.unlock();
     }
 
     private static WebApplicationException getException(final Status status, final String msg, final String... params) {
@@ -386,7 +385,7 @@ public class NotificationConfigRestService {
             bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
             bldr.addParam("remoteHost", request.getRemoteHost());
             bldr.addParam("remoteAddr", request.getRemoteAddr());
-            m_eventProxy.send(bldr.getEvent());
+            eventProxy.send(bldr.getEvent());
         } catch (final Exception e) {
             LOG.warn("Can't send event {}", uei, e);
         }
@@ -564,16 +563,16 @@ public class NotificationConfigRestService {
      * unrelated save persists. Every asserting setter must be covered here.
      */
     private static void validateEventNotification(final Notification notification) {
-        if (notification == null || isBlank(notification.getName())) {
+        if (notification == null || StringUtils.isBlank(notification.getName())) {
             throw getException(Status.BAD_REQUEST, "The event notification and its name are required");
         }
         if (!"on".equals(notification.getStatus()) && !"off".equals(notification.getStatus())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a status of 'on' or 'off'");
         }
-        if (isBlank(notification.getUei())) {
+        if (StringUtils.isBlank(notification.getUei())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a uei");
         }
-        if (notification.getRule() == null || isBlank(notification.getRule().getContent())) {
+        if (notification.getRule() == null || StringUtils.isBlank(notification.getRule().getContent())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a rule");
         }
         try {
@@ -583,25 +582,21 @@ public class NotificationConfigRestService {
         }
         // Infrastructure failures (uninitialized factory, DB outage) are not the
         // caller's fault; let them propagate to a 500 rather than a 400.
-        if (isBlank(notification.getDestinationPath())) {
+        if (StringUtils.isBlank(notification.getDestinationPath())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a destinationPath");
         }
-        if (isBlank(notification.getTextMessage())) {
+        if (StringUtils.isBlank(notification.getTextMessage())) {
             throw getException(Status.BAD_REQUEST, "The event notification requires a text-message");
         }
         for (final org.opennms.netmgt.config.notifications.Parameter parameter : notification.getParameters()) {
-            if (isBlank(parameter.getName()) || isBlank(parameter.getValue())) {
+            if (StringUtils.isBlank(parameter.getName()) || StringUtils.isBlank(parameter.getValue())) {
                 throw getException(Status.BAD_REQUEST, "Every parameter requires a non-empty name and value");
             }
         }
         final org.opennms.netmgt.config.notifications.Varbind varbind = notification.getVarbind();
-        if (varbind != null && (isBlank(varbind.getVbname()) || isBlank(varbind.getVbvalue()))) {
+        if (varbind != null && (StringUtils.isBlank(varbind.getVbname()) || StringUtils.isBlank(varbind.getVbvalue()))) {
             throw getException(Status.BAD_REQUEST, "A varbind requires both a name and a value");
         }
-    }
-
-    private static boolean isBlank(final String value) {
-        return value == null || value.isBlank();
     }
 
     private static DestinationPathFactory getDestinationPathFactory() throws Exception {
