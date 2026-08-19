@@ -164,6 +164,19 @@ const OpenNMSPreset = definePreset(Aura, {
     }
   },
   components: {
+    // Aura's dark ToggleButton (which SelectButton is built on) colors the
+    // checked option's label/icon with {surface.0} — white in stock Aura dark,
+    // but our dark surface.0 is the OpenNMS navy, leaving the active option
+    // dark-on-dark. Point the checked state at the text tokens, the same
+    // correction the semantic text/content/formField overrides make.
+    togglebutton: {
+      colorScheme: {
+        dark: {
+          root: { checkedColor: '{text.color}' },
+          icon: { checkedColor: '{text.color}' }
+        }
+      }
+    },
     // IftaLabel (in-field top-aligned label). Aura's label font is 0.75rem which
     // reads too small next to the input value; bump to 1rem and add a little more
     // input top padding so the value clears the larger label.
