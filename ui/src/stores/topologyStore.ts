@@ -46,6 +46,7 @@ import {
 } from '@/services/topologyService'
 import type { GraphContainerMeta } from '@/services/topologyService'
 import { buildSources, type TopologySourceOption } from '@/components/Topology/sources'
+import { focusSubgraph } from '@/components/Topology/focus'
 import type { DeviceIconId } from '@/components/Topology/deviceIcons'
 
 /**
@@ -250,6 +251,65 @@ export const useTopologyStore = defineStore('topologyStore', () => {
   const semanticZoomLevel = ref<number>(2)
 
   /**
+   * Laying out and drawing a big discovered graph is the expensive part (the
+   * fetch is cheap), so past this count the page holds the render until the user
+   * focuses or opts in. Lives here rather than in the page because what is drawn
+   * decides what gets polled -- see visibleNodeIds.
+   */
+  const LARGE_GRAPH_THRESHOLD = 3000
+  const renderAllAccepted = ref(false)
+  const discoveredNodeCount = computed<number>(() => discoveredGraph.value?.nodes.length ?? 0)
+
+  /**
+   * What the canvas would draw for the current focus and zoom level, before the
+   * gate is consulted. Separate from visibleNodeIds so the gate can be decided
+   * from it without the two becoming circular.
+   */
+  const renderedGraph = computed<DiscoveredGraph | null>(() =>
+    discoveredGraph.value
+      ? focusSubgraph(discoveredGraph.value, focusNodeId.value, semanticZoomLevel.value)
+      : null
+  )
+
+  /**
+   * Gate on the size of what would actually be drawn, not on whether a focus
+   * exists. Any focus used to clear the gate outright, but stepping the zoom
+   * level twice from the gate's own suggested anchor reaches ~1700 nodes and
+   * then the whole graph, which is the several-second layout freeze the gate is
+   * there to prevent.
+   */
+  const isLargeGraphGated = computed<boolean>(() =>
+    !!discoveredGraph.value &&
+    (renderedGraph.value?.nodes.length ?? 0) > LARGE_GRAPH_THRESHOLD &&
+    !renderAllAccepted.value
+  )
+  const acceptRenderAll = () => {
+    renderAllAccepted.value = true
+  }
+
+  /**
+   * The node ids actually on screen: the focus subgraph of a discovered graph,
+   * everything placed in a custom view, and nothing at all while the large-graph
+   * gate is up.
+   *
+   * Status polling and the Explore panel both work from this rather than from
+   * every node the graph happens to contain. On a 3400-vertex topology the
+   * difference is a handful of ids against all of them, and the whole-graph
+   * query was long enough that the server rejected it outright.
+   */
+  const visibleNodeIds = computed<number[]>(() => {
+    if (!discoveredGraph.value) {
+      return Array.from(placedNodeIds.value).map(Number).filter(Number.isInteger)
+    }
+    if (isLargeGraphGated.value) {
+      return []
+    }
+    return (renderedGraph.value?.nodes ?? [])
+      .map(n => n.nodeId)
+      .filter((id): id is number => id != null)
+  })
+
+  /**
    * Latest alarm status for placed nodes, keyed by real OnmsNode id. The
    * canvas colors nodes from this map. Empty until a status refresh runs;
    * refreshes are driven by the page (interval in View mode, manual in
@@ -274,9 +334,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * ids (mock/decorative nodes) are skipped.
    */
   const refreshStatus = async (): Promise<void> => {
-    const ids = Array.from(placedNodeIds.value)
-      .map(id => Number(id))
-      .filter(n => Number.isInteger(n))
+    const ids = visibleNodeIds.value
     severities.value = ids.length === 0 ? {} : await getNodeSeverities(ids)
     statusRevision.value++
   }
@@ -285,25 +343,27 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * Device-icon id per placed node (by real OnmsNode id), resolved from each
    * node's sysObjectId the legacy way. The canvas renders a glyph for nodes in
    * this map; others stay plain circles. Unlike severity, icons are static, so
-   * this is refreshed when the placed-node set changes (below) rather than on
-   * the status poll -- so icons show in Edit mode too.
+   * this is refreshed when the visible set changes (below) rather than on the
+   * status poll -- so icons show in Edit mode too.
    */
   const nodeIconIds = ref<Record<number, DeviceIconId>>({})
 
   const refreshDeviceIcons = async (): Promise<void> => {
-    const ids = Array.from(placedNodeIds.value)
-      .map(id => Number(id))
-      .filter(n => Number.isInteger(n))
+    // Scoped to what is drawn, like severity: asking for every node in a
+    // 3400-vertex graph is a request per ~110 ids for glyphs the canvas is not
+    // rendering, and it ran even while the gate held the render.
+    const ids = visibleNodeIds.value
     nodeIconIds.value = ids.length === 0 ? {} : await getNodeIconIds(ids)
   }
 
-  // Whenever the placed-node set is replaced (view load, discovered load, a
-  // palette drop), refresh the icon map AND severities. placedNodeIds is always
-  // reassigned (never mutated in place), so a shallow watch fires on every
-  // change. Fetching severities here (not only on the View-mode poll/interval)
-  // is what makes nodes show their correct color on the *initial* load instead
-  // of staying uncolored until the first poll or a click-triggered repaint.
-  watch(placedNodeIds, () => {
+  // Whenever the set of nodes on screen changes -- a view load, a discovered
+  // load, a palette drop, or a change of focus or zoom level -- refresh the icon
+  // map AND severities. This followed placedNodeIds, which does not change when
+  // focus does, so focusing into a subgraph left it painted with the previous
+  // set's severities: default blue in View mode, and indefinitely in Edit mode
+  // where the poll is stopped. Fetching here rather than only on the poll is
+  // also what colors nodes on the initial load.
+  watch(visibleNodeIds, () => {
     void refreshDeviceIcons()
     void refreshStatus()
     // Ghost links / neighbor tray only matter while composing a custom view.
@@ -356,6 +416,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     isDiscoveredLoading.value = true
     discoveredError.value = false
     focusNodeId.value = null
+    renderAllAccepted.value = false // each load re-arms the large-graph gate
     try {
       const graph = await loadDiscoveredGraph(source)
       if (graph === false) {
@@ -692,6 +753,10 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setEditMode,
     setLinkDrawMode,
     selectOnly,
+    visibleNodeIds,
+    discoveredNodeCount,
+    isLargeGraphGated,
+    acceptRenderAll,
     toggleSelection,
     clearSelection,
     setSelection,

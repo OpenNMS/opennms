@@ -9,7 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OpenNMS Web Console</title>
   </head>
-  <body>
+  <!-- onms-styles carries the html/body reset in onms-base.scss (margin/padding
+       0). It was only on #app, so body kept its default 8px margin and every page
+       overflowed the viewport by 16px. -->
+  <body class="onms-styles">
     <div id="app" class="onms-styles"></div>
     <script type="module" src="./main.ts"></script>
   </body>

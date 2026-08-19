@@ -59,23 +59,65 @@ const fetchPaletteNodes = async (
  */
 const alarmsEndpoint = '/alarms'
 
+/**
+ * Split node ids into chunks whose encoded query stays inside Jetty's request
+ * budget: `org.opennms.netmgt.jetty.requestHeaderSize` defaults to 4000 bytes
+ * and covers the whole request line plus headers. Measured against a live
+ * instance: 150 `node.id==` clauses encode to 3011 bytes and pass, 200 encode to
+ * 4011 and answer 414. The budget here leaves room for the cookies and headers a
+ * browser sends and curl does not.
+ *
+ * Counting clauses cannot work, which is how the first attempt at this stayed
+ * broken: `node.id==` is five bytes longer per clause than `id==`, and axios
+ * percent-encodes `=` as %3D, so one count gives very different URL lengths.
+ */
+const QUERY_BUDGET_BYTES = 2000
+
+export const chunkByQueryLength = (
+  ids: number[],
+  clause: (id: number) => string
+): number[][] => {
+  const chunks: number[][] = []
+  let current: number[] = []
+  let length = 0
+  for (const id of ids) {
+    const cost = encodeURIComponent(clause(id)).length + 1 // + the joining comma
+    if (current.length > 0 && length + cost > QUERY_BUDGET_BYTES) {
+      chunks.push(current)
+      current = []
+      length = 0
+    }
+    current.push(id)
+    length += cost
+  }
+  if (current.length > 0) {
+    chunks.push(current)
+  }
+  return chunks
+}
+
 const getNodeSeverities = async (nodeIds: number[]): Promise<Record<number, string>> => {
   if (nodeIds.length === 0) {
     return {}
   }
-  const fiql = nodeIds.map(id => `node.id==${id}`).join(',')
-  try {
-    const resp = await v2.get<{ alarm?: Array<{ nodeId?: number; severity?: string }> }>(
-      alarmsEndpoint,
-      { params: { _s: fiql, limit: 1000 }}
-    )
-    if (resp.status === 204 || !resp.data) {
-      return {}
+  // One clause per id: 3400 nodes built a 47 KB query and the server answered
+  // 414, which this function's catch turned into an empty map -- so every poll
+  // silently reset the canvas to no-alarm instead of failing visibly.
+  const alarms: Array<{ nodeId?: number; severity?: string }> = []
+  for (const chunk of chunkByQueryLength(nodeIds, id => `node.id==${id}`)) {
+    try {
+      const resp = await v2.get<{ alarm?: Array<{ nodeId?: number; severity?: string }> }>(
+        alarmsEndpoint,
+        { params: { _s: chunk.map(id => `node.id==${id}`).join(','), limit: 1000 }}
+      )
+      if (resp.status !== 204 && resp.data) {
+        alarms.push(...(resp.data.alarm ?? []))
+      }
+    } catch {
+      // A failed chunk leaves those nodes uncolored, not the whole canvas.
     }
-    return aggregateNodeSeverities(resp.data.alarm ?? [])
-  } catch {
-    return {}
   }
+  return aggregateNodeSeverities(alarms)
 }
 
 /**
@@ -627,24 +669,28 @@ const getNodeIconIds = async (nodeIds: number[]): Promise<Record<number, DeviceI
     return {}
   }
   // The /nodes endpoint filters on `id` (the /alarms endpoint uses `node.id`).
-  const fiql = nodeIds.map(id => `id==${id}`).join(',')
-  try {
-    const resp = await getNodes({ _s: fiql, limit: 1000 })
-    if (!resp || !resp.node) {
-      return {}
-    }
-    const out: Record<number, DeviceIconId> = {}
-    for (const n of resp.node) {
-      const icon = deviceIconForSysObjectId(n.sysObjectId)
-      const id = Number(n.id)
-      if (icon && Number.isFinite(id)) {
-        out[id] = icon
+  // Chunked for the same reason as the severity and category queries: unchunked
+  // this built a 30 KB query on a large view and answered 414, and the catch
+  // below turned that into "no icons" rather than an error.
+  const out: Record<number, DeviceIconId> = {}
+  for (const chunk of chunkByQueryLength(nodeIds, id => `id==${id}`)) {
+    try {
+      const resp = await getNodes({ _s: chunk.map(id => `id==${id}`).join(','), limit: chunk.length })
+      if (!resp || !resp.node) {
+        continue
       }
+      for (const n of resp.node) {
+        const icon = deviceIconForSysObjectId(n.sysObjectId)
+        const id = Number(n.id)
+        if (icon && Number.isFinite(id)) {
+          out[id] = icon
+        }
+      }
+    } catch {
+      // A failed chunk costs those nodes their glyph, not every node's.
     }
-    return out
-  } catch {
-    return {}
   }
+  return out
 }
 
 const getEdgeInfoPanel = async (

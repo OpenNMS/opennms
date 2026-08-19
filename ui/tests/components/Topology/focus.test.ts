@@ -21,7 +21,7 @@
 ///
 
 import { describe, it, expect } from 'vitest'
-import { focusSubgraph } from '@/components/Topology/focus'
+import { focusSubgraph, highestDegreeVertexId } from '@/components/Topology/focus'
 import type { CanvasLink, CanvasNode, DiscoveredGraph } from '@/types/topology'
 
 // core -- d1, d2 ; d1 -- a1 ; d2 -- a2 (a small two-tier tree)
@@ -73,5 +73,41 @@ describe('focusSubgraph', () => {
     focusSubgraph(graph, 'core', 1)
     expect(graph.nodes).toHaveLength(5)
     expect(graph.links).toHaveLength(4)
+  })
+})
+
+describe('highestDegreeVertexId', () => {
+  it('picks the most-connected vertex', () => {
+    // d2 reaches degree 4 against core's 2. Deliberately neither first in the
+    // node array nor lowest by id, so insertion order and the tie-break can't
+    // produce this answer by accident.
+    const g = { ...graph, links: [...graph.links, edge('d2', 'a1'), edge('d2', 'core')] }
+    expect(highestDegreeVertexId(g)).toBe('d2')
+  })
+
+  it('breaks ties on the lowest id so the choice is stable', () => {
+    // Two vertices of degree 1, with the lower id placed second in the array:
+    // insertion order would answer 'd1'.
+    const g: DiscoveredGraph = {
+      ...graph,
+      nodes: [node('d1'), node('core')],
+      links: [edge('d1', 'core')]
+    }
+    expect(highestDegreeVertexId(g)).toBe('core')
+  })
+
+  it('ignores links whose endpoints are outside the graph', () => {
+    // a1 would outrank core on raw link count, but both dangling edges point
+    // at vertices this graph does not contain.
+    const g = { ...graph, links: [...graph.links, edge('a1', 'ghost'), edge('a1', 'ghost2')] }
+    expect(highestDegreeVertexId(g)).toBe('core')
+  })
+
+  it('returns the lowest id when there are no links', () => {
+    expect(highestDegreeVertexId({ ...graph, links: [] })).toBe('a1')
+  })
+
+  it('returns null for an empty graph', () => {
+    expect(highestDegreeVertexId({ ...graph, nodes: [], links: [] })).toBeNull()
   })
 })

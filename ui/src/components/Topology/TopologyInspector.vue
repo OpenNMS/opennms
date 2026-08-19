@@ -954,13 +954,28 @@ const linkLabel = computed<string>({
 <style scoped>
 .ti-resizable {
   position: relative;
+  /* Flex column rather than percentage heights: the panel must never grow past
+     the space the body gives it, whatever detail arrives asynchronously. A
+     percentage height only holds while every ancestor resolves one, and when it
+     did not the panel pushed the layout instead of scrolling itself. */
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .topology-inspector {
   width: 100%;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+}
+
+/* The card puts its content in an inner wrapper; both have to be allowed to
+   shrink or the scroll lands on the wrong element. */
+.topology-inspector :deep(.p-card-body),
+.topology-inspector :deep(.p-card-content) {
+  min-height: 0;
 }
 
 .ti-resize-handle {

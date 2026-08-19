@@ -22,8 +22,9 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
+import { flushPromises } from '@vue/test-utils'
 import { useTopologyStore } from '@/stores/topologyStore'
-import { saveView, listViews } from '@/services/topologyService'
+import { saveView, listViews, getNodeSeverities } from '@/services/topologyService'
 import type { TopologyView } from '@/types/topology'
 
 vi.mock('@/services/topologyService', () => ({
@@ -248,5 +249,148 @@ describe('useTopologyStore - clearing view style back to automatic', () => {
     store.setViewStyle({ nodeLabelColor: undefined })
     expect(store.viewStyle?.nodeLabelColor).toBeUndefined()
     expect(store.viewStyle?.linkLabelColor).toBe('#445566')
+  })
+})
+
+// Status polling and the Explore panel work from what is drawn, not from every
+// node the graph contains: on a large topology the whole-graph query was long
+// enough that the server rejected it, and the tables described nodes that were
+// not on screen.
+describe('useTopologyStore - what is on screen', () => {
+  let store: ReturnType<typeof useTopologyStore>
+
+  // A star: hub plus 4 leaves, so a focus at SZL 1 shows a strict subset.
+  const graph = (extra = 0) => ({
+    source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+    label: 'Layer2',
+    nodes: [
+      { id: 'placed-1', nodeId: 1, label: 'hub', x: 0, y: 0 },
+      { id: 'placed-2', nodeId: 2, label: 'leaf-a', x: 0, y: 0 },
+      { id: 'placed-3', nodeId: 3, label: 'leaf-b', x: 0, y: 0 },
+      { id: 'placed-4', nodeId: 4, label: 'far', x: 0, y: 0 },
+      ...Array.from({ length: extra }, (_, i) => ({
+        id: `placed-${100 + i}`, nodeId: 100 + i, label: `pad-${i}`, x: 0, y: 0
+      }))
+    ],
+    links: [
+      { id: 'l1', sourceId: 'placed-1', targetId: 'placed-2', origin: 'discovered' },
+      { id: 'l2', sourceId: 'placed-1', targetId: 'placed-3', origin: 'discovered' },
+      { id: 'l3', sourceId: 'placed-3', targetId: 'placed-4', origin: 'discovered' }
+    ]
+  })
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    store = useTopologyStore()
+    vi.clearAllMocks()
+  })
+
+  it('is every placed node in a custom view', () => {
+    store.placedNodeIds = new Set(['7', '8'])
+    expect(store.visibleNodeIds.sort()).toEqual([7, 8])
+  })
+
+  it('is the whole discovered graph when nothing is focused', () => {
+    store.discoveredGraph = graph() as never
+    expect(store.visibleNodeIds.sort((a, b) => a - b)).toEqual([1, 2, 3, 4])
+  })
+
+  it('narrows to the focus subgraph, which is what the canvas draws', () => {
+    store.discoveredGraph = graph() as never
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+    // Node 4 is two hops out, so it is off screen.
+    expect(store.visibleNodeIds.sort((a, b) => a - b)).toEqual([1, 2, 3])
+  })
+
+  it('is empty while the large-graph gate holds the render', () => {
+    store.discoveredGraph = graph(3000) as never
+    expect(store.isLargeGraphGated).toBe(true)
+    expect(store.visibleNodeIds).toEqual([])
+  })
+
+  // The gate used to clear on ANY focus, so stepping the zoom level out from
+  // its own suggested anchor rendered the whole graph -- the seconds-long
+  // layout freeze the gate exists to prevent -- with no second opt-in.
+  it('stays up when a focus is set but the subgraph is still huge', () => {
+    // hub is linked to every padding node, so SZL 1 pulls all of them in.
+    const wide = {
+      ...graph(3000),
+      links: [
+        { id: 'l1', sourceId: 'placed-1', targetId: 'placed-2', origin: 'discovered' },
+        ...Array.from({ length: 3000 }, (_, i) => ({
+          id: `p${i}`, sourceId: 'placed-1', targetId: `placed-${100 + i}`, origin: 'discovered'
+        }))
+      ]
+    }
+    store.discoveredGraph = wide as never
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+
+    expect(store.isLargeGraphGated).toBe(true)
+    // Gated, so nothing is polled; opting in proves the subgraph really was
+    // this big rather than the gate having stayed up for some other reason.
+    store.acceptRenderAll()
+    expect(store.visibleNodeIds.length).toBeGreaterThan(3000)
+  })
+
+  it('drops once the focus actually narrows the graph', () => {
+    store.discoveredGraph = graph(3000) as never
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+
+    expect(store.isLargeGraphGated).toBe(false)
+    expect(store.visibleNodeIds.sort((a, b) => a - b)).toEqual([1, 2, 3])
+  })
+
+  it('opting in to render all reopens it', () => {
+    store.discoveredGraph = graph(3000) as never
+    store.acceptRenderAll()
+    expect(store.isLargeGraphGated).toBe(false)
+    expect(store.visibleNodeIds.length).toBe(3004)
+  })
+
+  it('a focus dismisses the gate too, and only the focus is polled', () => {
+    store.discoveredGraph = graph(3000) as never
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+    expect(store.isLargeGraphGated).toBe(false)
+    expect(store.visibleNodeIds.sort((a, b) => a - b)).toEqual([1, 2, 3])
+  })
+
+  // Status followed the placed-node set, which does not change when focus does,
+  // so focusing into a subgraph kept the previous set's severities: default blue
+  // in View mode, and indefinitely in Edit mode where the poll is stopped.
+  it('refetches status when the focus changes, not only when the graph loads', async () => {
+    vi.mocked(getNodeSeverities).mockResolvedValue({})
+    store.discoveredGraph = graph() as never
+    await flushPromises()
+    vi.mocked(getNodeSeverities).mockClear()
+
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+    await flushPromises()
+
+    expect(vi.mocked(getNodeSeverities)).toHaveBeenCalledWith([1, 2, 3])
+  })
+
+  it('polls status for what is on screen, not the whole graph', async () => {
+    vi.mocked(getNodeSeverities).mockResolvedValue({})
+    store.discoveredGraph = graph() as never
+    store.setFocusNode('placed-1')
+    store.setSemanticZoomLevel(1)
+
+    await store.refreshStatus()
+
+    expect(vi.mocked(getNodeSeverities)).toHaveBeenCalledWith([1, 2, 3])
+  })
+
+  it('does not poll at all while gated', async () => {
+    vi.mocked(getNodeSeverities).mockResolvedValue({})
+    store.discoveredGraph = graph(3000) as never
+
+    await store.refreshStatus()
+
+    expect(vi.mocked(getNodeSeverities)).not.toHaveBeenCalled()
   })
 })

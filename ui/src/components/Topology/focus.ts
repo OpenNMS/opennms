@@ -79,3 +79,39 @@ export const focusSubgraph = (
     links: graph.links.filter(e => reached.has(e.sourceId) && reached.has(e.targetId))
   }
 }
+
+/**
+ * Pick a default anchor for a graph too large to render whole: the vertex with
+ * the most links, which in practice lands on an aggregation device rather than
+ * a leaf. Structural on purpose. The API does offer the provider's own
+ * `defaultFocus`, but its enlinkd pick is a global "highest summed ifSpeed"
+ * node that falls back to an arbitrary vertex when it isn't in the graph being
+ * shown, and the response gives no way to tell the two apart.
+ *
+ * Ties break on the lowest id so the choice is stable across loads. Returns
+ * null for an empty graph; a graph with no links yields its lowest id.
+ */
+export const highestDegreeVertexId = (graph: DiscoveredGraph): string | null => {
+  const degree = new Map<string, number>()
+  for (const n of graph.nodes) {
+    degree.set(n.id, 0)
+  }
+  for (const e of graph.links) {
+    // Edges to vertices outside this graph don't count towards degree, matching
+    // what focusSubgraph will actually be able to traverse.
+    if (degree.has(e.sourceId) && degree.has(e.targetId)) {
+      degree.set(e.sourceId, degree.get(e.sourceId)! + 1)
+      degree.set(e.targetId, degree.get(e.targetId)! + 1)
+    }
+  }
+
+  let best: string | null = null
+  let bestDegree = -1
+  for (const [id, d] of degree) {
+    if (d > bestDegree || (d === bestDegree && best !== null && id < best)) {
+      best = id
+      bestDegree = d
+    }
+  }
+  return best
+}

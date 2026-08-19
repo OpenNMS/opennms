@@ -139,9 +139,10 @@ License.
             </span>
           </template>
           <OnmsButton
-            label="Refresh status"
+            :label="refreshLabel"
+            :disabled="store.isDiscoveredLoading"
             variant="outlined"
-            @click="store.refreshStatus()"
+            @click="onRefresh"
           />
           <OnmsButton
             v-if="store.isEditMode"
@@ -205,13 +206,21 @@ License.
           </p>
           <p class="discovered-empty-hint">
             Laying out a graph this large can take a long time in the browser.
-            Use <em>Search nodes</em> above to focus on a node's neighborhood instead.
+            Start from a single node's neighborhood instead, either the most
+            connected one below or any node via <em>Search nodes</em> above.
           </p>
-          <OnmsButton
-            :label="`Render all ${discoveredNodeCount.toLocaleString()} nodes`"
-            variant="outlined"
-            @click="renderAllAnyway"
-          />
+          <div class="large-graph-gate-actions">
+            <OnmsButton
+              v-if="suggestedAnchor"
+              :label="`Start focus at ${suggestedAnchor.label}`"
+              @click="focusSuggestedAnchor"
+            />
+            <OnmsButton
+              :label="`Render all ${discoveredNodeCount.toLocaleString()} nodes`"
+              variant="outlined"
+              @click="renderAllAnyway"
+            />
+          </div>
         </div>
       </div>
       <!-- View: full read-only Inspector on the left (order -1).
@@ -277,9 +286,9 @@ import {
   variantForKey,
   graphSourceFor
 } from '@/components/Topology/sources'
-import { focusSubgraph } from '@/components/Topology/focus'
-import { nodeActionLinks } from '@/components/Topology/nodeActions'
+import { focusSubgraph, highestDegreeVertexId } from '@/components/Topology/focus'
 import type { CanvasNode } from '@/types/topology'
+import { nodeActionLinks } from '@/components/Topology/nodeActions'
 
 const store = useTopologyStore()
 const { showToast } = useOnmsToast()
@@ -378,20 +387,31 @@ const discoveredEmpty = computed<boolean>(
 // the expensive, client-side part. Above this node count we hold the render
 // and let the user either focus on a neighborhood (rendering just the focus
 // subgraph, which is fast at any inventory size) or explicitly opt in.
-const LARGE_GRAPH_THRESHOLD = 3000
-// Per-load opt-in ("Render all N nodes"); reset whenever a source/variant loads.
-const renderAllAccepted = ref(false)
-const discoveredNodeCount = computed<number>(() => store.discoveredGraph?.nodes.length ?? 0)
-const isLargeGraphGated = computed<boolean>(
-  () =>
-    !!store.discoveredGraph &&
-    discoveredNodeCount.value > LARGE_GRAPH_THRESHOLD &&
-    !store.focusNodeId &&
-    !renderAllAccepted.value
-)
+const discoveredNodeCount = computed<number>(() => store.discoveredNodeCount)
+const isLargeGraphGated = computed<boolean>(() => store.isLargeGraphGated)
 const renderAllAnyway = () => {
-  renderAllAccepted.value = true
+  store.acceptRenderAll()
   renderDiscovered()
+}
+
+// The gate's default way in: the most-connected vertex, so the user gets a
+// useful neighborhood without having to guess a name to search for. Degree is
+// a single pass over links; it's the layout the gate is deferring, not the
+// fetch, so the graph is already in hand.
+const suggestedAnchor = computed<{ id: string, label: string } | null>(() => {
+  const graph = store.discoveredGraph
+  if (!graph) {
+    return null
+  }
+  const id = highestDegreeVertexId(graph)
+  const node = graph.nodes.find(n => n.id === id)
+  return id && node ? { id, label: node.label } : null
+})
+
+const focusSuggestedAnchor = () => {
+  if (suggestedAnchor.value) {
+    navFocus(suggestedAnchor.value.id, SZL_DEFAULT)
+  }
 }
 
 // Right-click a node -> context menu of node-data cross-links (Node Details,
@@ -447,7 +467,6 @@ const loadSource = async (): Promise<void> => {
     const gs = graphSourceFor(option, variantKey.value)
     const graph = gs ? await store.loadDiscoveredSource(gs) : false
     if (graph && store.discoveredGraph) {
-      renderAllAccepted.value = false // each load re-arms the large-graph gate
       applyRouteFocus() // restore focus/SZL from the URL before the first render
       renderDiscovered()
       store.refreshStatus()
@@ -466,6 +485,21 @@ const loadSource = async (): Promise<void> => {
   store.clearDiscovered()
   await store.refreshCatalog()
   await loadFromRoute(true)
+}
+
+// Discovered graph structure only changes when enlinkd rescans, which defaults
+// to daily, so it is refetched on demand rather than polled. Reusing loadSource
+// keeps focus and SZL, which live in the URL and are reapplied there.
+// Custom views keep the status-only label: their structure is user-authored,
+// so there is nothing to refetch.
+const refreshLabel = computed<string>(() => (isDiscovered.value ? 'Refresh Graph' : 'Refresh status'))
+
+const onRefresh = async (): Promise<void> => {
+  if (isDiscovered.value) {
+    await loadSource()
+    return
+  }
+  await store.refreshStatus()
 }
 
 onMounted(async () => {
@@ -887,10 +921,12 @@ const confirmDelete = async () => {
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  /* Fill the layout's main area (header + footer overhead ~104px). A residual
-     ~16px page scrollbar comes from the app shell (side-menu rail / footer
-     spacer), independent of this page -- tracked separately. */
-  height: calc(100vh - 104px);
+  /* Fill the layout's main grid row, which App.vue sizes for this route. No
+     viewport arithmetic: the previous calc(100vh - 104px) had to match the
+     footer's rendered height, and pushed the footer off screen once the footer
+     grew past the 44px the constant left it. */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .topology-toolbar {
@@ -1047,6 +1083,13 @@ const confirmDelete = async () => {
 
 .discovered-empty-hint {
   font-size: 0.85rem;
+}
+
+.large-graph-gate-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .large-graph-gate {

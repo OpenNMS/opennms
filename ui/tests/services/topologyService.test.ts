@@ -33,6 +33,7 @@ import {
   mapDiscoveredGraph,
   getNodeInfoPanel,
   getNodeIconIds,
+  getNodeSeverities,
   assetUrl,
   listAssets,
   uploadAsset,
@@ -606,5 +607,57 @@ describe('topologyService discovered graph (Graph REST API)', () => {
       vi.mocked(v2.get).mockResolvedValue({ data: { containers: [] }})
       expect(await listGraphContainers()).toEqual([])
     })
+  })
+})
+
+// The filter is one clause per node id, so a large view built a query the server
+// rejected with 414 -- and this function's catch turned that into an empty map,
+// so the canvas silently reset to no-alarm on every poll.
+describe('getNodeSeverities on a large view', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('keeps every request inside the server\'s request budget', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { alarm: [] }} as never)
+    const ids = Array.from({ length: 900 }, (_, i) => 1000 + i)
+
+    await getNodeSeverities(ids)
+
+    // Encoded bytes, not clause count. Jetty's requestHeaderSize defaults to
+    // 4000 for the whole request; measured live, 150 `node.id==` clauses encode
+    // to 3011 bytes and pass while 200 encode to 4011 and answer 414. Asserting
+    // the count instead is why the first attempt at this shipped still broken.
+    const encoded = vi.mocked(v2.get).mock.calls.map(([, config]) => {
+      const params = (config as { params: Record<string, unknown> }).params
+      return new URLSearchParams(
+        Object.entries(params).map(([k, v]) => [k, String(v)])
+      ).toString().length
+    })
+    expect(Math.max(...encoded)).toBeLessThan(3000)
+
+    const clauses = vi.mocked(v2.get).mock.calls
+      .map(([, config]) => String((config as { params: { _s: string }}).params._s).split(',').length)
+    expect(clauses.reduce((a, b) => a + b, 0)).toBe(900)
+  })
+
+  it('aggregates across chunks rather than keeping only the last', async () => {
+    vi.mocked(v2.get)
+      .mockResolvedValueOnce({ status: 200, data: { alarm: [{ nodeId: 1000, severity: 'MAJOR' }] }} as never)
+      .mockResolvedValueOnce({ status: 200, data: { alarm: [{ nodeId: 1400, severity: 'MINOR' }] }} as never)
+      .mockResolvedValue({ status: 200, data: { alarm: [] }} as never)
+
+    const out = await getNodeSeverities(Array.from({ length: 900 }, (_, i) => 1000 + i))
+
+    expect(out[1000]).toBe('MAJOR')
+    expect(out[1400]).toBe('MINOR')
+  })
+
+  it('a failed chunk costs only its own nodes', async () => {
+    vi.mocked(v2.get)
+      .mockRejectedValueOnce(new Error('414'))
+      .mockResolvedValue({ status: 200, data: { alarm: [{ nodeId: 1400, severity: 'MINOR' }] }} as never)
+
+    const out = await getNodeSeverities(Array.from({ length: 900 }, (_, i) => 1000 + i))
+
+    expect(out[1400]).toBe('MINOR')
   })
 })

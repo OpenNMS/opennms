@@ -142,6 +142,7 @@ import { nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { getNodes } from '@/services/nodeService'
 import { getAlarms } from '@/services/alarmService'
 import {
+  chunkByQueryLength,
   getApplications,
   getPerspectiveOutages,
   type PerspectiveOutage,
@@ -214,12 +215,10 @@ const alarmRows = ref<AlarmRow[]>([])
 const applicationRows = ref<TopologyApplication[]>([])
 const perspectiveRows = ref<PerspectiveOutage[]>([])
 
-// The real OnmsNode ids of the placed nodes (bare-number palette ids).
-const placedRealIds = computed<number[]>(() =>
-  Array.from(store.placedNodeIds)
-    .map(id => Number(id))
-    .filter(n => Number.isInteger(n))
-)
+// What is actually on screen, not every node the graph contains: on a large
+// discovered topology the tables would otherwise describe thousands of nodes the
+// canvas is not drawing, and refetch all of them on every status poll.
+const placedRealIds = computed<number[]>(() => store.visibleNodeIds)
 
 /**
  * The nodes behind the current selection, so the tables filter to all of them
@@ -317,6 +316,43 @@ const formatTime = (ms?: number): string => {
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`
 }
 
+/**
+ * One clause per node id, so the query grows with the view. Chunked by encoded
+ * length rather than by count: `node.id==` is five bytes longer per clause than
+ * `id==`, so a single count cannot keep both inside the request budget, which is
+ * how these stayed over the limit after the first attempt at chunking them.
+ */
+const fetchNodesFor = async (ids: number[]): Promise<NodeRow[]> => {
+  const pages = await Promise.all(
+    chunkByQueryLength(ids, id => `id==${id}`)
+      .map(part => getNodes({ _s: part.map(id => `id==${id}`).join(','), limit: part.length }))
+  )
+  return pages.flatMap(resp => (resp && resp.node ? resp.node : []).map((n) => {
+    const nid = Number(n.id)
+    return {
+      id: `placed-${nid}`,
+      nodeId: nid,
+      label: n.label ?? String(nid),
+      location: n.location ?? ''
+    }
+  }))
+}
+
+const fetchAlarmsFor = async (ids: number[]): Promise<AlarmRow[]> => {
+  const pages = await Promise.all(
+    chunkByQueryLength(ids, id => `node.id==${id}`)
+      .map(part => getAlarms({ _s: part.map(id => `node.id==${id}`).join(','), limit: 1000 }))
+  )
+  return pages.flatMap(resp => (resp && resp.alarm ? resp.alarm : []).map(a => ({
+    id: Number(a.id),
+    nodeId: a.nodeId,
+    nodeLabel: a.nodeLabel ?? String(a.nodeId),
+    severity: a.severity ?? 'NORMAL',
+    logMessage: a.logMessage ?? '',
+    lastEventTime: a.lastEventTime
+  })))
+}
+
 const fetchData = async (): Promise<void> => {
   const ids = placedRealIds.value
   if (ids.length === 0) {
@@ -328,39 +364,16 @@ const fetchData = async (): Promise<void> => {
   }
   loading.value = true
   try {
-    const nodeFiql = ids.map(id => `id==${id}`).join(',')
-    const alarmFiql = ids.map(id => `node.id==${id}`).join(',')
-    const [nodesResp, alarmsResp, applications, perspectives] = await Promise.all([
-      getNodes({ _s: nodeFiql, limit: 1000 }),
-      getAlarms({ _s: alarmFiql, limit: 1000 }),
+    const [nodes, alarms, applications, perspectives] = await Promise.all([
+      fetchNodesFor(ids),
+      fetchAlarmsFor(ids),
       isApplicationGraph.value ? getApplications() : Promise.resolve([]),
       isApplicationGraph.value ? getPerspectiveOutages(ids) : Promise.resolve([])
     ])
     applicationRows.value = applications
     perspectiveRows.value = perspectives
-    nodeRows.value =
-      nodesResp && nodesResp.node
-        ? nodesResp.node.map((n) => {
-          const nid = Number(n.id)
-          return {
-            id: `placed-${nid}`,
-            nodeId: nid,
-            label: n.label ?? String(nid),
-            location: n.location ?? ''
-          }
-        })
-        : []
-    alarmRows.value =
-      alarmsResp && alarmsResp.alarm
-        ? alarmsResp.alarm.map(a => ({
-          id: Number(a.id),
-          nodeId: a.nodeId,
-          nodeLabel: a.nodeLabel ?? String(a.nodeId),
-          severity: a.severity ?? 'NORMAL',
-          logMessage: a.logMessage ?? '',
-          lastEventTime: a.lastEventTime
-        }))
-        : []
+    nodeRows.value = nodes
+    alarmRows.value = alarms
   } finally {
     loading.value = false
   }

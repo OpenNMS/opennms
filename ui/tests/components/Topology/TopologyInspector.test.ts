@@ -31,13 +31,21 @@ import { useTopologyStore } from '@/stores/topologyStore'
 import { getNodeById } from '@/services/nodeService'
 
 vi.mock('@/services/nodeService', () => ({ getNodeById: vi.fn().mockResolvedValue(null) }))
+// The store refreshes icons and severities whenever the visible node set
+// changes, which these tests trigger by assigning discoveredGraph, so the mock
+// has to carry them. Returning the real shapes, not null: getNodeSeverities and
+// getNodeIconIds both resolve to a record.
 vi.mock('@/services/topologyService', () => ({
   listAssets: vi.fn().mockResolvedValue([]),
   assetUrl: vi.fn(),
   uploadAsset: vi.fn(),
   getNodeInfoPanel: vi.fn().mockResolvedValue([]),
   getEdgeInfoPanel: vi.fn().mockResolvedValue([]),
-  getDiscoveredNeighbors: vi.fn().mockResolvedValue([])
+  getDiscoveredNeighbors: vi.fn().mockResolvedValue([]),
+  getNodeSeverities: vi.fn().mockResolvedValue({}),
+  getNodeIconIds: vi.fn().mockResolvedValue({}),
+  getNodeNeighbors: vi.fn().mockResolvedValue(null),
+  parseEnlinkdNeighbors: vi.fn(() => [])
 }))
 
 const shapeA = { id: 'shape-a', type: 'rect', x: 0, y: 0, w: 10, h: 10, stroke: '#aaaaaa', fill: '#eeeeee' }

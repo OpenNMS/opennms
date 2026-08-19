@@ -335,3 +335,69 @@ describe('TopologyExplorePanel tabs', () => {
     expect(active[0].text()).toContain('Nodes')
   })
 })
+
+// One FIQL clause per node id: a 3400-vertex view built a 30 KB URI and the
+// server answered 414, so every tab came up empty.
+describe('TopologyExplorePanel large views', () => {
+  it('splits the node and alarm queries so the URI stays legal', async () => {
+    const nodeService = await import('@/services/nodeService')
+    const alarmService = await import('@/services/alarmService')
+    const { store } = await mountPanel()
+    vi.mocked(nodeService.getNodes).mockClear()
+    vi.mocked(alarmService.getAlarms).mockClear()
+
+    store.placedNodeIds = new Set(
+      Array.from({ length: 700 }, (_, i) => String(1000 + i))
+    ) as never
+    await flushPromises()
+
+    // Encoded bytes, not clause count: `node.id==` is five bytes longer per
+    // clause than `id==` and axios percent-encodes `=`, so one clause count
+    // cannot keep both endpoints inside Jetty's 4000-byte request budget. The
+    // first version of this test counted clauses and passed while the alarm
+    // query was still answering 414.
+    const encodedBytes = (calls: unknown[][]) =>
+      calls.map(([params]) => new URLSearchParams(
+        Object.entries(params as Record<string, unknown>).map(([k, v]) => [k, String(v)])
+      ).toString().length)
+
+    const nodeCalls = vi.mocked(nodeService.getNodes).mock.calls
+    expect(Math.max(...encodedBytes(nodeCalls))).toBeLessThan(3000)
+    expect(Math.max(...encodedBytes(vi.mocked(alarmService.getAlarms).mock.calls)))
+      .toBeLessThan(3000)
+
+    // Split, but complete: every id is still asked for.
+    const ids = nodeCalls.flatMap(([params]) =>
+      String((params as { _s: string })._s).split(',').map(c => c.replace('id==', '')))
+    expect(new Set(ids).size).toBe(700)
+  })
+
+  // The split is only half of it: the rows from every chunk have to survive.
+  // Keeping just the last chunk passed the original test, because the mock
+  // returned the same rows for every chunk and no row was ever asserted.
+  it('aggregates rows across chunks rather than keeping the last', async () => {
+    const nodeService = await import('@/services/nodeService')
+    const { wrapper, store } = await mountPanel()
+
+    let call = 0
+    vi.mocked(nodeService.getNodes).mockImplementation(async () => {
+      call += 1
+      return { node: [{ id: 9000 + call, label: `chunk-${call}`, location: 'HQ' }] } as never
+    })
+
+    store.placedNodeIds = new Set(
+      Array.from({ length: 700 }, (_, i) => String(1000 + i))
+    ) as never
+    await flushPromises()
+
+    const nodesTab = wrapper.findAll('.te-tabs button').find(b => b.text().includes('Nodes'))!
+    await nodesTab.trigger('click')
+    await flushPromises()
+
+    // One row per chunk, each labelled with its chunk number. Keeping only the
+    // last chunk leaves exactly one row; aggregating leaves one per chunk.
+    const rows = rowTexts(wrapper)
+    expect(rows.length).toBeGreaterThan(1)
+    expect(new Set(rows).size).toBe(rows.length)
+  })
+})
