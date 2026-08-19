@@ -60,16 +60,10 @@ const fetchPaletteNodes = async (
 const alarmsEndpoint = '/alarms'
 
 /**
- * Split node ids into chunks whose encoded query stays inside Jetty's request
- * budget: `org.opennms.netmgt.jetty.requestHeaderSize` defaults to 4000 bytes
- * and covers the whole request line plus headers. Measured against a live
- * instance: 150 `node.id==` clauses encode to 3011 bytes and pass, 200 encode to
- * 4011 and answer 414. The budget here leaves room for the cookies and headers a
- * browser sends and curl does not.
- *
- * Counting clauses cannot work, which is how the first attempt at this stayed
- * broken: `node.id==` is five bytes longer per clause than `id==`, and axios
- * percent-encodes `=` as %3D, so one count gives very different URL lengths.
+ * Chunk ids so each encoded query stays inside Jetty's `requestHeaderSize`
+ * (4000 bytes by default, covering the whole request). By length, not by clause
+ * count: `node.id==` is longer than `id==` and axios encodes `=` as %3D, so one
+ * count yields very different URLs.
  */
 const QUERY_BUDGET_BYTES = 2000
 
@@ -285,9 +279,19 @@ const parseIfIndex = (link: Record<string, unknown>): number | undefined => {
       return Number(match[1])
     }
   }
+  // IS-IS has no local port string at all: it reports isisCircIfIndex as a
+  // number. Remote-side indices are excluded, since they name an interface on
+  // the other node.
+  for (const [key, value] of Object.entries(link)) {
+    const lower = key.toLowerCase()
+    if (typeof value === 'number' && lower.includes('ifindex') && !lower.includes('rem')) {
+      return value
+    }
+  }
   return undefined
 }
-const REMOTE_PORT_HINT = 'remport'
+// LLDP and OSPF name it *RemPort, bridge *RemotePort, CDP *CacheDevicePort.
+const REMOTE_PORT_HINTS = ['remport', 'remoteport', 'deviceport']
 
 const firstStringField = (
   link: Record<string, unknown>,
@@ -302,11 +306,9 @@ const firstStringField = (
 }
 
 /**
- * The node at the far end of a link, read from whichever URL enlinkd built for
- * it. Every candidate is checked rather than the first one found: a record
- * carries a URL for its *local* port too ("snmpinterface.jsp?node=1&ifindex=2"),
- * and that one often comes first, so taking the first match resolved every link
- * to the node it started from and discarded it as a self-link.
+ * The node at the far end of a link. Every URL field is checked, not the first:
+ * a record also carries its *local* port's URL, usually first, so a first-match
+ * read resolved every link back to its own node.
  */
 const parseNeighborNodeId = (
   link: Record<string, unknown>,
@@ -329,6 +331,18 @@ const parseNeighborNodeId = (
  * Pure transform of an enlinkd response into normalized neighbors. Exported
  * so it can be unit-tested against captured payloads without HTTP.
  */
+const linkFarEnds = (link: Record<string, unknown>): Array<Record<string, unknown>> => {
+  const nested = Object.values(link).find(
+    v => Array.isArray(v) && v.length > 0 && typeof v[0] === 'object' && v[0] !== null
+  )
+  if (!nested) {
+    return [link]
+  }
+  // The remote entry's fields win, so the far end's url and port are found while
+  // the parent's local port and ifIndex survive.
+  return (nested as Array<Record<string, unknown>>).map(remote => ({ ...link, ...remote }))
+}
+
 const parseEnlinkdNeighbors = (
   data: Record<string, unknown> | null | undefined,
   nodeId: number
@@ -351,24 +365,25 @@ const parseEnlinkdNeighbors = (
       if (!raw || typeof raw !== 'object') {
         continue
       }
-      const link = raw as Record<string, unknown>
-      const neighborNodeId = parseNeighborNodeId(link, nodeId)
-      const key = `${type}|${neighborNodeId}`
-      if (neighborNodeId == null || neighborNodeId === nodeId || seen.has(key)) {
-        continue
+      for (const link of linkFarEnds(raw as Record<string, unknown>)) {
+        const neighborNodeId = parseNeighborNodeId(link, nodeId)
+        const key = `${type}|${neighborNodeId}`
+        if (neighborNodeId == null || neighborNodeId === nodeId || seen.has(key)) {
+          continue
+        }
+        seen.add(key)
+        neighbors.push({
+          neighborNodeId,
+          neighborLabel:
+            firstStringField(link, k => REMOTE_LABEL_HINTS.some(h => k.includes(h))) ??
+            `Node ${neighborNodeId}`,
+          linkType: type,
+          localPort: firstStringField(link, k => k.includes(LOCAL_PORT_HINT)),
+          remotePort: firstStringField(link, k => REMOTE_PORT_HINTS.some(h => k.includes(h))),
+          localIfIndex: parseIfIndex(link),
+          lastPollTime: firstStringField(link, k => k.includes('lastpolltime'))
+        })
       }
-      seen.add(key)
-      neighbors.push({
-        neighborNodeId,
-        neighborLabel:
-          firstStringField(link, k => REMOTE_LABEL_HINTS.some(h => k.includes(h))) ??
-          `Node ${neighborNodeId}`,
-        linkType: type,
-        localPort: firstStringField(link, k => k.includes(LOCAL_PORT_HINT)),
-        remotePort: firstStringField(link, k => k.includes(REMOTE_PORT_HINT)),
-        localIfIndex: parseIfIndex(link),
-        lastPollTime: firstStringField(link, k => k.includes('lastpolltime'))
-      })
     }
   }
   return neighbors
@@ -498,10 +513,8 @@ const vertexProperties = (vertex: GraphApiVertex): Record<string, string> | unde
  * are variations on force-directed, which is already the default.
  */
 /**
- * An edge label worth showing. Every provider sets one, but enlinkd and VMware
- * set it to the namespace-qualified edge id ("nodes:Layer2:572|581"), which is
- * machine noise. A GraphML author's "10G wave" is not, and telling them apart is
- * exactly that test.
+ * An author's edge label. enlinkd and VMware set it to the namespace-qualified
+ * edge id, which is machine noise; a GraphML author's "10G wave" is not.
  */
 const authoredEdgeLabel = (edge: GraphApiEdge): string | undefined => {
   const label = edge.label
@@ -770,15 +783,9 @@ const getNodeIconIds = async (nodeIds: number[]): Promise<Record<number, DeviceI
 }
 
 /**
- * Which categories each node belongs to, keyed by OnmsNode id.
- *
- * Read off the node payload, which already carries `categories`, rather than
- * filtering by category: the v2 /nodes endpoint has its `categories` alias join
- * commented out (NodeRestService, "add this alias via a CriteriaBehavior"), so
- * any `category`-prefixed filter returns a 500 from Hibernate.
- *
- * Chunked because the filter is an id-per-clause FIQL string, which would
- * otherwise outgrow the URL on a large topology.
+ * Categories per node id, read off the node payload rather than filtered by
+ * category: v2 /nodes has its `categories` alias join commented out in
+ * NodeRestService, so any category filter answers 500 from Hibernate.
  */
 const getNodeCategories = async (nodeIds: number[]): Promise<Record<number, string[]>> => {
   const out: Record<number, string[]> = {}
@@ -800,6 +807,39 @@ const getNodeCategories = async (nodeIds: number[]): Promise<Record<number, stri
     }
   }
   return out
+}
+
+/** One interface's state, for a link whose local ifIndex enlinkd reported. */
+export interface InterfaceState {
+  ifIndex: number
+  ifName?: string
+  ifAdminStatus?: number
+  ifOperStatus?: number
+  lastSnmpPoll?: number | null
+  lastCapsdPoll?: number | null
+}
+
+/**
+ * The SNMP interface behind one end of a link. Filtered server-side to the one
+ * ifIndex rather than fetching the node's whole interface table, which on a
+ * switch is dozens of rows to use one of.
+ */
+const getInterfaceState = async (
+  nodeId: number,
+  ifIndex: number
+): Promise<InterfaceState | null> => {
+  try {
+    const resp = await v2.get<{ snmpInterface?: InterfaceState[] }>(
+      `nodes/${nodeId}/snmpinterfaces`,
+      { params: { _s: `ifIndex==${ifIndex}` }}
+    )
+    if (resp.status === 204 || !resp.data) {
+      return null
+    }
+    return resp.data.snmpInterface?.[0] ?? null
+  } catch {
+    return null
+  }
 }
 
 const getEdgeInfoPanel = async (
@@ -922,6 +962,7 @@ export {
   getNodeInfoPanel,
   getNodeIconIds,
   getNodeCategories,
+  getInterfaceState,
   assetUrl,
   listAssets,
   uploadAsset,

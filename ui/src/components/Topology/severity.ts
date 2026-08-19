@@ -26,6 +26,12 @@ import { numericSeverityLevel } from '@/components/Map/utils'
  * Node color when no alarm status applies (no severity, or status hasn't
  * been fetched). Matches the default placed-node color on the canvas.
  */
+/**
+ * Deliberately theme-independent, unlike --onms-topology-accent. This value is
+ * written into saved views and into graphology node attributes, so making it
+ * follow the theme would mean a view composed in dark mode persisted different
+ * colors from the same view composed in light mode.
+ */
 export const DEFAULT_NODE_COLOR = '#1f5fb0'
 
 /**
@@ -89,6 +95,13 @@ export const aggregateNodeSeverities = (
   const byNode: Record<number, string> = {}
   for (const alarm of alarms) {
     if (alarm.nodeId == null || !alarm.severity) {
+      continue
+    }
+    // A cleared alarm is not a state the node is in. It used to stick, because
+    // its level is 0 and the first alarm seen for a node is taken unconditionally,
+    // so a node whose only alarms were cleared painted grey rather than keeping
+    // its default color.
+    if (alarm.severity.toUpperCase() === 'CLEARED') {
       continue
     }
     const current = byNode[alarm.nodeId]

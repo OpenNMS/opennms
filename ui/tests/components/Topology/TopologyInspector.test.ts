@@ -27,6 +27,7 @@ import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
 import { powerStateColor } from '@/components/Topology/deviceIcons'
+import { getInterfaceState } from '@/services/topologyService'
 import { useTopologyStore } from '@/stores/topologyStore'
 
 import { getNodeById } from '@/services/nodeService'
@@ -42,6 +43,7 @@ vi.mock('@/services/topologyService', () => ({
   uploadAsset: vi.fn(),
   getNodeInfoPanel: vi.fn().mockResolvedValue([]),
   getEdgeInfoPanel: vi.fn().mockResolvedValue([]),
+  getInterfaceState: vi.fn().mockResolvedValue(null),
   getDiscoveredNeighbors: vi.fn().mockResolvedValue([]),
   getNodeSeverities: vi.fn().mockResolvedValue({}),
   getNodeIconIds: vi.fn().mockResolvedValue({}),
@@ -202,7 +204,18 @@ describe('TopologyInspector node details', () => {
     vi.mocked(getNodeById).mockResolvedValue(node as never)
     const wrapper = mount(TopologyInspector, {
       props: { canvas: null, variant: 'full' },
-      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+      global: {
+        plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
+        // Leaflet needs real layout, which happy-dom has none of; the props it
+        // is handed are what matters here.
+        stubs: {
+          TopologyLocationMap: {
+            name: 'TopologyLocationMap',
+            props: ['lat', 'lon'],
+            template: '<div class="map-stub" />'
+          }
+        }
+      }
     })
     const store = useTopologyStore()
     store.selectedIds = ['placed-7'] as never
@@ -280,3 +293,164 @@ describe('TopologyInspector color pickers', () => {
 
 })
 
+// A node's asset coordinates, shown as the Vaadin map's info panel did. Read off
+// the node the inspector already fetched, so no extra request is made.
+describe('TopologyInspector geographic location', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const mountWithNode = async (node: Record<string, unknown>) => {
+    vi.mocked(getNodeById).mockResolvedValue(node as never)
+    const wrapper = mount(TopologyInspector, {
+      props: { canvas: null, variant: 'full' },
+      global: {
+        plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
+        stubs: {
+          TopologyLocationMap: {
+            name: 'TopologyLocationMap',
+            props: ['lat', 'lon'],
+            template: '<div class="map-stub" />'
+          }
+        }
+      }
+    })
+    const store = useTopologyStore()
+    store.selectedIds = ['placed-7'] as never
+    await flushPromises()
+    return { wrapper }
+  }
+
+  it('maps a node that has coordinates, and captions it', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1',
+      assetRecord: { latitude: 35.7796, longitude: -78.6382, city: 'Raleigh', state: 'NC' }
+    })
+    expect(wrapper.text()).toContain('Geographic Location')
+    expect(wrapper.text()).toContain('Raleigh, NC')
+    const map = wrapper.findComponent({ name: 'TopologyLocationMap' })
+    expect(map.props()).toEqual({ lat: 35.7796, lon: -78.6382 })
+  })
+
+  it('shows nothing at all for a node with no coordinates', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { city: 'Raleigh' }
+    })
+    expect(wrapper.text()).not.toContain('Geographic Location')
+    expect(wrapper.find('.map-stub').exists()).toBe(false)
+  })
+
+  it('treats a half-populated position as none, being unplaceable', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { latitude: 35.7796 }
+    })
+    expect(wrapper.find('.map-stub').exists()).toBe(false)
+  })
+
+  // The API sends an unset asset field as JSON null, and Number(null) is 0, not
+  // NaN -- so this plotted a node with only a longitude on the equator.
+  it('treats an explicitly null coordinate as absent, not as zero', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { latitude: null, longitude: -87.6658 }
+    })
+    expect(wrapper.find('.map-stub').exists()).toBe(false)
+  })
+
+  it('treats an empty-string coordinate the same way', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { latitude: '', longitude: -87.6658 }
+    })
+    expect(wrapper.find('.map-stub').exists()).toBe(false)
+  })
+
+  it('treats 0,0 as unset rather than the Gulf of Guinea', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { latitude: 0, longitude: 0 }
+    })
+    expect(wrapper.find('.map-stub').exists()).toBe(false)
+  })
+
+  it('accepts coordinates sent as strings', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', assetRecord: { latitude: '35.7796', longitude: '-78.6382' }
+    })
+    const map = wrapper.findComponent({ name: 'TopologyLocationMap' })
+    expect(map.props()).toEqual({ lat: 35.7796, lon: -78.6382 })
+  })
+
+  it('does not confuse the monitoring location with a place', async () => {
+    const { wrapper } = await mountWithNode({
+      id: 7, label: 'core-sw1', location: 'Default', assetRecord: {}
+    })
+    expect(wrapper.text()).toContain('Default')
+    expect(wrapper.text()).not.toContain('Geographic Location')
+  })
+})
+
+// The link's interface state, from /nodes/{id}/snmpinterfaces. Named rather than
+// mapped to up/down, and shown with how it got there: the same two numbers are
+// seconds old where the SNMP Interface Poller runs and a day old where only the
+// node scan writes them.
+describe('TopologyInspector link interface state', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const mountWithLink = async (iface: Record<string, unknown> | null) => {
+    vi.mocked(getInterfaceState).mockResolvedValue(iface as never)
+    const canvas = {
+      getLink: vi.fn(() => ({
+        id: 'e1',
+        sourceId: 'placed-1',
+        targetId: 'placed-2',
+        sourceLabel: 'core-01',
+        targetLabel: 'dist-02',
+        origin: 'discovered',
+        binding: { protocol: 'lldp', sourcePort: 'Gi0/2', targetPort: 'Gi0/1', sourceIfIndex: 2 }
+      })),
+      setLinkLabel: vi.fn(),
+      getNodeIconOverride: vi.fn(),
+      setNodeIconOverride: vi.fn()
+    }
+    const wrapper = mount(TopologyInspector, {
+      props: { canvas: canvas as never, variant: 'full' },
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+    })
+    const store = useTopologyStore()
+    store.selectedIds = ['e1'] as never
+    await flushPromises()
+    return { wrapper }
+  }
+
+  it('names the raw oper status and says when it was polled', async () => {
+    const { wrapper } = await mountWithLink({
+      ifIndex: 2, ifName: 'Gi0/2', ifAdminStatus: 1, ifOperStatus: 7,
+      lastSnmpPoll: Date.now() - 90_000, lastCapsdPoll: Date.now() - 6 * 3600_000
+    })
+    const text = wrapper.text()
+    expect(text).toContain('lowerLayerDown')
+    expect(text).toContain('polled')
+    // The interface's name rides along with its index.
+    expect(text).toContain('Gi0/2')
+  })
+
+  it('says the state came from the node scan when the poller has not run', async () => {
+    const { wrapper } = await mountWithLink({
+      ifIndex: 2, ifOperStatus: 1, lastSnmpPoll: null, lastCapsdPoll: Date.now() - 6 * 3600_000
+    })
+    expect(wrapper.text()).toContain('from the last node scan')
+    expect(wrapper.text()).not.toContain('polled ')
+  })
+
+  it('shows no state rows when the interface cannot be read', async () => {
+    const { wrapper } = await mountWithLink(null)
+    expect(wrapper.text()).toContain('Source ifIndex')
+    expect(wrapper.text()).not.toContain('Oper status')
+    expect(wrapper.text()).not.toContain('Admin status')
+  })
+
+  it('asks for the interface enlinkd named, on the link\'s source node', async () => {
+    await mountWithLink({ ifIndex: 2, ifOperStatus: 1 })
+    expect(vi.mocked(getInterfaceState)).toHaveBeenCalledWith(1, 2)
+  })
+})

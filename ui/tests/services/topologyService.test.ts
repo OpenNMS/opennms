@@ -32,6 +32,7 @@ import {
   listGraphContainers,
   mapDiscoveredGraph,
   getNodeInfoPanel,
+  getNodeCategories,
   getNodeIconIds,
   getNodeSeverities,
   assetUrl,
@@ -40,8 +41,13 @@ import {
   deleteAsset
 } from '@/services/topologyService'
 import { v2 } from '@/services/axiosInstances'
+import * as nodeService from '@/services/nodeService'
 import type { TopologyView } from '@/types/topology'
 
+// getNodeCategories and getNodeIconIds go through nodeService, not v2 directly.
+vi.mock('@/services/nodeService', () => ({
+  getNodes: vi.fn()
+}))
 vi.mock('@/services/axiosInstances', () => ({
   v2: {
     get: vi.fn(),
@@ -482,27 +488,24 @@ describe('topologyService discovered graph (Graph REST API)', () => {
 
   describe('getNodeIconIds', () => {
     it('maps each node sysObjectId to a device-type icon, omitting unresolved ones', async () => {
-      vi.mocked(v2.get).mockResolvedValue({
-        status: 200,
-        data: {
-          node: [
-            { id: '23', sysObjectId: '.1.3.6.1.4.1.9.1.559' }, // router
-            { id: '29', sysObjectId: '.1.3.6.1.4.1.9.1.283' }, // switch
-            { id: '99', sysObjectId: '.1.2.3.4' } // unknown -> omitted
-          ]
-        }
-      })
+      vi.mocked(nodeService.getNodes).mockResolvedValue({
+        node: [
+          { id: '23', sysObjectId: '.1.3.6.1.4.1.9.1.559' }, // router
+          { id: '29', sysObjectId: '.1.3.6.1.4.1.9.1.283' }, // switch
+          { id: '99', sysObjectId: '.1.2.3.4' } // unknown -> omitted
+        ]
+      } as never)
       const result = await getNodeIconIds([23, 29, 99])
       expect(result).toEqual({ 23: 'router', 29: 'switch' })
       // The /nodes endpoint filters on `id`, not `node.id`.
-      const url = vi.mocked(v2.get).mock.calls[0][0] as string
-      expect(decodeURIComponent(url)).toContain('id==23')
-      expect(decodeURIComponent(url)).not.toContain('node.id==')
+      const params = vi.mocked(nodeService.getNodes).mock.calls[0][0] as { _s: string }
+      expect(params._s).toContain('id==23')
+      expect(params._s).not.toContain('node.id==')
     })
 
     it('returns {} for an empty id list without calling the API', async () => {
       expect(await getNodeIconIds([])).toEqual({})
-      expect(v2.get).not.toHaveBeenCalled()
+      expect(nodeService.getNodes).not.toHaveBeenCalled()
     })
   })
 
@@ -858,5 +861,142 @@ describe('parseEnlinkdNeighbors across protocols', () => {
       lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2'
     }
     expect(parseEnlinkdNeighbors({ lldpLinkNodes: [link, { ...link }] }, 1)).toHaveLength(1)
+  })
+})
+
+// Two protocols report their far end in shapes the parser originally could not
+// read: IS-IS as an integer field with no port string at all, and bridge inside
+// a nested array, which is also how one bridge port reaches several neighbours.
+describe('parseEnlinkdNeighbors for isis and bridge', () => {
+  it('reads the IS-IS ifIndex from its integer field', () => {
+    const [n] = parseEnlinkdNeighbors({
+      isisLinkNodes: [{
+        isisCircIfIndex: 13,
+        isisISAdjNeighSysIDUrl: 'element/linkednode.jsp?node=2',
+        isisISAdjNeighSysID: 'loopback-001'
+      }]
+    }, 1)
+    expect(n.linkType).toBe('isis')
+    expect(n.localIfIndex).toBe(13)
+  })
+
+  it('does not take a remote-side index as the local one', () => {
+    const [n] = parseEnlinkdNeighbors({
+      isisLinkNodes: [{
+        // Deliberately first, so taking the first numeric ifindex-ish field
+        // would name an interface on the other node.
+        isisRemIfIndex: 99,
+        isisCircIfIndex: 13,
+        isisISAdjNeighSysIDUrl: 'element/linkednode.jsp?node=2'
+      }]
+    }, 1)
+    expect(n.localIfIndex).toBe(13)
+  })
+
+  it('resolves every far end of a bridge link, not none of them', () => {
+    const neighbors = parseEnlinkdNeighbors({
+      bridgeLinkNodes: [{
+        bridgeLocalPort: 'Gi0/1(ifindex:4)',
+        bridgeLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=4',
+        bridgeLinkRemoteNodes: [
+          { bridgeRemote: 'loopback-002', bridgeRemoteUrl: 'element/linkednode.jsp?node=2',
+            bridgeRemotePort: 'Gi0/9' },
+          { bridgeRemote: 'loopback-003', bridgeRemoteUrl: 'element/linkednode.jsp?node=3',
+            bridgeRemotePort: 'Gi0/8' }
+        ]
+      }]
+    }, 1)
+
+    expect(neighbors.map(n => n.neighborNodeId).sort()).toEqual([2, 3])
+    // The parent's local port survives the flatten; each remote keeps its own.
+    expect(neighbors.every(n => n.localIfIndex === 4)).toBe(true)
+    expect(neighbors.map(n => n.remotePort).sort()).toEqual(['Gi0/8', 'Gi0/9'])
+  })
+
+  it('leaves the single-far-end protocols alone', () => {
+    const neighbors = parseEnlinkdNeighbors({
+      lldpLinkNodes: [{
+        lldpLocalPort: 'Gi0/2(ifindex:2)',
+        lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=2',
+        lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2'
+      }]
+    }, 1)
+    expect(neighbors).toHaveLength(1)
+    expect(neighbors[0].localIfIndex).toBe(2)
+  })
+})
+
+// Only ever mocked before, so its chunking, its per-chunk catch and its
+// names-present filter were all unexercised, while the sibling severity chunking
+// had three tests.
+describe('getNodeCategories', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  const nodesWith = (cats: Record<number, string[]>) => ({
+    node: Object.entries(cats).map(([id, names]) => ({
+      id: Number(id), categories: names.map((name, i) => ({ id: i, name }))
+    }))
+  })
+
+  it('keys categories by node id', async () => {
+    vi.mocked(nodeService.getNodes).mockResolvedValue(
+      nodesWith({ 7: ['Routers', 'Production'], 8: ['Switches'] }) as never)
+
+    expect(await getNodeCategories([7, 8])).toEqual({
+      7: ['Routers', 'Production'],
+      8: ['Switches']
+    })
+  })
+
+  it('omits a node with no categories rather than storing an empty list', async () => {
+    vi.mocked(nodeService.getNodes).mockResolvedValue({
+      node: [{ id: 7, categories: [] }, { id: 8, categories: [{ id: 1, name: 'Switches' }] }]
+    } as never)
+
+    expect(await getNodeCategories([7, 8])).toEqual({ 8: ['Switches'] })
+  })
+
+  it('tolerates a node payload with no categories field at all', async () => {
+    vi.mocked(nodeService.getNodes).mockResolvedValue({ node: [{ id: 7 }] } as never)
+    expect(await getNodeCategories([7])).toEqual({})
+  })
+
+  it('keeps every request inside the request budget, and aggregates across them', async () => {
+    let call = 0
+    vi.mocked(nodeService.getNodes).mockImplementation(async () => {
+      call += 1
+      return nodesWith({ [1000 + call]: [`Cat-${call}`] }) as never
+    })
+
+    const out = await getNodeCategories(Array.from({ length: 900 }, (_, i) => 1000 + i))
+
+    expect(call).toBeGreaterThan(1)
+    // One entry per chunk proves the results were merged, not overwritten.
+    expect(Object.keys(out)).toHaveLength(call)
+
+    const encoded = vi.mocked(nodeService.getNodes).mock.calls.map(([params]) =>
+      new URLSearchParams(
+        Object.entries(params as Record<string, unknown>).map(([k, v]) => [k, String(v)])
+      ).toString().length)
+    expect(Math.max(...encoded)).toBeLessThan(3000)
+  })
+
+  it('a failed chunk costs only its own nodes', async () => {
+    let call = 0
+    vi.mocked(nodeService.getNodes).mockImplementation(async () => {
+      call += 1
+      if (call === 1) {
+        throw new Error('boom')
+      }
+      return nodesWith({ [2000 + call]: ['Survivor'] }) as never
+    })
+
+    const out = await getNodeCategories(Array.from({ length: 900 }, (_, i) => 1000 + i))
+    expect(Object.keys(out).length).toBeGreaterThan(0)
+  })
+
+  it('asks for nothing when given nothing', async () => {
+    expect(await getNodeCategories([])).toEqual({})
+    expect(vi.mocked(nodeService.getNodes)).not.toHaveBeenCalled()
   })
 })

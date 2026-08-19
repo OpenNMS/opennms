@@ -229,6 +229,21 @@ describe('Topology large-graph gate', () => {
     expect(labels).toContain('Render all 3,001 nodes')
   })
 
+  // The gate's other escape hatch. It was asserted to exist as a button label
+  // and never clicked, so nothing covered that it actually renders the graph.
+  it('renders the graph when the opt-in is clicked', async () => {
+    const { store } = await mountPage()
+    store.discoveredGraph = hugeGraph() as never
+    await flushPromises()
+    expect(document.querySelector('.large-graph-gate')).toBeTruthy()
+
+    await click('Render all 3,001 nodes')
+
+    expect(store.isLargeGraphGated).toBe(false)
+    expect(document.querySelector('.large-graph-gate')).toBeFalsy()
+    expect(canvasApi.loadDiscoveredGraph).toHaveBeenCalled()
+  })
+
   it('starting there focuses that node in the URL, so the view is shareable', async () => {
     // A discovered slug: focus only mirrors from the URL into the store there.
     const { store } = await mountPage('layer2')
@@ -453,6 +468,36 @@ describe('Topology search', () => {
     await flushPromises()
 
     expect(box.props('suggestions').map((m: { label: string }) => m.label)).toEqual(['dist-02'])
+  })
+
+  // The hop stepper says "2 hops" with no indication of from where, so the box
+  // carries the focused node. Driven from the focus, not the select handler, so
+  // it is right however the focus was set.
+  it('shows the focused node in the search box', async () => {
+    const service = await import('@/services/topologyService')
+    vi.mocked(service.loadDiscoveredGraph).mockResolvedValue({
+      source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+      label: 'Layer2',
+      nodes: [
+        { id: 'a', label: 'core-01', nodeId: 1, x: 0, y: 0 },
+        { id: 'b', label: 'dist-02', nodeId: 2, x: 0, y: 0 }
+      ],
+      links: []
+    } as never)
+
+    const { wrapper, store } = await mountPage('layer2')
+    expect(searchBox(wrapper).props('modelValue')).toBe('')
+
+    // Set via the URL, i.e. not through the select handler at all.
+    await router.replace({ path: '/topology/layer2', query: { focus: 'b', szl: '2' }})
+    await flushPromises()
+    expect(store.focusNodeId).toBe('b')
+    expect(searchBox(wrapper).props('modelValue')).toBe('dist-02')
+
+    // And it empties when the focus is dropped.
+    await router.replace({ path: '/topology/layer2', query: {}})
+    await flushPromises()
+    expect(searchBox(wrapper).props('modelValue')).toBe('')
   })
 
   it('fetches categories once per graph', async () => {

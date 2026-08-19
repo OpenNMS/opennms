@@ -196,7 +196,7 @@ License.
         :y1="linkPreview.y1"
         :x2="linkPreview.x2"
         :y2="linkPreview.y2"
-        stroke="#1f5fb0"
+        class="topology-link-preview"
         stroke-width="2"
         stroke-dasharray="6 4"
       />
@@ -215,7 +215,7 @@ import { downloadAsImage } from '@sigma/export-image'
 import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topology/dragTypes'
 import { useTopologyStore } from '@/stores/topologyStore'
 import { useAppStore } from '@/stores/appStore'
-import { severityColor } from '@/components/Topology/severity'
+import { DEFAULT_NODE_COLOR, severityColor } from '@/components/Topology/severity'
 import {
   DEVICE_ICON_SVG,
   deviceIconImage,
@@ -326,6 +326,7 @@ const LINK_HOVER_SIZE = 6
 const LINK_SELECTED_SIZE = 4
 // Transient hovered link id (cleared on leave). Drives the reducer + cursor.
 const hoveredLinkId = ref<string | null>(null)
+
 // Hovered node id: with it (or a single selected node), incident links are
 // emphasized and the rest dimmed, so dense graphs stay legible.
 const hoveredNodeId = ref<string | null>(null)
@@ -542,25 +543,26 @@ const mountSigma = (g: Graph) => {
     // fattest/clearest target. _selected is set by the selection watcher;
     // hover is tracked in hoveredLinkId via enter/leaveEdge.
     edgeReducer: (edge, attrs) => {
+      // Emphasis is carried by color against a neutral base, not by fading the
+      // rest: every link stays legible, and the emphasized one is a different
+      // color rather than the same color slightly thicker.
+      const base = { ...attrs, color: linkBaseColor(attrs.color) }
       if (edge === hoveredLinkId.value) {
-        return { ...attrs, color: '#1f5fb0', size: LINK_HOVER_SIZE }
+        return { ...base, color: accentColor(), size: LINK_HOVER_SIZE }
       }
       if ((attrs as { _selected?: boolean })._selected) {
-        return { ...attrs, color: '#1f5fb0', size: LINK_SELECTED_SIZE }
+        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
       }
-      // Emphasize the hovered/selected node's links: with many straight lines
-      // crossing under nodes (e.g. a dual-homed fabric), it is otherwise hard
-      // to tell which links belong to a node. Others dim while emphasizing.
+      // A hovered or selected node emphasizes its own links: with many straight
+      // lines crossing under nodes (a dual-homed fabric, say) it is otherwise
+      // hard to tell which belong to it.
       const emphasisNode =
         hoveredNodeId.value ??
         (store.selectedIds.length === 1 && g.hasNode(store.selectedIds[0]) ? store.selectedIds[0] : null)
-      if (emphasisNode) {
-        if (g.source(edge) === emphasisNode || g.target(edge) === emphasisNode) {
-          return { ...attrs, color: '#1f5fb0', size: LINK_SELECTED_SIZE }
-        }
-        return { ...attrs, color: 'rgba(154, 167, 184, 0.25)', size: LINK_SIZE }
+      if (emphasisNode && (g.source(edge) === emphasisNode || g.target(edge) === emphasisNode)) {
+        return { ...base, color: accentColor(), size: LINK_SELECTED_SIZE }
       }
-      return { ...attrs, size: LINK_SIZE }
+      return { ...base, size: LINK_SIZE }
     }
   })
   // Pin a fixed coordinate frame. With autoRescale:false sigma still
@@ -665,7 +667,7 @@ const loadView = (view: TopologyView) => {
       x: n.x,
       y: n.y,
       size: 20,
-      color: n.color ?? '#1f5fb0',
+      color: n.color ?? DEFAULT_NODE_COLOR,
       nodeId: n.nodeId,
       iconOverride: n.iconOverride
     })
@@ -679,7 +681,7 @@ const loadView = (view: TopologyView) => {
     ) {
       g.addEdgeWithKey(e.id, e.sourceId, e.targetId, {
         size: 2,
-        color: '#1f5fb0',
+        color: DEFAULT_NODE_COLOR,
         origin: e.origin,
         label: e.label,
         binding: e.binding
@@ -788,14 +790,9 @@ const setContentBBox = () => {
 }
 
 /**
- * Pan to a node without changing the zoom. Used when a search result is picked
- * in a custom view, where there is no focus/SZL to reduce the graph, so finding
- * a node means bringing the camera to it.
- *
- * getNodeDisplayData returns the node in the camera's own framed coordinates,
- * which is what animate consumes; deriving that from the graph x/y would mean
- * duplicating the customBBox mapping. The frame is left alone so the node does
- * not jump size under the user.
+ * Pan to a node without changing the zoom, for a search hit in a custom view.
+ * getNodeDisplayData is already in the camera's framed coordinates, so this
+ * avoids duplicating the customBBox mapping fitCamera relies on.
  */
 const centerOnNode = (id: string) => {
   if (!sigma || !graph || !graph.hasNode(id)) {
@@ -865,7 +862,7 @@ const loadDiscoveredGraph = (dg: DiscoveredGraph) => {
       // Discovered graphs can be large (100+ nodes); a smaller node keeps them
       // legible without overlap. Hand-composed views use the larger size 20.
       size: 12,
-      color: n.color ?? '#1f5fb0',
+      color: n.color ?? DEFAULT_NODE_COLOR,
       nodeId: n.nodeId,
       // The provider's own icon key (vmware.*, linkd.*), resolved in the node
       // reducer. Kept as the key rather than a glyph id so the power state
@@ -1219,7 +1216,7 @@ const handleLinkDrawClick = (nodeId: string) => {
     return
   }
   const edgeId = newLinkId()
-  const attrs = { size: 2, color: '#1f5fb0', origin: 'user' }
+  const attrs = { size: 2, color: DEFAULT_NODE_COLOR, origin: 'user' }
   graph.addEdgeWithKey(edgeId, source, nodeId, attrs)
   linkCount.value = graph.size
   pushCommand({
@@ -1615,7 +1612,7 @@ const onDrop = (event: DragEvent) => {
     x: coords.x,
     y: coords.y,
     size: 20,
-    color: '#1f5fb0'
+    color: DEFAULT_NODE_COLOR
   }
   const paletteId = payload.nodeId
   // Execute the addition, then record the inverse for undo.
@@ -1963,10 +1960,10 @@ const placeNeighbor = (fromId: string, neighbor: import('@/types/topology').Disc
     x: (graph.getNodeAttribute(fromId, 'x') as number) + radius * Math.cos(angle),
     y: (graph.getNodeAttribute(fromId, 'y') as number) + radius * Math.sin(angle),
     size: 20,
-    color: '#1f5fb0'
+    color: DEFAULT_NODE_COLOR
   }
   const linkId = newLinkId()
-  const linkAttrs = { size: 2, color: '#1f5fb0', origin: 'discovered', binding }
+  const linkAttrs = { size: 2, color: DEFAULT_NODE_COLOR, origin: 'discovered', binding }
 
   const apply = () => {
     if (!graph) {
@@ -2380,6 +2377,27 @@ const onShapeDrawEnd = () => {
  * over the map rather than punching a hole in it: links and nodes it overlaps
  * stay faintly visible.
  */
+/**
+ * Theme colors resolved to concrete strings, because sigma draws to a canvas and
+ * cannot use a CSS variable. Presentation only; persisted colors stay
+ * theme-independent (see DEFAULT_NODE_COLOR).
+ */
+const themeColor = (token: string, fallback: string): string => {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
+  return value || fallback
+}
+
+const accentColor = (): string => themeColor('--onms-topology-accent', DEFAULT_NODE_COLOR)
+
+/**
+ * How an unemphasized link is drawn. Only for links still on the default color,
+ * since the stored value is persisted and cannot follow the theme.
+ */
+const linkBaseColor = (stored: unknown): string =>
+  stored === DEFAULT_NODE_COLOR || stored == null
+    ? themeColor('--onms-topology-link', '#7d8ca3')
+    : String(stored)
+
 const HOVER_HALO_LIGHT = 'rgba(255, 255, 255, 0.85)'
 const HOVER_HALO_DARK = 'rgba(38, 44, 69, 0.85)'
 
@@ -2527,7 +2545,7 @@ const adoptHint = (hint: LinkHint) => {
   const id = newLinkId()
   const attrs = {
     size: 2,
-    color: '#1f5fb0',
+    color: DEFAULT_NODE_COLOR,
     origin: 'discovered',
     binding: { ...hint.binding }
   }
@@ -2591,7 +2609,13 @@ const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Pr
   if (!sigma) {
     return
   }
-  await downloadAsImage(sigma, { format, fileName, backgroundColor: '#ffffff' })
+  // Match the canvas: a hardcoded white flattened a dark view while its labels
+  // kept their dark-theme color. Opaque either way, since JPEG has no alpha and
+  // an exported map is usually pasted into a document.
+  const background = getComputedStyle(document.documentElement)
+    .getPropertyValue('--onms-background')
+    .trim() || '#ffffff'
+  await downloadAsImage(sigma, { format, fileName, backgroundColor: background })
 }
 
 defineExpose({
@@ -2615,11 +2639,21 @@ defineExpose({
 </script>
 
 <style scoped>
+/* An SVG presentation attribute cannot take a CSS variable, so the link-draw
+   preview is styled here instead. */
+.topology-link-preview {
+  stroke: var(--onms-topology-accent);
+}
+
 .topology-canvas-root {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 500px;
+  /* Shrinkable. A 500px floor here and on .topology-canvas below meant the page
+     could not absorb a short viewport: the flex column had a ~740px fixed cost
+     plus the Explore panel, so anything under roughly 1190px tall overflowed
+     into the footer instead of the canvas getting smaller. */
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--onms-background);
@@ -2628,7 +2662,7 @@ defineExpose({
 }
 
 .topology-canvas-root.is-drop-target {
-  box-shadow: inset 0 0 0 2px #1f5fb0;
+  box-shadow: inset 0 0 0 2px var(--onms-topology-accent);
 }
 
 .topology-canvas-stats {
@@ -2651,7 +2685,8 @@ defineExpose({
 .topology-canvas {
   flex: 1 1 auto;
   width: 100%;
-  min-height: 500px;
+  /* Enough to stay usable, small enough to shrink out of the way. */
+  min-height: 180px;
 }
 
 /* Background image layer: below the (transparent) sigma canvases, mouse-inert
@@ -2677,7 +2712,7 @@ defineExpose({
 .topology-background-layer.is-adjusting .topology-background-image {
   pointer-events: auto;
   cursor: move;
-  outline: 2px dashed #1f5fb0;
+  outline: 2px dashed var(--onms-topology-accent);
 }
 
 .topology-background-handle {
@@ -2685,7 +2720,7 @@ defineExpose({
   width: 14px;
   height: 14px;
   transform: translate(-50%, -50%);
-  background: #1f5fb0;
+  background: var(--onms-topology-accent);
   border: 2px solid #fff;
   border-radius: 3px;
   pointer-events: auto;
@@ -2705,7 +2740,7 @@ defineExpose({
 }
 
 .topology-ghost-link {
-  stroke: #1f5fb0;
+  stroke: var(--onms-topology-accent);
   stroke-width: 3;
   stroke-dasharray: 4 6;
   opacity: 0.45;
@@ -2742,7 +2777,7 @@ defineExpose({
 }
 
 .topology-shape.is-selected {
-  stroke: #1f5fb0;
+  stroke: var(--onms-topology-accent);
   stroke-width: 3;
   stroke-dasharray: 8 4;
 }
@@ -2773,7 +2808,7 @@ defineExpose({
 }
 
 .topology-shapes-hit-layer .topology-shape-resize-handle {
-  fill: #1f5fb0;
+  fill: var(--onms-topology-accent);
   stroke: #fff;
   stroke-width: 2;
   pointer-events: all;
@@ -2789,8 +2824,8 @@ defineExpose({
 
 .topology-shape-draft {
   position: absolute;
-  border: 2px dashed #1f5fb0;
-  background: rgba(31, 95, 176, 0.08);
+  border: 2px dashed var(--onms-topology-accent);
+  background: color-mix(in srgb, var(--onms-topology-accent) 8%, transparent);
   border-radius: 6px;
   pointer-events: none;
 }
@@ -2798,8 +2833,8 @@ defineExpose({
 .topology-rubber-band {
   position: absolute;
   pointer-events: none;
-  border: 1px dashed #1f5fb0;
-  background: rgba(31, 95, 176, 0.08);
+  border: 1px dashed var(--onms-topology-accent);
+  background: color-mix(in srgb, var(--onms-topology-accent) 8%, transparent);
   z-index: 2;
 }
 
@@ -2848,7 +2883,9 @@ defineExpose({
   font-weight: 500;
   color: var(--onms-primary-text-on-surface);
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Tokenized: a black shadow this faint is invisible on a dark surface, where
+     the token resolves to a light translucent edge instead. */
+  box-shadow: 0 1px 2px var(--onms-border-on-surface);
   border: 1px solid transparent;
 }
 
@@ -2857,13 +2894,13 @@ defineExpose({
 }
 
 .topology-label.is-selected {
-  border-color: #1f5fb0;
+  border-color: var(--onms-topology-accent);
   background: var(--onms-surface);
 }
 
 .topology-label.is-editing {
   background: var(--onms-surface);
-  border-color: #1f5fb0;
+  border-color: var(--onms-topology-accent);
   padding: 0;
   cursor: text;
 }

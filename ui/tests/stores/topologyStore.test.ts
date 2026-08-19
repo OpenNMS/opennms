@@ -24,7 +24,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { flushPromises } from '@vue/test-utils'
 import { useTopologyStore } from '@/stores/topologyStore'
-import { saveView, listViews, getNodeSeverities } from '@/services/topologyService'
+import {
+  saveView, listViews, getNodeSeverities, loadDiscoveredGraph
+} from '@/services/topologyService'
 import type { TopologyView } from '@/types/topology'
 
 vi.mock('@/services/topologyService', () => ({
@@ -392,5 +394,42 @@ describe('useTopologyStore - what is on screen', () => {
     await store.refreshStatus()
 
     expect(vi.mocked(getNodeSeverities)).not.toHaveBeenCalled()
+  })
+})
+
+// The gate must re-arm on every load. Accepting "Render all" once and having it
+// stick would mean every subsequently loaded huge topology renders whole, which
+// is the browser stall the gate exists to prevent.
+describe('useTopologyStore - the gate re-arms per load', () => {
+  let store: ReturnType<typeof useTopologyStore>
+
+  const huge = () => ({
+    source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+    label: 'Layer2',
+    nodes: Array.from({ length: 3200 }, (_, i) => ({
+      id: `placed-${i + 1}`, nodeId: i + 1, label: `n${i}`, x: 0, y: 0
+    })),
+    links: []
+  })
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    store = useTopologyStore()
+    vi.clearAllMocks()
+  })
+
+  it('re-arms after a load, discarding a previous opt-in', async () => {
+    vi.mocked(loadDiscoveredGraph).mockResolvedValue(huge() as never)
+    vi.mocked(getNodeSeverities).mockResolvedValue({})
+
+    await store.loadDiscoveredSource({ container: 'enlinkd', namespace: 'nodes:Layer2' } as never)
+    expect(store.isLargeGraphGated).toBe(true)
+
+    store.acceptRenderAll()
+    expect(store.isLargeGraphGated).toBe(false)
+
+    // Loading again -- a different source, a variant switch, or Refresh Graph.
+    await store.loadDiscoveredSource({ container: 'enlinkd', namespace: 'nodes:Lldp' } as never)
+    expect(store.isLargeGraphGated).toBe(true)
   })
 })

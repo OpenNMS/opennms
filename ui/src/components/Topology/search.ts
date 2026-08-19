@@ -45,14 +45,9 @@ export const searchFieldLabel = (key: string): string =>
   KEY_LABELS[key] ?? key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, c => c.toUpperCase())
 
 /**
- * Substring search over a node's label, its node id and every provider property
- * (an IP address, an application id, a GraphML author's own attributes). The
- * legacy map needed a separate search provider per topology to reach these;
- * here they all arrive on the vertex, so one matcher covers them.
- *
- * Label hits sort first, since a name match is what the user most often means.
- * An empty query yields the first `limit` nodes, which is what the autocomplete
- * shows when opened without typing.
+ * Substring search over a node's label, its id and every provider property (an
+ * IP, an application id, a GraphML author's attributes). Label hits sort first;
+ * an empty query yields the first `limit` nodes, as the dropdown does on focus.
  */
 export const searchNodes = (
   nodes: CanvasNode[],
@@ -88,15 +83,10 @@ export const searchNodes = (
 }
 
 /**
- * Search categories and nodes together, as the old map's single box did.
- *
- * A category hit resolves to the canvas ids of its members that are actually in
- * this graph: a node with no discovered links is not a vertex, so it cannot be
- * shown. Picking one selects them, which both highlights them on the canvas and
- * narrows the Explore panel, so no new visual language is needed.
- *
- * Categories sort first. There are few of them and one stands for many nodes,
- * so burying them under node hits would make them unreachable.
+ * Categories and nodes in one list, as the old map's single box did. A category
+ * resolves to its members that are vertices of *this* graph -- a node with no
+ * discovered links is not one. Categories sort first, being few and standing for
+ * many nodes.
  */
 export const searchTopology = (
   nodes: CanvasNode[],

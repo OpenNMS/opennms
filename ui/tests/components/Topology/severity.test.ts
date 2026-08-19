@@ -76,3 +76,23 @@ describe('topology severity utilities', () => {
     })
   })
 })
+
+// A cleared alarm is history, not a state. Its level is 0 and the first alarm
+// seen for a node was taken unconditionally, so a node whose only alarms were
+// cleared painted grey instead of keeping its default color.
+describe('aggregateNodeSeverities and cleared alarms', () => {
+  it('ignores a cleared alarm entirely', () => {
+    expect(aggregateNodeSeverities([{ nodeId: 7, severity: 'CLEARED' }])).toEqual({})
+  })
+
+  it('is case-insensitive about it', () => {
+    expect(aggregateNodeSeverities([{ nodeId: 7, severity: 'Cleared' }])).toEqual({})
+  })
+
+  it('still reports a real severity alongside a cleared one', () => {
+    expect(aggregateNodeSeverities([
+      { nodeId: 7, severity: 'CLEARED' },
+      { nodeId: 7, severity: 'MINOR' }
+    ])).toEqual({ 7: 'MINOR' })
+  })
+})

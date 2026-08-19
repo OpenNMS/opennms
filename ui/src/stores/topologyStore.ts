@@ -128,7 +128,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       return neighborsByNode.value[nodeId]
     }
     const fetched = await getNodeNeighbors(nodeId)
-    neighborsByNode.value = { ...neighborsByNode.value, [nodeId]: fetched }
+    // An empty result is indistinguishable from a failed request, and caching it
+    // hid a node's links for the rest of the session after one transient error.
+    // Nodes genuinely without neighbours cost a repeat request; that is cheaper
+    // than being wrong until reload.
+    if (fetched.length > 0) {
+      neighborsByNode.value = { ...neighborsByNode.value, [nodeId]: fetched }
+    }
     return fetched
   }
 

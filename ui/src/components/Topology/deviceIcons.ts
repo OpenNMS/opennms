@@ -93,10 +93,28 @@ export const iconKeyForSysObjectId = (sysObjectId?: string | null): string => {
  * Resolve an iconKey to a device-type icon id via longest-prefix match (so the
  * most specific OID wins), or null when nothing matches (keep the plain circle).
  */
+/**
+ * Memoized because the node reducer calls this per node per frame while panning,
+ * and a miss -- which is most vertices, since enlinkd sends the generic
+ * `linkd.system` for nearly all of them -- linear-scans every key in ICON_MAP.
+ * The map is a module constant, so the answer for a given key never changes.
+ */
+const resolved = new Map<string, DeviceIconId | null>()
+
 export const resolveDeviceIcon = (iconKey?: string | null): DeviceIconId | null => {
   if (!iconKey) {
     return null
   }
+  const cached = resolved.get(iconKey)
+  if (cached !== undefined) {
+    return cached
+  }
+  const answer = resolveUncached(iconKey)
+  resolved.set(iconKey, answer)
+  return answer
+}
+
+const resolveUncached = (iconKey: string): DeviceIconId | null => {
   if (ICON_MAP[iconKey]) {
     return ICON_MAP[iconKey]
   }

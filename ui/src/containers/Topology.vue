@@ -110,7 +110,7 @@ License.
             :complete-on-focus="true"
             placeholder="Search nodes, IPs, categories"
             class="topology-search"
-            aria-label="Search nodes"
+            :aria-label="store.focusNodeId ? 'Focused node; type to search' : 'Search nodes'"
             @complete="onSearchComplete"
             @option-select="onSearchSelect"
           >
@@ -716,16 +716,36 @@ const onSearchSelect = (selected: unknown) => {
   const id = match?.node.id
   if (id) {
     if (isDiscovered.value) {
+      // The field is left alone: the focus watcher below fills it with the
+      // focused node, which is what makes the hop count mean something.
       navFocus(id, store.semanticZoomLevel)
-    } else {
-      // No focus/SZL on a custom view: every node is already placed, so finding
-      // one means selecting it and bringing the camera to it.
-      store.selectOnly(id)
-      canvasRef.value?.centerOnNode(id)
+      return
     }
+    // No focus/SZL on a custom view: every node is already placed, so finding
+    // one means selecting it and bringing the camera to it.
+    store.selectOnly(id)
+    canvasRef.value?.centerOnNode(id)
   }
-  searchModel.value = '' // clear the field; the focus chip/SZL control reflects the state
+  searchModel.value = ''
 }
+
+/**
+ * Show whatever is focused, so the hop stepper reads as "2 hops from this node".
+ * Driven from the focus, not the select handler, so it holds however it was set.
+ */
+watch(
+  [() => store.focusNodeId, () => store.discoveredGraph],
+  ([focusId]) => {
+    if (!isDiscovered.value || !focusId) {
+      searchModel.value = ''
+      return
+    }
+    const node = searchableNodes().find(n => n.id === focusId)
+    // Fall back to the id: better than an empty box implying no focus at all.
+    searchModel.value = node?.label ?? focusId
+  },
+  { immediate: true }
+)
 
 // URL focus/SZL changed (a control click, a deep link, or back/forward) -> store.
 watch([routeFocus, routeSzl], () => {

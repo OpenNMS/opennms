@@ -215,7 +215,7 @@ onMounted(() => {
 }
 
 .palette-item:hover {
-  background: rgba(31, 95, 176, 0.10);
+  background: color-mix(in srgb, var(--onms-topology-accent) 10%, transparent);
 }
 
 .palette-item:active {
@@ -245,7 +245,7 @@ onMounted(() => {
 }
 
 .palette-item-category {
-  background: rgba(31, 95, 176, 0.10);
+  background: color-mix(in srgb, var(--onms-topology-accent) 10%, transparent);
   border-radius: 3px;
   padding: 0 0.375rem;
   font-size: 0.6875rem;

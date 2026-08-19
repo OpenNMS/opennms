@@ -102,6 +102,14 @@ html {
   height: 100vh;
 }
 
+// Per route, not app-wide. onms-base.scss resets this under .onms-styles, but
+// that class sits on #app, so body keeps its 8px margin and the page overflows
+// by 16px. Putting the class on <body> also restyled every other page's gutters
+// and every teleported PrimeVue overlay's typography.
+body:has(.app-layout-bounded) {
+  margin: 0;
+}
+
 // Pass that bounded row height down to the page, instead of the page guessing it
 // from 100vh minus an allowance that has to match the footer's rendered height.
 .main-content.main-content-fill {
