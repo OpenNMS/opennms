@@ -21,13 +21,17 @@
  */
 package org.opennms.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,8 +44,8 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 /**
- * Verifies that every statically written <code>images/...</code> reference in the webapp
- * resolves to a file that is actually present under <code>src/main/webapp</code>.
+ * Verifies that every statically written reference to a local <code>images/...</code> file in the
+ * webapp resolves to a file that is actually present under <code>src/main/webapp</code>.
  *
  * A dangling image reference in a JSP produces no compile error, no build failure and no
  * server-side error -- the page renders with a broken image or a blank background, and the
@@ -68,25 +72,23 @@ public class StaticAssetReferenceTest {
             Set.of(".jsp", ".jspf", ".tag", ".tagx", ".ftl", ".html", ".htm", ".css", ".js");
 
     /**
-     * Matches an image path anchored on its {@code images/} segment, which covers every form
-     * these references take in practice: bare ({@code images/foo.png}), server-absolute
-     * ({@code /opennms/images/foo.png}) and JSTL-wrapped ({@code <c:url value="/images/foo.png"/>}).
+     * Matches a whole URL or path token ending in an image extension. The character class
+     * excludes quotes, whitespace and CSS delimiters, so a match is naturally bounded by the
+     * attribute quoting or the {@code url(...)} parentheses that surround it, and a path
+     * assembled at runtime ({@code "images/" + name + ".png"}) does not match at all.
      *
-     * <p>The character class excludes quotes and whitespace, so a path assembled at runtime
-     * ({@code "images/" + name + ".png"}) simply does not match rather than matching wrongly.
-     *
-     * <p>The lookbehind skips {@code assets/images/...}, which lives in the core/web-assets
-     * module, is served from a different root, and is already checked at build time -- webpack's
-     * file-loader fails the bundle on an unresolvable {@code url()}.
+     * <p>Deciding whether a token is a local webapp image is left to
+     * {@link #localWebappImageReference(String)}, which inspects the token's path segments.
+     * Matching the token first and classifying it second is what keeps an external URL or a
+     * directory merely ending in "images" from being mistaken for a local reference.
      */
-    private static final Pattern IMAGE_REFERENCE = Pattern.compile(
-            "(?<!assets/)images/[A-Za-z0-9_@.+-]+(?:/[A-Za-z0-9_@.+-]+)*\\.(?:png|jpe?g|gif|svg|ico|webp|bmp)",
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern IMAGE_TOKEN = Pattern.compile(
+            "[A-Za-z0-9_@.:/+~%-]*\\.(?:png|jpe?g|gif|svg|ico|webp|bmp)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Guards against the scan silently finding nothing -- a vacuous pass would be worse than
      * no test at all. The real number is comfortably above this; the floor only has to catch
-     * a broken walk, a wrong working directory or a regex that stops matching.
+     * a broken walk, a wrong working directory or a pattern that stops matching.
      */
     private static final int MINIMUM_EXPECTED_REFERENCES = 10;
 
@@ -107,11 +109,14 @@ public class StaticAssetReferenceTest {
 
             for (final Path source : scannable) {
                 final String contents = Files.readString(source, StandardCharsets.UTF_8);
-                final Matcher matcher = IMAGE_REFERENCE.matcher(contents);
+                final Matcher matcher = IMAGE_TOKEN.matcher(contents);
                 while (matcher.find()) {
-                    referenceToSources
-                            .computeIfAbsent(normalize(matcher.group()), key -> new TreeSet<>())
-                            .add(WEBAPP_ROOT.relativize(source).toString());
+                    final String reference = localWebappImageReference(matcher.group());
+                    if (reference != null) {
+                        referenceToSources
+                                .computeIfAbsent(reference, key -> new TreeSet<>())
+                                .add(WEBAPP_ROOT.relativize(source).toString());
+                    }
                 }
             }
         }
@@ -140,15 +145,89 @@ public class StaticAssetReferenceTest {
         }
     }
 
+    @Test
+    public void recognizesTheReferenceFormsUsedInTheWebapp() {
+        // Bare, as written in a page that lives at the webapp root.
+        assertEquals("images/foo.png", localWebappImageReference("images/foo.png"));
+        // Server-absolute, and the JSTL <c:url value="..."/> form once the tag is stripped.
+        assertEquals("images/foo.png", localWebappImageReference("/opennms/images/foo.png"));
+        assertEquals("images/foo.png", localWebappImageReference("/images/foo.png"));
+        // Relative, as written in a page in a subdirectory.
+        assertEquals("images/foo.png", localWebappImageReference("../images/foo.png"));
+        // Nested below images/, which is where the wallpapers live.
+        assertEquals("images/wallpapers/bar.jpg",
+                localWebappImageReference("images/wallpapers/bar.jpg"));
+        // Case is preserved so a mismatch against the file on disk is still reportable.
+        assertEquals("Images/foo.png", localWebappImageReference("/opennms/Images/foo.png"));
+    }
+
+    @Test
+    public void ignoresImagesHostedElsewhere() {
+        // An external URL cannot be checked against the local filesystem, and its path
+        // happening to contain an images/ segment must not be read as a local reference.
+        assertNull(localWebappImageReference("https://cdn.example.com/images/x.png"));
+        assertNull(localWebappImageReference("http://cdn.example.com/images/x.png"));
+        // Protocol-relative.
+        assertNull(localWebappImageReference("//cdn.example.com/images/x.png"));
+    }
+
+    @Test
+    public void ignoresDirectoriesThatMerelyEndInImages() {
+        // "images" has to be a whole path segment. A directory whose name ends in it is a
+        // different directory, and resolving these against images/ would invent a file that
+        // was never referenced.
+        assertNull(localWebappImageReference("/opennms/custom-images/logo.png"));
+        assertNull(localWebappImageReference("myimages/logo.png"));
+        assertNull(localWebappImageReference("theme_images/logo.png"));
+    }
+
+    @Test
+    public void ignoresWebAssetsImages() {
+        // core/web-assets is served from a different root and is already checked at build
+        // time: webpack's file-loader fails the bundle on an unresolvable url().
+        assertNull(localWebappImageReference("assets/images/foo.png"));
+        assertNull(localWebappImageReference("/opennms/assets/images/foo.png"));
+    }
+
+    @Test
+    public void ignoresTokensThatAreNotImagePathsAtAll() {
+        assertNull(localWebappImageReference("foo.png"));
+        assertNull(localWebappImageReference("graph/graph.png"));
+        // images/ with nothing after it is not a reference to a file.
+        assertNull(localWebappImageReference("images/"));
+    }
+
     private static boolean isScannable(final Path path) {
         final String name = path.getFileName().toString().toLowerCase();
         return SCANNED_SUFFIXES.stream().anyMatch(name::endsWith);
     }
 
-    /** Trims the leading path so the reference is relative to the webapp root. */
-    private static String normalize(final String reference) {
-        final int imagesSegment = reference.toLowerCase().indexOf("images/");
-        return reference.substring(imagesSegment).replaceAll("/{2,}", "/");
+    /**
+     * Classifies a matched URL or path token and reduces it to a path relative to the webapp
+     * root. References are anchored on the {@code images/} segment, which is how they are
+     * served ({@code /opennms/images/...}) regardless of where the referring page sits.
+     *
+     * @return the reference relative to the webapp root, or null when the token is not a
+     *         reference to a local webapp image and therefore cannot be checked here.
+     */
+    static String localWebappImageReference(final String token) {
+        // Anything with a scheme, or protocol-relative, is served by another host.
+        if (token.contains("://") || token.startsWith("//")) {
+            return null;
+        }
+
+        final String[] segments = token.replaceAll("/{2,}", "/").split("/");
+        // Stop before the last segment: "images" must be a directory, with a file after it.
+        for (int i = 0; i < segments.length - 1; i++) {
+            if (!"images".equalsIgnoreCase(segments[i])) {
+                continue;
+            }
+            if (i > 0 && "assets".equalsIgnoreCase(segments[i - 1])) {
+                return null;
+            }
+            return String.join("/", Arrays.copyOfRange(segments, i, segments.length));
+        }
+        return null;
     }
 
     /**
@@ -181,7 +260,7 @@ public class StaticAssetReferenceTest {
                 // A symlink pointing outside the webapp; existence is all we can reasonably assert.
                 return null;
             }
-            return realRoot.relativize(real).toString().replace(java.io.File.separatorChar, '/');
+            return realRoot.relativize(real).toString().replace(File.separatorChar, '/');
         } catch (final IOException e) {
             return null;
         }
