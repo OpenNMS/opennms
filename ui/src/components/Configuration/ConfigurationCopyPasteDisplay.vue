@@ -20,7 +20,7 @@
         <OnmsIconButton
           class="edit-icon"
           aria-label="Copy to clipboard"
-          v-onms-tooltip="'Copy to clipboard'"
+          tooltip="Copy to clipboard"
           :icon="ContentCopy"
           @click="copyURLToClipboard"
         />

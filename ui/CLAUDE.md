@@ -80,6 +80,14 @@ The package covers most of the PrimeVue surface in use: buttons, form inputs (te
 
 All components use Composition API with `<script setup lang="ts">`, typed `defineProps<{...}>()` and `defineEmits<{...}>()`.
 
+### Tooltips
+
+Use the `tooltip` prop on `OnmsIconButton` rather than `v-onms-tooltip` on the
+component; the directive stays for other hosts (plain elements, `OnmsIcon`,
+`OnmsChip`) and for positioning modifiers like `v-onms-tooltip.top`. See
+"OnmsTooltip" in `packages/onms-ui/README.md` for why that directive is a
+wrapper and not a bare re-export.
+
 ### Form fields: `FormField` wrapper
 
 Form inputs are wrapped in `FormField` (`src/components/Common/FormField.vue`), which renders a top-aligned bold label plus error/hint text and wires up `aria-describedby`. Pass `label`, `for` (matching the control's `id`), and optional `required`/`error`/`hint`. Do not use PrimeVue `FloatLabel`/`IftaLabel` — the top-label pattern replaced them.
