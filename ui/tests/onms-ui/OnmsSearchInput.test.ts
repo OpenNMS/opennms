@@ -51,6 +51,25 @@ describe('OnmsSearchInput contract', () => {
     expect(wrapper.emitted('clear')).toEqual([[]])
   })
 
+  // The seam re-asserts the field's colors and horizontal padding from its
+  // scoped style, because legacy pages carry unlayered CSS that outranks
+  // PrimeVue's own `@layer primevue` rules. That only works while the scope
+  // attribute actually reaches the <input>, which is two component roots down
+  // (OnmsInputText -> InputText). An extra wrapper or a fragment root anywhere in
+  // that chain would silently stop the rules matching and drop the glyph back on
+  // top of the placeholder, with nothing else failing.
+  it('carries the scoped-style attribute down to the inner input', () => {
+    const wrapper = mountIt({ modelValue: '' })
+    const scopeOf = (el: Element) => Array.from(el.attributes)
+      .map(attr => attr.name)
+      .find(name => name.startsWith('data-v-'))
+
+    const rootScope = scopeOf(wrapper.element)
+
+    expect(rootScope).toBeDefined()
+    expect(scopeOf(wrapper.find('input').element)).toBe(rootScope)
+  })
+
   it('exposes focus() for callers that need to focus the field', () => {
     // attached to the document: a detached input can't take focus
     const wrapper = mount(OnmsSearchInput, {
