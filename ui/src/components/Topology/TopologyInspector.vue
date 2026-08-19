@@ -114,7 +114,11 @@ License.
           <h4 class="ti-section-title">Technical Details</h4>
           <dl class="ti-detail">
             <template v-for="row in technicalDetail" :key="row.label">
-              <dt>{{ row.label }}</dt><dd>{{ row.value }}</dd>
+              <dt>{{ row.label }}</dt>
+              <dd>
+                <span v-if="row.color" class="ti-detail-dot" :style="{ background: row.color }" />
+                {{ row.value }}
+              </dd>
             </template>
           </dl>
         </template>
@@ -130,7 +134,11 @@ License.
         <h4 class="ti-section-title">Technical Details</h4>
         <dl class="ti-detail">
           <template v-for="row in technicalDetail" :key="row.label">
-            <dt>{{ row.label }}</dt><dd>{{ row.value }}</dd>
+            <dt>{{ row.label }}</dt>
+            <dd>
+              <span v-if="row.color" class="ti-detail-dot" :style="{ background: row.color }" />
+              {{ row.value }}
+            </dd>
           </template>
         </dl>
       </div>
@@ -145,10 +153,23 @@ License.
           <dt>Source</dt><dd>{{ link.sourceLabel }}</dd>
           <dt>Target</dt><dd>{{ link.targetLabel }}</dd>
         </dl>
-        <p v-for="b in linkBindings" :key="b.protocol + (b.sourcePort ?? '')" class="ti-binding">
-          Discovered via {{ b.protocol.toUpperCase() }}<template v-if="b.sourcePort">
-            — {{ b.sourcePort }} ↔ {{ b.targetPort ?? '?' }}</template>
-        </p>
+        <!-- What discovery knows about this adjacency. The old map colored the
+             line red and left the operator to work out which end and which
+             interface; naming them is the useful part. -->
+        <div v-for="b in linkBindings" :key="b.protocol + (b.sourcePort ?? '')" class="ti-binding">
+          <p class="ti-binding-line">
+            Discovered via {{ b.protocol.toUpperCase() }}<template v-if="b.sourcePort">
+              — {{ b.sourcePort }} ↔ {{ b.targetPort ?? '?' }}</template>
+          </p>
+          <dl v-if="b.sourceIfIndex != null || b.lastPollTime" class="ti-detail ti-binding-detail">
+            <template v-if="b.sourceIfIndex != null">
+              <dt>Source ifIndex</dt><dd>{{ b.sourceIfIndex }}</dd>
+            </template>
+            <template v-if="b.lastPollTime">
+              <dt>Last confirmed</dt><dd>{{ b.lastPollTime }}</dd>
+            </template>
+          </dl>
+        </div>
         <div class="ti-field">
           <label class="ti-label">Link label</label>
           <OnmsInputText v-model="linkLabel" class="ti-input" placeholder="(none)" :disabled="!editable" />
@@ -409,7 +430,12 @@ import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText }
 import { useTopologyStore } from '@/stores/topologyStore'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { severityColor } from '@/components/Topology/severity'
-import { DEVICE_ICON_SVG } from '@/components/Topology/deviceIcons'
+import {
+  DEVICE_ICON_SVG,
+  powerStateColor,
+  powerStateForIconKey,
+  powerStateLabel
+} from '@/components/Topology/deviceIcons'
 import { getNodeById } from '@/services/nodeService'
 import {
   getEdgeInfoPanel,
@@ -555,14 +581,24 @@ const vertexDetail = computed<Array<{ label: string, value: string }>>(() =>
  * provider's own namespace-qualified id and icon key, then whatever else it
  * sent (IP address, vertex type, an application id).
  */
-const technicalDetail = computed<Array<{ label: string, value: string }>>(() => {
+const technicalDetail = computed<Array<{ label: string, value: string, color?: string }>>(() => {
   const vertex = discoveredVertex.value
   if (!vertex) {
     return []
   }
-  const rows = [{ label: 'Name', value: vertex.label }]
+  const rows: Array<{ label: string, value: string, color?: string }> =
+    [{ label: 'Name', value: vertex.label }]
   if (vertex.namespace && vertex.vertexId) {
     rows.push({ label: 'ID', value: `${vertex.namespace}:${vertex.vertexId}` })
+  }
+  // Named next to its own color, so the canvas badge needs no legend.
+  const powerState = powerStateForIconKey(vertex.icon)
+  if (powerState) {
+    rows.push({
+      label: 'Power state',
+      value: powerStateLabel(powerState),
+      color: powerStateColor(powerState)
+    })
   }
   if (vertex.icon) {
     rows.push({ label: 'Icon key', value: vertex.icon })
@@ -615,6 +651,13 @@ const labelFontSize = computed<number>({
 
 /* ---- Node detail (read-only, fetched on selection) ---- */
 const nodeDetail = ref<Node | null>(null)
+
+/** City and state if the asset names them, so the map has a caption. */
+const geoPlace = computed<string>(() => {
+  const asset = nodeDetail.value?.assetRecord as
+    { city?: string, state?: string } | undefined
+  return [asset?.city, asset?.state].filter(Boolean).join(', ')
+})
 const nodeLoading = ref(false)
 
 /* ---- Operator-configured info-panel items (etc/infopanel templates) ---- */
@@ -931,7 +974,13 @@ watch(
         seen.add(n.linkType)
         return true
       })
-      .map(n => ({ protocol: n.linkType, sourcePort: n.localPort, targetPort: n.remotePort }))
+      .map(n => ({
+        protocol: n.linkType,
+        sourcePort: n.localPort,
+        targetPort: n.remotePort,
+        sourceIfIndex: n.localIfIndex,
+        lastPollTime: n.lastPollTime
+      }))
   },
   { immediate: true }
 )
@@ -1049,6 +1098,23 @@ const linkLabel = computed<string>({
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.ti-binding-detail {
+  margin: 0.15rem 0 0.5rem;
+}
+
+.ti-binding-line {
+  margin: 0;
+}
+
+.ti-detail-dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  margin-right: 0.35rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .ti-severity-dot {

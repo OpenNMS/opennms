@@ -25,6 +25,8 @@ import {
   iconKeyForSysObjectId,
   resolveDeviceIcon,
   deviceIconForSysObjectId,
+  deviceIconImage,
+  powerStateForIconKey,
   DEVICE_ICON_SVG
 } from '@/components/Topology/deviceIcons'
 
@@ -91,5 +93,76 @@ describe('deviceIcons (legacy-faithful sysObjectId -> icon)', () => {
         expect(DEVICE_ICON_SVG[id]).toMatch(/^data:image\/svg\+xml;base64,/)
       }
     })
+  })
+})
+
+// VMware spells the entity kind and its power state into one icon key, so the
+// kind resolves by prefix and the state is read off the suffix separately.
+describe('VMware icon keys', () => {
+  it('maps each entity kind to its own glyph', () => {
+    expect(resolveDeviceIcon('vmware.DATACENTER_ICON')).toBe('datacenter')
+    expect(resolveDeviceIcon('vmware.NETWORK_ICON')).toBe('network')
+    expect(resolveDeviceIcon('vmware.DATASTORE_ICON')).toBe('datastore')
+  })
+
+  it('reuses the server glyph for a host system, whatever its power state', () => {
+    expect(resolveDeviceIcon('vmware.HOSTSYSTEM_ICON_ON')).toBe('server')
+    expect(resolveDeviceIcon('vmware.HOSTSYSTEM_ICON_STANDBY')).toBe('server')
+    expect(resolveDeviceIcon('vmware.HOSTSYSTEM_ICON_UNKNOWN')).toBe('server')
+  })
+
+  it('gives a virtual machine its own glyph, whatever its power state', () => {
+    expect(resolveDeviceIcon('vmware.VIRTUALMACHINE_ICON_ON')).toBe('virtualMachine')
+    expect(resolveDeviceIcon('vmware.VIRTUALMACHINE_ICON_SUSPENDED')).toBe('virtualMachine')
+  })
+
+  it('does not confuse a host system with a virtual machine', () => {
+    expect(resolveDeviceIcon('vmware.HOSTSYSTEM_ICON_ON'))
+      .not.toBe(resolveDeviceIcon('vmware.VIRTUALMACHINE_ICON_ON'))
+  })
+
+  it('leaves an enlinkd key alone, so nothing regresses', () => {
+    // The generic enlinkd key must still fall through to the sysObjectId map.
+    expect(resolveDeviceIcon('linkd.system')).toBeNull()
+    expect(resolveDeviceIcon('linkd.system.snmp.1.3.6.1.4.1.9.1.283')).toBe('switch')
+  })
+})
+
+describe('powerStateForIconKey', () => {
+  it('reads the state off the suffix', () => {
+    expect(powerStateForIconKey('vmware.VIRTUALMACHINE_ICON_ON')).toBe('on')
+    expect(powerStateForIconKey('vmware.VIRTUALMACHINE_ICON_OFF')).toBe('off')
+    expect(powerStateForIconKey('vmware.VIRTUALMACHINE_ICON_SUSPENDED')).toBe('suspended')
+    expect(powerStateForIconKey('vmware.HOSTSYSTEM_ICON_STANDBY')).toBe('standby')
+  })
+
+  it('is null when there is no state to show, so no badge is drawn', () => {
+    expect(powerStateForIconKey('vmware.VIRTUALMACHINE_ICON_UNKNOWN')).toBeNull()
+    expect(powerStateForIconKey('vmware.DATACENTER_ICON')).toBeNull()
+    expect(powerStateForIconKey(undefined)).toBeNull()
+  })
+})
+
+describe('deviceIconImage', () => {
+  it('is the plain glyph when there is no power state', () => {
+    expect(deviceIconImage('server', null)).toBe(DEVICE_ICON_SVG.server)
+  })
+
+  it('composes a distinct image per state, so the badge is visible', () => {
+    const on = deviceIconImage('virtualMachine', 'on')
+    const off = deviceIconImage('virtualMachine', 'off')
+    expect(on).not.toBe(DEVICE_ICON_SVG.virtualMachine)
+    expect(on).not.toBe(off)
+  })
+
+  it('keeps the glyph itself, badging rather than replacing it', () => {
+    const plain = atob(DEVICE_ICON_SVG.virtualMachine.split(',')[1])
+    const badged = atob(deviceIconImage('virtualMachine', 'on').split(',')[1])
+    const glyphBody = plain.replace(/^.*viewBox="0 0 24 24">/, '').replace('</svg>', '')
+    expect(badged).toContain(glyphBody)
+  })
+
+  it('returns the same url for the same request', () => {
+    expect(deviceIconImage('server', 'standby')).toBe(deviceIconImage('server', 'standby'))
   })
 })

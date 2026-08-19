@@ -216,7 +216,12 @@ import { PALETTE_DRAG_MIME, type PaletteDragPayload } from '@/components/Topolog
 import { useTopologyStore } from '@/stores/topologyStore'
 import { useAppStore } from '@/stores/appStore'
 import { severityColor } from '@/components/Topology/severity'
-import { DEVICE_ICON_SVG } from '@/components/Topology/deviceIcons'
+import {
+  DEVICE_ICON_SVG,
+  deviceIconImage,
+  powerStateForIconKey,
+  resolveDeviceIcon
+} from '@/components/Topology/deviceIcons'
 import {
   LABEL_PREFIX,
   SHAPE_PREFIX,
@@ -503,22 +508,31 @@ const mountSigma = (g: Graph) => {
       // All nodes render at the store's (density-defaulted, slider-adjustable) size.
       let res: typeof attrs = { ...attrs, size: store.nodeSize }
       if (resolvedNodeId !== null) {
-        const nid = resolvedNodeId
-        const severity = store.severities[nid]
+        const severity = store.severities[resolvedNodeId]
         if (severity) {
           res = { ...res, color: severityColor(severity) }
         }
-        // Icon resolution: a user-chosen override (built-in glyph or uploaded
-        // asset) wins over the automatic sysObjectId-derived glyph.
-        const overrideUrl = iconOverrideUrl(attrs.iconOverride as string | undefined)
-        if (overrideUrl) {
-          res = { ...res, type: 'image', image: overrideUrl }
-        } else {
-          const iconId = store.nodeIconIds[nid]
-          if (iconId) {
-            res = { ...res, type: 'image', image: DEVICE_ICON_SVG[iconId] }
-          }
+      }
+      // Icon resolution, most specific first: a user-chosen override, then the
+      // provider's own icon key, then the node's sysObjectId. The provider key
+      // is checked outside the node branch because the vertices that most need
+      // an icon -- a datacenter, a network, a datastore -- have no node at all.
+      const overrideUrl = iconOverrideUrl(attrs.iconOverride as string | undefined)
+      if (overrideUrl) {
+        return { ...res, type: 'image', image: overrideUrl }
+      }
+      const providerKey = attrs.icon as string | undefined
+      const providerIcon = resolveDeviceIcon(providerKey)
+      if (providerIcon) {
+        return {
+          ...res,
+          type: 'image',
+          image: deviceIconImage(providerIcon, powerStateForIconKey(providerKey))
         }
+      }
+      const iconId = resolvedNodeId !== null ? store.nodeIconIds[resolvedNodeId] : undefined
+      if (iconId) {
+        return { ...res, type: 'image', image: DEVICE_ICON_SVG[iconId] }
       }
       return res
     },
@@ -774,6 +788,28 @@ const setContentBBox = () => {
 }
 
 /**
+ * Pan to a node without changing the zoom. Used when a search result is picked
+ * in a custom view, where there is no focus/SZL to reduce the graph, so finding
+ * a node means bringing the camera to it.
+ *
+ * getNodeDisplayData returns the node in the camera's own framed coordinates,
+ * which is what animate consumes; deriving that from the graph x/y would mean
+ * duplicating the customBBox mapping. The frame is left alone so the node does
+ * not jump size under the user.
+ */
+const centerOnNode = (id: string) => {
+  if (!sigma || !graph || !graph.hasNode(id)) {
+    return
+  }
+  const pos = sigma.getNodeDisplayData(id)
+  if (!pos) {
+    return
+  }
+  const camera = sigma.getCamera()
+  camera.animate({ x: pos.x, y: pos.y, ratio: camera.getState().ratio, angle: 0 }, { duration: 300 })
+}
+
+/**
  * Frame all placed nodes: narrow the coordinate frame to the content (via
  * setContentBBox) and center the camera on it. Since the customBBox now equals
  * the padded content box, a plain centered camera (0.5/0.5, ratio 1) frames it
@@ -804,10 +840,11 @@ const fitCamera = (animate = true) => {
 const loadDiscoveredGraph = (dg: DiscoveredGraph) => {
   // Density-based default node size, then lay out with spacing scaled to it.
   // Tree-shaped sources (path outage) use the tiered hierarchy layout; the
-  // mesh-like ones (enlinkd) stay force-directed.
+  // mesh-like ones (enlinkd) stay force-directed. A graph that declares its own
+  // layout (GraphML's preferred-layout) overrides what the source implies.
   store.setNodeSizeForCount(dg.nodes.length)
   const positioned =
-    dg.source.layout === 'hierarchy'
+    (dg.layout ?? dg.source.layout) === 'hierarchy'
       ? layoutHierarchyGraph(dg.nodes, dg.links, {
         levelSpacing: Math.max(80, store.nodeSize * 6),
         // Wide enough that a node's right-hand label clears its next sibling.
@@ -829,7 +866,11 @@ const loadDiscoveredGraph = (dg: DiscoveredGraph) => {
       // legible without overlap. Hand-composed views use the larger size 20.
       size: 12,
       color: n.color ?? '#1f5fb0',
-      nodeId: n.nodeId
+      nodeId: n.nodeId,
+      // The provider's own icon key (vmware.*, linkd.*), resolved in the node
+      // reducer. Kept as the key rather than a glyph id so the power state
+      // encoded in its suffix survives to the reducer too.
+      icon: n.icon
     })
   }
   // Links whose straight run would pass under a third node render curved so
@@ -2560,6 +2601,7 @@ defineExpose({
   // each node. The default reset state is { x: 0.5, y: 0.5, ratio: 1 };
   // a ratio above 1 zooms out, leaving margin on all sides.
   fit: fitCamera,
+  centerOnNode,
   serialize,
   loadView,
   loadDiscoveredGraph,

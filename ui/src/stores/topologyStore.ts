@@ -40,6 +40,7 @@ import {
   deleteView,
   getNodeSeverities,
   getNodeIconIds,
+  getNodeCategories,
   getNodeNeighbors,
   loadDiscoveredGraph,
   listGraphContainers
@@ -604,6 +605,21 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     selectedIds.value = [id]
   }
 
+  /**
+   * nodeId -> category names, for searching by category. Loaded on demand: most
+   * sessions never search, and it costs a request per 500 nodes.
+   */
+  const nodeCategories = ref<Record<number, string[]>>({})
+
+  const loadNodeCategories = async (nodeIds: number[]): Promise<void> => {
+    nodeCategories.value = nodeIds.length === 0 ? {} : await getNodeCategories(nodeIds)
+  }
+
+  /** Replace the selection wholesale, e.g. with every member of a category. */
+  const selectMany = (ids: string[]) => {
+    selectedIds.value = [...ids]
+  }
+
   const toggleSelection = (id: string) => {
     const idx = selectedIds.value.indexOf(id)
     if (idx >= 0) {
@@ -753,6 +769,9 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setEditMode,
     setLinkDrawMode,
     selectOnly,
+    selectMany,
+    nodeCategories,
+    loadNodeCategories,
     visibleNodeIds,
     discoveredNodeCount,
     isLargeGraphGated,

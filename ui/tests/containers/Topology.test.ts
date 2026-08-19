@@ -88,6 +88,7 @@ vi.mock('@/services/topologyService', () => ({
   // Returns DiscoveredGraph | false, never null: false is the failure value.
   loadDiscoveredGraph: vi.fn().mockResolvedValue(false),
   listGraphContainers: vi.fn().mockResolvedValue([]),
+  getNodeCategories: vi.fn().mockResolvedValue({}),
   fetchPaletteNodes: vi.fn().mockResolvedValue([]),
   assetUrl: vi.fn()
 }))
@@ -292,3 +293,176 @@ describe('Topology discovered refresh', () => {
   })
 })
 
+// Search is in the toolbar for both kinds of view; what picking a result does
+// differs, because a custom view has no focus/SZL to reduce.
+//
+// Driven through the seam component's events rather than the DOM: PrimeVue's
+// overlay panel does not render under happy-dom, so the suggestion list never
+// reaches the document. The rendered second line is covered by the unit tests
+// for searchFieldLabel.
+describe('Topology search', () => {
+  afterEach(() => {
+    unmountAll()
+    document.body.innerHTML = ''
+    vi.clearAllMocks()
+  })
+
+  const searchBox = (wrapper: ReturnType<typeof mount>) => {
+    const box = wrapper.findAllComponents({ name: 'OnmsAutoComplete' })
+      .find(c => c.classes().includes('topology-search'))
+    expect(box, 'search box is not rendered').toBeTruthy()
+    return box!
+  }
+
+  const suggest = async (wrapper: ReturnType<typeof mount>, query: string) => {
+    const box = searchBox(wrapper)
+    box.vm.$emit('complete', query)
+    await flushPromises()
+    return box
+  }
+
+  it('finds a discovered node by IP and reports what matched', async () => {
+    const service = await import('@/services/topologyService')
+    vi.mocked(service.loadDiscoveredGraph).mockResolvedValue({
+      source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+      label: 'Layer2',
+      nodes: [
+        { id: 'a', label: 'core-01', nodeId: 1, x: 0, y: 0, properties: { ipAddress: '10.0.0.1' }},
+        { id: 'b', label: 'dist-02', nodeId: 2, x: 0, y: 0, properties: { ipAddress: '192.168.5.9' }}
+      ],
+      links: []
+    } as never)
+
+    const { wrapper } = await mountPage('layer2')
+    const box = await suggest(wrapper, '192.168')
+
+    expect(box.props('suggestions')).toEqual([
+      {
+        kind: 'node',
+        label: 'dist-02',
+        node: expect.objectContaining({ id: 'b', label: 'dist-02' }),
+        matchedOn: { key: 'ipAddress', value: '192.168.5.9' }
+      }
+    ])
+  })
+
+  it('focuses the picked node on a discovered view', async () => {
+    const service = await import('@/services/topologyService')
+    vi.mocked(service.loadDiscoveredGraph).mockResolvedValue({
+      source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+      label: 'Layer2',
+      nodes: [{ id: 'a', label: 'core-01', nodeId: 1, x: 0, y: 0 }],
+      links: []
+    } as never)
+
+    const { wrapper } = await mountPage('layer2')
+    const box = await suggest(wrapper, 'core')
+    box.vm.$emit('option-select', box.props('suggestions')[0])
+    await flushPromises()
+
+    expect(router.currentRoute.value.query.focus).toBe('a')
+  })
+
+  it('searches a custom view, where picking a result selects and pans instead', async () => {
+    const { wrapper, store } = await mountPage('custom')
+    // A custom view's nodes come from the canvas's own graph, not the store.
+    canvasApi.serialize.mockReturnValue({
+      nodes: [{ id: 'n1', label: 'edge-switch', x: 5, y: 5 }],
+      links: [],
+      viewport: { zoom: 1, panX: 0, panY: 0 }
+    } as never)
+
+    const box = await suggest(wrapper, 'edge')
+    expect(box.props('suggestions')).toEqual([
+      { kind: 'node', label: 'edge-switch', node: expect.objectContaining({ id: 'n1' }) }
+    ])
+
+    box.vm.$emit('option-select', box.props('suggestions')[0])
+    await flushPromises()
+
+    expect(store.selectedIds).toEqual(['n1'])
+    expect(canvasApi.centerOnNode).toHaveBeenCalledWith('n1')
+    // A custom view has no focus/SZL, so the URL must stay clean.
+    expect(router.currentRoute.value.query.focus).toBeUndefined()
+  })
+
+  it('selects a category\'s members, leaving focus alone', async () => {
+    const service = await import('@/services/topologyService')
+    vi.mocked(service.loadDiscoveredGraph).mockResolvedValue({
+      source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+      label: 'Layer2',
+      nodes: [
+        { id: 'a', label: 'core-01', nodeId: 1, x: 0, y: 0 },
+        { id: 'b', label: 'dist-02', nodeId: 2, x: 0, y: 0 },
+        { id: 'c', label: 'access-03', nodeId: 3, x: 0, y: 0 }
+      ],
+      links: []
+    } as never)
+    vi.mocked(service.getNodeCategories).mockResolvedValue({ 1: ['Core'], 2: ['Core'], 3: ['Access'] })
+
+    const { wrapper, store } = await mountPage('layer2')
+    const box = await suggest(wrapper, 'core')
+
+    const category = box.props('suggestions')[0]
+    expect(category).toEqual({ kind: 'category', label: 'Core', canvasIds: ['a', 'b'] })
+
+    box.vm.$emit('option-select', category)
+    await flushPromises()
+
+    expect(store.selectedIds).toEqual(['a', 'b'])
+    // A category is not a place, so it must not move the focus.
+    expect(router.currentRoute.value.query.focus).toBeUndefined()
+  })
+
+  // A slow category fetch used to land after a newer keystroke and replace its
+  // suggestions, so the list showed hits for a query the box no longer held.
+  // Exercised across two different node sets, because same-set keystrokes now
+  // share one in-flight fetch and cannot race by construction.
+  it('does not let a slow query overwrite a newer one', async () => {
+    const service = await import('@/services/topologyService')
+    const graph = (nodes: unknown[]) => ({
+      source: { container: 'enlinkd', namespace: 'nodes:Layer2' },
+      label: 'Layer2',
+      nodes,
+      links: []
+    })
+    vi.mocked(service.loadDiscoveredGraph).mockResolvedValue(
+      graph([{ id: 'a', label: 'core-01', nodeId: 1, x: 0, y: 0 }]) as never
+    )
+
+    let release: (v: Record<number, string[]>) => void = () => {}
+    vi.mocked(service.getNodeCategories).mockImplementationOnce(
+      () => new Promise((resolve) => {
+        release = resolve
+      })
+    )
+
+    const { wrapper, store } = await mountPage('layer2')
+    const box = searchBox(wrapper)
+
+    box.vm.$emit('complete', 'core') // fetch for node set {1}: deferred
+    await flushPromises()
+
+    // The graph changes under the search, so the next keystroke has its own key
+    // and its own (immediately resolving) fetch.
+    store.discoveredGraph = graph([{ id: 'b', label: 'dist-02', nodeId: 2, x: 0, y: 0 }]) as never
+    box.vm.$emit('complete', 'dist')
+    await flushPromises()
+
+    release({}) // the first, older query's fetch finally lands
+    await flushPromises()
+
+    expect(box.props('suggestions').map((m: { label: string }) => m.label)).toEqual(['dist-02'])
+  })
+
+  it('fetches categories once per graph', async () => {
+    const service = await import('@/services/topologyService')
+    const { wrapper } = await mountPage('layer2')
+    vi.mocked(service.getNodeCategories).mockClear()
+
+    await suggest(wrapper, 'a')
+    await suggest(wrapper, 'ab')
+
+    expect(vi.mocked(service.getNodeCategories)).toHaveBeenCalledTimes(1)
+  })
+})

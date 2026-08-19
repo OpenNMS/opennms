@@ -69,6 +69,9 @@ export interface CanvasLinkBinding {
   protocol: DiscoveredLinkType
   sourcePort?: string
   targetPort?: string
+  /** Set when the binding was resolved from enlinkd rather than persisted. */
+  sourceIfIndex?: number
+  lastPollTime?: string
 }
 
 /**
@@ -198,6 +201,14 @@ export interface DiscoveredNeighbor {
   linkType: DiscoveredLinkType
   localPort?: string
   remotePort?: string
+  /**
+   * The local port's SNMP ifIndex, which enlinkd reports inside the port's
+   * display string and its interface URL rather than as a field of its own.
+   * Names the interface an operator would go and look at.
+   */
+  localIfIndex?: number
+  /** When discovery last confirmed this link, as enlinkd formatted it. */
+  lastPollTime?: string
 }
 
 /**
@@ -227,6 +238,13 @@ export interface DiscoveredGraphSource {
 export interface DiscoveredGraph {
   source: DiscoveredGraphSource
   label: string
+  /**
+   * Layout the graph itself asks for, which only GraphML sets (its
+   * `preferred-layout`). Overrides the source's inferred layout: an author who
+   * has said how their graph is meant to be drawn knows better than our guess
+   * from the container it arrived in.
+   */
+  layout?: 'force' | 'hierarchy'
   nodes: CanvasNode[]
   links: CanvasLink[]
 }

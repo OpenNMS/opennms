@@ -26,6 +26,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
+import { powerStateColor } from '@/components/Topology/deviceIcons'
 import { useTopologyStore } from '@/stores/topologyStore'
 
 import { getNodeById } from '@/services/nodeService'
@@ -150,6 +151,46 @@ describe('TopologyInspector discovered vertices', () => {
     expect(wrapper.text()).toContain('Icon key')
     expect(wrapper.text()).toContain('linkd.system')
   })
+
+  // The canvas badge carries no label, so this is where a reader finds out what
+  // its color means.
+  it('names the power state beside its own color', async () => {
+    const { wrapper } = await mountFull(
+      [{
+        id: 'disc-vm-105', label: 'vm-app-02', vertexId: 'vcenter1.lab/vm-105',
+        namespace: 'vmware', icon: 'vmware.VIRTUALMACHINE_ICON_SUSPENDED', x: 0, y: 0
+      }],
+      'disc-vm-105'
+    )
+    expect(wrapper.text()).toContain('Power state')
+    expect(wrapper.text()).toContain('Suspended')
+    // Compared against the source of truth, so the swatch cannot drift from the
+    // color the canvas badge is drawn with.
+    const dot = wrapper.find('.ti-detail-dot')
+    expect(dot.exists()).toBe(true)
+    expect(dot.attributes('style')).toContain(powerStateColor('suspended'))
+  })
+
+  it('distinguishes powered off from powered on', async () => {
+    const off = await mountFull(
+      [{ id: 'd', label: 'vm', vertexId: 'v', namespace: 'vmware',
+        icon: 'vmware.VIRTUALMACHINE_ICON_OFF', x: 0, y: 0 }],
+      'd'
+    )
+    expect(off.wrapper.text()).toContain('Powered off')
+    expect(off.wrapper.text()).not.toContain('Powered on')
+  })
+
+  it('shows no power state where the provider names none', async () => {
+    const { wrapper } = await mountFull(
+      [{ id: 'dc', label: 'Lab Datacenter', vertexId: 'vcenter1.lab', namespace: 'vmware',
+        icon: 'vmware.DATACENTER_ICON', x: 0, y: 0 }],
+      'dc'
+    )
+    expect(wrapper.text()).toContain('Icon key')
+    expect(wrapper.text()).not.toContain('Power state')
+    expect(wrapper.find('.ti-detail-dot').exists()).toBe(false)
+  })
 })
 
 describe('TopologyInspector node details', () => {
@@ -238,3 +279,4 @@ describe('TopologyInspector color pickers', () => {
   })
 
 })
+

@@ -269,6 +269,24 @@ const NODE_URL_RE = /node=(\d+)/
 // remote node name across the various protocol DTOs.
 const REMOTE_LABEL_HINTS = ['reminfo', 'remsysname', 'cachedeviceid', 'remrouterid', 'neighsysid']
 const LOCAL_PORT_HINT = 'localport'
+// enlinkd reports the ifIndex inside the port's display string
+// ("GigabitEthernet0/2(ifindex:2)(interfaceName:Gi0/2)") and in the interface
+// URL it builds ("...snmpinterface.jsp?node=1&ifindex=2"), never as its own
+// field. Either form identifies the interface an operator would go and look at.
+const IFINDEX_RE = /ifindex[:=](\d+)/i
+
+const parseIfIndex = (link: Record<string, unknown>): number | undefined => {
+  for (const [key, value] of Object.entries(link)) {
+    if (typeof value !== 'string' || !key.toLowerCase().includes(LOCAL_PORT_HINT)) {
+      continue
+    }
+    const match = IFINDEX_RE.exec(value)
+    if (match) {
+      return Number(match[1])
+    }
+  }
+  return undefined
+}
 const REMOTE_PORT_HINT = 'remport'
 
 const firstStringField = (
@@ -283,13 +301,28 @@ const firstStringField = (
   return undefined
 }
 
-const parseNeighborNodeId = (link: Record<string, unknown>): number | undefined => {
-  const urlValue = firstStringField(link, (k, v) => k.includes('url') && NODE_URL_RE.test(v))
-  if (!urlValue) {
-    return undefined
+/**
+ * The node at the far end of a link, read from whichever URL enlinkd built for
+ * it. Every candidate is checked rather than the first one found: a record
+ * carries a URL for its *local* port too ("snmpinterface.jsp?node=1&ifindex=2"),
+ * and that one often comes first, so taking the first match resolved every link
+ * to the node it started from and discarded it as a self-link.
+ */
+const parseNeighborNodeId = (
+  link: Record<string, unknown>,
+  nodeId: number
+): number | undefined => {
+  for (const [key, value] of Object.entries(link)) {
+    if (typeof value !== 'string' || !key.toLowerCase().includes('url')) {
+      continue
+    }
+    const match = NODE_URL_RE.exec(value)
+    const candidate = match ? Number(match[1]) : undefined
+    if (candidate !== undefined && candidate !== nodeId) {
+      return candidate
+    }
   }
-  const match = NODE_URL_RE.exec(urlValue)
-  return match ? Number(match[1]) : undefined
+  return undefined
 }
 
 /**
@@ -304,7 +337,11 @@ const parseEnlinkdNeighbors = (
     return []
   }
   const neighbors: DiscoveredNeighbor[] = []
-  const seen = new Set<number>()
+  // Keyed by protocol as well as node: the same pair is commonly discovered over
+  // both LLDP and OSPF, and a set shared across protocols meant whichever came
+  // first silently discarded the rest -- including the per-protocol ports and
+  // ifIndex the inspector exists to show.
+  const seen = new Set<string>()
   for (const { field, type } of PROTOCOL_LINK_FIELDS) {
     const links = data[field]
     if (!Array.isArray(links)) {
@@ -315,11 +352,12 @@ const parseEnlinkdNeighbors = (
         continue
       }
       const link = raw as Record<string, unknown>
-      const neighborNodeId = parseNeighborNodeId(link)
-      if (neighborNodeId == null || neighborNodeId === nodeId || seen.has(neighborNodeId)) {
+      const neighborNodeId = parseNeighborNodeId(link, nodeId)
+      const key = `${type}|${neighborNodeId}`
+      if (neighborNodeId == null || neighborNodeId === nodeId || seen.has(key)) {
         continue
       }
-      seen.add(neighborNodeId)
+      seen.add(key)
       neighbors.push({
         neighborNodeId,
         neighborLabel:
@@ -327,7 +365,9 @@ const parseEnlinkdNeighbors = (
           `Node ${neighborNodeId}`,
         linkType: type,
         localPort: firstStringField(link, k => k.includes(LOCAL_PORT_HINT)),
-        remotePort: firstStringField(link, k => k.includes(REMOTE_PORT_HINT))
+        remotePort: firstStringField(link, k => k.includes(REMOTE_PORT_HINT)),
+        localIfIndex: parseIfIndex(link),
+        lastPollTime: firstStringField(link, k => k.includes('lastpolltime'))
       })
     }
   }
@@ -380,6 +420,7 @@ interface GraphApiEdgeRef {
 interface GraphApiEdge {
   id: string
   label?: string
+  namespace?: string
   source?: GraphApiEdgeRef
   target?: GraphApiEdgeRef
 }
@@ -389,6 +430,8 @@ interface GraphApiResponse {
   edges?: GraphApiEdge[]
   label?: string
   namespace?: string
+  /** GraphML's `preferred-layout`; absent from every other provider. */
+  'preferred-layout'?: string
 }
 
 /**
@@ -449,6 +492,32 @@ const vertexProperties = (vertex: GraphApiVertex): Record<string, string> | unde
  * DiscoveredGraph. Exported for unit testing against captured payloads.
  * Positions are zeroed -- the caller auto-lays-out before rendering.
  */
+/**
+ * A GraphML author's `preferred-layout` in our terms. Only the hierarchy case is
+ * meaningful here: the rest of the legacy algorithms (Circle, Grid, FR, KK, ...)
+ * are variations on force-directed, which is already the default.
+ */
+/**
+ * An edge label worth showing. Every provider sets one, but enlinkd and VMware
+ * set it to the namespace-qualified edge id ("nodes:Layer2:572|581"), which is
+ * machine noise. A GraphML author's "10G wave" is not, and telling them apart is
+ * exactly that test.
+ */
+const authoredEdgeLabel = (edge: GraphApiEdge): string | undefined => {
+  const label = edge.label
+  if (!label || label === edge.id || label.endsWith(`:${edge.id}`)) {
+    return undefined
+  }
+  return label
+}
+
+const declaredLayout = (preferred?: string): 'force' | 'hierarchy' | undefined => {
+  if (!preferred) {
+    return undefined
+  }
+  return /hierarch/i.test(preferred) ? 'hierarchy' : 'force'
+}
+
 const mapDiscoveredGraph = (
   data: GraphApiResponse,
   source: DiscoveredGraphSource
@@ -490,9 +559,16 @@ const mapDiscoveredGraph = (
       id: e.id,
       sourceId: canvasIdByVertexId.get(e.source!.id) as string,
       targetId: canvasIdByVertexId.get(e.target!.id) as string,
-      origin: 'discovered' as const
+      origin: 'discovered' as const,
+      label: authoredEdgeLabel(e)
     }))
-  return { source, label: data.label ?? source.namespace, nodes, links }
+  return {
+    source,
+    label: data.label ?? source.namespace,
+    layout: declaredLayout(data['preferred-layout']),
+    nodes,
+    links
+  }
 }
 
 const loadDiscoveredGraph = async (
@@ -693,6 +769,39 @@ const getNodeIconIds = async (nodeIds: number[]): Promise<Record<number, DeviceI
   return out
 }
 
+/**
+ * Which categories each node belongs to, keyed by OnmsNode id.
+ *
+ * Read off the node payload, which already carries `categories`, rather than
+ * filtering by category: the v2 /nodes endpoint has its `categories` alias join
+ * commented out (NodeRestService, "add this alias via a CriteriaBehavior"), so
+ * any `category`-prefixed filter returns a 500 from Hibernate.
+ *
+ * Chunked because the filter is an id-per-clause FIQL string, which would
+ * otherwise outgrow the URL on a large topology.
+ */
+const getNodeCategories = async (nodeIds: number[]): Promise<Record<number, string[]>> => {
+  const out: Record<number, string[]> = {}
+  for (const chunk of chunkByQueryLength(nodeIds, id => `id==${id}`)) {
+    try {
+      const resp = await getNodes({ _s: chunk.map(id => `id==${id}`).join(','), limit: chunk.length })
+      if (!resp || !resp.node) {
+        continue
+      }
+      for (const n of resp.node) {
+        const id = Number(n.id)
+        const names = (n.categories ?? []).map(c => c.name).filter(Boolean)
+        if (Number.isFinite(id) && names.length) {
+          out[id] = names
+        }
+      }
+    } catch {
+      // A failed chunk costs those nodes' categories, not the whole search.
+    }
+  }
+  return out
+}
+
 const getEdgeInfoPanel = async (
   sourceNodeId: number,
   targetNodeId: number,
@@ -812,6 +921,7 @@ export {
   getEdgeInfoPanel,
   getNodeInfoPanel,
   getNodeIconIds,
+  getNodeCategories,
   assetUrl,
   listAssets,
   uploadAsset,

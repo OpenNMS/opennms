@@ -661,3 +661,202 @@ describe('getNodeSeverities on a large view', () => {
     expect(out[1400]).toBe('MINOR')
   })
 })
+
+// GraphML is the only provider that says how its graph should be drawn, or puts
+// a label on an edge. Both were dropped by the mapper.
+describe('mapDiscoveredGraph on a GraphML topology', () => {
+  const source = { container: 'sites.services', namespace: 'review-sites', layout: 'force' as const }
+
+  const graphml = (extra: Record<string, unknown> = {}) => ({
+    label: 'Sites',
+    vertices: [
+      { id: 'site-hq', label: 'HQ Raleigh', nodeID: '1', namespace: 'review-sites' },
+      { id: 'site-dc', label: 'DC Atlanta', nodeID: '2', namespace: 'review-sites' }
+    ],
+    edges: [{
+      id: 'hq-dc',
+      label: '10G wave',
+      source: { id: 'site-hq', namespace: 'review-sites' },
+      target: { id: 'site-dc', namespace: 'review-sites' }
+    }],
+    ...extra
+  })
+
+  it('keeps an edge label the author wrote', () => {
+    const g = mapDiscoveredGraph(graphml() as never, source)
+    expect(g.links[0].label).toBe('10G wave')
+  })
+
+  // enlinkd and VMware label every edge with its own namespace-qualified id,
+  // which is why labels were dropped wholesale before.
+  it('drops a label that is just the edge id, as enlinkd and VMware send', () => {
+    const generated = {
+      label: 'Sites',
+      vertices: [
+        { id: 'a', label: 'A', nodeID: '1', namespace: 'nodes:Layer2' },
+        { id: 'b', label: 'B', nodeID: '2', namespace: 'nodes:Layer2' }
+      ],
+      edges: [{
+        id: '572|581',
+        namespace: 'nodes:Layer2',
+        label: 'nodes:Layer2:572|581',
+        source: { id: 'a', namespace: 'nodes:Layer2' },
+        target: { id: 'b', namespace: 'nodes:Layer2' }
+      }]
+    }
+    expect(mapDiscoveredGraph(generated as never, source).links[0].label).toBeUndefined()
+  })
+
+  it('honors a declared hierarchy layout over the source default', () => {
+    const g = mapDiscoveredGraph(graphml({ 'preferred-layout': 'Hierarchy Layout' }) as never, source)
+    expect(g.layout).toBe('hierarchy')
+  })
+
+  it('treats the other legacy algorithms as force, which they resemble', () => {
+    for (const declared of ['Circle Layout', 'Grid Layout', 'FR Layout', 'D3 Layout']) {
+      expect(mapDiscoveredGraph(graphml({ 'preferred-layout': declared }) as never, source).layout)
+        .toBe('force')
+    }
+  })
+
+  it('declares nothing when the graph declares nothing, so the source decides', () => {
+    expect(mapDiscoveredGraph(graphml() as never, source).layout).toBeUndefined()
+  })
+
+  it('still binds vertices to their nodes', () => {
+    const g = mapDiscoveredGraph(graphml() as never, source)
+    expect(g.nodes.map(n => n.nodeId)).toEqual([1, 2])
+    expect(g.nodes.map(n => n.id)).toEqual(['placed-1', 'placed-2'])
+  })
+})
+
+// enlinkd reports the ifIndex inside a display string and inside the interface
+// URL, never as its own field, which is why an earlier reading concluded no API
+// exposed it per edge.
+describe('parseEnlinkdNeighbors interface detail', () => {
+  const response = (link: Record<string, unknown>) => ({ lldpLinkNodes: [link] })
+
+  const base = {
+    lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2',
+    lldpRemInfo: 'loopback-001',
+    ldpRemPort: 'GigabitEthernet0/1(interfaceName:Gi0/1)'
+  }
+
+  it('reads the ifIndex out of the port display string', () => {
+    const [n] = parseEnlinkdNeighbors(response({
+      ...base,
+      lldpLocalPort: 'GigabitEthernet0/2(ifindex:2)(interfaceName:Gi0/2)'
+    }), 1)
+    expect(n.localIfIndex).toBe(2)
+  })
+
+  it('reads it out of the interface url when the port string lacks it', () => {
+    const [n] = parseEnlinkdNeighbors(response({
+      ...base,
+      lldpLocalPort: 'GigabitEthernet0/2',
+      lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=7'
+    }), 1)
+    expect(n.localIfIndex).toBe(7)
+  })
+
+  it('keeps when discovery last confirmed the link', () => {
+    const [n] = parseEnlinkdNeighbors(response({
+      ...base,
+      lldpLocalPort: 'Gi0/2',
+      lldpLastPollTime: '8/17/26, 5:20:39 PM'
+    }), 1)
+    expect(n.lastPollTime).toBe('8/17/26, 5:20:39 PM')
+  })
+
+  it('leaves both unset when enlinkd reports neither', () => {
+    const [n] = parseEnlinkdNeighbors(response({ ...base, lldpLocalPort: 'Gi0/2' }), 1)
+    expect(n.localIfIndex).toBeUndefined()
+    expect(n.lastPollTime).toBeUndefined()
+  })
+
+  it('does not mistake the remote port for the local one', () => {
+    // The remote record carries no ifIndex; taking it from there would name the
+    // wrong interface on the wrong node.
+    const [n] = parseEnlinkdNeighbors(response({
+      ...base,
+      ldpRemPort: 'GigabitEthernet0/1(ifindex:99)',
+      lldpLocalPort: 'GigabitEthernet0/2(ifindex:2)'
+    }), 1)
+    expect(n.localIfIndex).toBe(2)
+  })
+})
+
+// A link record carries a URL for its own local port as well as for the far end,
+// and enlinkd puts the local one first. Taking the first match resolved every
+// link to the node it started from, so every link was discarded as a self-link
+// and no neighbor was ever found.
+describe('parseEnlinkdNeighbors far-end resolution', () => {
+  it('ignores the local port url and takes the far end', () => {
+    const neighbors = parseEnlinkdNeighbors({
+      lldpLinkNodes: [{
+        lldpLocalPort: 'GigabitEthernet0/2(ifindex:2)(interfaceName:Gi0/2)',
+        lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=2',
+        lldpRemChassisId: 'loopback-001(macAddress:ch-002)',
+        lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2',
+        lldpRemInfo: 'loopback-001'
+      }]
+    }, 1)
+    expect(neighbors).toHaveLength(1)
+    expect(neighbors[0].neighborNodeId).toBe(2)
+  })
+
+  it('does the same for ospf, which carries three node urls', () => {
+    const neighbors = parseEnlinkdNeighbors({
+      ospfLinkNodes: [{
+        ospfLocalPort: '(ifindex:2)(10.10.1.1)',
+        ospfLocalPortUrl: 'element/interface.jsp?node=1&intf=10.10.1.1',
+        ospfRemRouterUrl: 'element/linkednode.jsp?node=2',
+        ospfRemPort: '(10.10.1.2)',
+        ospfRemPortUrl: 'element/interface.jsp?node=2&intf=10.10.1.2'
+      }]
+    }, 1)
+    expect(neighbors).toHaveLength(1)
+    expect(neighbors[0].neighborNodeId).toBe(2)
+  })
+
+  it('still discards a link that names no node but itself', () => {
+    expect(parseEnlinkdNeighbors({
+      lldpLinkNodes: [{ lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=2' }]
+    }, 1)).toEqual([])
+  })
+})
+
+// The same pair is commonly discovered over more than one protocol. A `seen`
+// set shared across protocols meant whichever was parsed first silently
+// discarded the rest, including their ports and ifIndex.
+describe('parseEnlinkdNeighbors across protocols', () => {
+  it('keeps one entry per protocol for the same neighbor', () => {
+    const neighbors = parseEnlinkdNeighbors({
+      lldpLinkNodes: [{
+        lldpLocalPort: 'Gi0/2(ifindex:2)',
+        lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=2',
+        lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2',
+        lldpRemInfo: 'loopback-001'
+      }],
+      ospfLinkNodes: [{
+        ospfLocalPort: '(ifindex:9)(10.10.1.1)',
+        ospfLocalPortUrl: 'element/interface.jsp?node=1&intf=10.10.1.1',
+        ospfRemPortUrl: 'element/interface.jsp?node=2&intf=10.10.1.2'
+      }]
+    }, 1)
+
+    expect(neighbors.map(n => n.linkType).sort()).toEqual(['lldp', 'ospf'])
+    // Each keeps its own interface, which is the point of showing them.
+    expect(neighbors.find(n => n.linkType === 'lldp')?.localIfIndex).toBe(2)
+    expect(neighbors.find(n => n.linkType === 'ospf')?.localIfIndex).toBe(9)
+  })
+
+  it('still collapses duplicates within one protocol', () => {
+    const link = {
+      lldpLocalPort: 'Gi0/2',
+      lldpLocalPortUrl: 'element/snmpinterface.jsp?node=1&ifindex=2',
+      lldpRemChassisIdUrl: 'element/linkednode.jsp?node=2'
+    }
+    expect(parseEnlinkdNeighbors({ lldpLinkNodes: [link, { ...link }] }, 1)).toHaveLength(1)
+  })
+})

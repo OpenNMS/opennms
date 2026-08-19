@@ -100,19 +100,36 @@ License.
             aria-label="View or Edit mode"
             class="mode-select"
           />
-          <!-- Discovered-view search, focus + Semantic Zoom Level. -->
+          <!-- Search works in both kinds of view; what picking a result does
+               differs (focus a neighborhood vs pan to the node). Focus and the
+               Semantic Zoom Level below are discovered-only. -->
+          <OnmsAutoComplete
+            v-model="searchModel"
+            :suggestions="searchSuggestions"
+            option-label="node.label"
+            :complete-on-focus="true"
+            placeholder="Search nodes, IPs, categories"
+            class="topology-search"
+            aria-label="Search nodes"
+            @complete="onSearchComplete"
+            @option-select="onSearchSelect"
+          >
+            <!-- A hit on an IP or a provider property is indistinguishable from
+                 a label hit unless the matched value is shown. -->
+            <template #option="{ option }">
+              <span class="search-option">
+                <span>{{ option.label }}</span>
+                <span v-if="option.kind === 'category'" class="search-option-detail">
+                  Category, {{ option.canvasIds.length }}
+                  node{{ option.canvasIds.length === 1 ? '' : 's' }} here
+                </span>
+                <span v-else-if="option.matchedOn" class="search-option-detail">
+                  {{ searchFieldLabel(option.matchedOn.key) }}: {{ option.matchedOn.value }}
+                </span>
+              </span>
+            </template>
+          </OnmsAutoComplete>
           <template v-if="isDiscovered">
-            <OnmsAutoComplete
-              v-model="searchModel"
-              :suggestions="searchSuggestions"
-              option-label="label"
-              :complete-on-focus="true"
-              placeholder="Search nodes"
-              class="topology-search"
-              aria-label="Search nodes to focus"
-              @complete="onSearchComplete"
-              @option-select="onSearchSelect"
-            />
             <OnmsButton
               v-if="!store.focusNodeId"
               label="Focus"
@@ -287,6 +304,7 @@ import {
   graphSourceFor
 } from '@/components/Topology/sources'
 import { focusSubgraph, highestDegreeVertexId } from '@/components/Topology/focus'
+import { searchFieldLabel, searchTopology, type SearchMatch } from '@/components/Topology/search'
 import type { CanvasNode } from '@/types/topology'
 import { nodeActionLinks } from '@/components/Topology/nodeActions'
 
@@ -615,26 +633,96 @@ const stepSzl = (delta: number) =>
 // result focuses it via the same URL navigation, so the focused view stays
 // shareable.
 const SEARCH_LIMIT = 12
-const searchModel = ref<CanvasNode | string>('')
-const searchSuggestions = ref<CanvasNode[]>([])
+const searchModel = ref<SearchMatch | string>('')
+const searchSuggestions = ref<SearchMatch[]>([])
 
-const onSearchComplete = (query: string) => {
-  const nodes = store.discoveredGraph?.nodes ?? []
-  const q = query.trim().toLowerCase()
-  const matches = q
-    ? nodes.filter(
-      n => n.label.toLowerCase().includes(q) || String(n.nodeId ?? '').includes(q)
-    )
-    : nodes
-  searchSuggestions.value = matches.slice(0, SEARCH_LIMIT)
+// Which node set the store's category map was loaded for, so a repeat search
+// does not refetch and a changed set does. Keyed on the ids rather than on the
+// source: keying on the view meant a node added afterwards never got its
+// categories, and two unsaved views shared one key. Cleared on failure so a
+// transient error is retried rather than cached as "loaded".
+let categoriesLoadedFor: string | null = null
+
+// Monotonic, so a slow query's results cannot land on top of a newer one's.
+let searchGeneration = 0
+
+// A custom view's nodes live in the canvas's own graph, not the store, which
+// only tracks their ids; serialize is the existing way to read them out. Cheap
+// enough per keystroke at the size a hand-built view reaches.
+const searchableNodes = (): CanvasNode[] =>
+  isDiscovered.value
+    ? store.discoveredGraph?.nodes ?? []
+    : canvasRef.value?.serialize().nodes ?? []
+
+// One key per graph so switching source or view refetches, and a repeat search
+// on the same graph does not.
+const categoryCacheKey = (ids: number[]): string => ids.join(',')
+
+// The in-flight fetch, so keystrokes arriving while one is running await it
+// rather than starting their own. The previous version claimed the cache key
+// before awaiting, which deduped but cached a failure forever.
+let categoriesInFlight: { key: string, promise: Promise<void> } | null = null
+
+const loadCategories = async (nodes: CanvasNode[]): Promise<void> => {
+  const ids = nodes.map(n => n.nodeId).filter((id): id is number => id != null)
+  const key = categoryCacheKey(ids)
+  if (categoriesLoadedFor === key) {
+    return
+  }
+  if (categoriesInFlight?.key === key) {
+    return categoriesInFlight.promise
+  }
+  const promise = store.loadNodeCategories(ids)
+    .then(() => {
+      categoriesLoadedFor = key
+    })
+    .catch(() => {
+      categoriesLoadedFor = null // retry next time rather than cache the failure
+    })
+    .finally(() => {
+      if (categoriesInFlight?.key === key) {
+        categoriesInFlight = null
+      }
+    })
+  categoriesInFlight = { key, promise }
+  return promise
+}
+
+const onSearchComplete = async (query: string) => {
+  const generation = ++searchGeneration
+  const nodes = searchableNodes()
+  // Show node hits immediately; categories fill in when the fetch lands.
+  searchSuggestions.value = searchTopology(nodes, store.nodeCategories, query, SEARCH_LIMIT)
+  await loadCategories(nodes)
+  // A newer keystroke started while this fetch was in flight, so its results,
+  // not these, are what the box is showing.
+  if (generation !== searchGeneration) {
+    return
+  }
+  searchSuggestions.value = searchTopology(nodes, store.nodeCategories, query, SEARCH_LIMIT)
 }
 
 // The seam types the selected option as unknown (it has no view of the
 // suggestion shape); these come straight from searchSuggestions.
 const onSearchSelect = (selected: unknown) => {
-  const node = selected as CanvasNode | undefined
-  if (node?.id) {
-    navFocus(node.id, store.semanticZoomLevel)
+  const match = selected as SearchMatch | undefined
+  if (match?.kind === 'category') {
+    // Selecting the members highlights them on the canvas and narrows the
+    // Explore panel; focus stays where it was, since a category is not a place.
+    store.selectMany(match.canvasIds)
+    searchModel.value = ''
+    return
+  }
+  const id = match?.node.id
+  if (id) {
+    if (isDiscovered.value) {
+      navFocus(id, store.semanticZoomLevel)
+    } else {
+      // No focus/SZL on a custom view: every node is already placed, so finding
+      // one means selecting it and bringing the camera to it.
+      store.selectOnly(id)
+      canvasRef.value?.centerOnNode(id)
+    }
   }
   searchModel.value = '' // clear the field; the focus chip/SZL control reflects the state
 }
@@ -1083,6 +1171,17 @@ const confirmDelete = async () => {
 
 .discovered-empty-hint {
   font-size: 0.85rem;
+}
+
+.search-option {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.search-option-detail {
+  font-size: 0.8em;
+  color: var(--onms-secondary-text-on-surface);
 }
 
 .large-graph-gate-actions {
