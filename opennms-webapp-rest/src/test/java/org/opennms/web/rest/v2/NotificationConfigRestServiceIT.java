@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
 
 import java.io.File;
@@ -64,6 +64,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
+    public NotificationConfigRestServiceIT() {
+        super(CXF_REST_V2_CONTEXT_PATH);
+    }
 
     private String m_onmsHome;
 

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-// JSON mirrors of the JAXB config models behind /rest/notification-config.
+// JSON mirrors of the config models behind /api/v2/notification-config.
 // Field names follow the XML element/attribute names in notifications.xml,
 // destinationPaths.xml and notificationCommands.xml — the files stay the
 // system of record, this API is a 1:1 view of them.

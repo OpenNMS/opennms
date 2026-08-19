@@ -23,7 +23,7 @@
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { DestinationPath, EventNotification, NotifdStatus, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
-import { rest, v2 } from './axiosInstances'
+import { v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -32,7 +32,7 @@ const endpoint = '/notification-config'
 const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/status`)
+    const resp = await v2.get(`${endpoint}/status`)
     return resp.data?.status ?? null
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load notification status.' })
@@ -45,7 +45,7 @@ const getNotificationConfigStatus = async (): Promise<NotifdStatus | null> => {
 const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/status`, { status })
+    await v2.put(`${endpoint}/status`, { status })
     showSnackBar({ msg: `Notifications turned ${status}.` })
     return true
   } catch (_err) {
@@ -59,7 +59,7 @@ const setNotificationConfigStatus = async (status: NotifdStatus): Promise<boolea
 const getEventNotifications = async (): Promise<EventNotification[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/event-notifications`)
+    const resp = await v2.get(`${endpoint}/event-notifications`)
     return resp.data?.notification ?? []
   } catch (_err) {
     // null (not []) so a failed load is distinguishable from an empty one and the
@@ -74,7 +74,7 @@ const getEventNotifications = async (): Promise<EventNotification[] | null> => {
 const setEventNotificationStatus = async (name: string, status: NotifdStatus): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/event-notifications/${encodeURIComponent(name)}/status`, { status })
+    await v2.put(`${endpoint}/event-notifications/${encodeURIComponent(name)}/status`, { status })
     showSnackBar({ msg: `Event notification '${name}' turned ${status}.` })
     return true
   } catch (_err) {
@@ -88,7 +88,7 @@ const setEventNotificationStatus = async (name: string, status: NotifdStatus): P
 const addEventNotification = async (notification: EventNotification): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.post(`${endpoint}/event-notifications`, notification)
+    await v2.post(`${endpoint}/event-notifications`, notification)
     showSnackBar({ msg: `Event notification '${notification.name}' added.` })
     return true
   } catch (err: any) {
@@ -103,7 +103,7 @@ const addEventNotification = async (notification: EventNotification): Promise<bo
 const updateEventNotification = async (originalName: string, notification: EventNotification): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.put(`${endpoint}/event-notifications/${encodeURIComponent(originalName)}`, notification)
+    await v2.put(`${endpoint}/event-notifications/${encodeURIComponent(originalName)}`, notification)
     showSnackBar({ msg: `Event notification '${notification.name}' updated.` })
     return true
   } catch (err: any) {
@@ -132,7 +132,7 @@ const searchEventConfUeis = async (query: string): Promise<UeiSuggestion[]> => {
 const deleteEventNotification = async (name: string): Promise<boolean> => {
   try {
     startSpinner()
-    await rest.delete(`${endpoint}/event-notifications/${encodeURIComponent(name)}`)
+    await v2.delete(`${endpoint}/event-notifications/${encodeURIComponent(name)}`)
     showSnackBar({ msg: `Event notification '${name}' deleted.` })
     return true
   } catch (err: any) {
@@ -149,7 +149,7 @@ const deleteEventNotification = async (name: string): Promise<boolean> => {
 const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
   try {
     startSpinner()
-    const resp = await rest.get(`${endpoint}/destination-paths`)
+    const resp = await v2.get(`${endpoint}/destination-paths`)
     return resp.data?.path ?? []
   } catch (_err) {
     // null (not []) so a failed load is distinguishable from an empty one and the
@@ -164,7 +164,7 @@ const getDestinationPaths = async (): Promise<DestinationPath[] | null> => {
 
 const getNotificationServices = async (): Promise<string[] | null> => {
   try {
-    const resp = await rest.get(`${endpoint}/services`)
+    const resp = await v2.get(`${endpoint}/services`)
     return Array.isArray(resp.data) ? resp.data : []
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load the service list.' })
@@ -176,7 +176,7 @@ const getNotificationServices = async (): Promise<string[] | null> => {
 // false so validation costs only a rule parse on the server.
 const validateNotificationRule = async (rule: string, preview = false): Promise<RuleValidation | null> => {
   try {
-    const resp = await rest.post(`${endpoint}/rule/validate`, { rule, preview })
+    const resp = await v2.post(`${endpoint}/rule/validate`, { rule, preview })
     return resp.data ?? null
   } catch (_err) {
     showSnackBar({ msg: 'Failed to validate the rule.' })
