@@ -1,15 +1,6 @@
 <template>
-  <!--
-    The `key` remounts the button when a tooltip appears or disappears, so the
-    directive's beforeMount runs with the value present. PrimeVue captures the
-    configured tooltip z-index only there (`updated` re-binds the events but
-    never sets it), so a tooltip that arrives after mount would otherwise paint
-    at the fallback z-index — behind the fixed menubar. Text changes keep the
-    same key and don't remount.
-  -->
   <Button
     v-onms-tooltip="tooltip"
-    :key="tooltip ? 'tooltip' : 'no-tooltip'"
     :title="nativeTitle"
     :severity="pSeverity"
     :text="variant === 'text' || variant === 'ghost'"

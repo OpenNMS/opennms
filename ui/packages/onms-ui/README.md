@@ -225,18 +225,33 @@ so `v-onms-tooltip` behaves identically to `v-tooltip` (verified against
 primevue@4.5.5) — only the vocabulary in the template changes.
 
 It is a thin wrapper rather than a bare re-export because of one upstream bug
-(NMS-20162): PrimeVue captures the configured tooltip z-index only in
-`beforeMount`, reading it from `binding.instance.$primevue`. Vue fills that in
-with `getComponentPublicInstance()`, which hands over the host's *exposeProxy*
-whenever the component has called `expose()` — which `<script setup>` always
-compiles to. That proxy resolves Vue's own `$`-properties but not app
-`globalProperties`, so `$primevue` came back undefined for every tooltip in the
-app, nothing was captured, and the ZIndex util fell back to ~1000 — behind the
-fixed menubar (1030) and the side-menu rail (2000), which reads as "the tooltip
-never opens". The wrapper hands the hook an instance that can resolve
-`$primevue` off the vnode's app context, the same fallback PrimeVue's own
-`BaseDirective._getConfig` uses for the rest of its config (which is why
-everything except the z-index worked). See `tests/onms-ui/OnmsTooltip.test.ts`.
+(NMS-20162): PrimeVue stamps the configured tooltip z-index onto the host element
+as `$_ptooltipZIndex`, and does it in `beforeMount` only, reading it from
+`binding.instance.$primevue`. That misses two cases.
+
+1. Vue fills `binding.instance` in with `getComponentPublicInstance()`, which
+   hands over the host's *exposeProxy* whenever the component has called
+   `expose()` — which `<script setup>` always compiles to. That proxy resolves
+   Vue's own `$`-properties but not app `globalProperties`, so `$primevue` came
+   back undefined for every tooltip in the app.
+2. `beforeMount` returns early on an empty directive value, before the capture,
+   and `updated` re-binds the events but never sets the property. So a tooltip
+   whose text arrives with data — `v-onms-tooltip="row.label"` in a table cell,
+   a label computed from a store — mounted empty and stayed uncaptured even once
+   it had something to say.
+
+Either way nothing was captured and the ZIndex util fell back to ~1000 — behind
+the fixed menubar (1030) and the side-menu rail (2000), which reads as "the
+tooltip never opens".
+
+The wrapper fixes both by resolving the configured z-index off the vnode's app
+context — the same fallback PrimeVue's own `BaseDirective._getConfig` uses for
+the rest of its config, which is why everything except the z-index worked — and
+stamping it on the host after both `beforeMount` and `updated`. `updated` is
+enough for a late value because `tooltipActions` reads the property at show time
+(`ZIndex.set('tooltip', tooltipElement, el.$_ptooltipZIndex)`), not at bind time,
+so nothing has to be remounted for a tooltip to arrive late. See
+`tests/onms-ui/OnmsTooltip.test.ts`.
 
 ### Tooltips on `OnmsIconButton`
 
@@ -246,8 +261,9 @@ Prefer the `tooltip` prop over putting `v-onms-tooltip` on the component:
 <OnmsIconButton :icon="Delete" tooltip="Delete" />
 ```
 
-The prop mounts the directive on the button itself. When `tooltip` is set the
-native `title` attribute is dropped, so the browser's own tooltip doesn't
+The prop mounts the directive on the button itself, with no remount when the
+text arrives late — the wrapper handles that (see above). When `tooltip` is set
+the native `title` attribute is dropped, so the browser's own tooltip doesn't
 duplicate the rich one; `title`, if given, still names the button for assistive
 tech, and a `tooltip`-only button is named from the tooltip text. Positioning
 modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing

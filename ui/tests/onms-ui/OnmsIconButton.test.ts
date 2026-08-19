@@ -105,23 +105,31 @@ describe('OnmsIconButton.vue', () => {
       expect(wrapper.find('svg').attributes('aria-label')).toBe('Clear every selection')
     })
 
-    // Regression guard for the z-index capture: PrimeVue only reads the
-    // configured tooltip z-index in beforeMount, so a tooltip appearing after
-    // mount has to remount the host or it paints behind the fixed menubar.
-    it('captures the tooltip z-index when the tooltip arrives after mount', async () => {
+    // A tooltip that arrives with data (`:tooltip="row.label"`) must not cost a
+    // remount: an earlier revision keyed the button on the tooltip's presence to
+    // force PrimeVue's beforeMount z-index capture to re-run, which replaced the
+    // DOM node and dropped keyboard focus to <body>. OnmsTooltip stamps the
+    // z-index after `updated` instead, so the host stays put.
+    it('picks up a tooltip that arrives after mount without remounting the button', async () => {
       const wrapper = mount(OnmsIconButton, {
         props: { icon: StubIcon, tooltip: undefined as string | undefined },
+        attachTo: document.body,
         global: { plugins: [PrimeVue] }
       })
-      expect(tooltipState(wrapper.find('button').element).value).toBeUndefined()
+      const button = wrapper.find('button').element as HTMLButtonElement
+      button.focus()
+      expect(document.activeElement).toBe(button)
 
       await wrapper.setProps({ tooltip: 'Now I have something to say' })
       await nextTick()
 
       const state = tooltipState(wrapper.find('button').element)
       expect(state.value).toBe('Now I have something to say')
-      // set only by beforeMount — proves the host was remounted
       expect(state.zIndex).toBeDefined()
+      // same element, so focus survives
+      expect(wrapper.find('button').element).toBe(button)
+      expect(document.activeElement).toBe(button)
+      wrapper.unmount()
     })
   })
 

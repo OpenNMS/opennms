@@ -23,6 +23,7 @@
 import { OnmsTooltip } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import PrimeVueTooltip from 'primevue/tooltip'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
 
@@ -60,6 +61,7 @@ describe('OnmsTooltip', () => {
   // fell back to ~1000, behind the fixed menubar.
   describe('z-index capture', () => {
     const zIndexOf = (el: Element) => (el as never as Record<string, unknown>).$_ptooltipZIndex
+    const valueOf = (el: Element) => (el as never as Record<string, unknown>).$_ptooltipValue
 
     const mountHost = (host: ReturnType<typeof defineComponent>) => mount(host, {
       global: {
@@ -93,6 +95,72 @@ describe('OnmsTooltip', () => {
       })
 
       expect(zIndexOf(mountHost(host).find('.host').element)).toBe(2100)
+    })
+
+    // The other half of the upstream bug, and the reason call sites no longer need
+    // a `v-if` guard (Menubar's calendar label) and OnmsIconButton no longer needs
+    // to remount its button: PrimeVue's beforeMount returns on an empty value
+    // *before* the capture, and its `updated` re-binds the events without ever
+    // setting the property, so a label that arrives with data stayed at the ~1000
+    // fallback forever. Pinned against the raw directive so the assertion is about
+    // the wrapper's fix and not about incidental behavior.
+    describe('a value that arrives after mount', () => {
+      const lateValueHost = defineComponent({
+        props: { label: { type: String, default: '' }},
+        template: '<span v-onms-tooltip="label" class="host">hello</span>',
+        setup: (_props, { expose }) => {
+          // what the <script setup> compiler emits with no defineExpose
+          expose()
+
+          return {}
+        }
+      })
+
+      const mountLate = async (directive: typeof OnmsTooltip) => {
+        const wrapper = mount(lateValueHost, {
+          global: {
+            plugins: [[PrimeVue, { zIndex: { tooltip: 2100 }}]],
+            directives: { 'onms-tooltip': directive }
+          }
+        })
+        const before = wrapper.find('.host').element
+        await wrapper.setProps({ label: 'arrived later' })
+
+        return { wrapper, before, after: wrapper.find('.host').element }
+      }
+
+      it('is what upstream misses', async () => {
+        const { after } = await mountLate(PrimeVueTooltip as typeof OnmsTooltip)
+
+        expect(valueOf(after)).toBe('arrived later')
+        expect(zIndexOf(after)).toBeUndefined()
+      })
+
+      it('is captured by the wrapper, without remounting the host element', async () => {
+        const { before, after } = await mountLate(OnmsTooltip)
+
+        expect(valueOf(after)).toBe('arrived later')
+        expect(zIndexOf(after)).toBe(2100)
+        expect(after).toBe(before)
+      })
+    })
+
+    it('keeps the z-index when the value changes on an already-bound tooltip', async () => {
+      const host = defineComponent({
+        props: { label: { type: String, default: 'first' }},
+        template: '<span v-onms-tooltip="label" class="host">hello</span>',
+        setup: (_props, { expose }) => {
+          expose()
+
+          return {}
+        }
+      })
+      const wrapper = mountHost(host)
+
+      await wrapper.setProps({ label: 'second' })
+
+      expect(valueOf(wrapper.find('.host').element)).toBe('second')
+      expect(zIndexOf(wrapper.find('.host').element)).toBe(2100)
     })
   })
 })
