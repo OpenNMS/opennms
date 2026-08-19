@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -69,7 +70,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -100,29 +100,28 @@ public class NotificationConfigRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationConfigRestService.class);
 
     @Autowired
-    @Qualifier("eventProxy")
-    protected EventProxy m_eventProxy;
+    protected EventProxy eventProxy;
 
     // Per-instance read/write/update lock serializing config mutations, carried
     // over from the base REST service this was split out of when it moved to v2.
-    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-    private final Lock m_readLock = m_globalLock.updateLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    private final ReadWriteUpdateLock globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock readLock = globalLock.updateLock();
+    private final Lock writeLock = globalLock.writeLock();
 
     private void readLock() {
-        m_readLock.lock();
+        readLock.lock();
     }
 
     private void readUnlock() {
-        m_readLock.unlock();
+        readLock.unlock();
     }
 
     private void writeLock() {
-        m_writeLock.lock();
+        writeLock.lock();
     }
 
     private void writeUnlock() {
-        m_writeLock.unlock();
+        writeLock.unlock();
     }
 
     private static WebApplicationException getException(final Status status, final String msg, final String... params) {
@@ -137,13 +136,13 @@ public class NotificationConfigRestService {
     }
 
     @Autowired
-    private PathOutageDao m_pathOutageDao;
+    private PathOutageDao pathOutageDao;
 
     @Autowired
-    private NodeDao m_nodeDao;
+    private NodeDao nodeDao;
 
     @Autowired
-    private SessionUtils m_sessionUtils;
+    private SessionUtils sessionUtils;
 
     // Flush/clear the Hibernate session every N rows during a bulk path-outage
     // apply so a rule that matches many nodes doesn't accumulate the whole batch
@@ -264,7 +263,7 @@ public class NotificationConfigRestService {
             bldr.addParam("remoteUser", securityContext.getUserPrincipal().getName());
             bldr.addParam("remoteHost", request.getRemoteHost());
             bldr.addParam("remoteAddr", request.getRemoteAddr());
-            m_eventProxy.send(bldr.getEvent());
+            eventProxy.send(bldr.getEvent());
         } catch (final Exception e) {
             LOG.warn("Can't send event {}", uei, e);
         }
@@ -384,8 +383,8 @@ public class NotificationConfigRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<PathOutageDTO> getPathOutages(@Context final SecurityContext securityContext) {
         assertAdmin(securityContext, "read path outages");
-        return m_sessionUtils.withReadOnlyTransaction(() -> {
-            final List<OnmsPathOutage> outages = m_pathOutageDao.findAll();
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final List<OnmsPathOutage> outages = pathOutageDao.findAll();
             // fetch the node labels in one query rather than a lazy select per
             // row on the @OneToOne node association
             final Set<Integer> nodeIds = new HashSet<>();
@@ -394,7 +393,7 @@ public class NotificationConfigRestService {
             }
             final Map<Integer, String> labelByNodeId = new HashMap<>();
             if (!nodeIds.isEmpty()) {
-                for (final OnmsNode node : m_nodeDao.findMatching(new CriteriaBuilder(OnmsNode.class).in("id", nodeIds).toCriteria())) {
+                for (final OnmsNode node : nodeDao.findMatching(new CriteriaBuilder(OnmsNode.class).in("id", nodeIds).toCriteria())) {
                     labelByNodeId.put(node.getId(), node.getLabel());
                 }
             }
@@ -420,7 +419,7 @@ public class NotificationConfigRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public PathOutagePreviewDTO previewPathOutageRule(@Context final SecurityContext securityContext, @javax.ws.rs.QueryParam("rule") final String rule) {
         assertAdmin(securityContext, "preview path outage rules");
-        if (rule == null || rule.isBlank()) {
+        if (StringUtils.isBlank(rule)) {
             throw getException(Status.BAD_REQUEST, "A filter rule is required");
         }
         readLock();
@@ -448,11 +447,11 @@ public class NotificationConfigRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response applyPathOutage(@Context final SecurityContext securityContext, final PathOutageRequestDTO request) {
         assertAdmin(securityContext, "configure path outages");
-        if (request == null || request.getRule() == null || request.getRule().isBlank()) {
+        if (request == null || StringUtils.isBlank(request.getRule())) {
             throw getException(Status.BAD_REQUEST, "A filter rule is required");
         }
         final boolean clearing = request.getCriticalIp() == null || request.getCriticalIp().trim().isEmpty();
-        final String requestedSvc = request.getCriticalSvc() == null || request.getCriticalSvc().isBlank() ? "ICMP" : request.getCriticalSvc().trim();
+        final String requestedSvc = StringUtils.isBlank(request.getCriticalSvc()) ? "ICMP" : request.getCriticalSvc().trim();
         if (!"ICMP".equalsIgnoreCase(requestedSvc)) {
             throw getException(Status.BAD_REQUEST, "Only ICMP is supported as a critical path service.");
         }
@@ -480,27 +479,27 @@ public class NotificationConfigRestService {
         try {
             // one transaction so a mid-loop failure can't leave some nodes
             // stripped of their old critical path with no new one written
-            m_sessionUtils.withTransaction(() -> {
+            sessionUtils.withTransaction(() -> {
                 int count = 0;
                 for (final Integer nodeId : nodes.keySet()) {
-                    final OnmsPathOutage existing = m_pathOutageDao.get(nodeId);
+                    final OnmsPathOutage existing = pathOutageDao.get(nodeId);
                     if (clearing) {
                         if (existing != null) {
-                            m_pathOutageDao.delete(existing);
+                            pathOutageDao.delete(existing);
                         }
                     } else if (existing != null) {
                         // update in place rather than delete+insert (same primary key)
                         existing.setCriticalPathIp(criticalIp);
                         existing.setCriticalPathServiceName(criticalSvc);
-                        m_pathOutageDao.update(existing);
+                        pathOutageDao.update(existing);
                     } else {
                         // load() is a proxy (no query); the node came from the filter
                         // evaluation so it exists
-                        m_pathOutageDao.save(new OnmsPathOutage(m_nodeDao.load(nodeId), criticalIp, criticalSvc));
+                        pathOutageDao.save(new OnmsPathOutage(nodeDao.load(nodeId), criticalIp, criticalSvc));
                     }
                     if (++count % PATH_OUTAGE_BATCH == 0) {
-                        m_pathOutageDao.flush();
-                        m_pathOutageDao.clear();
+                        pathOutageDao.flush();
+                        pathOutageDao.clear();
                     }
                 }
                 return null;
@@ -520,12 +519,12 @@ public class NotificationConfigRestService {
         assertAdmin(securityContext, "remove path outages");
         final boolean removed;
         try {
-            removed = m_sessionUtils.withTransaction(() -> {
-                final OnmsPathOutage existing = m_pathOutageDao.get(nodeId);
+            removed = sessionUtils.withTransaction(() -> {
+                final OnmsPathOutage existing = pathOutageDao.get(nodeId);
                 if (existing == null) {
                     return false;
                 }
-                m_pathOutageDao.delete(existing);
+                pathOutageDao.delete(existing);
                 return true;
             });
         } catch (final DataAccessException e) {
