@@ -133,14 +133,17 @@ a:visited {
 
 // Native form controls on legacy pages: <select> (e.g. the Alarm/Event/Outage
 // list filters, `select.form-control.custom-select`), checkboxes (e.g. the
-// alarm list's 'Ack' column), and radios (e.g. graph/admin pages). In dark
-// mode PrimeVue sets `color-scheme: dark` on the document, so the browser
-// paints native form controls dark — but legacy pages are light-only, leaving
-// selects dark-on-dark and checkboxes/radios dark-on-light-page. Force native
-// controls to render light (readable in both modes, and the <select> option
-// popup renders light too). The Vue menu uses PrimeVue components rather than
-// native controls, so it is unaffected.
+// alarm list's 'Ack' column), radios (e.g. graph/admin pages), and unstyled
+// <textarea>s (e.g. the alarm detail page's Sticky/Journal memos, which carry
+// no `.form-control` class and so get no explicit background from Bootstrap).
+// In dark mode PrimeVue sets `color-scheme: dark` on the document, so the
+// browser paints native form controls dark — but legacy pages are light-only,
+// leaving selects and textareas dark-on-dark and checkboxes/radios
+// dark-on-light-page. Force native controls to render light (readable in both
+// modes, and the <select> option popup renders light too). The Vue menu uses
+// PrimeVue components rather than native controls, so it is unaffected.
 select,
+textarea,
 input[type='checkbox'],
 input[type='radio'] {
   color-scheme: light;
