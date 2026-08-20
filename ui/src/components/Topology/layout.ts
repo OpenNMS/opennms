@@ -335,3 +335,17 @@ export const layoutHierarchyGraph = (
     return { ...n, x: p?.x ?? 0, y: p?.y ?? 0 }
   })
 }
+
+/**
+ * Confine a point to a rectangle. Pointer drags listen on `window` so the
+ * release still arrives when the pointer leaves the canvas, which means the
+ * coordinates keep climbing past its edges unless they are clamped.
+ */
+export const clampToRect = (
+  x: number,
+  y: number,
+  rect: { left: number, top: number, right: number, bottom: number }
+): { x: number, y: number } => ({
+  x: Math.min(Math.max(x, rect.left), rect.right),
+  y: Math.min(Math.max(y, rect.top), rect.bottom)
+})

@@ -116,7 +116,7 @@ License.
           ref="editingInputRef"
           v-model="editingText"
           class="topology-label-input"
-          :style="{ color: label.color || undefined }"
+          :style="{ color: label.color || undefined, width: editingInputWidth }"
           @keydown.enter.prevent="commitEdit"
           @keydown.escape.prevent="cancelEdit"
           @blur="commitEdit"
@@ -231,7 +231,9 @@ import {
   paletteIdFromPlacedId,
   nodeIdFromPlacedId
 } from '@/components/Topology/nodeIds'
-import { computeEdgeCurvatures, layoutDiscoveredGraph, layoutHierarchyGraph } from '@/components/Topology/layout'
+import { computeEdgeCurvatures, layoutDiscoveredGraph, layoutHierarchyGraph,
+  clampToRect
+} from '@/components/Topology/layout'
 import { computeGhostLinks, type LinkHint } from '@/components/Topology/linkHints'
 import { assetUrl } from '@/services/topologyService'
 import type {
@@ -1273,6 +1275,9 @@ const labelStyle = (label: CanvasLabel, _cameraVersion: number) => {
   }
 }
 
+/** Track the text so the input hugs it, keeping the box centered on the click. */
+const editingInputWidth = computed(() => `${Math.max(4, editingText.value.length + 1)}ch`)
+
 const createLabelAt = (graphX: number, graphY: number) => {
   const id = newLabelId()
   const label: CanvasLabel = { id, text: '', x: graphX, y: graphY }
@@ -2305,7 +2310,9 @@ let shapeDrawOverlayRect: DOMRect | null = null
 
 const shapeDraftStyle = computed(() => {
   const d = shapeDraft.value
-  const o = shapeDrawOverlayRect
+  // The same rect the commit converts against, so the preview and the shape it
+  // creates cannot drift apart if the two layers stop sharing an origin.
+  const o = canvasEl.value?.getBoundingClientRect() ?? shapeDrawOverlayRect
   if (!d || !o) {
     return {}
   }
@@ -2317,9 +2324,20 @@ const shapeDraftStyle = computed(() => {
   }
 })
 
+/**
+ * Clamp to the canvas. The move listener is on `window`, so the mouseup still
+ * arrives when the pointer leaves, but the coordinates keep climbing -- unclamped
+ * they convert to graph points well outside the visible area.
+ */
+const clampToCanvas = (x: number, y: number) => {
+  const r = canvasEl.value?.getBoundingClientRect()
+  return r ? clampToRect(x, y, r) : { x, y }
+}
+
 const onShapeDrawStart = (event: MouseEvent) => {
   shapeDrawOverlayRect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-  shapeDraft.value = { x1: event.clientX, y1: event.clientY, x2: event.clientX, y2: event.clientY }
+  const p = clampToCanvas(event.clientX, event.clientY)
+  shapeDraft.value = { x1: p.x, y1: p.y, x2: p.x, y2: p.y }
   window.addEventListener('mousemove', onShapeDrawMove)
   window.addEventListener('mouseup', onShapeDrawEnd)
 }
@@ -2328,7 +2346,8 @@ const onShapeDrawMove = (event: MouseEvent) => {
   if (!shapeDraft.value) {
     return
   }
-  shapeDraft.value = { ...shapeDraft.value, x2: event.clientX, y2: event.clientY }
+  const p = clampToCanvas(event.clientX, event.clientY)
+  shapeDraft.value = { ...shapeDraft.value, x2: p.x, y2: p.y }
 }
 
 const onShapeDrawEnd = () => {
@@ -2915,7 +2934,10 @@ defineExpose({
   padding: 2px 6px;
   font: inherit;
   background: transparent;
-  width: 12ch;
+  /* Narrow, because the label box is centered on the click point: a wide input
+     on a new empty label pushed the caret half its width to the left of the
+     cursor. It grows with the text via the inline width below. */
+  width: 4ch;
   min-width: 4ch;
   font-family: inherit;
 }

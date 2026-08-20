@@ -21,7 +21,9 @@
 ///
 
 import { describe, it, expect } from 'vitest'
-import { computeEdgeCurvatures, layoutDiscoveredGraph, layoutHierarchyGraph } from '@/components/Topology/layout'
+import {
+  clampToRect, computeEdgeCurvatures, layoutDiscoveredGraph, layoutHierarchyGraph
+} from '@/components/Topology/layout'
 import type { CanvasLink, CanvasNode } from '@/types/topology'
 
 const node = (id: string): CanvasNode => ({ id, label: id, x: 0, y: 0 })
@@ -243,5 +245,33 @@ describe('computeEdgeCurvatures budget', () => {
     const out = computeEdgeCurvatures(g.nodes, g.links, 200)
     expect(out.size).toBe(0)
     expect(Date.now() - t0).toBeLessThan(50)
+  })
+})
+
+// Shape drawing listens for mousemove on `window`, so the release still arrives
+// when the pointer leaves the canvas -- but the coordinates keep climbing, and
+// unclamped they converted to graph points outside the visible area.
+describe('clampToRect', () => {
+  const rect = { left: 100, top: 50, right: 500, bottom: 400 }
+
+  it('leaves a point inside the rect alone', () => {
+    expect(clampToRect(300, 200, rect)).toEqual({ x: 300, y: 200 })
+  })
+
+  it('holds a point dragged past each edge at that edge', () => {
+    expect(clampToRect(20, 200, rect)).toEqual({ x: 100, y: 200 })
+    expect(clampToRect(900, 200, rect)).toEqual({ x: 500, y: 200 })
+    expect(clampToRect(300, 10, rect)).toEqual({ x: 300, y: 50 })
+    expect(clampToRect(300, 900, rect)).toEqual({ x: 300, y: 400 })
+  })
+
+  it('holds a point dragged off a corner at that corner', () => {
+    expect(clampToRect(-500, -500, rect)).toEqual({ x: 100, y: 50 })
+    expect(clampToRect(9999, 9999, rect)).toEqual({ x: 500, y: 400 })
+  })
+
+  it('keeps the boundary itself', () => {
+    expect(clampToRect(100, 50, rect)).toEqual({ x: 100, y: 50 })
+    expect(clampToRect(500, 400, rect)).toEqual({ x: 500, y: 400 })
   })
 })
