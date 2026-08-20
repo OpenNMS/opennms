@@ -10,6 +10,7 @@
     :style="width ? { width } : undefined"
     :pt="unsafePt as never"
     @update:visible="emit('update:visible', $event)"
+    @show="emit('show')"
     @hide="emit('hide')"
   >
     <slot />
@@ -49,8 +50,11 @@ withDefaults(defineProps<{
   unsafePt: undefined
 })
 
+// `show` fires once the content is in the DOM, which is the only safe point to
+// move focus into a dialog that appends to body behind a transition.
 const emit = defineEmits<{
   'update:visible': [value: boolean]
+  show: []
   hide: []
 }>()
 </script>

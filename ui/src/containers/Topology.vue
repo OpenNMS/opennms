@@ -258,6 +258,15 @@ License.
     <TopologyExplorePanel @select="onExploreSelect" />
 
     <OnmsContextMenu ref="nodeMenuRef" :items="nodeMenuItems" />
+    <ViewNameDialog
+      v-model:visible="nameDialogVisible"
+      :title="nameDialogConfig.title"
+      :action-label="nameDialogConfig.actionLabel"
+      :initial-name="nameDialogConfig.initialName"
+      :taken-names="nameDialogTaken"
+      @submit="onNameSubmit"
+    />
+
     <OnmsConfirmationDialog
       :visible="deleteDialogVisible"
       title="Delete view"
@@ -295,6 +304,7 @@ import TopologyCanvas from '@/components/Topology/TopologyCanvas.vue'
 import TopologyPalette from '@/components/Topology/TopologyPalette.vue'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
 import TopologyExplorePanel from '@/components/Topology/TopologyExplorePanel.vue'
+import ViewNameDialog from '@/components/Topology/ViewNameDialog.vue'
 import { useTopologyStore } from '@/stores/topologyStore'
 import {
   CUSTOM_SOURCE_SLUG,
@@ -898,30 +908,72 @@ const loadDefault = async (): Promise<void> => {
 
 const onSave = () => saveCurrent()
 
-// View names are unique in the catalog. Catch a collision up front so New /
-// Save As give a clear message instead of a doomed request -- and, for Save
-// As, so we never mutate the open view before a save that will fail.
-const nameInUse = (name: string): boolean => store.catalog.some(v => v.name === name)
+// New, Save As and Rename all ask for one view name under the same rules, so
+// they share a single dialog. The mode decides the wording, what the field is
+// seeded with, and what the answer does.
+type NameDialogMode = 'new' | 'saveAs' | 'rename'
 
-const warnNameInUse = (name: string) =>
-  showToast({
-    message: `A view named "${name}" already exists. Choose a different name.`,
-    severity: 'warn',
-    timeout: 5000
-  })
+const nameDialogVisible = ref(false)
+const nameDialogMode = ref<NameDialogMode>('new')
 
-const onNew = async () => {
-  const name = window.prompt('Name the new view:', '')
-  if (!name || !name.trim()) {
-    return
+const nameDialogConfig = computed(() => {
+  const current = store.currentView?.name ?? ''
+  switch (nameDialogMode.value) {
+    case 'saveAs':
+      return { title: 'Save view as', actionLabel: 'Save', initialName: current }
+    case 'rename':
+      return { title: 'Rename view', actionLabel: 'Rename', initialName: current }
+    default:
+      return { title: 'New view', actionLabel: 'Create', initialName: '' }
   }
-  const trimmed = name.trim()
-  if (nameInUse(trimmed)) {
-    warnNameInUse(trimmed)
-    return
+})
+
+// View names are unique in the catalog, and the dialog blocks a known collision
+// rather than letting a doomed request through. Save As must create a new entry,
+// so the open view's own name is a conflict; Rename may keep it, where an
+// unchanged name is a no-op.
+const nameDialogTaken = computed(() => {
+  const names = store.catalog.map(v => v.name)
+  return nameDialogMode.value === 'rename'
+    ? names.filter(name => name !== store.currentView?.name)
+    : names
+})
+
+const openNameDialog = (mode: NameDialogMode) => {
+  nameDialogMode.value = mode
+  nameDialogVisible.value = true
+}
+
+const onNew = () => openNameDialog('new')
+
+const onSaveAs = () => {
+  if (store.currentView) {
+    openNameDialog('saveAs')
   }
+}
+
+const onRename = () => {
+  if (store.currentView) {
+    openNameDialog('rename')
+  }
+}
+
+const onNameSubmit = async (name: string) => {
+  switch (nameDialogMode.value) {
+    case 'saveAs':
+      await saveViewAs(name)
+      break
+    case 'rename':
+      await renameCurrentView(name)
+      break
+    default:
+      await createView(name)
+  }
+}
+
+const createView = async (name: string) => {
   store.newView()
-  store.renameCurrent(trimmed)
+  store.renameCurrent(name)
   store.setEditMode(true)
   if (store.currentView) {
     canvasRef.value?.loadView(store.currentView)
@@ -930,30 +982,17 @@ const onNew = async () => {
   syncRouteToView()
 }
 
-const onSaveAs = async () => {
-  if (!store.currentView) {
-    return
-  }
-  const name = window.prompt('Save view as:', store.currentView.name)
-  if (!name || !name.trim()) {
-    return
-  }
-  const trimmed = name.trim()
-  // Up-front collision check: Save As must create a new entry, so an existing
-  // name (including the current view's own) is always a conflict.
-  if (nameInUse(trimmed)) {
-    warnNameInUse(trimmed)
-    return
-  }
+const saveViewAs = async (name: string) => {
   const snapshot = canvasRef.value?.serialize()
   if (!snapshot) {
     return
   }
-  // Non-destructive: the open view is replaced only if the save succeeds.
-  const ok = await store.saveCurrentViewAs(trimmed, snapshot)
+  // Non-destructive: the open view is replaced only if the save succeeds. The
+  // catalog can be stale, so a name that looked free here may still be taken.
+  const ok = await store.saveCurrentViewAs(name, snapshot)
   showToast(
     ok
-      ? { message: `View "${trimmed}" saved`, severity: 'success', timeout: 3000 }
+      ? { message: `View "${name}" saved`, severity: 'success', timeout: 3000 }
       : { message: 'Could not save the view; the name may already be in use.', severity: 'error', timeout: 5000 }
   )
   if (ok) {
@@ -961,25 +1000,21 @@ const onSaveAs = async () => {
   }
 }
 
-const onRename = async () => {
+const renameCurrentView = async (name: string) => {
   const cur = store.currentView
-  if (!cur) {
-    return
-  }
-  const name = window.prompt('Rename view:', cur.name)
-  if (!name || !name.trim() || name.trim() === cur.name) {
+  if (!cur || name === cur.name) {
     return
   }
   if (cur.id) {
-    const ok = await store.renameView(cur.id, name.trim())
+    const ok = await store.renameView(cur.id, name)
     showToast(
       ok
-        ? { message: `View renamed to "${name.trim()}"`, severity: 'success', timeout: 3000 }
+        ? { message: `View renamed to "${name}"`, severity: 'success', timeout: 3000 }
         : { message: `Could not rename view "${cur.name}"`, severity: 'error', timeout: 5000 }
     )
   } else {
     // Unsaved view: just set the name locally (persisted on the next save).
-    store.renameCurrent(name.trim())
+    store.renameCurrent(name)
   }
   syncRouteToView()
 }

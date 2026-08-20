@@ -511,3 +511,124 @@ describe('Topology search', () => {
     expect(vi.mocked(service.getNodeCategories)).toHaveBeenCalledTimes(1)
   })
 })
+
+// New, Save As and Rename share one dialog. What differs per mode is the seed,
+// which names count as taken, and what the answer does; these cover that, and
+// that nothing happens until the dialog is answered.
+describe('Topology view naming', () => {
+  afterEach(() => {
+    unmountAll()
+    document.body.innerHTML = ''
+    vi.restoreAllMocks()
+  })
+
+  const nameField = () => document.querySelector('.p-dialog input') as HTMLInputElement
+
+  const typeName = async (value: string) => {
+    const input = nameField()
+    expect(input, 'the name dialog is not open').toBeTruthy()
+    input.value = value
+    input.dispatchEvent(new Event('input'))
+    await nextTick()
+  }
+
+  it('seeds Rename with the open view and Save As with it too, New with nothing', async () => {
+    const { wrapper } = await mountPage()
+
+    await click('Rename')
+    expect(nameField().value).toBe('Core switches')
+    await clickInDialog('Cancel')
+
+    await click('Save As')
+    expect(nameField().value).toBe('Core switches')
+    await clickInDialog('Cancel')
+
+    await click('New')
+    expect(nameField().value).toBe('')
+    expect(wrapper.exists()).toBe(true)
+  })
+
+  it('renames nothing until the dialog is answered', async () => {
+    const { store } = await mountPage()
+    const renameView = vi.spyOn(store, 'renameView').mockResolvedValue(true)
+
+    await click('Rename')
+    await typeName('Distribution')
+    expect(renameView).not.toHaveBeenCalled()
+
+    await clickInDialog('Rename')
+    expect(renameView).toHaveBeenCalledWith('v1', 'Distribution')
+  })
+
+  it('cancelling Rename leaves the view alone', async () => {
+    const { store } = await mountPage()
+    const renameView = vi.spyOn(store, 'renameView').mockResolvedValue(true)
+
+    await click('Rename')
+    await typeName('Distribution')
+    await clickInDialog('Cancel')
+
+    expect(renameView).not.toHaveBeenCalled()
+    expect(store.currentView!.name).toBe('Core switches')
+  })
+
+  // The two differ on the open view's own name: Save As has to create a new
+  // entry, so reusing it is a collision, while Rename may keep it.
+  it('treats the open view name as taken for Save As but not for Rename', async () => {
+    await mountPage()
+
+    await click('Save As')
+    expect(document.querySelector('.p-dialog')!.textContent)
+      .toContain('A view named "Core switches" already exists.')
+    await clickInDialog('Cancel')
+
+    await click('Rename')
+    expect(document.querySelector('.p-dialog')!.textContent)
+      .not.toContain('already exists')
+  })
+
+  it('does not rename when the name comes back unchanged', async () => {
+    const { store } = await mountPage()
+    const renameView = vi.spyOn(store, 'renameView').mockResolvedValue(true)
+
+    await click('Rename')
+    await clickInDialog('Rename')
+
+    expect(renameView).not.toHaveBeenCalled()
+  })
+
+  it('blocks a Save As onto another existing view, before any request', async () => {
+    const { store } = await mountPage()
+    store.catalog = [currentView, { id: 'v2', name: 'Edge routers' }] as never
+    await nextTick()
+    const saveAs = vi.spyOn(store, 'saveCurrentViewAs').mockResolvedValue(true)
+
+    await click('Save As')
+    await typeName('Edge routers')
+    const action = Array.from(document.querySelectorAll('.p-dialog button'))
+      .find(b => b.textContent?.trim() === 'Save') as HTMLButtonElement
+    expect(action.disabled).toBe(true)
+
+    await typeName('Edge routers 2')
+    await clickInDialog('Save')
+    expect(saveAs).toHaveBeenCalledWith('Edge routers 2', expect.anything())
+  })
+
+  it('creates a new view under the name given, and saves it', async () => {
+    const service = await import('@/services/topologyService')
+    const { store } = await mountPage()
+    // The real save action runs, so the name has to survive the round trip:
+    // the server's record replaces the open view.
+    vi.mocked(service.saveView).mockImplementation(
+      async view => ({ ...view, id: 'v9' }) as never
+    )
+
+    await click('New')
+    await typeName('Spine fabric')
+    await clickInDialog('Create')
+
+    expect(vi.mocked(service.saveView).mock.calls[0][0]).toMatchObject({ name: 'Spine fabric' })
+    expect(store.currentView).toMatchObject({ id: 'v9', name: 'Spine fabric' })
+    expect(store.isEditMode).toBe(true)
+  })
+})
