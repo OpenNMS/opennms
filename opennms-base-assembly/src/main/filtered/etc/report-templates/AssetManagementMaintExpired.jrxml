@@ -48,10 +48,10 @@
 	n.nodelabel,
 	a.manufacturer,
 	a.maintcontract,
-	to_date(a.maintcontractexpires,'$P!{DS_DATE_FORMAT}') AS expire,
+	to_date(a.maintcontractexpires,$P{DS_DATE_FORMAT}) AS expire,
 	CASE
 		WHEN
-			to_date(a.maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now() < INTERVAL '0 days'
+			to_date(a.maintcontractexpires,$P{DS_DATE_FORMAT}) - now() < INTERVAL '0 days'
  			THEN 'expired'
 		ELSE
 			'warning'
@@ -71,7 +71,7 @@ WHERE
 	a.maintcontractexpires != 'n.v.' AND
 	a.maintcontract != 'n.v.' AND
 	a.maintcontract != '' AND
-	to_date(a.maintcontractexpires,'$P!{DS_DATE_FORMAT}') - now() < INTERVAL '$P!{DS_WARN_THRESH} days'
+	to_date(a.maintcontractexpires,$P{DS_DATE_FORMAT}) - now() < make_interval(days => $P{DS_WARN_THRESH})
 GROUP BY
 	n.nodelabel,
 	a.manufacturer,
@@ -128,13 +128,13 @@ ORDER BY
 	a.modelnumber,
 	a.operatingsystem,
 	a.serialnumber,
-	to_date(a.dateinstalled,'$P!{DATE_FORMAT}') as dateinstalled,
+	to_date(a.dateinstalled,$P{DATE_FORMAT}) as dateinstalled,
 	a.vendorphone,
-	to_date(a.maintcontractexpires,'$P!{DATE_FORMAT}') AS maintcontractexpires,
-	to_date(a.maintcontractexpires,'$P!{DATE_FORMAT}') - now() AS maintcontractleft,
+	to_date(a.maintcontractexpires,$P{DATE_FORMAT}) AS maintcontractexpires,
+	to_date(a.maintcontractexpires,$P{DATE_FORMAT}) - now() AS maintcontractleft,
 	CASE
 		WHEN
-			to_date(a.maintcontractexpires,'$P!{DATE_FORMAT}') - now() < INTERVAL '$P!{WARNING_THRESHOLD_DAYS} days'
+			to_date(a.maintcontractexpires,$P{DATE_FORMAT}) - now() < make_interval(days => $P{WARNING_THRESHOLD_DAYS})
  			THEN 'expired'
 		ELSE
 			'warning'
@@ -153,7 +153,7 @@ WHERE
 	a.maintcontractexpires != 'n.v.' AND
 	a.maintcontract != 'n.v.' AND
 	a.maintcontract != '' AND
-	to_date(a.maintcontractexpires,'$P!{DATE_FORMAT}') - now() < INTERVAL '$P!{WARNING_THRESHOLD_DAYS} days'
+	to_date(a.maintcontractexpires,$P{DATE_FORMAT}) - now() < make_interval(days => $P{WARNING_THRESHOLD_DAYS})
 ORDER BY
 	a.manufacturer ASC,
 	a.maintcontractexpires DESC]]>
