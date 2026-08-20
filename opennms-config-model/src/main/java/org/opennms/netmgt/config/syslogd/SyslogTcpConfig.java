@@ -23,52 +23,59 @@ package org.opennms.netmgt.config.syslogd;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
- * The settings for the syslog TCP listener.
+ * The settings for the syslog TCP listener, the optional {@code tcp} element of
+ * syslogd-configuration.xml.
  *
- * Carried as a single object so that the two {@code SyslogdConfig} implementations,
- * one reading syslogd-configuration.xml and one populated from the Minion .cfg, do not
- * each have to grow a dozen parallel accessors.
+ * Carried as a single object so that the two {@code SyslogdConfig} implementations, one
+ * reading the XML and one populated from the Minion .cfg, do not each have to grow a dozen
+ * parallel accessors. The Minion keeps flat properties and populates this the same way.
  *
- * The framing and client authentication properties are typed as strings rather than as
- * enums because the containers populate them from string properties, and a getter and
- * setter that disagree on type turns the property read-only under bean introspection.
- * Use {@link #resolveFraming()} and {@link #resolveTlsClientAuth()} to get the parsed
- * values; the setters validate eagerly so a typo fails at wiring time.
+ * The framing property is typed as a string rather than as an enum because the containers
+ * populate it from a string property, and a getter and setter that disagree on type turns
+ * the property read-only under bean introspection. Use {@link #resolveFraming()} to get the
+ * parsed value; the setter validates eagerly, so a typo fails at wiring time.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SyslogTcpConfig {
 
     public static final int DEFAULT_MAX_MESSAGE_SIZE = 65536;
     public static final int DEFAULT_MAX_CONNECTIONS = 1024;
     public static final int DEFAULT_IDLE_TIMEOUT_SECONDS = 0;
 
-    /** Null or non-positive leaves TCP ingestion switched off. */
+    /**
+     * Required in the XML, where the presence of the element is what asks for a listener.
+     * The Minion .cfg always carries the key, so zero switches TCP off there.
+     */
+    @XmlAttribute(name = "port")
     private Integer port;
 
+    @XmlAttribute(name = "listen-address")
     private String listenAddress;
 
-    private String framing = SyslogTcpFraming.AUTO.getConfigValue();
+    @XmlAttribute(name = "framing")
+    private String framing;
 
-    private int maxMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
+    @XmlAttribute(name = "max-message-size")
+    private Integer maxMessageSize;
 
-    private int maxConnections = DEFAULT_MAX_CONNECTIONS;
+    @XmlAttribute(name = "max-connections")
+    private Integer maxConnections;
 
-    private int idleTimeoutSeconds = DEFAULT_IDLE_TIMEOUT_SECONDS;
+    @XmlAttribute(name = "idle-timeout")
+    private Integer idleTimeoutSeconds;
 
-    private boolean tlsEnabled;
-
-    private String tlsCertFilePath;
-
-    private String tlsPrivateKeyFilePath;
-
-    private String tlsTrustCertFilePath;
-
-    private String tlsClientAuth = SyslogTcpClientAuth.NONE.getConfigValue();
+    @XmlElement(name = "tls")
+    private SyslogTcpTlsConfig tls;
 
     /**
-     * Whether a TCP listener should be started at all. TCP is opt-in, so an install
-     * that has never been touched leaves the port unset and gets the UDP-only
-     * behaviour it had before.
+     * Whether a listener should be started at all. TCP is opt-in: the XML leaves the element
+     * out and the Minion leaves the port at zero.
      */
     public boolean isEnabled() {
         return port != null && port > 0;
@@ -79,8 +86,8 @@ public class SyslogTcpConfig {
     }
 
     /**
-     * Zero and null both mean disabled. The Minion .cfg always carries the key, so it
-     * needs a value that switches TCP off; anything else out of range is a mistake.
+     * Zero and null both mean disabled, because the Minion .cfg always carries the key and
+     * needs a value that switches TCP off. Anything else out of range is a mistake.
      */
     public void setPort(final Integer port) {
         if (port != null && port != 0 && (port < 1 || port > 65535)) {
@@ -98,12 +105,12 @@ public class SyslogTcpConfig {
     }
 
     public String getFraming() {
-        return framing;
+        return framing != null ? framing : SyslogTcpFraming.AUTO.getConfigValue();
     }
 
     public void setFraming(final String framing) {
-        // Normalize through the enum so that an unsupported value is rejected here
-        // rather than on the first message of the first connection.
+        // Normalized through the enum, so an unsupported value is rejected here rather than
+        // on the first message of the first connection.
         this.framing = SyslogTcpFraming.fromConfigValue(framing).getConfigValue();
     }
 
@@ -112,7 +119,7 @@ public class SyslogTcpConfig {
     }
 
     public int getMaxMessageSize() {
-        return maxMessageSize;
+        return maxMessageSize != null ? maxMessageSize : DEFAULT_MAX_MESSAGE_SIZE;
     }
 
     public void setMaxMessageSize(final int maxMessageSize) {
@@ -123,7 +130,7 @@ public class SyslogTcpConfig {
     }
 
     public int getMaxConnections() {
-        return maxConnections;
+        return maxConnections != null ? maxConnections : DEFAULT_MAX_CONNECTIONS;
     }
 
     public void setMaxConnections(final int maxConnections) {
@@ -134,7 +141,7 @@ public class SyslogTcpConfig {
     }
 
     public int getIdleTimeoutSeconds() {
-        return idleTimeoutSeconds;
+        return idleTimeoutSeconds != null ? idleTimeoutSeconds : DEFAULT_IDLE_TIMEOUT_SECONDS;
     }
 
     public void setIdleTimeoutSeconds(final int idleTimeoutSeconds) {
@@ -144,58 +151,22 @@ public class SyslogTcpConfig {
         this.idleTimeoutSeconds = idleTimeoutSeconds;
     }
 
+    /** Null when the element carries no tls child, which is plaintext. */
+    public SyslogTcpTlsConfig getTls() {
+        return tls;
+    }
+
+    public void setTls(final SyslogTcpTlsConfig tls) {
+        this.tls = tls;
+    }
+
     public boolean isTlsEnabled() {
-        return tlsEnabled;
-    }
-
-    public void setTlsEnabled(final boolean tlsEnabled) {
-        this.tlsEnabled = tlsEnabled;
-    }
-
-    public String getTlsCertFilePath() {
-        return tlsCertFilePath;
-    }
-
-    public void setTlsCertFilePath(final String tlsCertFilePath) {
-        this.tlsCertFilePath = normalizePath(tlsCertFilePath);
-    }
-
-    public String getTlsPrivateKeyFilePath() {
-        return tlsPrivateKeyFilePath;
-    }
-
-    public void setTlsPrivateKeyFilePath(final String tlsPrivateKeyFilePath) {
-        this.tlsPrivateKeyFilePath = normalizePath(tlsPrivateKeyFilePath);
-    }
-
-    public String getTlsTrustCertFilePath() {
-        return tlsTrustCertFilePath;
-    }
-
-    public void setTlsTrustCertFilePath(final String tlsTrustCertFilePath) {
-        this.tlsTrustCertFilePath = normalizePath(tlsTrustCertFilePath);
-    }
-
-    public String getTlsClientAuth() {
-        return tlsClientAuth;
-    }
-
-    public void setTlsClientAuth(final String tlsClientAuth) {
-        this.tlsClientAuth = SyslogTcpClientAuth.fromConfigValue(tlsClientAuth).getConfigValue();
-    }
-
-    public SyslogTcpClientAuth resolveTlsClientAuth() {
-        return SyslogTcpClientAuth.fromConfigValue(tlsClientAuth);
-    }
-
-    private static String normalizePath(final String path) {
-        return path == null || path.trim().isEmpty() ? null : path.trim();
+        return tls != null && tls.isEnabled();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(port, listenAddress, framing, maxMessageSize, maxConnections, idleTimeoutSeconds,
-                tlsEnabled, tlsCertFilePath, tlsPrivateKeyFilePath, tlsTrustCertFilePath, tlsClientAuth);
+        return Objects.hash(port, listenAddress, framing, maxMessageSize, maxConnections, idleTimeoutSeconds, tls);
     }
 
     @Override
@@ -210,25 +181,20 @@ public class SyslogTcpConfig {
         return Objects.equals(port, other.port)
                 && Objects.equals(listenAddress, other.listenAddress)
                 && Objects.equals(framing, other.framing)
-                && maxMessageSize == other.maxMessageSize
-                && maxConnections == other.maxConnections
-                && idleTimeoutSeconds == other.idleTimeoutSeconds
-                && tlsEnabled == other.tlsEnabled
-                && Objects.equals(tlsCertFilePath, other.tlsCertFilePath)
-                && Objects.equals(tlsPrivateKeyFilePath, other.tlsPrivateKeyFilePath)
-                && Objects.equals(tlsTrustCertFilePath, other.tlsTrustCertFilePath)
-                && Objects.equals(tlsClientAuth, other.tlsClientAuth);
+                && Objects.equals(maxMessageSize, other.maxMessageSize)
+                && Objects.equals(maxConnections, other.maxConnections)
+                && Objects.equals(idleTimeoutSeconds, other.idleTimeoutSeconds)
+                && Objects.equals(tls, other.tls);
     }
 
     @Override
     public String toString() {
         return "SyslogTcpConfig[port=" + port
                 + ", listenAddress=" + (listenAddress == null ? "0.0.0.0" : listenAddress)
-                + ", framing=" + framing
-                + ", maxMessageSize=" + maxMessageSize
-                + ", maxConnections=" + maxConnections
-                + ", idleTimeoutSeconds=" + idleTimeoutSeconds
-                + ", tlsEnabled=" + tlsEnabled
-                + ", tlsClientAuth=" + tlsClientAuth + "]";
+                + ", framing=" + getFraming()
+                + ", maxMessageSize=" + getMaxMessageSize()
+                + ", maxConnections=" + getMaxConnections()
+                + ", idleTimeoutSeconds=" + getIdleTimeoutSeconds()
+                + ", tls=" + tls + "]";
     }
 }

@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 
 import io.netty.bootstrap.Bootstrap;
@@ -276,6 +277,15 @@ public class SyslogTcpListenerDispatchIT {
 
     // --- harness ------------------------------------------------------------
 
+    /** Lazily attaches the tls element, so each test only sets what it cares about. */
+    private static SyslogTcpTlsConfig tlsOf(final SyslogTcpConfig config) {
+        if (config.getTls() == null) {
+            config.setTls(new SyslogTcpTlsConfig());
+        }
+        return config.getTls();
+    }
+
+
     private int startTls(final AsyncDispatcher<SyslogConnection> dispatcher) throws Exception {
         final int port = findFreePort();
 
@@ -283,9 +293,9 @@ public class SyslogTcpListenerDispatchIT {
         config.setPort(port);
         config.setListenAddress("127.0.0.1");
         config.setFraming("non-transparent");
-        config.setTlsEnabled(true);
-        config.setTlsCertFilePath(s_certificate.certificate().getAbsolutePath());
-        config.setTlsPrivateKeyFilePath(s_certificate.privateKey().getAbsolutePath());
+        tlsOf(config).setEnabled(true);
+        tlsOf(config).setCertFilePath(s_certificate.certificate().getAbsolutePath());
+        tlsOf(config).setPrivateKeyFilePath(s_certificate.privateKey().getAbsolutePath());
 
         m_listener = new SyslogTcpListener(config, dispatcher);
         m_listener.start();

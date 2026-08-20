@@ -46,6 +46,7 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.opennms.netmgt.syslogd.api.SyslogMessageDTO;
@@ -186,8 +187,8 @@ public class SyslogdReceiverNettyTcpTlsIT {
     @Test(timeout = 60 * 1000)
     public void acceptsASenderPresentingATrustedCertificate() throws Exception {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsClientAuth("require");
-        config.setTlsTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
+        tlsOf(config).setClientAuth("require");
+        tlsOf(config).setTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
         final int port = startReceiver(config);
 
         final Channel client = connect(port, clientContext(true));
@@ -202,8 +203,8 @@ public class SyslogdReceiverNettyTcpTlsIT {
     @Test(timeout = 60 * 1000)
     public void rejectsASenderWithNoCertificateWhenClientAuthIsRequired() throws Exception {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsClientAuth("require");
-        config.setTlsTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
+        tlsOf(config).setClientAuth("require");
+        tlsOf(config).setTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
         final int port = startReceiver(config);
 
         final Channel client = connect(port, clientContext(false));
@@ -220,8 +221,8 @@ public class SyslogdReceiverNettyTcpTlsIT {
     @Test(timeout = 60 * 1000)
     public void acceptsASenderWithNoCertificateWhenClientAuthIsOptional() throws Exception {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsClientAuth("optional");
-        config.setTlsTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
+        tlsOf(config).setClientAuth("optional");
+        tlsOf(config).setTrustCertFilePath(s_clientCertificate.certificate().getAbsolutePath());
         final int port = startReceiver(config);
 
         final Channel client = connect(port, clientContext(false));
@@ -250,7 +251,7 @@ public class SyslogdReceiverNettyTcpTlsIT {
     @Test(timeout = 60 * 1000)
     public void doesNotStartWithAnUnusableCertificatePath() throws Exception {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsCertFilePath("/definitely/not/here/syslog.crt");
+        tlsOf(config).setCertFilePath("/definitely/not/here/syslog.crt");
         final int port = findFreePort();
         config.setPort(port);
 
@@ -266,14 +267,23 @@ public class SyslogdReceiverNettyTcpTlsIT {
 
     // --- harness ------------------------------------------------------------
 
+    /** Lazily attaches the tls element, so each test only sets what it cares about. */
+    private static SyslogTcpTlsConfig tlsOf(final SyslogTcpConfig config) {
+        if (config.getTls() == null) {
+            config.setTls(new SyslogTcpTlsConfig());
+        }
+        return config.getTls();
+    }
+
+
     private SyslogTcpConfig tlsConfig() throws Exception {
         final SyslogTcpConfig config = new SyslogTcpConfig();
         config.setPort(findFreePort());
         config.setListenAddress("127.0.0.1");
         config.setFraming("auto");
-        config.setTlsEnabled(true);
-        config.setTlsCertFilePath(s_serverCertificate.certificate().getAbsolutePath());
-        config.setTlsPrivateKeyFilePath(s_serverCertificate.privateKey().getAbsolutePath());
+        tlsOf(config).setEnabled(true);
+        tlsOf(config).setCertFilePath(s_serverCertificate.certificate().getAbsolutePath());
+        tlsOf(config).setPrivateKeyFilePath(s_serverCertificate.privateKey().getAbsolutePath());
         return config;
     }
 

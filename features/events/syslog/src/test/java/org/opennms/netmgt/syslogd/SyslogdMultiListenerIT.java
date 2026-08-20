@@ -87,13 +87,16 @@ public class SyslogdMultiListenerIT {
         m_udpPort = findFreePort();
         m_tcpPort = findFreePort();
 
+        // No listen-address on the tcp element, so this also covers the fallback to the
+        // address the UDP listener was given.
         final String xml = "<syslogd-configuration>\n"
                 + "  <configuration syslog-port=\"" + m_udpPort + "\"\n"
                 + "                 listen-address=\"127.0.0.1\"\n"
-                + "                 syslog-tcp-port=\"" + m_tcpPort + "\"\n"
                 + "                 batch-size=\"1\"\n"
                 + "                 batch-interval=\"10\"\n"
-                + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\"/>\n"
+                + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\">\n"
+                + "    <tcp port=\"" + m_tcpPort + "\"/>\n"
+                + "  </configuration>\n"
                 + "</syslogd-configuration>\n";
 
         final SyslogdConfigFactory config = new SyslogdConfigFactory(

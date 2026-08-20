@@ -43,11 +43,15 @@
 		<property name="maxMessageSize" value="${syslog.tcp.max.message.size}" />
 		<property name="maxConnections" value="${syslog.tcp.max.connections}" />
 		<property name="idleTimeoutSeconds" value="${syslog.tcp.idle.timeout}" />
-		<property name="tlsEnabled" value="${syslog.tcp.tls.enabled}" />
-		<property name="tlsCertFilePath" value="${syslog.tcp.tls.cert.filepath}" />
-		<property name="tlsPrivateKeyFilePath" value="${syslog.tcp.tls.private.key.filepath}" />
-		<property name="tlsTrustCertFilePath" value="${syslog.tcp.tls.trust.cert.filepath}" />
-		<property name="tlsClientAuth" value="${syslog.tcp.tls.client.auth}" />
+		<property name="tls" ref="syslogTcpTlsConfig" />
+	</bean>
+
+	<bean id="syslogTcpTlsConfig" class="org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig">
+		<property name="enabled" value="${syslog.tcp.tls.enabled}" />
+		<property name="certFilePath" value="${syslog.tcp.tls.cert.filepath}" />
+		<property name="privateKeyFilePath" value="${syslog.tcp.tls.private.key.filepath}" />
+		<property name="trustCertFilePath" value="${syslog.tcp.tls.trust.cert.filepath}" />
+		<property name="clientAuth" value="${syslog.tcp.tls.client.auth}" />
 	</bean>
 
 	<bean id="syslogConfig" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
