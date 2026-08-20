@@ -92,21 +92,9 @@ After upgrade, manage event configurations through the *Administration -> Manage
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
 === ActiveMQ store and JVM temp directory moved out of the Karaf cache
-`java.io.tmpdir` moved from `data/tmp` to `tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved
-from `data/tmp/activemq` to `var/activemq`. Both previously lived under `$\{OPENNMS_HOME}/data`, which is Karaf's own
-cache directory and can be cleared during upgrades or via `karaf.clean.all`; relocating them keeps JVM scratch space and
-message-broker storage from being wiped along with the cache.
+`java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
 
-Any ActiveMQ store contents and persisted Drools correlation-engine or northbounder session state under the old
-`data/tmp` location are *not* migrated to the new paths -- they are cleared during the upgrade, the same as with any
-other upgrade that clears the Karaf cache. The broker and any persisted rule sessions simply start fresh at the new
-locations afterward. Going forward, however, routine restarts (including container restarts) no longer clear this
-data, since it now lives outside `$\{OPENNMS_HOME}/data`.
-
-To keep the previous paths instead, set `-Djava.io.tmpdir=$\{OPENNMS_HOME}/data/tmp` and
-`-Dactivemq.data=$\{OPENNMS_HOME}/data/tmp/activemq` in `ADDITIONAL_MANAGER_OPTIONS`
-(see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration]), or in `JAVA_OPTS` for
-container deployments.
+To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration], or xref:reference:configuration/core-docker.adoc[Core Docker] for container deployments.
 
 == Breaking changes
 
