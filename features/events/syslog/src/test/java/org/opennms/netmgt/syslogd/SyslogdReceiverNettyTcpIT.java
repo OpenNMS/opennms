@@ -255,12 +255,11 @@ public class SyslogdReceiverNettyTcpIT {
 
         final String xml = "<syslogd-configuration>\n"
                 + "  <configuration syslog-port=\"" + findFreePort() + "\"\n"
-                + "                 syslog-tcp-port=\"" + port + "\"\n"
-                + "                 tcp-listen-address=\"127.0.0.1\"\n"
-                + "                 tcp-framing=\"" + framing + "\"\n"
                 + "                 batch-size=\"1\"\n"
                 + "                 batch-interval=\"10\"\n"
-                + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\"/>\n"
+                + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\">\n"
+                + "    <tcp port=\"" + port + "\" listen-address=\"127.0.0.1\" framing=\"" + framing + "\"/>\n"
+                + "  </configuration>\n"
                 + "</syslogd-configuration>\n";
 
         final SyslogdConfigFactory config = new SyslogdConfigFactory(

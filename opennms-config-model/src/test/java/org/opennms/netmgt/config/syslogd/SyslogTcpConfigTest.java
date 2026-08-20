@@ -32,68 +32,75 @@ import org.junit.Test;
 public class SyslogTcpConfigTest {
 
     @Test
-    public void tcpIsDisabledUntilAPortIsConfigured() {
+    public void tcpIsDisabledWithoutATcpElement() {
         // An install that has never been touched must keep its UDP-only behaviour.
         final Configuration config = new Configuration();
         config.setSyslogPort(514);
 
-        assertFalse(config.getTcpConfig().isEnabled());
+        assertNull(config.getTcpConfig());
     }
 
     @Test
-    public void tcpIsEnabledOnceAPortIsConfigured() {
+    public void tcpIsEnabledOnceTheElementCarriesAPort() {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
+
         final Configuration config = new Configuration();
         config.setSyslogPort(514);
-        config.setSyslogTcpPort(601);
+        config.setTcpConfig(tcpConfig);
 
-        final SyslogTcpConfig tcpConfig = config.getTcpConfig();
-        assertTrue(tcpConfig.isEnabled());
-        assertEquals(Integer.valueOf(601), tcpConfig.getPort());
+        assertTrue(config.getTcpConfig().isEnabled());
+        assertEquals(Integer.valueOf(601), config.getTcpConfig().getPort());
     }
 
     @Test
-    public void tcpListenAddressFallsBackToTheUdpListenAddress() {
-        final Configuration config = new Configuration();
-        config.setSyslogPort(514);
-        config.setSyslogTcpPort(601);
-        config.setListenAddress("10.0.0.1");
+    public void aZeroPortLeavesTcpOffSoTheMinionCfgCanAlwaysCarryTheKey() {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(0);
 
-        assertEquals("10.0.0.1", config.getTcpConfig().getListenAddress());
+        assertFalse(tcpConfig.isEnabled());
     }
 
     @Test
-    public void explicitTcpListenAddressWinsOverTheUdpOne() {
-        final Configuration config = new Configuration();
-        config.setSyslogPort(514);
-        config.setSyslogTcpPort(601);
-        config.setListenAddress("10.0.0.1");
-        config.setTcpListenAddress("10.0.0.2");
+    public void unsetListenAddressLeavesTheListenerToBindEverything() {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
 
-        assertEquals("10.0.0.2", config.getTcpConfig().getListenAddress());
-    }
-
-    @Test
-    public void unsetListenAddressesLeaveTheListenerToBindEverything() {
-        final Configuration config = new Configuration();
-        config.setSyslogPort(514);
-        config.setSyslogTcpPort(601);
-
-        assertNull(config.getTcpConfig().getListenAddress());
+        assertNull(tcpConfig.getListenAddress());
     }
 
     @Test
     public void defaultsAreAppliedForUnsetTcpAttributes() {
-        final Configuration config = new Configuration();
-        config.setSyslogPort(514);
-        config.setSyslogTcpPort(601);
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
 
-        final SyslogTcpConfig tcpConfig = config.getTcpConfig();
         assertEquals(SyslogTcpFraming.AUTO, tcpConfig.resolveFraming());
         assertEquals(SyslogTcpConfig.DEFAULT_MAX_MESSAGE_SIZE, tcpConfig.getMaxMessageSize());
         assertEquals(SyslogTcpConfig.DEFAULT_MAX_CONNECTIONS, tcpConfig.getMaxConnections());
         assertEquals(SyslogTcpConfig.DEFAULT_IDLE_TIMEOUT_SECONDS, tcpConfig.getIdleTimeoutSeconds());
+    }
+
+    @Test
+    public void tlsIsOffWithoutATlsElement() {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
+
+        assertNull(tcpConfig.getTls());
         assertFalse(tcpConfig.isTlsEnabled());
-        assertEquals(SyslogTcpClientAuth.NONE, tcpConfig.resolveTlsClientAuth());
+    }
+
+    @Test
+    public void aTlsElementThatIsNotEnabledStillLeavesTlsOff() {
+        // So that switching TLS off does not mean deleting the certificate paths.
+        final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
+        tls.setCertFilePath("/etc/syslog.crt");
+
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
+        tcpConfig.setTls(tls);
+
+        assertFalse(tcpConfig.isTlsEnabled());
+        assertEquals(SyslogTcpClientAuth.NONE, tls.resolveClientAuth());
     }
 
     @Test
@@ -116,9 +123,10 @@ public class SyslogTcpConfigTest {
     @Test
     public void badValuesAreRejectedAtWiringTimeRatherThanOnTheFirstMessage() {
         final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
 
         assertThrows(IllegalArgumentException.class, () -> tcpConfig.setFraming("octet counting"));
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setTlsClientAuth("mutual"));
+        assertThrows(IllegalArgumentException.class, () -> tls.setClientAuth("mutual"));
         assertThrows(IllegalArgumentException.class, () -> tcpConfig.setPort(70000));
         assertThrows(IllegalArgumentException.class, () -> tcpConfig.setMaxMessageSize(0));
         assertThrows(IllegalArgumentException.class, () -> tcpConfig.setMaxConnections(0));
@@ -127,11 +135,11 @@ public class SyslogTcpConfigTest {
 
     @Test
     public void blankPathsAreNormalizedToNull() {
-        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
-        tcpConfig.setTlsCertFilePath("   ");
-        tcpConfig.setTlsPrivateKeyFilePath("  /etc/key.pem  ");
+        final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
+        tls.setCertFilePath("   ");
+        tls.setPrivateKeyFilePath("  /etc/key.pem  ");
 
-        assertNull(tcpConfig.getTlsCertFilePath());
-        assertEquals("/etc/key.pem", tcpConfig.getTlsPrivateKeyFilePath());
+        assertNull(tls.getCertFilePath());
+        assertEquals("/etc/key.pem", tls.getPrivateKeyFilePath());
     }
 }

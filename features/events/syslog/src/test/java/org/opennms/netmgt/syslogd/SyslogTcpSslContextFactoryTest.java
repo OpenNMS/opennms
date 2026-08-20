@@ -29,6 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
 
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
@@ -56,8 +57,8 @@ public class SyslogTcpSslContextFactoryTest {
     @Test
     public void buildsAContextForMutualTls() throws Exception {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsClientAuth("require");
-        config.setTlsTrustCertFilePath(s_certificate.certificate().getAbsolutePath());
+        tlsOf(config).setClientAuth("require");
+        tlsOf(config).setTrustCertFilePath(s_certificate.certificate().getAbsolutePath());
 
         assertNotNull(SyslogTcpSslContextFactory.create(config));
     }
@@ -66,27 +67,27 @@ public class SyslogTcpSslContextFactoryTest {
     public void refusesToBuildWithoutACertificate() {
         final SyslogTcpConfig config = new SyslogTcpConfig();
         config.setPort(6514);
-        config.setTlsEnabled(true);
+        tlsOf(config).setEnabled(true);
 
         final Exception e = assertThrows(IllegalStateException.class, () -> SyslogTcpSslContextFactory.create(config));
-        assertTrue(e.getMessage(), e.getMessage().contains("tcp-tls-cert-filepath"));
+        assertTrue(e.getMessage(), e.getMessage().contains("cert-filepath"));
     }
 
     @Test
     public void refusesToBuildWithoutAPrivateKey() {
         final SyslogTcpConfig config = new SyslogTcpConfig();
         config.setPort(6514);
-        config.setTlsEnabled(true);
-        config.setTlsCertFilePath(s_certificate.certificate().getAbsolutePath());
+        tlsOf(config).setEnabled(true);
+        tlsOf(config).setCertFilePath(s_certificate.certificate().getAbsolutePath());
 
         final Exception e = assertThrows(IllegalStateException.class, () -> SyslogTcpSslContextFactory.create(config));
-        assertTrue(e.getMessage(), e.getMessage().contains("tcp-tls-private-key-filepath"));
+        assertTrue(e.getMessage(), e.getMessage().contains("private-key-filepath"));
     }
 
     @Test
     public void refusesToBuildWhenAPathDoesNotExist() {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsCertFilePath("/definitely/not/here/syslog.crt");
+        tlsOf(config).setCertFilePath("/definitely/not/here/syslog.crt");
 
         final Exception e = assertThrows(IllegalStateException.class, () -> SyslogTcpSslContextFactory.create(config));
         // Naming the offending path is the whole point; a generic failure sends the
@@ -97,18 +98,27 @@ public class SyslogTcpSslContextFactoryTest {
     @Test
     public void refusesMutualTlsWithoutTrustedCertificates() {
         final SyslogTcpConfig config = tlsConfig();
-        config.setTlsClientAuth("require");
+        tlsOf(config).setClientAuth("require");
 
         final Exception e = assertThrows(IllegalStateException.class, () -> SyslogTcpSslContextFactory.create(config));
-        assertTrue(e.getMessage(), e.getMessage().contains("tcp-tls-trust-cert-filepath"));
+        assertTrue(e.getMessage(), e.getMessage().contains("trust-cert-filepath"));
     }
 
     private static SyslogTcpConfig tlsConfig() {
         final SyslogTcpConfig config = new SyslogTcpConfig();
         config.setPort(6514);
-        config.setTlsEnabled(true);
-        config.setTlsCertFilePath(s_certificate.certificate().getAbsolutePath());
-        config.setTlsPrivateKeyFilePath(s_certificate.privateKey().getAbsolutePath());
+        tlsOf(config).setEnabled(true);
+        tlsOf(config).setCertFilePath(s_certificate.certificate().getAbsolutePath());
+        tlsOf(config).setPrivateKeyFilePath(s_certificate.privateKey().getAbsolutePath());
         return config;
     }
+
+    /** Lazily attaches the tls element, so each test only sets what it cares about. */
+    private static SyslogTcpTlsConfig tlsOf(final SyslogTcpConfig config) {
+        if (config.getTls() == null) {
+            config.setTls(new SyslogTcpTlsConfig());
+        }
+        return config.getTls();
+    }
+
 }

@@ -79,6 +79,12 @@ public class SyslogTcpListener {
 
     private final AsyncDispatcher<SyslogConnection> m_dispatcher;
 
+    /**
+     * The interface the UDP listener was given, used when the tcp element names none. TCP
+     * binding everything while UDP was restricted to one interface is a poor surprise.
+     */
+    private final String m_fallbackListenAddress;
+
     private final ChannelGroup m_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private volatile EventLoopGroup m_bossGroup;
@@ -98,8 +104,18 @@ public class SyslogTcpListener {
     private long m_dispatchTimeoutMs = DEFAULT_DISPATCH_TIMEOUT_MS;
 
     public SyslogTcpListener(final SyslogTcpConfig config, final AsyncDispatcher<SyslogConnection> dispatcher) {
+        this(config, null, dispatcher);
+    }
+
+    public SyslogTcpListener(final SyslogTcpConfig config, final String fallbackListenAddress,
+            final AsyncDispatcher<SyslogConnection> dispatcher) {
         m_config = Objects.requireNonNull(config);
+        m_fallbackListenAddress = fallbackListenAddress;
         m_dispatcher = Objects.requireNonNull(dispatcher);
+    }
+
+    private String listenAddress() {
+        return m_config.getListenAddress() != null ? m_config.getListenAddress() : m_fallbackListenAddress;
     }
 
     void setDispatchTimeoutMs(final long dispatchTimeoutMs) {
@@ -114,7 +130,7 @@ public class SyslogTcpListener {
         if (!m_config.isEnabled()) {
             return "disabled";
         }
-        final String address = m_config.getListenAddress() == null ? "0.0.0.0" : m_config.getListenAddress();
+        final String address = listenAddress() == null ? "0.0.0.0" : listenAddress();
         return address + ":" + m_config.getPort();
     }
 
@@ -136,7 +152,7 @@ public class SyslogTcpListener {
             if (m_config.isTlsEnabled()) {
                 m_sslContext = SyslogTcpSslContextFactory.create(m_config);
                 LOG.info("TLS enabled for the syslog TCP listener on {}, client authentication is {}",
-                        describeAddress(), m_config.getTlsClientAuth());
+                        describeAddress(), m_config.getTls().getClientAuth());
             }
         } catch (Throwable e) {
             LOG.error("Not starting the syslog TCP listener on {}: {}", describeAddress(), e.getMessage(), e);
@@ -379,8 +395,8 @@ public class SyslogTcpListener {
     }
 
     private InetSocketAddress bindAddress() {
-        return m_config.getListenAddress() == null
+        return listenAddress() == null
                 ? new InetSocketAddress(m_config.getPort())
-                : new InetSocketAddress(m_config.getListenAddress(), m_config.getPort());
+                : new InetSocketAddress(listenAddress(), m_config.getPort());
     }
 }

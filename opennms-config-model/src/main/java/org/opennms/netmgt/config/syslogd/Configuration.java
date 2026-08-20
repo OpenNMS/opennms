@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
@@ -147,81 +148,12 @@ public class Configuration implements Serializable {
 
     @XmlAttribute(name = "includeRawSyslogmessage")
     private Boolean includeRawSyslogmessage;
-
     /**
-     * The port on which Syslogd accepts SYSLOG messages over TCP. Leaving this
-     *  unset switches TCP ingestion off, which is the default.
+     * The optional TCP listener. Leaving the element out is what keeps an install on UDP
+     * alone, so its absence is the switch rather than a sentinel value in an attribute.
      */
-    @XmlAttribute(name = "syslog-tcp-port")
-    private Integer m_syslogTcpPort;
-
-    /**
-     * The address on which Syslogd accepts TCP connections. Defaults to the
-     *  value of listen-address, and then to all addresses.
-     */
-    @XmlAttribute(name = "tcp-listen-address")
-    private String m_tcpListenAddress;
-
-    /**
-     * The RFC 6587 framing to expect from TCP senders: auto, octet-counting or
-     *  non-transparent. The default, auto, detects the framing from the first
-     *  message of each connection.
-     */
-    @XmlAttribute(name = "tcp-framing")
-    private String m_tcpFraming;
-
-    /**
-     * The largest TCP message accepted, in bytes. A sender that exceeds it has
-     *  its connection closed, because the position of the next message is no
-     *  longer known.
-     */
-    @XmlAttribute(name = "tcp-max-message-size")
-    private Integer m_tcpMaxMessageSize;
-
-    /**
-     * The largest number of TCP connections accepted at once.
-     */
-    @XmlAttribute(name = "tcp-max-connections")
-    private Integer m_tcpMaxConnections;
-
-    /**
-     * Close a TCP connection that has sent nothing for this many seconds. Zero
-     *  disables the timeout.
-     */
-    @XmlAttribute(name = "tcp-idle-timeout")
-    private Integer m_tcpIdleTimeout;
-
-    /**
-     * Whether TCP connections are wrapped in TLS, as described by RFC 5425.
-     */
-    @XmlAttribute(name = "tcp-tls-enabled")
-    private Boolean m_tcpTlsEnabled;
-
-    /**
-     * Path to the PEM encoded certificate this listener presents to senders.
-     */
-    @XmlAttribute(name = "tcp-tls-cert-filepath")
-    private String m_tcpTlsCertFilePath;
-
-    /**
-     * Path to the PEM encoded private key matching tcp-tls-cert-filepath.
-     */
-    @XmlAttribute(name = "tcp-tls-private-key-filepath")
-    private String m_tcpTlsPrivateKeyFilePath;
-
-    /**
-     * Path to the PEM encoded certificates used to verify sender certificates.
-     *  Only consulted when tcp-tls-client-auth asks for them.
-     */
-    @XmlAttribute(name = "tcp-tls-trust-cert-filepath")
-    private String m_tcpTlsTrustCertFilePath;
-
-    /**
-     * Whether senders must present a trusted certificate: none, optional or
-     *  require.
-     */
-    @XmlAttribute(name = "tcp-tls-client-auth")
-    private String m_tcpTlsClientAuth;
+    @XmlElement(name = "tcp")
+    private SyslogTcpConfig m_tcpConfig;
 
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
@@ -343,114 +275,15 @@ public class Configuration implements Serializable {
         this.includeRawSyslogmessage = includeRawSyslogmessage;
     }
 
-    public Optional<Integer> getSyslogTcpPort() {
-        return Optional.ofNullable(m_syslogTcpPort);
-    }
-
-    public void setSyslogTcpPort(final Integer syslogTcpPort) {
-        m_syslogTcpPort = ConfigUtils.assertMinimumInclusive(syslogTcpPort, 1, "syslog-tcp-port");
-    }
-
-    public Optional<String> getTcpListenAddress() {
-        return Optional.ofNullable(m_tcpListenAddress);
-    }
-
-    public void setTcpListenAddress(final String tcpListenAddress) {
-        m_tcpListenAddress = ConfigUtils.normalizeString(tcpListenAddress);
-    }
-
-    public String getTcpFraming() {
-        return m_tcpFraming != null ? m_tcpFraming : SyslogTcpFraming.AUTO.getConfigValue();
-    }
-
-    public void setTcpFraming(final String tcpFraming) {
-        m_tcpFraming = ConfigUtils.normalizeString(tcpFraming);
-    }
-
-    public Integer getTcpMaxMessageSize() {
-        return m_tcpMaxMessageSize != null ? m_tcpMaxMessageSize : SyslogTcpConfig.DEFAULT_MAX_MESSAGE_SIZE;
-    }
-
-    public void setTcpMaxMessageSize(final Integer tcpMaxMessageSize) {
-        m_tcpMaxMessageSize = ConfigUtils.assertMinimumInclusive(tcpMaxMessageSize, 1, "tcp-max-message-size");
-    }
-
-    public Integer getTcpMaxConnections() {
-        return m_tcpMaxConnections != null ? m_tcpMaxConnections : SyslogTcpConfig.DEFAULT_MAX_CONNECTIONS;
-    }
-
-    public void setTcpMaxConnections(final Integer tcpMaxConnections) {
-        m_tcpMaxConnections = ConfigUtils.assertMinimumInclusive(tcpMaxConnections, 1, "tcp-max-connections");
-    }
-
-    public Integer getTcpIdleTimeout() {
-        return m_tcpIdleTimeout != null ? m_tcpIdleTimeout : SyslogTcpConfig.DEFAULT_IDLE_TIMEOUT_SECONDS;
-    }
-
-    public void setTcpIdleTimeout(final Integer tcpIdleTimeout) {
-        m_tcpIdleTimeout = ConfigUtils.assertMinimumInclusive(tcpIdleTimeout, 0, "tcp-idle-timeout");
-    }
-
-    public Boolean getTcpTlsEnabled() {
-        return m_tcpTlsEnabled != null ? m_tcpTlsEnabled : Boolean.FALSE;
-    }
-
-    public void setTcpTlsEnabled(final Boolean tcpTlsEnabled) {
-        m_tcpTlsEnabled = tcpTlsEnabled;
-    }
-
-    public Optional<String> getTcpTlsCertFilePath() {
-        return Optional.ofNullable(m_tcpTlsCertFilePath);
-    }
-
-    public void setTcpTlsCertFilePath(final String tcpTlsCertFilePath) {
-        m_tcpTlsCertFilePath = ConfigUtils.normalizeString(tcpTlsCertFilePath);
-    }
-
-    public Optional<String> getTcpTlsPrivateKeyFilePath() {
-        return Optional.ofNullable(m_tcpTlsPrivateKeyFilePath);
-    }
-
-    public void setTcpTlsPrivateKeyFilePath(final String tcpTlsPrivateKeyFilePath) {
-        m_tcpTlsPrivateKeyFilePath = ConfigUtils.normalizeString(tcpTlsPrivateKeyFilePath);
-    }
-
-    public Optional<String> getTcpTlsTrustCertFilePath() {
-        return Optional.ofNullable(m_tcpTlsTrustCertFilePath);
-    }
-
-    public void setTcpTlsTrustCertFilePath(final String tcpTlsTrustCertFilePath) {
-        m_tcpTlsTrustCertFilePath = ConfigUtils.normalizeString(tcpTlsTrustCertFilePath);
-    }
-
-    public String getTcpTlsClientAuth() {
-        return m_tcpTlsClientAuth != null ? m_tcpTlsClientAuth : SyslogTcpClientAuth.NONE.getConfigValue();
-    }
-
-    public void setTcpTlsClientAuth(final String tcpTlsClientAuth) {
-        m_tcpTlsClientAuth = ConfigUtils.normalizeString(tcpTlsClientAuth);
-    }
-
     /**
-     * Assembles the TCP listener settings, applying the defaults that the individual
-     * attributes leave unset. A TCP sender that is not told otherwise should land on
-     * the same interface as the UDP listener, so tcp-listen-address falls back to
-     * listen-address before falling back to all addresses.
+     * Null when the file has no tcp element, which is the UDP-only default.
      */
     public SyslogTcpConfig getTcpConfig() {
-        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
-        tcpConfig.setPort(m_syslogTcpPort);
-        tcpConfig.setListenAddress(m_tcpListenAddress != null ? m_tcpListenAddress : m_listenAddress);
-        tcpConfig.setFraming(getTcpFraming());
-        tcpConfig.setMaxMessageSize(getTcpMaxMessageSize());
-        tcpConfig.setMaxConnections(getTcpMaxConnections());
-        tcpConfig.setIdleTimeoutSeconds(getTcpIdleTimeout());
-        tcpConfig.setTlsEnabled(getTcpTlsEnabled());
-        tcpConfig.setTlsCertFilePath(m_tcpTlsCertFilePath);
-        tcpConfig.setTlsPrivateKeyFilePath(m_tcpTlsPrivateKeyFilePath);
-        tcpConfig.setTlsTrustCertFilePath(m_tcpTlsTrustCertFilePath);
-        tcpConfig.setTlsClientAuth(getTcpTlsClientAuth());
-        return tcpConfig;
+        return m_tcpConfig;
+    }
+
+    public void setTcpConfig(final SyslogTcpConfig tcpConfig) {
+        m_tcpConfig = tcpConfig;
     }
 
     @Override
@@ -469,17 +302,7 @@ public class Configuration implements Serializable {
                             m_batchInterval,
                             timeZone,
                             includeRawSyslogmessage,
-                            m_syslogTcpPort,
-                            m_tcpListenAddress,
-                            m_tcpFraming,
-                            m_tcpMaxMessageSize,
-                            m_tcpMaxConnections,
-                            m_tcpIdleTimeout,
-                            m_tcpTlsEnabled,
-                            m_tcpTlsCertFilePath,
-                            m_tcpTlsPrivateKeyFilePath,
-                            m_tcpTlsTrustCertFilePath,
-                            m_tcpTlsClientAuth);
+                            m_tcpConfig);
     }
 
     /**
@@ -510,17 +333,7 @@ public class Configuration implements Serializable {
                     && Objects.equals(this.m_batchInterval, that.m_batchInterval)
                     && Objects.equals(this.timeZone, that.timeZone)
                     && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage)
-                    && Objects.equals(this.m_syslogTcpPort, that.m_syslogTcpPort)
-                    && Objects.equals(this.m_tcpListenAddress, that.m_tcpListenAddress)
-                    && Objects.equals(this.m_tcpFraming, that.m_tcpFraming)
-                    && Objects.equals(this.m_tcpMaxMessageSize, that.m_tcpMaxMessageSize)
-                    && Objects.equals(this.m_tcpMaxConnections, that.m_tcpMaxConnections)
-                    && Objects.equals(this.m_tcpIdleTimeout, that.m_tcpIdleTimeout)
-                    && Objects.equals(this.m_tcpTlsEnabled, that.m_tcpTlsEnabled)
-                    && Objects.equals(this.m_tcpTlsCertFilePath, that.m_tcpTlsCertFilePath)
-                    && Objects.equals(this.m_tcpTlsPrivateKeyFilePath, that.m_tcpTlsPrivateKeyFilePath)
-                    && Objects.equals(this.m_tcpTlsTrustCertFilePath, that.m_tcpTlsTrustCertFilePath)
-                    && Objects.equals(this.m_tcpTlsClientAuth, that.m_tcpTlsClientAuth);
+                    && Objects.equals(this.m_tcpConfig, that.m_tcpConfig);
         }
         return false;
     }

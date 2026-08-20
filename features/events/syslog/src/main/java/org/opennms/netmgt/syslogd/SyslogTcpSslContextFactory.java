@@ -25,6 +25,7 @@ import java.io.File;
 
 import org.opennms.netmgt.config.syslogd.SyslogTcpClientAuth;
 import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
 
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
@@ -46,17 +47,18 @@ public final class SyslogTcpSslContextFactory {
             throw new IllegalStateException("TLS is not enabled for the syslog TCP listener");
         }
 
-        final File certificate = requireFile(config.getTlsCertFilePath(), "tcp-tls-cert-filepath",
+        final SyslogTcpTlsConfig tls = config.getTls();
+        final File certificate = requireFile(tls.getCertFilePath(), "cert-filepath",
                 "the certificate the listener presents to senders");
-        final File privateKey = requireFile(config.getTlsPrivateKeyFilePath(), "tcp-tls-private-key-filepath",
+        final File privateKey = requireFile(tls.getPrivateKeyFilePath(), "private-key-filepath",
                 "the private key matching the listener certificate");
 
         final SslContextBuilder builder = SslContextBuilder.forServer(certificate, privateKey);
 
-        final SyslogTcpClientAuth clientAuth = config.resolveTlsClientAuth();
+        final SyslogTcpClientAuth clientAuth = tls.resolveClientAuth();
         if (clientAuth != SyslogTcpClientAuth.NONE) {
-            final File trustCertificates = requireFile(config.getTlsTrustCertFilePath(), "tcp-tls-trust-cert-filepath",
-                    "the certificates used to verify sender certificates, required when tcp-tls-client-auth is "
+            final File trustCertificates = requireFile(tls.getTrustCertFilePath(), "trust-cert-filepath",
+                    "the certificates used to verify sender certificates, required when client-auth is "
                             + clientAuth.getConfigValue());
             builder.trustManager(trustCertificates);
         }
