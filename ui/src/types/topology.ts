@@ -174,7 +174,8 @@ export interface TopologyView {
 }
 
 /**
- * Lightweight catalog entry used by ViewManager (list/rename/delete).
+ * Lightweight catalog entry: what the view chooser and the name-collision
+ * check need, without loading every view's contents.
  */
 export interface TopologyViewSummary {
   id: string
