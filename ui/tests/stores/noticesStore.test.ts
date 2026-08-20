@@ -72,6 +72,7 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledWith({
         acktype: 'unack',
         user: 'admin',
+        excludeUser: null,
         limit: 10,
         offset: 0
       })
@@ -81,6 +82,16 @@ describe('useNoticesStore', () => {
   })
 
   describe('applyPreset', () => {
+    it('teamOutstanding should exclude the current user', async () => {
+      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+
+      await store.applyPreset('teamOutstanding')
+
+      expect(API.browseNotices).toHaveBeenCalledWith(
+        expect.objectContaining({ acktype: 'unack', user: null, excludeUser: 'admin' })
+      )
+    })
+
     it('allOutstanding should drop the user filter and reset paging', async () => {
       vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
       store.first = 30
@@ -92,6 +103,7 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledWith({
         acktype: 'unack',
         user: null,
+        excludeUser: null,
         limit: 10,
         offset: 0
       })
@@ -157,6 +169,9 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).not.toHaveBeenCalled()
       expect(store.notices).toEqual([])
       expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+
+      await store.applyPreset('teamOutstanding')
+      expect(API.browseNotices).not.toHaveBeenCalled()
     })
 
     it('should clamp to the last valid page when the ack empties the current page', async () => {
@@ -209,10 +224,23 @@ describe('useNoticesStore', () => {
       expect(API.browseNotices).toHaveBeenCalledWith({
         acktype: 'unack',
         user: 'admin',
+        excludeUser: null,
         limit: 1000,
         offset: 0
       })
       expect(result).toEqual(mockResult)
+    })
+
+    it('carries excludeUser for a teamOutstanding export so it stays scoped', async () => {
+      vi.mocked(API.browseNotices).mockResolvedValue(mockResult)
+      await store.applyPreset('teamOutstanding')
+      vi.mocked(API.browseNotices).mockClear()
+
+      await store.fetchForExport(1000)
+
+      expect(API.browseNotices).toHaveBeenCalledWith(
+        expect.objectContaining({ user: null, excludeUser: 'admin', limit: 1000 })
+      )
     })
 
     it('refuses to export (no query) when a user-scoped preset has no user id', async () => {

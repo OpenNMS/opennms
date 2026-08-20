@@ -267,6 +267,23 @@ public class NotificationRestService extends OnmsRestService {
         builder.alias("event", "event", JoinType.LEFT_JOIN);
         builder.alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN);
 
+        // "assigned to anyone but this user": same restriction the summary
+        // endpoint uses for teamUnacknowledgedCount, including notices that
+        // notified nobody; not expressible through the generic filters
+        final String excludeNotifiedUser = params.getFirst("excludeNotifiedUser");
+        if (excludeNotifiedUser != null) {
+            // always consume the param so a blank value isn't treated as an
+            // (unknown) entity property by applyQueryFilters below
+            params.remove("excludeNotifiedUser");
+            if (!excludeNotifiedUser.isBlank()) {
+                // distinct: the usersNotified LEFT_JOIN can match several rows per
+                // notice, which would otherwise duplicate notices and inflate the count
+                builder.distinct();
+                builder.or(Restrictions.ne("usersNotified.userId", excludeNotifiedUser),
+                        Restrictions.isNull("usersNotified.userId"));
+            }
+        }
+
         applyQueryFilters(params, builder);
         return builder;
     }
