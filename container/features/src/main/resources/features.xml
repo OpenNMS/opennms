@@ -3,9 +3,8 @@
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/camel</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
-    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/activemq</repository>
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
-    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <!-- our repackaged copy, with Jackson locked to ours -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/jaxrs</repository>
@@ -2057,7 +2056,7 @@
     <feature name="opennms-newts-api" description="OpenNMS :: Newts API" version="${project.version}">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/failureaccess/${guavaFailureaccessVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-jexl3/${commonsJexl3Version}</bundle>
