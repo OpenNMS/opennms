@@ -48,6 +48,21 @@
     XssRequestWrapper req = new XssRequestWrapper(request);
 %>
 
+<%-- Close the #content-body wrapper opened in bootstrap.jsp, so the footer is a
+     sibling of it rather than inside it — that is what lets #content-body take
+     the slack and leave the footer at the bottom. Guarded by the same
+     'superQuiet' test as the #content close below, since that branch emits
+     neither div. Closed here, ahead of the footer markup, rather than with
+     #content at the end of this file. --%>
+<c:choose>
+    <c:when test="${param.superQuiet == 'true'}">
+        <%-- nothing to do --%>
+    </c:when>
+    <c:otherwise>
+        <%= "</div>" %><!-- id="content-body" -->
+    </c:otherwise>
+</c:choose>
+
 <c:choose>
     <c:when test="${param.quiet == 'true'}">
         <!-- Not displaying footer -->

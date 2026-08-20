@@ -82,6 +82,15 @@ html {
   overflow-x: hidden;
   scrollbar-gutter: stable;
 }
+// The UA's default 8px body margin sits outside .app-layout's `min-height:
+// 100vh`, so the shell overflowed the viewport by it: even a page whose content
+// fits scrolled ~16px, and its footer stopped short of the bottom of the window.
+// Drop the margin so the shell is exactly as tall as the viewport — the layout's
+// own padding already clears the fixed menubar and rail, and legacy JSP pages
+// have carried a margin-less body all along (NMS-20182).
+body {
+  margin: 0;
+}
 // The `.p-overlay-mask` arm covers nesting: PrimeVue's block/unblock is not
 // reference-counted, so closing a dialog opened *inside* an open drawer strips
 // the body class and unlocked the page while the drawer was still up. The mask
