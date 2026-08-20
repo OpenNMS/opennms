@@ -66,8 +66,30 @@ onMounted(() => {
 @import '@/styles/onms-typography';
 @import "@/styles/onms-tokens";
 
+// `overflow-x: hidden` makes <html> itself the SPA's scroll container: the
+// other axis can no longer compute to `visible`, so the body's overflow is not
+// propagated to the viewport. That is why PrimeVue's `blockScroll` — which only
+// adds `.p-overflow-hidden` (overflow: hidden) to <body> — cannot stop the page
+// scrolling on its own here, and the wheel over an open drawer/dialog kept
+// scrolling the content behind it. Lock the real scroller instead, keyed off the
+// same body class so it tracks PrimeVue's own lock state (NMS-20182).
+//
+// `scrollbar-gutter: stable` reserves the scrollbar's width permanently. Without
+// it, locking removes the page scrollbar and the fixed chrome (Menubar, side
+// rail) jumps ~15px wider; PrimeVue's `padding-right` compensation only shifts
+// in-flow content, never fixed elements.
 html {
   overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+// The `.p-overlay-mask` arm covers nesting: PrimeVue's block/unblock is not
+// reference-counted, so closing a dialog opened *inside* an open drawer strips
+// the body class and unlocked the page while the drawer was still up. The mask
+// element exists for exactly as long as a modal overlay is open, so matching it
+// keeps the lock until the last one closes.
+html:has(body.p-overflow-hidden),
+html:has(.p-overlay-mask) {
+  overflow: hidden;
 }
 // Offsets for the SPA content, clearing the two fixed chrome elements:
 // - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).
