@@ -19,9 +19,7 @@
       </OnmsTabList>
       <OnmsTabPanels>
         <OnmsTabPanel value="event-notifications">
-          <p class="tab-placeholder" data-test="placeholder-event-notifications">
-            Event notification management arrives with NMS-20118.
-          </p>
+          <EventNotificationsTable />
         </OnmsTabPanel>
         <OnmsTabPanel value="destination-paths">
           <p class="tab-placeholder" data-test="placeholder-destination-paths">
@@ -61,6 +59,7 @@ import { ref, watch } from 'vue'
 
 import { OnmsDialog, OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
+import EventNotificationsTable from '@/components/AdminNotifications/EventNotificationsTable.vue'
 import { useNotificationConfigStore } from '@/stores/notificationConfigStore'
 import { NotifdStatus } from '@/types/notificationConfig'
 
@@ -72,9 +71,8 @@ const emit = defineEmits(['update:visible'])
 
 const store = useNotificationConfigStore()
 
-// Event Notifications is first in the final tab order but is only a placeholder
-// until NMS-20118 lands, so open on General (the one live tab) for now.
-const activeTab = ref('general')
+// Open on Event Notifications, the first tab in the final order (now live).
+const activeTab = ref('event-notifications')
 
 const statusPending = ref(false)
 
@@ -84,6 +82,10 @@ const statusPending = ref(false)
 const loadedTabs = ref(new Set<string>())
 
 const TAB_LOADERS: Record<string, () => Promise<boolean>> = {
+  'event-notifications': async () =>
+    // destination paths feed the editor's path picker; every fetch must succeed or
+    // the tab retries instead of latching (a failed fetch returns null/false)
+    (await Promise.all([store.getEventNotifications(), store.getDestinationPaths()])).every(Boolean),
   general: () => store.getStatus()
 }
 
