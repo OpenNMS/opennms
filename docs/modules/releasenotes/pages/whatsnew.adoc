@@ -91,6 +91,20 @@ After upgrade, manage event configurations through the *Administration -> Manage
 
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
+=== ActiveMQ store and JVM temp directory moved out of the Karaf cache
+`java.io.tmpdir` moved from `data/tmp` to `tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved
+from `data/tmp/activemq` to `var/activemq`. Both previously lived under `$\{OPENNMS_HOME}/data`, which is Karaf's own
+cache directory and can be cleared during upgrades or via `karaf.clean.all`; relocating them keeps JVM scratch space and
+message-broker storage from being wiped along with the cache.
+
+The upgrade process moves the existing ActiveMQ store and any persisted Drools correlation-engine or northbounder
+session state to their new locations automatically; no action is required.
+
+To keep the previous paths instead, set `-Djava.io.tmpdir=$\{OPENNMS_HOME}/data/tmp` and
+`-Dactivemq.data=$\{OPENNMS_HOME}/data/tmp/activemq` in `ADDITIONAL_MANAGER_OPTIONS`
+(see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration]), or in `JAVA_OPTS` for
+container deployments.
+
 == Breaking changes
 
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support
