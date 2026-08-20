@@ -1,5 +1,4 @@
 <template>
-  <div style="height: 1rem"></div>
   <div class="footer">
     <p>
       OpenNMS <a href="../about/index.jsp">Copyright</a> © {{ mainMenu.copyrightDates || '--' }}
