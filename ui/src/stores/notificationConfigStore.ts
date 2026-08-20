@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand } from '@/types/notificationConfig'
+import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, PathOutage, PathOutagePreview, PathOutageRequest } from '@/types/notificationConfig'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -34,6 +34,7 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
   const users = ref([] as string[])
   const groups = ref([] as string[])
   const roles = ref([] as string[])
+  const pathOutages = ref([] as PathOutage[])
 
   const getStatus = async (): Promise<boolean> => {
     notifdStatus.value = await API.getNotificationConfigStatus()
@@ -68,10 +69,39 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     return ok
   }
 
+  const getPathOutages = async (): Promise<boolean> => {
+    const result = await API.getPathOutages()
+    if (result === null) {
+      return false
+    }
+    pathOutages.value = result
+    return true
+  }
+
+  const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+    return await API.previewPathOutageRule(rule)
+  }
+
+  const applyPathOutage = async (request: PathOutageRequest) => {
+    const ok = await API.applyPathOutage(request)
+    if (ok) {
+      await getPathOutages()
+    }
+    return ok
+  }
+
   const addEventNotification = async (notification: EventNotification) => {
     const ok = await API.addEventNotification(notification)
     if (ok) {
       await getEventNotifications()
+    }
+    return ok
+  }
+
+  const deletePathOutage = async (nodeId: number) => {
+    const ok = await API.deletePathOutage(nodeId)
+    if (ok) {
+      await getPathOutages()
     }
     return ok
   }
@@ -160,6 +190,7 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     users,
     groups,
     roles,
+    pathOutages,
     getStatus,
     setStatus,
     getEventNotifications,
@@ -173,6 +204,10 @@ export const useNotificationConfigStore = defineStore('notificationConfigStore',
     deleteDestinationPath,
     testDestinationPath,
     getCommands,
-    getUsersAndGroups
+    getUsersAndGroups,
+    getPathOutages,
+    previewPathOutageRule,
+    applyPathOutage,
+    deletePathOutage
   }
 })

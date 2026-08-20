@@ -24,9 +24,12 @@ package org.opennms.web.rest.v2;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.locks.Lock;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +50,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
@@ -54,15 +58,21 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.PathOutageDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.springframework.dao.DataAccessException;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +100,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * <li><b>GET/POST/PUT/DELETE /notification-config/destination-paths[/{name}]</b> destination path CRUD (destinationPaths.xml)</li>
  * <li><b>GET /notification-config/commands</b> notification commands (notificationCommands.xml, read-only)</li>
  * <li><b>GET /notification-config/on-call-roles</b> on-call role names (groups.xml, read-only)</li>
+ * <li><b>GET/POST/DELETE /notification-config/path-outages</b> critical paths (pathoutage table)</li>
  * </ul>
  */
 @Component("notificationConfigRestService")
@@ -136,6 +147,20 @@ public class NotificationConfigRestService {
         LOG.error(t.getMessage(), t);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
+
+    @Autowired
+    private PathOutageDao pathOutageDao;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
+
+    // Flush/clear the Hibernate session every N rows during a bulk path-outage
+    // apply so a rule that matches many nodes doesn't accumulate the whole batch
+    // in the persistence context.
+    private static final int PATH_OUTAGE_BATCH = 200;
 
     public static class NotificationStatus {
         private String status;
@@ -745,6 +770,9 @@ public class NotificationConfigRestService {
         final org.opennms.netmgt.config.notifications.Varbind varbind = notification.getVarbind();
         if (varbind != null && (StringUtils.isBlank(varbind.getVbname()) || StringUtils.isBlank(varbind.getVbvalue()))) {
             throw getException(Status.BAD_REQUEST, "A varbind requires both a name and a value");
+        }
+    }
+
     private static void validateDestinationPath(final org.opennms.netmgt.config.destinationPaths.Path path) {
         if (path == null || StringUtils.isBlank(path.getName())) {
             throw getException(Status.BAD_REQUEST, "The destination path and its name are required");
@@ -802,5 +830,274 @@ public class NotificationConfigRestService {
     private static GroupManager getGroupManager() throws Exception {
         GroupFactory.init();
         return GroupFactory.getInstance();
+    }
+
+    // ------------------------------------------------------------------
+    // Path outages (critical paths). Storage is and stays the pathoutage
+    // DB table; the logic below mirrors the legacy NotificationWizardServlet
+    // (filter rule -> node set; per node delete + optional insert; blank
+    // critical IP clears the path for the matching nodes).
+    // ------------------------------------------------------------------
+
+    private static final int PREVIEW_NODE_LIMIT = 200;
+
+    public static class PathOutageDTO {
+        private Integer nodeId;
+        private String nodeLabel;
+        private String criticalPathIp;
+        private String criticalPathServiceName;
+
+        public Integer getNodeId() {
+            return nodeId;
+        }
+
+        public void setNodeId(final Integer nodeId) {
+            this.nodeId = nodeId;
+        }
+
+        public String getNodeLabel() {
+            return nodeLabel;
+        }
+
+        public void setNodeLabel(final String nodeLabel) {
+            this.nodeLabel = nodeLabel;
+        }
+
+        public String getCriticalPathIp() {
+            return criticalPathIp;
+        }
+
+        public void setCriticalPathIp(final String criticalPathIp) {
+            this.criticalPathIp = criticalPathIp;
+        }
+
+        public String getCriticalPathServiceName() {
+            return criticalPathServiceName;
+        }
+
+        public void setCriticalPathServiceName(final String criticalPathServiceName) {
+            this.criticalPathServiceName = criticalPathServiceName;
+        }
+    }
+
+    public static class PathOutagePreviewDTO {
+        private int totalCount;
+        private List<PathOutageDTO> nodes = new ArrayList<>();
+
+        public int getTotalCount() {
+            return totalCount;
+        }
+
+        public void setTotalCount(final int totalCount) {
+            this.totalCount = totalCount;
+        }
+
+        public List<PathOutageDTO> getNodes() {
+            return nodes;
+        }
+
+        public void setNodes(final List<PathOutageDTO> nodes) {
+            this.nodes = nodes;
+        }
+    }
+
+    public static class PathOutageRequestDTO {
+        private String rule;
+        private String criticalIp;
+        private String criticalSvc;
+
+        public String getRule() {
+            return rule;
+        }
+
+        public void setRule(final String rule) {
+            this.rule = rule;
+        }
+
+        public String getCriticalIp() {
+            return criticalIp;
+        }
+
+        public void setCriticalIp(final String criticalIp) {
+            this.criticalIp = criticalIp;
+        }
+
+        public String getCriticalSvc() {
+            return criticalSvc;
+        }
+
+        public void setCriticalSvc(final String criticalSvc) {
+            this.criticalSvc = criticalSvc;
+        }
+    }
+
+    @GET
+    @Path("path-outages")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PathOutageDTO> getPathOutages(@Context final SecurityContext securityContext) {
+        assertAdmin(securityContext, "read path outages");
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final List<OnmsPathOutage> outages = pathOutageDao.findAll();
+            // fetch the node labels in one query rather than a lazy select per
+            // row on the @OneToOne node association
+            final Set<Integer> nodeIds = new HashSet<>();
+            for (final OnmsPathOutage po : outages) {
+                nodeIds.add(po.getNodeId());
+            }
+            final Map<Integer, String> labelByNodeId = new HashMap<>();
+            if (!nodeIds.isEmpty()) {
+                for (final OnmsNode node : nodeDao.findMatching(new CriteriaBuilder(OnmsNode.class).in("id", nodeIds).toCriteria())) {
+                    labelByNodeId.put(node.getId(), node.getLabel());
+                }
+            }
+            final List<PathOutageDTO> result = new ArrayList<>();
+            for (final OnmsPathOutage po : outages) {
+                final PathOutageDTO dto = new PathOutageDTO();
+                dto.setNodeId(po.getNodeId());
+                dto.setNodeLabel(labelByNodeId.get(po.getNodeId()));
+                dto.setCriticalPathIp(InetAddressUtils.str(po.getCriticalPathIp()));
+                dto.setCriticalPathServiceName(po.getCriticalPathServiceName());
+                result.add(dto);
+            }
+            // preserve the prior ordering: node label, then node id
+            result.sort(Comparator
+                    .comparing((final PathOutageDTO dto) -> dto.getNodeLabel() == null ? "" : dto.getNodeLabel(), String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PathOutageDTO::getNodeId));
+            return result;
+        });
+    }
+
+    @GET
+    @Path("path-outages/preview")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PathOutagePreviewDTO previewPathOutageRule(@Context final SecurityContext securityContext, @javax.ws.rs.QueryParam("rule") final String rule) {
+        assertAdmin(securityContext, "preview path outage rules");
+        if (StringUtils.isBlank(rule)) {
+            throw getException(Status.BAD_REQUEST, "A filter rule is required");
+        }
+        readLock();
+        try {
+            final SortedMap<Integer, String> nodes = getMatchingNodes(rule);
+            final PathOutagePreviewDTO preview = new PathOutagePreviewDTO();
+            preview.setTotalCount(nodes.size());
+            for (final Map.Entry<Integer, String> entry : nodes.entrySet()) {
+                if (preview.getNodes().size() >= PREVIEW_NODE_LIMIT) {
+                    break;
+                }
+                final PathOutageDTO dto = new PathOutageDTO();
+                dto.setNodeId(entry.getKey());
+                dto.setNodeLabel(entry.getValue());
+                preview.getNodes().add(dto);
+            }
+            return preview;
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @POST
+    @Path("path-outages")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response applyPathOutage(@Context final SecurityContext securityContext, final PathOutageRequestDTO request) {
+        assertAdmin(securityContext, "configure path outages");
+        if (request == null || StringUtils.isBlank(request.getRule())) {
+            throw getException(Status.BAD_REQUEST, "A filter rule is required");
+        }
+        final boolean clearing = request.getCriticalIp() == null || request.getCriticalIp().trim().isEmpty();
+        final String requestedSvc = StringUtils.isBlank(request.getCriticalSvc()) ? "ICMP" : request.getCriticalSvc().trim();
+        if (!"ICMP".equalsIgnoreCase(requestedSvc)) {
+            throw getException(Status.BAD_REQUEST, "Only ICMP is supported as a critical path service.");
+        }
+        // store the canonical service name: the path-outage joins compare
+        // criticalPathServiceName to serviceType.name case-sensitively, so a
+        // verbatim "icmp" would silently drop out of getNodesForPathOutage.
+        final String criticalSvc = "ICMP";
+        final InetAddress criticalIp;
+        if (clearing) {
+            criticalIp = null;
+        } else {
+            final String raw = request.getCriticalIp().trim();
+            try {
+                FilterDaoFactory.getInstance().validateRule("IPADDR IPLIKE " + raw);
+                // addr already parses/canonicalizes; normalize would be a redundant round-trip
+                criticalIp = InetAddressUtils.addr(raw);
+            } catch (final FilterParseException | IllegalArgumentException e) {
+                throw getException(Status.BAD_REQUEST, "Invalid critical path IP address: {}", raw);
+            }
+        }
+        final SortedMap<Integer, String> nodes = getMatchingNodes(request.getRule());
+        if (nodes.isEmpty()) {
+            throw getException(Status.BAD_REQUEST, "The filter rule matches no nodes.");
+        }
+        try {
+            // one transaction so a mid-loop failure can't leave some nodes
+            // stripped of their old critical path with no new one written
+            sessionUtils.withTransaction(() -> {
+                int count = 0;
+                for (final Integer nodeId : nodes.keySet()) {
+                    final OnmsPathOutage existing = pathOutageDao.get(nodeId);
+                    if (clearing) {
+                        if (existing != null) {
+                            pathOutageDao.delete(existing);
+                        }
+                    } else if (existing != null) {
+                        // update in place rather than delete+insert (same primary key)
+                        existing.setCriticalPathIp(criticalIp);
+                        existing.setCriticalPathServiceName(criticalSvc);
+                        pathOutageDao.update(existing);
+                    } else {
+                        // load() is a proxy (no query); the node came from the filter
+                        // evaluation so it exists
+                        pathOutageDao.save(new OnmsPathOutage(nodeDao.load(nodeId), criticalIp, criticalSvc));
+                    }
+                    if (++count % PATH_OUTAGE_BATCH == 0) {
+                        pathOutageDao.flush();
+                        pathOutageDao.clear();
+                    }
+                }
+                return null;
+            });
+        } catch (final DataAccessException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Could not apply the path outage: {}", e.getMessage());
+        }
+        LOG.info("Path outage {} applied to {} nodes (rule '{}') by user {}",
+                clearing ? "cleared" : "critical path " + InetAddressUtils.str(criticalIp) + "/" + criticalSvc,
+                nodes.size(), request.getRule(), securityContext.getUserPrincipal().getName());
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("path-outages/{nodeId}")
+    public Response deletePathOutage(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+        assertAdmin(securityContext, "remove path outages");
+        final boolean removed;
+        try {
+            removed = sessionUtils.withTransaction(() -> {
+                final OnmsPathOutage existing = pathOutageDao.get(nodeId);
+                if (existing == null) {
+                    return false;
+                }
+                pathOutageDao.delete(existing);
+                return true;
+            });
+        } catch (final DataAccessException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't remove path outage for node {}: {}", String.valueOf(nodeId), e.getMessage());
+        }
+        if (!removed) {
+            throw getException(Status.NOT_FOUND, "No critical path is configured for node {}.", String.valueOf(nodeId));
+        }
+        return Response.noContent().build();
+    }
+
+    private static SortedMap<Integer, String> getMatchingNodes(final String rule) {
+        // getNodeMap already parses/evaluates the rule; a preceding validateRule
+        // would be a second full evaluation, so rely on getNodeMap's own parse.
+        try {
+            return FilterDaoFactory.getInstance().getNodeMap(rule);
+        } catch (final FilterParseException e) {
+            throw getException(Status.BAD_REQUEST, "Invalid filter rule: {}", e.getMessage());
+        } catch (final DataAccessException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Could not evaluate the filter rule: {}", e.getMessage());
+        }
     }
 }

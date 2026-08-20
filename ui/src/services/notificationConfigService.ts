@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
+import { DestinationPath, EventNotification, NotifdStatus, NotificationCommand, PathOutage, PathOutagePreview, PathOutageRequest, RuleValidation, UeiSuggestion } from '@/types/notificationConfig'
 import { v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
@@ -266,6 +266,20 @@ const getNotificationCommands = async (): Promise<NotificationCommand[] | null> 
   }
 }
 
+const getPathOutages = async (): Promise<PathOutage[] | null> => {
+  try {
+    startSpinner()
+    const resp = await v2.get(`${endpoint}/path-outages`)
+    return resp.data ?? []
+  } catch (_err) {
+    // null (not []) so the caller can tell a failed load from an empty one and retry
+    showSnackBar({ msg: 'Failed to load path outages.' })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
+
 const getNotificationServices = async (): Promise<string[] | null> => {
   try {
     const resp = await v2.get(`${endpoint}/services`)
@@ -288,11 +302,57 @@ const validateNotificationRule = async (rule: string, preview = false): Promise<
   }
 }
 
+const previewPathOutageRule = async (rule: string): Promise<PathOutagePreview | null> => {
+  try {
+    startSpinner()
+    const resp = await v2.get(`${endpoint}/path-outages/preview?rule=${encodeURIComponent(rule)}`)
+    return resp.data ?? null
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to validate the filter rule.' })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
+
+const applyPathOutage = async (request: PathOutageRequest): Promise<boolean> => {
+  try {
+    startSpinner()
+    await v2.post(`${endpoint}/path-outages`, request)
+    showSnackBar({ msg: request.criticalIp ? 'Critical path applied.' : 'Critical path cleared.' })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to apply the critical path.' })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+const deletePathOutage = async (nodeId: number): Promise<boolean> => {
+  try {
+    startSpinner()
+    await v2.delete(`${endpoint}/path-outages/${nodeId}`)
+    showSnackBar({ msg: 'Critical path removed.' })
+    return true
+  } catch (err: any) {
+    const detail = err?.response?.data
+    showSnackBar({ msg: typeof detail === 'string' && detail ? detail : 'Failed to remove critical path.' })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
 export {
   addDestinationPath,
   addEventNotification,
+  applyPathOutage,
   deleteDestinationPath,
   deleteEventNotification,
+  deletePathOutage,
   getDestinationPaths,
   getEventNotifications,
   getNotificationCommands,
@@ -301,6 +361,8 @@ export {
   getNotificationServices,
   getNotificationUsers,
   getOnCallRoles,
+  getPathOutages,
+  previewPathOutageRule,
   searchEventConfUeis,
   setEventNotificationStatus,
   setNotificationConfigStatus,
