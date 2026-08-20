@@ -125,12 +125,6 @@ body .v-app.topo_default.topologyui {
   transition: margin-left 0.1s linear;
 }
 
-// Visited links keep the normal color (no distinct visited color), matching the
-// app convention in onms-base.scss.
-a:visited {
-  color: var(--onms-clickable-normal);
-}
-
 // Native form controls on legacy pages: <select> (e.g. the Alarm/Event/Outage
 // list filters, `select.form-control.custom-select`), checkboxes (e.g. the
 // alarm list's 'Ack' column), radios (e.g. graph/admin pages), and unstyled
