@@ -177,12 +177,11 @@
                 <!-- Netty moved the kqueue classes out of the native artifact after 4.1.22,
                      so point at the classes artifact. Must precede the generic rule below. -->
                 <replacement>
-                  <token>io\.netty/netty-transport-native-kqueue/4\.1\.22\.Final</token>
+                  <token>io\.netty/netty-transport-native-kqueue/4\.[0-9]+\.[0-9]+\.Final</token>
                   <value>io.netty/netty-transport-classes-kqueue/${netty4Version}</value>
                 </replacement>
-                <!-- Lock Netty to our version -->
                 <replacement>
-                  <token>io\.netty/([a-zA-Z0-9._-]+)/4\.1\.22\.Final</token>
+                  <token>io\.netty/([a-zA-Z0-9._-]+)/4\.[0-9]+\.[0-9]+\.Final</token>
                   <value>io.netty/$1/${netty4Version}</value>
                 </replacement>
                 <!-- upstream Camel typo: the property is never interpolated -->
@@ -233,31 +232,30 @@
             <configuration>
               <file>${project.build.directory}/downloaded-features/newts-karaf-${newtsVersion}-features.xml</file>
               <replacements>
-                <!-- Lock Jackson to our version, feature label included -->
                 <replacement>
                   <token>com\.fasterxml\.jackson\.([a-z]+)/([a-zA-Z0-9._-]+)/2\.[0-9]+[0-9.]*</token>
                   <value>com.fasterxml.jackson.$1/$2/${jackson2Version}</value>
                 </replacement>
                 <replacement>
-                  <token>(name="fastxml-jackson"[^>]*version=)"2\.5\.4"</token>
+                  <token>(name="fastxml-jackson"[^>]*version=)"2\.[0-9]+[0-9.]*"</token>
                   <value>$1"${jackson2Version}"</value>
                 </replacement>
-                <!-- Lock Netty to our version. The feature label stays 4.0.56.Final on purpose:
-                     nothing references it by version, and renaming it would collide with our own
-                     netty/${netty4Version} feature. -->
                 <replacement>
-                  <token>io\.netty/([a-zA-Z0-9._-]+)/4\.0\.56\.Final</token>
+                  <token><![CDATA[<feature version="2\.[0-9]+[0-9.]*">fastxml-jackson</feature>]]></token>
+                  <value><![CDATA[<feature version="${jackson2Version}">fastxml-jackson</feature>]]></value>
+                </replacement>
+                <replacement>
+                  <token>io\.netty/([a-zA-Z0-9._-]+)/4\.[0-9]+\.[0-9]+\.Final</token>
                   <value>io.netty/$1/${netty4Version}</value>
                 </replacement>
-                <!-- Lock Guava to our version (Newts 1.5.7 imports [18.0,26)) -->
+                <!-- Lock Guava to our version -->
                 <replacement>
-                  <token>com\.google\.guava/guava/18\.0</token>
+                  <token>com\.google\.guava/guava/[0-9][0-9.]*(?:-jre|-android)?</token>
                   <value>com.google.guava/guava/${guavaVersion}</value>
                 </replacement>
-                <!-- Lock the Cassandra driver to our version; label left alone as above -->
                 <replacement>
-                  <token>com\.datastax\.cassandra/cassandra-driver-core/3\.5\.0</token>
-                  <value>com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</value>
+                  <token>com\.datastax\.oss/(java-driver-core|java-driver-query-builder)/[0-9][0-9.]*</token>
+                  <value>com.datastax.oss/$1/${cassandraVersion}</value>
                 </replacement>
               </replacements>
             </configuration>
