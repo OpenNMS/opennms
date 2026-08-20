@@ -13,7 +13,15 @@ vi.mock('@/services', () => ({
     addEventNotification: vi.fn(),
     updateEventNotification: vi.fn(),
     deleteEventNotification: vi.fn(),
-    getDestinationPaths: vi.fn()
+    getDestinationPaths: vi.fn(),
+    addDestinationPath: vi.fn(),
+    updateDestinationPath: vi.fn(),
+    deleteDestinationPath: vi.fn(),
+    testDestinationPath: vi.fn(),
+    getNotificationCommands: vi.fn(),
+    getNotificationUsers: vi.fn(),
+    getNotificationGroups: vi.fn(),
+    getOnCallRoles: vi.fn()
   }
 }))
 
@@ -56,6 +64,7 @@ describe('useNotificationConfigStore', () => {
       expect(store.notifdStatus).toBeNull()
       expect(store.eventNotifications).toEqual([])
       expect(store.destinationPaths).toEqual([])
+      expect(store.commands).toEqual([])
     })
   })
 
@@ -183,6 +192,71 @@ describe('useNotificationConfigStore', () => {
       await store.getDestinationPaths()
 
       expect(store.destinationPaths).toEqual([mockPath])
+    })
+
+    it('should refresh after add, update and delete', async () => {
+      vi.mocked(API.addDestinationPath).mockResolvedValue(true)
+      vi.mocked(API.updateDestinationPath).mockResolvedValue(true)
+      vi.mocked(API.deleteDestinationPath).mockResolvedValue(true)
+      vi.mocked(API.getDestinationPaths).mockResolvedValue([mockPath])
+
+      await store.addDestinationPath(mockPath)
+      await store.updateDestinationPath('Email-Admin', mockPath)
+      await store.deleteDestinationPath('Email-Admin')
+
+      expect(API.getDestinationPaths).toHaveBeenCalledTimes(3)
+      expect(store.destinationPaths).toEqual([mockPath])
+    })
+
+    it('should pass the original name when renaming', async () => {
+      vi.mocked(API.updateDestinationPath).mockResolvedValue(true)
+      vi.mocked(API.getDestinationPaths).mockResolvedValue([])
+
+      const renamed = { ...mockPath, name: 'Email-Ops' }
+      await store.updateDestinationPath('Email-Admin', renamed)
+
+      expect(API.updateDestinationPath).toHaveBeenCalledWith('Email-Admin', renamed)
+    })
+  })
+
+  describe('editor lookups', () => {
+    it('should load the notification commands', async () => {
+      vi.mocked(API.getNotificationCommands).mockResolvedValue([{ name: 'javaEmail' }])
+
+      await store.getCommands()
+
+      expect(store.commands).toEqual([{ name: 'javaEmail' }])
+    })
+
+    it('should load users, groups and roles for the target picker', async () => {
+      vi.mocked(API.getNotificationUsers).mockResolvedValue(['admin'])
+      vi.mocked(API.getNotificationGroups).mockResolvedValue(['Admin'])
+      vi.mocked(API.getOnCallRoles).mockResolvedValue(['oncall'])
+
+      const ok = await store.getUsersAndGroups()
+
+      expect(ok).toBe(true)
+      expect(store.users).toEqual(['admin'])
+      expect(store.groups).toEqual(['Admin'])
+      expect(store.roles).toEqual(['oncall'])
+    })
+
+    it('reports failure when a lookup errors so the tab loader can retry', async () => {
+      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce([mockPath])
+      await store.getDestinationPaths()
+      // a failed reload returns false and keeps the prior data
+      vi.mocked(API.getDestinationPaths).mockResolvedValueOnce(null)
+      expect(await store.getDestinationPaths()).toBe(false)
+      expect(store.destinationPaths).toEqual([mockPath])
+
+      // getUsersAndGroups is false if ANY of the three lookups fails
+      vi.mocked(API.getNotificationUsers).mockResolvedValue(['admin'])
+      vi.mocked(API.getNotificationGroups).mockResolvedValue(null)
+      vi.mocked(API.getOnCallRoles).mockResolvedValue(['oncall'])
+      expect(await store.getUsersAndGroups()).toBe(false)
+
+      vi.mocked(API.getNotificationCommands).mockResolvedValueOnce(null)
+      expect(await store.getCommands()).toBe(false)
     })
   })
 })

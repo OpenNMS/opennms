@@ -49,12 +49,16 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
+import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -83,8 +87,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * <li><b>PUT /notification-config/status</b> turn notifd on or off</li>
  * <li><b>GET/POST/PUT/DELETE /notification-config/event-notifications[/{name}]</b> event notification CRUD (notifications.xml)</li>
  * <li><b>PUT /notification-config/event-notifications/{name}/status</b> toggle one event notification</li>
- * <li><b>GET /notification-config/destination-paths</b> all destination paths</li>
- * <li><b>GET /notification-config/destination-paths/{name}</b> one destination path</li>
+ * <li><b>GET/POST/PUT/DELETE /notification-config/destination-paths[/{name}]</b> destination path CRUD (destinationPaths.xml)</li>
+ * <li><b>GET /notification-config/commands</b> notification commands (notificationCommands.xml, read-only)</li>
+ * <li><b>GET /notification-config/on-call-roles</b> on-call role names (groups.xml, read-only)</li>
  * </ul>
  */
 @Component("notificationConfigRestService")
@@ -368,6 +373,150 @@ public class NotificationConfigRestService {
         }
     }
 
+    @POST
+    @Path("destination-paths")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addDestinationPath(@Context final SecurityContext securityContext, final org.opennms.netmgt.config.destinationPaths.Path path) {
+        assertAdmin(securityContext, "add destination paths");
+        validateDestinationPath(path);
+        writeLock();
+        try {
+            if (getDestinationPathFactory().getPath(path.getName()) != null) {
+                throw getException(Status.BAD_REQUEST, "Destination path {} already exists.", path.getName());
+            }
+            getDestinationPathFactory().addPath(path);
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            reloadDestinationPathsQuietly();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't add destination path {}: {}", path.getName(), e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("destination-paths/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateDestinationPath(@Context final SecurityContext securityContext, @PathParam("name") final String name, final org.opennms.netmgt.config.destinationPaths.Path path) {
+        assertAdmin(securityContext, "update destination paths");
+        validateDestinationPath(path);
+        writeLock();
+        try {
+            if (getDestinationPathFactory().getPath(name) == null) {
+                throw getException(Status.NOT_FOUND, "Destination path {} was not found.", name);
+            }
+            final boolean renamed = !name.equals(path.getName());
+            if (renamed && getDestinationPathFactory().getPath(path.getName()) != null) {
+                throw getException(Status.BAD_REQUEST, "Destination path {} already exists.", path.getName());
+            }
+            final org.opennms.netmgt.config.destinationPaths.Path oldPath = getDestinationPathFactory().getPath(name);
+            getDestinationPathFactory().replacePath(name, path);
+            if (renamed) {
+                // keep event notifications pointing at the renamed path
+                final List<Notification> touched = new ArrayList<>();
+                for (final Notification n : getNotificationFactory().getNotifications().values()) {
+                    if (name.equals(n.getDestinationPath())) {
+                        n.setDestinationPath(path.getName());
+                        touched.add(n);
+                    }
+                }
+                if (!touched.isEmpty()) {
+                    try {
+                        getNotificationFactory().saveCurrent();
+                    } catch (final Exception notifSaveError) {
+                        // The path rename already persisted; undo it and revert the
+                        // in-memory notifications so destinationPaths.xml and
+                        // notifications.xml stay consistent instead of leaving
+                        // notifications pointing at a name that no longer exists.
+                        try {
+                            getDestinationPathFactory().replacePath(path.getName(), oldPath);
+                        } catch (final Exception rollbackError) {
+                            notifSaveError.addSuppressed(rollbackError);
+                        }
+                        for (final Notification n : touched) {
+                            n.setDestinationPath(name);
+                        }
+                        throw notifSaveError;
+                    }
+                }
+            }
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            reloadDestinationPathsQuietly();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update destination path {}: {}", name, e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("destination-paths/{name}")
+    public Response deleteDestinationPath(@Context final SecurityContext securityContext, @PathParam("name") final String name) {
+        assertAdmin(securityContext, "delete destination paths");
+        writeLock();
+        try {
+            if (getDestinationPathFactory().getPath(name) == null) {
+                throw getException(Status.NOT_FOUND, "Destination path {} was not found.", name);
+            }
+            // destinationPaths.xsd requires at least one path, so removing the
+            // last one would fail schema validation on marshal (a raw 500).
+            // Reject it up front with an explanation instead.
+            if (getDestinationPathFactory().getPaths().size() <= 1) {
+                throw getException(Status.BAD_REQUEST, "Destination path {} is the only one configured; at least one must remain.", name);
+            }
+            getDestinationPathFactory().removePath(name);
+            return Response.noContent().build();
+        } catch (final javax.ws.rs.WebApplicationException e) {
+            throw e;
+        } catch (final Exception e) {
+            reloadDestinationPathsQuietly();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete destination path {}: {}", name, e.getMessage());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @GET
+    @Path("commands")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Command> getCommands(@Context final SecurityContext securityContext) {
+        assertAdmin(securityContext, "read notification commands");
+        readLock();
+        try {
+            final List<Command> commands = new ArrayList<>(getNotificationCommandFactory().getCommands().values());
+            commands.sort(Comparator.comparing(Command::getName, String.CASE_INSENSITIVE_ORDER));
+            return commands;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read notification commands: {}", e.getMessage());
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("on-call-roles")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getOnCallRoles(@Context final SecurityContext securityContext) {
+        assertAdmin(securityContext, "read on-call roles");
+        readLock();
+        try {
+            final GroupManager manager = getGroupManager();
+            // getRoleNames() reads cached state without checking the file
+            manager.update();
+            final List<String> roles = new ArrayList<>(java.util.Arrays.asList(manager.getRoleNames()));
+            roles.sort(String.CASE_INSENSITIVE_ORDER);
+            return roles;
+        } catch (final Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't read on-call roles: {}", e.getMessage());
+        } finally {
+            readUnlock();
+        }
+    }
+
     private static void assertAdmin(final SecurityContext securityContext, final String operation) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw getException(Status.FORBIDDEN, "User {} does not have access to {}.", securityContext.getUserPrincipal().getName(), operation);
@@ -596,11 +745,62 @@ public class NotificationConfigRestService {
         final org.opennms.netmgt.config.notifications.Varbind varbind = notification.getVarbind();
         if (varbind != null && (StringUtils.isBlank(varbind.getVbname()) || StringUtils.isBlank(varbind.getVbvalue()))) {
             throw getException(Status.BAD_REQUEST, "A varbind requires both a name and a value");
+    private static void validateDestinationPath(final org.opennms.netmgt.config.destinationPaths.Path path) {
+        if (path == null || StringUtils.isBlank(path.getName())) {
+            throw getException(Status.BAD_REQUEST, "The destination path and its name are required");
+        }
+        if (path.getTargets().isEmpty()) {
+            throw getException(Status.BAD_REQUEST, "The destination path requires at least one target");
+        }
+        validateTargets(path.getTargets());
+        for (final org.opennms.netmgt.config.destinationPaths.Escalate escalate : path.getEscalates()) {
+            if (StringUtils.isBlank(escalate.getDelay())) {
+                throw getException(Status.BAD_REQUEST, "Every escalation requires a delay");
+            }
+            if (escalate.getTargets().isEmpty()) {
+                throw getException(Status.BAD_REQUEST, "Every escalation requires at least one target");
+            }
+            validateTargets(escalate.getTargets());
+        }
+    }
+
+    private static void validateTargets(final List<org.opennms.netmgt.config.destinationPaths.Target> targets) {
+        for (final org.opennms.netmgt.config.destinationPaths.Target target : targets) {
+            if (StringUtils.isBlank(target.getName())) {
+                throw getException(Status.BAD_REQUEST, "Every target requires a name");
+            }
+            if (target.getCommands().isEmpty() || target.getCommands().stream().anyMatch(StringUtils::isBlank)) {
+                throw getException(Status.BAD_REQUEST, "Every target requires at least one non-empty command");
+            }
         }
     }
 
     private static DestinationPathFactory getDestinationPathFactory() throws Exception {
         DestinationPathFactory.init();
         return DestinationPathFactory.getInstance();
+    }
+
+    // addPath/replacePath/removePath mutate the in-memory map and only then
+    // saveCurrent(); if the save throws (I/O error, or the marshalled XML fails
+    // schema validation — e.g. removing the last path), memory is left ahead of
+    // the file and the factory won't re-read until a restart. Reload from disk
+    // on any mutation failure so memory matches what actually persisted.
+    private static void reloadDestinationPathsQuietly() {
+        try {
+            getDestinationPathFactory().reload();
+        } catch (final Exception e) {
+            LOG.warn("Failed to reload destination paths after a save error; "
+                    + "in-memory notification config may diverge from disk until restart", e);
+        }
+    }
+
+    private static NotificationCommandFactory getNotificationCommandFactory() throws Exception {
+        NotificationCommandFactory.init();
+        return NotificationCommandFactory.getInstance();
+    }
+
+    private static GroupManager getGroupManager() throws Exception {
+        GroupFactory.init();
+        return GroupFactory.getInstance();
     }
 }

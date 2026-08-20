@@ -92,3 +92,19 @@ export interface UeiSuggestion {
   uei: string
   eventLabel: string
 }
+
+export interface NotificationCommandArgument {
+  streamed?: string
+  substitution?: string
+  switch?: string
+}
+
+export interface NotificationCommand {
+  binary?: string
+  'service-registry'?: string
+  name: string
+  execute?: string
+  comment?: string
+  'contact-type'?: string
+  argument?: NotificationCommandArgument[]
+}
