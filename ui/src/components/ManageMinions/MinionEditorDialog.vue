@@ -9,20 +9,14 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message v-if="errorText" severity="error" :closable="false" data-test="dialog-error">{{ errorText }}</Message>
+      <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
 
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText id="minion-label" v-model="label" data-test="label-input" />
-          <label for="minion-label">Label</label>
-        </IftaLabel>
+      <FormField label="Label" for="minion-label">
+        <OnmsInputText id="minion-label" v-model="label" fluid data-test="label-input" />
       </FormField>
 
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText id="minion-location" v-model="location" :invalid="!!locationProblem" data-test="location-input" />
-          <label for="minion-location">Location *</label>
-        </IftaLabel>
+      <FormField label="Location" for="minion-location" required>
+        <OnmsInputText id="minion-location" v-model="location" :invalid="!!locationProblem" fluid data-test="location-input" />
         <small v-if="locationProblem" class="field-error" data-test="location-error">{{ locationProblem }}</small>
         <small v-else class="hint">The monitoring location this minion belongs to (required).</small>
       </FormField>
@@ -68,8 +62,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -209,6 +201,15 @@ const save = async () => {
     margin: 0;
     color: var(--p-text-muted-color);
   }
+}
+
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--p-red-200, #fecaca);
+  background: var(--p-red-50, #fef2f2);
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
 }
 
 .field-error {

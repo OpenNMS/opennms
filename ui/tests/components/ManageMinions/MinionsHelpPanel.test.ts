@@ -8,7 +8,7 @@ const TogglePanelStub = { name: 'TogglePanel', template: '<div><slot name="heade
 describe('MinionsHelpPanel.vue', () => {
   it('renders the help content', () => {
     const wrapper = mount(MinionsHelpPanel, {
-      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub } }
+      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub }}
     })
     expect(wrapper.text()).toContain('About Minions')
   })

@@ -16,12 +16,12 @@ describe('MinionEditorDialog.vue', () => {
   let wrapper: VueWrapper<any>
   let store: any
 
-  const minion = { id: 'm1', label: 'Minion One', location: 'Default', type: 'Minion', status: 'UP', version: '1.0', properties: { region: 'us' } }
+  const minion = { id: 'm1', label: 'Minion One', location: 'Default', type: 'Minion', status: 'UP', version: '1.0', properties: { region: 'us' }}
 
   const mountDialog = async (m: any = minion) => {
     wrapper = mount(MinionEditorDialog, {
       props: { visible: false, minion: m },
-      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub } }
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub }}
     })
     await wrapper.setProps({ visible: true })
     await flushPromises()
@@ -45,14 +45,14 @@ describe('MinionEditorDialog.vue', () => {
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
     const arg = store.updateMinion.mock.calls[0][0]
-    expect(arg).toEqual({ id: 'm1', label: 'Renamed', location: 'Default', properties: { region: 'us' } })
+    expect(arg).toEqual({ id: 'm1', label: 'Renamed', location: 'Default', properties: { region: 'us' }})
     // the editor deliberately does NOT send server-maintained fields
     expect(arg.status).toBeUndefined()
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
 
   it('preserves a property key verbatim (does not trim keys)', async () => {
-    await mountDialog({ ...minion, properties: { ' region': 'us' } })
+    await mountDialog({ ...minion, properties: { ' region': 'us' }})
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
     expect(store.updateMinion.mock.calls[0][0].properties).toEqual({ ' region': 'us' })

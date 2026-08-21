@@ -3,24 +3,24 @@ import { AxiosError, AxiosHeaders } from 'axios'
 import { deleteMinion, getMinionNodeIds, listMinions, updateMinion } from '@/services/minionAdminService'
 import { v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() } }))
+vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar: vi.fn() }) }))
 vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 
 const http = (status: number) => {
   const e = new AxiosError('x')
-  e.response = { status, data: '', statusText: '', headers: {}, config: { headers: new AxiosHeaders() } }
+  e.response = { status, data: '', statusText: '', headers: {}, config: { headers: new AxiosHeaders() }}
   return e
 }
 
-const minion = (id: string, location = 'Default') => ({ id, label: id, location, type: 'Minion', status: 'up', version: '1', properties: {} }) as any
+const minion = (id: string, location = 'Default') => ({ id, label: id, location, type: 'Minion', status: 'up', version: '1', properties: {}}) as any
 
 describe('minionAdminService', () => {
   beforeEach(() => vi.clearAllMocks())
   afterEach(() => vi.restoreAllMocks())
 
   it('listMinions fetches a bounded page (not limit=0), reports the total, and maps 204 to empty', async () => {
-    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { minion: [{ id: 'm1' }], totalCount: 7 } } as any)
+    vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { minion: [{ id: 'm1' }], totalCount: 7 }} as any)
     expect(await listMinions()).toEqual({ minions: [{ id: 'm1' }], totalCount: 7 })
     expect(vi.mocked(v2.get).mock.calls[0][0]).not.toContain('limit=0')
 
@@ -37,7 +37,7 @@ describe('minionAdminService', () => {
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { node: [
       { id: '100', foreignId: 'm1', location: 'Default' },
       { id: '101', foreignId: 'm2', location: 'RemoteA' }
-    ] } } as any)
+    ] }} as any)
     const map = await getMinionNodeIds([minion('m1'), minion('m2', 'RemoteA')])
     const url = vi.mocked(v2.get).mock.calls[0][0] as string
     expect(decodeURIComponent(url)).toContain('(foreignId==m1,foreignId==m2)')
@@ -52,10 +52,10 @@ describe('minionAdminService', () => {
 
   it('updateMinion reads the current row and changes only label/location/properties', async () => {
     // fresh server row has a NEWER status than any client snapshot
-    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1', label: 'old', location: 'Default', type: 'Minion', status: 'DOWN', version: '2.0', date: 999, properties: {} } })
+    vi.mocked(v2.get).mockResolvedValue({ data: { id: 'm1', label: 'old', location: 'Default', type: 'Minion', status: 'DOWN', version: '2.0', date: 999, properties: {}}})
     vi.mocked(v2.put).mockResolvedValue({})
 
-    await updateMinion({ id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' } })
+    await updateMinion({ id: 'm1', label: 'new label', location: 'RemoteA', properties: { k: 'v' }})
 
     const [, body] = vi.mocked(v2.put).mock.calls[0]
     expect(body).toMatchObject({

@@ -8,7 +8,7 @@ vi.mock('@/services', () => ({
   default: { listMinions: vi.fn(), updateMinion: vi.fn(), deleteMinion: vi.fn(), getMinionNodeIds: vi.fn() }
 }))
 
-const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {} })
+const minion = (id: string, location = 'Default'): Minion => ({ id, label: id, location, type: 'Minion', status: 'UP', version: '1.0', properties: {}})
 const listResult = (minions: Minion[], totalCount = minions.length) => ({ minions, totalCount })
 
 describe('useMinionAdminStore', () => {
@@ -49,7 +49,7 @@ describe('useMinionAdminStore', () => {
   })
 
   it('updateMinion refreshes on success, not on failure', async () => {
-    const edit = { id: 'm1', label: 'm1', location: 'Default', properties: {} }
+    const edit = { id: 'm1', label: 'm1', location: 'Default', properties: {}}
     vi.mocked(API.updateMinion).mockResolvedValue(null)
     vi.mocked(API.listMinions).mockResolvedValue(listResult([minion('m1')]))
     expect(await store.updateMinion(edit)).toBeNull()

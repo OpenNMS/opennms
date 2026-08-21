@@ -13,7 +13,7 @@ const mountTable = () => {
   const wrapper = mount(MinionsTable, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { MinionEditorDialog: true, OnmsConfirmationDialog: true, TableCard: { template: '<div><slot /></div>' } }
+      stubs: { MinionEditorDialog: true, OnmsConfirmationDialog: true, TableCard: { template: '<div><slot /></div>' }}
     }
   })
   return { wrapper, store: useMinionAdminStore() }
@@ -30,7 +30,7 @@ describe('MinionsTable.vue', () => {
     ctx.store.minions = []
     ctx.store.isLoading = false
     await ctx.wrapper.vm.$nextTick()
-    const headers = ctx.wrapper.findAll('th').map((th) => th.text().trim()).filter(Boolean)
+    const headers = ctx.wrapper.findAll('th').map(th => th.text().trim()).filter(Boolean)
     for (const h of ['ID', 'Label', 'Location', 'Type', 'Status', 'Version', 'Last Updated', 'Properties']) {
       expect(headers).toContain(h)
     }
