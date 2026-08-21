@@ -54,7 +54,7 @@
     <jackson2Version>2.22.1</jackson2Version>
     <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
     <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
-    <jersey.version>2.62</jersey.version>
+    <jersey.version>2.46</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
     <karafVersion>4.3.6</karafVersion>
