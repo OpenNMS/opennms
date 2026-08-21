@@ -192,6 +192,47 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testWritesDoNotReEscapeFullNameAndContacts() throws Exception {
+        // full name and email carry HTML-escapable characters; the config model
+        // sanitizes them to a single layer on create
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"userId\":\"escuser\",\"password\":\"pw\",\"fullName\":\"O'Brien & Sons\","
+                + "\"email\":\"bill&ted@example.com\"}", 201);
+
+        final User created = m_userManager.getUser("escuser");
+        final String storedFullName = created.getFullName().orElse(null);
+        final String storedEmail = emailOf(created);
+        assertNotNull(storedFullName);
+        assertNotNull(storedEmail);
+
+        // a password change copies the stored user; it must not re-escape the
+        // full name or contacts it leaves untouched
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/escuser/password", "{\"password\":\"new\"}", 204);
+        User after = m_userManager.getUser("escuser");
+        assertEquals(storedFullName, after.getFullName().orElse(null));
+        assertEquals(storedEmail, emailOf(after));
+
+        // an unrelated edit that echoes the already-escaped values back must
+        // leave full name and email byte-for-byte unchanged (no cumulative escaping)
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/escuser",
+                "{\"userId\":\"escuser\",\"fullName\":\"" + storedFullName + "\",\"email\":\""
+                + storedEmail + "\",\"userComments\":\"touched\"}", 204);
+        after = m_userManager.getUser("escuser");
+        assertEquals(storedFullName, after.getFullName().orElse(null));
+        assertEquals(storedEmail, emailOf(after));
+
+        sendRequest(DELETE, "/users/escuser", 204);
+    }
+
+    private static String emailOf(final User user) {
+        return user.getContacts().stream()
+                .filter(c -> "email".equals(c.getType()))
+                .findFirst()
+                .flatMap(Contact::getInfo)
+                .orElse(null);
+    }
+
+    @Test
     public void testPasswordChange() throws Exception {
         sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"pwuser\",\"password\":\"first\"}", 201);
         assertTrue(m_userManager.comparePasswords("pwuser", "first"));

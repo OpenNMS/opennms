@@ -35,10 +35,10 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.users.Contact;
-import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.api.UsersRestApi;
@@ -323,25 +323,13 @@ public class UsersRestService implements UsersRestApi {
 
     /** Detached copy so mutations never touch the manager's live object. */
     private static User copyOf(final User user) {
-        final User copy = new User();
-        copy.setUserId(user.getUserId());
-        copy.setFullName(user.getFullName().orElse(null));
-        copy.setUserComments(user.getUserComments().orElse(null));
-        final Password password = user.getPassword();
-        if (password != null) {
-            copy.setPassword(password.getEncryptedPassword(), password.getSalt());
-        }
-        for (final Contact contact : user.getContacts()) {
-            final Contact contactCopy = new Contact(contact.getType());
-            contactCopy.setInfo(contact.getInfo().orElse(null));
-            contactCopy.setServiceProvider(contact.getServiceProvider().orElse(null));
-            copy.getContacts().add(contactCopy);
-        }
-        copy.setDutySchedules(new ArrayList<>(user.getDutySchedules()));
-        copy.setRoles(new ArrayList<>(user.getRoles()));
-        copy.setTuiPin(user.getTuiPin().orElse(null));
-        copy.setTimeZoneId(user.getTimeZoneId().orElse(null));
-        return copy;
+        // Round-trip through JAXB (field access — User is @XmlAccessorType(NONE)
+        // with field annotations, Contact is FIELD) so the deep copy bypasses the
+        // HTML-sanitizing setters. setFullName / Contact.setInfo run a
+        // non-idempotent Encode.forHtml, so a setter-based copy would escape an
+        // already-stored value one layer deeper on every write — a password
+        // change or any unrelated edit would mangle full name and contacts.
+        return JaxbUtils.unmarshal(User.class, JaxbUtils.marshal(user));
     }
 
     /**
@@ -393,7 +381,13 @@ public class UsersRestService implements UsersRestApi {
         // omitted (null) fields are preserved, matching the groups and
         // on-call services; an empty string clears a field
         if (dto.getFullName() != null) {
-            user.setFullName(StringUtils.trimToNull(dto.getFullName()));
+            // setFullName runs a non-idempotent HTML sanitizer; only write when the
+            // value actually changed so an unrelated edit can't re-escape the
+            // already-stored value one layer deeper
+            final String incoming = StringUtils.trimToNull(dto.getFullName());
+            if (!Objects.equals(incoming, user.getFullName().orElse(null))) {
+                user.setFullName(incoming);
+            }
         }
         if (dto.getUserComments() != null) {
             user.setUserComments(StringUtils.trimToNull(dto.getUserComments()));
@@ -409,11 +403,18 @@ public class UsersRestService implements UsersRestApi {
                 user.setTimeZoneId(timeZoneId);
             }
         }
+        // Contact.setInfo sanitizes the same way, so also skip an unchanged value.
         if (dto.getEmail() != null) {
-            setContact(user, ContactType.email, dto.getEmail());
+            final String incoming = StringUtils.trimToNull(dto.getEmail());
+            if (!Objects.equals(incoming, contactInfo(user, ContactType.email))) {
+                setContact(user, ContactType.email, incoming);
+            }
         }
         if (dto.getPagerEmail() != null) {
-            setContact(user, ContactType.pagerEmail, dto.getPagerEmail());
+            final String incoming = StringUtils.trimToNull(dto.getPagerEmail());
+            if (!Objects.equals(incoming, contactInfo(user, ContactType.pagerEmail))) {
+                setContact(user, ContactType.pagerEmail, incoming);
+            }
         }
         if (dto.getDutySchedules() != null) {
             user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
