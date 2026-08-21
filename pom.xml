@@ -2806,9 +2806,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.mib-compiler</artifactId>
+        <groupId>org.opennms.features.mib-compiler</groupId>
+        <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <!-- jsmiparser is scope=provided (bnd-embedded) inside the mib-compiler parser
+             bundle, so flat-classpath consumers need it as an explicit dependency -->
+        <groupId>org.jsmiparser</groupId>
+        <artifactId>jsmiparser-api</artifactId>
+        <version>0.14</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>

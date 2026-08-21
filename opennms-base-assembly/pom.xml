@@ -1100,6 +1100,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <!-- the MIB compiler REST API in opennms-webapp-rest uses the parser on the flat classpath -->
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>

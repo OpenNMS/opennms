@@ -71,6 +71,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.mib-compiler</groupId>
+            <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jsmiparser</groupId>
+            <artifactId>jsmiparser-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.bsm</groupId>
             <artifactId>org.opennms.features.bsm.service.impl</artifactId>
             <version>${project.version}</version>
