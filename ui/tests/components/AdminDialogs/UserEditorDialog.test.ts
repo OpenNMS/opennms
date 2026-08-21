@@ -80,6 +80,57 @@ describe('UserEditorDialog.vue', () => {
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
   })
 
+  it('loads and saves the phone, pager, PIN, time-zone and duty-schedule fields', async () => {
+    await mountDialog({
+      userId: 'jose',
+      workPhone: '555-1000',
+      mobilePhone: '555-2000',
+      homePhone: '555-3000',
+      numericPagerService: 'AcmePage',
+      numericPagerPin: '12345',
+      textPagerService: 'AcmeText',
+      textPagerPin: '67890',
+      tuiPin: '9999',
+      timeZoneId: 'America/New_York',
+      dutySchedules: ['MoWeFr800-1700'],
+      roles: []
+    })
+
+    expect((wrapper.find('[data-test="work-phone-input"]').element as HTMLInputElement).value).toBe('555-1000')
+    expect((wrapper.find('[data-test="numeric-pin-input"]').element as HTMLInputElement).value).toBe('12345')
+    expect((wrapper.find('[data-test="tui-pin-input"]').element as HTMLInputElement).value).toBe('9999')
+    expect((wrapper.find('[data-test="duty-input-0"]').element as HTMLInputElement).value).toBe('MoWeFr800-1700')
+
+    await wrapper.find('[data-test="mobile-phone-input"]').setValue('555-9999')
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({
+      workPhone: '555-1000',
+      mobilePhone: '555-9999',
+      homePhone: '555-3000',
+      numericPagerService: 'AcmePage',
+      numericPagerPin: '12345',
+      textPagerService: 'AcmeText',
+      textPagerPin: '67890',
+      tuiPin: '9999',
+      dutySchedules: ['MoWeFr800-1700']
+    }))
+  })
+
+  it('adds and removes duty schedule rows', async () => {
+    await mountDialog({ userId: 'jose', dutySchedules: [], roles: [] })
+
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+    await wrapper.find('[data-test="duty-input-0"]').setValue('MoTuWeThFr900-1700')
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({
+      dutySchedules: ['MoTuWeThFr900-1700']
+    }))
+  })
+
   it('shows a server rejection inside the dialog and stays open', async () => {
     store.createUser.mockResolvedValue('User jose already exists.')
     await mountDialog()

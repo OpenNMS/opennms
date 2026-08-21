@@ -31,6 +31,13 @@ export interface ManagedUser {
   userComments?: string | null
   email?: string | null
   pagerEmail?: string | null
+  workPhone?: string | null
+  mobilePhone?: string | null
+  homePhone?: string | null
+  numericPagerService?: string | null
+  numericPagerPin?: string | null
+  textPagerService?: string | null
+  textPagerPin?: string | null
   tuiPin?: string | null
   timeZoneId?: string | null
   dutySchedules?: string[]

@@ -224,6 +224,35 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, "/users/escuser", 204);
     }
 
+    @Test
+    public void testEditsPhoneAndPagerContacts() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/users",
+                "{\"userId\":\"contactuser\",\"password\":\"pw\","
+                + "\"workPhone\":\"555-1000\",\"mobilePhone\":\"555-2000\",\"homePhone\":\"555-3000\","
+                + "\"numericPagerService\":\"AcmePage\",\"numericPagerPin\":\"12345\","
+                + "\"textPagerService\":\"AcmeText\",\"textPagerPin\":\"67890\"}", 201);
+
+        JSONObject u = new JSONObject(getJson("/users/contactuser", 200));
+        assertEquals("555-1000", u.getString("workPhone"));
+        assertEquals("555-2000", u.getString("mobilePhone"));
+        assertEquals("555-3000", u.getString("homePhone"));
+        assertEquals("AcmePage", u.getString("numericPagerService"));
+        assertEquals("12345", u.getString("numericPagerPin"));
+        assertEquals("AcmeText", u.getString("textPagerService"));
+        assertEquals("67890", u.getString("textPagerPin"));
+
+        // a partial update touches only the mobile phone; every other contact is preserved
+        sendData(PUT, MediaType.APPLICATION_JSON, "/users/contactuser",
+                "{\"userId\":\"contactuser\",\"mobilePhone\":\"555-9999\"}", 204);
+        u = new JSONObject(getJson("/users/contactuser", 200));
+        assertEquals("555-9999", u.getString("mobilePhone"));
+        assertEquals("555-1000", u.getString("workPhone"));
+        assertEquals("AcmePage", u.getString("numericPagerService"));
+        assertEquals("12345", u.getString("numericPagerPin"));
+
+        sendRequest(DELETE, "/users/contactuser", 204);
+    }
+
     private static String emailOf(final User user) {
         return user.getContacts().stream()
                 .filter(c -> "email".equals(c.getType()))

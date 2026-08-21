@@ -313,6 +313,13 @@ public class UsersRestService implements UsersRestApi {
         dto.setUserComments(user.getUserComments().orElse(null));
         dto.setEmail(contactInfo(user, ContactType.email));
         dto.setPagerEmail(contactInfo(user, ContactType.pagerEmail));
+        dto.setWorkPhone(contactInfo(user, ContactType.workPhone));
+        dto.setMobilePhone(contactInfo(user, ContactType.mobilePhone));
+        dto.setHomePhone(contactInfo(user, ContactType.homePhone));
+        dto.setNumericPagerService(contactServiceProvider(user, ContactType.numericPage));
+        dto.setNumericPagerPin(contactInfo(user, ContactType.numericPage));
+        dto.setTextPagerService(contactServiceProvider(user, ContactType.textPage));
+        dto.setTextPagerPin(contactInfo(user, ContactType.textPage));
         dto.setTuiPin(user.getTuiPin().orElse(null));
         dto.setTimeZoneId(user.getTimeZoneId().map(Objects::toString).orElse(null));
         dto.setDutySchedules(new ArrayList<>(user.getDutySchedules()));
@@ -403,19 +410,17 @@ public class UsersRestService implements UsersRestApi {
                 user.setTimeZoneId(timeZoneId);
             }
         }
-        // Contact.setInfo sanitizes the same way, so also skip an unchanged value.
-        if (dto.getEmail() != null) {
-            final String incoming = StringUtils.trimToNull(dto.getEmail());
-            if (!Objects.equals(incoming, contactInfo(user, ContactType.email))) {
-                setContact(user, ContactType.email, incoming);
-            }
-        }
-        if (dto.getPagerEmail() != null) {
-            final String incoming = StringUtils.trimToNull(dto.getPagerEmail());
-            if (!Objects.equals(incoming, contactInfo(user, ContactType.pagerEmail))) {
-                setContact(user, ContactType.pagerEmail, incoming);
-            }
-        }
+        applyContactInfoIfChanged(user, ContactType.email, dto.getEmail());
+        applyContactInfoIfChanged(user, ContactType.pagerEmail, dto.getPagerEmail());
+        applyContactInfoIfChanged(user, ContactType.workPhone, dto.getWorkPhone());
+        applyContactInfoIfChanged(user, ContactType.mobilePhone, dto.getMobilePhone());
+        applyContactInfoIfChanged(user, ContactType.homePhone, dto.getHomePhone());
+        // pager PIN is the contact info; pager service provider is a separate
+        // (also sanitizing) field on the same contact
+        applyContactInfoIfChanged(user, ContactType.numericPage, dto.getNumericPagerPin());
+        applyContactServiceProviderIfChanged(user, ContactType.numericPage, dto.getNumericPagerService());
+        applyContactInfoIfChanged(user, ContactType.textPage, dto.getTextPagerPin());
+        applyContactServiceProviderIfChanged(user, ContactType.textPage, dto.getTextPagerService());
         if (dto.getDutySchedules() != null) {
             user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
         }
@@ -482,6 +487,38 @@ public class UsersRestService implements UsersRestApi {
                 .orElse(null);
     }
 
+    private static String contactServiceProvider(final User user, final ContactType type) {
+        return user.getContacts().stream()
+                .filter(c -> type.name().equals(c.getType()))
+                .findFirst()
+                .flatMap(Contact::getServiceProvider)
+                .filter(sp -> !sp.isEmpty())
+                .orElse(null);
+    }
+
+    // A null DTO value means "preserve"; and because Contact.setInfo /
+    // setServiceProvider run a non-idempotent HTML sanitizer, only write when the
+    // value actually changed so an unrelated edit can't re-escape a stored value.
+    private static void applyContactInfoIfChanged(final User user, final ContactType type, final String dtoValue) {
+        if (dtoValue == null) {
+            return;
+        }
+        final String incoming = StringUtils.trimToNull(dtoValue);
+        if (!Objects.equals(incoming, contactInfo(user, type))) {
+            setContact(user, type, incoming);
+        }
+    }
+
+    private static void applyContactServiceProviderIfChanged(final User user, final ContactType type, final String dtoValue) {
+        if (dtoValue == null) {
+            return;
+        }
+        final String incoming = StringUtils.trimToNull(dtoValue);
+        if (!Objects.equals(incoming, contactServiceProvider(user, type))) {
+            setContactServiceProvider(user, type, incoming);
+        }
+    }
+
     private static void setContact(final User user, final ContactType type, final String value) {
         final Optional<Contact> existing = user.getContacts().stream()
                 .filter(c -> type.name().equals(c.getType()))
@@ -492,6 +529,20 @@ public class UsersRestService implements UsersRestApi {
         } else if (trimmed != null) {
             final Contact contact = new Contact(type.name());
             contact.setInfo(trimmed);
+            user.getContacts().add(contact);
+        }
+    }
+
+    private static void setContactServiceProvider(final User user, final ContactType type, final String value) {
+        final Optional<Contact> existing = user.getContacts().stream()
+                .filter(c -> type.name().equals(c.getType()))
+                .findFirst();
+        final String trimmed = StringUtils.trimToNull(value);
+        if (existing.isPresent()) {
+            existing.get().setServiceProvider(trimmed == null ? "" : trimmed);
+        } else if (trimmed != null) {
+            final Contact contact = new Contact(type.name());
+            contact.setServiceProvider(trimmed);
             user.getContacts().add(contact);
         }
     }

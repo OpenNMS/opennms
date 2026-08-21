@@ -42,6 +42,21 @@ public class UserDto {
 
     private String pagerEmail;
 
+    private String workPhone;
+
+    private String mobilePhone;
+
+    private String homePhone;
+
+    // pager contacts carry a service provider (name) plus a PIN/number (info)
+    private String numericPagerService;
+
+    private String numericPagerPin;
+
+    private String textPagerService;
+
+    private String textPagerPin;
+
     private String tuiPin;
 
     private String timeZoneId;
@@ -92,6 +107,62 @@ public class UserDto {
 
     public void setPagerEmail(final String pagerEmail) {
         this.pagerEmail = pagerEmail;
+    }
+
+    public String getWorkPhone() {
+        return workPhone;
+    }
+
+    public void setWorkPhone(final String workPhone) {
+        this.workPhone = workPhone;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(final String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    public void setHomePhone(final String homePhone) {
+        this.homePhone = homePhone;
+    }
+
+    public String getNumericPagerService() {
+        return numericPagerService;
+    }
+
+    public void setNumericPagerService(final String numericPagerService) {
+        this.numericPagerService = numericPagerService;
+    }
+
+    public String getNumericPagerPin() {
+        return numericPagerPin;
+    }
+
+    public void setNumericPagerPin(final String numericPagerPin) {
+        this.numericPagerPin = numericPagerPin;
+    }
+
+    public String getTextPagerService() {
+        return textPagerService;
+    }
+
+    public void setTextPagerService(final String textPagerService) {
+        this.textPagerService = textPagerService;
+    }
+
+    public String getTextPagerPin() {
+        return textPagerPin;
+    }
+
+    public void setTextPagerPin(final String textPagerPin) {
+        this.textPagerPin = textPagerPin;
     }
 
     public String getTuiPin() {

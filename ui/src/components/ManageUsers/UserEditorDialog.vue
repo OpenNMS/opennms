@@ -90,6 +90,82 @@
           data-test="pager-email-input"
         />
       </FormField>
+      <FormField label="Work Phone" for="user-editor-work-phone">
+        <OnmsInputText id="user-editor-work-phone" v-model="form.workPhone" data-test="work-phone-input" />
+      </FormField>
+      <FormField label="Mobile Phone" for="user-editor-mobile-phone">
+        <OnmsInputText id="user-editor-mobile-phone" v-model="form.mobilePhone" data-test="mobile-phone-input" />
+      </FormField>
+      <FormField label="Home Phone" for="user-editor-home-phone">
+        <OnmsInputText id="user-editor-home-phone" v-model="form.homePhone" data-test="home-phone-input" />
+      </FormField>
+      <FormField label="Telephone PIN" for="user-editor-tui-pin">
+        <OnmsInputText id="user-editor-tui-pin" v-model="form.tuiPin" data-test="tui-pin-input" />
+      </FormField>
+      <FormField label="Numeric Pager Service" for="user-editor-numeric-service">
+        <OnmsInputText id="user-editor-numeric-service" v-model="form.numericPagerService" data-test="numeric-service-input" />
+      </FormField>
+      <FormField label="Numeric Pager PIN" for="user-editor-numeric-pin">
+        <OnmsInputText id="user-editor-numeric-pin" v-model="form.numericPagerPin" data-test="numeric-pin-input" />
+      </FormField>
+      <FormField label="Text Pager Service" for="user-editor-text-service">
+        <OnmsInputText id="user-editor-text-service" v-model="form.textPagerService" data-test="text-service-input" />
+      </FormField>
+      <FormField label="Text Pager PIN" for="user-editor-text-pin">
+        <OnmsInputText id="user-editor-text-pin" v-model="form.textPagerPin" data-test="text-pin-input" />
+      </FormField>
+      <FormField
+        class="full-width"
+        label="Time Zone"
+        for="user-editor-timezone"
+      >
+        <OnmsSelect
+          v-model="form.timeZoneId"
+          inputId="user-editor-timezone"
+          :options="timeZoneOptions"
+          filter
+          showClear
+          fluid
+          data-test="timezone-select"
+        />
+      </FormField>
+      <FormField
+        class="full-width"
+        label="Duty Schedules"
+        for="user-editor-duty-0"
+        hint="Day tokens plus military begin-end times, e.g. MoWeFr800-1700."
+      >
+        <div class="duty-schedules" data-test="duty-schedules">
+          <div
+            v-for="(sched, index) in form.dutySchedules"
+            :key="index"
+            class="duty-row"
+          >
+            <OnmsInputText
+              :id="`user-editor-duty-${index}`"
+              v-model="form.dutySchedules[index]"
+              placeholder="e.g. MoWeFr800-1700"
+              fluid
+              :data-test="`duty-input-${index}`"
+            />
+            <OnmsIconButton
+              severity="danger"
+              :icon="Cancel"
+              :aria-label="`Remove duty schedule ${index + 1}`"
+              :data-test="`remove-duty-${index}`"
+              @click="form.dutySchedules.splice(index, 1)"
+            />
+          </div>
+          <OnmsButton
+            variant="outlined"
+            size="small"
+            icon="pi pi-plus"
+            label="Add Schedule"
+            data-test="add-duty-button"
+            @click="form.dutySchedules.push('')"
+          />
+        </div>
+      </FormField>
       <FormField
         class="full-width"
         label="Security Roles"
@@ -128,12 +204,23 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMultiSelect, OnmsPassword } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
 
+import Cancel from '@/components/icons/navigation/Cancel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser } from '@/types/userAdmin'
+
+// IANA zone ids for the time-zone picker; supportedValuesOf is present in the
+// app's target browsers, guarded so a missing implementation just yields no list
+const timeZoneOptions: string[] = (() => {
+  try {
+    return (Intl as unknown as { supportedValuesOf(key: string): string[] }).supportedValuesOf('timeZone')
+  } catch {
+    return []
+  }
+})()
 
 const props = defineProps<{
   visible: boolean
@@ -151,6 +238,16 @@ const form = reactive({
   comments: '',
   email: '',
   pagerEmail: '',
+  workPhone: '',
+  mobilePhone: '',
+  homePhone: '',
+  numericPagerService: '',
+  numericPagerPin: '',
+  textPagerService: '',
+  textPagerPin: '',
+  tuiPin: '',
+  timeZoneId: null as string | null,
+  dutySchedules: [] as string[],
   roles: [] as string[]
 })
 
@@ -199,10 +296,24 @@ watch(
         comments: props.user.userComments ?? '',
         email: props.user.email ?? '',
         pagerEmail: props.user.pagerEmail ?? '',
+        workPhone: props.user.workPhone ?? '',
+        mobilePhone: props.user.mobilePhone ?? '',
+        homePhone: props.user.homePhone ?? '',
+        numericPagerService: props.user.numericPagerService ?? '',
+        numericPagerPin: props.user.numericPagerPin ?? '',
+        textPagerService: props.user.textPagerService ?? '',
+        textPagerPin: props.user.textPagerPin ?? '',
+        tuiPin: props.user.tuiPin ?? '',
+        timeZoneId: props.user.timeZoneId ?? null,
+        dutySchedules: [...(props.user.dutySchedules ?? [])],
         roles: [...(props.user.roles ?? [])]
       })
     } else {
-      Object.assign(form, { userId: '', password: '', fullName: '', comments: '', email: '', pagerEmail: '', roles: [] })
+      Object.assign(form, {
+        userId: '', password: '', fullName: '', comments: '', email: '', pagerEmail: '',
+        workPhone: '', mobilePhone: '', homePhone: '', numericPagerService: '', numericPagerPin: '',
+        textPagerService: '', textPagerPin: '', tuiPin: '', timeZoneId: null, dutySchedules: [], roles: []
+      })
     }
   }
 )
@@ -210,9 +321,9 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    // spread the original so fields this form doesn't expose (duty schedules,
-    // tui-pin, time-zone-id) round-trip untouched; other contact types (XMPP
-    // among them) are preserved server-side.
+    // spread the original so contact types the form still doesn't expose (XMPP,
+    // microblog) round-trip untouched; the server skips re-writing any value
+    // that matches what is stored.
     const base = props.user ?? {}
     const payload: ManagedUser = {
       ...base,
@@ -221,6 +332,16 @@ const save = async () => {
       userComments: form.comments.trim(),
       email: form.email.trim(),
       pagerEmail: form.pagerEmail.trim(),
+      workPhone: form.workPhone.trim(),
+      mobilePhone: form.mobilePhone.trim(),
+      homePhone: form.homePhone.trim(),
+      numericPagerService: form.numericPagerService.trim(),
+      numericPagerPin: form.numericPagerPin.trim(),
+      textPagerService: form.textPagerService.trim(),
+      textPagerPin: form.textPagerPin.trim(),
+      tuiPin: form.tuiPin.trim(),
+      timeZoneId: form.timeZoneId,
+      dutySchedules: form.dutySchedules.map(s => s.trim()).filter(Boolean),
       roles: [...form.roles]
     }
     const error = isEditing.value
@@ -252,6 +373,18 @@ const save = async () => {
   :deep(.p-password),
   :deep(.p-multiselect) {
     width: 100%;
+  }
+}
+
+.duty-schedules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .duty-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 }
 
