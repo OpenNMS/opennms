@@ -132,39 +132,9 @@
       <FormField
         class="full-width"
         label="Duty Schedules"
-        for="user-editor-duty-0"
-        hint="Day tokens plus military begin-end times, e.g. MoWeFr800-1700."
+        hint="Pick the days and the begin/end times for each coverage window."
       >
-        <div class="duty-schedules" data-test="duty-schedules">
-          <div
-            v-for="(sched, index) in form.dutySchedules"
-            :key="index"
-            class="duty-row"
-          >
-            <OnmsInputText
-              :id="`user-editor-duty-${index}`"
-              v-model="form.dutySchedules[index]"
-              placeholder="e.g. MoWeFr800-1700"
-              fluid
-              :data-test="`duty-input-${index}`"
-            />
-            <OnmsIconButton
-              severity="danger"
-              :icon="Cancel"
-              :aria-label="`Remove duty schedule ${index + 1}`"
-              :data-test="`remove-duty-${index}`"
-              @click="form.dutySchedules.splice(index, 1)"
-            />
-          </div>
-          <OnmsButton
-            variant="outlined"
-            size="small"
-            icon="pi pi-plus"
-            label="Add Schedule"
-            data-test="add-duty-button"
-            @click="form.dutySchedules.push('')"
-          />
-        </div>
+        <DutyScheduleEditor v-model="form.dutySchedules" />
       </FormField>
       <FormField
         class="full-width"
@@ -204,9 +174,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsMultiSelect, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMultiSelect, OnmsPassword, OnmsSelect } from '@opennms/onms-ui'
 
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
@@ -373,18 +343,6 @@ const save = async () => {
   :deep(.p-password),
   :deep(.p-multiselect) {
     width: 100%;
-  }
-}
-
-.duty-schedules {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .duty-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
   }
 }
 

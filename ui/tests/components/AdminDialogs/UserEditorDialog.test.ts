@@ -99,7 +99,9 @@ describe('UserEditorDialog.vue', () => {
     expect((wrapper.find('[data-test="work-phone-input"]').element as HTMLInputElement).value).toBe('555-1000')
     expect((wrapper.find('[data-test="numeric-pin-input"]').element as HTMLInputElement).value).toBe('12345')
     expect((wrapper.find('[data-test="tui-pin-input"]').element as HTMLInputElement).value).toBe('9999')
-    expect((wrapper.find('[data-test="duty-input-0"]').element as HTMLInputElement).value).toBe('MoWeFr800-1700')
+    // the duty schedule is parsed into the day/time widget
+    expect((wrapper.find('[data-test="duty-0-begin"]').element as HTMLInputElement).value).toBe('08:00')
+    expect((wrapper.find('[data-test="duty-0-end"]').element as HTMLInputElement).value).toBe('17:00')
 
     await wrapper.find('[data-test="mobile-phone-input"]').setValue('555-9999')
     await wrapper.find('[data-test="save-button"]').trigger('click')
@@ -114,18 +116,22 @@ describe('UserEditorDialog.vue', () => {
       textPagerService: 'AcmeText',
       textPagerPin: '67890',
       tuiPin: '9999',
+      // round-trips back to the canonical string form
       dutySchedules: ['MoWeFr800-1700']
     }))
   })
 
-  it('adds and removes duty schedule rows', async () => {
+  it('builds a duty schedule from day toggles and the default times', async () => {
     await mountDialog({ userId: 'jose', dutySchedules: [], roles: [] })
 
     await wrapper.find('[data-test="add-duty-button"]').trigger('click')
-    await wrapper.find('[data-test="duty-input-0"]').setValue('MoTuWeThFr900-1700')
+    for (const day of ['Mo', 'Tu', 'We', 'Th', 'Fr']) {
+      await wrapper.find(`[data-test="duty-0-day-${day}"]`).trigger('click')
+    }
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
+    // default 09:00-17:00 serialize to 900-1700
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({
       dutySchedules: ['MoTuWeThFr900-1700']
     }))
