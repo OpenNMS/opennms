@@ -125,15 +125,12 @@
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
 
-                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-
-                        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${cxfJackson2Version}</bundle>
-                        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${cxfJackson2Version}</bundle>
-                        <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${cxfJackson2Version}</bundle>
-                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${cxfJackson2Version}</bundle>
-                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${cxfJackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
 
                         <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
@@ -255,6 +252,36 @@
                                     <type>jar</type>
                                     <outputDirectory>${project.build.directory}/assembly/system/org/ops4j/pax/url/pax-url-aether/${paxUrlAetherVersion}</outputDirectory>
                                     <destFileName>pax-url-aether-${paxUrlAetherVersion}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- NMS-19841 (filed upstream as apache/karaf#2808):
+                             org.apache.karaf.features.core's SimpleDownloadTask stages
+                             wrap:/blueprint:/spring: bundle URLs (e.g.
+                             wrap:mvn:.../protobuf-java/...) via an unsynchronized
+                             delete-then-renameTo, so two overlapping resolutions of the
+                             same URL can delete the file out from under a reader that is
+                             mid-open, raising FileNotFoundException at runtime. Replace it
+                             with the patched jar from container/karaf-features-core-patch,
+                             built the same way as the pax-url-aether replacement above. -->
+                        <id>replace-racy-karaf-features-core</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.container</groupId>
+                                    <artifactId>org.opennms.container.karaf-features-core-patch</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/system/org/apache/karaf/features/org.apache.karaf.features.core/${karafVersion}</outputDirectory>
+                                    <destFileName>org.apache.karaf.features.core-${karafVersion}.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
