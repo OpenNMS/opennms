@@ -14,7 +14,7 @@ describe('validateAdminName', () => {
   })
 
   it('rejects whitespace, markup and URL-hostile characters', () => {
-    for (const bad of ['Test Group', 'a<b', 'a&b', 'a"b', "a'b", 'a`b', 'a:b', 'a/b', 'a\\b', 'a%b', 'a?b', 'a#b']) {
+    for (const bad of ['Test Group', 'a<b', 'a&b', 'a"b', 'a\'b', 'a`b', 'a:b', 'a/b', 'a\\b', 'a%b', 'a?b', 'a#b']) {
       expect(validateAdminName(bad, 'group name'), bad).toContain('must not contain')
     }
   })
@@ -36,7 +36,7 @@ describe('validateAdminComments', () => {
   })
 
   it('rejects markup characters', () => {
-    for (const bad of ['<b>x</b>', 'a & b', 'quote "x"', "it's", 'tick `x`']) {
+    for (const bad of ['<b>x</b>', 'a & b', 'quote "x"', 'it\'s', 'tick `x`']) {
       expect(validateAdminComments(bad), bad).not.toBeNull()
     }
   })

@@ -52,7 +52,9 @@ const getManagedGroups = async (): Promise<ManagedGroup[] | null> => {
 const getGroupMemberCandidates = async (): Promise<string[]> => {
   try {
     const resp = await rest.get('/users?limit=0')
-    const users = resp.data?.users ?? []
+    // v1 OnmsUserList serializes the array under "user" (@JsonProperty("user")),
+    // and a single-element list may deserialize as one object, not an array
+    const users = resp.data?.user ?? []
     return (Array.isArray(users) ? users : [users]).map((u: any) => u['user-id']).filter(Boolean)
   } catch (_err) {
     showSnackBar({ msg: 'Failed to load users.' })

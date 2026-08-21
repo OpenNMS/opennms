@@ -39,11 +39,15 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -72,6 +76,12 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private UserManager m_userManager;
+
+    @Autowired
+    private CategoryDao m_categoryDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
 
     public GroupsRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -354,6 +364,52 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, "/groups/rolegroup2", 400);
         m_groupManager.deleteRole("junit-oncall-role");
         sendRequest(DELETE, "/groups/rolegroup2", 204);
+    }
+
+    @Test
+    public void testRenameMigratesCategoryAuthorizations() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"catgroup\"}", 201);
+        authorizeCategory("junit-cat-rename", "catgroup");
+
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups/catgroup/rename", "{\"newName\":\"catgroup2\"}", 204);
+
+        // the authorization must follow the group to its new name and be gone
+        // from the old one — not silently dropped
+        inReadOnlyTransaction(() -> {
+            assertEquals(0, m_categoryDao.getCategoriesWithAuthorizedGroup("catgroup").size());
+            assertEquals(1, m_categoryDao.getCategoriesWithAuthorizedGroup("catgroup2").size());
+        });
+
+        sendRequest(DELETE, "/groups/catgroup2", 204);
+    }
+
+    @Test
+    public void testDeleteClearsCategoryAuthorizations() throws Exception {
+        sendData(POST, MediaType.APPLICATION_JSON, "/groups", "{\"name\":\"delcatgroup\"}", 201);
+        authorizeCategory("junit-cat-delete", "delcatgroup");
+
+        sendRequest(DELETE, "/groups/delcatgroup", 204);
+
+        // deleting the group must clear its DB authorizations so a future group
+        // reusing the name can't inherit them
+        inReadOnlyTransaction(() ->
+                assertEquals(0, m_categoryDao.getCategoriesWithAuthorizedGroup("delcatgroup").size()));
+    }
+
+    private void authorizeCategory(final String categoryName, final String groupName) {
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            final OnmsCategory category = new OnmsCategory(categoryName);
+            category.getAuthorizedGroups().add(groupName);
+            m_categoryDao.save(category);
+            return null;
+        });
+    }
+
+    private void inReadOnlyTransaction(final Runnable assertion) {
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            assertion.run();
+            return null;
+        });
     }
 
     @Test

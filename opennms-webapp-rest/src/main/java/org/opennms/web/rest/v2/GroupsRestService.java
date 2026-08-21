@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Versioned group management on top of {@link GroupManager}: groups.xml
@@ -182,6 +183,10 @@ public class GroupsRestService implements GroupsRestApi {
     }
 
     @Override
+    // The category-authorization migration in GroupService.renameGroup mutates
+    // managed OnmsCategory entities without an explicit save; OSIV runs with
+    // MANUAL flush, so without a transaction those changes never reach the DB.
+    @Transactional
     public Response renameGroup(final SecurityContext securityContext, final String name, final GroupRenameRequest request) {
         assertAdmin(securityContext);
         if (request == null || StringUtils.isBlank(request.getNewName())) {
@@ -241,6 +246,10 @@ public class GroupsRestService implements GroupsRestApi {
     }
 
     @Override
+    // Clearing the group's DB category authorizations mutates managed entities
+    // without an explicit save; a transaction is required to flush them under
+    // the MANUAL-flush OSIV session (see renameGroup).
+    @Transactional
     public Response deleteGroup(final SecurityContext securityContext, final String name) {
         assertAdmin(securityContext);
         if (PROTECTED_GROUPS.contains(name)) {
