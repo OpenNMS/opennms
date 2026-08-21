@@ -91,6 +91,11 @@ After upgrade, manage event configurations through the *Administration -> Manage
 
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
+=== ActiveMQ store and JVM temp directory moved out of the Karaf cache
+`java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
+
+To keep the previous behavior, see xref:operation:deep-dive/admin/configuration/startup.adoc[Startup Configuration], or xref:reference:configuration/core-docker.adoc[Core Docker] for container deployments.
+
 == Breaking changes
 
 === Jakarta Mail migration and OAuth2 (XOAUTH2) SMTP support

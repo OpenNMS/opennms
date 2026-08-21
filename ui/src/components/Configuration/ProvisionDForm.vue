@@ -22,7 +22,7 @@
       <div class="icon">
         <OnmsIconButton
           aria-label="Help"
-          v-onms-tooltip="'Help'"
+          tooltip="Help"
           :icon="Help"
           @click="() => props.toggleHelp()"
         />

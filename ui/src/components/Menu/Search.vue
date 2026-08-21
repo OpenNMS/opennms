@@ -1,38 +1,23 @@
 <template>
   <div
+    ref="searchControlRef"
     class="onms-search-control-wrapper"
     :id="props.searchId"
   >
-    <div class="onms-search-input-wrapper">
-      <div class="search-icon">
-        <OnmsIcon :icon="SearchIcon" />
-      </div>
-      <input
-        ref="searchInputRef"
-        type="text"
-        placeholder="Search..."
-        v-model="searchValue"
-        @input="handleSearch"
-        @keydown="onKeyDown"
-        class="search-input"
-      />
-    </div>
+    <OnmsSearchInput
+      ref="searchInputRef"
+      class="onms-search-input"
+      placeholder="Search..."
+      aria-label="Search"
+      :modelValue="searchValue"
+      @update:modelValue="onSearchInput"
+      @keydown="onKeyDown"
+    />
     <div
       v-if="showResults && hasResults"
       class="search-results-dropdown"
       @mousedown.prevent
     >
-      <div class="search-results-toolbar">
-        <OnmsIcon
-          :icon="CancelIcon"
-          class="search-results-close"
-          role="button"
-          tabindex="0"
-          title="Close"
-          @click="closeResults"
-          @keydown.enter.space.prevent="closeResults"
-        />
-      </div>
       <template
         v-for="(searchResultByContext, searchResultByContextKey) in filteredResults"
         :key="searchResultByContextKey"
@@ -71,9 +56,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { OnmsIcon } from '@opennms/onms-ui'
-import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
-import CancelIcon from '@opennms/onms-ui/icons/navigation/Cancel.vue'
+import { OnmsSearchInput } from '@opennms/onms-ui'
+import { useOutsideClick } from '@/composables/useOutsideClick'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -82,7 +66,8 @@ import { useSearchStore } from '@/stores/searchStore'
 const menuStore = useMenuStore()
 const searchStore = useSearchStore()
 const iconClasses = ref<any>([[]])
-const searchInputRef = ref<any>(null)
+const searchControlRef = ref()
+const searchInputRef = ref<InstanceType<typeof OnmsSearchInput> | null>(null)
 const searchResultRefs = ref<Map<string, any>>(new Map())
 
 const props = defineProps({
@@ -158,8 +143,8 @@ watch(filteredResults, () => {
   selectedIndex.value = -1 // Reset selection when results change
 }, { deep: true })
 
-const handleSearch = (event: any) => {
-  const stringValue = String(event.target?.value || '')
+const onSearchInput = (value?: string) => {
+  const stringValue = value ?? ''
   searchValue.value = stringValue
 
   if (searchTimeout) {
@@ -234,7 +219,30 @@ const closeResults = () => {
   selectedIndex.value = -1
 }
 
+// Dismiss the results (keeping the query) once attention moves elsewhere. The
+// composable's window-blur leg matters here: the menu app is embedded in legacy
+// JSP/Vaadin pages, and a click inside one of their iframes never reaches this
+// document — the window losing focus is the only signal we get. Only listen
+// while the dropdown is actually open.
+const outsideClickActive = useOutsideClick(searchControlRef, () => closeResults())
+
+watch(showResults, (isShown) => {
+  outsideClickActive.value = isShown
+})
+
+// Lets the Menubar's shift-shift shortcut focus the field without reaching into
+// this component's DOM.
+defineExpose({
+  focus: () => searchInputRef.value?.focus()
+})
+
 const onKeyDown = async (event: KeyboardEvent) => {
+  // Keydown is listened for on OnmsSearchInput's container, so it also sees keys
+  // aimed at the field's clear button; those must keep their own behavior.
+  if (!(event.target instanceof HTMLInputElement)) {
+    return
+  }
+
   if (!showResults.value || !hasResults.value) {
     return
   }
@@ -306,29 +314,6 @@ const onKeyDown = async (event: KeyboardEvent) => {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  .search-results-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.25em 0.5em;
-    border-bottom: 1px solid var(--p-content-border-color);
-
-    .search-results-close {
-      cursor: pointer;
-      color: var(--p-text-muted-color);
-      font-size: 1.25rem;
-
-      &:hover {
-        color: var(--p-text-color);
-      }
-
-      &:focus-visible {
-        outline: 2px solid var(--p-primary-color);
-        outline-offset: 2px;
-        border-radius: 2px;
-      }
-    }
-  }
-
   .search-category {
     background-color: var(--p-content-background);
     padding: 0.5em 0.75em;
@@ -356,39 +341,11 @@ const onKeyDown = async (event: KeyboardEvent) => {
   }
 }
 
-.onms-search-input-wrapper {
-  display: flex;
-  position: relative;
-  align-items: center;
-  width: 100%;
-  background-color: var(--p-content-background);
-  border: 1px solid var(--p-content-border-color);
-  border-radius: 4px;
-
-  .search-icon {
-    position: absolute;
-    left: 8px;
-    z-index: 1;
-    color: var(--p-text-muted-color);
-    pointer-events: none;
-  }
-
-  .search-input {
+// The field is the seam's standard search input; it only needs to fill the
+// (fluid) width of this wrapper.
+.onms-search-input {
+  :deep(.p-inputtext) {
     width: 100%;
-    padding: 8px 12px 8px 36px;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 14px;
-    color: var(--p-text-color);
-
-    &::placeholder {
-      color: var(--p-text-muted-color);
-    }
-
-    &:focus {
-      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
-    }
   }
 }
 </style>

@@ -322,19 +322,6 @@ const onSearchChange = (value: string | number | undefined) => {
 
         .search-field {
           width: 100%;
-
-          // make the input (and its IconField wrapper) fill the field so the
-          // search icon sits at the input's right edge rather than floating far
-          // out in the container
-          :deep(.p-iconfield) {
-            display: block;
-            width: 100%;
-          }
-
-          :deep(.p-inputtext) {
-            width: 100%;
-            padding-right: 2.75rem;
-          }
         }
       }
     }

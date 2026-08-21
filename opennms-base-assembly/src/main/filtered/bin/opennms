@@ -883,10 +883,17 @@ if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c MaxMetaspaceSize=)" -e
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djava.io.tmpdir=)" -eq 0 ]; then
-	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
-		mkdir -p "$OPENNMS_HOME/data/tmp"
+	if [ ! -d "$OPENNMS_HOME/tmp" ]; then
+		mkdir -p "$OPENNMS_HOME/tmp"
 	fi
-	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.io.tmpdir=$OPENNMS_HOME/data/tmp")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.io.tmpdir=$OPENNMS_HOME/tmp")
+fi
+
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dactivemq.data=)" -eq 0 ]; then
+	if [ ! -d "$OPENNMS_HOME/var/activemq" ]; then
+		mkdir -p "$OPENNMS_HOME/var/activemq"
+	fi
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dactivemq.data=$OPENNMS_HOME/var/activemq")
 fi
 
 # Fix for Attach API listener sometimes going AWOL

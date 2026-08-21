@@ -113,6 +113,18 @@ footer#footer,
   z-index: 2000; // matches .onms-side-menu in SideMenu.vue
 }
 
+// Vaadin pages (topology) get no #content div — bootstrap.jsp emits that only on
+// its non-Vaadin branch — so SideMenu's applyPush has nothing to offset and the
+// expanded rail painted straight over the map. vaadin-theme.scss already clears
+// the *collapsed* rail here with a static margin ("Note this only moves it past
+// the collapsed side menu"); track the live rail width instead. The `body`
+// prefix outranks that rule whichever order the two stylesheets land in, and the
+// fallback keeps the collapsed offset for the frames before the menu mounts.
+body .v-app.topo_default.topologyui {
+  margin-left: var(--onms-side-menu-offset, var(--onms-legacy-content-offset));
+  transition: margin-left 0.1s linear;
+}
+
 // Visited links keep the normal color (no distinct visited color), matching the
 // app convention in onms-base.scss.
 a:visited {
