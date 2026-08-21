@@ -9,63 +9,68 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
+        class="dialog-error"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
-      <FormField v-if="!isEditing">
-        <IftaLabel>
-          <OnmsInputText
-            id="role-editor-name"
-            v-model="name"
-            :invalid="!!nameProblem"
-            data-test="role-name-input"
-          />
-          <label for="role-editor-name">Role Name *</label>
-        </IftaLabel>
+      >{{ errorText }}</div>
+      <FormField
+        v-if="!isEditing"
+        label="Role Name"
+        for="role-editor-name"
+        required
+      >
+        <OnmsInputText
+          id="role-editor-name"
+          v-model="name"
+          :invalid="!!nameProblem"
+          fluid
+          data-test="role-name-input"
+        />
         <small
           v-if="nameProblem"
           class="field-error"
           data-test="name-error"
         >{{ nameProblem }}</small>
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsSelect
-            v-model="membershipGroup"
-            labelId="role-editor-group"
-            :options="groupOptions"
-            filter
-            data-test="membership-group-select"
-          />
-          <label for="role-editor-group">Membership Group *</label>
-        </IftaLabel>
+      <FormField
+        label="Membership Group"
+        for="role-editor-group"
+        required
+      >
+        <OnmsSelect
+          v-model="membershipGroup"
+          inputId="role-editor-group"
+          :options="groupOptions"
+          filter
+          fluid
+          data-test="membership-group-select"
+        />
         <small class="hint">Scheduled users are chosen from this group's members.</small>
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsSelect
-            v-model="supervisor"
-            labelId="role-editor-supervisor"
-            :options="store.supervisorCandidates"
-            filter
-            data-test="supervisor-select"
-          />
-          <label for="role-editor-supervisor">Supervisor *</label>
-        </IftaLabel>
+      <FormField
+        label="Supervisor"
+        for="role-editor-supervisor"
+        required
+      >
+        <OnmsSelect
+          v-model="supervisor"
+          inputId="role-editor-supervisor"
+          :options="store.supervisorCandidates"
+          filter
+          fluid
+          data-test="supervisor-select"
+        />
         <small class="hint">On call whenever nobody is scheduled.</small>
       </FormField>
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="role-editor-description"
-            v-model="description"
-            data-test="role-description-input"
-          />
-          <label for="role-editor-description">Description</label>
-        </IftaLabel>
+      <FormField label="Description" for="role-editor-description">
+        <OnmsInputText
+          id="role-editor-description"
+          v-model="description"
+          fluid
+          data-test="role-description-input"
+        />
       </FormField>
     </div>
 
@@ -89,8 +94,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -178,6 +181,15 @@ const save = async () => {
   :deep(.p-select) {
     width: 100%;
   }
+}
+
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--p-red-200, #fecaca);
+  background: var(--p-red-50, #fef2f2);
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
 }
 
 .field-error {

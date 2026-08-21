@@ -72,8 +72,8 @@ export const validateEmailShape = (value: string, label: string): string | null 
   if (!trimmed) {
     return null
   }
-  const parts = trimmed.split(',').map((part) => part.trim())
-  if (parts.some((part) => !part || !EMAIL_SHAPE.test(part))) {
+  const parts = trimmed.split(',').map(part => part.trim())
+  if (parts.some(part => !part || !EMAIL_SHAPE.test(part))) {
     return `The ${label} must look like an email address (name@domain).`
   }
   return null

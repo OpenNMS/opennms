@@ -258,6 +258,31 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testMembershipChangeRejectedWhenRetainedScheduleUserNotInNewGroup() throws Exception {
+        ensureGroup("orphan-old", "oncall1");
+        ensureGroup("orphan-new", "oncall2");
+        sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",
+                "{\"name\":\"orphan-role\",\"membership-group\":\"orphan-old\",\"supervisor\":\"admin\",\"schedule\":["
+                + "{\"user\":\"oncall1\",\"type\":\"specific\","
+                + "\"time\":[{\"begins\":\"15-Jun-2093 08:00:00\",\"ends\":\"15-Jun-2093 17:00:00\"}]}]}", 201);
+
+        // changing only the membership group (schedules omitted) must be rejected:
+        // the retained schedule's user oncall1 is not in orphan-new, and letting
+        // it through would silently orphan the schedule
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/orphan-role",
+                "{\"name\":\"orphan-role\",\"membership-group\":\"orphan-new\"}", 400);
+        assertEquals("orphan-old",
+                new JSONObject(getJson("/on-call-roles/orphan-role", 200)).getString("membership-group"));
+
+        // moving to a group that does contain the scheduled user succeeds
+        ensureGroup("orphan-ok", "oncall1", "oncall2");
+        sendData(PUT, MediaType.APPLICATION_JSON, "/on-call-roles/orphan-role",
+                "{\"name\":\"orphan-role\",\"membership-group\":\"orphan-ok\"}", 204);
+
+        sendRequest(DELETE, "/on-call-roles/orphan-role", 204);
+    }
+
+    @Test
     public void testRejectedUpdateLeavesNoPartialState() throws Exception {
         ensureGroup("atomic-team", "atomuser");
         sendData(POST, MediaType.APPLICATION_JSON, "/on-call-roles",

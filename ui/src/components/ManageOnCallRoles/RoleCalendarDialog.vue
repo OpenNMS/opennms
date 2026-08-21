@@ -8,12 +8,12 @@
     data-test="role-calendar-dialog"
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
-    <Message
+    <div
       v-if="errorText"
-      severity="error"
-      :closable="false"
+      class="dialog-error"
+      role="alert"
       data-test="dialog-error"
-    >{{ errorText }}</Message>
+    >{{ errorText }}</div>
     <div class="calendar-controls">
       <OnmsIconButton
         :icon="ChevronLeft"
@@ -99,17 +99,16 @@
       <p v-else class="no-schedules">No coverage entries; the supervisor is always on call.</p>
 
       <div class="add-entry-row">
-        <IftaLabel>
+        <FormField label="User" for="calendar-entry-user">
           <OnmsSelect
             v-model="entryUser"
-            labelId="calendar-entry-user"
+            inputId="calendar-entry-user"
             :options="memberOptions"
             filter
             data-test="entry-user-select"
           />
-          <label for="calendar-entry-user">User</label>
-        </IftaLabel>
-        <IftaLabel>
+        </FormField>
+        <FormField label="From" for="calendar-entry-start">
           <OnmsDatePicker
             v-model="entryStart"
             inputId="calendar-entry-start"
@@ -117,9 +116,8 @@
             hourFormat="24"
             data-test="entry-start-input"
           />
-          <label for="calendar-entry-start">From</label>
-        </IftaLabel>
-        <IftaLabel>
+        </FormField>
+        <FormField label="To" for="calendar-entry-end">
           <OnmsDatePicker
             v-model="entryEnd"
             inputId="calendar-entry-end"
@@ -127,8 +125,7 @@
             hourFormat="24"
             data-test="entry-end-input"
           />
-          <label for="calendar-entry-end">To</label>
-        </IftaLabel>
+        </FormField>
         <OnmsButton
           variant="outlined"
           label="Add Coverage"
@@ -167,11 +164,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsConfirmationDialog, OnmsDatePicker, OnmsDialog, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
 import Cancel from '@/components/icons/navigation/Cancel.vue'
+import FormField from '@/components/Common/FormField.vue'
 import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
 import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
@@ -384,6 +380,16 @@ const cancelRemove = () => {
   color: var(--p-text-muted-color);
 }
 
+.dialog-error {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--p-red-200, #fecaca);
+  background: var(--p-red-50, #fef2f2);
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
+}
+
 .field-error {
   display: block;
   margin-top: 0.5rem;
@@ -499,7 +505,7 @@ const cancelRemove = () => {
 
   .add-entry-row {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 0.75rem;
     flex-wrap: wrap;
 

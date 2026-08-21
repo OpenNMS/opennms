@@ -392,17 +392,35 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 throw new IllegalArgumentException("A membership-group is required and must be an existing group.");
             }
         }
+        // A membership-group change can invalidate schedules that were valid
+        // under the old group, so the "already on the role" exemption must not
+        // apply to it, and schedules left unchanged still have to be re-checked.
+        final boolean membershipChanging = existing != null && membershipGroup != null
+                && !membershipGroup.equals(existing.getMembershipGroup());
+        final String scheduleGroup = membershipGroup != null
+                ? membershipGroup
+                : existing == null ? null : existing.getMembershipGroup();
+        final Group group = scheduleGroup == null ? null : m_groupManager.getGroup(scheduleGroup);
+        final Set<String> members = group == null ? Set.of() : new LinkedHashSet<>(group.getUsers());
         if (dto.getSchedules() != null) {
-            final String scheduleGroup = membershipGroup != null
-                    ? membershipGroup
-                    : existing == null ? null : existing.getMembershipGroup();
-            final Group group = scheduleGroup == null ? null : m_groupManager.getGroup(scheduleGroup);
-            final Set<String> members = group == null ? Set.of() : new LinkedHashSet<>(group.getUsers());
-            final Set<String> preExisting = existing == null ? Set.of()
+            final Set<String> preExisting = (existing == null || membershipChanging) ? Set.of()
                     : existing.getSchedules().stream().map(OnCallRolesRestService::canonical).collect(Collectors.toSet());
             for (final OnCallScheduleDto schedule : dto.getSchedules()) {
                 if (!preExisting.contains(canonical(schedule))) {
                     validateSchedule(schedule, members);
+                }
+            }
+        } else if (membershipChanging) {
+            // membership group changed without resubmitting schedules: the
+            // retained schedules' users must still belong to the new group, or
+            // notifd would keep paging users who are no longer members while the
+            // new group's members get nothing
+            for (final Schedule schedule : existing.getSchedules()) {
+                final String user = trimToNull(schedule.getName());
+                if (user != null && !members.contains(user)) {
+                    throw new IllegalArgumentException("Schedule user " + user
+                            + " is not a member of the new membership group " + membershipGroup
+                            + "; update or remove the schedule before changing the group.");
                 }
             }
         }
