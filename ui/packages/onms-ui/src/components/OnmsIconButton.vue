@@ -1,6 +1,7 @@
 <template>
   <Button
-    :title="title"
+    v-onms-tooltip="tooltip"
+    :title="nativeTitle"
     :severity="pSeverity"
     :text="variant === 'text' || variant === 'ghost'"
     :outlined="variant === 'outlined' || variant === 'ghost'"
@@ -13,7 +14,7 @@
     >
       <OnmsIcon
         :icon="icon"
-        :title="title"
+        :title="accessibleName"
       />
     </span>
   </Button>
@@ -22,20 +23,27 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import { computed } from 'vue'
+import vOnmsTooltip from '../directives/OnmsTooltip'
 import OnmsIcon from './OnmsIcon.vue'
 
 // Seam wrapper (NMS-20029) for icon-only buttons: PrimeVue Button + OnmsIcon
 // with consistent icon sizing. Defaults to the text variant (the dominant
-// icon-button style). `title` is both the native tooltip and the icon's
-// accessible name. class, data-*, aria-* and @click fall through to the button.
+// icon-button style). `title` names the button for assistive tech and, unless
+// `tooltip` is also set, is the native browser tooltip too. class, data-*,
+// aria-* and @click fall through to the button.
 //
 // `variant="ghost"` maps to PrimeVue's `text` AND `outlined` both true — the
 // bordered, transparent-background button (matches OnmsButton's `ghost`
 // variant for API consistency across the seam's two button wrappers).
+//
+// `tooltip` (NMS-20162) mounts the seam's tooltip directive on the button, so
+// call sites declare a tooltip as a prop instead of relying on `v-onms-tooltip`
+// falling through to the root element.
 const props = withDefaults(defineProps<{
   icon: object
   iconSize?: string
   title?: string
+  tooltip?: string
   variant?: 'text' | 'filled' | 'outlined' | 'ghost'
   severity?: 'primary' | 'danger'
   disabled?: boolean
@@ -43,6 +51,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   iconSize: '1.5rem',
   title: undefined,
+  tooltip: undefined,
   variant: 'text',
   severity: 'primary',
   disabled: false,
@@ -50,6 +59,15 @@ const props = withDefaults(defineProps<{
 })
 
 const pSeverity = computed(() => props.severity === 'danger' ? 'danger' : undefined)
+
+// The rich tooltip replaces the browser's own, rather than stacking on top of
+// it: `title` keeps naming the button for assistive tech, but is not rendered as
+// the native tooltip attribute while `tooltip` is showing the same information.
+const nativeTitle = computed(() => props.tooltip ? undefined : props.title)
+
+// A `tooltip`-only call site still needs an accessible name, and the tooltip
+// text is it.
+const accessibleName = computed(() => props.title ?? props.tooltip)
 </script>
 
 <style lang="scss" scoped>

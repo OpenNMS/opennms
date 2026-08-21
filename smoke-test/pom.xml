@@ -51,8 +51,10 @@
     <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.18.9</jackson2Version>
-    <jersey.version>2.46</jersey.version>
+    <jackson2Version>2.22.1</jackson2Version>
+    <!-- jackson-annotations dropped its patch component as of 2.20, so it needs its own property -->
+    <jackson2AnnotationsVersion>2.22</jackson2AnnotationsVersion>
+    <jersey.version>2.62</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
     <karafVersion>4.3.6</karafVersion>
@@ -404,7 +406,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2Version}</version>
+        <version>${jackson2AnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>

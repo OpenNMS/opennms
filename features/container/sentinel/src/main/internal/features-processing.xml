@@ -172,8 +172,8 @@
     <!-- jackson2 upgrades -->
     <bundle replacement="mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}"
             originalUri="mvn:com.datastax.cassandra/cassandra-driver-core/[3,${cassandraVersion})" mode="maven" />
-    <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}"
-            originalUri="mvn:com.fasterxml.jackson.core/jackson-annotations/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}"
+            originalUri="mvn:com.fasterxml.jackson.core/jackson-annotations/[2,${jackson2AnnotationsVersion})" mode="maven" />
     <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}"
             originalUri="mvn:com.fasterxml.jackson.core/jackson-core/[2,${jackson2Version})" mode="maven" />
     <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}"

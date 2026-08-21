@@ -40,7 +40,7 @@
             <OnmsIconButton
               variant="filled"
               aria-label="Edit"
-              v-onms-tooltip="'Edit'"
+              tooltip="Edit"
               :disabled="Boolean(data[RequisitionData.ImportURL].startsWith('requisition://'))"
               data-test="edit-btn"
               :icon="Edit"
@@ -49,7 +49,7 @@
             <OnmsIconButton
               class="delete-icon"
               aria-label="Delete"
-              v-onms-tooltip="'Delete'"
+              tooltip="Delete"
               :icon="Delete"
               @click="() => props.deleteClicked(data.originalIndex)"
             />

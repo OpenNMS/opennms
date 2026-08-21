@@ -3,7 +3,7 @@
     class="scv-edit-icon"
     :aria-label="title ?? tooltipTitle"
     :disabled="disabled"
-    v-onms-tooltip="title ?? tooltipTitle"
+    :tooltip="title ?? tooltipTitle"
     :icon="IconSecurity"
     @click="$emit('click')"
   />
