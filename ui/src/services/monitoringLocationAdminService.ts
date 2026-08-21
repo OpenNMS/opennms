@@ -39,7 +39,9 @@ const errorMessage = (err: any, fallback: string): string => {
   const detail = err?.response?.data
   if (typeof detail === 'string') {
     const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) return trimmed
+    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
+      return trimmed
+    }
   }
   return fallback
 }
@@ -94,7 +96,9 @@ const updateMonitoringLocation = async (location: MonitoringLocation): Promise<s
     const current = (await v2.get(path))?.data ?? {}
     const body: Record<string, unknown> = { ...current }
     const source = location as unknown as Record<string, unknown>
-    for (const field of EDITABLE_FIELDS) body[field] = source[field]
+    for (const field of EDITABLE_FIELDS) {
+      body[field] = source[field]
+    }
     await v2.put(path, body)
     showSnackBar({ msg: `Monitoring location '${name}' updated.` })
     return null

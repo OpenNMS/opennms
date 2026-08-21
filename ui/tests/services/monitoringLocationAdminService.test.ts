@@ -5,13 +5,13 @@ import {
 } from '@/services/monitoringLocationAdminService'
 import { v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() } }))
+vi.mock('@/services/axiosInstances', () => ({ v2: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }}))
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar: vi.fn() }) }))
 vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 
 const http = (status: number, data: any = '') => {
   const e = new AxiosError('x')
-  e.response = { status, data, statusText: '', headers: {}, config: { headers: new AxiosHeaders() } }
+  e.response = { status, data, statusText: '', headers: {}, config: { headers: new AxiosHeaders() }}
   return e
 }
 
@@ -20,7 +20,7 @@ describe('monitoringLocationAdminService', () => {
   afterEach(() => vi.restoreAllMocks())
 
   it('listMonitoringLocations fetches a bounded page and reports the total', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { location: [{ 'location-name': 'Default' }], totalCount: 42 } })
+    vi.mocked(v2.get).mockResolvedValue({ data: { location: [{ 'location-name': 'Default' }], totalCount: 42 }})
     const result = await listMonitoringLocations()
     expect(result).toEqual({ locations: [{ 'location-name': 'Default' }], totalCount: 42 })
     // bounded, not limit=0
@@ -41,7 +41,7 @@ describe('monitoringLocationAdminService', () => {
 
   it('updateMonitoringLocation reads the current row and patches only the editable fields', async () => {
     // the fresh server row carries a tag this page never edits; it must survive
-    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] } })
+    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'old', priority: 50, latitude: 1, longitude: 2, tags: ['keep-me'] }})
     vi.mocked(v2.put).mockResolvedValue({})
 
     await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'new', priority: 100, latitude: 35, longitude: -78 } as any)
@@ -54,7 +54,7 @@ describe('monitoringLocationAdminService', () => {
   })
 
   it('updateMonitoringLocation applies an edited geolocation (regression: it was dropped)', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 } })
+    vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: 'old address', priority: 100, latitude: 1, longitude: 2 }})
     vi.mocked(v2.put).mockResolvedValue({})
 
     await updateMonitoringLocation({ 'location-name': 'Raleigh', 'monitoring-area': 'a', geolocation: '123 New St', priority: 100, latitude: 1, longitude: 2 } as any)

@@ -9,94 +9,93 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <Message
+      <div
         v-if="errorText"
-        severity="error"
-        :closable="false"
+        class="dialog-error"
+        role="alert"
         data-test="dialog-error"
-      >{{ errorText }}</Message>
+      >{{ errorText }}</div>
 
-      <FormField v-if="!isEditing">
-        <IftaLabel>
-          <OnmsInputText
-            id="location-name"
-            v-model="locationName"
-            :invalid="!!nameProblem"
-            data-test="location-name-input"
-          />
-          <label for="location-name">Location Name *</label>
-        </IftaLabel>
+      <FormField
+        v-if="!isEditing"
+        label="Location Name"
+        for="location-name"
+        required
+      >
+        <OnmsInputText
+          id="location-name"
+          v-model="locationName"
+          :invalid="!!nameProblem"
+          fluid
+          data-test="location-name-input"
+        />
         <small v-if="nameProblem" class="field-error" data-test="name-error">{{ nameProblem }}</small>
       </FormField>
 
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText
-            id="monitoring-area"
-            v-model="monitoringArea"
-            :invalid="!!areaProblem"
-            data-test="monitoring-area-input"
-          />
-          <label for="monitoring-area">Monitoring Area *</label>
-        </IftaLabel>
+      <FormField
+        label="Monitoring Area"
+        for="monitoring-area"
+        required
+      >
+        <OnmsInputText
+          id="monitoring-area"
+          v-model="monitoringArea"
+          :invalid="!!areaProblem"
+          fluid
+          data-test="monitoring-area-input"
+        />
         <small v-if="areaProblem" class="field-error" data-test="area-error">{{ areaProblem }}</small>
       </FormField>
 
-      <FormField>
-        <IftaLabel>
-          <OnmsInputText id="geolocation" v-model="geolocation" data-test="geolocation-input" />
-          <label for="geolocation">Geolocation (address)</label>
-        </IftaLabel>
+      <FormField label="Geolocation (address)" for="geolocation">
+        <OnmsInputText
+          id="geolocation"
+          v-model="geolocation"
+          fluid
+          data-test="geolocation-input"
+        />
       </FormField>
 
       <div class="lat-lng">
-        <FormField>
-          <IftaLabel>
-            <OnmsInputNumber
-              v-model="latitude"
-              inputId="latitude"
-              :minFractionDigits="0"
-              :maxFractionDigits="6"
-              :min="-90"
-              :max="90"
-              :invalid="!!latProblem"
-              data-test="latitude-input"
-            />
-            <label for="latitude">Latitude</label>
-          </IftaLabel>
+        <FormField label="Latitude" for="latitude">
+          <OnmsInputNumber
+            v-model="latitude"
+            inputId="latitude"
+            :maxFractionDigits="6"
+            :min="-90"
+            :max="90"
+            :invalid="!!latProblem"
+            fluid
+            data-test="latitude-input"
+          />
           <small v-if="latProblem" class="field-error" data-test="lat-error">{{ latProblem }}</small>
         </FormField>
-        <FormField>
-          <IftaLabel>
-            <OnmsInputNumber
-              v-model="longitude"
-              inputId="longitude"
-              :minFractionDigits="0"
-              :maxFractionDigits="6"
-              :min="-180"
-              :max="180"
-              :invalid="!!lngProblem"
-              data-test="longitude-input"
-            />
-            <label for="longitude">Longitude</label>
-          </IftaLabel>
+        <FormField label="Longitude" for="longitude">
+          <OnmsInputNumber
+            v-model="longitude"
+            inputId="longitude"
+            :maxFractionDigits="6"
+            :min="-180"
+            :max="180"
+            :invalid="!!lngProblem"
+            fluid
+            data-test="longitude-input"
+          />
           <small v-if="lngProblem" class="field-error" data-test="lng-error">{{ lngProblem }}</small>
         </FormField>
       </div>
 
-      <FormField>
-        <IftaLabel>
-          <OnmsInputNumber
-            v-model="priority"
-            inputId="priority"
-            :useGrouping="false"
-            :min="1"
-            :max="MAX_PRIORITY"
-            :invalid="!!priorityProblem"
-            data-test="priority-input"
-          />
-          <label for="priority">Priority</label>
-        </IftaLabel>
+      <FormField label="Priority" for="priority">
+        <OnmsInputNumber
+          v-model="priority"
+          inputId="priority"
+          :useGrouping="false"
+          :min="1"
+          :max="MAX_PRIORITY"
+          :invalid="!!priorityProblem"
+          fluid
+          data-test="priority-input"
+        />
         <small v-if="priorityProblem" class="field-error" data-test="priority-error">{{ priorityProblem }}</small>
         <small v-else class="hint">Lower numbers sort first (1 = highest); the default location is 100.</small>
       </FormField>
@@ -117,8 +116,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import IftaLabel from 'primevue/iftalabel'
-import Message from 'primevue/message'
 import { OnmsButton, OnmsDialog, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
@@ -259,6 +256,15 @@ const save = async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+.dialog-error {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--p-red-200, #fecaca);
+  background: var(--p-red-50, #fef2f2);
+  color: var(--p-red-700, #b91c1c);
+  font-size: 0.9rem;
 }
 
 .field-error {

@@ -14,14 +14,14 @@ const mountTable = () => {
   const wrapper = mount(LocationsTable, {
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { LocationEditorDialog: true, OnmsConfirmationDialog: true, TableCard: { template: '<div><slot /></div>' } }
+      stubs: { LocationEditorDialog: true, OnmsConfirmationDialog: true, TableCard: { template: '<div><slot /></div>' }}
     }
   })
   return { wrapper, store: useMonitoringLocationAdminStore() }
 }
 
 const headerText = (wrapper: VueWrapper<any>) =>
-  wrapper.findAll('th').map((th) => th.text().trim()).filter(Boolean)
+  wrapper.findAll('th').map(th => th.text().trim()).filter(Boolean)
 
 describe('LocationsTable.vue', () => {
   let ctx: ReturnType<typeof mountTable>

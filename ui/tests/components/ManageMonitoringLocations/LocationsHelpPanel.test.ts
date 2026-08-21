@@ -8,7 +8,7 @@ const TogglePanelStub = { name: 'TogglePanel', template: '<div><slot name="heade
 describe('LocationsHelpPanel.vue', () => {
   it('renders the help content', () => {
     const wrapper = mount(LocationsHelpPanel, {
-      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub } }
+      global: { plugins: [PrimeVue], stubs: { TogglePanel: TogglePanelStub }}
     })
     expect(wrapper.text()).toContain('About Monitoring Locations')
   })

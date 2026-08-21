@@ -19,7 +19,7 @@ describe('LocationEditorDialog.vue', () => {
   const mountDialog = async (location: any = null) => {
     wrapper = mount(LocationEditorDialog, {
       props: { visible: false, location },
-      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub } }
+      global: { plugins: [PrimeVue], stubs: { Dialog: DialogStub }}
     })
     await wrapper.setProps({ visible: true })
     await flushPromises()
