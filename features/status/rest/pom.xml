@@ -64,6 +64,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- Same reason: SurveillanceViewRestService's model classes. -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>org.opennms.features.surveillance-views</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
