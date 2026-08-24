@@ -30,7 +30,7 @@ reproduced without substantive change are marked **Verbatim**.
 
 | Path (under `ui/`) | Upstream source | Nature |
 | --- | --- | --- |
-| `src/components/icons/**/*.vue` (262 icon SFCs across `account`, `action`, `communication`, `content`, `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`, `notification`, `status`) | `@featherds/icon` | **Verbatim** — SVG geometry reproduced byte-for-byte via a one-time render-to-string generator (`scripts/generate-icons.mjs`), wrapped in template-only single-file components. |
+| `packages/onms-ui/src/icons/**/*.vue` (262 icon SFCs across `account`, `action`, `communication`, `content`, `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`, `notification`, `status`) | `@featherds/icon` | **Verbatim** — SVG geometry reproduced byte-for-byte via a one-time render-to-string generator (`scripts/generate-icons.mjs`), wrapped in template-only single-file components. |
 | `src/composables/useOutsideClick.ts` | `@featherds/composables` (`events/OutsideClick`) | **Verbatim** — behavior preserved; re-typed for standalone use, depends only on Vue. |
 | `src/styles/_onms-typography.scss` | `@featherds/styles` (typography mixins) | **Verbatim** — metric values copied; token references replaced with literals. |
 | `src/styles/_onms-elevation.scss` | `@featherds/styles` (elevation) | **Verbatim** — shadow/elevation values copied as literals. |
@@ -44,7 +44,7 @@ reproduced without substantive change are marked **Verbatim**.
 | `src/components/Map/SortableTh.vue` | `@featherds/table` (`FeatherSortHeader`) | **Modified** — drop-in reimplementation preserving the sort API. |
 | `src/components/Layout/OnmsAppLayout.vue` | `@featherds/app-layout` (`FeatherAppLayout`) | **Modified** — reimplementation preserving the slot API; provide/inject rail machinery omitted. |
 
-> Note: `src/components/icons/OnmsIcon.vue` is an OpenNMS-authored wrapper (it
+> Note: `packages/onms-ui/src/components/OnmsIcon.vue` is an OpenNMS-authored wrapper (it
 > replaces `FeatherIcon`'s API but contains no vendored FeatherDS code) and is
 > therefore not listed as vendored above.
 

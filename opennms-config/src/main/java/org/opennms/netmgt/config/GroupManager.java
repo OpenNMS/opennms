@@ -475,15 +475,25 @@ public abstract class GroupManager implements GroupConfig {
      */
     public synchronized void renameGroup(String oldName, String newName) throws Exception {
     	if (oldName != null && !oldName.equals("")) {
-    		if (m_groups.containsKey(oldName)) {
-    			Group grp = m_groups.remove(oldName);
-    			grp.setName(newName);
-    			m_groups.put(newName, grp);
-    		} else {
+    		if (!m_groups.containsKey(oldName)) {
     			throw new Exception("GroupFactory.renameGroup: Group doesn't exist: " + oldName);
     		}
-    		// Save into groups.xml
-    		saveGroups();
+    		Group grp = m_groups.remove(oldName);
+    		grp.setName(newName);
+    		m_groups.put(newName, grp);
+    		try {
+    			// Save into groups.xml
+    			saveGroups();
+    		} catch (final Exception e) {
+    			// The save did not persist, so undo the in-memory rename: the map
+    			// must keep reflecting groups.xml. Callers key referential-integrity
+    			// decisions (and their rollback) on hasGroup(), which must not report
+    			// a rename the file never received.
+    			m_groups.remove(newName);
+    			grp.setName(oldName);
+    			m_groups.put(oldName, grp);
+    			throw e;
+    		}
     	}
     }
 

@@ -172,7 +172,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
 
         clickMenuItem("User Management", "Manage Groups");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
@@ -413,7 +414,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header

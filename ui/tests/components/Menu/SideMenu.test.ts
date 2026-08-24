@@ -102,6 +102,28 @@ describe('SideMenu.vue', () => {
     })
   })
 
+  // Pages the rail can't push with padding-left read this instead: bootstrap.jsp
+  // emits #content only on its non-Vaadin branch, so the Vaadin topology page has
+  // nothing to push and its own stylesheet tracks the live rail width from here.
+  describe('--onms-side-menu-offset', () => {
+    const offset = () => document.documentElement.style.getPropertyValue('--onms-side-menu-offset')
+
+    it('publishes the collapsed offset on mount and the expanded one on toggle', async () => {
+      expect(offset()).toBe('calc(var(--onms-header-height, 3.75rem) + 0.25rem)')
+
+      await wrapper.get('.onms-side-menu__toggle').trigger('click')
+      expect(offset()).toBe('calc(20rem + 0.25rem)')
+
+      await wrapper.get('.onms-side-menu__toggle').trigger('click')
+      expect(offset()).toBe('calc(var(--onms-header-height, 3.75rem) + 0.25rem)')
+    })
+
+    it('stops publishing it after unmount', () => {
+      wrapper.unmount()
+      expect(offset()).toBe('')
+    })
+  })
+
   describe('Ctrl+\\ global shortcut', () => {
     it('toggles the rail and consumes the event', async () => {
       const event = ctrlBackslash()

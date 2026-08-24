@@ -52,8 +52,8 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 // eslint-disable-next-line no-restricted-imports
 import TieredMenu from 'primevue/tieredmenu'
 import { OnmsIcon, OnmsMenuItem } from '@opennms/onms-ui'
-import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
-import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
+import ChevronLeft from '@opennms/onms-ui/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -73,6 +73,11 @@ const props = defineProps({
 const RAIL_EXPANDED = '20rem'
 // Small breathing room so pushed content isn't flush against the rail edge.
 const RAIL_GAP = '0.25rem'
+// What legacy stylesheets already use for the collapsed rail
+// (--onms-legacy-content-offset in opennms-theme.scss).
+const RAIL_COLLAPSED_OFFSET = 'calc(var(--onms-header-height, 3.75rem) + 0.25rem)'
+// Matches the padding-left/margin-left transitions below.
+const RAIL_TRANSITION_MS = 100
 
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
@@ -161,7 +166,39 @@ const getPushedElement = (): HTMLElement | null => {
   }
 }
 
+// Vaadin sizes its UI in pixels from JS and only re-measures on window resize,
+// so a page it owns has to be told the rail moved or the map keeps its old width
+// and hangs off the right edge. Fired after the transition, so the measurement
+// sees the settled geometry.
+let vaadinResizeTimer = 0
+
+const notifyVaadinLayout = () => {
+  if (!document.querySelector('.v-app')) {
+    return
+  }
+
+  window.clearTimeout(vaadinResizeTimer)
+  vaadinResizeTimer = window.setTimeout(() => window.dispatchEvent(new Event('resize')), RAIL_TRANSITION_MS + 20)
+}
+
 const applyPush = () => {
+  const offset = isPinned.value ? `calc(${RAIL_EXPANDED} + ${RAIL_GAP})` : RAIL_COLLAPSED_OFFSET
+
+  // Published for pages that can't be pushed by the query below. bootstrap.jsp
+  // only emits #content on its non-Vaadin branch, so a Vaadin page (topology)
+  // has nothing to push and the expanded rail painted straight over it; its own
+  // stylesheet offsets the app root with a *static* margin sized for the
+  // collapsed rail. Legacy CSS reads this to track the live width instead — see
+  // styles/opennms-styles.scss.
+  const root = document.documentElement
+  const changed = root.style.getPropertyValue('--onms-side-menu-offset') !== offset
+
+  root.style.setProperty('--onms-side-menu-offset', offset)
+
+  if (changed) {
+    notifyVaadinLayout()
+  }
+
   const el = getPushedElement()
 
   if (!el) {
@@ -267,6 +304,9 @@ onBeforeUnmount(() => {
   if (el) {
     el.style.paddingLeft = ''
   }
+
+  window.clearTimeout(vaadinResizeTimer)
+  document.documentElement.style.removeProperty('--onms-side-menu-offset')
 
   flyoutObserver?.disconnect()
   cancelAnimationFrame(flyoutRaf)

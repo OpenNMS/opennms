@@ -38,7 +38,7 @@
 import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
-import ArrowDown from '@/components/icons/navigation/ArrowDropDown.vue'
+import ArrowDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 

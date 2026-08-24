@@ -77,7 +77,7 @@ import { ref, watch } from 'vue'
 
 import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 
 const props = defineProps<{
   modelValue: string[]

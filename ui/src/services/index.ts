@@ -84,6 +84,14 @@ import {
   setManagedUserPassword,
   updateManagedUser
 } from './userAdminService'
+import {
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
+} from './groupAdminService'
 
 export default {
   search,
@@ -155,5 +163,11 @@ export default {
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
-  updateManagedUser
+  updateManagedUser,
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
 }

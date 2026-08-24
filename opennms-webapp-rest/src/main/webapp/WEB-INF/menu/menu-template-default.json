@@ -411,7 +411,7 @@
         {
           "id": "manageGroups",
           "name": "Manage Groups",
-          "url": "admin/userGroupView/groups/list.htm",
+          "url": "ui/index.html#/admin/groups",
           "locationMatch": "",
           "roles": null
         },

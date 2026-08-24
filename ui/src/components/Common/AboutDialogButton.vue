@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { OnmsDialog, OnmsIconButton } from '@opennms/onms-ui'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 // An Info affordance for an admin page: the icon lives in the card header and
 // opens the page's help copy in a modal, replacing the older inline panel.

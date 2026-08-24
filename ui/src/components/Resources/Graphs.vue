@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
-import DownloadFile from '@/components/icons/action/DownloadFile.vue'
+import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
