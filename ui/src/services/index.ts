@@ -75,6 +75,14 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
+} from './groupAdminService'
 
 export default {
   search,
@@ -139,5 +147,11 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
-  performLogout
+  performLogout,
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
 }
