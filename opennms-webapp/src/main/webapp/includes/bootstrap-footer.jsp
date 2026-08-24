@@ -95,9 +95,20 @@
     </c:otherwise>
 </c:choose>
 
+<%--
+  Whatever an install drops in includes/custom-footer lands here, between the
+  footer and the close of #content — which is a flex column (see #content in
+  opennms-theme.scss). Give it a plain block of its own to live in, for the same
+  reason #content-body exists: as direct flex items, inline-level markup would be
+  stretched and anything sized by auto margins would collapse. Inside this div it
+  lays out normally, and #content keeps a hand-countable set of items.
+--%>
 <%
     File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
     if (extraIncludes.exists()) {
+%>
+<div id="custom-footer">
+<%
         for (File file : extraIncludes.listFiles()) {
             if (file.isFile()) {
                 pageContext.setAttribute("file", "custom-footer/" + file.getName());
@@ -106,6 +117,9 @@
 <%
             }
         }
+%>
+</div>
+<%
     }
 %>
 

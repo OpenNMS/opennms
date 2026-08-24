@@ -91,13 +91,20 @@ html {
 body {
   margin: 0;
 }
-// The `.p-overlay-mask` arm covers nesting: PrimeVue's block/unblock is not
-// reference-counted, so closing a dialog opened *inside* an open drawer strips
-// the body class and unlocked the page while the drawer was still up. The mask
-// element exists for exactly as long as a modal overlay is open, so matching it
-// keeps the lock until the last one closes.
+// The mask arms cover nesting: PrimeVue's block/unblock is not reference-counted,
+// so closing a dialog opened *inside* an open drawer strips the body class and
+// unlocked the page while the drawer was still up. A mask element exists for
+// exactly as long as its overlay is open, so matching it keeps the lock until the
+// last one closes (PrimeVue drops its own body class in `onAfterLeave`, so both
+// mechanisms expire together).
+//
+// Match the dialog and drawer masks specifically, not `.p-overlay-mask` on its
+// own: DataTable, Tree, TreeTable, Image, Galleria and SpeedDial put that class
+// on their masks unconditionally, so a bare `:has(.p-overlay-mask)` would freeze
+// page scroll for the length of, say, a table's loading state.
 html:has(body.p-overflow-hidden),
-html:has(.p-overlay-mask) {
+html:has(.p-dialog-mask.p-overlay-mask),
+html:has(.p-drawer-mask.p-overlay-mask) {
   overflow: hidden;
 }
 // Offsets for the SPA content, clearing the two fixed chrome elements:

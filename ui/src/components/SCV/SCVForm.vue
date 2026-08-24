@@ -176,9 +176,10 @@ const addAttribute = () => scvStore.addAttribute()
   background: var(--p-content-background);
   // Fit the height the app shell leaves for page content, or the page pushes the
   // footer past the bottom of the window and clips it: the masthead
-  // (--onms-header-height) off the top, the footer band (41px) off the bottom,
-  // then this page's breadcrumb row (51px) and .scv-container's 2px padding.
-  height: calc(100vh - var(--onms-header-height, 3.75rem) - 41px - 51px - 4px);
+  // (--onms-header-height) off the top, the footer band (--onms-footer-height) off
+  // the bottom, then this page's breadcrumb row (51px) and .scv-container's 2px
+  // padding.
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px) - 51px - 4px);
   display: flex;
   flex-direction: column;
   padding: 0px 15px 15px 15px;

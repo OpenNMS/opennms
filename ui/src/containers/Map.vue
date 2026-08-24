@@ -68,13 +68,12 @@ onMounted(async () => {
 <style scoped lang="scss">
 // Fit the height the app shell leaves for page content, or the page pushes the
 // footer past the bottom of the window and clips it. The shell takes the masthead
-// (--onms-header-height) off the top and the footer band (41px: a 1.5rem line,
-// 0.5rem of padding either side and a 1px top border) off the bottom.
+// (--onms-header-height) off the top and the footer band (--onms-footer-height) off the bottom.
 //
 // The map is the whole page — no breadcrumbs or heading above it — so the shell's
 // own chrome is all there is to subtract.
 .map-panes {
-  height: calc(100vh - var(--onms-header-height, 3.75rem) - 41px);
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px));
 }
 
 .bottom-pane {
