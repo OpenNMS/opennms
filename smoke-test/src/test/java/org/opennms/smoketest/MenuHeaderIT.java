@@ -412,7 +412,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header
