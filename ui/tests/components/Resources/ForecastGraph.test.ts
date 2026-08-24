@@ -153,4 +153,61 @@ describe('ForecastGraph.vue', () => {
     expect(hw.parameter.every((p: { value: unknown }) => typeof p.value === 'string')).toBe(true)
     expect(wrapper.find('[data-test="forecast-warning"]').exists()).toBe(false)
   })
+
+  it('warns when the fit is all NaN because the metric reaches zero in-season', async () => {
+    const wrapper = mountGraph()
+    await flushPromises()
+    getGraphMetrics.mockResolvedValue({
+      timestamps: [1000, 2000, 3000],
+      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      columns: [
+        { values: [1, 0, 2] }, // the metric touches zero within the window
+        { values: [NaN, NaN, NaN] }, // multiplicative Holt-Winters yields no fit
+        { values: [NaN, NaN, NaN] },
+        { values: [NaN, NaN, NaN] },
+        { values: [1, 2, 3] }
+      ]
+    })
+
+    await wrapper.find('[data-test="forecast-run"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="forecast-warning"]').text()).toContain('reaches zero')
+  })
+
+  it('warns when the response has no HWFit column', async () => {
+    const wrapper = mountGraph()
+    await flushPromises()
+    getGraphMetrics.mockResolvedValue({
+      timestamps: [1000, 2000],
+      labels: ['data'],
+      columns: [{ values: [1, 2] }]
+    })
+
+    await wrapper.find('[data-test="forecast-run"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="forecast-warning"]').text()).toContain('could not be produced')
+  })
+
+  it('warns when the confidence bounds have zero width', async () => {
+    const wrapper = mountGraph()
+    await flushPromises()
+    getGraphMetrics.mockResolvedValue({
+      timestamps: [1000, 2000, 3000],
+      labels: ['data', 'HWFit', 'HWLwr', 'HWUpr', 'Trend'],
+      columns: [
+        { values: [5, 5, 5] },
+        { values: [5, 5, 5] }, // valid flat fit
+        { values: [5, 5, 5] }, // lower == upper -> zero width
+        { values: [5, 5, 5] },
+        { values: [5, 5, 5] }
+      ]
+    })
+
+    await wrapper.find('[data-test="forecast-run"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="forecast-warning"]').text()).toContain('zero width')
+  })
 })

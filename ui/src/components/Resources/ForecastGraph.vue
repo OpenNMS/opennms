@@ -299,6 +299,33 @@ const columnByLabel = (resp: { labels?: string[], columns?: { values: number[] }
   return idx < 0 ? [] : (resp.columns?.[idx]?.values ?? []).map(v => (typeof v === 'number' ? v : NaN))
 }
 
+// The server's Holt-Winters filter can return a response whose timestamps are
+// present but whose forecast columns are empty or all-NaN — the legacy forecast
+// page surfaces these cases via checkForecastWarning.js, and the new page must
+// too, or the user just sees a bare data line and empty legend entries. Returns
+// a human-readable reason, or null when the forecast looks healthy.
+const forecastWarningFor = (resp: { labels?: string[], columns?: { values: number[] }[] }): string | null => {
+  const fit = columnByLabel(resp, 'HWFit')
+  if (!fit.length) {
+    return 'Forecast could not be produced. The most common cause is that the selected training window does not have enough historical data.'
+  }
+  if (!fit.some(v => !Number.isNaN(v))) {
+    // Holt-Winters here is multiplicative, so a series that touches zero inside
+    // its season divides by zero and yields no fit at all
+    if (columnByLabel(resp, 'data').some(v => v === 0)) {
+      return 'Forecast produced no valid values because the metric reaches zero within its season, which the multiplicative Holt-Winters model cannot forecast. Try a metric or a training window that stays above zero.'
+    }
+    return 'Forecast produced no valid values. This typically means gaps or outliers in the training window left too few usable samples after filtering.'
+  }
+  const lwr = columnByLabel(resp, 'HWLwr')
+  const upr = columnByLabel(resp, 'HWUpr')
+  if (lwr.length && upr.length
+      && !lwr.some((lo, i) => !Number.isNaN(lo) && !Number.isNaN(upr[i]) && Math.abs(upr[i] - lo) > 1e-12)) {
+    return 'Confidence bounds have zero width (training residuals had no variance); the upper and lower bounds coincide with the fit line.'
+  }
+  return null
+}
+
 const runForecast = async () => {
   warning.value = null
   forecasting.value = true
@@ -335,6 +362,9 @@ const runForecast = async () => {
     datasets.push(line('HW Fit', '#9d4edd', toPoints(ts, columnByLabel(resp, 'HWFit'))))
     datasets.push(line('Trend', '#00ffff', toPoints(ts, columnByLabel(resp, 'Trend'))))
     drawChart(datasets)
+    // the data line still renders; explain why the forecast overlay is missing
+    // or degenerate instead of leaving empty legend entries unexplained
+    warning.value = forecastWarningFor(resp)
   } finally {
     forecasting.value = false
   }
