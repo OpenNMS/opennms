@@ -36,8 +36,9 @@ public interface LinkDetailsAware {
 
     /**
      * The enlinkd {@code ProtocolSupported} name. A combined view holds several
-     * protocols in one namespace, so the namespace does not identify an edge's.
-     * Includes the synthetic topologies, whose ends have no ifIndex.
+     * protocols in one namespace, so the namespace does not identify an edge's
+     * discovery protocol. Includes the synthetic topologies, whose ends have no
+     * ifIndex.
      */
     String getDiscoveryProtocol();
 }
