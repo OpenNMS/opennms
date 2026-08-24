@@ -1,0 +1,157 @@
+= MCP Server
+
+The MCP server exposes {page-component-title} to clients that speak the https://modelcontextprotocol.io[Model Context Protocol] (MCP), the open standard that AI agents such as Claude Code and Claude Desktop use to interact with external systems.
+Once installed, an AI agent can inventory nodes, inspect alarms, resolve IP addresses, acknowledge or clear alarms, and send events — all through the regular {page-component-title} security layer.
+
+The server implements the stateless MCP specification revision `2026-07-28` (Streamable HTTP, plain JSON request/response) and additionally serves legacy `2025-03-26` through `2025-11-25` clients through a stateless `initialize` handshake, so both current and older MCP clients work against the same endpoint.
+
+== Installation
+
+The MCP server ships as an optional Karaf feature.
+Install it from the Karaf shell:
+
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+[source, karaf]
+----
+feature:install opennms-mcp-server
+----
+
+The MCP endpoint is then available at `http://<opennms-host>:8980/opennms/rest/mcp`.
+
+== Security
+
+The endpoint lives under `/rest`, so it is protected by the same authentication as the {page-component-title} REST API: HTTP basic authentication, stateless, no sessions.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Access | Requirement
+
+| Read tools (list/query)
+| A user allowed to use the REST API (`ROLE_REST` or `ROLE_ADMIN`).
+
+| Write tools (acknowledge alarms, send events)
+| `ROLE_ADMIN`, and not `ROLE_READONLY` (the read-only marker role revokes write access even for administrators, mirroring the REST API rules). Write tools are hidden from `tools/list` for other users and rejected server side if called anyway.
+|===
+
+We recommend creating a dedicated {page-component-title} user for AI agents so that access can be scoped and audited independently.
+Give it `ROLE_REST` for read-only access, or `ROLE_ADMIN` to allow the write tools.
+
+Every tool invocation is written to the container's security audit log
+(`$OPENNMS_HOME/data/security/audit.log`), recording the authenticated user, the tool
+name, the argument names, and the outcome.
+Argument values are deliberately not logged, since they may contain sensitive data.
+Actions performed by write tools are attributed to the authenticated user: alarm
+acknowledgements record the caller as the acknowledging user, and events sent through
+`send_event` carry a source of `mcp:<user>`.
+
+== Connect a client
+
+Example: register the server with Claude Code:
+
+[source, console]
+----
+claude mcp add --transport http opennms http://localhost:8980/opennms/rest/mcp \
+    --header "Authorization: Basic $(echo -n admin:admin | base64)"
+----
+
+Any other MCP client works the same way: configure the endpoint URL as an HTTP (Streamable HTTP) MCP server and supply a basic authentication header.
+
+== Built-in tools
+
+[options="header"]
+[cols="1,1,3"]
+|===
+| Tool | Access | Description
+
+| list_nodes
+| read
+| List or search the node inventory by label substring.
+
+| get_node
+| read
+| Node details including IP interfaces and monitored services.
+
+| list_alarms
+| read
+| List alarms, filtered by minimum severity and acknowledgement state.
+
+| find_node_by_ip
+| read
+| Resolve an IP address to the node that owns it.
+
+| update_alarms
+| write
+| Acknowledge, unacknowledge, escalate, or clear alarms by ID.
+
+| send_event
+| write
+| Send an event onto the {page-component-title} event bus.
+|===
+
+== Contribute tools from a plugin
+
+Plugins can add their own MCP tools by publishing an `org.opennms.integration.api.v1.mcp.McpToolProvider` OSGi service.
+The MCP server discovers these services dynamically and advertises them alongside the built-in tools.
+
+[source, java]
+----
+public class MyTool implements McpToolProvider {
+    @Override
+    public String getToolName() {
+        return "my_tool";
+    }
+
+    @Override
+    public String getToolDescription() {
+        return "Describe what the tool does, for the LLM to read.";
+    }
+
+    @Override
+    public String getInputSchema() {
+        return "{\"type\":\"object\",\"properties\":{\"query\":{\"type\":\"string\"}}}";
+    }
+
+    @Override
+    public McpToolResult execute(McpToolContext context) {
+        // context carries the parsed tool arguments and the identity of the
+        // authenticated caller (user name and role membership)
+        Map<String, Object> arguments = context.getArguments();
+        return McpToolResult.text("result text");
+    }
+}
+----
+
+Register it in your blueprint:
+
+[source, xml]
+----
+<service interface="org.opennms.integration.api.v1.mcp.McpToolProvider">
+    <bean class="org.example.MyTool"/>
+</service>
+----
+
+Tools that change state should return `true` from `isWriteAccess()`; they are then restricted to administrators.
+
+Notes for tool authors:
+
+* Design tools as capabilities, not API endpoints.
+  Most MCP clients load every registered tool schema into the model's context before each request, so a large tool surface costs tokens and degrades tool selection.
+  Prefer one tool with an `action` or mode parameter over several near-identical tools (the built-in `update_alarms` follows this pattern), and return compact summaries rather than full API payloads.
+* The `McpToolContext` carries the authenticated caller (`getUserName()`, `isUserInRole()`), so tools can authorize per user and attribute their actions.
+* Report expected failures by returning a result with the error flag set, or by throwing `IllegalArgumentException` with a safe message for argument problems.
+  Other exceptions are logged on the server and reported to the client as a generic failure.
+* A misbehaving provider (throwing from its methods, returning a null name, schema, or result) is skipped or converted to an error result; it cannot break the endpoint for other tools.
+* Input schemas must not declare the `x-mcp-header` extension; the server does not validate `Mcp-Param-*` headers against the request body and refuses to serve tools that request them.
+
+== Protocol notes
+
+* The endpoint accepts HTTP POST only; each request carries a single JSON-RPC 2.0 message.
+  GET and DELETE return `405 Method Not Allowed`, as the stateless revision requires.
+* Requests using the `2026-07-28` revision must carry the `MCP-Protocol-Version`, `Mcp-Method`, and (for `tools/call`) `Mcp-Name` headers matching the request body.
+* No protocol-level sessions are used in either era; every request is self-contained, which also means the endpoint works behind ordinary load balancers.
+* Server-push (`subscriptions/listen`), multi round-trip requests (MRTR), and the deprecated 2024-11-05 HTTP+SSE transport are not supported.
