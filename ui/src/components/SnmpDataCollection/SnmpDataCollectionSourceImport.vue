@@ -131,7 +131,7 @@
       </div>
     </div>
     <div class="container">
-      <DataTable
+      <OnmsTable
         v-if="orderedSourceFiles.length"
         v-model:first="firstRow"
         v-model:rows="rowsPerPage"
@@ -141,7 +141,7 @@
         class="data-table"
         data-test="import-files-table"
       >
-        <Column
+        <OnmsColumn
           header="Source"
           style="width: 85%"
         >
@@ -189,8 +189,8 @@
               />
             </div>
           </template>
-        </Column>
-        <Column header="Action">
+        </OnmsColumn>
+        <OnmsColumn header="Action">
           <template #body="{ data }">
             <OnmsIconButton
               title="Remove"
@@ -199,8 +199,8 @@
               @click="removeFile(data)"
             />
           </template>
-        </Column>
-      </DataTable>
+        </OnmsColumn>
+      </OnmsTable>
       <div v-if="!orderedSourceFiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -266,7 +266,7 @@ import { ellipsify } from '@/lib/utils'
 import { getAllSnmpCollectionProfiles, uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpCollectionProfile, SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
-import { OnmsButton, OnmsCheckbox, OnmsIcon, OnmsIconButton, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import CheckCircle from '@/components/icons/action/CheckCircle.vue'
 import Delete from '@/components/icons/action/Delete.vue'
 import UploadFile from '@/components/icons/action/UploadFile.vue'
@@ -275,8 +275,6 @@ import Apps from '@/components/icons/navigation/Apps.vue'
 import Refresh from '@/components/icons/navigation/Refresh.vue'
 import Error from '@/components/icons/notification/Error.vue'
 import Warning from '@/components/icons/notification/Warning.vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'

@@ -20,23 +20,50 @@
 /// License.
 ///
 
-export const ONMS_UI_VERSION = '0.1.0'
+import packageInfo from '../package.json'
+export const ONMS_UI_VERSION: string = packageInfo.version
 
 export { default as OnmsAutoComplete } from './components/OnmsAutoComplete.vue'
 export { default as OnmsButton } from './components/OnmsButton.vue'
+export { default as OnmsCard } from './components/OnmsCard.vue'
 export { default as OnmsCheckbox } from './components/OnmsCheckbox.vue'
+export { default as OnmsChip } from './components/OnmsChip.vue'
+export { default as OnmsColumn } from './components/OnmsColumn'
+export { default as OnmsConfirmationDialog } from './components/OnmsConfirmationDialog.vue'
+export { default as OnmsDatePicker } from './components/OnmsDatePicker.vue'
 export { default as OnmsDialog } from './components/OnmsDialog.vue'
+export { default as OnmsDrawer } from './components/OnmsDrawer.vue'
 export { default as OnmsIcon } from './components/OnmsIcon.vue'
 export { default as OnmsIconButton } from './components/OnmsIconButton.vue'
+export { default as OnmsInputNumber } from './components/OnmsInputNumber.vue'
 export { default as OnmsInputText } from './components/OnmsInputText.vue'
+export { default as OnmsListbox } from './components/OnmsListbox.vue'
+export { default as OnmsMenu } from './components/OnmsMenu.vue'
+export { default as OnmsMessageDialog } from './components/OnmsMessageDialog.vue'
+export { default as OnmsMultiSelect } from './components/OnmsMultiSelect.vue'
+export { default as OnmsPanel } from './components/OnmsPanel.vue'
 export { default as OnmsPassword } from './components/OnmsPassword.vue'
+export { default as OnmsPopover } from './components/OnmsPopover.vue'
+export { default as OnmsRadioButton } from './components/OnmsRadioButton.vue'
+export { default as OnmsSearchInput } from './components/OnmsSearchInput.vue'
 export { default as OnmsSelect } from './components/OnmsSelect.vue'
 export { default as OnmsSpinner } from './components/OnmsSpinner.vue'
+export { default as OnmsTab } from './components/OnmsTab.vue'
+export { default as OnmsTable } from './components/OnmsTable.vue'
+export { default as OnmsTabList } from './components/OnmsTabList.vue'
+export { default as OnmsTabPanel } from './components/OnmsTabPanel.vue'
+export { default as OnmsTabPanels } from './components/OnmsTabPanels.vue'
+export { default as OnmsTabs } from './components/OnmsTabs.vue'
 export { default as OnmsTag } from './components/OnmsTag.vue'
 export { default as OnmsTextarea } from './components/OnmsTextarea.vue'
 export { default as OnmsToastHost } from './components/OnmsToastHost.vue'
+export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 
-export { useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
+export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
 
-export type { OnmsTagSeverity } from './types'
+// Directives — register app-level; core does this in src/theme/primevue-setup.ts
+export { default as OnmsTooltip } from './directives/OnmsTooltip'
+
+export type { OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent, OnmsTagSeverity } from './types'
+export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'
 export type { OnmsToastOptions, OnmsToastSeverity } from './composables/useOnmsToast'

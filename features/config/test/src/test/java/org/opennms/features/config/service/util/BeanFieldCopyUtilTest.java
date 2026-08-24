@@ -34,7 +34,6 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
-import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -68,7 +67,6 @@ public class BeanFieldCopyUtilTest<T> {
                         NotifdConfiguration.class,
                         VacuumdConfiguration.class,
                         JmxDatacollectionConfig.class,
-                        MicroblogConfiguration.class,
                         ReadmailConfig.class,
                         HwInventoryAdapterConfiguration.class,
                         TrapdConfiguration.class

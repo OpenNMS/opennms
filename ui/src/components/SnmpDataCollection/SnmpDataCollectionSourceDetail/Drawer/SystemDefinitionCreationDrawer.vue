@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="system-definition-drawer"
     v-model:visible="store.systemDefDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '40rem' }"
+    width="40rem"
     @hide="store.closeSystemDefDrawer"
     class="system-definition-drawer"
   >
     <div class="container">
       <div class="drawer-content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -47,8 +46,9 @@
               :key="item.name"
               class="radio-option"
             >
-              <RadioButton
-                v-model="oidType"
+              <OnmsRadioButton
+                :modelValue="oidType"
+                @update:modelValue="(val) => oidType = val as string"
                 :inputId="`oid-type-${item.value}`"
                 :value="item.value"
               />
@@ -114,7 +114,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
@@ -127,11 +127,8 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { IAutocompleteItemType } from '@/types'
-import { OnmsAutoComplete, OnmsButton, OnmsInputText } from '@opennms/onms-ui'
-import Drawer from 'primevue/drawer'
+import { OnmsAutoComplete, OnmsButton, OnmsDrawer, OnmsInputText, OnmsRadioButton, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_MASK_PATTERN, OID_TYPE_OPTIONS } from '@/lib/constants'
-import RadioButton from 'primevue/radiobutton'
-import ToggleSwitch from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
 
 const store = useSnmpDataCollectionDetailStore()

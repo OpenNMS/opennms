@@ -21,3 +21,51 @@
 ///
 
 export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'
+
+// Menu model item in OpenNMS vocabulary (structurally compatible with
+// PrimeVue's MenuItem). The index signature permits app-specific fields
+// (e.g. iconComponent, statusClass) consumed by custom #item templates.
+export interface OnmsMenuItem {
+  label?: string
+  key?: string
+  separator?: boolean
+  url?: string
+  target?: string
+  disabled?: boolean
+  visible?: boolean
+  items?: OnmsMenuItem[]
+  command?: (event: { originalEvent: Event, item: OnmsMenuItem }) => void
+  [custom: string]: unknown
+}
+
+// DataTable-shaped event payloads forwarded by OnmsTable (NMS-20081). Field
+// names and types deliberately match PrimeVue's DataTablePageEvent /
+// DataTableSortEvent / DataTableRowEditSaveEvent so existing handler bodies
+// keep working after the seam sweep. `any` mirrors PrimeVue's own typing of
+// row data (the app's row shapes are per-consumer).
+export interface OnmsTablePageEvent {
+  /** New page index (0-based) */
+  page: number
+  /** Index of the first row on the new page */
+  first: number
+  /** Rows per page */
+  rows: number
+  pageCount?: number
+}
+
+export interface OnmsTableSortEvent {
+  sortField: string | ((item: any) => string) | null | undefined
+  sortOrder: number | null | undefined
+  first?: number
+  rows?: number
+}
+
+export interface OnmsTableRowEditSaveEvent {
+  originalEvent?: Event
+  /** Row data before the edit */
+  data: any
+  /** Row data with the editor values applied */
+  newData: any
+  /** Row index */
+  index: number
+}

@@ -4,19 +4,14 @@
       <div class="section-left">
         <div class="search-container">
           <FormField>
-            <IconField>
-              <OnmsInputText
-                :id="searchId"
-                :modelValue="store.sourcesSearchTerm"
-                @update:modelValue="onChangeSearchTerm"
-                data-test="search-input"
-                placeholder="Search by Source, Vendor or Description"
-                :aria-label="'Search by Source, Vendor or Description'"
-              />
-              <InputIcon>
-                <OnmsIcon :icon="Search" />
-              </InputIcon>
-            </IconField>
+            <OnmsSearchInput
+              :input-id="searchId"
+              :modelValue="store.sourcesSearchTerm"
+              @update:modelValue="onChangeSearchTerm"
+              data-test="search-input"
+              placeholder="Search by Source, Vendor or Description"
+              :aria-label="'Search by Source, Vendor or Description'"
+            />
           </FormField>
         </div>
       </div>
@@ -32,7 +27,7 @@
       </div>
     </div>
 
-    <DataTable
+    <OnmsTable
       v-if="store.sources.length"
       :value="store.sources"
       lazy
@@ -49,23 +44,23 @@
       class="data-table"
       data-test="sources-table"
     >
-      <Column
+      <OnmsColumn
         field="name"
         header="Source"
         sortable
       />
-      <Column header="Profiles">
+      <OnmsColumn header="Profiles">
         <template #body="{ data }">
           <div
             class="profile-chips"
             :data-test="`profiles-cell-${data.name}`"
           >
-            <Chip
+            <OnmsChip
               v-for="profile in profilesForSource(data.name)"
               :key="profile.id"
               :label="profile.name"
               class="profile-tag clickable-chip"
-              v-tooltip="'Click to edit profile'"
+              v-onms-tooltip="'Click to edit profile'"
               @click="router.push({ name: 'SNMP Data Collection Profile Detail', params: { id: profile.id } })"
             />
             <span
@@ -74,8 +69,8 @@
             >—</span>
           </div>
         </template>
-      </Column>
-      <Column
+      </OnmsColumn>
+      <OnmsColumn
         field="enabled"
         header="Status"
         sortable
@@ -87,8 +82,8 @@
             data-test="status-tag"
           />
         </template>
-      </Column>
-      <Column header="Actions">
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
         <template #body="{ data }">
           <div class="action-container">
             <OnmsIconButton
@@ -116,14 +111,13 @@
             />
           </div>
         </template>
-      </Column>
-    </DataTable>
+      </OnmsColumn>
+    </OnmsTable>
 
-    <Menu
+    <OnmsMenu
       id="source-row-menu"
       ref="rowMenu"
-      :model="rowMenuItems"
-      popup
+      :items="rowMenuItems"
     />
 
     <div v-if="!store.sources.length">
@@ -155,19 +149,22 @@ import { computed, onMounted, ref, useId, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsTag } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsChip,
+  OnmsColumn,
+  OnmsIconButton,
+  OnmsMenu,
+  OnmsMenuItem,
+  OnmsSearchInput,
+  OnmsTable,
+  OnmsTag,
+  type OnmsTablePageEvent,
+  type OnmsTableSortEvent
+} from '@opennms/onms-ui'
 import DownloadIcon from '@/components/icons/action/DownloadFile.vue'
 import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import Search from '@/components/icons/action/Search.vue'
 import ViewDetails from '@/components/icons/action/ViewDetails.vue'
-import Chip from 'primevue/chip'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import type { MenuItem } from 'primevue/menuitem'
-import Menu from 'primevue/menu'
 import { debounce } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import {
@@ -231,12 +228,12 @@ watch(
 
 const rowMenu = ref()
 const rowMenuTarget = ref<SnmpCollectionSource | null>(null)
-const rowMenuItems = computed<MenuItem[]>(() => {
+const rowMenuItems = computed<OnmsMenuItem[]>(() => {
   const target = rowMenuTarget.value
   if (!target) {
     return []
   }
-  const items: MenuItem[] = [
+  const items: OnmsMenuItem[] = [
     {
       label: 'Download XML',
       command: () => downloadCollectionSource(target, 'xml')
@@ -278,7 +275,7 @@ const onSourceClick = (source: SnmpCollectionSource) => {
   })
 }
 
-const onSort = (event: DataTableSortEvent) => {
+const onSort = (event: OnmsTableSortEvent) => {
   if (event.sortField) {
     store.onSourcesSortChange(String(event.sortField), event.sortOrder === 1 ? 'asc' : 'desc')
   } else {
@@ -286,7 +283,7 @@ const onSort = (event: DataTableSortEvent) => {
   }
 }
 
-const onPage = (event: DataTablePageEvent) => {
+const onPage = (event: OnmsTablePageEvent) => {
   if (event.rows !== store.sourcesPagination.pageSize) {
     store.onSourcePageSizeChange(event.rows)
   } else {

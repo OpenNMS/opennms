@@ -1,7 +1,7 @@
 <template>
   <span
     v-if="text"
-    v-tooltip.top="text"
+    v-onms-tooltip.top="text"
     class="pointer"
   >{{ ellipsify(text, 30) }}</span>
 </template>

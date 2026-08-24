@@ -78,7 +78,7 @@
            </div>
         </div>
     </div>
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="confirmationDialogVisible"
       title="Upload Trap Configuration"
       actionButtonText="Upload"
@@ -88,14 +88,14 @@
       <template v-slot:content>
         <p>Are you sure you want to upload the Trap configuration? This will overwrite any existing configuration.</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
 import IconDownload from '@/components/icons/action/DownloadFile.vue'
 import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
@@ -105,7 +105,6 @@ import useRole from '@/composables/useRole'
 import { validateTrapdXml, validateTrapdJson } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 
 const { downloadFile } = useDownload()
 const { adminRole } = useRole()

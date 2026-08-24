@@ -9,10 +9,10 @@
       <div class="title-flex">
         <div class="title">Thread Pools</div>
         <div v-if="!threadPoolsActive" class="chip-list">
-          <PChip v-if="unTouchedThreadPoolData.importThreads" :label="`${unTouchedThreadPoolData.importThreads} Import Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.scanThreads" :label="`${unTouchedThreadPoolData.scanThreads} Scan Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.rescanThreads" :label="`${unTouchedThreadPoolData.rescanThreads} Rescan Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.writeThreads" :label="`${unTouchedThreadPoolData.writeThreads} Write Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.importThreads" :label="`${unTouchedThreadPoolData.importThreads} Import Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.scanThreads" :label="`${unTouchedThreadPoolData.scanThreads} Scan Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.rescanThreads" :label="`${unTouchedThreadPoolData.rescanThreads} Rescan Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.writeThreads" :label="`${unTouchedThreadPoolData.writeThreads} Write Threads`" />
         </div>
       </div>
     </template>
@@ -71,8 +71,7 @@ import { computed, reactive, ref } from 'vue'
 
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import { OnmsButton, OnmsInputText } from '@opennms/onms-ui'
-import Chip from 'primevue/chip'
+import { OnmsButton, OnmsChip, OnmsInputText } from '@opennms/onms-ui'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { isEqual as _isEqual } from 'lodash'
@@ -81,8 +80,6 @@ import { putProvisionDService } from '@/services/configurationService'
 import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
-
-const PChip = Chip
 
 const configurationStore = useConfigurationStore()
 const { showSnackBar } = useSnackbar()

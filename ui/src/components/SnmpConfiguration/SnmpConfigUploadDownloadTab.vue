@@ -69,7 +69,7 @@
            </div>
         </div>
     </div>
-    <ConfirmationDialog
+    <OnmsConfirmationDialog
       :visible="confirmationDialogVisible"
       title="Upload SNMP Configuration"
       actionButtonText="Upload"
@@ -79,14 +79,14 @@
       <template v-slot:content>
         <p>Are you sure you want to upload the SNMP configuration? This will overwrite any existing configuration.</p>
       </template>
-    </ConfirmationDialog>
+    </OnmsConfirmationDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import { OnmsButton, OnmsConfirmationDialog, OnmsIcon } from '@opennms/onms-ui'
 import IconDownload from '@/components/icons/action/DownloadFile.vue'
 import IconUpload from '@/components/icons/action/UploadFile.vue'
 import useDownload from '@/composables/useDownload'
@@ -94,7 +94,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { downloadSnmpConfig, uploadSnmpConfig } from '@/services/snmpConfigService'
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 
 const { downloadFile } = useDownload()
 const snackbar = useSnackbar()

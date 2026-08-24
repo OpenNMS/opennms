@@ -2,17 +2,12 @@
   <div class="search-bar">
     <div class="search">
       <FormField class="search-field">
-        <IconField>
-          <OnmsInputText
-            placeholder="Search"
-            aria-label="Search"
-            :modelValue="searchValue"
-            @update:modelValue="(val) => search(val as string)"
-          />
-          <InputIcon>
-            <OnmsIcon :icon="IconSearch" />
-          </InputIcon>
-        </IconField>
+        <OnmsSearchInput
+          placeholder="Search"
+          aria-label="Search"
+          :modelValue="searchValue"
+          @update:modelValue="(val) => search(val as string)"
+        />
       </FormField>
     </div>
     <div class="save">
@@ -28,10 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import IconSearch from '@/components/icons/action/Search.vue'
+import { OnmsButton, OnmsSearchInput } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 

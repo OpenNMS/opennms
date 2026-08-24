@@ -3,7 +3,7 @@
     class="config-details-box"
     data-test="profile-details-box"
   >
-    <PCard class="snmp-data-collection-profiles-card">
+    <OnmsCard class="snmp-data-collection-profiles-card">
       <template #title>
         <h4>Profile Details</h4>
       </template>
@@ -52,7 +52,7 @@
               :for="`profile-status-toggle`"
               hint=""
             >
-              <PToggleSwitch
+              <OnmsToggleSwitch
                 id="profile-status-toggle"
                 :modelValue="configDetails.enabled"
                 @update:modelValue="update('enabled', Boolean($event))"
@@ -111,11 +111,10 @@
               hint=""
             >
               <div class="settings-input">
-                <PInputNumber
-                  id="profile-max-vars-per-pdu"
+                <OnmsInputNumber
+                  inputId="profile-max-vars-per-pdu"
                   :modelValue="configDetails.maxVarsPerPdu === '' ? null : Number(configDetails.maxVarsPerPdu)"
                   @update:modelValue="update('maxVarsPerPdu', $event == null ? '' : String($event))"
-                  :useGrouping="false"
                   :min="0"
                   :invalid="!!errors.maxVarsPerPdu"
                   data-test="max-vars-per-pdu"
@@ -157,24 +156,17 @@
           </div>
         </div>
       </template>
-    </PCard>
+    </OnmsCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
+import { OnmsCard, OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsTag, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpProfileStorageFlagType } from '@/types/snmpDataCollection'
 import type { ConfigDetailsModel, ProfileFormErrors } from '@/types/snmpDataCollection'
 import { format } from 'date-fns-tz'
-import Card from 'primevue/card'
-import InputNumberComponent from 'primevue/inputnumber'
-import ToggleSwitchComponent from 'primevue/toggleswitch'
 import FormField from '@/components/Common/FormField.vue'
-
-const PCard = Card
-const PToggleSwitch = ToggleSwitchComponent
-const PInputNumber = InputNumberComponent
 
 const props = defineProps<{
   configDetails: ConfigDetailsModel

@@ -33,22 +33,22 @@
       </div>
     </div>
 
-    <PDataTable
+    <OnmsTable
       v-if="gridItems.length > 0"
       :value="gridItems"
       dataKey="key"
       class="extended-search-table"
     >
-      <PColumn field="label" header="Search Type" style="width: 40%" />
-      <PColumn field="value" header="Search Term">
+      <OnmsColumn field="label" header="Search Type" style="width: 40%" />
+      <OnmsColumn field="value" header="Search Term">
         <template #body="{ data }">
           <OnmsInputText
             v-model="data.value"
             class="extended-search-input"
           />
         </template>
-      </PColumn>
-      <PColumn header="" style="width: 3.5rem">
+      </OnmsColumn>
+      <OnmsColumn header="" style="width: 3.5rem">
         <template #body="{ data }">
           <OnmsIconButton
             :icon="DeleteIcon"
@@ -57,26 +57,21 @@
             @click="removeGridItem(data.key)"
           />
         </template>
-      </PColumn>
-    </PDataTable>
+      </OnmsColumn>
+    </OnmsTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import DataTableComponent from 'primevue/datatable'
-import ColumnComponent from 'primevue/column'
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import Add from '@/components/icons/action/Add.vue'
 import DeleteIcon from '@/components/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodeQueryExtendedSearchParams } from '@/types'
-
-const PDataTable = DataTableComponent
-const PColumn = ColumnComponent
 
 const {
   getExtendedSearchValues,
@@ -113,7 +108,7 @@ const foreignSourceKeys = ['foreignSource', 'foreignId', 'foreignSourceId']
 const snmpKeys = ['snmpIfAlias', 'snmpIfDescription', 'snmpIfIndex', 'snmpIfName', 'snmpIfType']
 const sysKeys = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId']
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const searchTerm = ref('')
 const currentSelection = ref<SearchOption | undefined>(undefined)
 const gridItems = ref<GridItem[]>([])
@@ -161,11 +156,11 @@ const applyToStore = () => {
       Object.assign(ext.sysParams, { [item.key]: item.value })
     }
   }
-  nodeStructureStore.setExtendedSearchParams(ext)
+  nodeListStore.setExtendedSearchParams(ext)
 }
 
 const resetFromStore = () => {
-  const values = getExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+  const values = getExtendedSearchValues(nodeListStore.queryFilter.extendedSearch)
   gridItems.value = values.map(v => ({ key: v.key, label: v.name, value: v.value }))
   searchTerm.value = ''
   currentSelection.value = undefined

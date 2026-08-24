@@ -1,6 +1,6 @@
 <template>
   <div class="snmp-config-definition-details">
-    <PCard v-if="props.displayIps" class="ip-range-card">
+    <OnmsCard v-if="props.displayIps" class="ip-range-card">
       <template #title>
         <h4>Add more IP ranges to the configuration</h4>
       </template>
@@ -77,7 +77,7 @@
           </div>
         </div>
       </template>
-    </PCard>
+    </OnmsCard>
 
     <div class="onms-row">
       <div class="onms-col-6" v-if="!props.suppressMonitoringLocation">
@@ -242,8 +242,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import { OnmsButton, OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
-import Card from 'primevue/card'
+import { OnmsButton, OnmsCard, OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { ISelectItemType } from '@/types'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -255,8 +254,6 @@ import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
-
-const PCard = Card
 
 // Unique per-instance prefix for label `for`/input `id` pairs (multiple detail
 // panels stay mounted across PrimeVue tab panels).

@@ -1,0 +1,24 @@
+{
+  "name": "@opennms/onms-ui-example-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "verify": "node scripts/verify-dist.mjs"
+  },
+  "dependencies": {
+    "@opennms/onms-ui": "workspace:*",
+    "vue": "^3.5.33"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "rollup": "^4.62.2",
+    "rollup-plugin-external-globals": "^0.13.0",
+    "typescript": "~5.4.5",
+    "vite": "^6.4.3",
+    "vue-tsc": "^2.2.12"
+  }
+}

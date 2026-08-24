@@ -1,10 +1,9 @@
 <template>
-  <PDrawer
+  <OnmsDrawer
     data-test="scv-drawer"
     v-model:visible="drawerOpen"
-    position="right"
     header="Use an Existing Credential"
-    :style="{ width: '40em' }"
+    width="40em"
     @hide="emit('hidden')"
   >
     <div class="drawer-content">
@@ -18,31 +17,26 @@
         label="Search for credentials"
         for="scv-search"
       >
-        <IconField>
-          <OnmsInputText
-            id="scv-search"
-            :modelValue="searchValue"
-            @update:modelValue="val => onSearch(val as string)"
-          />
-          <InputIcon>
-            <OnmsIcon :icon="SearchIcon" />
-          </InputIcon>
-        </IconField>
+        <OnmsSearchInput
+          input-id="scv-search"
+          :modelValue="searchValue"
+          @update:modelValue="val => onSearch(val as string)"
+        />
       </FormField>
 
       <div class="large-spacer"></div>
 
       <div class="results-table-container">
-        <PDataTable
+        <OnmsTable
           :value="filteredResults"
           aria-label="SCV Search Results Table"
         >
-          <PColumn header="Alias">
+          <OnmsColumn header="Alias">
             <template #body="{ data }">
               {{ data.type === 'alias' ? data.alias : '' }}
             </template>
-          </PColumn>
-          <PColumn header="Key">
+          </OnmsColumn>
+          <OnmsColumn header="Key">
             <template #body="{ data }">
               <a
                 v-if="data.type === 'key' && data.key"
@@ -51,11 +45,11 @@
                 @click.prevent="onItemSelected(data)"
               >{{ data.key }}</a>
             </template>
-          </PColumn>
+          </OnmsColumn>
           <template #empty>
             <div class="empty-results">No results found.</div>
           </template>
-        </PDataTable>
+        </OnmsTable>
       </div>
 
       <div class="large-spacer"></div>
@@ -69,27 +63,17 @@
         />
       </div>
     </div>
-  </PDrawer>
+  </OnmsDrawer>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import SearchIcon from '@/components/icons/action/Search.vue'
 import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
-
-const PColumn = Column
-const PDataTable = DataTable
-const PDrawer = Drawer
 
 const props = defineProps<{
   isOpen: boolean

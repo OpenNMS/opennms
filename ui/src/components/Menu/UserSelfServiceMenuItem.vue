@@ -11,7 +11,7 @@
       <OnmsIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
     </OnmsButton>
 
-    <Popover
+    <OnmsPopover
       ref="pop"
       appendTo="self"
       class="onms-user-dropdown-panel self-service-dropdown-panel"
@@ -30,7 +30,7 @@
         v-for="item in menuItems"
         :key="item?.id || ''"
         class="self-service-menubar-dropdown-item-content"
-        @click="onMenuItemClick(item)"
+        @click="onMenuItemClick(item, $event)"
       >
         <a :href="item.action === 'logout' ? '#' : computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
           <OnmsIcon :icon="createIcon(item)" class="self-service-icon" />
@@ -39,19 +39,18 @@
           </span>
         </a>
       </div>
-    </Popover>
+    </OnmsPopover>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Component, computed, ref, watch } from 'vue'
-import { OnmsIcon, OnmsButton } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsButton, OnmsPopover } from '@opennms/onms-ui'
 import ArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
 import IconAccountCircle from '@/components/icons/action/AccountCircle.vue'
 import IconHelp from '@/components/icons/action/Help.vue'
 import IconLogout from '@/components/icons/action/LogOut.vue'
 import IconSecurity from '@/components/icons/network/Security.vue'
-import Popover from 'primevue/popover'
 import { ellipsify } from '@/lib/utils'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -138,8 +137,14 @@ const onUserProfileMenuClick = () => {
   window.location.assign(link)
 }
 
-const onMenuItemClick = async (item: MenuItem) => {
+const onMenuItemClick = async (item: MenuItem, event?: Event) => {
   if (item.action === 'logout') {
+    // Cancel the anchor's default navigation: its '#' href resolves against the
+    // <base href> that embedding JSP pages set (includes/bootstrap.jsp), so an
+    // uncancelled click starts a full-page navigation that races the logout
+    // POST below — Firefox tears the request down before it is ever sent,
+    // leaving the user logged in (NMS-20174).
+    event?.preventDefault()
     await performLogout()
     return
   }

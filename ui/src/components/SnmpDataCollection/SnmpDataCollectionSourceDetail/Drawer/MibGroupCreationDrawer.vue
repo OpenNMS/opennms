@@ -1,18 +1,17 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     id="drawer"
     data-test="mib-group-drawer"
     v-model:visible="store.mibGroupDrawerState.visible"
-    position="right"
     :header="drawerTitle"
-    :style="{ width: '80rem' }"
+    width="80rem"
     @hide="closeMibGroupDrawer"
     class="mib-group-drawer"
   >
     <div class="container">
       <div class="content">
         <div class="switch-row">
-          <ToggleSwitch
+          <OnmsToggleSwitch
             v-model="status"
             data-test="system-def-status-input"
           />
@@ -68,30 +67,30 @@
               />
             </div>
           </div>
-          <DataTable
+          <OnmsTable
             :value="mibObjects"
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 15, 20]"
             data-test="mib-objects-table"
           >
-            <Column
+            <OnmsColumn
               field="oid"
               header="OID"
             />
-            <Column
+            <OnmsColumn
               field="instance"
               header="Instance"
             />
-            <Column
+            <OnmsColumn
               field="alias"
               header="Alias"
             />
-            <Column
+            <OnmsColumn
               field="type"
               header="Type"
             />
-            <Column header="Action">
+            <OnmsColumn header="Action">
               <template #body="{ data }">
                 <div class="action-container">
                   <OnmsIconButton
@@ -108,11 +107,11 @@
                   />
                 </div>
               </template>
-            </Column>
+            </OnmsColumn>
             <template #empty>
               <EmptyList :content="{ msg: 'No MIB Objects added yet.' }" />
             </template>
-          </DataTable>
+          </OnmsTable>
         </div>
       </div>
       <div
@@ -223,7 +222,7 @@
         />
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -241,11 +240,7 @@ import Delete from '@/components/icons/action/Delete.vue'
 import Edit from '@/components/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsButton, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Drawer from 'primevue/drawer'
-import ToggleSwitch from 'primevue/toggleswitch'
+import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
