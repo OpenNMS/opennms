@@ -209,6 +209,10 @@
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
+    <action>
+        <label>Resource Graphs (Preview)</label>
+        <url>ui/index.html#/resource-graphs</url>
+    </action>
 
     <!-- Distributed Monitoring Card -->
     <action>
@@ -303,5 +307,15 @@
     <action>
         <label>Show Nodes without Flows</label>
         <url>ui/index.html#/nodes?flows=false</url>
+    </action>
+
+    <!-- Maps -->
+    <action>
+        <label>Geographical Map</label>
+        <url>ui/index.html#/map</url>
+    </action>
+    <action>
+        <label>Topology Map</label>
+        <url>topology</url>
     </action>
 </actions>
