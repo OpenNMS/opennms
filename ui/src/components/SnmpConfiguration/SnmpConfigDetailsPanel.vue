@@ -61,12 +61,14 @@
                 </FormField>
               </div>
               <div class="onms-col-6 add-range-col">
-                <OnmsButton
-                  label="Add"
-                  :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
-                  @click="onAddRange"
-                  data-test="add-definition-range-button"
-                />
+                <FormField :reserve-label-space="true">
+                  <OnmsButton
+                    label="Add"
+                    :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
+                    @click="onAddRange"
+                    data-test="add-definition-range-button"
+                  />
+                </FormField>
               </div>
             </div>
           </div>
@@ -637,8 +639,10 @@ onMounted(() => {
 
   // Align the Add button with the IPLIKE input. The input's column also holds a
   // hint below it (which can wrap), so centering against the full cell pushes the
-  // button too low. Instead top-align the button and match the input height, so
-  // the button and input line up (and their centers coincide).
+  // button too low. Instead the button sits in a FormField of its own with
+  // `reserveLabelSpace`, which lays out the label box the sibling fields have and
+  // leaves the button where their inputs are — no offset to keep in sync here.
+  // Matching the input height (3rem) then makes their centers coincide too.
   .add-range-col {
     display: flex;
     align-items: flex-start;
@@ -646,7 +650,6 @@ onMounted(() => {
     :deep(.p-button) {
       height: 3rem;
       min-width: 8rem;
-      margin-top: 0.5rem;
     }
   }
 
