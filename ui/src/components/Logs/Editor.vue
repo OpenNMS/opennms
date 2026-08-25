@@ -93,8 +93,14 @@ const init = (editor: any) => {
 
 <style lang="scss" scoped>
 @import "@/styles/onms-tokens";
+// Fit the height the app shell leaves for page content, or the page pushes the
+// footer past the bottom of the window and clips it. The shell takes the masthead
+// (--onms-header-height) off the top and the footer band (--onms-footer-height) off the bottom.
+//
+// This page also stacks a breadcrumb row (51px) above the card the editor sits
+// in, and that card pads it by 15px top and bottom.
 .editor {
-  height: calc(100vh - 120px);
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px) - 51px - 30px);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--p-content-border-color);
