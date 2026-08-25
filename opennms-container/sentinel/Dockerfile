@@ -138,7 +138,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 ### Runtime information and not relevant at build time
 
-# TODO MVR SENTINEL_LOCATION is not used at the moment
 ENV SENTINEL_HOME="/opt/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \

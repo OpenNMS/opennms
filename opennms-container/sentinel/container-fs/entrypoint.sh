@@ -193,18 +193,17 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Set Sentinel location and connection to OpenNMS instance
-        SENTINEL_CONFIG=${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg
-        echo "location = ${SENTINEL_LOCATION}" > ${SENTINEL_CONFIG}
-        echo "id = ${SENTINEL_ID:=$(uuidgen)}" >> ${SENTINEL_CONFIG}
-        echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${SENTINEL_CONFIG}
-
-        # Configure datasource
-        DB_CONFIG=${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg
-        echo "datasource.url = jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}" > ${DB_CONFIG}
-        echo "datasource.username = ${POSTGRES_USER}" >> ${DB_CONFIG}
-        echo "datasource.password = ${POSTGRES_PASSWORD}" >> ${DB_CONFIG}
-        echo "datasource.databaseName = ${POSTGRES_DB}" >> ${DB_CONFIG}
+        # Location, broker-url, and the datasource are resolved live from the
+        # environment via ${env:...} placeholders in the checked-in
+        # org.opennms.sentinel.controller.cfg / org.opennms.netmgt.distributed.datasource.cfg,
+        # so they stay in sync across restarts instead of being pinned here.
+        #
+        # The id must stay stable across restarts even when SENTINEL_ID isn't
+        # set, so it's the one value still persisted on first boot: generate a
+        # random one and bake it into the file, overwriting its placeholder.
+        if [ -z "${SENTINEL_ID:-}" ]; then
+            updateConfig "id" "$(uuidgen)" "${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg"
+        fi
 
         # Mark as configured
         echo "Configured $(date)" > ${SENTINEL_HOME}/etc/configured
