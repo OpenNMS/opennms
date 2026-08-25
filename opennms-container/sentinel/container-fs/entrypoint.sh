@@ -10,7 +10,10 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -eE
+
+# shellcheck disable=SC2064
+trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO} (exit=${rc})"; exit ${rc}' ERR
 
 umask 002
 export SENTINEL_HOME="/opt/sentinel"
@@ -18,10 +21,8 @@ export KARAF_HOME="${SENTINEL_HOME}"
 
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
-CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
-CONFD_CONFIG_DIR="${SENTINEL_HOME}/confd"
-CONFD_BIN="/usr/bin/confd"
-CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
+FEATURES_BOOT_DIR="${SENTINEL_HOME}/etc/featuresBoot.d"
+FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
 
 # Prometheus JMX Exporter Configuration
 #
@@ -33,8 +34,7 @@ CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - Configuration is managed via environment variables, which can be set in the Dockerfile, via docker run -e, or in a docker-compose file.
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -94,6 +94,83 @@ setCredentials() {
   rsync --out-format="%n %C" ${SENTINEL_HOME}/etc/scv.jce /keystore/.
 }
 
+function updateConfig() {
+    key=$1
+    value=$2
+    file=$3
+
+    # Omit $value here, in case there is sensitive information
+    echo "[Configuring] '$key' in '$file'"
+
+    # If config exists in file, replace it. Otherwise, append to file.
+    if grep -E -q "^#?\s*$key\s*=" "$file"; then
+        sed -r -i "s@^#?\s*$key\s*=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
+    else
+        echo "$key=$value" >> "$file"
+    fi
+}
+
+function parseEnvironment() {
+    IFS=$'\n'
+
+    for VAR in $(env)
+    do
+        env_var=$(echo "$VAR" | cut -d= -f1)
+
+        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
+            updateConfig "$ipc_name" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
+        fi
+
+        if [[ $env_var =~ ^ELASTICSEARCH_ ]]; then
+            es_name=$(echo "$env_var" | cut -d_ -f2- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            case "$es_name" in
+              url)            es_key="elasticUrl" ;;
+              index.strategy) es_key="elasticIndexStrategy" ;;
+              replicas)       es_key="settings.index.number_of_replicas" ;;
+              conn.timeout)   es_key="connTimeout" ;;
+              read.timeout)   es_key="readTimeout" ;;
+              *)              es_key="$es_name" ;;
+            esac
+            updateConfig "$es_key" "${!env_var}" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg"
+        fi
+
+        if [[ $env_var == "OPENNMS_INSTANCE_ID" ]]; then
+            updateConfig "org.opennms.instance.id" "${!env_var}" "${SENTINEL_HOME}/etc/custom.system.properties"
+        fi
+    done
+}
+
+function applyFeatureBootTemplates() {
+    local managed_boot_files=(
+      "sentinel-ipc.boot"
+    )
+    local boot_file
+    for boot_file in "${managed_boot_files[@]}"; do
+      rm -f "${FEATURES_BOOT_DIR}/${boot_file}"
+    done
+
+    apply_template() {
+        local name="$1"
+        cp "${FEATURES_BOOT_TEMPLATES_DIR}/${name}" "${FEATURES_BOOT_DIR}/${name}"
+        echo "[Features] Enabled: ${name}"
+    }
+
+    case "${SENTINEL_IPC:-}" in
+      kafka)
+        echo "[Features] IPC strategy set to Kafka."
+        apply_template "sentinel-ipc.boot"
+        ;;
+      jms|"")
+        echo "[Features] IPC strategy set to JMS (default)."
+        ;;
+      *)
+        echo "[Features] Unknown IPC strategy '${SENTINEL_IPC}', using defaults."
+        ;;
+    esac
+}
+
 initConfig() {
     if [ ! -d ${SENTINEL_HOME} ]; then
         echo "OpenNMS Sentinel home directory doesn't exist in ${SENTINEL_HOME}."
@@ -116,24 +193,29 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Set Sentinel location and connection to OpenNMS instance
-        SENTINEL_CONFIG=${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg
-        echo "location = ${SENTINEL_LOCATION}" > ${SENTINEL_CONFIG}
-        echo "id = ${SENTINEL_ID:=$(uuidgen)}" >> ${SENTINEL_CONFIG}
-        echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${SENTINEL_CONFIG}
-
-        # Configure datasource
-        DB_CONFIG=${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg
-        echo "datasource.url = jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}" > ${DB_CONFIG}
-        echo "datasource.username = ${POSTGRES_USER}" >> ${DB_CONFIG}
-        echo "datasource.password = ${POSTGRES_PASSWORD}" >> ${DB_CONFIG}
-        echo "datasource.databaseName = ${POSTGRES_DB}" >> ${DB_CONFIG}
+        # Location, broker-url, and the datasource are resolved live from the
+        # environment via ${env:...} placeholders in the checked-in
+        # org.opennms.sentinel.controller.cfg / org.opennms.netmgt.distributed.datasource.cfg,
+        # so they stay in sync across restarts instead of being pinned here.
+        #
+        # The id must stay stable across restarts even when SENTINEL_ID isn't
+        # set, so it's the one value still persisted on first boot: generate a
+        # random one and bake it into the file, overwriting its placeholder.
+        if [ -z "${SENTINEL_ID:-}" ]; then
+            updateConfig "id" "$(uuidgen)" "${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg"
+        fi
 
         # Mark as configured
         echo "Configured $(date)" > ${SENTINEL_HOME}/etc/configured
     else
         echo "OpenNMS Sentinel is already configured, skipped."
     fi
+
+    # Re-applied on every start (not gated by the configured marker) so that
+    # environment-driven config takes effect on container restarts, matching
+    # the old confd behavior where templates were re-rendered on every start.
+    parseEnvironment
+    applyFeatureBootTemplates
 }
 
 applyOverlayConfig() {
@@ -150,15 +232,6 @@ applyOverlayConfig() {
     rsync -r --out-format="%n %C" ${SENTINEL_OVERLAY}/* ${SENTINEL_HOME}/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${SENTINEL_OVERLAY}. Use default configuration."
-  fi 
-}
-
-applyConfd() {
-  if [ -f "${CONFD_KEY_STORE}" ]; then
-    echo "Found a configuration key store, applying configuration via confd."
-    runConfd
-  else
-    echo "No configuration key store present, skipping confd configuration."
   fi
 }
 
@@ -182,17 +255,6 @@ start() {
     exec ./karaf server ${SENTINEL_DEBUG}
 }
 
-runConfd() {
-  # Create any directories that confd might write to
-  while IFS= read -r dir; do
-    local dirToCreate="$SENTINEL_HOME"/"$dir"
-    echo "Creating $dirToCreate so confd can write to it"
-    mkdir -p "$dirToCreate"
-  done < "$CONFD_CONFIG_DIR"/directories
-
-  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
-}
-
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
     usage
@@ -205,7 +267,6 @@ while getopts csdfh flag; do
         c)
             useEnvCredentials
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
@@ -216,14 +277,12 @@ while getopts csdfh flag; do
         d)
             SENTINEL_DEBUG="debug"
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
             ;;
         f)
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
