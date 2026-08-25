@@ -326,6 +326,16 @@
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
+    <%-- #content is a flex column at least as tall as the window, so the footer
+         can sit at the bottom of a short page instead of stopping wherever the
+         content ends (see #content / #content-body in opennms-theme.scss). This
+         wrapper holds everything except the footer, which keeps #content down to
+         two flex items: page markup lays out inside a plain block exactly as it
+         did before, rather than becoming flex items itself (which stretched
+         inline-level children like .btn-group and collapsed <hr> elements).
+         Closed in bootstrap-footer.jsp, just before the footer. --%>
+    <%= "<div id=\"content-body\">" %>
+
     <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
          'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
          if 'oldmenu' query string param is true. On unauthenticated quiet pages
