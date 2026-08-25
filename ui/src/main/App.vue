@@ -76,8 +76,46 @@ onMounted(() => {
 @import '@/styles/onms-typography';
 @import "@/styles/onms-tokens";
 
+// `overflow-x: hidden` makes <html> itself the SPA's scroll container: the
+// other axis can no longer compute to `visible`, so the body's overflow is not
+// propagated to the viewport. That is why PrimeVue's `blockScroll` — which only
+// adds `.p-overflow-hidden` (overflow: hidden) to <body> — cannot stop the page
+// scrolling on its own here, and the wheel over an open drawer/dialog kept
+// scrolling the content behind it. Lock the real scroller instead, keyed off the
+// same body class so it tracks PrimeVue's own lock state (NMS-20182).
+//
+// `scrollbar-gutter: stable` reserves the scrollbar's width permanently. Without
+// it, locking removes the page scrollbar and the fixed chrome (Menubar, side
+// rail) jumps ~15px wider; PrimeVue's `padding-right` compensation only shifts
+// in-flow content, never fixed elements.
 html {
   overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+// The UA's default 8px body margin sits outside .app-layout's `min-height:
+// 100vh`, so the shell overflowed the viewport by it: even a page whose content
+// fits scrolled ~16px, and its footer stopped short of the bottom of the window.
+// Drop the margin so the shell is exactly as tall as the viewport — the layout's
+// own padding already clears the fixed menubar and rail, and legacy JSP pages
+// have carried a margin-less body all along (NMS-20182).
+body {
+  margin: 0;
+}
+// The mask arms cover nesting: PrimeVue's block/unblock is not reference-counted,
+// so closing a dialog opened *inside* an open drawer strips the body class and
+// unlocked the page while the drawer was still up. A mask element exists for
+// exactly as long as its overlay is open, so matching it keeps the lock until the
+// last one closes (PrimeVue drops its own body class in `onAfterLeave`, so both
+// mechanisms expire together).
+//
+// Match the dialog and drawer masks specifically, not `.p-overlay-mask` on its
+// own: DataTable, Tree, TreeTable, Image, Galleria and SpeedDial put that class
+// on their masks unconditionally, so a bare `:has(.p-overlay-mask)` would freeze
+// page scroll for the length of, say, a table's loading state.
+html:has(body.p-overflow-hidden),
+html:has(.p-dialog-mask.p-overlay-mask),
+html:has(.p-drawer-mask.p-overlay-mask) {
+  overflow: hidden;
 }
 // Offsets for the SPA content, clearing the two fixed chrome elements:
 // - padding-top clears the fixed top menu bar (Menubar, --onms-header-height).
