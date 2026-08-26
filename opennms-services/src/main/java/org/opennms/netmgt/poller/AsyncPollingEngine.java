@@ -24,7 +24,6 @@ package org.opennms.netmgt.poller;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
@@ -40,9 +39,8 @@ import java.util.concurrent.Executors;
 public class AsyncPollingEngine {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncPollingEngine.class);
 
-    private static final Executor executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-            .setNameFormat("Poller-AsyncPollingEngine-%d")
-            .build());
+    private static final Executor executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("Poller-AsyncPollingEngine-", 0).factory());
 
     private final int maxConcurrentCalls;
     private final Bulkhead bulkhead;
