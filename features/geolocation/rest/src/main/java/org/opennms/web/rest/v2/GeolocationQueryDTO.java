@@ -29,12 +29,27 @@ import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.deser.std.StdScalarDeserializer;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 
 @XmlRootElement
+@Schema(description = "Query for the geolocation endpoint. Every member is optional.")
 public class GeolocationQueryDTO {
+    @Schema(description = """
+            How to calculate each node's status. Matched case-insensitively. `Alarms` and `Outages` are \
+            the values the endpoint can act on; `None` is accepted by validation and then rejected with \
+            500, so omit the member to skip the calculation.""",
+            allowableValues = {"Alarms", "Outages"}, example = "Alarms")
     private String strategy;
+
+    @Schema(description = """
+            Lowest calculated severity a node must have to be returned. Read only when `strategy` is \
+            also given. Validation accepts any `OnmsSeverity` name, but only `Normal`, `Warning`, \
+            `Minor`, `Major` and `Critical` can be converted; `Indeterminate` and `Cleared` are \
+            rejected with 500.""",
+            allowableValues = {"Normal", "Warning", "Minor", "Major", "Critical"}, example = "Normal")
     private String severityFilter;
 
     static public class CustomBooleanSerializer extends StdScalarDeserializer<Boolean> {
@@ -64,6 +79,10 @@ public class GeolocationQueryDTO {
      * Use of a custom deserializer to prevent the incorrect value from being returned to the requester. See NMS-18052.
      */
     @JsonDeserialize(using = CustomBooleanSerializer.class)
+    @Schema(description = """
+            Whether acknowledged alarms count towards the status when `strategy` is `Alarms`. Defaults \
+            to false. A value that is not a boolean is answered with 500.""",
+            example = "false")
     private boolean includeAcknowledgedAlarms;
 
     public String getStrategy() {

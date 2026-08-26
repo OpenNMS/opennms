@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -33,6 +35,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="bridgeLinkNode")
 @JsonRootName("bridgeLinkNode")
+@Schema(description = "One shared bridge segment the node takes part in, with the node's own end in bridgeLocalPort and the other ends in BridgeLinkRemoteNodes. Note that one field name is capitalised where the rest are not.")
 public class BridgeLinkNodeDTO {
     private String bridgeLocalPort;
 
@@ -48,6 +51,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLocalPort")
     @JsonProperty("bridgeLocalPort")
+    @Schema(description = "Local end of the shared segment as a display label. Depending on what resolved this is a bridge port ((bridgeport:N)), a MAC ((mac:...)), or a port string with (ifindex:N) embedded.", example = "GigabitEthernet0/1(ifindex:2)(bridgeport:1)")
     public String getBridgeLocalPort() {
         return bridgeLocalPort;
     }
@@ -63,6 +67,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLocalPortUrl")
     @JsonProperty("bridgeLocalPortUrl")
+    @Schema(description = "Relative URL of the local SNMP or IP interface page. Omitted when nothing resolved.", example = "element/snmpinterface.jsp?node=1&ifindex=2")
     public String getBridgeLocalPortUrl() {
         return bridgeLocalPortUrl;
     }
@@ -78,6 +83,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="BridgeLinkRemoteNodes")
     @JsonProperty("BridgeLinkRemoteNodes")
+    @Schema(name = "BridgeLinkRemoteNodes", description = "Other ends of the shared segment. Note the wire name is capitalised: BridgeLinkRemoteNodes, unlike every other field here. Always present, empty when the segment has no resolved remote end.")
     public List<BridgeLinkRemoteNodeDTO> getBridgeLinkRemoteNodes() {
         return bridgeLinkRemoteNodes;
     }
@@ -93,6 +99,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeInfo")
     @JsonProperty("bridgeInfo")
+    @Schema(description = "VLAN name of the bridge element behind the local port, when one was found.", example = "default")
     public String getBridgeInfo() {
         return bridgeInfo;
     }
@@ -108,6 +115,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLinkCreateTime")
     @JsonProperty("bridgeLinkCreateTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeLinkCreateTime() {
         return bridgeLinkCreateTime;
     }
@@ -123,6 +131,7 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="bridgeLinkLastPollTime")
     @JsonProperty("bridgeLinkLastPollTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeLinkLastPollTime() {
         return bridgeLinkLastPollTime;
     }

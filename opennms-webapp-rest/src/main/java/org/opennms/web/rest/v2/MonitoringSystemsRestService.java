@@ -22,6 +22,11 @@
 package org.opennms.web.rest.v2;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -54,17 +59,45 @@ public class MonitoringSystemsRestService {
     private MonitoringSystemDao dao;
 
     public static class MonitoringSystemResponseDTO {
+        @Schema(description = "The system's id. For the main system this is the instance UUID from `opennms.properties`.",
+                example = "e126608f-9801-4c7f-9369-87179a3ea979")
         public String id;
+
+        @Schema(description = "Human-readable label, usually the host name.", example = "localhost")
         public String label;
+
+        @Schema(description = "Monitoring location the system belongs to.", example = "Default")
         public String location;
+
+        @Schema(description = "System role. The main system reports `OpenNMS`; Minions and Sentinels report their own types.",
+                example = "OpenNMS")
         public String type;
     }
 
     @GET
     @Path("/main")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get main monitoring system", description = "Get main monitoring system",
+    @Operation(summary = "Get main monitoring system",
+            description = """
+        Identity of the core OpenNMS instance itself, as opposed to the Minions and Sentinels that also
+        register as monitoring systems. Four fields only: no capabilities or status.""",
             operationId = "MonitoringSystemsRestServiceGetMainMonitoringSystem")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The main monitoring system.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = MonitoringSystemResponseDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": "e126608f-9801-4c7f-9369-87179a3ea979",
+                      "label": "localhost",
+                      "location": "Default",
+                      "type": "OpenNMS"
+                    }"""))),
+            @ApiResponse(responseCode = "204", description = "No main monitoring system is registered, which normally means the core has not started fully."),
+            @ApiResponse(responseCode = "500", description = "The lookup failed. The cause is logged, not returned.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error getting monitoring system.")))
+    })
     public Response getMainMonitoringSystem(final @Context HttpServletRequest request) {
         try {
             OnmsMonitoringSystem system = dao.getMainMonitoringSystem();

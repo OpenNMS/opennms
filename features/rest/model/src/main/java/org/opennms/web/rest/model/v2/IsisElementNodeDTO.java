@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="isisElementNode")
 @JsonRootName("isisElementNode")
+@Schema(description = "The IS-IS process on the node itself. Omitted from EnlinkdDTO entirely, not serialized as null, when the node has no IS-IS element.")
 public class IsisElementNodeDTO {
     private String isisSysID;
 
@@ -42,6 +45,7 @@ public class IsisElementNodeDTO {
 
     @XmlElement(name="isisSysID")
     @JsonProperty("isisSysID")
+    @Schema(description = "isisSysID of the node, as reported.", example = "0000.0000.0001")
     public String getIsisSysID() {
         return isisSysID;
     }
@@ -57,6 +61,7 @@ public class IsisElementNodeDTO {
 
     @XmlElement(name="isisSysAdminState")
     @JsonProperty("isisSysAdminState")
+    @Schema(description = "Administrative state of the IS-IS process, as a word rather than the SNMP integer.", example = "on", allowableValues = {"on", "off"})
     public String getIsisSysAdminState() {
         return isisSysAdminState;
     }
@@ -72,6 +77,7 @@ public class IsisElementNodeDTO {
 
     @XmlElement(name="isisCreateTime")
     @JsonProperty("isisCreateTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisCreateTime() {
         return isisCreateTime;
     }
@@ -87,6 +93,7 @@ public class IsisElementNodeDTO {
 
     @XmlElement(name="isisLastPollTime")
     @JsonProperty("isisLastPollTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisLastPollTime() {
         return isisLastPollTime;
     }

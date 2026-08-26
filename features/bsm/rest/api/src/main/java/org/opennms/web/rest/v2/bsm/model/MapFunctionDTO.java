@@ -29,15 +29,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.google.common.collect.Maps;
 
 @XmlRootElement(name = "map-function")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = """
+        A map function applied to one edge's severity before the reduce function sees it. Take `type`
+        and the `properties` keys from `GET /business-services/functions/map`.""")
 public class MapFunctionDTO {
 
+    @Schema(description = "Map function name.", example = "Identity", required = true,
+            allowableValues = {"Identity", "Increase", "Decrease", "Ignore", "SetTo"})
     @XmlElement(name="type", required = true)
     private String type;
 
+    @Schema(description = "Function parameters, keyed by the parameter `key` the metadata endpoint reports. "
+            + "Empty for functions that take none.",
+            example = "{}")
     @XmlElement(name="properties")
     private Map<String, String> properties = Maps.newHashMap();
 

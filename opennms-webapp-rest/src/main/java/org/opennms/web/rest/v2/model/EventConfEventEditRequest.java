@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.xml.eventconf.Event;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -31,10 +32,14 @@ import java.io.Serializable;
 
 @XmlRootElement(name = "eventEdit")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Schema(name = "EventConfEventEditRequest",
+        description = "Updates an existing EventConf event. Both members are optional: send 'event' to replace the event definition, 'enabled' to toggle it, or both.")
 public class EventConfEventEditRequest implements Serializable {
 
+    @Schema(description = "Whether the event participates in event matching.", example = "true")
     private Boolean enabled;
 
+    @Schema(description = "Replacement event definition, using the same structure as an <event> element in an eventconf file.")
     @XmlElement(name = "event", namespace = "http://xmlns.opennms.org/xsd/eventconf")
     private org.opennms.netmgt.xml.eventconf.Event event;
 

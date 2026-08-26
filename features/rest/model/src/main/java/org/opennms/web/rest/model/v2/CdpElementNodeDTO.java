@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="cdpElementNode")
 @JsonRootName("cdpElementNode")
+@Schema(description = "The CDP process on the node itself. Omitted from EnlinkdDTO entirely, not serialized as null, when the node has no CDP element.")
 public class CdpElementNodeDTO {
     private String cdpGlobalRun;
 
@@ -44,6 +47,7 @@ public class CdpElementNodeDTO {
 
     @XmlElement(name="cdpGlobalRun")
     @JsonProperty("cdpGlobalRun")
+    @Schema(description = "Whether the CDP protocol is running on the node, as the word form of the SNMP TruthValue.", example = "true", allowableValues = {"true", "false"})
     public String getCdpGlobalRun() {
         return cdpGlobalRun;
     }
@@ -59,6 +63,7 @@ public class CdpElementNodeDTO {
 
     @XmlElement(name="cdpGlobalDeviceId")
     @JsonProperty("cdpGlobalDeviceId")
+    @Schema(description = "cdpGlobalDeviceId as reported by the device.", example = "SEP001B213C4D5E")
     public String getCdpGlobalDeviceId() {
         return cdpGlobalDeviceId;
     }
@@ -74,6 +79,7 @@ public class CdpElementNodeDTO {
 
     @XmlElement(name="cdpGlobalDeviceIdFormat")
     @JsonProperty("cdpGlobalDeviceIdFormat")
+    @Schema(description = "Format of cdpGlobalDeviceId. The v2 mapper never sets this field, so it is absent from every response even when the underlying element has it; the JSP UI shows serialNumber, macAddress or other.", example = "macAddress", allowableValues = {"serialNumber", "macAddress", "other"})
     public String getCdpGlobalDeviceIdFormat() {
         return cdpGlobalDeviceIdFormat;
     }
@@ -89,6 +95,7 @@ public class CdpElementNodeDTO {
 
     @XmlElement(name="cdpCreateTime")
     @JsonProperty("cdpCreateTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpCreateTime() {
         return cdpCreateTime;
     }
@@ -104,6 +111,7 @@ public class CdpElementNodeDTO {
 
     @XmlElement(name="cdpLastPollTime")
     @JsonProperty("cdpLastPollTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getCdpLastPollTime() {
         return cdpLastPollTime;
     }

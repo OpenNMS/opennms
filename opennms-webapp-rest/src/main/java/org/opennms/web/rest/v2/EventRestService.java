@@ -27,8 +27,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
@@ -42,6 +65,9 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.mapper.v2.EventMapper;
 import org.opennms.web.rest.model.v2.EventCollectionDTO;
 import org.opennms.web.rest.model.v2.EventDTO;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchPropertyCollection;
+import org.opennms.web.rest.support.StringCollection;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -159,29 +185,381 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
         return getDao().get(id);
     }
 
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List events",
+            description = """
+        Return a page of events. `application/atom+xml` yields the same document as
+        `application/xml`, not an Atom feed. The event table is the largest in an OpenNMS database, so
+        a call without `_s` and without `limit` still costs a full count over it.
+
+        Example query: `_s=event.eventUei==uei.opennms.org/nodes/nodeDown&orderBy=eventTime&order=desc`.""",
+            operationId = "getEvents")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "A page of events.",
+                    headers = @Header(name = "Content-Range", description = "Range of rows returned and the total, as `items <from>-<to>/<total>`.",
+                            schema = @Schema(type = "string", example = "items 0-0/55178")),
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = EventCollectionDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 55178,
+                      "count": 1,
+                      "offset": 0,
+                      "event": [
+                        {
+                          "id": 55168,
+                          "uei": "uei.opennms.org/perspective/nodes/nodeLostService",
+                          "label": "OpenNMS-defined perspective poller event: A perspective poller detected a node lost service",
+                          "time": 1787685470949,
+                          "createTime": 1787685470954,
+                          "source": "PerspectivePoller",
+                          "ipAddress": "127.0.0.1",
+                          "serviceType": { "id": 3, "name": "SNMP" },
+                          "severity": "MINOR",
+                          "log": "Y",
+                          "display": "Y",
+                          "nodeId": 2,
+                          "nodeLabel": "loopback-001",
+                          "location": "Default",
+                          "parameters": [
+                            { "name": "eventReason", "value": "SNMP poll failed", "type": "string" }
+                          ]
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = EventCollectionDTO.class),
+                                    examples = @ExampleObject(value = """
+                    <events count="1" offset="0" totalCount="55178">
+                      <event id="55168" severity="MINOR" log="Y" display="Y">
+                        <uei>uei.opennms.org/perspective/nodes/nodeLostService</uei>
+                        <time>2026-08-25T15:17:50.949-04:00</time>
+                        <source>PerspectivePoller</source>
+                        <ipAddress>127.0.0.1</ipAddress>
+                        <serviceType id="3"><name>SNMP</name></serviceType>
+                        <parameters>
+                          <parameter name="eventReason" value="SNMP poll failed" type="string"/>
+                        </parameters>
+                        <nodeId>2</nodeId>
+                        <location>Default</location>
+                      </event>
+                    </events>"""))
+                    }),
+            @ApiResponse(responseCode = "204", description = "No event matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` or `orderBy` named a property the entity does not have.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogus of: org.opennms.netmgt.model.OnmsEvent")))
+    })
     @Override
-    public Response get(UriInfo uriInfo, SearchContext searchContext) {
+    public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         return super.get(uriInfo, searchContext);
     }
 
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get one event",
+            description = "Return a single event by its database id.",
+            operationId = "getEventById")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The event.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = EventDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": 55168,
+                      "uei": "uei.opennms.org/perspective/nodes/nodeLostService",
+                      "label": "OpenNMS-defined perspective poller event: A perspective poller detected a node lost service",
+                      "time": 1787685470949,
+                      "createTime": 1787685470954,
+                      "source": "PerspectivePoller",
+                      "severity": "MINOR",
+                      "log": "Y",
+                      "display": "Y",
+                      "nodeId": 2,
+                      "location": "Default"
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = EventDTO.class),
+                                    examples = @ExampleObject(value = """
+                    <event id="55168" severity="MINOR" log="Y" display="Y">
+                      <uei>uei.opennms.org/perspective/nodes/nodeLostService</uei>
+                      <time>2026-08-25T15:17:50.949-04:00</time>
+                      <source>PerspectivePoller</source>
+                      <nodeId>2</nodeId>
+                      <location>Default</location>
+                    </event>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No event has that id. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "The path segment is not a number.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "object is not an instance of declaring class")))
+    })
     @Override
-    public Response get(UriInfo uriInfo, Long id) {
+    public Response get(@Context final UriInfo uriInfo,
+                        @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                description = "Event database id.", example = "55168")
+                        @PathParam("id") final Long id) {
         return super.get(uriInfo, id);
     }
 
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    @Operation(
+            summary = "Count events",
+            description = """
+        Return the number of events matching `_s` as a plain-text integer. The response is
+        `text/plain` only, so a request that asks solely for `application/json` is answered with 404.
+        `limit` and `offset` are ignored: the count covers the whole match.
+
+        Example query: `_s=event.eventUei==uei.opennms.org/nodes/nodeDown`.""",
+            operationId = "getEventCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The number of matching events.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "55179"))),
+            @ApiResponse(responseCode = "404", description = "The request did not accept `text/plain`. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property the entity does not have.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogus of: org.opennms.netmgt.model.OnmsEvent")))
+    })
     @Override
-    public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         return super.getCount(uriInfo, searchContext);
     }
 
+    @GET
+    @Path("properties")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the properties events can be queried on",
+            description = """
+        Return the property names accepted by `_s` and `orderBy`, with their type and whether they
+        support `iplike`. The UEI is exposed as `eventUei`, not `uei`. `q` filters the list by a
+        case-insensitive substring of the name; a `q` that matches nothing yields 200 with an empty
+        list, not 204.""",
+            operationId = "getEventProperties")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The matching query properties.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SearchPropertyCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "searchProperty": [
+                        { "id": "eventUei", "name": "UEI", "type": "STRING", "orderBy": true, "iplike": false },
+                        { "id": "alarm.uei", "name": "Alarm: UEI", "type": "STRING", "orderBy": true, "iplike": false }
+                      ]
+                    }""")))
+    })
     @Override
-    public Response getProperties(String query) {
+    public Response getProperties(@Parameter(in = ParameterIn.QUERY, name = "q",
+            description = "Case-insensitive substring of the property name.", example = "uei")
+                                  @QueryParam("q") final String query) {
         return super.getProperties(query);
     }
 
+    @GET
+    @Path("properties/{propertyId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the values a query property takes",
+            description = """
+        Return the distinct values of one query property, either from its fixed value set or from a
+        `select distinct` over the event table. The element type follows the property type: strings for
+        `STRING` and `IP_ADDRESS`, numbers for `INTEGER`, `LONG` and `FLOAT`, and epoch milliseconds in
+        JSON for `TIMESTAMP`. `propertyId` is the unprefixed id from `GET /events/properties`, so
+        `eventUei` rather than `event.eventUei`. Without `limit` this reads every distinct value in the
+        event table.""",
+            operationId = "getEventPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The distinct values of the property.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = StringCollection.class),
+                            examples = {
+                                    @ExampleObject(name = "string property", value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "value": [
+                        "uei.opennms.org/internal/authentication/failure",
+                        "uei.opennms.org/internal/capsd/deleteNode"
+                      ]
+                    }"""),
+                                    @ExampleObject(name = "timestamp property", value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "value": [1786133772883, 1786133772913]
+                    }""")
+                            })),
+            @ApiResponse(responseCode = "204", description = "The property has a type with no value listing. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No query property has that id. No body is returned.")
+    })
     @Override
-    public Response getPropertyValues(String propertyId, String query, Integer limit) {
+    public Response getPropertyValues(
+            @Parameter(in = ParameterIn.PATH, name = "propertyId", required = true,
+                    description = "Unprefixed property id from `GET /events/properties`.", example = "eventUei")
+            @PathParam("propertyId") final String propertyId,
+            @Parameter(in = ParameterIn.QUERY, name = "q",
+                    description = "Case-sensitive substring the value must contain.", example = "nodeDown")
+            @QueryParam("q") final String query,
+            @Parameter(in = ParameterIn.QUERY, name = "limit",
+                    description = "Maximum number of values returned. Applies only to values read from the database.",
+                    example = "25")
+            @QueryParam("limit") final Integer limit) {
         return super.getPropertyValues(propertyId, query, limit);
+    }
+
+
+    @POST
+    @Path("{id}")
+    @Operation(
+            summary = "Broken: create an event at a chosen id",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Publish events with `POST /events` instead.""",
+            operationId = "createEventWithId",
+            parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                    description = "Event database id. The value is not read: the call fails before the handler runs.",
+                    example = "1"))
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Broken: update properties of several events",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Events are an immutable record; there is no supported way to change one.""",
+            operationId = "updateEvents")
+    @RequestBody(description = "Event properties, form-encoded. Never read.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "eventSeverity=5")))
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    @Operation(
+            summary = "Broken: replace an event",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Events are an immutable record; there is no supported way to change one.""",
+            operationId = "replaceEvent")
+    @RequestBody(description = "Event document. Never read.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = EventDTO.class),
+                    examples = @ExampleObject(value = "{}")))
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                           @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                   description = "Event database id.", example = "55168")
+                           @PathParam("id") final Long id, final OnmsEvent object) {
+        return super.update(securityContext, uriInfo, id, object);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{id}")
+    @Operation(
+            summary = "Broken: update properties of an event",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Events are an immutable record; there is no supported way to change one.""",
+            operationId = "updateEventProperties")
+    @RequestBody(description = "Event properties, form-encoded. Never read.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "eventSeverity=5")))
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                                     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                             description = "Event database id.", example = "55168")
+                                     @PathParam("id") final Long id, final MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, id, params);
+    }
+
+    @DELETE
+    @Operation(
+            summary = "Broken: delete several events",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Event retention is handled by vacuumd, not through this API.""",
+            operationId = "deleteEvents")
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Operation(
+            summary = "Broken: delete one event",
+            description = """
+        Inherited from the generic DAO resource and not reachable in practice. This implementation is
+        proxied on its interface, so a method the interface does not declare cannot be invoked on the
+        proxy and the call fails with 500 before any of the handler runs.
+
+        Event retention is handled by vacuumd, not through this API.""",
+            operationId = "deleteEvent")
+    @ApiResponses(@ApiResponse(responseCode = "500", description = "Always.",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                    examples = @ExampleObject(value = "object is not an instance of declaring class"))))
+    @Override
+    public Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                           @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                   description = "Event database id.", example = "55168")
+                           @PathParam("id") final Long id) {
+        return super.delete(securityContext, uriInfo, id);
     }
 
     /**

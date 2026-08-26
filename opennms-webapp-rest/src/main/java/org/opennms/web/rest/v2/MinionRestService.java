@@ -51,6 +51,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchPropertyCollection;
+import org.opennms.web.rest.support.StringCollection;
 
 /**
  * Basic Web Service using REST for {@link OnmsMinion} entity
@@ -149,5 +165,323 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Override
     protected OnmsMinion doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
+    }
+
+    @Override
+    @Operation(summary = "List Minions",
+            description = """
+                    Minions matching the query, by descending label unless `orderBy` says otherwise. Minions register themselves through heartbeats, so an instance with no Minion deployed answers 204 here.
+
+                    The `date` member is the last heartbeat: epoch milliseconds in JSON, ISO-8601 with a UTC offset in XML.
+
+                    `application/atom+xml` is also accepted and returns the same document as `application/xml`.
+
+                    For example, `_s=location==Default`.""",
+            operationId = "minionsList")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One page of matching Minions.",
+                    headers = @Header(name = "Content-Range", description = "`items <offset>-<last>/<totalCount>` for this page.",
+                            schema = @Schema(type = "string")),
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsMinionCollection.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "totalCount": 1,
+                              "count": 1,
+                              "offset": 0,
+                              "minion": [ {
+                                "id": "00000000-0000-0000-0000-000000ddba11",
+                                "label": "minion-01",
+                                "location": "Default",
+                                "type": "Minion",
+                                "status": "Started",
+                                "version": "36.0.4-SNAPSHOT",
+                                "date": 1787727804037,
+                                "lastCheckedIn": null,
+                                "properties": { }
+                              } ]
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinionCollection.class),
+                                    examples = @ExampleObject(value = """
+                            <minions count="1" offset="0" totalCount="1">
+                              <minion id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00" status="Started" version="36.0.4-SNAPSHOT">
+                                <properties/>
+                              </minion>
+                            </minions>"""))
+                    }),
+            @ApiResponse(responseCode = "204", description = "No Minion matched the query. The response has no body."),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    public Response get(final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "Count Minions",
+            description = """
+                    Number of Minions matching the query.
+
+                    Only `text/plain` is produced. A request that sends `Accept: application/json` does not match this operation and falls through to the single-entity GET with `count` as the identifier.
+
+                    For example, `_s=location==Default`.""",
+            operationId = "minionsCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The number of matching Minions, as a decimal string.",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "0"))),
+            @ApiResponse(responseCode = "500", description = DOC_COUNT_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    public Response getCount(final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "List the queryable properties of Minions",
+            description = """
+                    The properties a Minion query can filter and sort on.""",
+            operationId = "minionsSearchProperties")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The properties this endpoint can search and sort on.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = SearchPropertyCollection.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "totalCount": 1,
+                              "count": 1,
+                              "offset": 0,
+                              "searchProperty": [
+                                { "id": "label", "name": "Label", "type": "STRING", "orderBy": true, "iplike": false }
+                              ]
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = SearchPropertyCollection.class),
+                                    examples = @ExampleObject(value = """
+                            <searchProperties count="1" offset="0" totalCount="1">
+                              <searchProperty type="STRING" orderBy="true" iplike="false" id="label" name="Label"/>
+                            </searchProperties>"""))
+                    })
+    })
+    public Response getProperties(final String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    @Operation(summary = "List the values a queryable property takes",
+            description = """
+                    Distinct values held by one Minion property. With no Minion registered the `value` array is empty and `totalCount` and `count` are `null`.""",
+            operationId = "minionsSearchPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The distinct values, typed after the property.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StringCollection.class),
+                            examples = @ExampleObject(value = """
+                            {
+                              "totalCount": null,
+                              "count": null,
+                              "offset": 0,
+                              "value": [ ]
+                            }"""))),
+            @ApiResponse(responseCode = "404", description = "No property with that `id` is queryable here. The response has no body.")
+    })
+    public Response getPropertyValues(final String propertyId, final String query, final Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @Override
+    @Operation(summary = "Get one Minion",
+            description = """
+                    One Minion by identifier.
+
+                    `application/atom+xml` is also accepted and returns the same document as `application/xml`.""",
+            operationId = "minionsGet")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The requested Minion.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "id": "00000000-0000-0000-0000-000000ddba11",
+                              "label": "minion-01",
+                              "location": "Default",
+                              "type": "Minion",
+                              "status": "Started",
+                              "version": "36.0.4-SNAPSHOT",
+                              "date": 1787727804037,
+                              "lastCheckedIn": null,
+                              "properties": { }
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            <minion status="Started" version="36.0.4-SNAPSHOT" id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" date="2026-08-26T03:03:24.037-04:00">
+                              <properties/>
+                            </minion>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = """
+                    No Minion has that identifier. The response has no body.""")
+    })
+    public Response get(final UriInfo uriInfo,
+            @Parameter(description = """
+                    Identifier the Minion reports for itself, which is also its primary key.""",
+                    required = true, example = "00000000-0000-0000-0000-000000ddba11")
+            final String id) {
+        return super.get(uriInfo, id);
+    }
+
+    @Override
+    @Operation(summary = "Create a Minion",
+            description = """
+                    Not supported: Minions register themselves by heartbeat. The endpoint answers 501 for every body.""",
+            operationId = "minionsCreate")
+    @ApiResponses({
+            @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
+    })
+    public Response create(final SecurityContext securityContext, final UriInfo uriInfo,
+            @RequestBody(description = """
+                    Accepted but not acted on: the endpoint answers 501 for every body.""",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            { }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            <minion/>"""))
+                    })
+            final OnmsMinion object) {
+        return super.create(securityContext, uriInfo, object);
+    }
+
+    @Override
+    @Operation(summary = "Rejected: create a Minion at a caller-chosen identifier",
+            description = DOC_POST_WITH_ID,
+            operationId = "minionsCreateWithId")
+    @Parameters({
+            @Parameter(name = "id", in = ParameterIn.PATH, required = true,
+                    description = "Ignored. Any value produces the same response.",
+                    schema = @Schema(type = "string"), example = "00000000-0000-0000-0000-000000ddba11")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Always. The response has no body.")
+    })
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @Override
+    @Operation(summary = "Update the Minions matching a query",
+            description = """
+                    Not supported for Minions: the endpoint answers 501 once it has found at least one match, and 404 when nothing matches.
+
+                    For example, `_s=location==Default`.""",
+            operationId = "minionsUpdateMany")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = DOC_NO_MATCH),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search"))),
+            @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
+    })
+    public Response updateMany(final SecurityContext securityContext, final UriInfo uriInfo, final SearchContext searchContext,
+            @RequestBody(description = DOC_FORM_BODY,
+                    content = @Content(mediaType = "application/x-www-form-urlencoded",
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = """
+                            label=minion-01""")))
+            final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @Override
+    @Hidden
+    public Response update(final SecurityContext securityContext, final UriInfo uriInfo, final String id,
+            final OnmsMinion object) {
+        return super.update(securityContext, uriInfo, id, object);
+    }
+
+    @Override
+    @Operation(summary = "Update one Minion",
+            description = """
+                    Replaces a Minion record. With a JSON or XML body the stored row is replaced wholesale, so members left out of the body are cleared, and the `id` in the body has to equal the identifier in the path. The form-parameter form is not implemented and answers 501.
+
+                    Heartbeats overwrite these fields again, so an edit made here lasts only until the Minion next checks in.""",
+            operationId = "minionsUpdate")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = """
+                    The Minion record was replaced. The response has no body."""),
+            @ApiResponse(responseCode = "400", description = """
+                    The `id` in the body does not match the identifier in the path. The body is a `text/plain` message.""",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = """
+                            The ID of the object doesn't match the ID of the path: Other != ApiDocMinion"""))),
+            @ApiResponse(responseCode = "404", description = """
+                    No Minion has that identifier, or the body was empty. The response has no body."""),
+            @ApiResponse(responseCode = "501", description = """
+                    Reached only by a form-encoded body: updating named properties is not implemented here. The response has no body.""")
+    })
+    public Response updateProperties(final SecurityContext securityContext, final UriInfo uriInfo,
+            @Parameter(description = """
+                    Identifier the Minion reports for itself, which is also its primary key.""",
+                    required = true, example = "00000000-0000-0000-0000-000000ddba11")
+            final String id,
+            @RequestBody(description = """
+                    JSON or XML replaces the whole Minion record. A form-encoded body is accepted by the router but answered with 501.""",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "id": "00000000-0000-0000-0000-000000ddba11",
+                              "label": "minion-01",
+                              "location": "Default",
+                              "type": "Minion",
+                              "status": "Stopped",
+                              "version": "36.0.4-SNAPSHOT"
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsMinion.class),
+                                    examples = @ExampleObject(value = """
+                            <minion id="00000000-0000-0000-0000-000000ddba11" label="minion-01" location="Default" type="Minion" status="Stopped"/>""")),
+                            @Content(mediaType = "application/x-www-form-urlencoded",
+                                    schema = @Schema(type = "object"),
+                                    examples = @ExampleObject(value = """
+                            label=minion-01"""))
+                    })
+            final MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, id, params);
+    }
+
+    @Override
+    @Operation(summary = "Delete the Minions matching a query",
+            description = """
+                    Deletes every Minion matching the query. At most `limit` entities are affected, so this touches ten entities per call unless a larger `limit` is given.
+
+                    For example, `_s=location==Default`.""",
+            operationId = "minionsDeleteMany")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Every matching Minion was deleted. The response has no body."),
+            @ApiResponse(responseCode = "404", description = DOC_NO_MATCH),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    public Response deleteMany(final SecurityContext securityContext, final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "Delete one Minion",
+            description = """
+                    Deletes one Minion record. A `monitoringSystemDeleted` event is sent, and the Minion's node is removed from the requisition named by `opennms.minion.provisioning.foreignSourcePattern` (`Minions` by default).""",
+            operationId = "minionsDelete")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The Minion was deleted. The response has no body."),
+            @ApiResponse(responseCode = "404", description = """
+                    No Minion has that identifier. The response has no body.""")
+    })
+    public Response delete(final SecurityContext securityContext, final UriInfo uriInfo,
+            @Parameter(description = """
+                    Identifier the Minion reports for itself, which is also its primary key.""",
+                    required = true, example = "00000000-0000-0000-0000-000000ddba11")
+            final String id) {
+        return super.delete(securityContext, uriInfo, id);
     }
 }

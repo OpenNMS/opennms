@@ -25,6 +25,8 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,6 +34,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 @XmlRootElement(name="bridgeElementNode")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "One bridge element of the node, one per VLAN. Most fields carry the raw dot1dBase and dot1dStp values; the two timestamp fields are never populated by the v2 mapper.")
 public class BridgeElementNodeDTO {
 
     private String  baseBridgeAddress;
@@ -49,6 +52,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="baseBridgeAddress")
     @JsonProperty("baseBridgeAddress")
+    @Schema(description = "dot1dBaseBridgeAddress of the bridge, as reported.", example = "001b213c4d5e")
     public String getBaseBridgeAddress() {
         return baseBridgeAddress;
     }
@@ -64,6 +68,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="baseNumPorts")
     @JsonProperty("baseNumPorts")
+    @Schema(description = "dot1dBaseNumPorts. Numeric, not a display label.", example = "24")
     public Integer getBaseNumPorts() {
         return baseNumPorts;
     }
@@ -79,6 +84,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="baseType")
     @JsonProperty("baseType")
+    @Schema(description = "dot1dBaseType, as a word rather than the SNMP integer.", example = "transparent-only", allowableValues = {"unknown", "transparent-only", "sourceroute-only", "srt"})
     public String getBaseType() {
         return baseType;
     }
@@ -94,6 +100,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="stpProtocolSpecification")
     @JsonProperty("stpProtocolSpecification")
+    @Schema(description = "dot1dStpProtocolSpecification, as a word rather than the SNMP integer. Omitted when the bridge does not report it.", example = "ieee802.1d", allowableValues = {"unknown", "decLb100", "ieee802.1d", "ieee802.1m", "ieee802.1aq"})
     public String getStpProtocolSpecification() {
         return stpProtocolSpecification;
     }
@@ -109,6 +116,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="stpPriority")
     @JsonProperty("stpPriority")
+    @Schema(description = "dot1dStpPriority.", example = "32768")
     public Integer getStpPriority() {
         return stpPriority;
     }
@@ -124,6 +132,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="stpDesignatedRoot")
     @JsonProperty("stpDesignatedRoot")
+    @Schema(description = "dot1dStpDesignatedRoot, as reported.", example = "8000001b213c4d5e")
     public String getStpDesignatedRoot() {
         return stpDesignatedRoot;
     }
@@ -139,6 +148,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="stpRootCost")
     @JsonProperty("stpRootCost")
+    @Schema(description = "dot1dStpRootCost.", example = "0")
     public Integer getStpRootCost() {
         return stpRootCost;
     }
@@ -154,6 +164,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="stpRootPort")
     @JsonProperty("stpRootPort")
+    @Schema(description = "dot1dStpRootPort.", example = "1")
     public Integer getStpRootPort() {
         return stpRootPort;
     }
@@ -169,6 +180,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="vlan")
     @JsonProperty("vlan")
+    @Schema(description = "VLAN id this bridge element was collected for.", example = "1")
     public Integer getVlan() {
         return vlan;
     }
@@ -184,6 +196,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="vlanname")
     @JsonProperty("vlanname")
+    @Schema(description = "Name of that VLAN.", example = "default")
     public String getVlanname() {
         return vlanname;
     }
@@ -199,6 +212,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="bridgeNodeCreateTime")
     @JsonProperty("bridgeNodeCreateTime")
+    @Schema(description = "Intended as the create timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeNodeCreateTime() {
         return bridgeNodeCreateTime;
     }
@@ -214,6 +228,7 @@ public class BridgeElementNodeDTO {
 
     @XmlElement(name="bridgeNodeLastPollTime")
     @JsonProperty("bridgeNodeLastPollTime")
+    @Schema(description = "Intended as the last-poll timestamp in the same locale-formatted display form as the other time fields. The v2 mapper never assigns it, so it is absent from every response.", example = "8/18/26, 1:16:57\u202fPM")
     public String getBridgeNodeLastPollTime() {
         return bridgeNodeLastPollTime;
     }

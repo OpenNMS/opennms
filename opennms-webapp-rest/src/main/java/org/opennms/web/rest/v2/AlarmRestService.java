@@ -30,10 +30,13 @@ import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,7 +44,18 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
@@ -69,7 +83,11 @@ import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.v2.model.AlarmMemoRequest;
+import org.opennms.web.rest.v2.model.AlarmPropertyUpdateRequest;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -83,7 +101,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
-@Tag(name = "Alarms", description = "Alarms API")
+@Tag(name = "Alarms", description = """
+        Alarms API.
+
+        An alarm is the deduplicated form of one or more events that share a reduction key. Alarms are
+        not created through this API: they are raised by alarmd when an event whose event configuration
+        carries `alarm-data` is processed. What this API offers is querying, acknowledgement and
+        severity changes, sticky and journal notes, and trouble ticket actions.
+
+        Timestamps are rendered differently per representation: JSON carries epoch milliseconds
+        (`1787685470949`), XML carries an ISO-8601 string with offset
+        (`2026-08-25T15:17:50.949-04:00`). The generated schema shows the XML form for both.
+
+        Collection reads accept a CXF FIQL expression in `_s` together with `limit`, `offset`,
+        `orderBy` and `order`. The default page size is 10 and the default sort is `lastEventTime`
+        descending. Property names usable in `_s` and `orderBy` are listed by
+        `GET /alarms/properties`; naming a property the entity does not have fails with 500 rather
+        than 400.""")
 public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
 
     @Autowired
@@ -244,10 +278,480 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         return Response.noContent().build();
     }
 
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List alarms",
+            description = """
+        Return a page of alarms. `application/atom+xml` yields the same document as
+        `application/xml`, not an Atom feed. `relatedAlarms` is present only on alarms that are
+        situations.
+
+        Example query: `_s=alarm.severity==MINOR&orderBy=lastEventTime&order=desc`.""",
+            operationId = "getAlarms")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "A page of alarms.",
+                    headers = @Header(name = "Content-Range", description = "Range of rows returned and the total, as `items <from>-<to>/<total>`.",
+                            schema = @Schema(type = "string", example = "items 0-1/16")),
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = AlarmCollectionDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 1,
+                      "offset": 0,
+                      "alarm": [
+                        {
+                          "id": 4241,
+                          "uei": "uei.opennms.org/perspective/nodes/nodeLostService",
+                          "location": "Default",
+                          "nodeId": 2,
+                          "nodeLabel": "loopback-001",
+                          "ipAddress": "127.0.0.1",
+                          "serviceType": { "id": 3, "name": "SNMP" },
+                          "reductionKey": "uei.opennms.org/perspective/nodes/nodeLostService:Default:2:127.0.0.1:SNMP",
+                          "type": 1,
+                          "count": 2,
+                          "severity": "MINOR",
+                          "firstEventTime": 1787684981802,
+                          "lastEventTime": 1787685470949,
+                          "description": "<p>A SNMP outage was identified on interface 127.0.0.1.</p>",
+                          "logMessage": "SNMP outage identified on interface 127.0.0.1.",
+                          "x733ProbableCause": 0,
+                          "affectedNodeCount": 1
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = AlarmCollectionDTO.class),
+                                    examples = @ExampleObject(value = """
+                    <alarms count="1" offset="0" totalCount="2">
+                      <alarm id="4241" type="1" count="2" severity="MINOR">
+                        <uei>uei.opennms.org/perspective/nodes/nodeLostService</uei>
+                        <location>Default</location>
+                        <nodeId>2</nodeId>
+                        <nodeLabel>loopback-001</nodeLabel>
+                        <ipAddress>127.0.0.1</ipAddress>
+                        <serviceType id="3"><name>SNMP</name></serviceType>
+                        <reductionKey>uei.opennms.org/perspective/nodes/nodeLostService:Default:2:127.0.0.1:SNMP</reductionKey>
+                        <firstEventTime>2026-08-25T15:09:41.802-04:00</firstEventTime>
+                        <lastEventTime>2026-08-25T15:17:50.949-04:00</lastEventTime>
+                        <x733ProbableCause>0</x733ProbableCause>
+                        <affectedNodeCount>1</affectedNodeCount>
+                      </alarm>
+                    </alarms>"""))
+                    }),
+            @ApiResponse(responseCode = "204", description = "No alarm matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` or `orderBy` named a property the entity does not have.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+    })
+    @Override
+    public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    @Operation(
+            summary = "Count alarms",
+            description = """
+        Return the number of alarms matching `_s` as a plain-text integer. The response is
+        `text/plain` only, so a request that asks solely for `application/json` is answered with 404.
+        `limit` and `offset` are ignored here: the count covers the whole match.
+
+        Example query: `_s=alarm.severity==MINOR`.""",
+            operationId = "getAlarmCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The number of matching alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "2"))),
+            @ApiResponse(responseCode = "404", description = "The request did not accept `text/plain`. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property the entity does not have.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+    })
+    @Override
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @GET
+    @Path("properties")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the properties alarms can be queried on",
+            description = """
+        Return the property names accepted by `_s` and `orderBy`, with their type and whether they
+        support `iplike`. Properties whose value set is fixed carry a `values` map of code to label.
+        `q` filters the list by a case-insensitive substring of the name; a `q` that matches nothing
+        yields 200 with an empty list, not 204.""",
+            operationId = "getAlarmProperties")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The matching query properties.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SearchPropertyCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "searchProperty": [
+                        {
+                          "id": "severity",
+                          "name": "Severity",
+                          "type": "INTEGER",
+                          "orderBy": true,
+                          "iplike": false,
+                          "values": { "1": "Indeterminate", "2": "Cleared", "3": "Normal" }
+                        },
+                        {
+                          "id": "alarm.severity",
+                          "name": "Alarm: Severity",
+                          "type": "INTEGER",
+                          "orderBy": true,
+                          "iplike": false
+                        }
+                      ]
+                    }""")))
+    })
+    @Override
+    public Response getProperties(@Parameter(in = ParameterIn.QUERY, name = "q",
+            description = "Case-insensitive substring of the property name.", example = "severity")
+                                  @QueryParam("q") final String query) {
+        return super.getProperties(query);
+    }
+
+    @GET
+    @Path("properties/{propertyId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the values a query property takes",
+            description = """
+        Return the distinct values of one query property, either from its fixed value set or from a
+        `select distinct` over the alarm table. The element type follows the property type: strings for
+        `STRING` and `IP_ADDRESS`, numbers for `INTEGER`, `LONG` and `FLOAT`, and epoch milliseconds in
+        JSON for `TIMESTAMP`. `propertyId` is the unprefixed id from `GET /alarms/properties`, so
+        `severity` rather than `alarm.severity`.""",
+            operationId = "getAlarmPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The distinct values of the property.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = StringCollection.class),
+                            examples = {
+                                    @ExampleObject(name = "string property", value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "value": [
+                        "uei.opennms.org/nodes/dataCollectionFailed",
+                        "uei.opennms.org/perspective/nodes/nodeLostService"
+                      ]
+                    }"""),
+                                    @ExampleObject(name = "timestamp property", value = """
+                    {
+                      "totalCount": 2,
+                      "count": 2,
+                      "offset": 0,
+                      "value": [1787685468093, 1787685470949]
+                    }""")
+                            })),
+            @ApiResponse(responseCode = "204", description = "The property has a type with no value listing, such as BOOLEAN. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No query property has that id. No body is returned.")
+    })
+    @Override
+    public Response getPropertyValues(
+            @Parameter(in = ParameterIn.PATH, name = "propertyId", required = true,
+                    description = "Unprefixed property id from `GET /alarms/properties`.", example = "severity")
+            @PathParam("propertyId") final String propertyId,
+            @Parameter(in = ParameterIn.QUERY, name = "q",
+                    description = "Case-sensitive substring the value must contain.", example = "nodeLost")
+            @QueryParam("q") final String query,
+            @Parameter(in = ParameterIn.QUERY, name = "limit",
+                    description = "Maximum number of values returned. Applies only to values read from the database.",
+                    example = "25")
+            @QueryParam("limit") final Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get one alarm",
+            description = """
+        Return a single alarm by its database id. `relatedAlarms` is present only when the alarm is a
+        situation.
+
+        A situation is itself an alarm, so `/situations/{id}` resolves the same way and this operation
+        also serves that path. Neither path restricts the lookup, so a situation id works here and an
+        ordinary alarm id works there.""",
+            operationId = "getAlarmById")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The alarm.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = AlarmDTO.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": 4241,
+                      "uei": "uei.opennms.org/perspective/nodes/nodeLostService",
+                      "location": "Default",
+                      "nodeId": 2,
+                      "nodeLabel": "loopback-001",
+                      "ipAddress": "127.0.0.1",
+                      "serviceType": { "id": 3, "name": "SNMP" },
+                      "reductionKey": "uei.opennms.org/perspective/nodes/nodeLostService:Default:2:127.0.0.1:SNMP",
+                      "type": 1,
+                      "count": 2,
+                      "severity": "MINOR",
+                      "firstEventTime": 1787684981802,
+                      "lastEventTime": 1787685470949,
+                      "x733ProbableCause": 0,
+                      "affectedNodeCount": 1
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = AlarmDTO.class),
+                                    examples = @ExampleObject(value = """
+                    <alarm id="4241" type="1" count="2" severity="MINOR">
+                      <uei>uei.opennms.org/perspective/nodes/nodeLostService</uei>
+                      <reductionKey>uei.opennms.org/perspective/nodes/nodeLostService:Default:2:127.0.0.1:SNMP</reductionKey>
+                      <lastEventTime>2026-08-25T15:17:50.949-04:00</lastEventTime>
+                    </alarm>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id. No body is returned.")
+    })
+    @Override
+    public Response get(@Context final UriInfo uriInfo,
+                        @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                description = "Alarm database id.", example = "4241")
+                        @PathParam("id") final Integer id) {
+        return super.get(uriInfo, id);
+    }
+
+    @POST
+    @Path("{id}")
+    @Operation(
+            summary = "Rejected: alarms cannot be created at a chosen id",
+            description = "Always answers 404. Alarms are raised by alarmd from events, not created through this API.",
+            operationId = "createAlarmWithId",
+            parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                    description = "Alarm database id. The value is not read: every request to this path is answered with 404.",
+                    example = "4241"))
+    @ApiResponses(@ApiResponse(responseCode = "404", description = "Always. No body is returned."))
+    @Override
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Not implemented: create an alarm",
+            description = """
+        Creating an alarm from a document is not implemented and answers 501. To raise an alarm,
+        publish an event whose event configuration carries `alarm-data`; to correlate existing alarms
+        into a situation, use `POST /situations/create`. This operation also serves `POST /situations`,
+        which behaves identically.
+
+        The body is still deserialised and mapped before the 501 is produced, so a body that omits
+        `relatedAlarms` fails earlier with 500: the entity setter dereferences the missing collection.
+        Sending `"relatedAlarms": []` reaches the 501.""",
+            operationId = "createAlarm")
+    @RequestBody(description = "Alarm document. Include `relatedAlarms` to avoid the 500 described above.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AlarmDTO.class),
+                            examples = @ExampleObject(value = "{ \"relatedAlarms\": [] }")),
+                    @Content(mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = AlarmDTO.class),
+                            examples = @ExampleObject(value = "<alarm><relatedAlarms/></alarm>"))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "500", description = "The body omitted `relatedAlarms`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"java.util.Set.forEach(java.util.function.Consumer)\" because \"alarms\" is null"))),
+            @ApiResponse(responseCode = "501", description = "Create is not implemented. No body is returned.")
+    })
+    @Override
+    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final AlarmDTO object) {
+        return super.create(securityContext, uriInfo, object);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Update properties of several alarms",
+            description = """
+        Apply the form parameters to every alarm matching `_s`. The default `limit` of 10 applies to
+        the selection, so a call without an explicit `limit` touches at most 10 alarms. Acknowledgement
+        changes go through the acknowledgement DAO, which writes an `acks` row per alarm and updates
+        the alarm in place.
+
+        The whole batch runs in one transaction and stops at the first alarm whose update fails, so a
+        4xx or 5xx leaves earlier alarms already changed.
+
+        Example query: `_s=alarm.id==4241`.""",
+            operationId = "updateAlarms")
+    @RequestBody(required = true, description = "Alarm properties to apply, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmPropertyUpdateRequest.class),
+                    examples = @ExampleObject(value = "ack=true")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Every selected alarm was updated. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No alarm matched `_s`. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property the entity does not have.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+    })
+    @Override
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    @Operation(
+            summary = "Not implemented: replace an alarm",
+            description = """
+        Replacing an alarm from a document is not implemented and answers 501. Use the
+        form-encoded variant of `PUT /alarms/{id}` to change acknowledgement, severity or ticket
+        fields.""",
+            operationId = "replaceAlarm")
+    @RequestBody(description = "Alarm document. Not applied.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AlarmDTO.class),
+                            examples = @ExampleObject(value = "{}")),
+                    @Content(mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = AlarmDTO.class),
+                            examples = @ExampleObject(value = "<alarm/>"))
+            })
+    @ApiResponses(@ApiResponse(responseCode = "501", description = "Replace is not implemented. No body is returned."))
+    @Override
+    public Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                           @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                   description = "Alarm database id.", example = "4241")
+                           @PathParam("id") final Integer id, final OnmsAlarm object) {
+        return super.update(securityContext, uriInfo, id, object);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{id}")
+    @Operation(
+            summary = "Acknowledge, clear, escalate or ticket one alarm",
+            description = """
+        Apply the form parameters to one alarm. Only the parameters present are acted on, so this is
+        the endpoint for acknowledging, un-acknowledging, escalating and clearing an alarm as well as
+        for recording a trouble ticket id and state.
+
+        A `ticketState` outside the enumerated names is ignored, and a caller with ROLE_ADMIN may set
+        `ackUser` to any name, so neither case is reported as an error.
+
+        This operation also serves `PUT /situations/{id}`, where it acts on the situation alarm alone:
+        clearing or acknowledging a situation leaves its member alarms untouched. Use
+        `POST /situations/alarms/clear` to clear members. A body sent as JSON or XML rather than
+        form-encoded reaches a different handler that answers 501.""",
+            operationId = "updateAlarmProperties")
+    @RequestBody(required = true, description = "Alarm properties to apply, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmPropertyUpdateRequest.class),
+                    examples = {
+                            @ExampleObject(name = "acknowledge", value = "ack=true"),
+                            @ExampleObject(name = "clear", value = "clear=true"),
+                            @ExampleObject(name = "record a ticket", value = "ticketId=INC0012345&ticketState=OPEN")
+                    }))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The alarm was updated. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `ackUser` named.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator' cannot act on behalf of user 'admin'"))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id. No body is returned.")
+    })
+    @Override
+    public Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                                     @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                             description = "Alarm database id.", example = "4241")
+                                     @PathParam("id") final Integer id, final MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, id, params);
+    }
+
+    @DELETE
+    @Operation(
+            summary = "Not implemented: delete several alarms",
+            description = """
+        Deleting alarms is not implemented. When `_s` selects at least one alarm the handler answers
+        501 without deleting anything; when nothing matches it answers 404 instead, so the status code
+        reports whether the filter matched rather than whether anything was deleted.
+
+        Example query: `_s=alarm.id==4241`.""",
+            operationId = "deleteAlarms")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "No alarm matched `_s`. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "Delete is not implemented. No body is returned.")
+    })
+    @Override
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Operation(
+            summary = "Not implemented: delete one alarm",
+            description = """
+        Deleting an alarm is not implemented. An existing alarm answers 501 and an unknown id answers
+        404, so the status code reports whether the alarm exists rather than whether it was
+        deleted.
+
+        This operation also serves `DELETE /situations/{id}`. To dissolve a correlation rather than
+        remove the alarm, drop its members with `DELETE /situations/removeAlarm`.""",
+            operationId = "deleteAlarm")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "No alarm has that id. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "Delete is not implemented. No body is returned.")
+    })
+    @Override
+    public Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                           @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                   description = "Alarm database id.", example = "4241")
+                           @PathParam("id") final Integer id) {
+        return super.delete(securityContext, uriInfo, id);
+    }
+
     @PUT
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Set the sticky memo on an alarm",
+            description = """
+        Replace the sticky memo, the note attached to the alarm row itself. `body` is required. When
+        `user` is omitted the authenticated user is recorded as the author.""",
+            operationId = "updateAlarmMemo")
+    @RequestBody(required = true, description = "Memo text and optional author, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmMemoRequest.class),
+                    examples = @ExampleObject(value = "body=Waiting+on+the+carrier.&user=admin")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The memo was written. No body is returned."),
+            @ApiResponse(responseCode = "400", description = "`body` was absent.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Body cannot be null."))),
+            @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `user` named.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found.")))
+    })
+    public Response updateMemo(@Context final SecurityContext securityContext,
+                               @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                       description = "Alarm database id.", example = "4241")
+                               @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
@@ -260,7 +764,33 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @PUT
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Set the journal note on an alarm",
+            description = """
+        Replace the journal note, which is keyed on the reduction key rather than on the alarm row, so a
+        later alarm reduced onto the same key carries the same note. `body` is required. When `user` is
+        omitted the authenticated user is recorded as the author.""",
+            operationId = "updateAlarmJournal")
+    @RequestBody(required = true, description = "Memo text and optional author, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmMemoRequest.class),
+                    examples = @ExampleObject(value = "body=Carrier+ticket+INC0012345+raised.&user=admin")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The journal note was written. No body is returned."),
+            @ApiResponse(responseCode = "400", description = "`body` was absent.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Body cannot be null."))),
+            @ApiResponse(responseCode = "403", description = "The caller may not act on behalf of the `user` named.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found.")))
+    })
+    public Response updateJournal(@Context final SecurityContext securityContext,
+                                  @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                          description = "Alarm database id.", example = "4241")
+                                  @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
@@ -273,7 +803,26 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @DELETE
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+    @Operation(
+            summary = "Remove the sticky memo from an alarm",
+            description = """
+        Remove the note attached to the alarm row. Removing one that is not set is not reported as an error: the call still answers
+        204. No request body is read, although the handler declares
+        `application/x-www-form-urlencoded`.""",
+            operationId = "deleteAlarmMemo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The sticky memo is gone, whether or not one was set. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found.")))
+    })
+    public Response removeMemo(@Context final SecurityContext securityContext,
+                               @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                       description = "Alarm database id.", example = "4241")
+                               @PathParam("id") final Integer alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.removeStickyMemo(alarmId);
@@ -283,7 +832,26 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @DELETE
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+    @Operation(
+            summary = "Remove the journal note from an alarm",
+            description = """
+        Remove the note keyed on the reduction key. Removing one that is not set is not reported as an error: the call still answers
+        204. No request body is read, although the handler declares
+        `application/x-www-form-urlencoded`.""",
+            operationId = "deleteAlarmJournal")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The journal note is gone, whether or not one was set. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found.")))
+    })
+    public Response removeJournal(@Context final SecurityContext securityContext,
+                                  @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                          description = "Alarm database id.", example = "4241")
+                                  @PathParam("id") final Integer alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.removeReductionKeyMemo(alarmId);
@@ -292,7 +860,33 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/create")
-    public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    @Operation(
+            summary = "Create the trouble ticket for an alarm",
+            description = """
+        Ask the configured ticketer plugin to raise a ticket for the alarm. The authenticated user is passed
+        to the plugin as the `user` parameter.
+
+        The action is asynchronous: the handler hands the request to the ticketer plugin and answers
+        202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
+        `troubleTicketState` fields of the alarm.
+
+        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        ticketer disabled every call answers 501, including a call naming an alarm that does not
+        exist, because the gate is checked before the alarm is looked up.""",
+            operationId = "createAlarmTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+    })
+    public Response createTicket(@Context final SecurityContext securityContext,
+                                 @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                         description = "Alarm database id.", example = "4241")
+                                 @PathParam("id") final Integer alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {
@@ -305,7 +899,33 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/update")
-    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    @Operation(
+            summary = "Refresh the trouble ticket for an alarm",
+            description = """
+        Ask the configured ticketer plugin to re-read the ticket from the helpdesk system and write the
+        current state back onto the alarm.
+
+        The action is asynchronous: the handler hands the request to the ticketer plugin and answers
+        202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
+        `troubleTicketState` fields of the alarm.
+
+        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        ticketer disabled every call answers 501, including a call naming an alarm that does not
+        exist, because the gate is checked before the alarm is looked up.""",
+            operationId = "updateAlarmTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+    })
+    public Response updateTicket(@Context final SecurityContext securityContext,
+                                 @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                         description = "Alarm database id.", example = "4241")
+                                 @PathParam("id") final Integer alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {
@@ -316,7 +936,32 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @POST
     @Path("{id}/ticket/close")
-    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+    @Operation(
+            summary = "Close the trouble ticket for an alarm",
+            description = """
+        Ask the configured ticketer plugin to close the ticket recorded on the alarm.
+
+        The action is asynchronous: the handler hands the request to the ticketer plugin and answers
+        202 without waiting for the helpdesk system. Progress shows up in the `troubleTicket` and
+        `troubleTicketState` fields of the alarm.
+
+        The whole family is gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the
+        ticketer disabled every call answers 501, including a call naming an alarm that does not
+        exist, because the gate is checked before the alarm is looked up.""",
+            operationId = "closeAlarmTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not edit alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User operator cannot act on behalf of user admin"))),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation")))
+    })
+    public Response closeTicket(@Context final SecurityContext securityContext,
+                                @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                        description = "Alarm database id.", example = "4241")
+                                @PathParam("id") final Integer alarmId) throws Exception {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
 
         return runIfTicketerPluginIsEnabled(() -> {

@@ -23,6 +23,8 @@ package org.opennms.web.rest.v2.infopanel;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * One rendered info-panel item: a titled HTML fragment produced from an
  * {@code etc/infopanel/} Jinjava template. {@code order} controls display
@@ -31,12 +33,24 @@ import org.codehaus.jackson.annotate.JsonProperty;
  */
 public class InfoPanelItem {
 
+    @Schema(description = """
+            Panel heading, taken from the `title` variable the template set. Templates that set no title
+            get the literal `No title defined`.""",
+            example = "SNMP Attributes")
     @JsonProperty("title")
     private String title;
 
+    @Schema(description = """
+            Display position, ascending. Taken from the template's `order` variable; a missing or
+            non-numeric value becomes 0.""",
+            example = "10")
     @JsonProperty("order")
     private int order;
 
+    @Schema(description = """
+            The template's rendered output. Operator-authored markup, so the consuming client is
+            responsible for sanitizing it before injecting it into the DOM.""",
+            example = "<table><tr><td>sysName</td><td>loopback-001</td></tr></table>")
     @JsonProperty("html")
     private String html;
 

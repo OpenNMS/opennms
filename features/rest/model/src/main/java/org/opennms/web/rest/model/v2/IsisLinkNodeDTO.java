@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="isisLinkNode")
 @JsonRootName("isisLinkNode")
+@Schema(description = "One discovered IS-IS adjacency of the node. Most fields are display strings built for the JSP UI; isisCircIfIndex and isisISAdjNbrExtendedCircID are the exceptions and are numeric.")
 public class IsisLinkNodeDTO {
 
     private Integer isisCircIfIndex;
@@ -59,6 +62,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisCircIfIndex")
     @JsonProperty("isisCircIfIndex")
+    @Schema(description = "ifIndex of the local IS-IS circuit. One of the few numeric fields on these DTOs: it is the raw ifIndex, not a display label.", example = "2")
     public Integer getIsisCircIfIndex() {
         return isisCircIfIndex;
     }
@@ -74,6 +78,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisCircAdminState")
     @JsonProperty("isisCircAdminState")
+    @Schema(description = "Administrative state of the circuit, as a word rather than the SNMP integer.", example = "on", allowableValues = {"on", "off"})
     public String getIsisCircAdminState() {
         return isisCircAdminState;
     }
@@ -89,6 +94,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighSysID")
     @JsonProperty("isisISAdjNeighSysID")
+    @Schema(description = "Neighbour system id as a display label: the raw isisISAdjNeighSysID, or the node label followed by (isis system id:...) once the neighbour resolves to a node.", example = "core-rtr-01(isis system id:0000.0000.0002)")
     public String getIsisISAdjNeighSysID() {
         return isisISAdjNeighSysID;
     }
@@ -104,6 +110,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighSysType")
     @JsonProperty("isisISAdjNeighSysType")
+    @Schema(description = "IS-IS level of the neighbour, as a word rather than the SNMP integer.", example = "l1L2IntermediateSystem", allowableValues = {"l1_IntermediateSystem", "l2IntermediateSystem", "l1L2IntermediateSystem", "unknown"})
     public String getIsisISAdjNeighSysType() {
         return isisISAdjNeighSysType;
     }
@@ -119,6 +126,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighSysUrl")
     @JsonProperty("isisISAdjNeighSysUrl")
+    @Schema(description = "Intended as the relative URL of the neighbour's node page. The factory never assigns it, so it is absent from every response; isisISAdjUrl carries that link instead.", example = "element/linkednode.jsp?node=7")
     public String getIsisISAdjNeighSysUrl() {
         return isisISAdjNeighSysUrl;
     }
@@ -134,6 +142,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighSNPAAddress")
     @JsonProperty("isisISAdjNeighSNPAAddress")
+    @Schema(description = "SNPA (subnetwork point of attachment) address of the neighbour, as reported.", example = "00:1b:21:3c:4d:5e")
     public String getIsisISAdjNeighSNPAAddress() {
         return isisISAdjNeighSNPAAddress;
     }
@@ -149,6 +158,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNeighPort")
     @JsonProperty("isisISAdjNeighPort")
+    @Schema(description = "Neighbour port as a display label. When the remote interface resolves it is the port string, otherwise the fallback (Isis IS Adj Index: N) built from the adjacency index.", example = "GigabitEthernet0/2(ifindex:3)")
     public String getIsisISAdjNeighPort() {
         return isisISAdjNeighPort;
     }
@@ -164,6 +174,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjState")
     @JsonProperty("isisISAdjState")
+    @Schema(description = "Adjacency state, as a word rather than the SNMP integer.", example = "up", allowableValues = {"down", "initializing", "up", "failed"})
     public String getIsisISAdjState() {
         return isisISAdjState;
     }
@@ -179,6 +190,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjNbrExtendedCircID")
     @JsonProperty("isisISAdjNbrExtendedCircID")
+    @Schema(description = "isisISAdjNbrExtendedCircID as reported. Numeric, not a display label.", example = "3")
     public Integer getIsisISAdjNbrExtendedCircID() {
         return isisISAdjNbrExtendedCircID;
     }
@@ -194,6 +206,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisISAdjUrl")
     @JsonProperty("isisISAdjUrl")
+    @Schema(description = "Relative URL for the adjacency: the neighbour's linked-node page when the neighbour resolves to a node, otherwise the neighbour's SNMP interface page.", example = "element/linkednode.jsp?node=7")
     public String getIsisISAdjUrl() {
         return isisISAdjUrl;
     }
@@ -209,6 +222,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisLinkCreateTime")
     @JsonProperty("isisLinkCreateTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisLinkCreateTime() {
         return isisLinkCreateTime;
     }
@@ -224,6 +238,7 @@ public class IsisLinkNodeDTO {
 
     @XmlElement(name="isisLinkLastPollTime")
     @JsonProperty("isisLinkLastPollTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getIsisLinkLastPollTime() {
         return isisLinkLastPollTime;
     }

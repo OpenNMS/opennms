@@ -21,10 +21,21 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "AddEventConfSourceRequest", description = "Request body used to create an empty EventConf source.")
 public class AddEventConfSourceRequest {
 
+    @Schema(description = "Source name. Conventionally the event file basename, without the '.xml' extension.",
+            example = "Cisco.syslog.events", required = true)
     private String name;
+
+    @Schema(description = "Free-form description of the source.",
+            example = "Syslog events forwarded by Cisco IOS devices")
     private String description;
+
+    @Schema(description = "Vendor the source belongs to. Defaults to the part of the name before the first dot, and must not exceed 128 characters.",
+            example = "Cisco")
     private String vendor;
 
     public AddEventConfSourceRequest() {

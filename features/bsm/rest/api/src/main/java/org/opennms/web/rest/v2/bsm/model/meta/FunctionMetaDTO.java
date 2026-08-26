@@ -34,22 +34,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 @XmlRootElement(name="function")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "One map or reduce function and the parameters it takes.")
 public class FunctionMetaDTO {
 
+    @Schema(description = "Whether this is a map or a reduce function.", example = "MapFunction")
     @XmlAttribute
     private FunctionType type;
 
+    @Schema(description = "Function name. Use it as the `type` of a `map-function` or "
+            + "`reduce-function` object.",
+            example = "Identity", required = true)
     @XmlAttribute(name="name", required=true)
     private String name;
 
+    @Schema(description = "What the function does.", example = "Use the status as is")
     @XmlAttribute(name="description")
     private String description;
 
+    @Schema(description = "Parameters the function accepts in its `properties` map.")
     @XmlElement(name="parameter")
     private List<ParameterMetaDTO> parameters;
 

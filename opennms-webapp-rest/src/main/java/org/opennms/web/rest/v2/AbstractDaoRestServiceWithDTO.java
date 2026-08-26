@@ -94,6 +94,11 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import com.google.common.base.Strings;
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
@@ -130,6 +135,71 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     private final Lock m_writeLock = m_globalLock.writeLock();
 
     protected static final int DEFAULT_LIMIT = 10;
+
+    /*
+     * Reference text for the query layer every V2 collection endpoint inherits. Held as
+     * constants because annotation members must be compile-time constants, and the same
+     * wording has to appear on each of the four collection operations.
+     */
+
+    protected static final String DOC_SEARCH = """
+            FIQL search expression restricting the result set. Property names are the `id` values \
+            listed by this endpoint's `properties` operation; nested properties are reached with a \
+            dot, for example `node.label`.
+
+            Operators are `==` (equal), `!=` (not equal), `=gt=`, `=ge=`, `=lt=` and `=le=`. \
+            String comparisons accept `*` as a wildcard, so `name==Review*` matches by prefix. \
+            Terms are combined with `;` for AND and `,` for OR. Timestamps are written as \
+            ISO-8601, for example `2026-08-01T00:00:00.000-0400`, even though they are returned \
+            as epoch milliseconds in JSON.
+
+            An expression that cannot be parsed, or that names a property the underlying query \
+            cannot resolve, is answered with 500 and a `text/plain` message.""";
+
+    protected static final String DOC_LIMIT = """
+            Maximum number of entities to return. Defaults to 10, and `0` means no limit. The same \
+            limit bounds how many matching entities the collection-level PUT and DELETE act on, so \
+            those operations touch at most ten entities unless a larger limit is given. A \
+            non-numeric value is answered with 500.""";
+
+    protected static final String DOC_OFFSET = """
+            Number of matching entities to skip before the first one returned. Defaults to 0.""";
+
+    protected static final String DOC_ORDER_BY = """
+            Property to sort by, named as in the `properties` operation. It replaces the \
+            endpoint's default ordering rather than adding to it. A name the query cannot resolve \
+            is answered with 500.""";
+
+    protected static final String DOC_ORDER = """
+            Sort direction. Read only when `orderBy` is also given: `desc` (case-insensitive) \
+            sorts descending, and any other value, including an absent one, sorts ascending.""";
+
+    protected static final String DOC_SEARCH_ERROR = """
+            The search expression could not be parsed, or it named a property the underlying query \
+            could not resolve. The body is a `text/plain` message.""";
+
+    protected static final String DOC_COUNT_ERROR = """
+            The search expression could not be parsed or resolved, or an `offset` was given (the \
+            count query rejects it). The body is a `text/plain` message.""";
+
+    protected static final String DOC_NOT_IMPLEMENTED = """
+            Not supported by this endpoint. The shared implementation answers 501 with no body.""";
+
+    protected static final String DOC_POST_WITH_ID = """
+            Creating an entity under a caller-chosen identifier is not supported. Every request to \
+            this path is answered with 404 and no body, whether or not the identifier exists. Use \
+            the collection-level POST instead where the endpoint supports creation.""";
+
+    protected static final String DOC_NO_MATCH = """
+            No entity matched the query, so nothing was changed. The response has no body.""";
+
+    protected static final String DOC_FORM_BODY = """
+            Form parameters naming the properties to set. Names are normalised by lower-casing and \
+            then upper-casing the letter after each `-` or `_`, so `link-label` and `link_label` \
+            both reach the `linkLabel` property while the camel-case spelling `linkLabel` does \
+            not. Names that do not resolve to a writable property, and the protected names `id`, \
+            `dbId`, `nodeId`, `authorizedGroups`, `foreignSource`, `foreignId` and `type`, are \
+            ignored without an error.""";
 
     protected abstract OnmsDao<T,K> getDao();
     protected abstract Class<T> getDaoClass();
@@ -244,6 +314,18 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Parameters({
+            @Parameter(name = "_s", in = ParameterIn.QUERY, description = DOC_SEARCH,
+                    schema = @Schema(type = "string")),
+            @Parameter(name = "limit", in = ParameterIn.QUERY, description = DOC_LIMIT,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "10"), example = "10"),
+            @Parameter(name = "offset", in = ParameterIn.QUERY, description = DOC_OFFSET,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "0"), example = "0"),
+            @Parameter(name = "orderBy", in = ParameterIn.QUERY, description = DOC_ORDER_BY,
+                    schema = @Schema(type = "string"), example = "id"),
+            @Parameter(name = "order", in = ParameterIn.QUERY, description = DOC_ORDER,
+                    schema = @Schema(type = "string", allowableValues = {"asc", "desc"}), example = "asc")
+    })
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         Criteria crit = getCriteria(uriInfo, searchContext);
         final List<T> coll = getDao().findMatching(crit);
@@ -275,6 +357,10 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @GET
     @Path("count")
     @Produces({MediaType.TEXT_PLAIN})
+    @Parameters({
+            @Parameter(name = "_s", in = ParameterIn.QUERY, description = DOC_SEARCH,
+                    schema = @Schema(type = "string"))
+    })
     public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
     }
@@ -282,7 +368,10 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @GET
     @Path("properties")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getProperties(@QueryParam("q") final String query) {
+    public Response getProperties(
+            @Parameter(description = "Case-insensitive substring matched against the property `name`. "
+                    + "Omit it to list every property.", example = "label")
+            @QueryParam("q") final String query) {
         Set<SearchProperty> props = getQueryProperties();
         if (props != null && props.size() > 0) {
             return Response.ok(new SearchPropertyCollection(props.stream().filter(s -> {
@@ -356,7 +445,18 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     @GET
     @Path("properties/{propertyId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query, @QueryParam("limit") final Integer limit) {
+    public Response getPropertyValues(
+            @Parameter(description = "The `id` of one of the properties listed by the `properties` operation.",
+                    required = true, example = "id")
+            @PathParam("propertyId") final String propertyId,
+            @Parameter(description = "Substring the returned values must contain. For a property with a fixed "
+                    + "value list the match is case-sensitive; otherwise it is applied case-insensitively in SQL.",
+                    example = "127.")
+            @QueryParam("q") final String query,
+            @Parameter(description = "Maximum number of distinct values to return. Applied only to properties "
+                    + "whose values are read from the database, not to those with a fixed value list.",
+                    example = "25")
+            @QueryParam("limit") final Integer limit) {
         Set<SearchProperty> props = getQueryProperties();
         // Find the property with the matching ID
         Optional<SearchProperty> prop = props.stream().filter(p -> p.getId().equals(propertyId)).findAny();
@@ -457,6 +557,18 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Parameters({
+            @Parameter(name = "_s", in = ParameterIn.QUERY, description = DOC_SEARCH,
+                    schema = @Schema(type = "string")),
+            @Parameter(name = "limit", in = ParameterIn.QUERY, description = DOC_LIMIT,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "10"), example = "10"),
+            @Parameter(name = "offset", in = ParameterIn.QUERY, description = DOC_OFFSET,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "0"), example = "0"),
+            @Parameter(name = "orderBy", in = ParameterIn.QUERY, description = DOC_ORDER_BY,
+                    schema = @Schema(type = "string"), example = "id"),
+            @Parameter(name = "order", in = ParameterIn.QUERY, description = DOC_ORDER,
+                    schema = @Schema(type = "string", allowableValues = {"asc", "desc"}), example = "asc")
+    })
     public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
         writeLock();
         try {
@@ -515,6 +627,18 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
     }
 
     @DELETE
+    @Parameters({
+            @Parameter(name = "_s", in = ParameterIn.QUERY, description = DOC_SEARCH,
+                    schema = @Schema(type = "string")),
+            @Parameter(name = "limit", in = ParameterIn.QUERY, description = DOC_LIMIT,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "10"), example = "10"),
+            @Parameter(name = "offset", in = ParameterIn.QUERY, description = DOC_OFFSET,
+                    schema = @Schema(type = "integer", format = "int32", defaultValue = "0"), example = "0"),
+            @Parameter(name = "orderBy", in = ParameterIn.QUERY, description = DOC_ORDER_BY,
+                    schema = @Schema(type = "string"), example = "id"),
+            @Parameter(name = "order", in = ParameterIn.QUERY, description = DOC_ORDER,
+                    schema = @Schema(type = "string", allowableValues = {"asc", "desc"}), example = "asc")
+    })
     public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         writeLock();
         try {

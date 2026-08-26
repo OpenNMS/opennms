@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="lldpLinkNode")
 @JsonRootName("lldpLinkNode")
+@Schema(description = "One discovered LLDP neighbour of the node. Every field is a display string built for the JSP UI: ifIndexes and interface names are embedded in the port labels, URLs are relative JSP paths, and the two timestamps are locale-formatted rather than epoch milliseconds.")
 public class LldpLinkNodeDTO {
 
     private String   lldpLocalPort;
@@ -53,6 +56,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpLocalPort")
     @JsonProperty("lldpLocalPort")
+    @Schema(description = "Local port as a display label: the SNMP ifName, then (ifindex:N) when the SNMP interface resolves, then the LLDP port id in parentheses. The ifIndex is embedded in this string rather than carried as its own field.", example = "GigabitEthernet0/1001(ifindex:2)(interfaceName:Gi0/1001)")
     public String getLldpLocalPort() {
         return lldpLocalPort;
     }
@@ -68,6 +72,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpLocalPortUrl")
     @JsonProperty("lldpLocalPortUrl")
+    @Schema(description = "Relative URL of the local SNMP interface page in the JSP UI, resolved against /opennms/. Omitted when the ifIndex could not be resolved.", example = "element/snmpinterface.jsp?node=1011&ifindex=2")
     public String getLldpLocalPortUrl() {
         return lldpLocalPortUrl;
     }
@@ -83,6 +88,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpRemChassisId")
     @JsonProperty("lldpRemChassisId")
+    @Schema(description = "Remote chassis as a display label. When the neighbour resolves to a node it is the node label followed by the chassis id in parentheses, otherwise the parenthesised chassis id alone.", example = "scale-core-001(macAddress:sc-001001)")
     public String getLldpRemChassisId() {
         return lldpRemChassisId;
     }
@@ -98,6 +104,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpRemChassisIdUrl")
     @JsonProperty("lldpRemChassisIdUrl")
+    @Schema(description = "Relative URL of the neighbour's linked-node page. Omitted when the neighbour does not resolve to a node in this database.", example = "element/linkednode.jsp?node=1001")
     public String getLldpRemChassisIdUrl() {
         return lldpRemChassisIdUrl;
     }
@@ -113,6 +120,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpRemInfo")
     @JsonProperty("lldpRemInfo")
+    @Schema(description = "lldpRemSysName as advertised by the neighbour.", example = "scale-core-001")
     public String getLldpRemInfo() {
         return lldpRemInfo;
     }
@@ -128,6 +136,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="ldpRemPort")
     @JsonProperty("ldpRemPort")
+    @Schema(description = "Remote port display label, in the same form as lldpLocalPort. The wire name is missing the leading l: it is ldpRemPort, not lldpRemPort. The spelling is client-visible and is left as is.", example = "GigabitEthernet0/1011(interfaceName:Gi0/1011)")
     public String getLdpRemPort() {
         return ldpRemPort;
     }
@@ -143,6 +152,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpRemPortUrl")
     @JsonProperty("lldpRemPortUrl")
+    @Schema(description = "Relative URL of the neighbour's SNMP interface page. Omitted unless the remote ifIndex resolves to a stored SNMP interface, which it did on none of the rows observed.", example = "element/snmpinterface.jsp?node=1001&ifindex=12")
     public String getLldpRemPortUrl() {
         return lldpRemPortUrl;
     }
@@ -158,6 +168,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpCreateTime")
     @JsonProperty("lldpCreateTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getLldpCreateTime() {
         return lldpCreateTime;
     }
@@ -173,6 +184,7 @@ public class LldpLinkNodeDTO {
 
     @XmlElement(name="lldpLastPollTime")
     @JsonProperty("lldpLastPollTime")
+    @Schema(description = "Poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space. Treat it as an opaque label.", example = "8/18/26, 1:16:57\u202fPM")
     public String getLldpLastPollTime() {
         return lldpLastPollTime;
     }

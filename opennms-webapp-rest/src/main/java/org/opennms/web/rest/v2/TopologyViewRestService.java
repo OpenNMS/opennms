@@ -49,6 +49,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -77,12 +86,51 @@ public class TopologyViewRestService {
     /** Serializes the name-uniqueness check-then-write; see {@link #create}. */
     private static final Object WRITE_LOCK = new Object();
 
+    private static final String VIEW_ID_DESC =
+            "The view's generated id, as returned by the listing or the create's Location header (a UUID on this build).";
+
+    private static final String VIEW_STORE_UNAVAILABLE =
+            "The topology view store bean is not present in this deployment, so no view operation can be served.";
+
+    private static final String VIEW_EXAMPLE = """
+            {
+              "id": "1e3df566-9268-4ab2-92d0-2c6877fde67d",
+              "name": "Core and distribution",
+              "definition": {
+                "nodes": [
+                  {"id": "placed-1011", "nodeId": 1011, "label": "scale-dist-001", "x": 120.0, "y": 80.0, "color": "#1f5fb0"}
+                ],
+                "links": [
+                  {"id": "link-1", "sourceId": "placed-1011", "targetId": "placed-1001", "origin": "user"}
+                ],
+                "viewport": {"zoom": 1.0, "x": 0, "y": 0}
+              },
+              "owner": "admin",
+              "created": 1787727339697,
+              "lastModified": 1787727349607
+            }""";
+
     @Autowired(required = false)
     private TopologyViewDao m_dao;
 
     private final ObjectMapper m_mapper = new ObjectMapper();
 
     @GET
+    @Operation(summary = "List custom topology views",
+            description = """
+        Every view in the shared catalog, with its full `definition` inlined. The catalog is shared
+        rather than per-user, so this returns views other users created as well. A stored definition
+        that is no longer parseable as JSON comes back as `null` rather than failing the listing.""",
+            operationId = "listTopologyViews")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All views, empty when the catalog is empty.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = TopologyViewDTO.class)),
+                            examples = @ExampleObject(value = "[" + VIEW_EXAMPLE + "]"))),
+            @ApiResponse(responseCode = "503", description = VIEW_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Topology view persistence is not available")))
+    })
     public List<TopologyViewDTO> list() {
         final List<TopologyView> views = getDao().findAll();
         final List<TopologyViewDTO> dtos = new ArrayList<>(views.size());
@@ -94,11 +142,65 @@ public class TopologyViewRestService {
 
     @GET
     @Path("{id}")
-    public TopologyViewDTO get(@PathParam("id") final String id) {
+    @Operation(summary = "Get one custom topology view", description = "One view by id, with its `definition` inlined.",
+            operationId = "getTopologyView")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The view.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = TopologyViewDTO.class),
+                            examples = @ExampleObject(value = VIEW_EXAMPLE))),
+            @ApiResponse(responseCode = "404", description = "No view with that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No topology view with id 1e3df566-9268-4ab2-92d0-2c6877fde67d"))),
+            @ApiResponse(responseCode = "503", description = VIEW_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public TopologyViewDTO get(@Parameter(description = VIEW_ID_DESC, required = true,
+                                       example = "1e3df566-9268-4ab2-92d0-2c6877fde67d")
+                               @PathParam("id") final String id) {
         return toDto(require(id));
     }
 
     @POST
+    @Operation(summary = "Create a custom topology view",
+            description = """
+        `name` and `definition` are both required. The name has to be free: a collision is refused with
+        409 rather than merged. `owner` is taken from the authenticated principal and `created` from the
+        server clock, so values sent for either are ignored.
+
+        The 201 has no body. Its `Location` header carries the new view's URL; read the view back from
+        there if the client needs the generated id.""",
+            operationId = "createTopologyView")
+    @RequestBody(required = true, description = "The view to create. Only `name` and `definition` are read.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = TopologyViewDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "name": "Core and distribution",
+                      "definition": {
+                        "nodes": [
+                          {"id": "placed-1011", "nodeId": 1011, "label": "scale-dist-001", "x": 120.0, "y": 80.0}
+                        ],
+                        "links": [
+                          {"id": "link-1", "sourceId": "placed-1011", "targetId": "placed-1001", "origin": "user"}
+                        ],
+                        "viewport": {"zoom": 1.0, "x": 0, "y": 0}
+                      }
+                    }""")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "View created. `Location` holds its URL; no body is returned."),
+            @ApiResponse(responseCode = "400", description = "The body is absent, `name` is missing or blank, or `definition` is missing.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A view definition is required"))),
+            @ApiResponse(responseCode = "401", description = "The request carries no authenticated principal, so no owner can be recorded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "An authenticated user is required"))),
+            @ApiResponse(responseCode = "409", description = "A view already holds that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A view named \'Core and distribution\' already exists"))),
+            @ApiResponse(responseCode = "503", description = VIEW_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response create(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, final TopologyViewDTO dto) {
         if (dto == null || dto.getName() == null || dto.getName().trim().isEmpty()) {
             throw webException(Response.Status.BAD_REQUEST, "A view name is required");
@@ -128,7 +230,38 @@ public class TopologyViewRestService {
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") final String id, final TopologyViewDTO dto) {
+    @Operation(summary = "Update a custom topology view",
+            description = """
+        A partial update rather than a full replacement: a null or blank `name` leaves the name alone,
+        and an absent `definition` leaves the stored canvas alone. `lastModified` is refreshed on every
+        call, whether or not anything else changed. Renaming onto a name another view holds is refused
+        with 409.""",
+            operationId = "updateTopologyView")
+    @RequestBody(required = true, description = "The fields to change. Only `name` and `definition` are read.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = TopologyViewDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "name": "Core and distribution",
+                      "definition": {"nodes": [], "links": [], "viewport": {"zoom": 1.0, "x": 0, "y": 0}}
+                    }""")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "View updated. No body is returned."),
+            @ApiResponse(responseCode = "400", description = "The body is absent.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A view body is required"))),
+            @ApiResponse(responseCode = "404", description = "No view with that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No topology view with id 1e3df566-9268-4ab2-92d0-2c6877fde67d"))),
+            @ApiResponse(responseCode = "409", description = "Another view already holds the requested name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "A view named \'Core and distribution\' already exists"))),
+            @ApiResponse(responseCode = "503", description = VIEW_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response update(@Parameter(description = VIEW_ID_DESC, required = true,
+                                   example = "1e3df566-9268-4ab2-92d0-2c6877fde67d")
+                           @PathParam("id") final String id, final TopologyViewDTO dto) {
         final TopologyView view = require(id);
         if (dto == null) {
             throw webException(Response.Status.BAD_REQUEST, "A view body is required");
@@ -159,7 +292,20 @@ public class TopologyViewRestService {
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") final String id) {
+    @Operation(summary = "Delete a custom topology view",
+            description = "Removes the view from the shared catalog. Any image assets it referenced are left in place.",
+            operationId = "deleteTopologyView")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "View deleted."),
+            @ApiResponse(responseCode = "404", description = "No view with that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No topology view with id 1e3df566-9268-4ab2-92d0-2c6877fde67d"))),
+            @ApiResponse(responseCode = "503", description = VIEW_STORE_UNAVAILABLE,
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response delete(@Parameter(description = VIEW_ID_DESC, required = true,
+                                   example = "1e3df566-9268-4ab2-92d0-2c6877fde67d")
+                           @PathParam("id") final String id) {
         getDao().delete(require(id));
         return Response.noContent().build();
     }
