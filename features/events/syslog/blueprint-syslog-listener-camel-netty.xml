@@ -27,6 +27,7 @@
 			<cm:property name="syslog.tcp.max.message.size" value="65536" />
 			<cm:property name="syslog.tcp.max.connections" value="1024" />
 			<cm:property name="syslog.tcp.idle.timeout" value="0" />
+			<cm:property name="syslog.tcp.dispatch.timeout" value="30" />
 			<cm:property name="syslog.tcp.tls.enabled" value="false" />
 			<cm:property name="syslog.tcp.tls.cert.filepath" value="" />
 			<cm:property name="syslog.tcp.tls.private.key.filepath" value="" />
@@ -43,6 +44,7 @@
 		<property name="maxMessageSize" value="${syslog.tcp.max.message.size}" />
 		<property name="maxConnections" value="${syslog.tcp.max.connections}" />
 		<property name="idleTimeoutSeconds" value="${syslog.tcp.idle.timeout}" />
+		<property name="dispatchTimeoutSeconds" value="${syslog.tcp.dispatch.timeout}" />
 		<property name="tls" ref="syslogTcpTlsConfig" />
 	</bean>
 

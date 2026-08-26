@@ -122,6 +122,21 @@
                                 </restriction>
                             </simpleType>
                         </attribute>
+                        <attribute name="dispatch-timeout" use="optional" default="30">
+                            <annotation>
+                                <documentation>Seconds to wait for the sink to confirm a message
+                                               before this connection stops waiting for
+                                               confirmation, which costs in-order delivery and
+                                               read backpressure for the rest of its life. Zero
+                                               waits indefinitely.
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="0"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
                         <attribute name="idle-timeout" use="optional" default="0">
                             <annotation>
                                 <documentation>Seconds before a connection that has sent nothing is

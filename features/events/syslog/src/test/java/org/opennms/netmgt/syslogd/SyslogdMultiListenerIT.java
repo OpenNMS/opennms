@@ -22,6 +22,7 @@
 package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -55,6 +56,7 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
@@ -223,6 +225,100 @@ public class SyslogdMultiListenerIT {
 
         assertEquals("UDP must keep working when the TCP configuration is unusable", UDP_MESSAGE, received);
         assertNull("no TCP listener should have been started", receiver.getTcpListener());
+    }
+
+    /**
+     * The Minion shape: flat properties set on the config bean, one of them a typo. Setting it
+     * must not throw, because there it is a Blueprint property injection and a bean that
+     * throws fails the container that also owns the UDP listener.
+     */
+    @Test(timeout = 60 * 1000)
+    public void udpKeepsRunningWhenATcpPropertyIsATypo() throws Exception {
+        m_syslogd.stop();
+        m_syslogd = null;
+        m_received.clear();
+
+        m_udpPort = findFreePort();
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(findFreePort());
+        tcpConfig.setListenAddress("127.0.0.1");
+        tcpConfig.setFraming("octetcounting");
+
+        final SyslogConfigBean bean = new SyslogConfigBean();
+        bean.setSyslogPort(m_udpPort);
+        bean.setListenAddress("127.0.0.1");
+        bean.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
+        bean.setBatchSize(1);
+        bean.setBatchIntervalMs(10);
+        bean.setNumThreads(1);
+        bean.setQueueSize(16);
+        bean.setTcpConfig(tcpConfig);
+
+        final SharedRegistryDispatcherFactory dispatcherFactory = new SharedRegistryDispatcherFactory();
+        dispatcherFactory.setConsumer(new CollectingConsumer());
+
+        final SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(bean);
+        receiver.setDistPollerDao(m_distPollerDao);
+        receiver.setMessageDispatcherFactory(dispatcherFactory);
+
+        m_syslogd = new Syslogd();
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        m_syslogd.start();
+
+        String received = null;
+        for (int i = 0; i < 50 && received == null; i++) {
+            sendUdp(UDP_MESSAGE);
+            received = m_received.poll(1, TimeUnit.SECONDS);
+        }
+
+        assertEquals("UDP must survive a typo in a TCP property", UDP_MESSAGE, received);
+        assertFalse("the TCP listener must not have bound",
+                receiver.getTcpListener() != null && receiver.getTcpListener().isStarted());
+    }
+
+    /**
+     * A UDP-only install builds no listener at all, so it pays none of the waits in
+     * SyslogTcpListener.stop() for a feature it does not use.
+     */
+    @Test(timeout = 60 * 1000)
+    public void aUdpOnlyInstallBuildsNoTcpListener() throws Exception {
+        m_syslogd.stop();
+        m_syslogd = null;
+        m_received.clear();
+
+        m_udpPort = findFreePort();
+        final SyslogConfigBean bean = new SyslogConfigBean();
+        bean.setSyslogPort(m_udpPort);
+        bean.setListenAddress("127.0.0.1");
+        bean.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
+        bean.setBatchSize(1);
+        bean.setBatchIntervalMs(10);
+        bean.setNumThreads(1);
+        bean.setQueueSize(16);
+
+        final SharedRegistryDispatcherFactory dispatcherFactory = new SharedRegistryDispatcherFactory();
+        dispatcherFactory.setConsumer(new CollectingConsumer());
+
+        final SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(bean);
+        receiver.setDistPollerDao(m_distPollerDao);
+        receiver.setMessageDispatcherFactory(dispatcherFactory);
+
+        m_syslogd = new Syslogd();
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        m_syslogd.start();
+
+        // A delivered message proves run() is past the point where it would have built a
+        // listener, so the assertion below is not just winning a race.
+        String received = null;
+        for (int i = 0; i < 50 && received == null; i++) {
+            sendUdp(UDP_MESSAGE);
+            received = m_received.poll(1, TimeUnit.SECONDS);
+        }
+
+        assertEquals(UDP_MESSAGE, received);
+        assertNull("a config with no tcp port must not build a listener", receiver.getTcpListener());
     }
 
     // --- harness ------------------------------------------------------------

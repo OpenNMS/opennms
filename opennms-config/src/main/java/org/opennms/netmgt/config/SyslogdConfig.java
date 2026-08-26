@@ -154,13 +154,17 @@ public interface SyslogdConfig {
     boolean shouldIncludeRawSyslogmessage();
 
     /**
-     * The settings for the TCP listener, which is disabled unless a TCP port has been
-     * configured. Never null, so callers check {@link SyslogTcpConfig#isEnabled()}
-     * rather than the return value.
+     * The settings for the TCP listener, which is disabled unless a port has been configured.
+     * Callers check {@link SyslogTcpConfig#isEnabled()} rather than the return value.
      *
-     * @return the TCP listener settings
+     * Defaulted rather than abstract so that an implementation outside this repository keeps
+     * compiling, and gets the UDP-only behaviour it had before.
+     *
+     * @return the TCP listener settings, never null
      */
-    SyslogTcpConfig getTcpConfig();
+    default SyslogTcpConfig getTcpConfig() {
+        return new SyslogTcpConfig();
+    }
 
     /**
      * reload configuration

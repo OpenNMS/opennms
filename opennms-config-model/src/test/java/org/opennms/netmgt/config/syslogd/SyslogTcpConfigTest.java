@@ -120,17 +120,58 @@ public class SyslogTcpConfigTest {
         assertEquals(SyslogTcpClientAuth.REQUIRE, SyslogTcpClientAuth.fromConfigValue("REQUIRE"));
     }
 
+    /**
+     * The setters must accept anything. On a Minion they are Blueprint property injections,
+     * and a bean that throws fails the container that also owns the UDP listener.
+     */
     @Test
-    public void badValuesAreRejectedAtWiringTimeRatherThanOnTheFirstMessage() {
+    public void settersAcceptBadValuesSoThatWiringCannotFail() {
         final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
         final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
 
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setFraming("octet counting"));
-        assertThrows(IllegalArgumentException.class, () -> tls.setClientAuth("mutual"));
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setPort(70000));
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setMaxMessageSize(0));
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setMaxConnections(0));
-        assertThrows(IllegalArgumentException.class, () -> tcpConfig.setIdleTimeoutSeconds(-1));
+        tcpConfig.setFraming("octet counting");
+        tcpConfig.setPort(70000);
+        tcpConfig.setMaxMessageSize(0);
+        tcpConfig.setMaxConnections(0);
+        tcpConfig.setIdleTimeoutSeconds(-1);
+        tls.setClientAuth("mutual");
+        tcpConfig.setTls(tls);
+
+        assertEquals("octet counting", tcpConfig.getFraming());
+        assertEquals("mutual", tls.getClientAuth());
+    }
+
+    @Test
+    public void validateRejectsEachBadValueWithAMessageNamingIt() {
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setFraming("octet counting")));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setPort(70000)));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setMaxMessageSize(0)));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setMaxConnections(0)));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setIdleTimeoutSeconds(-1)));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> {
+            final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
+            tls.setClientAuth("mutual");
+            c.setTls(tls);
+        }));
+    }
+
+    @Test
+    public void validateAcceptsAUsableConfiguration() {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
+        tcpConfig.setFraming("octet-counting");
+        final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();
+        tls.setClientAuth("require");
+        tcpConfig.setTls(tls);
+
+        tcpConfig.validate();
+    }
+
+    private static void validated(final java.util.function.Consumer<SyslogTcpConfig> mutation) {
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(601);
+        mutation.accept(tcpConfig);
+        tcpConfig.validate();
     }
 
     @Test

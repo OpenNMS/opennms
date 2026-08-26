@@ -136,6 +136,9 @@ netmgt:
         syslog.tcp.max.message.size: 65536
         syslog.tcp.max.connections: 1024
         syslog.tcp.idle.timeout: 0
+        # Seconds to wait for the sink to confirm a message before this connection stops
+        # waiting, which costs in-order delivery and read backpressure for its remaining life.
+        syslog.tcp.dispatch.timeout: 30
         # TLS, per RFC 5425. Certificates and keys are PEM encoded and the private key
         # must not be password protected.
         syslog.tcp.tls.enabled: false

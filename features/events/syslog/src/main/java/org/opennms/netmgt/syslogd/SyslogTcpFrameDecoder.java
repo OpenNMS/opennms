@@ -200,9 +200,14 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
 
             final int frameLength = trailerIndex - start;
             if (frameLength > maxMessageSize) {
-                throw new TooLongFrameException(String.format(
-                        "Syslog frame from %s is %d bytes, which exceeds the %d byte maximum",
-                        source, frameLength, maxMessageSize));
+                // Drop the message rather than the connection: the trailer is already in
+                // hand, so the next message starts right after it. Only the octet-counted
+                // path has to close, because there a bad length leaves the next message
+                // nowhere in particular.
+                LOG.warn("Discarding a {} byte syslog frame from {}, which exceeds the {} byte maximum",
+                        frameLength, source, maxMessageSize);
+                in.skipBytes(frameLength + 1);
+                continue;
             }
 
             final int trimmedLength = trimTrailingTrailers(in, start, frameLength);
