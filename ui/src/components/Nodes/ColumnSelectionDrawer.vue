@@ -50,7 +50,7 @@
           @click="addColumn"
         >Add Column</OnmsButton>
         <OnmsButton variant="outlined" @click="resetColumns">Reset Columns</OnmsButton>
-        <OnmsButton variant="outlined" @click="nodeStructureStore.columnsDrawerState.visible = false">Close</OnmsButton>
+        <OnmsButton variant="outlined" @click="nodeListStore.columnsDrawerState.visible = false">Close</OnmsButton>
       </div>
     </div>
   </OnmsDrawer>
@@ -59,24 +59,24 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import Apps from '@/components/icons/navigation/Apps.vue'
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Apps from '@opennms/onms-ui/icons/navigation/Apps.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
 import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { NodeColumnSelectionItem } from '@/types'
 import { defaultColumns } from './utils'
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
 const selectedColumns = ref<{ name: string; value: string }[]>([])
 
 const drawerVisible = computed({
-  get: () => nodeStructureStore.columnsDrawerState.visible,
+  get: () => nodeListStore.columnsDrawerState.visible,
   set: (val: boolean) => {
     if (!val) {
-      nodeStructureStore.columnsDrawerState.visible = false
+      nodeListStore.columnsDrawerState.visible = false
     }
   }
 })
@@ -118,7 +118,7 @@ const customizeTable = async () => {
   // only `col.value` (the id) and never `col.name` — trusting `col.name` here
   // persisted an empty label for any re-added/changed column, which rendered as
   // a header with no text. The id is always correct, so derive the label from it.
-  nodeStructureStore.columns = selectedColumns.value
+  nodeListStore.columns = selectedColumns.value
     .filter(col => col.value)
     .map((col, index) => ({
       id: col.value as string,
@@ -127,28 +127,29 @@ const customizeTable = async () => {
       order: index
     }))
 
-  const nodePrefs = await nodeStructureStore.getNodePreferences()
+  const nodePrefs = await nodeListStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
-  nodeStructureStore.columnsDrawerState.visible = false
+  nodeListStore.columnsDrawerState.visible = false
 }
 
 const resetColumns = async () => {
-  nodeStructureStore.columns = [...defaultColumns]
-  const nodePrefs = await nodeStructureStore.getNodePreferences()
+  nodeListStore.columns = [...defaultColumns]
+  const nodePrefs = await nodeListStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
-  nodeStructureStore.columnsDrawerState.visible = false
+  nodeListStore.columnsDrawerState.visible = false
 }
 
-watch(() => nodeStructureStore.columns, (newColumns) => {
+watch(() => nodeListStore.columns, (newColumns) => {
   initializeSelectedColumns(newColumns)
 }, { immediate: true, deep: true })
 </script>
 
 <style lang="scss" scoped>
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .drawer-content {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 }
 
 .spacer-large {

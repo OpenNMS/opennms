@@ -6,7 +6,7 @@
   <!-- Sample localhost configuration using POP3 and SMTP -->
 
   <sendmail-config name="localhost" 
-                   attempt-interval="3000" use-authentication="false" use-jmta="true" 
+                   attempt-interval="3000" use-authentication="false" use-jmta="false" 
                    debug="true" >
     <sendmail-host host="127.0.0.1" port="25"/>
     
@@ -26,7 +26,7 @@
   <!-- Sample gmail configuration using SSL and IMAPS and SMTPS
        If you want to use either of these as a default, change the default attributes in the root element.
    -->
-  <sendmail-config name="google" attempt-interval="3000" use-authentication="true" use-jmta="true" debug="true" >
+  <sendmail-config name="google" attempt-interval="3000" use-authentication="true" use-jmta="false" debug="true" >
   
     <sendmail-host host="smtp.gmail.com" port="465"/>
 

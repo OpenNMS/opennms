@@ -373,16 +373,6 @@ public abstract class ConfigFileConstants {
     public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
     /**
-     * The Asterisk global configuration file (for notifications, etc.)
-     */
-    public static final int ASTERISK_CONFIG_FILE_NAME;
-
-    /**
-     * The AMI agent configuration file
-     */
-    public static final int AMI_CONFIG_FILE_NAME;
-
-    /**
      * The config file for the JDBC Data Collector.
      */
     public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
@@ -486,10 +476,6 @@ public abstract class ConfigFileConstants {
         
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
-        ASTERISK_CONFIG_FILE_NAME = 74;
-        
-        AMI_CONFIG_FILE_NAME = 75;
-        
         MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
 
         SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
@@ -577,8 +563,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
-        FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
-        FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
         FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
         FILE_ID_TO_NAME[WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME] = "wsman-asset-adapter-configuration.xml";

@@ -33,21 +33,28 @@ store registry, single component library — no duplicate frameworks, no
 prop/type drift).
 
 This package's `vite.config.ts` implements that contract with
-[`vite-plugin-externals`](https://www.npmjs.com/package/vite-plugin-externals):
+[`rollup-plugin-external-globals`](https://www.npmjs.com/package/rollup-plugin-external-globals),
+applied through `build.rollupOptions`:
 
 ```ts
-viteExternalsPlugin({
-  vue: 'Vue',
-  pinia: 'Pinia',
-  'vue-router': 'VueRouter',
-  '@opennms/onms-ui': 'OnmsUI'
-})
+rollupOptions: {
+  external: ['vue', 'pinia', 'vue-router', '@opennms/onms-ui'],
+  plugins: [
+    externalGlobals({
+      vue: 'window.Vue',
+      pinia: 'window.Pinia',
+      'vue-router': 'window.VueRouter',
+      '@opennms/onms-ui': 'window.OnmsUI'
+    })
+  ]
+}
 ```
 
-Window-global resolution (`import X from 'vue'` → `const X = window.Vue`) is
-the plugin's **default** mode — no extra option is required to get it. (Its
-`useWindow: false` option exists for a different scenario — module-path
-resolution without the `window` prefix — and is not used here.)
+The plugin rewrites every externalized import (`import X from 'vue'` →
+reads of `window.Vue`) in the emitted module. A plain Rollup
+`external` + `output.globals` pair is **not** a substitute here:
+`output.globals` only applies to `umd`/`iife` output, and this build must
+be an ES module (the host loads it via `<script type="module">`).
 
 ## The module contract
 
@@ -76,7 +83,7 @@ have to agree. Get any of them out of sync and the host loads the module but
 never finds the component on `window`.
 
 CSS is a separate concern: Vite's library mode extracts any `<style>` block
-into its own CSS file, and this example's dev harness (Task 5) does not serve
+into its own CSS file, and this example's dev harness does not serve
 it — real plugins ship their CSS via `GET
 /rest/plugins/ui-extension/css/{extensionId}` (`getCSSPath` in
 `Plugin/utils.ts`), loaded by the host as a `<link>` tag. That is why
@@ -100,6 +107,14 @@ implementations always come from the host's `window.OnmsUI` at runtime), but
 keeping it aligned means the types you build against match the host you'll
 actually run on.
 
+> **Not yet possible outside this repo:** `@opennms/onms-ui` is currently
+> `private: true` and unpublished — there is no npm package to pin a
+> dependency on, and no published type declarations. Publishing is planned;
+> until then a third-party plugin builds against the runtime contract only
+> (`window.OnmsUI`, externalized as shown above) and the pinning advice in
+> this section applies once the package is published. Inside this repo the
+> example uses `"@opennms/onms-ui": "workspace:*"`.
+
 ## Build
 
 ```bash
@@ -109,13 +124,23 @@ pnpm --filter @opennms/onms-ui-example-plugin build
 
 This produces `dist/exampleUiExtension.es.js`.
 
-Type-check the package on its own strict `tsconfig.json` (nothing in the
-normal `pnpm build`/`pnpm test` gates at the repo root reaches into this
-package):
+Type-check the package on its own strict `tsconfig.json`:
 
 ```bash
 pnpm --filter @opennms/onms-ui-example-plugin typecheck
 ```
+
+Verify the built module honors the externals contract (`vite build` exits 0
+even if externalization silently failed — see `scripts/verify-dist.mjs`):
+
+```bash
+pnpm --filter @opennms/onms-ui-example-plugin verify
+```
+
+CI runs all three of the above via `pnpm check:example-plugin` (see the
+`build-ui` job), so a change to `@opennms/onms-ui` that breaks this
+package's build, types, or built artifact fails the pipeline — that is
+this package's contract-test role.
 
 ## Run it in the dev harness
 
@@ -123,9 +148,10 @@ pnpm --filter @opennms/onms-ui-example-plugin typecheck
 VITE_EXAMPLE_PLUGIN=true pnpm dev
 ```
 
-Then open `/example-plugin` in the running dev server. (Task 5 wires the dev
-harness route and the flag that serves this package's `dist/` output plus a
-mount point for it.)
+Then open `/#/example-plugin` in the running dev server (the router uses
+hash history). The flag both registers the route (`ui/src/main/main.ts`)
+and mounts the dev middleware that serves this package's `dist/` output
+(`ui/vite.config.ts`).
 
 ## Manual verification checklist
 
@@ -141,14 +167,15 @@ After building, confirm:
       renders itself.
 - [ ] **Table/tabs render**: switching between the Form and Table tabs works,
       and the table renders three rows with an `up`/`down` status tag per row.
-- [ ] **Zero framework code in dist** — externalization actually happened:
+- [ ] **Zero framework code in dist** — externalization actually happened.
+      `pnpm --filter @opennms/onms-ui-example-plugin verify` asserts the
+      import-rewriting half of this automatically (no residual framework
+      imports, `window.*` globals present); the greps below additionally
+      confirm no framework *implementation* code was bundled:
 
   ```bash
   grep -c "createElementBlock\|defineComponent" dist/exampleUiExtension.es.js
   # small (this component's own compiled render code only — not Vue's runtime)
-
-  grep "window.OnmsUI\|window\['OnmsUI'\]" dist/exampleUiExtension.es.js
-  # present — confirms components resolve from the host at runtime
 
   grep -c "p-datatable\|BaseComponent" dist/exampleUiExtension.es.js
   # 0 — confirms no PrimeVue implementation code was bundled

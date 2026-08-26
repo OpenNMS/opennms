@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Active/passive HA for a pair of OpenNMS instances coordinating through
+  the shared PostgreSQL database.
+
+  Quick start: on each node set enabled=true, a unique instance-id, the
+  role (one PRIMARY, one SECONDARY) and the partner settings below; enable
+  the HA shell/REST features once per node:
+      echo "opennms-ha-rest" >> $OPENNMS_HOME/etc/featuresBoot.d/ha.boot
+      echo "opennms-ha-shell" >> $OPENNMS_HOME/etc/featuresBoot.d/ha.boot
+  and create the "hasync" service account (ROLE_ADMIN) with the
+  same password on both nodes, stored in the Secure Credentials Vault:
+      $OPENNMS_HOME/bin/opennms-scv:set hasync hasync <password>
+  Then restart both nodes. The SECONDARY waits in standby, syncs config
+  from the PRIMARY, and promotes itself if the PRIMARY heartbeat goes
+  stale beyond the failover threshold.
+
+  Operations: opennms:ha-status / opennms:ha-failover (Karaf shell), or
+  GET /rest/ha/status and POST /rest/ha/failover (ROLE_ADMIN). Failback is
+  manual: step the ACTIVE node down and the restored PRIMARY reclaims.
+-->
+<ha-configuration>
+  <enabled>false</enabled>
+
+  <!-- Unique label for this node -->
+  <instance-id>opennms-primary</instance-id>
+
+  <!-- Static role of THIS node: PRIMARY or SECONDARY -->
+  <role>PRIMARY</role>
+
+  <!--
+    coordinator:    OpenNMS runs the HA state machine itself (default).
+    heartbeat-only: an external HA agent supervises the pair; OpenNMS only
+                    publishes its liveness heartbeat and never gates startup.
+  -->
+  <mode>coordinator</mode>
+
+  <partner-instance-id>opennms-secondary</partner-instance-id>
+
+  <!--
+    Partner's REST base URL. Use https: sync authenticates with HTTP Basic and
+    transfers credential stores, so http exposes both on the network. The
+    partner's certificate must be trusted by this JVM's trust store.
+    Changing this requires a restart.
+  -->
+  <partner-rest-url>https://opennms-secondary:8443/opennms</partner-rest-url>
+
+  <!-- How often this node writes its heartbeat (seconds) -->
+  <heartbeat-interval-seconds>10</heartbeat-interval-seconds>
+
+  <!-- Heartbeat age that triggers failover; recommend >= 3x the interval -->
+  <failover-threshold-seconds>60</failover-threshold-seconds>
+
+  <!--
+    Sync etc/ from the ACTIVE node while in STANDBY — binary-safe (includes
+    scv.jce, keystores, users.xml). ha-configuration.xml is never synced.
+  -->
+  <sync-enabled>true</sync-enabled>
+  <sync-interval-seconds>60</sync-interval-seconds>
+
+  <!-- Service account on the partner; requires ROLE_ADMIN -->
+  <sync-username>hasync</sync-username>
+  <sync-password>${scv:hasync:password|opennms}</sync-password>
+
+  <!--
+    Per-node files sync must never overwrite or delete, relative to etc/
+    (a trailing "/" excludes a subtree). ha-configuration.xml and examples/
+    are always excluded. On identically-installed nodes leave this empty —
+    exclude only files that genuinely differ per node:
+  <sync-excludes>
+    <exclude>node-certificates/</exclude>
+    <exclude>host-tuning.properties</exclude>
+  </sync-excludes>
+  -->
+
+</ha-configuration>

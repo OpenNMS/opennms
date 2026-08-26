@@ -52,9 +52,10 @@ public class UserIT extends OpenNMSSeleniumIT {
     @Test
     public void testExpectedTextAndLinksArePresent() throws Exception {
         final List<WebElement> headers = driver.findElements(By.xpath("//div[@class='card-header']/span"));
-        assertEquals("Account page should have 2 panels", 2, headers.size());
+        assertEquals("Account page should have 3 panels", 3, headers.size());
         assertEquals("Account page should have \"User Account Self-Service\" panel", "User Account Self-Service", headers.get(0).getText());
         assertEquals("Account page should have \"User Account Self-Service Options\" panel", "Account Self-Service Options", headers.get(1).getText());
+        assertEquals("Account page should have \"Browser Notifications\" panel", "Browser Notifications", headers.get(2).getText());
     }
 
     @Test
