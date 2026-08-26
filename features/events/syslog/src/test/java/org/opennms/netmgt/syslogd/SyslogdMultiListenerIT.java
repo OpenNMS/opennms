@@ -321,6 +321,63 @@ public class SyslogdMultiListenerIT {
         assertNull("a config with no tcp port must not build a listener", receiver.getTcpListener());
     }
 
+    /**
+     * Every other test here sets batch-size to 1, which makes each message its own batch and
+     * hides how the listener interacts with real aggregation. This one leaves the shipped
+     * batch settings alone.
+     */
+    @Test(timeout = 120 * 1000)
+    public void deliversABurstUnderTheShippedBatchSettings() throws Exception {
+        m_syslogd.stop();
+        m_syslogd = null;
+        m_received.clear();
+
+        final int count = 200;
+        m_udpPort = findFreePort();
+        final SyslogTcpConfig tcpConfig = new SyslogTcpConfig();
+        tcpConfig.setPort(findFreePort());
+        tcpConfig.setListenAddress("127.0.0.1");
+
+        final SyslogConfigBean bean = new SyslogConfigBean();
+        bean.setSyslogPort(m_udpPort);
+        bean.setListenAddress("127.0.0.1");
+        bean.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
+        bean.setNumThreads(4);
+        bean.setQueueSize(10000);
+        // batch-size and batch-interval left at their defaults on purpose
+        bean.setTcpConfig(tcpConfig);
+
+        final SharedRegistryDispatcherFactory dispatcherFactory = new SharedRegistryDispatcherFactory();
+        dispatcherFactory.setConsumer(new CollectingConsumer());
+
+        final SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(bean);
+        receiver.setDistPollerDao(m_distPollerDao);
+        receiver.setMessageDispatcherFactory(dispatcherFactory);
+
+        m_syslogd = new Syslogd();
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        m_syslogd.start();
+        for (int i = 0; i < 100 && (receiver.getTcpListener() == null
+                || !receiver.getTcpListener().isStarted()); i++) {
+            Thread.sleep(50);
+        }
+
+        try (Socket socket = new Socket("127.0.0.1", tcpConfig.getPort())) {
+            final StringBuilder burst = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                burst.append("<34>Oct 11 22:14:15 tcphost app: batched ").append(i).append('\n');
+            }
+            socket.getOutputStream().write(burst.toString().getBytes(StandardCharsets.UTF_8));
+            socket.getOutputStream().flush();
+
+            for (int i = 0; i < count; i++) {
+                assertNotNull("stalled after " + i + " of " + count + " under real batching",
+                        m_received.poll(30, TimeUnit.SECONDS));
+            }
+        }
+    }
+
     // --- harness ------------------------------------------------------------
 
 

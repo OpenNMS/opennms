@@ -138,6 +138,10 @@ netmgt:
         syslog.tcp.idle.timeout: 0
         # Seconds to wait for the sink to confirm a message before this connection stops
         # waiting, which costs in-order delivery and read backpressure for its remaining life.
+        # Guarantee that one connection's messages become events in arrival order. Off by
+        # default, matching UDP. Costs roughly two orders of magnitude of throughput on that
+        # connection, so leave it off unless a sender must be correlated in sequence.
+        syslog.tcp.ordered: false
         syslog.tcp.dispatch.timeout: 30
         # TLS, per RFC 5425. Certificates and keys are PEM encoded and the private key
         # must not be password protected.

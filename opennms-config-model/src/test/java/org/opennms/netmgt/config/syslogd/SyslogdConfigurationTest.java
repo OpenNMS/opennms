@@ -69,7 +69,8 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
                         "             framing=\"octet-counting\"\n" +
                         "             max-message-size=\"32768\"\n" +
                         "             max-connections=\"64\"\n" +
-                        "             idle-timeout=\"300\">\n" +
+                        "             idle-timeout=\"300\"\n" +
+                        "             ordered=\"false\">\n" +
                         "            <tls enabled=\"true\"\n" +
                         "                 cert-filepath=\"/opt/opennms/etc/syslog-tls.crt\"\n" +
                         "                 private-key-filepath=\"/opt/opennms/etc/syslog-tls.key\"\n" +

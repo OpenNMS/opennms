@@ -36,8 +36,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -70,6 +73,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
  * blocks in send(), so this test supplies its own.
  */
 public class SyslogTcpListenerDispatchIT {
+
+    private static final ScheduledExecutorService CONFIRMER = Executors.newScheduledThreadPool(2);
 
     private static final long TIMEOUT_SECONDS = 20;
 
@@ -148,13 +153,13 @@ public class SyslogTcpListenerDispatchIT {
     public void keepsIngestingWhenTheDispatchFutureNeverCompletes() throws Exception {
         // A Minion whose syslog configuration had been reloaded delivered the message but
         // never completed the future for it, because a previous dispatcher's drain thread
-        // completed the wrong one. The wait on that future has to be bounded, or ingestion
-        // stops after a single message. The timeout is shortened here because the shipped one
-        // is thirty seconds.
+        // completed the wrong one. Ordered is the only mode that waits on that future, so it
+        // is the only one that has to bound the wait. Shortened here from the shipped thirty
+        // seconds.
         final int count = 5;
         final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
         dispatcher.setNeverCompleteFutures(true);
-        final int port = start(dispatcher, 250);
+        final int port = startOrdered(dispatcher, 250);
 
         try (Socket socket = new Socket("127.0.0.1", port)) {
             final StringBuilder burst = new StringBuilder();
@@ -188,6 +193,64 @@ public class SyslogTcpListenerDispatchIT {
 
             for (int i = 0; i < count; i++) {
                 assertEquals("message " + i, dispatcher.nextMessage());
+            }
+        }
+    }
+
+    /**
+     * What ordering actually rests on. The sink appends under a non-fair striped lock, so two
+     * of its threads can invert a pair; holding one message in flight per connection keeps a
+     * connection out of that race entirely. This asserts the mechanism, because the race itself
+     * is a lock race and does not reproduce on demand.
+     */
+    @Test(timeout = 60 * 1000)
+    public void orderedKeepsOneMessagePerConnectionUnconfirmed() throws Exception {
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setConfirmAfterMillis(20);
+        final int port = startOrdered(dispatcher, 0);
+
+        sendBurst(port, 40);
+        for (int i = 0; i < 40; i++) {
+            assertNotNull(dispatcher.nextMessage());
+        }
+
+        assertEquals("ordered must never leave two messages from one connection at the sink",
+                1, dispatcher.getMaxUnconfirmed());
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void theDefaultModeLetsMoreThanOneRideAtOnce() throws Exception {
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setConfirmAfterMillis(20);
+        final int port = start(dispatcher);
+
+        sendBurst(port, 40);
+        for (int i = 0; i < 40; i++) {
+            assertNotNull(dispatcher.nextMessage());
+        }
+
+        assertTrue("the default must not be pacing itself on confirmations, saw "
+                + dispatcher.getMaxUnconfirmed(), dispatcher.getMaxUnconfirmed() > 1);
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void theDefaultModeDoesNotDependOnTheDispatchFutureAtAll() throws Exception {
+        // Unordered reads on as soon as the sink takes the message, so a sink that never
+        // confirms anything cannot slow it down and no timeout has to rescue it.
+        final int count = 200;
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setNeverCompleteFutures(true);
+        final int port = start(dispatcher);
+
+        try (Socket socket = new Socket("127.0.0.1", port)) {
+            final StringBuilder burst = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                burst.append("<34>Oct 11 22:14:15 host app: message ").append(i).append('\n');
+            }
+            write(socket, burst.toString());
+
+            for (int i = 0; i < count; i++) {
+                assertNotNull("stalled after " + i + " messages", dispatcher.nextMessage());
             }
         }
     }
@@ -275,6 +338,17 @@ public class SyslogTcpListenerDispatchIT {
         return count;
     }
 
+    private static void sendBurst(final int port, final int count) throws Exception {
+        try (Socket socket = new Socket("127.0.0.1", port)) {
+            final StringBuilder burst = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                burst.append("<34>Oct 11 22:14:15 host app: message ").append(i).append('\n');
+            }
+            write(socket, burst.toString());
+            Thread.sleep(1500);
+        }
+    }
+
     // --- harness ------------------------------------------------------------
 
     /** Lazily attaches the tls element, so each test only sets what it cares about. */
@@ -319,12 +393,23 @@ public class SyslogTcpListenerDispatchIT {
 
     private int start(final AsyncDispatcher<SyslogConnection> dispatcher, final long dispatchTimeoutMs,
             final int idleSeconds) throws Exception {
+        return start(dispatcher, dispatchTimeoutMs, idleSeconds, false);
+    }
+
+    private int startOrdered(final AsyncDispatcher<SyslogConnection> dispatcher, final long dispatchTimeoutMs)
+            throws Exception {
+        return start(dispatcher, dispatchTimeoutMs, 0, true);
+    }
+
+    private int start(final AsyncDispatcher<SyslogConnection> dispatcher, final long dispatchTimeoutMs,
+            final int idleSeconds, final boolean ordered) throws Exception {
         final int port = findFreePort();
 
         final SyslogTcpConfig config = new SyslogTcpConfig();
         config.setPort(port);
         config.setListenAddress("127.0.0.1");
         config.setFraming("non-transparent");
+        config.setOrdered(ordered);
         if (idleSeconds > 0) {
             config.setIdleTimeoutSeconds(idleSeconds);
         }
@@ -352,6 +437,10 @@ public class SyslogTcpListenerDispatchIT {
         private volatile long delayMillis;
 
         private volatile boolean neverCompleteFutures;
+
+        private volatile long confirmAfterMillis;
+        private final AtomicInteger unconfirmed = new AtomicInteger();
+        private final AtomicInteger maxUnconfirmed = new AtomicInteger();
 
         private int seen;
 
@@ -387,8 +476,30 @@ public class SyslogTcpListenerDispatchIT {
                 }
             }
             // An uncompleted future, the way a reloaded Minion leaves them.
-            return neverCompleteFutures ? new CompletableFuture<>()
-                    : CompletableFuture.completedFuture(DispatchStatus.DISPATCHED);
+            if (neverCompleteFutures) {
+                return new CompletableFuture<>();
+            }
+            if (confirmAfterMillis > 0) {
+                // Confirmed later, so the number outstanding at once is observable. That count
+                // is what ordering rests on: one at a time cannot be reordered by the sink.
+                final CompletableFuture<DispatchStatus> future = new CompletableFuture<>();
+                final int outstanding = unconfirmed.incrementAndGet();
+                maxUnconfirmed.accumulateAndGet(outstanding, Math::max);
+                CONFIRMER.schedule(() -> {
+                    unconfirmed.decrementAndGet();
+                    future.complete(DispatchStatus.DISPATCHED);
+                }, confirmAfterMillis, TimeUnit.MILLISECONDS);
+                return future;
+            }
+            return CompletableFuture.completedFuture(DispatchStatus.DISPATCHED);
+        }
+
+        void setConfirmAfterMillis(final long confirmAfterMillis) {
+            this.confirmAfterMillis = confirmAfterMillis;
+        }
+
+        int getMaxUnconfirmed() {
+            return maxUnconfirmed.get();
         }
 
         void setDelayMillis(final long delayMillis) {

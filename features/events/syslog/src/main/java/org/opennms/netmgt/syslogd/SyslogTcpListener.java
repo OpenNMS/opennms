@@ -308,7 +308,17 @@ public class SyslogTcpListener {
                     Throwable failure = null;
                     try {
                         final CompletableFuture<?> dispatched = m_dispatcher.send(next);
-                        if (waitForDispatch && m_dispatchTimeoutMs <= 0) {
+                        if (!m_config.isOrdered()) {
+                            // send() returning means the sink took the message, which is all
+                            // that is needed to read the next one. The sink still reorders
+                            // pairs on its own, so waiting buys a guarantee only while nothing
+                            // else is in flight, and it costs two orders of magnitude.
+                            dispatched.whenComplete((r, e) -> {
+                                if (e != null) {
+                                    LOG.warn("The sink failed a syslog message from {}", next.getSource(), e);
+                                }
+                            });
+                        } else if (waitForDispatch && m_dispatchTimeoutMs <= 0) {
                             dispatched.get();
                         } else if (waitForDispatch) {
                             try {
@@ -326,7 +336,8 @@ public class SyslogTcpListener {
                                         + " within {}ms. This connection will no longer wait for confirmation, so"
                                         + " its messages may reach the consumer out of order and are no longer"
                                         + " subject to read backpressure. Raise dispatch-timeout if the sink is"
-                                        + " merely slow.", next.getSource(), m_dispatchTimeoutMs);
+                                        + " merely slow, or clear ordered if this sender does not need it.",
+                                        next.getSource(), m_dispatchTimeoutMs);
                             }
                         }
                     } catch (InterruptedException e) {
