@@ -21,7 +21,7 @@
 ///
 
 import NodeAdvancedFiltersDrawer from '@/components/Nodes/NodeAdvancedFiltersDrawer.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -44,6 +44,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
     topology: '',
     nodesWithDownAggregateStatus: false,
     nodesWithAssets: false,
+    nodesWithOutages: false,
     assetFilters: [],
     extendedSearch: {
       foreignSourceParams: { foreignId: '', foreignSource: '', foreignSourceId: '' },
@@ -53,7 +54,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
   })
   return {
     useNodeQuery: () => ({
-      buildUpdatedNodeStructureQueryParameters: vi.fn().mockImplementation(params => params),
+      buildUpdatedNodeListQueryParameters: vi.fn().mockImplementation(params => params),
       getExtendedSearchValues: vi.fn().mockReturnValue([]),
       getDefaultNodeQueryFilter: makeDefaultFilter,
       getDefaultNodeQueryForeignSourceParams: () => ({ foreignId: '', foreignSource: '', foreignSourceId: '' }),
@@ -109,7 +110,7 @@ const ExtendedSearchPanelStub = {
 
 // ── Mount helper ───────────────────────────────────────────────────────────────
 
-const seedStore = (store: ReturnType<typeof useNodeStructureStore>) => {
+const seedStore = (store: ReturnType<typeof useNodeListStore>) => {
   store.categories = [
     { id: 1, name: 'Routers', authorizedGroups: [] },
     { id: 2, name: 'Switches', authorizedGroups: [] }
@@ -142,12 +143,12 @@ const mountDrawer = () =>
 
 describe('NodeAdvancedFiltersDrawer.vue', () => {
   let wrapper: VueWrapper<any>
-  let store: ReturnType<typeof useNodeStructureStore>
+  let store: ReturnType<typeof useNodeListStore>
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountDrawer()
-    store = useNodeStructureStore()
+    store = useNodeListStore()
     seedStore(store)
     store.drawerState = { visible: true } as any
     await nextTick()
@@ -230,6 +231,14 @@ describe('NodeAdvancedFiltersDrawer.vue', () => {
       toggle.vm.$emit('update:modelValue', true)
       await nextTick()
       expect(wrapper.vm.selectedFilters.nodesWithAssets).toBe(true)
+    })
+
+    it('toggles the with-outages flag via the ToggleSwitch', async () => {
+      const toggle = wrapper.find('[data-test="with-outages"]').findComponent({ name: 'ToggleSwitch' })
+      expect(toggle.exists()).toBe(true)
+      toggle.vm.$emit('update:modelValue', true)
+      await nextTick()
+      expect(wrapper.vm.selectedFilters.nodesWithOutages).toBe(true)
     })
   })
 

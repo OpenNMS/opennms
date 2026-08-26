@@ -119,9 +119,9 @@
 import { ref, watch } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsMessageDialog, OnmsTable } from '@opennms/onms-ui'
-import Delete from '@/components/icons/action/Delete.vue'
-import Edit from '@/components/icons/action/Edit.vue'
-import InfoIcon from '@/components/icons/action/Info.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'

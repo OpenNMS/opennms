@@ -21,7 +21,7 @@
 ///
 
 import ColumnSelectionDrawer from '@/components/Nodes/ColumnSelectionDrawer.vue'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -49,6 +49,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
     topology: '',
     nodesWithDownAggregateStatus: false,
     nodesWithAssets: false,
+    nodesWithOutages: false,
     assetFilters: [],
     extendedSearch: {
       foreignSourceParams: { foreignId: '', foreignSource: '', foreignSourceId: '' },
@@ -58,7 +59,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', () => {
   })
   return {
     useNodeQuery: () => ({
-      buildUpdatedNodeStructureQueryParameters: vi.fn().mockImplementation(params => params),
+      buildUpdatedNodeListQueryParameters: vi.fn().mockImplementation(params => params),
       getExtendedSearchValues: vi.fn().mockReturnValue([]),
       getDefaultNodeQueryFilter: makeDefaultFilter,
       getDefaultNodeQueryForeignSourceParams: () => ({ foreignId: '', foreignSource: '', foreignSourceId: '' }),
@@ -104,12 +105,12 @@ const mountDrawer = () =>
 
 describe('ColumnSelectionDrawer.vue', () => {
   let wrapper: VueWrapper<any>
-  let store: ReturnType<typeof useNodeStructureStore>
+  let store: ReturnType<typeof useNodeListStore>
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountDrawer()
-    store = useNodeStructureStore()
+    store = useNodeListStore()
 
     // Seed the store with two selected columns so the drawer has rows to display.
     store.columns = defaultColumns.map(c => ({ ...c }))

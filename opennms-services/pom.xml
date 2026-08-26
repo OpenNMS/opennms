@@ -161,12 +161,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>javamail-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
@@ -180,6 +174,15 @@
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
       <scope>test</scope>
+    </dependency>
+    <!-- Groovy engine for scriptd and BSFNotificationStrategy; runtime scope so
+         Groovy notification scripts do not depend on another module keeping
+         groovy on the classpath -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>groovy-dependencies</artifactId>
+      <type>pom</type>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -307,6 +310,10 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
@@ -335,13 +342,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache-extras.beanshell</groupId>
-      <artifactId>bsh</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -377,16 +379,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>quartz-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>smack-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>twitter4j-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

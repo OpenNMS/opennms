@@ -21,6 +21,8 @@
  */
 package org.opennms.core.utils.jexl;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.jexl2.JexlInfo;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
@@ -66,9 +68,17 @@ public class OnmsJexlUberspect extends UberspectImpl {
     public JexlMethod getMethod(final Object obj, final String method, final Object[] args, final JexlInfo info) {
         if (obj != null && method != null) {
             final String className;
-            if (obj instanceof Class) {
-                Class<?> clazz = (Class) obj;
-                className = clazz.getName();
+            if (obj instanceof Class && !isJavaLangClassMethod(method)) {
+                // A static method invoked on a whitelisted class object, e.g. the
+                // math:/strictmath: namespace functions. Authorize against the class the
+                // object represents.
+                className = ((Class<?>) obj).getName();
+            } else if (obj instanceof Class) {
+                // A method that java.lang.Class itself exposes (getName, forName,
+                // getClassLoader, ...). The receiver's real type is java.lang.Class, which
+                // is not whitelisted, so authorizing against it denies reflective escapes
+                // through the Class object of an otherwise-whitelisted type.
+                className = Class.class.getName();
             } else {
                 className = obj.getClass().getName();
             }
@@ -79,6 +89,20 @@ public class OnmsJexlUberspect extends UberspectImpl {
         }
 
         return null;
+    }
+
+    /**
+     * Returns true if {@code java.lang.Class} exposes a public method with the given name.
+     * Such a call on a Class receiver invokes a {@code java.lang.Class} member (not a static
+     * method of the represented class) and must be authorized against java.lang.Class itself.
+     */
+    private static boolean isJavaLangClassMethod(final String method) {
+        for (final Method m : Class.class.getMethods()) {
+            if (m.getName().equals(method)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public JexlPropertyGet getPropertyGet(final Object obj, final Object identifier, final JexlInfo info) {

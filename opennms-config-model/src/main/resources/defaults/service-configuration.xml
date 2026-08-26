@@ -77,14 +77,6 @@ can override these defaults and support environment variable interpolation using
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="true">
-    <name>OpenNMS:Name=Actiond</name>
-    <class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="true">
     <name>OpenNMS:Name=Notifd</name>
     <class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
     <invoke at="start" pass="0" method="init"/>

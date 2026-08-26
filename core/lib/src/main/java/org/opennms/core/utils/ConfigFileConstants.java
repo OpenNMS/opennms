@@ -53,11 +53,6 @@ public abstract class ConfigFileConstants {
     //
 
     /**
-     * The opennms actiond config file
-     */
-    public static final int ACTIOND_CONFIG_FILE_NAME;
-
-    /**
      * The opennms capsd config file
      */
     public static final int CAPSD_CONFIG_FILE_NAME;
@@ -158,12 +153,6 @@ public abstract class ConfigFileConstants {
 
     public static final int JAVA_MAIL_CONFIG_FILE_NAME;
 
-    /**
-     * The config file specifying the XMPP config (host, user, password, etc.)
-     * 
-     */
-    public static final int XMPP_CONFIG_FILE_NAME;
-    
     /**
      * JFree Chart configuration file
      */
@@ -384,21 +373,6 @@ public abstract class ConfigFileConstants {
     public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
     /**
-     * The Asterisk global configuration file (for notifications, etc.)
-     */
-    public static final int ASTERISK_CONFIG_FILE_NAME;
-
-    /**
-     * The AMI agent configuration file
-     */
-    public static final int AMI_CONFIG_FILE_NAME;
-    
-    /**
-     * The config file for microblog notifications and acks
-     */
-    public static final int MICROBLOG_CONFIG_FILE_NAME;
-    
-    /**
      * The config file for the JDBC Data Collector.
      */
     public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
@@ -420,7 +394,7 @@ public abstract class ConfigFileConstants {
 
         DB_CONFIG_FILE_NAME = 0;
         JMS_CONFIG_FILE_NAME = 1;
-        ACTIOND_CONFIG_FILE_NAME = 2;
+        // 2 was ACTIOND_CONFIG_FILE_NAME
         CAPSD_CONFIG_FILE_NAME = 3;
         DISCOVERY_CONFIG_FILE_NAME = 4;
 
@@ -478,8 +452,6 @@ public abstract class ConfigFileConstants {
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
         VACUUMD_CONFIG_FILE_NAME = 53;
 
-        XMPP_CONFIG_FILE_NAME = 54;
-        
         CHART_CONFIG_FILE_NAME = 55;
 
         JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
@@ -504,14 +476,8 @@ public abstract class ConfigFileConstants {
         
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
-        ASTERISK_CONFIG_FILE_NAME = 74;
-        
-        AMI_CONFIG_FILE_NAME = 75;
-        
         MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
-        
-        MICROBLOG_CONFIG_FILE_NAME = 78;
-        
+
         SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
         
         JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
@@ -526,7 +492,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
-        FILE_ID_TO_NAME[ACTIOND_CONFIG_FILE_NAME] = "actiond-configuration.xml";
         FILE_ID_TO_NAME[CAPSD_CONFIG_FILE_NAME] = "capsd-configuration.xml";
         FILE_ID_TO_NAME[DISCOVERY_CONFIG_FILE_NAME] = "discovery-configuration.xml";
 
@@ -585,7 +550,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
-        FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
         FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
@@ -599,10 +563,7 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
-        FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
-        FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
-        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
         FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
         FILE_ID_TO_NAME[WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME] = "wsman-asset-adapter-configuration.xml";
         FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";

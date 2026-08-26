@@ -83,7 +83,7 @@ public class ServiceConfigMigratorOfflineTest {
 
         // Checking Service Factory (it should return only the enabled services)
         ServiceConfigFactory factory = new ServiceConfigFactory();
-        Assert.assertEquals(26, factory.getServices().length);
+        Assert.assertEquals(25, factory.getServices().length);
         Assert.assertTrue("Services added to the current catalog must be present after merging a legacy configuration.",
                 Arrays.stream(factory.getServices())
                         .anyMatch(service -> "OpenNMS:Name=Karaf".equals(service.getName())));

@@ -166,10 +166,10 @@ import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsConfirmationDialog, OnmsDatePicker, OnmsDialog, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import FormField from '@/components/Common/FormField.vue'
-import ChevronLeft from '@/components/icons/navigation/ChevronLeft.vue'
-import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
+import ChevronLeft from '@opennms/onms-ui/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { formatScheduleTimestamp, OnCallCalendar, OnCallCalendarEntry, OnCallRole, OnCallSchedule } from '@/types/onCallRoleAdmin'
 

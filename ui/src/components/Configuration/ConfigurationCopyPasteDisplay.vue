@@ -20,7 +20,7 @@
         <OnmsIconButton
           class="edit-icon"
           aria-label="Copy to clipboard"
-          v-tooltip="'Copy to clipboard'"
+          tooltip="Copy to clipboard"
           :icon="ContentCopy"
           @click="copyURLToClipboard"
         />
@@ -36,7 +36,7 @@
 import { computed, reactive, ref } from 'vue'
 
 import { OnmsIconButton } from '@opennms/onms-ui'
-import ContentCopy from '@/components/icons/action/ContentCopy.vue'
+import ContentCopy from '@opennms/onms-ui/icons/action/ContentCopy.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
