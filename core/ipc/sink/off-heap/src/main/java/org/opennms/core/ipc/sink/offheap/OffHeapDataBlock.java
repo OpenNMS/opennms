@@ -122,7 +122,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
     @Override
     public synchronized Map.Entry<String, T> dequeue() throws InterruptedException, ReadFailedException {
         enableQueue();
-        return queue.take();
+        return queue.poll();
     }
 
     @Override

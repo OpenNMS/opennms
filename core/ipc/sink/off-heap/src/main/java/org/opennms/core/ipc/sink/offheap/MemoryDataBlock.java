@@ -71,7 +71,7 @@ public class MemoryDataBlock<T> implements DataBlock<T> {
 
     @Override
     public synchronized Map.Entry<String, T> dequeue() throws InterruptedException {
-        return queue.take();
+        return queue.poll();
     }
 
     @Override
