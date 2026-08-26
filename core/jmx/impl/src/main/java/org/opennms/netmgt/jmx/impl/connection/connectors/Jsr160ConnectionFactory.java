@@ -47,7 +47,8 @@ public abstract class Jsr160ConnectionFactory {
 
     private static final long DEFAULT_TIMEOUT = 30000; // 30 secs
 
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private static final ExecutorService executor = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("Jsr160Connector-", 0).factory());
 
     public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,String> propertiesMap, InetAddress address) throws IOException {
         final long timeout = DEFAULT_TIMEOUT;

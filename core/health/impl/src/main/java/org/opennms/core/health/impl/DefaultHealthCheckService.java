@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.vavr.control.Either;
 
@@ -61,7 +60,8 @@ public class DefaultHealthCheckService implements HealthCheckService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultHealthCheckService.class);
 
     // HealthChecks are performed asynchronously with this executor.
-    private final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
+    private final ExecutorService executorService = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual().name("health-check-", 0).factory());
 
     // Context to load the services
     private BundleContext bundleContext;
