@@ -465,9 +465,9 @@
         {
           "id": "scheduledOutages",
           "name": "Scheduled Outages",
-          "url": "admin/sched-outages/index.jsp",
-          "locationMatch": null,
-          "roles": null
+          "url": "ui/index.html#/scheduled-outages",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "productUpdateEnrollment",
