@@ -1,0 +1,22 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Stub API",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "__OPENNMS_BASE_URI__"
+  } ],
+  "paths" : {
+    "/things" : {
+      "get" : {
+        "operationId" : "getThings",
+        "responses" : {
+          "200" : {
+            "description" : "ok"
+          }
+        }
+      }
+    }
+  }
+}

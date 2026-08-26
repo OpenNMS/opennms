@@ -133,9 +133,9 @@ import { computed, ref } from 'vue'
 
 import { cloneDeep, debounce } from 'lodash'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
-import IconAdd from '@/components/icons/action/Add.vue'
-import IconDelete from '@/components/icons/action/Delete.vue'
-import IconEdit from '@/components/icons/action/Edit.vue'
+import IconAdd from '@opennms/onms-ui/icons/action/Add.vue'
+import IconDelete from '@opennms/onms-ui/icons/action/Delete.vue'
+import IconEdit from '@opennms/onms-ui/icons/action/Edit.vue'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
@@ -322,19 +322,6 @@ const onSearchChange = (value: string | number | undefined) => {
 
         .search-field {
           width: 100%;
-
-          // make the input (and its IconField wrapper) fill the field so the
-          // search icon sits at the input's right edge rather than floating far
-          // out in the container
-          :deep(.p-iconfield) {
-            display: block;
-            width: 100%;
-          }
-
-          :deep(.p-inputtext) {
-            width: 100%;
-            padding-right: 2.75rem;
-          }
         }
       }
     }

@@ -63,8 +63,8 @@ export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'location', label: 'Monitoring Location', selected: true, order: 3 },
   { id: 'foreignSource', label: 'Foreign Source', selected: true, order: 4 },
   { id: 'foreignId', label: 'Foreign ID', selected: true, order: 5 },
-  { id: 'sysContact', label: 'Sys Contact', selected: true, order: 6 },
-  { id: 'sysLocation', label: 'Sys Location', selected: true, order: 7 },
-  { id: 'sysDescription', label: 'Sys Description', selected: true, order: 8 },
-  { id: 'flows', label: 'Flows', selected: true, order: 9 }
+  { id: 'sysContact', label: 'Sys Contact', selected: false, order: 6 },
+  { id: 'sysLocation', label: 'Sys Location', selected: false, order: 7 },
+  { id: 'sysDescription', label: 'Sys Description', selected: false, order: 8 },
+  { id: 'flows', label: 'Flows', selected: false, order: 9 }
 ]

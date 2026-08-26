@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import Download from '@/components/icons/action/DownloadFile.vue'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { OnmsIconButton, OnmsMenu, OnmsMenuItem } from '@opennms/onms-ui'
 import { markRaw, ref, PropType } from 'vue'
 

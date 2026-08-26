@@ -27,13 +27,15 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
@@ -44,7 +46,6 @@ import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.google.common.base.Strings;
 
@@ -85,6 +86,8 @@ public class JavaSendMailer extends JavaMailer2 {
         m_config = config;
         try {
             m_session = Session.getInstance(createProps(useJmProps), createAuthenticator());
+            // JavaMailer2.getSession() callers (reportd) otherwise see a null session
+            setSession(m_session);
             if (config.getSendmailMessage() != null) {
                 m_message = buildMimeMessage(config.getSendmailMessage());
             } else {
@@ -129,13 +132,13 @@ public class JavaSendMailer extends JavaMailer2 {
 
             try {
                 final String charset = m_config.getSendmailProtocol() != null? m_config.getSendmailProtocol().getCharSet() : Charset.defaultCharset().name();
-                final MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, charset);
-                helper.setFrom(configMsg.getFrom());
+                mimeMsg.setFrom(new InternetAddress(configMsg.getFrom()));
                 if (!Strings.isNullOrEmpty(configMsg.getReplyTo())) {
-                    helper.setReplyTo(configMsg.getReplyTo());
+                    mimeMsg.setReplyTo(InternetAddress.parse(configMsg.getReplyTo()));
                 }
-                helper.setTo(configMsg.getTo());
-                helper.setSubject(configMsg.getSubject());
+                // parse like JavaMailer.initializeMessage() so comma-separated recipient lists work
+                mimeMsg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(configMsg.getTo(), false));
+                mimeMsg.setSubject(configMsg.getSubject(), charset);
             } catch (final MessagingException e) {
                 LOG.warn("found a problem building message: {}", e.getMessage());
             }
@@ -179,12 +182,17 @@ public class JavaSendMailer extends JavaMailer2 {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private Properties createProps(boolean useJmProps) throws IOException {
-
-        Properties props = generatePropsFromConfig(m_config.getJavamailProperties());
-        configureProperties(props, useJmProps);
-
-        //get rid of this
-        return Session.getDefaultInstance(new Properties()).getProperties();
+        final Properties props = generatePropsFromConfig(m_config.getJavamailProperties());
+        if (!props.isEmpty()) {
+            LOG.info("applying javamail-property entries to the mail session: {}", props.stringPropertyNames());
+        }
+        final Properties merged = configureProperties(props, useJmProps);
+        // these were consumed into the config above; keeping them (and any
+        // interpolated credentials) out of the session limits exposure
+        merged.stringPropertyNames().stream()
+                .filter(key -> key.startsWith("org.opennms.core.utils."))
+                .forEach(merged::remove);
+        return merged;
     }
 
     /**
@@ -211,19 +219,19 @@ public class JavaSendMailer extends JavaMailer2 {
      * @param sendmailConfigDefinedProps the sendmail configuration defined properties
      * @param useJmProps a boolean representing the handling of the deprecated javamail-configuration.properties file.
      */
-    private void configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
+    private Properties configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
 
         //this loads the properties from the old style javamail-configuration.properties
         //TODO: deprecate this
         Properties props = null;
         try {
-            props = JavaMailerConfig.getProperties();
-
-            /* These strange properties from javamail-configuration.properties need to be translated into actual javax.mail properties
-             * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
-             * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
-             */
             if (useJmProps) {
+                props = JavaMailerConfig.getProperties();
+
+                /* These strange properties from javamail-configuration.properties need to be translated into actual jakarta.mail properties
+                 * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
+                 * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
+                 */
                 m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.isDebug()));
                 if (m_config.getSendmailHost() != null) {
                     final SendmailHost sendmailHost = m_config.getSendmailHost();
@@ -270,6 +278,14 @@ public class JavaSendMailer extends JavaMailer2 {
 
         props.putAll(sendmailConfigDefinedProps);
 
+        // with no <user-auth> there are no credentials to offer; advertising
+        // mail.smtp(s).auth=true would fail the connect instead of sending
+        // unauthenticated, which is what this configuration always did
+        final boolean useAuthentication = m_config.isUseAuthentication() && m_config.getUserAuth() != null;
+        if (m_config.isUseAuthentication() && m_config.getUserAuth() == null) {
+            LOG.warn("use-authentication is enabled but no user-auth is configured; sending unauthenticated");
+        }
+
         if (m_config.getSendmailProtocol() != null) {
             final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol();
             if (!props.containsKey("mail.smtp.starttls.enable")) {
@@ -278,12 +294,9 @@ public class JavaSendMailer extends JavaMailer2 {
             if (!props.containsKey("mail.smtp.quitwait")) {
                 props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
             }
-            if (!props.containsKey("mail.smtp.quitwait")) {
-                props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
-            }
             if (sendmailProtocol.isSslEnable()) {
                 if (!props.containsKey("mail.smtps.auth")) {
-                    props.setProperty("mail.smtps.auth", String.valueOf(m_config.isUseAuthentication()));
+                    props.setProperty("mail.smtps.auth", String.valueOf(useAuthentication));
                 }
                 if (!props.containsKey("mail.smtps.socketFactory.class")) {
                     props.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -295,13 +308,13 @@ public class JavaSendMailer extends JavaMailer2 {
         }
 
         if (!props.containsKey("mail.smtp.auth")) {
-            props.setProperty("mail.smtp.auth", String.valueOf(m_config.isUseAuthentication()));
+            props.setProperty("mail.smtp.auth", String.valueOf(useAuthentication));
         }
         if (!props.containsKey("mail.smtp.port") && m_config.getSendmailHost() != null) {
             props.setProperty("mail.smtp.port", String.valueOf(m_config.getSendmailHost().getPort()));
         }
 
-
+        return props;
     }
 
     /**
@@ -341,25 +354,27 @@ public class JavaSendMailer extends JavaMailer2 {
         }
         try {
             SendmailProtocol protoConfig = m_config.getSendmailProtocol();
-            t = m_session.getTransport(protoConfig.getTransport());
-            LOG.debug("for transport name '{}' got: {}@{}", protoConfig.getTransport(), t.getClass().getName(), Integer.toHexString(t.hashCode()));
+            String transport = protoConfig.getTransport();
+            if ("mta".equals(transport)) {
+                // the schema restricts the XML attribute to smtp|smtps, but the
+                // (unvalidated) properties-file override can still say mta
+                LOG.warn("the JMTA/'mta' transport is no longer supported; sending via 'smtp' instead");
+                transport = "smtp";
+            }
+            t = m_session.getTransport(transport);
+            LOG.debug("for transport name '{}' got: {}@{}", transport, t.getClass().getName(), Integer.toHexString(t.hashCode()));
 
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
-            if ("mta".equals(t.getURLName().getProtocol())) {
-                // JMTA throws an AuthenticationFailedException if we call connect()
-                LOG.debug("transport is 'mta', not trying to connect()");
+            final SendmailHost sendmailHost = m_config.getSendmailHost();
+            if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
+                LOG.debug("authenticating to {}", sendmailHost.getHost());
+                final UserAuth userAuth = m_config.getUserAuth();
+                t.connect(sendmailHost.getHost(), sendmailHost.getPort(), JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
             } else {
-                final SendmailHost sendmailHost = m_config.getSendmailHost();
-                if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
-                    LOG.debug("authenticating to {}", sendmailHost.getHost());
-                    final UserAuth userAuth = m_config.getUserAuth();
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
-                } else {
-                    LOG.debug("not authenticating to {}", sendmailHost.getHost());
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);
-                }
+                LOG.debug("not authenticating to {}", sendmailHost.getHost());
+                t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);
             }
 
             t.sendMessage(message, message.getAllRecipients());

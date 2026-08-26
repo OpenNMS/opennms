@@ -17,5 +17,8 @@
        <argument streamed="false">
            <switch>-tm</switch>
        </argument>
+       <argument streamed="false">
+           <switch>noticeid</switch>
+       </argument>
    </command>
 </notification-commands>
