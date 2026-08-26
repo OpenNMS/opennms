@@ -15,144 +15,161 @@
       </div>
       <p class="subtitle">Search the inventory and open the matching nodes in the node list.</p>
 
-      <form class="criterion" data-test="criterion-name" @submit.prevent="goToNodes({ nodename: form.nodename })">
-        <FormField label="Name containing" for="search-nodename">
-          <div class="control-row">
-            <OnmsInputText id="search-nodename" v-model="form.nodename" fluid data-test="nodename-input" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by name" data-test="nodename-search" />
-          </div>
-        </FormField>
-      </form>
+      <div class="criteria-grid">
+        <SearchField
+          class="criterion"
+          label="Name containing"
+          for="search-nodename"
+          testId="name"
+          help="Case-insensitive substring match on the node label. Use _ to match a single character and % to match any number."
+          @search="goToNodes({ nodename: form.nodename })"
+        >
+          <OnmsInputText id="search-nodename" v-model="form.nodename" fluid data-test="nodename-input" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-iplike" @submit.prevent="goToNodes({ iplike: form.iplike })">
-        <FormField label="TCP/IP Address like" for="search-iplike">
-          <div class="control-row">
-            <OnmsInputText id="search-iplike" v-model="form.iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" fluid data-test="iplike-input" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by IP address" data-test="iplike-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="TCP/IP Address like"
+          for="search-iplike"
+          testId="iplike"
+          help="Flexible address match: * is any octet, a-b is a range and commas list values (e.g. 10.1.1-3,5.*). IPv4 or IPv6."
+          @search="goToNodes({ iplike: form.iplike })"
+        >
+          <OnmsInputText id="search-iplike" v-model="form.iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" fluid data-test="iplike-input" />
+        </SearchField>
 
-      <form
-        class="criterion"
-        data-test="criterion-system"
-        @submit.prevent="goToNodes({ mib2Parm: form.mib2Parm, mib2ParmMatchType: form.mib2ParmMatchType, mib2ParmValue: form.mib2ParmValue })"
-      >
-        <FormField label="System attribute" for="search-mib2-value">
-          <div class="control-row">
-            <OnmsSelect v-model="form.mib2Parm" :options="SYSTEM_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="mib2-parm" />
-            <OnmsSelect v-model="form.mib2ParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="mib2-match" />
-            <OnmsInputText id="search-mib2-value" v-model="form.mib2ParmValue" fluid data-test="mib2-value" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by system attribute" data-test="mib2-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion span-2"
+          label="System attribute"
+          for="search-mib2-value"
+          testId="system"
+          help="Match an SNMP MIB-2 system value. 'contains' is a substring match; 'equals' is exact."
+          @search="goToNodes({ mib2Parm: form.mib2Parm, mib2ParmMatchType: form.mib2ParmMatchType, mib2ParmValue: form.mib2ParmValue })"
+        >
+          <OnmsSelect v-model="form.mib2Parm" :options="SYSTEM_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="mib2-parm" />
+          <OnmsSelect v-model="form.mib2ParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="mib2-match" />
+          <OnmsInputText id="search-mib2-value" v-model="form.mib2ParmValue" fluid data-test="mib2-value" />
+        </SearchField>
 
-      <form
-        class="criterion"
-        data-test="criterion-interface"
-        @submit.prevent="goToNodes({ snmpParm: form.snmpParm, snmpParmMatchType: form.snmpParmMatchType, snmpParmValue: form.snmpParmValue })"
-      >
-        <FormField label="Interface attribute" for="search-snmp-value">
-          <div class="control-row">
-            <OnmsSelect v-model="form.snmpParm" :options="INTERFACE_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="snmp-parm" />
-            <OnmsSelect v-model="form.snmpParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="snmp-match" />
-            <OnmsInputText id="search-snmp-value" v-model="form.snmpParmValue" fluid data-test="snmp-value" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by interface attribute" data-test="snmp-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion span-2"
+          label="Interface attribute"
+          for="search-snmp-value"
+          testId="interface"
+          help="Match an SNMP interface value (ifAlias, ifName or ifDescr). 'contains' is a substring match; 'equals' is exact."
+          @search="goToNodes({ snmpParm: form.snmpParm, snmpParmMatchType: form.snmpParmMatchType, snmpParmValue: form.snmpParmValue })"
+        >
+          <OnmsSelect v-model="form.snmpParm" :options="INTERFACE_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="snmp-parm" />
+          <OnmsSelect v-model="form.snmpParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="snmp-match" />
+          <OnmsInputText id="search-snmp-value" v-model="form.snmpParmValue" fluid data-test="snmp-value" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-location" @submit.prevent="goToNodes({ monitoringLocation: form.monitoringLocation })">
-        <FormField label="Location" for="search-location">
-          <div class="control-row">
-            <OnmsSelect
-              v-model="form.monitoringLocation"
-              inputId="search-location"
-              :options="locationOptions"
-              optionLabel="label"
-              optionValue="value"
-              filter
-              fluid
-              data-test="location-select"
-            />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by location" data-test="location-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="Location"
+          for="search-location"
+          testId="location"
+          help="Restrict results to nodes monitored from the selected location."
+          @search="goToNodes({ monitoringLocation: form.monitoringLocation })"
+        >
+          <OnmsSelect
+            v-model="form.monitoringLocation"
+            inputId="search-location"
+            :options="locationOptions"
+            optionLabel="label"
+            optionValue="value"
+            filter
+            fluid
+            data-test="location-select"
+          />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-service" @submit.prevent="goToNodes({ monitoredService: form.monitoredService })">
-        <FormField label="Providing service" for="search-service">
-          <div class="control-row">
-            <OnmsSelect
-              v-model="form.monitoredService"
-              inputId="search-service"
-              :options="serviceOptions"
-              optionLabel="label"
-              optionValue="value"
-              filter
-              fluid
-              data-test="service-select"
-            />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by service" data-test="service-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="Providing service"
+          for="search-service"
+          testId="service"
+          help="Restrict results to nodes that provide the selected monitored service."
+          @search="goToNodes({ monitoredService: form.monitoredService })"
+        >
+          <OnmsSelect
+            v-model="form.monitoredService"
+            inputId="search-service"
+            :options="serviceOptions"
+            optionLabel="label"
+            optionValue="value"
+            filter
+            fluid
+            data-test="service-select"
+          />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-mac" @submit.prevent="goToNodes({ maclike: form.maclike })">
-        <FormField label="MAC Address like" for="search-mac">
-          <div class="control-row">
-            <OnmsInputText id="search-mac" v-model="form.maclike" fluid data-test="mac-input" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by MAC address" data-test="mac-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="MAC Address like"
+          for="search-mac"
+          testId="mac"
+          help="Case-insensitive partial match on interface MAC addresses; separators are optional. The first six hex digits identify the vendor."
+          @search="goToNodes({ maclike: form.maclike })"
+        >
+          <OnmsInputText id="search-mac" v-model="form.maclike" fluid data-test="mac-input" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-fs" @submit.prevent="goToNodes({ foreignSource: form.foreignSource })">
-        <FormField label="Foreign Source name like" for="search-fs">
-          <div class="control-row">
-            <OnmsInputText id="search-fs" v-model="form.foreignSource" fluid data-test="fs-input" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by foreign source" data-test="fs-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="Foreign Source name like"
+          for="search-fs"
+          testId="fs"
+          help="Substring match on the provisioning foreign source name."
+          @search="goToNodes({ foreignSource: form.foreignSource })"
+        >
+          <OnmsInputText id="search-fs" v-model="form.foreignSource" fluid data-test="fs-input" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-flows" @submit.prevent="goToNodes({ flows: form.flows })">
-        <FormField label="Flows" for="search-flows">
-          <div class="control-row">
-            <OnmsSelect v-model="form.flows" inputId="search-flows" :options="FLOW_OPTIONS" optionLabel="label" optionValue="value" fluid data-test="flows-select" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by flow data" data-test="flows-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="Flows"
+          for="search-flows"
+          testId="flows"
+          @search="goToNodes({ flows: form.flows })"
+        >
+          <OnmsSelect v-model="form.flows" inputId="search-flows" :options="FLOW_OPTIONS" optionLabel="label" optionValue="value" fluid data-test="flows-select" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-topology" @submit.prevent="goToNodes({ topology: form.topology })">
-        <FormField label="Enhanced Linkd topology (CDP/LLDP)" for="search-topology">
-          <div class="control-row">
-            <OnmsInputText id="search-topology" v-model="form.topology" fluid data-test="topology-input" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by topology" data-test="topology-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion"
+          label="Category"
+          for="search-category"
+          testId="category"
+          help="Filter by the asset 'category' value, which is distinct from surveillance categories."
+          @search="goToNodes({ assetColumn: 'category', assetValue: form.assetCategory })"
+        >
+          <OnmsSelect v-model="form.assetCategory" inputId="search-category" :options="ASSET_CATEGORIES" optionLabel="label" optionValue="value" fluid data-test="category-select" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-category" @submit.prevent="goToNodes({ assetColumn: 'category', assetValue: form.assetCategory })">
-        <FormField label="Category" for="search-category">
-          <div class="control-row">
-            <OnmsSelect v-model="form.assetCategory" inputId="search-category" :options="ASSET_CATEGORIES" optionLabel="label" optionValue="value" fluid data-test="category-select" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by asset category" data-test="category-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion span-2"
+          label="Enhanced Linkd topology (CDP/LLDP)"
+          for="search-topology"
+          testId="topology"
+          help="Substring match on CDP/LLDP neighbour data discovered by Enhanced Linkd."
+          @search="goToNodes({ topology: form.topology })"
+        >
+          <OnmsInputText id="search-topology" v-model="form.topology" fluid data-test="topology-input" />
+        </SearchField>
 
-      <form class="criterion" data-test="criterion-field" @submit.prevent="goToNodes({ assetColumn: form.assetField, assetValue: form.assetFieldValue })">
-        <FormField label="Asset field" for="search-field-value">
-          <div class="control-row">
-            <OnmsSelect v-model="form.assetField" :options="ASSET_FIELDS" optionLabel="label" optionValue="value" filter data-test="field-select" />
-            <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Containing text" fluid data-test="field-value" />
-            <OnmsButton type="submit" icon="pi pi-search" aria-label="Search by asset field" data-test="field-search" />
-          </div>
-        </FormField>
-      </form>
+        <SearchField
+          class="criterion span-2"
+          label="Asset field"
+          for="search-field-value"
+          testId="field"
+          help="Search any asset inventory field; the value is matched as a case-insensitive substring."
+          @search="goToNodes({ assetColumn: form.assetField, assetValue: form.assetFieldValue })"
+        >
+          <OnmsSelect v-model="form.assetField" :options="ASSET_FIELDS" optionLabel="label" optionValue="value" filter data-test="field-select" />
+          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Containing text" fluid data-test="field-value" />
+        </SearchField>
+      </div>
     </div>
   </div>
 </template>
@@ -161,12 +178,12 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import FormField from '@/components/Common/FormField.vue'
 import InventorySearchHelp from '@/components/InventorySearch/InventorySearchHelp.vue'
+import SearchField from '@/components/InventorySearch/SearchField.vue'
 import {
   ASSET_CATEGORIES,
   ASSET_FIELDS,
@@ -243,8 +260,10 @@ onMounted(async () => {
     padding: 1rem 1.25rem;
   }
 
+  // wide enough for two columns, but capped so the form doesn't sprawl on
+  // ultrawide displays; on a laptop screen everything fits without scrolling.
   .search-panel {
-    max-width: 48rem;
+    max-width: 66rem;
   }
 
   .page-header {
@@ -259,18 +278,29 @@ onMounted(async () => {
     color: var(--p-text-muted-color);
   }
 
-  .criterion {
-    margin-bottom: 0.75rem;
+  .criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
   }
 
-  .control-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  .criterion {
+    min-width: 0;
+  }
 
-    :deep(.p-select),
-    :deep(input) {
-      min-width: 0;
+  // multi-control criteria (attribute searches, asset field) need the full width
+  .span-2 {
+    grid-column: 1 / -1;
+  }
+
+  // single column below typical tablet width
+  @media (max-width: 48rem) {
+    .criteria-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .span-2 {
+      grid-column: auto;
     }
   }
 }
