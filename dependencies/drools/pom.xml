@@ -15,12 +15,17 @@
     can depend on to use the drools library.
   </description>
   <properties>
-    <droolsVersion>8.34.0.Final</droolsVersion>
+    <droolsVersion>10.2.0</droolsVersion>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-core</artifactId>
+      <version>${droolsVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-base</artifactId>
       <version>${droolsVersion}</version>
     </dependency>
     <dependency>
@@ -34,6 +39,7 @@
       <version>${droolsVersion}</version>
     </dependency>
     <dependency>
+      <!-- pinned for JDK21: mvel2 < 2.5 references java.lang.Compiler (NMS-19451) -->
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
       <version>2.5.2.Final</version>
