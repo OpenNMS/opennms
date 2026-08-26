@@ -39,7 +39,7 @@
         </SearchField>
 
         <SearchField
-          class="criterion span-2"
+          class="criterion"
           label="System attribute"
           for="search-mib2-value"
           testId="system"
@@ -52,7 +52,7 @@
         </SearchField>
 
         <SearchField
-          class="criterion span-2"
+          class="criterion"
           label="Interface attribute"
           for="search-snmp-value"
           testId="interface"
@@ -148,7 +148,7 @@
         </SearchField>
 
         <SearchField
-          class="criterion span-2"
+          class="criterion"
           label="Enhanced Linkd topology (CDP/LLDP)"
           for="search-topology"
           testId="topology"
@@ -159,7 +159,7 @@
         </SearchField>
 
         <SearchField
-          class="criterion span-2"
+          class="criterion"
           label="Asset field"
           for="search-field-value"
           testId="field"
@@ -260,10 +260,11 @@ onMounted(async () => {
     padding: 1rem 1.25rem;
   }
 
-  // wide enough for two columns, but capped so the form doesn't sprawl on
-  // ultrawide displays; on a laptop screen everything fits without scrolling.
+  // fill the content width so the two columns use the horizontal space and
+  // the whole form fits on a laptop screen without scrolling; capped so it
+  // doesn't sprawl on ultrawide displays.
   .search-panel {
-    max-width: 66rem;
+    max-width: 90rem;
   }
 
   .page-header {
@@ -281,26 +282,17 @@ onMounted(async () => {
   .criteria-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem 1.5rem;
+    gap: 0.75rem 2rem;
   }
 
   .criterion {
     min-width: 0;
   }
 
-  // multi-control criteria (attribute searches, asset field) need the full width
-  .span-2 {
-    grid-column: 1 / -1;
-  }
-
-  // single column below typical tablet width
-  @media (max-width: 48rem) {
+  // collapse to one column once two would crowd the multi-control searches
+  @media (max-width: 60rem) {
     .criteria-grid {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .span-2 {
-      grid-column: auto;
     }
   }
 }

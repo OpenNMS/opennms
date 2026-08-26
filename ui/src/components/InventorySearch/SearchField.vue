@@ -72,9 +72,10 @@ const emit = defineEmits<{
     align-items: stretch;
     gap: 0.5rem;
 
-    // let the inputs/selects share the row; the search button keeps its size
+    // share the row evenly so a fluid input doesn't crowd out the selects
+    // (which otherwise truncate to "sysD…"); the search button keeps its size
     :deep(> *:not(.field-search)) {
-      flex: 1 1 auto;
+      flex: 1 1 0;
       min-width: 0;
     }
 
