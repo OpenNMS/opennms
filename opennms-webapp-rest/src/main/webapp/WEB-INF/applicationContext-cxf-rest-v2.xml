@@ -61,6 +61,9 @@
         <entry key="search.timezone.support" value="false"/>
         <!-- see https://issues.apache.org/jira/browse/CXF-8684 -->
         <entry key="default.wae.mapper.least.specific" value="false"/>
+        <!-- CXF defaults this to 50; eventconf/upload accepts one multipart attachment per
+             example event file, of which there are more than 50 -->
+        <entry key="attachment-max-count" value="300"/>
       </jaxrs:properties>
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />
