@@ -64,6 +64,11 @@
       <expression description="Trigger an alarm when the number of active pollerd threads exceeds 95% of the maximum thread pool size for three samples" type="high" ds-type="node" value="95" rearm="90" trigger="3" expr-label="Above 95% Pollerd Threadpool Usage" filterOperator="OR" expression="(ONMSPollerThreadAct / ONMSPollerPoolThrd) * 100"/>
       <expression description="Trigger an alarm when the number of active collectd threads exceeds 95% of the maximum thread pool size for three samples" type="high" ds-type="node" value="95" rearm="90" trigger="3" expr-label="Above 95% Collectd Threadpool Usage" filterOperator="OR" expression="(ONMSCollectThrdAct / ONMSCollectPoolThrd) * 100"/>
    </group>
+   <group name="postgresql" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <threshold description="Trigger an alert when the oldest transaction ID horizon holder (backend snapshot, replication slot, standby feedback, or prepared transaction) is holding back vacuum cleanup by 50 million or more transactions for two consecutive measurement intervals" type="high" ds-type="node" value="50000000.0" rearm="25000000.0" trigger="2" filterOperator="OR" ds-name="pg_data_horizon_age"/>
+      <expression description="Trigger an alert when more than 10 backends are idle in an open transaction (including aborted transactions) for two consecutive measurement intervals" type="high" ds-type="node" value="11.0" rearm="5.0" trigger="2" expr-label="Idle in Transaction Backends" filterOperator="OR" expression="pg_sa_idle_txn + pg_sa_idle_txn_abrt"/>
+      <expression description="Trigger an alert when all configured autovacuum workers are busy for three consecutive measurement intervals, indicating autovacuum may not be keeping up" type="high" ds-type="node" value="100.0" rearm="75.0" trigger="3" expr-label="Autovacuum Workers Saturated" filterOperator="OR" expression="pg_av_workers / pg_av_max_workers * 100.0"/>
+   </group>
    <group name="coffee" rrdRepository="${install.share.dir}/rrd/snmp/">
       <expression description="Trigger an alert when the coffee pot level reaches or goes below 25% in one measurement interval" type="low" ds-type="node" value="25.0" rearm="100.0" trigger="1" expr-label="Coffee Pot Below 25%" filterOperator="OR" expression="coffeePotLevel / coffeePotCapacity * 100.0"/>
    </group>
