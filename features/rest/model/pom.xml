@@ -29,6 +29,13 @@
   </build>
 
   <dependencies>
+    <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Keep these dependencies to a minimal in order to allow 3rd party application
          to leverage this artifact in their projects. -->
     <dependency>

@@ -26,6 +26,13 @@
     </plugins>
   </build>
   <dependencies>
+    <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- All of this projects dependencies should have either a 'provided' or 'test' scope, since
          this .jar gets pull into jetty-webapps/opennmns/WEB-INF/lib -->
     <dependency>
