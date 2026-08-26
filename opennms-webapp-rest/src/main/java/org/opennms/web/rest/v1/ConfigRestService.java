@@ -44,7 +44,28 @@ import org.springframework.stereotype.Component;
 
 @Component("configRestService")
 @Path("config")
-@Tag(name = "Config", description = "Config API")
+@Tag(name = "Config", description = """
+        Config API.
+
+        Read and write a handful of the daemon configuration files directly. The read-only subtrees
+        (`/config/snmp`, `/config/trapd`, `/config/jmx`, `/config/datacollection`, `/config/agents`) return
+        the file or DAO contents as they stand. The northbounder and JavaMail subtrees
+        (`/config/email-nbi`, `/config/syslog-nbi`, `/config/snmptrap-nbi`, `/config/javamail`) also accept
+        writes.
+
+        Every write re-marshals the whole target file from the in-memory model and then sends a
+        `reloadDaemonConfig` event, so comments and formatting in the file are lost even when the change is
+        confined to one named entry. There is no dry run and no versioning; take a copy of the file first if
+        you need one.
+
+        The `POST` on `/config/email-nbi`, `/config/syslog-nbi` and `/config/snmptrap-nbi` replaces the
+        entire file rather than merging, so anything absent from the body is dropped. Prefer the
+        per-destination and per-sink operations for incremental changes.
+
+        The `PUT` operations that take `application/x-www-form-urlencoded` address bean property names, not
+        the XML element or attribute names the GET returns, and quietly ignore keys that do not resolve to a
+        writable property. Nested blocks and lists are not reachable that way; re-POST the whole entry
+        instead.""")
 public class ConfigRestService extends OnmsRestService {
 
     @Path("datacollection")

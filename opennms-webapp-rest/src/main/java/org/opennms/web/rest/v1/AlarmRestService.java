@@ -36,6 +36,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -51,6 +59,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.v1.model.AlarmAckForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +88,68 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{alarmId}")
     @Transactional
-    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final String alarmId) {
+    @Operation(
+            summary = "Get an alarm",
+            description = """
+                    Return one alarm by id.
+                    The literal path segment `summaries` is handled by this same method and returns per-node alarm
+                    summaries instead of a single alarm, so `GET /alarms/summaries` is a second, differently shaped
+                    response from this operation.
+                    Timestamps are epoch milliseconds in JSON and ISO-8601 strings in XML, whatever the schema
+                    says.""",
+            operationId = "getAlarmV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The alarm, or the node alarm summaries for the `summaries` path segment.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsAlarm.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": 4547,
+                      "uei": "uei.opennms.org/apidoc/validationAlarm",
+                      "description": "Probe alarm",
+                      "logMessage": "Probe alarm",
+                      "reductionKey": "uei.opennms.org/apidoc/validationAlarm::probe",
+                      "severity": "MINOR",
+                      "type": 3,
+                      "count": 1,
+                      "ackId": 4547,
+                      "ackUser": "admin",
+                      "ackTime": 1787727572573,
+                      "firstEventTime": 1787727549288,
+                      "lastEventTime": 1787727549288,
+                      "suppressedTime": 1787727549288,
+                      "suppressedUntil": 1787727549288,
+                      "troubleTicket": "TT-4711",
+                      "troubleTicketState": "OPEN",
+                      "x733ProbableCause": 0,
+                      "parameters": [],
+                      "lastEvent": {
+                        "id": 55315,
+                        "uei": "uei.opennms.org/apidoc/validationAlarm",
+                        "time": 1787727549288,
+                        "createTime": 1787727549292,
+                        "source": "ReST",
+                        "severity": "MINOR",
+                        "log": "Y",
+                        "display": "Y",
+                        "parameters": []
+                      }
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No alarm with that id."),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms."))),
+            @ApiResponse(responseCode = "500", description = "The path segment is neither `summaries` nor an integer.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \"abc\"")))
+    })
+    public Response getAlarm(@Context SecurityContext securityContext,
+            @Parameter(description = "Alarm id, or the literal `summaries` for per-node alarm summaries.",
+                    example = "4547", required = true)
+            @PathParam("alarmId") final String alarmId) {
         SecurityHelper.assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
             final List<AlarmSummary> collection = m_alarmDao.getNodeAlarmSummaries();
@@ -101,6 +171,22 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
+    @Operation(
+            summary = "Count all alarms",
+            description = "Return the total number of alarm rows as a plain-text integer. Query parameters are "
+                    + "ignored, so this is not a count of a filtered set.",
+            operationId = "getAlarmCountV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The alarm count.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "13"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms.")))
+    })
     public String getCount(@Context SecurityContext securityContext) {
         SecurityHelper.assertUserReadCredentials(securityContext);
         return Integer.toString(m_alarmDao.countAll());
@@ -116,6 +202,69 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
+    @Operation(
+            summary = "Search alarms",
+            description = """
+                    Return alarms matching the query parameters, newest `lastEventTime` first unless `orderBy`
+                    says otherwise.
+                    Filters are `OnmsAlarm` property names, with `nodeId`, `nodeLabel` and `alarmId` accepted as
+                    aliases for `node.id`, `node.label` and `id`. `limit` (default 10), `offset`, `orderBy`,
+                    `order`, `match` and `comparator` shape the result. A filter name that is not a property of
+                    the entity fails with 500.
+                    `totalCount` is the unpaged match count; `count` is the size of this page.""",
+            operationId = "getAlarmsV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The matching alarms.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsAlarmCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "alarm": [ {
+                          "id": 4547,
+                          "uei": "uei.opennms.org/apidoc/validationAlarm",
+                          "description": "Probe alarm",
+                          "logMessage": "Probe alarm",
+                          "reductionKey": "uei.opennms.org/apidoc/validationAlarm::probe",
+                          "severity": "MINOR",
+                          "type": 3,
+                          "count": 1,
+                          "ackId": 4547,
+                          "ackUser": "admin",
+                          "ackTime": 1787727572573,
+                          "firstEventTime": 1787727549288,
+                          "lastEventTime": 1787727549288,
+                          "suppressedTime": 1787727549288,
+                          "suppressedUntil": 1787727549288,
+                          "troubleTicket": "TT-4711",
+                          "troubleTicketState": "OPEN",
+                          "x733ProbableCause": 0,
+                          "parameters": [],
+                          "lastEvent": {
+                            "id": 55315,
+                            "uei": "uei.opennms.org/apidoc/validationAlarm",
+                            "time": 1787727549288,
+                            "createTime": 1787727549292,
+                            "source": "ReST",
+                            "severity": "MINOR",
+                            "log": "Y",
+                            "display": "Y",
+                            "parameters": []
+                          }
+                        } ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the alarm entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to read alarms.")))
+    })
     public OnmsAlarmCollection getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
         SecurityHelper.assertUserReadCredentials(securityContext);
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters(), false);
@@ -142,7 +291,37 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateAlarm(@Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    @Operation(
+            summary = "Acknowledge, clear, escalate or ticket one alarm",
+            description = """
+                    Apply an acknowledgement action and optional trouble-ticket fields to one alarm. The body is
+                    form-encoded; JSON is rejected with 415.
+                    `ack`, `escalate` and `clear` are checked in that order and only the first one present is
+                    acted on. `ticketId` and `ticketState` are applied independently of the acknowledgement, and a
+                    `ticketState` outside the enumeration is ignored rather than reported.
+                    A body with none of those fields still returns 204 without changing the alarm.""",
+            operationId = "updateAlarmV1"
+    )
+    @RequestBody(required = true, description = "The action to apply.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmAckForm.class),
+                    examples = @ExampleObject(value = "ack=true")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The request was processed."),
+            @ApiResponse(responseCode = "400", description = "No alarm with that id.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unable to locate alarm with ID '99999999'"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to perform updates to alarms as user 'admin'"))),
+            @ApiResponse(responseCode = "404", description = "The path segment is not an integer."),
+            @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`.")
+    })
+    public Response updateAlarm(@Context final SecurityContext securityContext,
+            @Parameter(description = "Alarm id.", example = "4547", required = true)
+            @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -231,6 +410,41 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @PUT
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Acknowledge, clear or escalate matching alarms",
+            description = """
+                    Apply one acknowledgement action to every alarm matching the filters in the form body. Fields
+                    other than `ack`, `escalate`, `clear` and `ackUser` are read as alarm filters, so a body of
+                    just `ack=true` matches everything the filter defaults allow and acknowledges it. Scope the
+                    request with `id`, `severity` or another `OnmsAlarm` property.
+                    `alarmId` is accepted as an alias for `id`, but sending both is a 400. `ticketId` and
+                    `ticketState` are not honoured here.
+                    The limit and offset that the filter parsing derives are reset to unlimited, so the action
+                    reaches the whole match set rather than one page of it. The paging equivalents on
+                    `GET /alarms` therefore do not restrict what this operation touches.""",
+            operationId = "updateAlarmsV1"
+    )
+    @RequestBody(required = true, description = "The action to apply, plus the filters selecting the alarms.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmAckForm.class),
+                    examples = @ExampleObject(value = "ack=true&id=4547")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "At least one alarm matched and was processed."),
+            @ApiResponse(responseCode = "304", description = "No alarm matched the filters."),
+            @ApiResponse(responseCode = "400", description = "None of `ack`, `escalate` or `clear` was supplied, or both `id` and `alarmId` were.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to perform updates to alarms as user 'admin'"))),
+            @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`."),
+            @ApiResponse(responseCode = "500", description = "A form parameter is not a property of the alarm entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+    })
     public Response updateAlarms(@Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
         writeLock();
 

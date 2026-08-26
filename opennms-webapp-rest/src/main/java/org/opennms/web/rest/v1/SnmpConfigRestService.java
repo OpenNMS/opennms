@@ -35,6 +35,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpConfigAccessService;
@@ -96,7 +104,21 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("snmpConfigRestService")
 @Path("snmpConfig")
-@Tag(name = "SnmpConfig", description = "SNMP Config API")
+@Tag(name = "SnmpConfig", description = """
+        SNMP configuration API over `snmp-config.xml`. Deprecated in favour of the v2 SNMP configuration API
+        and slated for removal.
+
+        `GET` reports the *effective* configuration for one address: the most specific matching definition
+        merged over the file's defaults. It always answers, because every address has a default, so a 200
+        does not mean a definition exists for that address.
+
+        `PUT` is an update rather than a create, for the same reason. The address may be a single address or a
+        dash-separated range (`10.1.1.1-10.1.1.20`), in which case the definition is written for the whole
+        range. The factory then merges and optimises the definitions in the file, so the entry that ends up
+        stored is not necessarily the one that was sent.
+
+        Writes affect live polling of the addresses they cover. There is no delete: narrowing or removing a
+        definition means editing the configuration directly.""")
 @Transactional
 @Deprecated(forRemoval = true)
 public class SnmpConfigRestService extends OnmsRestService {
@@ -120,7 +142,81 @@ public class SnmpConfigRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
-    public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr, @QueryParam("location")String location) {
+    @Operation(
+            summary = "Get the effective SNMP configuration for an address",
+            description = """
+        Return the SNMP agent configuration that would be used for one IP address: the most specific matching
+        definition in `snmp-config.xml` merged over the file's defaults.
+
+        Every address resolves to something, so this always answers 200 for a parseable address. To tell
+        whether a definition actually exists, compare the result with that of a neighbouring address outside
+        the range.
+
+        `community` and `readCommunity` carry the same value; `community` is the older spelling. Fields the
+        configuration does not set come back null.
+
+        A string that is not a valid IP address fails with 500, not 400.""",
+            operationId = "getSnmpInfo"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The effective configuration for the address.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = SnmpInfo.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "location": null,
+                      "port": 161,
+                      "version": "v2c",
+                      "contextName": null,
+                      "timeout": 1800,
+                      "retries": 1,
+                      "authPassPhrase": null,
+                      "privPassPhrase": null,
+                      "securityLevel": null,
+                      "authProtocol": null,
+                      "privProtocol": null,
+                      "engineId": null,
+                      "contextEngineId": null,
+                      "enterpriseId": null,
+                      "maxRequestSize": 65535,
+                      "maxVarsPerPdu": 10,
+                      "maxRepetitions": 2,
+                      "ttl": null,
+                      "proxyHost": null,
+                      "securityName": null,
+                      "readCommunity": "public",
+                      "writeCommunity": "private",
+                      "community": "public"
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = SnmpInfo.class),
+                                    examples = @ExampleObject(value = """
+                    <snmp-info>
+                      <community>public</community>
+                      <maxRepetitions>2</maxRepetitions>
+                      <maxRequestSize>65535</maxRequestSize>
+                      <maxVarsPerPdu>10</maxVarsPerPdu>
+                      <port>161</port>
+                      <readCommunity>public</readCommunity>
+                      <retries>1</retries>
+                      <timeout>1800</timeout>
+                      <version>v2c</version>
+                      <writeCommunity>private</writeCommunity>
+                    </snmp-info>"""))
+                    }),
+            @ApiResponse(responseCode = "500", description = "The path segment is not a valid IP address, or a previous write left the configuration unreadable.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid IPAddress not-an-ip")))
+    })
+    public SnmpInfo getSnmpInfo(
+            @Parameter(description = "Single IP address to resolve. A range is not accepted here.",
+                    required = true, example = "192.0.2.10")
+            @PathParam("ipAddr") String ipAddr,
+            @Parameter(description = "Monitoring location the configuration should be resolved for. Defaults to the core location.",
+                    example = "Default")
+            @QueryParam("location") String location) {
         final InetAddress addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
             throw getException(Status.BAD_REQUEST, "Malformed IP Address: {}.", ipAddr);
@@ -139,7 +235,64 @@ public class SnmpConfigRestService extends OnmsRestService {
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
-    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
+    @Operation(
+            summary = "Set the SNMP configuration for an address or range",
+            description = """
+        Write an SNMP definition covering one address, or a dash-separated range such as
+        `10.1.1.1-10.1.1.20`. Only the fields present in the body are set; the rest keep the file's defaults.
+
+        This changes how the addresses are polled, and it takes effect without a restart. The definition is
+        merged into `snmp-config.xml` by the factory, so an address already covered by a wider definition may
+        cause that definition to be split.
+
+        Three body formats are accepted: JSON, XML (`<snmp-info>` with one element per field) and form
+        encoding (`community=public&port=161&...`). The field names are the same in all three.
+
+        Values are not validated on the way in. A `version` outside `v1`, `v2c` and `v3` is accepted with 204
+        and only surfaces later, as a validation error on the next `GET` for a covered address, so check the
+        result of a write with a `GET` before relying on it.""",
+            operationId = "setSnmpInfo"
+    )
+    @RequestBody(
+            required = true,
+            description = "The fields to set. Omitted fields keep the configuration defaults.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SnmpInfo.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "community": "public",
+                      "port": 161,
+                      "retries": 1,
+                      "timeout": 1800,
+                      "version": "v2c"
+                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = SnmpInfo.class),
+                            examples = @ExampleObject(value = """
+                    <snmp-info>
+                      <community>public</community>
+                      <port>161</port>
+                      <retries>1</retries>
+                      <timeout>1800</timeout>
+                      <version>v2c</version>
+                    </snmp-info>""")),
+                    @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                            schema = @Schema(implementation = SnmpInfo.class),
+                            examples = @ExampleObject(value = "community=public&port=161&retries=1&timeout=1800&version=v2c"))
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The definition was written. This is also the answer for a body containing invalid values."),
+            @ApiResponse(responseCode = "500", description = "The address or range could not be parsed, or the configuration could not be written.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't update SNMP configuration for not-an-ip : <cause>")))
+    })
+    public Response setSnmpInfo(
+            @Parameter(description = "Single IP address, or a dash-separated inclusive range such as `10.1.1.1-10.1.1.20`.",
+                    required = true, example = "192.0.2.10-192.0.2.20")
+            @PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
             final SnmpEventInfo eventInfo;
@@ -170,6 +323,9 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Path("{ipAddr}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
+    // Same path and method as setSnmpInfo, so it would collide in the document; the form-encoded
+    // body is documented as one of that operation's request content types instead.
+    @Operation(hidden = true)
     public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         try {

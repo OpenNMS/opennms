@@ -36,6 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Component("jmxDataCollectionConfigResource")
 public class JmxDataCollectionConfigResource implements InitializingBean {
@@ -56,6 +62,65 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the JMX data collection configuration",
+            description = """
+                    Returns jmx-datacollection-config.xml as the JMX collection DAO holds it, with every
+                    `import-mbeans` include already resolved into the owning collection. The response is
+                    large: the shipped default is on the order of 100 kB of JSON.
+
+                    `rrdRepository` is the absolute path on the OpenNMS server, so it varies per
+                    installation. Each `jmx-collection` carries its own `rrd` step and RRA definitions.""",
+            operationId = "getJmxDataCollectionConfig")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The current JMX data collection configuration. The example is abbreviated to a single collection, MBean and attribute.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = JmxDatacollectionConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "rrdRepository": "/opt/opennms/share/rrd/snmp/",
+                                              "jmx-collection": [
+                                                {
+                                                  "name": "jmx-kafka",
+                                                  "rrd": {
+                                                    "step": 300,
+                                                    "rra": [
+                                                      "RRA:AVERAGE:0.5:1:2016",
+                                                      "RRA:AVERAGE:0.5:12:1488",
+                                                      "RRA:AVERAGE:0.5:288:366",
+                                                      "RRA:MAX:0.5:288:366",
+                                                      "RRA:MIN:0.5:288:366"
+                                                    ]
+                                                  },
+                                                  "mbeans": [
+                                                    {
+                                                      "name": "JVM Memory",
+                                                      "objectname": "java.lang:type=OperatingSystem",
+                                                      "keyfield": null,
+                                                      "exclude": null,
+                                                      "key-alias": null,
+                                                      "resource-type": null,
+                                                      "attrib": [
+                                                        {
+                                                          "name": "FreePhysicalMemorySize",
+                                                          "alias": "FreeMemory",
+                                                          "type": "gauge",
+                                                          "maxval": null,
+                                                          "minval": null
+                                                        }
+                                                      ],
+                                                      "comp-attrib": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = JmxDatacollectionConfig.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "The JMX data collection DAO holds no configuration. Bodiless.")
+    })
     public Response getJmxDataCollectionConfig() throws ConfigurationResourceException {
         LOG.debug("getJmxDataCollectionConfigurationForLocation()");
 

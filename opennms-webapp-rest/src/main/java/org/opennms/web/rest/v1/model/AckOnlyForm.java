@@ -19,34 +19,19 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1.config;
+
+package org.opennms.web.rest.v1.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "TicketerConfig", description = "State of the trouble ticketer integration.")
-public class TicketerConfig {
-    /**
-     * The plugin currently in use. If enabled is false, this should be null.
-     */
-    @Schema(description = "Class name of the ticketer plugin in use. Null when the ticketer is disabled.", example = "org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin")
-    private String plugin;
+/** Describes the form body the single-event and single-notification acknowledge handlers read; it is not bound as a type. */
+@Schema(name = "V1AckOnlyForm",
+        description = "Form-encoded body carrying only an acknowledge flag.")
+public class AckOnlyForm {
 
-    @Schema(description = "Whether the trouble ticketer is enabled, from opennms.ticketer.plugin in opennms.properties.", example = "false")
-    private boolean enabled;
-
-    public void setPlugin(String plugin) {
-        this.plugin = plugin;
-    }
-
-    public String getPlugin() {
-        return plugin;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
+    @Schema(description = "`true` records the acknowledgement as the authenticated user, `false` removes it. "
+            + "Any other value parses as `false`. The single-resource operations reject a body without it with a "
+            + "400; the collection operations default it to `false`.",
+            example = "true")
+    public Boolean ack;
 }

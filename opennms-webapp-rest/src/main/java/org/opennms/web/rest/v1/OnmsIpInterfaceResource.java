@@ -37,6 +37,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -86,7 +95,99 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsIpInterfaceList getIpInterfaces(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
+    @Operation(
+            summary = "List a node's IP interfaces",
+            description = """
+                    Returns the IP interfaces of one node. Interfaces flagged deleted (`isManaged` of `D`) are
+                    excluded and cannot be included.
+
+                    Every query parameter that is not one of the paging parameters below is read as a property
+                    restriction on `OnmsIpInterface`. Joins are pre-registered for `monitoredServices.serviceType`
+                    as `serviceType` and for `node`. A value of `null` or `notnull` becomes an is-null /
+                    is-not-null test. Unknown property names are logged and ignored rather than rejected.
+
+                    `isManaged` is a one-character code: `M` is managed, and only `M` counts as managed. `U`, `F`
+                    and `N` are the unmanaged, forced-unmanaged and not-polled variants; `D` marks a deleted row.
+                    `snmpPrimary` is `P` for the primary SNMP interface, `S` for secondary and `N` for none.
+
+                    The node lookup is not guarded, so an unknown `nodeCriteria` fails with HTTP 500 rather than
+                    400 or 404.""",
+            operationId = "listNodeIpInterfaces",
+            parameters = {
+                    @Parameter(in = ParameterIn.QUERY, name = "limit",
+                            description = "Maximum rows to return. 0 disables the limit.",
+                            schema = @Schema(type = "integer", defaultValue = "10"), example = "25"),
+                    @Parameter(in = ParameterIn.QUERY, name = "offset",
+                            description = "Zero-based index of the first row to return.",
+                            schema = @Schema(type = "integer"), example = "0"),
+                    @Parameter(in = ParameterIn.QUERY, name = "orderBy",
+                            description = "Property to sort on.",
+                            schema = @Schema(type = "string"), example = "ipAddress"),
+                    @Parameter(in = ParameterIn.QUERY, name = "order",
+                            description = "Sort direction for `orderBy`. Anything other than `desc` is read as ascending.",
+                            schema = @Schema(type = "string", allowableValues = {"asc", "desc"}), example = "asc"),
+                    @Parameter(in = ParameterIn.QUERY, name = "comparator",
+                            description = "Comparison applied to every property restriction in the query.",
+                            schema = @Schema(type = "string", defaultValue = "eq",
+                                    allowableValues = {"eq", "ne", "gt", "lt", "ge", "le", "like", "ilike", "contains", "iplike"}),
+                            example = "iplike"),
+                    @Parameter(in = ParameterIn.QUERY, name = "match",
+                            description = "Whether the property restrictions are combined with AND or OR.",
+                            schema = @Schema(type = "string", defaultValue = "all", allowableValues = {"all", "any"}),
+                            example = "any"),
+                    @Parameter(in = ParameterIn.QUERY, name = "ipAddress",
+                            description = "Restrict to this address. Example of the generic property-restriction form; pair it with `comparator=iplike` for a range.",
+                            schema = @Schema(type = "string"), example = "192.0.2.10"),
+                    @Parameter(in = ParameterIn.QUERY, name = "snmpPrimary",
+                            description = "Restrict by SNMP primary role.",
+                            schema = @Schema(type = "string", allowableValues = {"P", "S", "N"}), example = "P")
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The node's IP interfaces.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsIpInterfaceList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "ipInterface": [
+                        {
+                          "ipAddress": "192.0.2.10",
+                          "ifIndex": 8,
+                          "lastIngressFlow": null,
+                          "lastEgressFlow": null,
+                          "isManaged": "M",
+                          "snmpPrimary": "P",
+                          "monitoredServiceCount": 2,
+                          "isDown": false,
+                          "id": "23601",
+                          "hostName": "core-sw-01",
+                          "nodeId": 258
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsIpInterfaceList.class),
+                                    examples = @ExampleObject(value = """
+                    <ipInterfaces count="1" offset="0" totalCount="1">
+                      <ipInterface isDown="false" ifIndex="8" id="23601" isManaged="M" monitoredServiceCount="2" snmpPrimary="P">
+                        <ipAddress>192.0.2.10</ipAddress>
+                        <hostName>core-sw-01</hostName>
+                        <nodeId>258</nodeId>
+                      </ipInterface>
+                    </ipInterfaces>"""))
+                    }),
+            @ApiResponse(responseCode = "500", description = "No node matches `nodeCriteria`. The node is dereferenced without a null check, so this is a null-pointer failure rather than a 400.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsNode.getId()\" because \"node\" is null")))
+    })
+    public OnmsIpInterfaceList getIpInterfaces(@Context final UriInfo uriInfo,
+                                               @Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                               @PathParam("nodeCriteria") final String nodeCriteria) {
         LOG.debug("getIpInterfaces: reading interfaces for node {}", nodeCriteria);
 
         final OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -118,7 +219,57 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
-    public OnmsIpInterface getIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
+    @Operation(
+            summary = "Get one IP interface of a node",
+            description = """
+                    Returns a single IP interface, addressed by its literal address. The address is parsed before
+                    the lookup, so an unparseable address behaves the same as an address the node does not have.
+
+                    Unlike the list endpoint, this one does look at interfaces flagged deleted, since it reads the
+                    node's own interface set rather than running a query.""",
+            operationId = "getNodeIpInterface"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The IP interface. `snmpInterface` is present when the address is bound to a known ifIndex.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsIpInterface.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "ipAddress": "192.0.2.10",
+                      "ifIndex": 8,
+                      "lastIngressFlow": null,
+                      "lastEgressFlow": null,
+                      "isManaged": "M",
+                      "snmpPrimary": "P",
+                      "monitoredServiceCount": 2,
+                      "isDown": false,
+                      "id": "23601",
+                      "hostName": "core-sw-01",
+                      "nodeId": 258
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsIpInterface.class),
+                                    examples = @ExampleObject(value = """
+                    <ipInterface isDown="false" ifIndex="8" id="23601" isManaged="M" monitoredServiceCount="2" snmpPrimary="P">
+                      <ipAddress>192.0.2.10</ipAddress>
+                      <hostName>core-sw-01</hostName>
+                      <nodeId>258</nodeId>
+                    </ipInterface>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no interface with that address.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "IP Interface 192.0.2.99 was not found on node 258.")))
+    })
+    public OnmsIpInterface getIpInterface(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                          @PathParam("nodeCriteria") final String nodeCriteria,
+                                          @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                          @PathParam("ipAddress") final String ipAddress) {
         final OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
@@ -139,7 +290,47 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addIpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
+    @Operation(
+            summary = "Add an IP interface to a node",
+            description = """
+                    Attaches a new IP interface to the node and publishes `nodeGainedInterface`, which is what
+                    makes pollerd and collectd pick it up.
+
+                    XML only. A JSON or form-encoded body is rejected with 415.
+
+                    `isManaged` and `snmpPrimary` are XML *attributes* on `ipInterface`, while `ipAddress` and
+                    `hostName` are *elements*; a value sent as the wrong kind of node is dropped silently.""",
+            operationId = "addNodeIpInterface"
+    )
+    @RequestBody(
+            required = true,
+            description = "The interface to add. `ipAddress` is required.",
+            content = @Content(mediaType = MediaType.APPLICATION_XML,
+                    schema = @Schema(implementation = OnmsIpInterface.class),
+                    examples = @ExampleObject(value = """
+                    <ipInterface isManaged="M" snmpPrimary="P">
+                      <ipAddress>192.0.2.10</ipAddress>
+                      <hostName>core-sw-01</hostName>
+                    </ipInterface>"""))
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created. `Location` points at the new interface."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or the body carries no usable `ipAddress`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "unknownNode", value = "Node 999999 was not found."),
+                                    @ExampleObject(name = "noAddress", value = "IP Interface's ipAddress cannot be null")
+                            })),
+            @ApiResponse(responseCode = "415", description = "The body was not XML."),
+            @ApiResponse(responseCode = "500", description = "Publishing `nodeGainedInterface` failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot send event uei.opennms.org/nodes/nodeGainedInterface : connection refused")))
+    })
+    public Response addIpInterface(@Context final UriInfo uriInfo,
+                                   @Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                   @PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
         writeLock();
         
         try {
@@ -180,7 +371,49 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
-    public Response updateIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update one IP interface of a node",
+            description = """
+                    Applies form-encoded fields to an existing IP interface. Keys are bean property names on
+                    `OnmsIpInterface`, which do not always match the names in the XML representation, so check the
+                    property name rather than copying the attribute name out of a GET response.
+
+                    `nodeId` is skipped so the interface cannot be moved between nodes, and `id`, `dbId`,
+                    `authorizedGroups`, `foreignSource`, `foreignId` and `type` are protected and dropped with a
+                    log warning. Keys that resolve to nothing writable are ignored, so a request naming only such
+                    keys comes back 304.
+
+                    No event is published, so changing `isManaged` here does not by itself tell pollerd.""",
+            operationId = "updateNodeIpInterface"
+    )
+    @RequestBody(
+            required = true,
+            description = "Form-encoded interface properties to set.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "string"),
+                    examples = {
+                            @ExampleObject(name = "unmanage", summary = "Mark the interface unmanaged",
+                                    value = "isManaged=U"),
+                            @ExampleObject(name = "hostname", summary = "Set the reverse name",
+                                    value = "hostName=core-sw-01.example.org")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "At least one field was written. No body."),
+            @ApiResponse(responseCode = "304", description = "No key in the body resolved to a writable, unprotected property."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "409", description = "The node has no interface with that address. This path reports the missing interface as a conflict, not a 404.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find interface with IP address 192.0.2.99 for node 258.")))
+    })
+    public Response updateIpInterface(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                      @PathParam("nodeCriteria") final String nodeCriteria,
+                                      @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                      @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -233,7 +466,35 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @DELETE
     @Path("{ipAddress}")
-    public Response deleteIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
+    @Operation(
+            summary = "Delete one IP interface of a node",
+            description = """
+                    Publishes `deleteInterface` and returns immediately. The deletion is carried out
+                    asynchronously by provisiond, so the interface is normally still readable for a moment after
+                    the 202 and the caller has to poll to see the effect.
+
+                    Only the node is checked. Whether the node actually has that interface is not, so a request
+                    naming an address the node does not have is accepted and simply has no effect.
+
+                    Removing a node's last IP interface has been observed to take the node with it: provisiond
+                    deletes a node left with no interfaces, so a following request for the node returns 404.""",
+            operationId = "deleteNodeIpInterface"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "The delete request was published. No body. Completion is not confirmed."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "500", description = "Publishing `deleteInterface` failed.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot send event uei.opennms.org/internal/capsd/deleteInterface : connection refused")))
+    })
+    public Response deleteIpInterface(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                      @PathParam("nodeCriteria") final String nodeCriteria,
+                                      @Parameter(description = "Literal IPv4 or IPv6 address of the interface.", example = "192.0.2.10")
+                                      @PathParam("ipAddress") final String ipAddress) {
         writeLock();
         
         try {

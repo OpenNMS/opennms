@@ -43,6 +43,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.PollerConfig;
@@ -71,7 +77,15 @@ import com.google.common.collect.Lists;
  */
 @Component("foreignSourceConfigRestService")
 @Path("foreignSourcesConfig")
-@Tag(name = "ForeignSourcesConfig", description = "Foreign Sources Config API")
+@Tag(name = "ForeignSourcesConfig", description = """
+        Foreign Sources Config API.
+
+        Read-only lookups that back the provisioning UI: the detector and policy plugin classes this
+        installation can load, the parameters each one accepts, the service names a detector may be bound
+        to, the surveillance categories that exist, and the asset field names a requisition may set.
+
+        These describe what is *available*, not what any one foreign source is configured with. For the
+        configured detectors and policies of a foreign source, use `/foreignSources/{foreignSource}`.""")
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceConfigRestService.class);
 
@@ -118,6 +132,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
          */
         @XmlElement(name="plugin")
         @XmlElementWrapper(name="plugins")
+        @Schema(description = "One entry per plugin class that could be loaded and introspected. A class that fails to wrap is logged and skipped, so this can be shorter than the configured plugin list.")
         public List<SimplePluginConfig> getPlugins() {
             return getObjects();
         }
@@ -132,15 +147,18 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
         /** The name. */
         @XmlAttribute(name="name")
+        @Schema(description = "Display name. For detectors this is the service name the detector registers under; for policies it is the policy's registered label.", example = "SNMP")
         public String name;
 
         /** The plugin class. */
         @XmlAttribute(name="class")
+        @Schema(description = "Fully qualified class name, the value to put in a foreign source definition's detector or policy `class` attribute.", example = "org.opennms.netmgt.provision.detector.snmp.SnmpDetector")
         public String pluginClass;
 
         /** The parameters. */
         @XmlElement(name="parameter")
         @XmlElementWrapper(name="parameters")
+        @Schema(description = "Accepted parameters, required ones first, each group sorted by key.")
         public List<SimplePluginParameter> parameters = new ArrayList<>();
 
         /**
@@ -169,15 +187,18 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
         /** The key. */
         @XmlAttribute
+        @Schema(description = "Parameter name.", example = "matchBehavior")
         public String key;
 
         /** The required. */
         @XmlAttribute
+        @Schema(description = "Whether the plugin declares the parameter as required.", example = "true")
         public Boolean required;
 
         /** The options. */
         @XmlElement(name="option")
         @XmlElementWrapper(name="options")
+        @Schema(description = "Permitted values, sorted. Empty when the parameter is free-form.", example = "[\"ALL_PARAMETERS\",\"ANY_PARAMETER\",\"NO_PARAMETERS\"]")
         public List<String> options = new ArrayList<>();
 
         /**
@@ -228,6 +249,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
          * @return the elements
          */
         @XmlElement(name="element")
+        @Schema(description = "The listed names, sorted.", example = "[\"Production\",\"Routers\",\"Servers\"]")
         public List<String> getElements() {
             List<String> elements = getObjects();
             Collections.sort(elements);
@@ -257,6 +279,58 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("policies")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the provisioning policy classes available on this installation",
+            description = """
+                    Each entry carries the policy's display name, its class name, and the parameters it accepts.
+                    Required parameters are listed before optional ones and each group is sorted by key. A
+                    parameter whose value is constrained reports its permitted values in `options`; a free-form
+                    parameter reports an empty `options`. Policy classes that could not be introspected are
+                    logged and left out, so the list can be shorter than the set of registered policies.""",
+            operationId = "getAvailablePolicies")
+    @ApiResponse(responseCode = "200", description = "Available policy classes.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SimplePluginConfigList.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "plugins": [
+                                        {
+                                          "name": "Match IP Interface",
+                                          "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
+                                          "parameters": [
+                                            { "key": "action", "required": true,
+                                              "options": [ "DISABLE_COLLECTION", "DISABLE_SNMP_POLL", "DO_NOT_PERSIST", "ENABLE_COLLECTION", "ENABLE_SNMP_POLL", "MANAGE", "UNMANAGE" ] },
+                                            { "key": "matchBehavior", "required": true,
+                                              "options": [ "ALL_PARAMETERS", "ANY_PARAMETER", "NO_PARAMETERS" ] },
+                                            { "key": "hostName", "required": false, "options": [] },
+                                            { "key": "ipAddress", "required": false, "options": [] }
+                                          ]
+                                        }
+                                      ],
+                                      "totalCount": 6,
+                                      "count": 6,
+                                      "offset": 0
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = SimplePluginConfigList.class),
+                            examples = @ExampleObject(value = """
+                                    <plugin-configuration count="6" offset="0" totalCount="6">
+                                      <plugins>
+                                        <plugin name="Match IP Interface" class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy">
+                                          <parameters>
+                                            <parameter key="action" required="true">
+                                              <options>
+                                                <option>DO_NOT_PERSIST</option>
+                                                <option>MANAGE</option>
+                                              </options>
+                                            </parameter>
+                                            <parameter key="ipAddress" required="false"><options/></parameter>
+                                          </parameters>
+                                        </plugin>
+                                      </plugins>
+                                    </plugin-configuration>"""))
+            })
     public SimplePluginConfigList getAvailablePolicies() {
         SimplePluginConfigList plugins = new SimplePluginConfigList();
         Map<String,String> typesMap = m_foreignSourceService.getPolicyTypes();
@@ -281,6 +355,50 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("detectors")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the service detector classes available on this installation",
+            description = """
+                    Same shape as `/foreignSourcesConfig/policies`, sorted by detector name. `name` is the
+                    service name the detector is registered under, which is the name that appears on the
+                    monitored service when detection succeeds. Detector classes that could not be introspected
+                    are logged and left out.""",
+            operationId = "getAvailableDetectors")
+    @ApiResponse(responseCode = "200", description = "Available detector classes, sorted by name.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SimplePluginConfigList.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "plugins": [
+                                        {
+                                          "name": "ActiveMQ",
+                                          "class": "org.opennms.netmgt.provision.detector.jms.ActiveMQDetector",
+                                          "parameters": [
+                                            { "key": "brokerURL", "required": false, "options": [] },
+                                            { "key": "ipMatch", "required": false, "options": [] },
+                                            { "key": "port", "required": false, "options": [] },
+                                            { "key": "timeout", "required": false, "options": [] }
+                                          ]
+                                        }
+                                      ],
+                                      "totalCount": 44,
+                                      "count": 44,
+                                      "offset": 0
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = SimplePluginConfigList.class),
+                            examples = @ExampleObject(value = """
+                                    <plugin-configuration count="44" offset="0" totalCount="44">
+                                      <plugins>
+                                        <plugin name="ActiveMQ" class="org.opennms.netmgt.provision.detector.jms.ActiveMQDetector">
+                                          <parameters>
+                                            <parameter key="brokerURL" required="false"><options/></parameter>
+                                            <parameter key="port" required="false"><options/></parameter>
+                                          </parameters>
+                                        </plugin>
+                                      </plugins>
+                                    </plugin-configuration>"""))
+            })
     public SimplePluginConfigList getAvailableDetectors() {
         SimplePluginConfigList plugins = new SimplePluginConfigList();
         Map<String, Class<?>> detectorMap = m_foreignSourceService.getDetectorTypes();
@@ -333,7 +451,39 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("services/{groupName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public ElementList getServices(@PathParam("groupName") String groupName) {
+    @Operation(
+            summary = "List the service names that may be bound to a requisition's interfaces",
+            description = """
+                    The union of the service monitors configured in `poller-configuration.xml`, the services
+                    configured in `collectd-configuration.xml`, the detector names on the named foreign source,
+                    and the service types already present in the database. The result is sorted and
+                    de-duplicated.
+
+                    An unknown `groupName` is not reported as an error: the foreign source lookup falls back to
+                    the default definition, so the response is still a 200 and simply carries the default
+                    definition's detector names.""",
+            operationId = "getForeignSourceConfigServices")
+    @ApiResponse(responseCode = "200", description = "Service names, sorted.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "totalCount": 43,
+                                      "count": 43,
+                                      "offset": 0,
+                                      "element": [ "ActiveMQ", "DNS", "HTTP", "HTTPS", "ICMP", "SNMP", "SSH", "StrafePing" ]
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    <elements count="43" offset="0" totalCount="43">
+                                      <element>ActiveMQ</element>
+                                      <element>ICMP</element>
+                                      <element>SNMP</element>
+                                    </elements>"""))
+            })
+    public ElementList getServices(@Parameter(required = true, description = "Foreign source (provisioning group) name whose detector names are folded into the list.", example = "selfmonitor") @PathParam("groupName") String groupName) {
         ElementList elements = new ElementList(m_pollerConfig.getServiceMonitorNames());
         m_collectdConfigFactory.getCollectors().forEach(c -> {
             if (!elements.contains(c.getService())) {
@@ -370,6 +520,34 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("assets")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the asset field names a requisition may set",
+            description = """
+                    Derived from the bean properties of the node asset record, sorted, with `id`, `class`,
+                    `geolocation` and `node` removed. These are the names accepted as the `name` of a
+                    requisition asset, for example in
+                    `POST /requisitions/{foreignSource}/nodes/{foreignId}/assets`.""",
+            operationId = "getForeignSourceConfigAssets")
+    @ApiResponse(responseCode = "200", description = "Asset field names, sorted.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "totalCount": 65,
+                                      "count": 65,
+                                      "offset": 0,
+                                      "element": [ "address1", "building", "category", "city", "country", "department", "description", "region", "serialNumber", "vendor" ]
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    <elements count="65" offset="0" totalCount="65">
+                                      <element>building</element>
+                                      <element>city</element>
+                                      <element>region</element>
+                                    </elements>"""))
+            })
     public ElementList getAssets() {
         final List<String> blackList = Lists.newArrayList("id", "class", "geolocation", "node");
         final Collection<String> assets = PropertyUtils.getProperties(new OnmsAssetRecord())
@@ -387,6 +565,33 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @GET
     @Path("categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the surveillance categories that exist",
+            description = """
+                    Every category name in the database, sorted. A requisition category does not have to name
+                    one of these: a category on a requisitioned node is created on import if it does not yet
+                    exist, so this is the list of categories already known rather than the set of permitted
+                    values.""",
+            operationId = "getForeignSourceConfigCategories")
+    @ApiResponse(responseCode = "200", description = "Category names, sorted.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "totalCount": 4,
+                                      "count": 4,
+                                      "offset": 0,
+                                      "element": [ "Development", "Production", "Routers", "Servers" ]
+                                    }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = ElementList.class),
+                            examples = @ExampleObject(value = """
+                                    <elements count="4" offset="0" totalCount="4">
+                                      <element>Development</element>
+                                      <element>Production</element>
+                                    </elements>"""))
+            })
     public ElementList getCategories() {
         final Set<String> categories = m_categoryDao.findAll().stream()
                 .map(c -> c.getName())

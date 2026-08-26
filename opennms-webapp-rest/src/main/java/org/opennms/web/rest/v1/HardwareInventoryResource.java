@@ -37,6 +37,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -79,7 +87,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("hardwareInventoryResource")
 @Path("hardwareInventory")
-@Tag(name = "HardwareInventory", description = "Hardware Inventory API")
+@Tag(name = "HardwareInventory", description = """
+        Hardware Inventory API.
+
+        A node's hardware inventory is the ENTITY-MIB physical tree: one root entity per node, each entity
+        addressed by its `entPhysicalIndex`, with vendor-specific values hanging off each entity as
+        `vendorAttributes`. Reach it through the node: `/nodes/{nodeCriteria}/hardwareInventory`.
+
+        The class also carries a root `@Path` of its own, so the V1 document additionally lists these
+        operations with no node in the path. Every handler needs a `nodeCriteria` path parameter that a
+        path without a node cannot supply, so all six of them fail with HTTP 500 on every such request.
+        Use the node-scoped paths.
+
+        In the request and response bodies `entPhysicalIndex`, `parentPhysicalIndex`, `entityId` and `nodeId` are
+        XML *attributes*, while `entPhysicalDescr` and the other `entPhysical*` values are XML *elements*. An
+        `entPhysical*` value sent as the wrong kind of node is dropped silently. Sending `nodeId` is unnecessary;
+        it is taken from the path.""")
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryResource.class);
@@ -104,7 +127,92 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsHwEntity getHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria) {
+    @Operation(
+            summary = "Get a node's whole hardware inventory",
+            description = """
+                    Returns the root hardware entity for the node with its descendants nested under `children`.
+                    A node that has never been scanned for ENTITY-MIB data, or whose inventory has been deleted,
+                    has no root entity and returns 404.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "getNodeHardwareInventory"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The root entity and its subtree.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsHwEntity.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "entPhysicalName": "Chassis",
+                      "entPhysicalIndex": 1,
+                      "entPhysicalDescr": "Example 9000 chassis",
+                      "entPhysicalClass": "chassis",
+                      "entPhysicalSerialNum": "SN0001",
+                      "entPhysicalModelName": "X-9000",
+                      "entPhysicalIsFRU": false,
+                      "children": [
+                        {
+                          "entPhysicalName": "Slot 1",
+                          "entPhysicalIndex": 2,
+                          "entPhysicalDescr": "Example line card",
+                          "entPhysicalClass": "module",
+                          "entPhysicalSerialNum": "SN0002",
+                          "entPhysicalIsFRU": true,
+                          "children": [],
+                          "parentPhysicalIndex": 1,
+                          "hwEntityAliases": [],
+                          "entityId": "23658",
+                          "vendorAttributes": [],
+                          "nodeId": 258
+                        }
+                      ],
+                      "parentPhysicalIndex": null,
+                      "hwEntityAliases": [],
+                      "entityId": "23657",
+                      "vendorAttributes": [
+                        { "value": "1", "name": "entPhysicalFanState", "class": "integer", "oid": ".1.3.6.1.4.1.9.9.13.1.4.1.3" }
+                      ],
+                      "nodeId": 258
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsHwEntity.class),
+                                    examples = @ExampleObject(value = """
+                    <hwEntity entPhysicalIndex="1" nodeId="258" entityId="23657">
+                      <children>
+                        <hwEntity entPhysicalIndex="2" nodeId="258" entityId="23658" parentPhysicalIndex="1">
+                          <children/>
+                          <entPhysicalClass>module</entPhysicalClass>
+                          <entPhysicalDescr>Example line card</entPhysicalDescr>
+                          <entPhysicalIsFRU>true</entPhysicalIsFRU>
+                          <entPhysicalName>Slot 1</entPhysicalName>
+                          <vendorAttributes/>
+                        </hwEntity>
+                      </children>
+                      <entPhysicalClass>chassis</entPhysicalClass>
+                      <entPhysicalDescr>Example 9000 chassis</entPhysicalDescr>
+                      <entPhysicalModelName>X-9000</entPhysicalModelName>
+                      <entPhysicalName>Chassis</entPhysicalName>
+                      <vendorAttributes>
+                        <hwEntityAttribute class="integer" name="entPhysicalFanState" oid=".1.3.6.1.4.1.9.9.13.1.4.1.3" value="1"/>
+                      </vendorAttributes>
+                    </hwEntity>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no hardware inventory.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find root hardware entity for node 258."))),
+            @ApiResponse(responseCode = "500", description = "Returned unconditionally when the operation is reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")))
+    })
+    public OnmsHwEntity getHardwareInventory(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                             @PathParam("nodeCriteria") String nodeCriteria) {
         final OnmsNode node = getOnmsNode(nodeCriteria);
         final OnmsHwEntity entity = m_hwEntityDao.findRootByNodeId(node.getId());
         if (entity == null) {
@@ -123,7 +231,65 @@ public class HardwareInventoryResource extends OnmsRestService {
     @GET
     @Path("{entPhysicalIndex}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsHwEntity getHwEntityByIndex(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+    @Operation(
+            summary = "Get one hardware entity by its physical index",
+            description = """
+                    Returns a single entity from the node's inventory, with its own subtree nested under
+                    `children`. The index is the ENTITY-MIB `entPhysicalIndex`, unique per node, not a database
+                    key.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "getNodeHardwareEntity"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The entity and its subtree.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = OnmsHwEntity.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "entPhysicalName": "Slot 1",
+                      "entPhysicalIndex": 2,
+                      "entPhysicalDescr": "Example line card",
+                      "entPhysicalClass": "module",
+                      "entPhysicalSerialNum": "SN0002",
+                      "entPhysicalIsFRU": true,
+                      "children": [],
+                      "parentPhysicalIndex": 1,
+                      "hwEntityAliases": [],
+                      "entityId": "23658",
+                      "vendorAttributes": [],
+                      "nodeId": 258
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = OnmsHwEntity.class),
+                                    examples = @ExampleObject(value = """
+                    <hwEntity entPhysicalIndex="2" nodeId="258" entityId="23658" parentPhysicalIndex="1">
+                      <children/>
+                      <entPhysicalClass>module</entPhysicalClass>
+                      <entPhysicalDescr>Example line card</entPhysicalDescr>
+                      <entPhysicalIsFRU>true</entPhysicalIsFRU>
+                      <entPhysicalName>Slot 1</entPhysicalName>
+                      <vendorAttributes/>
+                    </hwEntity>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no entity with that index.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find entity with index 99 on node 258."))),
+            @ApiResponse(responseCode = "500", description = "Returned unconditionally when the operation is reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")))
+    })
+    public OnmsHwEntity getHwEntityByIndex(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                           @PathParam("nodeCriteria") String nodeCriteria,
+                                           @Parameter(description = "ENTITY-MIB entPhysicalIndex of the entity, unique within the node.", example = "2")
+                                           @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
         final OnmsNode node = getOnmsNode(nodeCriteria);
         return getHwEntity(node.getId(), entPhysicalIndex);
     }
@@ -137,7 +303,95 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
+    @Operation(
+            summary = "Replace a node's whole hardware inventory",
+            description = """
+                    Stores the posted entity as the node's root entity, together with everything nested under
+                    `children`. Any inventory the node already had is deleted first, so this replaces rather than
+                    merges.
+
+                    Attribute types named in `vendorAttributes` are created on demand from the `name`, `oid` and
+                    `class` given, and are keyed by name, so an existing type keeps its stored OID and class.
+                    A new type whose `oid` is not a dotted-numeric string is rejected with 400.
+
+                    The handler tests `isRoot()` on the deserialized entity and that test passes whenever the
+                    parent reference is unset, which a request body cannot set, so the "not a root entity"
+                    rejection is not reachable over ReST.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "setNodeHardwareInventory"
+    )
+    @RequestBody(
+            required = true,
+            description = "The root entity, with any descendants nested under `children`.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = OnmsHwEntity.class),
+                            examples = @ExampleObject(value = """
+                    <hwEntity entPhysicalIndex="1">
+                      <entPhysicalClass>chassis</entPhysicalClass>
+                      <entPhysicalDescr>Example 9000 chassis</entPhysicalDescr>
+                      <entPhysicalModelName>X-9000</entPhysicalModelName>
+                      <entPhysicalName>Chassis</entPhysicalName>
+                      <entPhysicalSerialNum>SN0001</entPhysicalSerialNum>
+                      <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                      <vendorAttributes>
+                        <hwEntityAttribute class="integer" name="entPhysicalFanState" oid=".1.3.6.1.4.1.9.9.13.1.4.1.3" value="1"/>
+                      </vendorAttributes>
+                      <children>
+                        <hwEntity entPhysicalIndex="2">
+                          <entPhysicalClass>module</entPhysicalClass>
+                          <entPhysicalDescr>Example line card</entPhysicalDescr>
+                          <entPhysicalName>Slot 1</entPhysicalName>
+                          <entPhysicalSerialNum>SN0002</entPhysicalSerialNum>
+                          <entPhysicalIsFRU>true</entPhysicalIsFRU>
+                        </hwEntity>
+                      </children>
+                    </hwEntity>""")),
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsHwEntity.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "entPhysicalIndex": 1,
+                      "entPhysicalClass": "chassis",
+                      "entPhysicalDescr": "Example 9000 chassis",
+                      "entPhysicalModelName": "X-9000",
+                      "entPhysicalName": "Chassis",
+                      "entPhysicalSerialNum": "SN0001",
+                      "entPhysicalIsFRU": false,
+                      "vendorAttributes": [
+                        { "name": "entPhysicalFanState", "oid": ".1.3.6.1.4.1.9.9.13.1.4.1.3", "class": "integer", "value": "1" }
+                      ],
+                      "children": [
+                        {
+                          "entPhysicalIndex": 2,
+                          "entPhysicalClass": "module",
+                          "entPhysicalDescr": "Example line card",
+                          "entPhysicalName": "Slot 1",
+                          "entPhysicalSerialNum": "SN0002",
+                          "entPhysicalIsFRU": true
+                        }
+                      ]
+                    }"""))
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The inventory was stored. No body."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or a new attribute type carries a non-numeric OID.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "unknownNode", value = "Node 999999 was not found."),
+                                    @ExampleObject(name = "badOid", value = "OID {not-an-oid} provided in entity is not valid.")
+                            })),
+            @ApiResponse(responseCode = "415", description = "The body was form-encoded. Send XML or JSON."),
+            @ApiResponse(responseCode = "500", description = "Returned unconditionally when the operation is reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")))
+    })
+    public Response setHardwareInventory(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                         @PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
         if (!entity.isRoot()) {
             throw getException(Status.BAD_REQUEST, "The hardware entity is not a root entity {}.", entity.toString());
         }
@@ -171,7 +425,63 @@ public class HardwareInventoryResource extends OnmsRestService {
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addOrReplaceChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+    @Operation(
+            summary = "Add or replace one child entity",
+            description = """
+                    Attaches the posted entity, and anything nested under its `children`, beneath the entity whose
+                    index is in the path. If the parent already has a child with the same `entPhysicalIndex`, that
+                    child and its subtree are removed first, so posting twice replaces rather than duplicates.
+
+                    Attribute types are created on demand exactly as for the root POST.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "addNodeHardwareChildEntity"
+    )
+    @RequestBody(
+            required = true,
+            description = "The child entity to attach. `entPhysicalIndex` identifies it within the node.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = OnmsHwEntity.class),
+                            examples = @ExampleObject(value = """
+                    <hwEntity entPhysicalIndex="3">
+                      <entPhysicalClass>port</entPhysicalClass>
+                      <entPhysicalDescr>Example gigabit port</entPhysicalDescr>
+                      <entPhysicalName>Gi0/1</entPhysicalName>
+                      <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                    </hwEntity>""")),
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsHwEntity.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "entPhysicalIndex": 3,
+                      "entPhysicalClass": "port",
+                      "entPhysicalDescr": "Example gigabit port",
+                      "entPhysicalName": "Gi0/1",
+                      "entPhysicalIsFRU": false
+                    }"""))
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The child was attached, replacing any previous child with the same index. No body."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`, or a new attribute type carries a non-numeric OID.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no entity with the parent index.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find entity with index 77 on node 258."))),
+            @ApiResponse(responseCode = "415", description = "The body was form-encoded. Send XML or JSON."),
+            @ApiResponse(responseCode = "500", description = "Returned unconditionally when the operation is reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")))
+    })
+    public Response addOrReplaceChild(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                      @PathParam("nodeCriteria") String nodeCriteria,
+                                      @Parameter(description = "entPhysicalIndex of the entity the child is attached to.", example = "1")
+                                      @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
         writeLock();
         try {
             final OnmsNode node = getOnmsNode(nodeCriteria);
@@ -203,7 +513,60 @@ public class HardwareInventoryResource extends OnmsRestService {
     @PUT
     @Path("{entPhysicalIndex}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update one hardware entity",
+            description = """
+                    Applies form-encoded fields to a single entity. Keys are routed by their prefix: a key that
+                    starts with `entPhysical` is set as a bean property on the entity, and any other key is
+                    matched against the names of the entity's existing `vendorAttributes` and sets that
+                    attribute's value. A vendor attribute the entity does not already carry cannot be added here;
+                    post the entity again instead.
+
+                    Two consequences of that routing are worth knowing. A vendor attribute whose type name itself
+                    begins with `entPhysical` is unreachable, because the key is taken as a bean property. And
+                    `entPhysicalMfgDate` is a `Date` property with no registered string converter, so sending it
+                    fails with 500.
+
+                    The handler's modified flag starts out true, so a request whose keys match nothing still
+                    returns 204 and rewrites the entity unchanged. It never returns 304.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "updateNodeHardwareEntity"
+    )
+    @RequestBody(
+            required = true,
+            description = "Form-encoded entity properties and vendor attribute values.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "string"),
+                    examples = {
+                            @ExampleObject(name = "entityProperties", summary = "Set properties on the entity itself",
+                                    value = "entPhysicalName=Slot+1&entPhysicalSerialNum=SN0002-B&entPhysicalAlias=uplink+card"),
+                            @ExampleObject(name = "vendorAttribute", summary = "Set an existing vendor attribute by its type name",
+                                    value = "entPhysicalFanState=2")
+                    })
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "The entity was saved. Returned even when no key matched anything."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no entity with that index.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find entity with index 77 on node 258."))),
+            @ApiResponse(responseCode = "500", description = "A value could not be converted to the property's type, or the operation was reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "dateProperty", value = "Failed to convert value of type 'java.lang.String' to required type 'java.util.Date'; nested exception is java.lang.IllegalStateException: Cannot convert value of type 'java.lang.String' to required type 'java.util.Date': no matching editors or conversion strategy found"),
+                                    @ExampleObject(name = "noNodeInPath", value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")
+                            }))
+    })
+    public Response updateHwEntity(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                   @PathParam("nodeCriteria") String nodeCriteria,
+                                   @Parameter(description = "entPhysicalIndex of the entity to update.", example = "2")
+                                   @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
         writeLock();
         try {
             final OnmsNode node = getOnmsNode(nodeCriteria);
@@ -246,7 +609,38 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @DELETE
     @Path("{entPhysicalIndex}")
-    public Response deleteHwEntity(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+    @Operation(
+            summary = "Delete one hardware entity",
+            description = """
+                    Deletes the entity with the given index. Deleting the root entity clears the node's whole
+                    inventory, which is the supported way to reset it.
+
+                    Deleting a non-root entity has been observed to remove the entire tree, root included, rather
+                    than just that entity and its descendants. Re-read the inventory after such a delete instead
+                    of assuming the rest of the tree survived.
+
+                    Reached with no node in the path this fails with HTTP 500.""",
+            operationId = "deleteNodeHardwareEntity"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted. No body."),
+            @ApiResponse(responseCode = "400", description = "No node matches `nodeCriteria`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found."))),
+            @ApiResponse(responseCode = "404", description = "The node has no entity with that index.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Can't find entity with index 2 on node 258."))),
+            @ApiResponse(responseCode = "500", description = "Returned unconditionally when the operation is reached with no node in the path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"String.contains(java.lang.CharSequence)\" because \"lookupCriteria\" is null")))
+    })
+    public Response deleteHwEntity(@Parameter(description = "Node identifier: either the database node id or `foreignSource:foreignId`. Both forms are accepted.", example = "Router-Requisition:node1")
+                                   @PathParam("nodeCriteria") final String nodeCriteria,
+                                   @Parameter(description = "entPhysicalIndex of the entity to delete. Index 1 is normally the root.", example = "2")
+                                   @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
         writeLock();
         try {
             final OnmsNode node = getOnmsNode(nodeCriteria);

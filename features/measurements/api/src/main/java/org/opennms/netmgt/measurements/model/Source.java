@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.measurements.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -97,6 +99,10 @@ public class Source {
         this.isTransient = isTransient;
     }
 
+    @Schema(name = "label", required = true,
+            description = "Identifies the result column produced by this source. Must be unique across every source "
+                    + "label and expression label in the request.",
+            example = "resp")
     @XmlAttribute(name = "label")
     public String getLabel() {
         return this.label;
@@ -106,6 +112,10 @@ public class Source {
         this.label = label;
     }
 
+    @Schema(name = "resourceId", required = true,
+            description = "Resource ID the attribute is read from, in the same form the resources ReST endpoint "
+                    + "reports.",
+            example = "node[loopback-lab:lb-001].responseTime[127.0.0.1]")
     @XmlAttribute(name = "resourceId")
     public String getResourceId() {
         return this.resourceId;
@@ -115,6 +125,9 @@ public class Source {
         this.resourceId = resourceId;
     }
 
+    @Schema(name = "attribute", required = true,
+            description = "Name of the attribute to read from the resource.",
+            example = "http-8080")
     @XmlAttribute(name = "attribute")
     public String getAttribute() {
         return this.attribute;
@@ -124,6 +137,11 @@ public class Source {
         this.attribute = attribute;
     }
 
+    // Wire name is "fallback-attribute", not the bean name: a body using "fallbackAttribute" is rejected.
+    @Schema(name = "fallback-attribute",
+            description = "Attribute tried when attribute is absent on the resource, which helps when a metric has "
+                    + "been renamed.",
+            example = "icmp")
     @XmlAttribute(name = "fallback-attribute")
     public String getFallbackAttribute() {
         return this.fallbackAttribute;
@@ -133,6 +151,11 @@ public class Source {
         this.fallbackAttribute = fallbackAttribute;
     }
 
+    // Wire name is "datasource", not the bean name: a body using "dataSource" is rejected.
+    @Schema(name = "datasource",
+            description = "Data source within the attribute. Defaults to the attribute name, and only needs setting "
+                    + "when one attribute holds several data sources.",
+            example = "http-8080")
     @XmlAttribute(name = "datasource")
     public String getDataSource() {
         return this.datasource;
@@ -150,6 +173,11 @@ public class Source {
         return this.datasource != null ? this.datasource : this.attribute;
     }
 
+    @Schema(name = "aggregation",
+            description = "Consolidation function applied when samples are rolled up to the step size.",
+            allowableValues = {"AVERAGE", "MIN", "MAX", "LAST"},
+            defaultValue = "AVERAGE",
+            example = "AVERAGE")
     @XmlAttribute(name = "aggregation")
     public String getAggregation() {
         return this.aggregation;
@@ -159,6 +187,10 @@ public class Source {
         this.aggregation = aggregation;
     }
 
+    @Schema(name = "transient",
+            description = "When true the series is fetched but its column is left out of the response, so "
+                    + "expressions can still reference it.",
+            example = "false")
     @XmlAttribute(name = "transient")
     public boolean getTransient() {
         return isTransient;

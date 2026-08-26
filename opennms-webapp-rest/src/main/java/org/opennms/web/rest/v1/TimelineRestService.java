@@ -40,9 +40,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -58,7 +66,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("timelineRestService")
 @Path("timeline")
-@Tag(name = "Timeline", description = "Timeline API")
+@Tag(name = "Timeline", description = """
+        Timeline API: server-rendered outage strips for the node and service pages.
+
+        Every operation takes `start`, `end` and `width` as path segments. **`start` and `end` are epoch
+        seconds, not milliseconds**, which is the usual mistake with these endpoints: passing milliseconds
+        produces a strip covering the year 58000 and no drawn outages.
+
+        `width` is the pixel width of the image; the height is always 20. `width` also divides the time
+        range, so it must be at least 1 and the range must be at least `width` seconds wide. Passing 0, or a
+        range narrower than the width, fails with 500 on the division.
+
+        Three of the four operations return a PNG. `html` returns an `<img>` element plus the client-side
+        image map of the outage rectangles, so the caller can render the same strip with links to the outage
+        detail pages.
+
+        Query parameters other than the path segments are applied as extra criteria on the outage query, the
+        same way as elsewhere in v1.""")
 public class TimelineRestService extends OnmsRestService {
 
     private static class TimescaleDescriptor {
@@ -380,7 +404,35 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("header/{start}/{end}/{width}")
-    public Response header(@PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Operation(
+            summary = "Render the timeline time axis",
+            description = """
+        Render the labelled time axis that sits above a row of timeline strips: tick marks and date or time
+        labels for the given window, and nothing else. The label granularity is chosen from the window length
+        and the width, so a wider image gets more labels.
+
+        `start` and `end` are epoch seconds.""",
+            operationId = "getTimelineHeader"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG of the time axis.",
+                    content = @Content(mediaType = "image/png",
+                            schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "404", description = "A path segment was not a number.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "500", description = "`width` was 0, or the window was narrower than `width` seconds.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
+    })
+    public Response header(
+            @Parameter(description = "Start of the window, in epoch **seconds**.", required = true, example = "1787011200")
+            @PathParam("start") final long start,
+            @Parameter(description = "End of the window, in epoch **seconds**. Must be at least `width` seconds after `start`.",
+                    required = true, example = "1787097600")
+            @PathParam("end") final long end,
+            @Parameter(description = "Image width in pixels. Must be at least 1.", required = true, example = "800")
+            @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
@@ -410,7 +462,47 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("text/html")
     @Transactional
     @Path("html/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
-    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Operation(
+            summary = "Render the HTML wrapper and image map for a service timeline",
+            description = """
+        Return an `<img>` element pointing at the matching `timeline/image/...` URL, together with the
+        client-side image map that turns each drawn outage into a link to its outage detail page. Each `area`
+        carries the outage id in its `alt` and the lost-service timestamp in its `title`.
+
+        No image is produced here, only the markup; the browser fetches the PNG separately. A node id that
+        does not exist is not an error: the map simply comes back empty.
+
+        `start` and `end` are epoch seconds.""",
+            operationId = "getTimelineHtml"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The `<img>` element and its image map. The map is empty when no outage falls in the window.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = """
+                    <img src="/opennms/rest/timeline/image/1/127.0.0.4/2/1787011200/1787097600/800" usemap="#1-127.0.0.4-2"><map name="1-127.0.0.4-2"><area shape="rect" coords="585,2,586,18" href="/opennms/outage/detail.htm?id=3543" alt="Id 3543" title="2026-08-18 13:34:47.697"></map>"""))),
+            @ApiResponse(responseCode = "404", description = "A numeric path segment was not a number.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "500", description = "`width` was 0, or the window was narrower than `width` seconds.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
+    })
+    public Response html(@Context final UriInfo uriInfo,
+            @Parameter(description = "Database id of the node.", required = true, example = "1")
+            @PathParam("nodeId") final int nodeId,
+            @Parameter(description = "IP address of the interface the service runs on.", required = true, example = "127.0.0.4")
+            @PathParam("ipAddress") final String ipAddress,
+            @Parameter(description = "Service type id from the `service` table, not the monitored-service id.",
+                    required = true, example = "2")
+            @PathParam("serviceId") final int serviceId,
+            @Parameter(description = "Start of the window, in epoch **seconds**.", required = true, example = "1787011200")
+            @PathParam("start") final long start,
+            @Parameter(description = "End of the window, in epoch **seconds**. Must be at least `width` seconds after `start`.",
+                    required = true, example = "1787097600")
+            @PathParam("end") final long end,
+            @Parameter(description = "Image width in pixels. Must be at least 1.", required = true, example = "800")
+            @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
@@ -472,7 +564,46 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("image/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
-    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Operation(
+            summary = "Render the outage strip for one monitored service",
+            description = """
+        Render a 20-pixel-high strip for one monitored service over the window: a green bar from the node's
+        creation time onward, red blocks for the outages that overlap the window, and the vertical grid lines.
+        An outage that has not been resolved is drawn to the right-hand edge.
+
+        The service is addressed by node id, interface IP address and service type id. Only outages with no
+        perspective (that is, from the core poller rather than a remote perspective) are drawn.
+
+        An unknown node id fails with 500, because the node is drawn before it is checked. `start` and `end`
+        are epoch seconds.""",
+            operationId = "getTimelineImage"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG of the outage strip.",
+                    content = @Content(mediaType = "image/png",
+                            schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "404", description = "A numeric path segment was not a number.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "500", description = "The node does not exist, `width` was 0, or the window was narrower than `width` seconds.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
+    })
+    public Response image(@Context final UriInfo uriInfo,
+            @Parameter(description = "Database id of the node.", required = true, example = "1")
+            @PathParam("nodeId") final int nodeId,
+            @Parameter(description = "IP address of the interface the service runs on.", required = true, example = "127.0.0.4")
+            @PathParam("ipAddress") final String ipAddress,
+            @Parameter(description = "Service type id from the `service` table, not the monitored-service id.",
+                    required = true, example = "2")
+            @PathParam("serviceId") final int serviceId,
+            @Parameter(description = "Start of the window, in epoch **seconds**.", required = true, example = "1787011200")
+            @PathParam("start") final long start,
+            @Parameter(description = "End of the window, in epoch **seconds**. Must be at least `width` seconds after `start`.",
+                    required = true, example = "1787097600")
+            @PathParam("end") final long end,
+            @Parameter(description = "Image width in pixels. Must be at least 1.", required = true, example = "800")
+            @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
@@ -512,7 +643,35 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("empty/{start}/{end}/{width}")
-    public Response empty(@PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Operation(
+            summary = "Render an empty timeline strip",
+            description = """
+        Render a strip with only the vertical grid lines and no outage or node bar, for use as a placeholder
+        where a service has nothing to show. Nothing is read from the database.
+
+        `start` and `end` are epoch seconds. This operation narrows them to `int` before subtracting, so a
+        window that does not fit in a signed 32-bit number of seconds produces a wrong or negative range.""",
+            operationId = "getTimelineEmpty"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "A 20-pixel-high PNG containing only grid lines.",
+                    content = @Content(mediaType = "image/png",
+                            schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "404", description = "A path segment was not a number.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "500", description = "`width` was 0, or the window was narrower than `width` seconds.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
+    })
+    public Response empty(
+            @Parameter(description = "Start of the window, in epoch **seconds**.", required = true, example = "1787011200")
+            @PathParam("start") final long start,
+            @Parameter(description = "End of the window, in epoch **seconds**. Must be at least `width` seconds after `start`.",
+                    required = true, example = "1787097600")
+            @PathParam("end") final long end,
+            @Parameter(description = "Image width in pixels. Must be at least 1.", required = true, example = "800")
+            @PathParam("width") final int width) throws IOException {
         int delta = (int) end - (int) start;
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);

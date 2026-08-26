@@ -41,6 +41,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.IOUtils;
 import org.opennms.web.utils.assets.AssetLocator;
@@ -53,7 +61,16 @@ import org.springframework.util.FileCopyUtils;
 
 @Component("webAssetsRestService")
 @Path("web-assets")
-@Tag(name = "Web-Assets", description = "Web Assets API")
+@Tag(name = "Web-Assets", description = """
+        Web Assets API: the bundled front-end assets (scripts, stylesheets, fonts, images) that the OpenNMS
+        web UI loads, addressed by the logical asset name the build assigned them.
+
+        An asset name usually maps to more than one file, one per type: `opennms` covers both `opennms.css`
+        and `opennms.min.js`. The listing operations report that mapping; the third operation serves the file
+        itself.
+
+        These endpoints exist for the UI's own use, and the asset names are a build artefact rather than a
+        stable interface.""")
 public class WebAssetsRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(WebAssetsRestService.class);
 
@@ -63,6 +80,25 @@ public class WebAssetsRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/")
+    @Operation(
+            summary = "List asset names",
+            description = """
+        List every known asset name. The list is unsorted and, on the builds checked, includes one empty
+        string, so callers should not assume every entry addresses a real asset.""",
+            operationId = "listWebAssets"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The asset names.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(type = "string")),
+                            examples = @ExampleObject(value = """
+                    [
+                      "onms-assets",
+                      "opennms",
+                      "font-awesome",
+                      "global"
+                    ]""")))
+    })
     public List<String> listAssets() {
         return new ArrayList<>(m_assetLocator.getAssets());
     }
@@ -70,7 +106,38 @@ public class WebAssetsRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("{assetName}")
-    public List<AssetResource> getResources(@PathParam("assetName") final String assetName) {
+    @Operation(
+            summary = "List the files that make up one asset",
+            description = """
+        List the files registered under an asset name. Each entry gives the asset name, its type and the path
+        the file is served from, which is what `GET /web-assets/{assetName}.{type}` addresses.
+
+        A few assets carry inline content rather than a file: for those the `type` is `text` and `path` holds
+        the content itself rather than a filename.""",
+            operationId = "getWebAssetResources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The files registered under the asset name.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = AssetResource.class)),
+                            examples = @ExampleObject(value = """
+                    [
+                      {
+                        "asset": "opennms",
+                        "type": "css",
+                        "path": "opennms.css"
+                      },
+                      {
+                        "asset": "opennms",
+                        "type": "js",
+                        "path": "opennms.min.js"
+                      }
+                    ]"""))),
+            @ApiResponse(responseCode = "404", description = "No asset with that name is registered. The body is empty.")
+    })
+    public List<AssetResource> getResources(
+            @Parameter(description = "Asset name, as listed by `GET /web-assets`.", required = true, example = "opennms")
+            @PathParam("assetName") final String assetName) {
         final Optional<Collection<AssetResource>> resources = m_assetLocator.getResources(assetName);
         if (!resources.isPresent()) {
             throw new WebApplicationException(Status.NOT_FOUND);
@@ -80,7 +147,36 @@ public class WebAssetsRestService extends OnmsRestService {
 
     @GET
     @Path("{assetName}.{type}")
-    public Response getResource(@PathParam("assetName") final String assetName, @PathParam("type") final String type) {
+    @Operation(
+            summary = "Fetch an asset file",
+            description = """
+        Serve the file registered for an asset name and type. The response media type is chosen from the
+        `type` segment: `js` becomes `application/javascript`, `css` becomes `text/css`, image and font types
+        get their own, `md`, `sh`, `txt`, `yml` and `jsp` come back as `text/plain`, `xml` as `text/xml`, and
+        anything unrecognised as `application/octet-stream`.
+
+        When the exact name is not registered, one fallback is tried: the last `-`-separated component of the
+        name is dropped and, if that shorter name registers a file whose path is the originally requested
+        one, that file is served.
+
+        This operation depends on the built asset files being present on the classpath. Where they are not,
+        the request fails with 500 even though the asset is listed.""",
+            operationId = "getWebAssetFile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The asset file. The media type follows the `type` segment.",
+                    content = @Content(schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "404", description = "No file is registered for that asset name and type. The body is empty."),
+            @ApiResponse(responseCode = "500", description = "The file is registered but could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "java.io.FileNotFoundException: class path resource [opennms.css] cannot be opened because it does not exist")))
+    })
+    public Response getResource(
+            @Parameter(description = "Asset name, as listed by `GET /web-assets`.", required = true, example = "opennms")
+            @PathParam("assetName") final String assetName,
+            @Parameter(description = "File type, as reported by `GET /web-assets/{assetName}`.", required = true, example = "css")
+            @PathParam("type") final String type) {
         InputStream is = null;
 
         try {

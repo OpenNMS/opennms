@@ -23,8 +23,15 @@ package org.opennms.web.rest.v1.config;
 
 import java.time.ZoneId;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "DatetimeformatConfig", description = "Time zone and date format the web UI should render timestamps with.")
 public class DatetimeformatConfig {
+
+    @Schema(description = "IANA time zone id, taken from the user's session when one is set and from the server default otherwise.", example = "America/New_York")
     private String zoneId;
+
+    @Schema(description = "java.time date format pattern, from the org.opennms.ui.datettimeformat system property. Defaults to yyyy-MM-dd'T'HH:mm:ssxxx.", example = "yyyy-MM-dd'T'HH:mm:ssxxx")
     private String datetimeformat;
 
     public String getZoneId() {

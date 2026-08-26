@@ -38,6 +38,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -74,6 +81,52 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get alarm statistics",
+            description = """
+                    Return acknowledged and unacknowledged alarm counts together with the newest and oldest alarm
+                    in each of those two sets.
+                    Query parameters are applied as alarm filters in the same way as `GET /alarms`, so the counts
+                    can be narrowed. The four newest/oldest lookups run against their own criteria and are not
+                    filtered by those parameters.
+                    In JSON each of `newestAcked`, `newestUnacked`, `oldestAcked` and `oldestUnacked` is an array
+                    of one element, and that element is `null` when the set is empty. Alarm timestamps inside them
+                    are epoch milliseconds in JSON and ISO-8601 strings in XML.""",
+            operationId = "getAlarmStatsV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The statistics. `severity` is null on this operation.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = AlarmStatistics.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "acknowledgedCount": 2,
+                      "unacknowledgedCount": 14,
+                      "totalCount": 16,
+                      "severity": null,
+                      "newestAcked": [
+                        {
+                          "id": 4548,
+                          "uei": "uei.opennms.org/apidoc/validationAlarm",
+                          "severity": "WARNING",
+                          "ackUser": "admin",
+                          "ackTime": 1787727618396,
+                          "firstEventTime": 1787727549288,
+                          "lastEventTime": 1787727549288,
+                          "count": 1,
+                          "type": 3,
+                          "parameters": []
+                        }
+                      ],
+                      "newestUnacked": [ null ],
+                      "oldestAcked": [ null ],
+                      "oldestUnacked": [ null ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the alarm entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+    })
     public AlarmStatistics getStats(@Context final UriInfo uriInfo) {
         return getStats(uriInfo, null);
     }
@@ -81,7 +134,55 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @GET
     @Path("/by-severity")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public AlarmStatisticsBySeverity getStatsForEachSeverity(@Context final UriInfo uriInfo, @QueryParam("severities") final String severitiesString) {
+    @Operation(
+            summary = "Get alarm statistics per severity",
+            description = """
+                    Return one statistics block per severity. With `severities` absent, all seven severities are
+                    reported in ordinal order.
+                    A name that is not a severity resolves to `INDETERMINATE` rather than being rejected, so a
+                    misspelled name silently yields the indeterminate block. Names are matched case-insensitively.
+                    Other query parameters are applied as alarm filters, as on `GET /stats/alarms`.""",
+            operationId = "getAlarmStatsBySeverityV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "One statistics block per requested severity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = AlarmStatisticsBySeverity.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "alarmStatistics": [
+                        {
+                          "acknowledgedCount": 0,
+                          "unacknowledgedCount": 3,
+                          "totalCount": 3,
+                          "severity": "MINOR",
+                          "newestAcked": [ null ],
+                          "newestUnacked": [ null ],
+                          "oldestAcked": [ null ],
+                          "oldestUnacked": [ null ]
+                        },
+                        {
+                          "acknowledgedCount": 0,
+                          "unacknowledgedCount": 3,
+                          "totalCount": 3,
+                          "severity": "MAJOR",
+                          "newestAcked": [ null ],
+                          "newestUnacked": [ null ],
+                          "oldestAcked": [ null ],
+                          "oldestUnacked": [ null ]
+                        }
+                      ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the alarm entity.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null")))
+    })
+    public AlarmStatisticsBySeverity getStatsForEachSeverity(@Context final UriInfo uriInfo,
+            @Parameter(description = "Comma-separated severity names to report on. All severities when omitted.",
+                    example = "MINOR,MAJOR",
+                    schema = @Schema(type = "string"))
+            @QueryParam("severities") final String severitiesString) {
         final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
 
         String[] severities = StringUtils.split(severitiesString, ",");
@@ -186,10 +287,12 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     @Entity
     @XmlRootElement(name = "severities")
+    @Schema(name = "AlarmStatisticsBySeverity", description = "One alarm statistics block per severity.")
     public static class AlarmStatisticsBySeverity {
         private List<AlarmStatistics> m_stats = new LinkedList<>();
 
         @XmlElement(name="alarmStatistics")
+        @Schema(description = "One entry per requested severity, in the order they were requested.")
         public List<AlarmStatistics> getStats() {
             return m_stats;
         }
@@ -212,6 +315,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     
     @Entity
     @XmlRootElement(name = "alarmStatistics")
+    @Schema(name = "AlarmStatistics", description = "Acknowledged and unacknowledged alarm counts, plus the newest "
+            + "and oldest alarm in each set.")
     public static class AlarmStatistics {
         private int m_totalCount = 0;
         private int m_acknowledgedCount = 0;
@@ -235,6 +340,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
                 .toString();
         }
         @XmlAttribute(name="totalCount")
+        @Schema(description = "Alarms matching the criteria, acknowledged or not.", example = "16")
         public int getTotalCount() {
             return m_totalCount;
         }
@@ -244,6 +350,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         }
 
         @XmlAttribute(name="acknowledgedCount")
+        @Schema(description = "Matching alarms that carry an acknowledgement.", example = "2")
         public int getAcknowledgedCount() {
             return m_acknowledgedCount;
         }
@@ -253,6 +360,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         }
 
         @XmlAttribute(name="unacknowledgedCount")
+        @Schema(description = "Derived as `totalCount` minus `acknowledgedCount`; the setter is a no-op.",
+                example = "14")
         public int getUnacknowledgedCount() {
             return m_totalCount - m_acknowledgedCount;
         }
@@ -260,6 +369,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         public void setUnacknowledgedCount(final int count) {}
 
         @XmlAttribute(name="severity")
+        @Schema(description = "Severity this block covers. Null on `GET /stats/alarms`.", example = "MINOR")
         public OnmsSeverity getSeverity() {
             return m_severity;
         }
@@ -270,6 +380,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="newestAcked")
         @XmlElement(name="alarm")
+        @Schema(description = "Most recent acknowledged alarm, as a one-element list whose element is null when "
+                + "there is none.")
         public List<OnmsAlarm> getNewestAcknowledged() {
             return Collections.singletonList(m_newestAcknowledged);
         }
@@ -280,6 +392,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="newestUnacked")
         @XmlElement(name="alarm")
+        @Schema(description = "Most recent unacknowledged alarm, as a one-element list whose element is null when "
+                + "there is none.")
         public List<OnmsAlarm> getNewestUnacknowledged() {
             return Collections.singletonList(m_newestUnacknowledged);
         }
@@ -290,6 +404,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="oldestAcked")
         @XmlElement(name="alarm")
+        @Schema(description = "Oldest acknowledged alarm by `firstEventTime`, as a one-element list whose element "
+                + "is null when there is none.")
         public List<OnmsAlarm> getOldestAcknowledged() {
             return Collections.singletonList(m_oldestAcknowledged);
         }
@@ -300,6 +416,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="oldestUnacked")
         @XmlElement(name="alarm")
+        @Schema(description = "Oldest unacknowledged alarm by `firstEventTime`, as a one-element list whose "
+                + "element is null when there is none.")
         public List<OnmsAlarm> getOldestUnacknowledged() {
             return Collections.singletonList(m_oldestUnacknowledged);
         }

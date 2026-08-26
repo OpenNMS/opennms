@@ -62,6 +62,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Component("agentConfigurationResource")
 public class AgentConfigurationResource implements InitializingBean {
@@ -106,14 +113,115 @@ public class AgentConfigurationResource implements InitializingBean {
     @GET
     @Path("{filterName}/{serviceName}.xml")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getAgentsXmlWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    @Operation(
+            summary = "List collectable agents for a filter and service (XML)",
+            description = """
+                    `filterName` is matched first against the `name` attribute of a collectd `filter`, then against
+                    the enclosing `package` name, so a package whose filter is unnamed can be addressed by the
+                    package name. The filter rule is evaluated against the current database to get the matching
+                    interfaces, and those are then narrowed to the ones that actually have `serviceName`
+                    monitored.
+
+                    Each entry carries the collectd service parameters verbatim, so `${requisition:...}`
+                    placeholders are returned unexpanded. `nodeId`, `foreignSource` and `foreignId` are added
+                    when known. For `SNMP` the port comes from snmp-config.xml for that address and location
+                    rather than from the collectd `port` parameter, and `sysObjectId` is added when the node
+                    has one.
+
+                    The XML form wraps the entries in an `agents` element carrying `count`, `offset` and
+                    `totalCount` attributes; the map is rendered as repeated `entry` elements.""",
+            operationId = "getAgentsForFilterXml")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One entry per matching agent.",
+                    content = @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = AgentResponseCollection.class),
+                            examples = @ExampleObject(value = """
+                                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <agents count="1" offset="0" totalCount="1">
+                                              <agent>
+                                                <address>127.0.0.1</address>
+                                                <port>1161</port>
+                                                <serviceName>SNMP</serviceName>
+                                                <parameters>
+                                                  <entry>
+                                                    <key>collection</key>
+                                                    <value>${requisition:collection|detector:collection|default}</value>
+                                                  </entry>
+                                                  <entry>
+                                                    <key>nodeId</key>
+                                                    <value>2</value>
+                                                  </entry>
+                                                </parameters>
+                                              </agent>
+                                            </agents>"""))),
+            @ApiResponse(responseCode = "204", description = "The filter matched, but no interface has that service monitored. Bodiless."),
+            @ApiResponse(responseCode = "404", description = "No collectd filter or package is named `filterName`. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "`serviceName` is not configured on the matched package. The body is the plain string `Service name not part of package!`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Service name not part of package!")))
+    })
+    public Response getAgentsXmlWithExtension(@io.swagger.v3.oas.annotations.Parameter(description = "Name of a collectd filter, or of the collectd package that owns it.", required = true, example = "example1") @PathParam("filterName") final String filterName, @io.swagger.v3.oas.annotations.Parameter(description = "Name of the monitored service to restrict the result to. Must be one of the services configured on that package.", required = true, example = "SNMP") @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
         return getAgentsXml(filterName, serviceName);
     }
 
     @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getAgentsXmlWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    @Operation(
+            summary = "List collectable agents for a filter and service",
+            description = """
+                    `filterName` is matched first against the `name` attribute of a collectd `filter`, then against
+                    the enclosing `package` name, so a package whose filter is unnamed can be addressed by the
+                    package name. The filter rule is evaluated against the current database to get the matching
+                    interfaces, and those are then narrowed to the ones that actually have `serviceName`
+                    monitored.
+
+                    Each entry carries the collectd service parameters verbatim, so `${requisition:...}`
+                    placeholders are returned unexpanded. `nodeId`, `foreignSource` and `foreignId` are added
+                    when known. For `SNMP` the port comes from snmp-config.xml for that address and location
+                    rather than from the collectd `port` parameter, and `sysObjectId` is added when the node
+                    has one.
+
+                    This path is served by two handlers selected by content negotiation: `Accept: application/xml`
+                    (or application/atom+xml) returns the wrapped XML form, `Accept: application/json` returns the
+                    bare JSON array. Only one of the two appears in this document, so the JSON response of this
+                    path is documented on `/config/agents/{filterName}/{serviceName}.json` instead.
+
+                    The XML form wraps the entries in an `agents` element carrying `count`, `offset` and
+                    `totalCount` attributes; the map is rendered as repeated `entry` elements.""",
+            operationId = "getAgentsForFilter")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One entry per matching agent.",
+                    content = @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = AgentResponseCollection.class),
+                            examples = @ExampleObject(value = """
+                                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <agents count="1" offset="0" totalCount="1">
+                                              <agent>
+                                                <address>127.0.0.1</address>
+                                                <port>1161</port>
+                                                <serviceName>SNMP</serviceName>
+                                                <parameters>
+                                                  <entry>
+                                                    <key>collection</key>
+                                                    <value>${requisition:collection|detector:collection|default}</value>
+                                                  </entry>
+                                                  <entry>
+                                                    <key>nodeId</key>
+                                                    <value>2</value>
+                                                  </entry>
+                                                </parameters>
+                                              </agent>
+                                            </agents>"""))),
+            @ApiResponse(responseCode = "204", description = "The filter matched, but no interface has that service monitored. Bodiless."),
+            @ApiResponse(responseCode = "404", description = "No collectd filter or package is named `filterName`. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "`serviceName` is not configured on the matched package. The body is the plain string `Service name not part of package!`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Service name not part of package!")))
+    })
+    public Response getAgentsXmlWithoutExtension(@io.swagger.v3.oas.annotations.Parameter(description = "Name of a collectd filter, or of the collectd package that owns it.", required = true, example = "example1") @PathParam("filterName") final String filterName, @io.swagger.v3.oas.annotations.Parameter(description = "Name of the monitored service to restrict the result to. Must be one of the services configured on that package.", required = true, example = "SNMP") @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
         return getAgentsXml(filterName, serviceName);
     }
 
@@ -130,14 +238,118 @@ public class AgentConfigurationResource implements InitializingBean {
     @GET
     @Path("{filterName}/{serviceName}.json")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAgentsJsonWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    @Operation(
+            summary = "List collectable agents for a filter and service (JSON)",
+            description = """
+                    `filterName` is matched first against the `name` attribute of a collectd `filter`, then against
+                    the enclosing `package` name, so a package whose filter is unnamed can be addressed by the
+                    package name. The filter rule is evaluated against the current database to get the matching
+                    interfaces, and those are then narrowed to the ones that actually have `serviceName`
+                    monitored.
+
+                    Each entry carries the collectd service parameters verbatim, so `${requisition:...}`
+                    placeholders are returned unexpanded. `nodeId`, `foreignSource` and `foreignId` are added
+                    when known. For `SNMP` the port comes from snmp-config.xml for that address and location
+                    rather than from the collectd `port` parameter, and `sysObjectId` is added when the node
+                    has one.
+
+                    The JSON form is a bare array with no wrapper, and each `parameters` map is rendered as a
+                    JAXB-style `{"entry": [{"key": ..., "value": ...}]}` object rather than as a plain
+                    object.""",
+            operationId = "getAgentsForFilterJson")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One entry per matching agent.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = AgentResponse.class)),
+                            examples = @ExampleObject(value = """
+                                    [
+                                              {
+                                                "address": "127.0.0.1",
+                                                "port": 1161,
+                                                "serviceName": "SNMP",
+                                                "parameters": {
+                                                  "entry": [
+                                                    {
+                                                      "key": "collection",
+                                                      "value": "${requisition:collection|detector:collection|default}"
+                                                    },
+                                                    {
+                                                      "key": "nodeId",
+                                                      "value": "2"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]"""))),
+            @ApiResponse(responseCode = "204", description = "The filter matched, but no interface has that service monitored. Bodiless."),
+            @ApiResponse(responseCode = "404", description = "No collectd filter or package is named `filterName`. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "`serviceName` is not configured on the matched package. The body is the plain string `Service name not part of package!`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Service name not part of package!")))
+    })
+    public Response getAgentsJsonWithExtension(@io.swagger.v3.oas.annotations.Parameter(description = "Name of a collectd filter, or of the collectd package that owns it.", required = true, example = "example1") @PathParam("filterName") final String filterName, @io.swagger.v3.oas.annotations.Parameter(description = "Name of the monitored service to restrict the result to. Must be one of the services configured on that package.", required = true, example = "SNMP") @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
         return getAgentsJson(filterName, serviceName);
     }
 
     @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAgentsJsonWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    @Operation(
+            summary = "List collectable agents for a filter and service (JSON, negotiated)",
+            description = """
+                    Identical to `/config/agents/{filterName}/{serviceName}.json`, reached by sending
+                    `Accept: application/json` to the extensionless path. Two handlers share that path and only
+                    one of them survives into this document, so this entry may not appear.
+
+                    `filterName` is matched first against the `name` attribute of a collectd `filter`, then against
+                    the enclosing `package` name, so a package whose filter is unnamed can be addressed by the
+                    package name. The filter rule is evaluated against the current database to get the matching
+                    interfaces, and those are then narrowed to the ones that actually have `serviceName`
+                    monitored.
+
+                    Each entry carries the collectd service parameters verbatim, so `${requisition:...}`
+                    placeholders are returned unexpanded. `nodeId`, `foreignSource` and `foreignId` are added
+                    when known. For `SNMP` the port comes from snmp-config.xml for that address and location
+                    rather than from the collectd `port` parameter, and `sysObjectId` is added when the node
+                    has one.
+
+                    The JSON form is a bare array with no wrapper, and each `parameters` map is rendered as a
+                    JAXB-style `{"entry": [{"key": ..., "value": ...}]}` object rather than as a plain
+                    object.""",
+            operationId = "getAgentsForFilterNegotiatedJson")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One entry per matching agent.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = AgentResponse.class)),
+                            examples = @ExampleObject(value = """
+                                    [
+                                              {
+                                                "address": "127.0.0.1",
+                                                "port": 1161,
+                                                "serviceName": "SNMP",
+                                                "parameters": {
+                                                  "entry": [
+                                                    {
+                                                      "key": "collection",
+                                                      "value": "${requisition:collection|detector:collection|default}"
+                                                    },
+                                                    {
+                                                      "key": "nodeId",
+                                                      "value": "2"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]"""))),
+            @ApiResponse(responseCode = "204", description = "The filter matched, but no interface has that service monitored. Bodiless."),
+            @ApiResponse(responseCode = "404", description = "No collectd filter or package is named `filterName`. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "`serviceName` is not configured on the matched package. The body is the plain string `Service name not part of package!`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Service name not part of package!")))
+    })
+    public Response getAgentsJsonWithoutExtension(@io.swagger.v3.oas.annotations.Parameter(description = "Name of a collectd filter, or of the collectd package that owns it.", required = true, example = "example1") @PathParam("filterName") final String filterName, @io.swagger.v3.oas.annotations.Parameter(description = "Name of the monitored service to restrict the result to. Must be one of the services configured on that package.", required = true, example = "SNMP") @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
         return getAgentsJson(filterName, serviceName);
     }
 

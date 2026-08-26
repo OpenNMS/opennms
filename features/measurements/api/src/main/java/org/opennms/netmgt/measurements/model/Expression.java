@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.measurements.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -67,6 +69,10 @@ public class Expression {
         this.isTransient = isTransient;
     }
 
+    @Schema(name = "label",
+            description = "Identifies the result column produced by this expression. Must be unique across "
+                    + "every source label and expression label in the request.",
+            example = "doubled")
     @XmlAttribute(name = "label")
     @JsonProperty("label")
     public String getLabel() {
@@ -77,6 +83,15 @@ public class Expression {
         this.label = label;
     }
 
+    // The bare Jackson 2 @JsonProperty is only there to keep the property in the generated OpenAPI
+    // document: swagger's ModelResolver drops members of an XmlAccessType.NONE class that carry none
+    // of @XmlElement, @XmlAttribute, @XmlElementRef(s) or a Jackson 2 @JsonProperty, and @XmlValue is
+    // not one of them. The wire name is "value" rather than the bean name.
+    @com.fasterxml.jackson.annotation.JsonProperty
+    @Schema(name = "value",
+            description = "JEXL expression evaluated once per row. Source and expression labels are in scope as "
+                    + "variables, as are the string constants returned in the response.",
+            example = "resp * 2")
     @XmlValue
     @JsonProperty("value")
     public String getExpression() {
@@ -87,6 +102,10 @@ public class Expression {
         this.expression = expression;
     }
 
+    @Schema(name = "transient",
+            description = "When true the expression is evaluated but its column is left out of the response, so "
+                    + "later expressions can still reference it.",
+            example = "false")
     @XmlAttribute(name = "transient")
     @JsonProperty("transient")
     public boolean getTransient() {

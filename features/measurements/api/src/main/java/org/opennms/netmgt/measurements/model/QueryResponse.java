@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.measurements.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import com.google.common.collect.Maps;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -41,6 +43,11 @@ import java.util.Map;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
+@Schema(name = "QueryResponse",
+        description = "Result of a measurements query. The response is column oriented: labels, columns and "
+                + "timestamps are parallel arrays, so columns[i] holds the series named labels[i] and "
+                + "columns[i].values[j] is that series' value at timestamps[j]. A sample with no data is rendered "
+                + "as the JSON string \"NaN\", not as null and not as a number.")
 @XmlRootElement(name = "query-response")
 public class QueryResponse {
 
@@ -84,6 +91,10 @@ public class QueryResponse {
      */
     private QueryMetadata metadata;
 
+    @Schema(name = "step",
+            description = "Step size in milliseconds actually used, which may be coarser than the step requested "
+                    + "when the underlying archives cannot supply the finer resolution.",
+            example = "300000")
     @XmlAttribute(name = "step")
     public long getStep() {
         return step;
@@ -93,6 +104,11 @@ public class QueryResponse {
         this.step = step;
     }
 
+    @Schema(name = "start",
+            description = "Start of the window as echoed back from the request, in milliseconds since the epoch. "
+                    + "The first entry in timestamps is normally later than this, since timestamps are aligned to "
+                    + "the step.",
+            example = "1787728079000")
     @XmlAttribute(name = "start")
     public long getStart() {
         return start;
@@ -102,6 +118,9 @@ public class QueryResponse {
         this.start = start;
     }
 
+    @Schema(name = "end",
+            description = "End of the window as echoed back from the request, in milliseconds since the epoch.",
+            example = "1787731679000")
     @XmlAttribute(name = "end")
     public long getEnd() {
         return end;
@@ -111,6 +130,10 @@ public class QueryResponse {
         this.end = end;
     }
 
+    @Schema(name = "timestamps",
+            description = "Row timestamps in milliseconds since the epoch, aligned to step and ascending. Element j "
+                    + "labels row j of every entry in columns.",
+            example = "[1787728200000, 1787728500000, 1787728800000]")
     @XmlElement(name = "timestamps")
     @JsonProperty("timestamps")
     public long[] getTimestamps() {
@@ -133,6 +156,9 @@ public class QueryResponse {
         this.timestamps = timestamps;
     }
 
+    @Schema(name = "labels",
+            description = "Series names, in the same order as columns. Holds the label of every non-transient source "
+                    + "and expression in the request.")
     @XmlElement(name="labels")
     public String[] getLabels() {
         return labels;
@@ -142,6 +168,9 @@ public class QueryResponse {
         this.labels = labels;
     }
 
+    @Schema(name = "columns",
+            description = "One entry per series, positionally matching labels. Each entry wraps a values array of "
+                    + "the same length as timestamps.")
     @XmlElement(name="columns")
     @JsonProperty("columns")
     public WrappedPrimitive[] getColumns() {
@@ -172,6 +201,9 @@ public class QueryResponse {
         }
     }
 
+    @Schema(name = "constants",
+            description = "String properties of the queried resources, taken from their strings.properties. Empty "
+                    + "when no queried resource carries any. Available to expressions as variables.")
     @XmlElement(name="constants")
     public List<QueryConstant> getConstants() {
         return this.constants;
@@ -190,6 +222,8 @@ public class QueryResponse {
         this.constants = c;
     }
 
+    @Schema(name = "metadata",
+            description = "Resources and nodes the request's sources resolved to.")
     @XmlElement(name="metadata")
     public QueryMetadata getMetadata() {
         return this.metadata;
@@ -256,6 +290,8 @@ public class QueryResponse {
      * Used to wrap an array of primitive doubles in order
      * to avoid boxing for marshaling.
      */
+    @Schema(name = "WrappedPrimitive",
+            description = "One series of the result table.")
     @XmlRootElement
     public static class WrappedPrimitive {
         private double[] values;
@@ -267,6 +303,12 @@ public class QueryResponse {
             this.values = values;
         }
 
+        // Wire name is "values", not the bean name.
+        @Schema(name = "values",
+                description = "Values of this series, one per entry in the response's timestamps array and in the "
+                        + "same order. A sample with no data appears as the JSON string \"NaN\" rather than a "
+                        + "number or null, so a strict numeric decoder will reject it.",
+                example = "[9.85957792, 11.960674583333336, \"NaN\"]")
         @XmlElement(name="values")
         @JsonProperty("values")
         public double[] getList() {
@@ -305,6 +347,8 @@ public class QueryResponse {
         }
     }
 
+    @Schema(name = "QueryConstant",
+            description = "One string property of a queried resource.")
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement(name="constant")
     public static class QueryConstant {
@@ -319,9 +363,18 @@ public class QueryResponse {
             this.key = key;
             this.value = value;
         }
+        @Schema(name = "key",
+                description = "Property name, prefixed with the label of the source it was fetched for.",
+                example = "resp.ifName")
         public String getKey() {
             return this.key;
         }
+        // The bare Jackson 2 @JsonProperty only keeps the property in the generated OpenAPI document;
+        // swagger's ModelResolver drops @XmlValue members of an XmlAccessType.NONE class. Wire name is "value".
+        @com.fasterxml.jackson.annotation.JsonProperty
+        @Schema(name = "value",
+                description = "Property value.",
+                example = "eth0")
         public String getValue() {
             return this.value;
         }

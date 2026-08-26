@@ -53,6 +53,14 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 /**
  * The Class JavamailConfigurationResource.
@@ -200,6 +208,22 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("default/readmail")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(
+            summary = "Get the name of the default readmail configuration",
+            description = """
+                    Returns the value of the `default-read-config-name` attribute on the root element of
+                    javamail-configuration.xml as a bare string, not as a JSON or XML document.
+
+                    This operation produces text/plain only, so a request sent with
+                    `Accept: application/json` is rejected with a 406.""",
+            operationId = "getDefaultReadmailConfigurationName")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The default readmail configuration name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "localhost"))),
+            @ApiResponse(responseCode = "404", description = "No default readmail configuration is set. Bodiless.")
+    })
     public Response getDefaultReadmailConfiguration() {
         ReadmailConfig config = m_javamailConfigurationDao.getDefaultReadmailConfig();
         if (config == null) {
@@ -216,6 +240,22 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("default/sendmail")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(
+            summary = "Get the name of the default sendmail configuration",
+            description = """
+                    Returns the value of the `default-send-config-name` attribute on the root element of
+                    javamail-configuration.xml as a bare string, not as a JSON or XML document.
+
+                    This operation produces text/plain only, so a request sent with
+                    `Accept: application/json` is rejected with a 406.""",
+            operationId = "getDefaultSendmailConfigurationName")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The default sendmail configuration name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "localhost"))),
+            @ApiResponse(responseCode = "404", description = "No default sendmail configuration is set. Bodiless.")
+    })
     public Response getDefaultSendmailConfiguration() {
         SendmailConfig config = m_javamailConfigurationDao.getDefaultSendmailConfig();
         if (config == null) {
@@ -232,7 +272,26 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      */
     @PUT
     @Path("default/readmail/{readmailConfig}")
-    public Response setDefaultReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfigName) {
+    @Operation(
+            summary = "Set the default readmail configuration",
+            description = """
+                    Sets `default-read-config-name` on the root element of javamail-configuration.xml. The name
+                    is taken from the path; there is no request body.
+
+                    A name that matches no `readmail-config` entry is silently ignored: the call still returns
+                    204 and the stored default is left unchanged. Check with
+                    `GET /config/javamail/default/readmail` afterwards.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost. The passwords in `user-auth` are stored and returned in the clear.""",
+            operationId = "setDefaultReadmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The request was accepted and the configuration saved. This does not confirm that the name matched an existing configuration."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response setDefaultReadmailConfiguration(@Parameter(description = "Name of the readmail-config entry.", required = true, example = "localhost") @PathParam("readmailConfig") final String readmailConfigName) {
         m_javamailConfigurationDao.setDefaultReadmailConfig(readmailConfigName);
         return saveConfiguration();
     }
@@ -245,7 +304,26 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      */
     @PUT
     @Path("default/sendmail/{sendmailConfig}")
-    public Response setDefaultSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfigName) {
+    @Operation(
+            summary = "Set the default sendmail configuration",
+            description = """
+                    Sets `default-send-config-name` on the root element of javamail-configuration.xml. The name
+                    is taken from the path; there is no request body.
+
+                    A name that matches no `sendmail-config` entry is silently ignored: the call still returns
+                    204 and the stored default is left unchanged. Check with
+                    `GET /config/javamail/default/sendmail` afterwards.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost. The passwords in `user-auth` are stored and returned in the clear.""",
+            operationId = "setDefaultSendmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The request was accepted and the configuration saved. This does not confirm that the name matched an existing configuration."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response setDefaultSendmailConfiguration(@Parameter(description = "Name of the sendmail-config entry.", required = true, example = "localhost") @PathParam("sendmailConfig") final String sendmailConfigName) {
         m_javamailConfigurationDao.setDefaultSendmailConfig(sendmailConfigName);
         return saveConfiguration();
     }
@@ -258,6 +336,37 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("readmails")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the readmail configuration names",
+            description = """
+                    Returns only the names of the `readmail-config` entries, not the configurations themselves.
+                    Entries with no `name` are skipped.
+
+                    The XML form is rooted at `sendmail-configs` even though the child elements are
+                    `readmail-config`; the wrapper class carries the sendmail root element name.""",
+            operationId = "getReadmailConfigurationNames")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The readmail configuration names.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ReadmailConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "totalCount": 2,
+                                              "count": 2,
+                                              "offset": 0,
+                                              "readmail-config": ["localhost", "google"]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ReadmailConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <sendmail-configs count="2" offset="0" totalCount="2">
+                                              <readmail-config>localhost</readmail-config>
+                                              <readmail-config>google</readmail-config>
+                                            </sendmail-configs>"""))
+                    })
+    })
     public Response getReadmailConfigurations() {
         ReadmailConfigList readmails = new ReadmailConfigList(m_javamailConfigurationDao.getReadmailConfigs());
         return Response.ok(readmails).build();
@@ -271,6 +380,34 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("sendmails")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the sendmail configuration names",
+            description = """
+                    Returns only the names of the `sendmail-config` entries, not the configurations themselves.
+                    Entries with no `name` are skipped.""",
+            operationId = "getSendmailConfigurationNames")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The sendmail configuration names.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = SendmailConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "totalCount": 2,
+                                              "count": 2,
+                                              "offset": 0,
+                                              "sendmail-config": ["localhost", "google"]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = SendmailConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <sendmail-configs count="2" offset="0" totalCount="2">
+                                              <sendmail-config>localhost</sendmail-config>
+                                              <sendmail-config>google</sendmail-config>
+                                            </sendmail-configs>"""))
+                    })
+    })
     public Response getSendmailConfigurations() {
         SendmailConfigList sendmails = new SendmailConfigList(m_javamailConfigurationDao.getSendmailConfigs());
         return Response.ok(sendmails).build();
@@ -284,6 +421,34 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("end2ends")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the end2end mail configuration names",
+            description = """
+                    Returns only the names of the `end2end-mail-config` entries. Each pairs a sendmail
+                    configuration with a readmail configuration for the mail transport monitor to send through
+                    one and read back from the other.""",
+            operationId = "getEnd2endConfigurationNames")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The end2end configuration names.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = End2endConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "totalCount": 1,
+                                              "count": 1,
+                                              "offset": 0,
+                                              "end2end-config": ["default"]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = End2endConfigList.class),
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <end2end-configs count="1" offset="0" totalCount="1">
+                                              <end2end-config>default</end2end-config>
+                                            </end2end-configs>"""))
+                    })
+    })
     public Response getEnd2endConfigurations() {
         End2endConfigList sendmails = new End2endConfigList(m_javamailConfigurationDao.getEnd2EndConfigs());
         return Response.ok(sendmails).build();
@@ -298,7 +463,65 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public ReadmailConfig getReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfig) {
+    @Operation(
+            summary = "Get one readmail configuration",
+            description = """
+                    Returns the named `readmail-config`. The literal name `default` is special-cased to the
+                    configuration named by `default-read-config-name`, so a configuration actually called
+                    `default` cannot be fetched by name.
+
+                    `user-auth.password` is returned in the clear.""",
+            operationId = "getReadmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The readmail configuration.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ReadmailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "name": "ApiDocReadmail",
+                                              "debug": false,
+                                              "mail-folder": "INBOX",
+                                              "attempt-interval": 1000,
+                                              "delete-all-mail": false,
+                                              "javamail-property": [
+                                                {
+                                                  "name": "mail.pop3.rsetbeforequit",
+                                                  "value": "false"
+                                                }
+                                              ],
+                                              "readmail-host": {
+                                                "host": "127.0.0.1",
+                                                "port": 110,
+                                                "readmail-protocol": {
+                                                  "transport": "pop3",
+                                                  "ssl-enable": false,
+                                                  "start-tls": false
+                                                }
+                                              },
+                                              "user-auth": {
+                                                "user-name": "opennms",
+                                                "password": "opennms"
+                                              }
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ReadmailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            <readmail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration" name="ApiDocReadmail" attempt-interval="1000" delete-all-mail="false"
+                                                            mail-folder="INBOX" debug="false">
+                                              <javamail-property name="mail.pop3.rsetbeforequit" value="false"/>
+                                              <readmail-host host="127.0.0.1" port="110">
+                                                <readmail-protocol transport="pop3" ssl-enable="false" start-tls="false"/>
+                                              </readmail-host>
+                                              <user-auth user-name="opennms" password="opennms"/>
+                                            </readmail-config>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No readmail configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Readmail configuration ApiDocReadmail was not found.")))
+    })
+    public ReadmailConfig getReadmailConfiguration(@Parameter(description = "Name of the readmail-config entry.", required = true, example = "localhost") @PathParam("readmailConfig") final String readmailConfig) {
         ReadmailConfig readmail = "default".equals(readmailConfig) ? m_javamailConfigurationDao.getDefaultReadmailConfig() : m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
         if (readmail == null) {
             throw getException(Status.NOT_FOUND, "Readmail configuration {} was not found.", readmailConfig);
@@ -315,7 +538,76 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public SendmailConfig getSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfig) {
+    @Operation(
+            summary = "Get one sendmail configuration",
+            description = """
+                    Returns the named `sendmail-config`. The literal name `default` is special-cased to the
+                    configuration named by `default-send-config-name`, so a configuration actually called
+                    `default` cannot be fetched by name.
+
+                    `user-auth.password` is returned in the clear.""",
+            operationId = "getSendmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The sendmail configuration.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = SendmailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "name": "ApiDocSendmail",
+                                              "debug": false,
+                                              "use-authentication": false,
+                                              "use-jmta": false,
+                                              "attempt-interval": 3000,
+                                              "javamail-property": [],
+                                              "sendmail-host": {
+                                                "host": "127.0.0.1",
+                                                "port": 25
+                                              },
+                                              "sendmail-protocol": {
+                                                "char-set": "us-ascii",
+                                                "mailer": "smtpsend",
+                                                "message-content-type": "text/plain",
+                                                "message-encoding": "7-bit",
+                                                "quit-wait": true,
+                                                "transport": "smtp",
+                                                "ssl-enable": false,
+                                                "start-tls": false
+                                              },
+                                              "sendmail-message": {
+                                                "to": "root@localhost",
+                                                "from": "root@[127.0.0.1]",
+                                                "reply-to": null,
+                                                "subject": "OpenNMS Test Message",
+                                                "body": "This is an OpenNMS test message."
+                                              },
+                                              "user-auth": {
+                                                "user-name": "opennms",
+                                                "password": "opennms"
+                                              }
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = SendmailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            <sendmail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration" name="ApiDocSendmail" attempt-interval="3000" use-authentication="false"
+                                                            use-jmta="false" debug="false">
+                                              <sendmail-host host="127.0.0.1" port="25"/>
+                                              <sendmail-protocol char-set="us-ascii" mailer="smtpsend"
+                                                                 message-content-type="text/plain" message-encoding="7-bit"
+                                                                 quit-wait="true" transport="smtp" ssl-enable="false"
+                                                                 start-tls="false"/>
+                                              <sendmail-message to="root@localhost" from="root@[127.0.0.1]"
+                                                                subject="OpenNMS Test Message"
+                                                                body="This is an OpenNMS test message."/>
+                                              <user-auth user-name="opennms" password="opennms"/>
+                                            </sendmail-config>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No sendmail configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Sendmail configuration ApiDocSendmail was not found.")))
+    })
+    public SendmailConfig getSendmailConfiguration(@Parameter(description = "Name of the sendmail-config entry.", required = true, example = "localhost") @PathParam("sendmailConfig") final String sendmailConfig) {
         SendmailConfig sendmail = "default".equals(sendmailConfig) ? m_javamailConfigurationDao.getDefaultSendmailConfig() : m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
         if (sendmail == null) {
             throw getException(Status.NOT_FOUND, "Sendmail configuration {} was not found.", sendmailConfig);
@@ -332,7 +624,38 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("end2ends/{end2endConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public End2endMailConfig getEnd2EndMailConfiguration(@PathParam("end2endConfig") final String end2endConfig) {
+    @Operation(
+            summary = "Get one end2end mail configuration",
+            description = """
+                    Returns the named `end2end-mail-config`. Unlike the readmail and sendmail lookups there is
+                    no `default` special case, so `default` here means an entry actually named `default`.
+
+                    Neither name is validated against the configurations that exist.""",
+            operationId = "getEnd2endMailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The end2end mail configuration.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = End2endMailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "name": "ApiDocEnd2End",
+                                              "sendmail-config-name": "localhost",
+                                              "readmail-config-name": "localhost"
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = End2endMailConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            <end2end-mail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration"
+                                                             name="ApiDocEnd2End" sendmail-config-name="localhost"
+                                                                 readmail-config-name="localhost"/>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No end2end configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "End2End configuration ApiDocEnd2End was not found.")))
+    })
+    public End2endMailConfig getEnd2EndMailConfiguration(@Parameter(description = "Name of the end2end-mail-config entry.", required = true, example = "default") @PathParam("end2endConfig") final String end2endConfig) {
         End2endMailConfig end2end = m_javamailConfigurationDao.getEnd2endConfig(end2endConfig);
         if (end2end == null) {
             throw getException(Status.NOT_FOUND, "End2End configuration {} was not found.", end2endConfig);
@@ -350,6 +673,65 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @POST
     @Path("readmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Add or replace a readmail configuration",
+            description = """
+                    Stores the `readmail-config` under its `name`, replacing any existing entry of that name
+                    outright. This is the only way to change the nested `readmail-host`, `readmail-protocol`,
+                    `user-auth` or `javamail-property` blocks: the PUT reaches the scalar fields only.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "setReadmailConfiguration")
+    @RequestBody(required = true, description = "The readmail configuration to add or replace.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ReadmailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                              "name": "ApiDocReadmail",
+                                              "debug": false,
+                                              "mail-folder": "INBOX",
+                                              "attempt-interval": 1000,
+                                              "delete-all-mail": false,
+                                              "javamail-property": [
+                                                {
+                                                  "name": "mail.pop3.rsetbeforequit",
+                                                  "value": "false"
+                                                }
+                                              ],
+                                              "readmail-host": {
+                                                "host": "127.0.0.1",
+                                                "port": 110,
+                                                "readmail-protocol": {
+                                                  "transport": "pop3",
+                                                  "ssl-enable": false,
+                                                  "start-tls": false
+                                                }
+                                              },
+                                              "user-auth": {
+                                                "user-name": "opennms",
+                                                "password": "opennms"
+                                              }
+                                            }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = ReadmailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    <readmail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration" name="ApiDocReadmail" attempt-interval="1000" delete-all-mail="false"
+                                                            mail-folder="INBOX" debug="false">
+                                              <javamail-property name="mail.pop3.rsetbeforequit" value="false"/>
+                                              <readmail-host host="127.0.0.1" port="110">
+                                                <readmail-protocol transport="pop3" ssl-enable="false" start-tls="false"/>
+                                              </readmail-host>
+                                              <user-auth user-name="opennms" password="opennms"/>
+                                            </readmail-config>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was stored and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The body could not be parsed, or the configuration could not be saved. An empty body reaches this rather than the 400 the null check suggests.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response setReadmailConfiguration(final ReadmailConfig readmailConfig) {
         writeLock();
         try {
@@ -374,6 +756,79 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @POST
     @Path("sendmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Add or replace a sendmail configuration",
+            description = """
+                    Stores the `sendmail-config` under its `name`, replacing any existing entry of that name
+                    outright. This is the only way to change the nested `sendmail-host`, `sendmail-protocol`,
+                    `sendmail-message`, `user-auth` or `javamail-property` blocks: the PUT reaches the scalar
+                    fields only.
+
+                    Email northbounder destinations reference these entries by name, so the name is what ties a
+                    destination to its SMTP settings.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "setSendmailConfiguration")
+    @RequestBody(required = true, description = "The sendmail configuration to add or replace.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SendmailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                              "name": "ApiDocSendmail",
+                                              "debug": false,
+                                              "use-authentication": false,
+                                              "use-jmta": false,
+                                              "attempt-interval": 3000,
+                                              "javamail-property": [],
+                                              "sendmail-host": {
+                                                "host": "127.0.0.1",
+                                                "port": 25
+                                              },
+                                              "sendmail-protocol": {
+                                                "char-set": "us-ascii",
+                                                "mailer": "smtpsend",
+                                                "message-content-type": "text/plain",
+                                                "message-encoding": "7-bit",
+                                                "quit-wait": true,
+                                                "transport": "smtp",
+                                                "ssl-enable": false,
+                                                "start-tls": false
+                                              },
+                                              "sendmail-message": {
+                                                "to": "root@localhost",
+                                                "from": "root@[127.0.0.1]",
+                                                "subject": "OpenNMS Test Message",
+                                                "body": "This is an OpenNMS test message."
+                                              },
+                                              "user-auth": {
+                                                "user-name": "opennms",
+                                                "password": "opennms"
+                                              }
+                                            }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = SendmailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    <sendmail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration" name="ApiDocSendmail" attempt-interval="3000" use-authentication="false"
+                                                            use-jmta="false" debug="false">
+                                              <sendmail-host host="127.0.0.1" port="25"/>
+                                              <sendmail-protocol char-set="us-ascii" mailer="smtpsend"
+                                                                 message-content-type="text/plain" message-encoding="7-bit"
+                                                                 quit-wait="true" transport="smtp" ssl-enable="false"
+                                                                 start-tls="false"/>
+                                              <sendmail-message to="root@localhost" from="root@[127.0.0.1]"
+                                                                subject="OpenNMS Test Message"
+                                                                body="This is an OpenNMS test message."/>
+                                              <user-auth user-name="opennms" password="opennms"/>
+                                            </sendmail-config>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was stored and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The body could not be parsed, or the configuration could not be saved. An empty body reaches this rather than the 400 the null check suggests.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response setSendmailConfiguration(final SendmailConfig sendmailConfig) {
         writeLock();
         try {
@@ -398,6 +853,39 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @POST
     @Path("end2ends")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Add or replace an end2end mail configuration",
+            description = """
+                    Stores the `end2end-mail-config` under its `name`, replacing any existing entry of that name
+                    outright. Neither `sendmail-config-name` nor `readmail-config-name` is validated at write
+                    time.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "setEnd2endMailConfiguration")
+    @RequestBody(required = true, description = "The end2end mail configuration to add or replace.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = End2endMailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                              "name": "ApiDocEnd2End",
+                                              "sendmail-config-name": "localhost",
+                                              "readmail-config-name": "localhost"
+                                            }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = End2endMailConfig.class),
+                            examples = @ExampleObject(value = """
+                                    <end2end-mail-config xmlns="http://xmlns.opennms.org/xsd/config/javamail-configuration"
+                                                             name="ApiDocEnd2End" sendmail-config-name="localhost"
+                                                                 readmail-config-name="localhost"/>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was stored and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The body could not be parsed, or the configuration could not be saved. An empty body reaches this rather than the 400 the null check suggests.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response setEnd2EndMailConfiguration(final End2endMailConfig end2endMailConfig) {
         writeLock();
         try {
@@ -422,7 +910,35 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("readmails/{readmailConfig}")
-    public Response updateReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update fields on a readmail configuration",
+            description = """
+                    Takes a form-encoded body and applies each key to the matching writable bean property of
+                    the configuration, then saves. Keys are bean property names, not XML element or attribute
+                    names, and unrecognised keys are ignored rather than rejected.
+
+                    The writable properties are `name`, `debug`, `attemptInterval`, `deleteAllMail`, `mailFolder`, `javamailProperties`, `readmailHost` and `userAuth`. The ones holding nested objects or lists cannot be
+                    expressed as a form value, so POST the configuration again to change those.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "updateReadmailConfiguration")
+    @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "debug=true&attemptInterval=2000&mailFolder=INBOX")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "At least one property was applied and the configuration was saved."),
+            @ApiResponse(responseCode = "304", description = "No key in the body matched a writable property, so nothing was changed."),
+            @ApiResponse(responseCode = "404", description = "No readmail configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Readmail configuration ApiDocReadmail was not found."))),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response updateReadmailConfiguration(@Parameter(description = "Name of the readmail-config entry.", required = true, example = "localhost") @PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             ReadmailConfig readmailConfig = getReadmailConfiguration(readmailConfigName);
@@ -446,7 +962,35 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("sendmails/{sendmailConfig}")
-    public Response updateSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update fields on a sendmail configuration",
+            description = """
+                    Takes a form-encoded body and applies each key to the matching writable bean property of
+                    the configuration, then saves. Keys are bean property names, not XML element or attribute
+                    names, and unrecognised keys are ignored rather than rejected.
+
+                    The writable properties are `name`, `debug`, `attemptInterval`, `useAuthentication`, `useJmta`, `javamailProperties`, `sendmailHost`, `sendmailProtocol`, `sendmailMessage` and `userAuth`. The ones holding nested objects or lists cannot be
+                    expressed as a form value, so POST the configuration again to change those.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "updateSendmailConfiguration")
+    @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "debug=true&attemptInterval=5000&useAuthentication=true")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "At least one property was applied and the configuration was saved."),
+            @ApiResponse(responseCode = "304", description = "No key in the body matched a writable property, so nothing was changed."),
+            @ApiResponse(responseCode = "404", description = "No sendmail configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Sendmail configuration ApiDocSendmail was not found."))),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response updateSendmailConfiguration(@Parameter(description = "Name of the sendmail-config entry.", required = true, example = "localhost") @PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             SendmailConfig sendmailConfig = getSendmailConfiguration(sendmailConfigName);
@@ -470,7 +1014,35 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("end2ends/{end2endConfig}")
-    public Response updateEnd2endConfiguration(@PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update fields on a end2end mail configuration",
+            description = """
+                    Takes a form-encoded body and applies each key to the matching writable bean property of
+                    the configuration, then saves. Keys are bean property names, not XML element or attribute
+                    names, and unrecognised keys are ignored rather than rejected.
+
+                    The writable properties are `name`, `sendmailConfigName` and `readmailConfigName`. The ones holding nested objects or lists cannot be
+                    expressed as a form value, so POST the configuration again to change those.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "updateEnd2endMailConfiguration")
+    @RequestBody(required = true, description = "Form-encoded property assignments, keyed by bean property name.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "sendmailConfigName=localhost&readmailConfigName=localhost")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "At least one property was applied and the configuration was saved."),
+            @ApiResponse(responseCode = "304", description = "No key in the body matched a writable property, so nothing was changed."),
+            @ApiResponse(responseCode = "404", description = "No end2end mail configuration has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "End2End configuration ApiDocEnd2End was not found."))),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response updateEnd2endConfiguration(@Parameter(description = "Name of the end2end-mail-config entry.", required = true, example = "default") @PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             End2endMailConfig end2endConfig = getEnd2EndMailConfiguration(end2endConfigName);
@@ -493,7 +1065,22 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @DELETE
     @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response removeReadmailConfig(@PathParam("readmailConfig") final String readmailConfig) {
+    @Operation(
+            summary = "Delete a readmail configuration",
+            description = """
+                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an `end2end-mail-config` or the `default-read-config-name` attribute still points at it.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "removeReadmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was removed and the reload event sent."),
+            @ApiResponse(responseCode = "404", description = "No readmail configuration has that name. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response removeReadmailConfig(@Parameter(description = "Name of the readmail-config entry.", required = true, example = "localhost") @PathParam("readmailConfig") final String readmailConfig) {
         if (m_javamailConfigurationDao.removeReadMailConfig(readmailConfig)) {
             return saveConfiguration();
         }
@@ -509,7 +1096,22 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @DELETE
     @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response removeSendmailConfig(@PathParam("sendmailConfig") final String sendmailConfig) {
+    @Operation(
+            summary = "Delete a sendmail configuration",
+            description = """
+                    Removes the entry and saves javamail-configuration.xml. Nothing checks whether an `end2end-mail-config`, the `default-send-config-name` attribute or an Email northbounder destination still points at it.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "removeSendmailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was removed and the reload event sent."),
+            @ApiResponse(responseCode = "404", description = "No sendmail configuration has that name. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response removeSendmailConfig(@Parameter(description = "Name of the sendmail-config entry.", required = true, example = "localhost") @PathParam("sendmailConfig") final String sendmailConfig) {
         if (m_javamailConfigurationDao.removeSendMailConfig(sendmailConfig)) {
             return saveConfiguration();
         }
@@ -525,7 +1127,22 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @DELETE
     @Path("end2ends/{end2endConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response removeEnd2endConfig(@PathParam("end2endConfig") final String end2endConfig) {
+    @Operation(
+            summary = "Delete a end2end mail configuration",
+            description = """
+                    Removes the entry and saves javamail-configuration.xml.
+
+                    Any write here re-marshals the whole of javamail-configuration.xml from the in-memory model and
+                    then sends a `reloadDaemonConfig` event naming `EmailNBI`, so comments and formatting in the
+                    file are lost.""",
+            operationId = "removeEnd2endMailConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The configuration was removed and the reload event sent."),
+            @ApiResponse(responseCode = "404", description = "No end2end mail configuration has that name. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response removeEnd2endConfig(@Parameter(description = "Name of the end2end-mail-config entry.", required = true, example = "default") @PathParam("end2endConfig") final String end2endConfig) {
         if (m_javamailConfigurationDao.removeEnd2endConfig(end2endConfig)) {
             return saveConfiguration();
         }

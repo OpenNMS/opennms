@@ -46,6 +46,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.opennms.web.api.Authentication;
@@ -53,7 +61,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("logs")
-@Tag(name = "Logs", description = "Logs API")
+@Tag(name = "Logs", description = """
+        Logs API: read access to the `.log` files in the OpenNMS log directory.
+
+        Both operations require `ROLE_ADMIN`, enforced both by the servlet security configuration and again
+        in the handler.
+
+        Only files directly in the log directory whose name ends in `.log` are reachable. Anything else,
+        including a path that would escape the directory, is rejected with 400.""")
 public class LogRestService {
 
     public static final int DEFAULT_NUM_LINES = 5000;
@@ -67,6 +82,27 @@ public class LogRestService {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "List log files",
+            description = """
+        List the names of the `.log` files directly in the OpenNMS log directory, sorted. Rotated and
+        compressed files are not listed, since only the `.log` suffix is matched.""",
+            operationId = "getLogFiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The log file names.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(type = "string")),
+                            examples = @ExampleObject(value = """
+                    [
+                      "alarmd.log",
+                      "collectd.log",
+                      "eventd.log",
+                      "poller.log",
+                      "web.log"
+                    ]"""))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.")
+    })
     public List<String> getLogFiles(@Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for enumerating log files.");
@@ -85,7 +121,44 @@ public class LogRestService {
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines, @QueryParam("reverse") @DefaultValue("true") boolean reverse, @Context SecurityContext securityContext) {
+    @Operation(
+            summary = "Read the tail of a log file",
+            description = """
+        Return the last `n` lines of a log file as text. The file is always read backwards from the end, so
+        the cost is bounded by `n` rather than by the size of the file.
+
+        `n` defaults to 5000 and is clamped to the range 1 to 10000, so values outside that are quietly
+        adjusted rather than rejected. `reverse` controls only the order the lines are returned in: true, the
+        default, gives newest first.
+
+        The response media type is probed from the file rather than fixed, so it is typically
+        `application/octet-stream` for a `.log` file. A name that exists in the directory listing but whose
+        file has since gone returns 204 with no body.""",
+            operationId = "getLogFileContents"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The requested lines, newline-separated.",
+                    content = @Content(schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = """
+                    2026-08-26 02:57:48,374 DEBUG [qtp450304221-76882] o.a.c.p.PhaseInterceptorChain: Invoking handleMessage on interceptor"""))),
+            @ApiResponse(responseCode = "204", description = "The file does not exist. No body."),
+            @ApiResponse(responseCode = "400", description = "The name does not end in `.log`, or is not directly inside the log directory.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot access files outside of log folder! Filename given: ../etc/opennms.log"))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.")
+    })
+    public Response getFileContents(
+            @Parameter(description = "Log file name, as listed by `GET /logs`. Must end in `.log` and contain no path separators.",
+                    required = true, example = "web.log")
+            @QueryParam("f") String fileName,
+            @Parameter(description = "Number of lines to return, counted from the end of the file. Clamped to 1..10000; defaults to 5000.",
+                    example = "200")
+            @QueryParam("n") Integer numLines,
+            @Parameter(description = "True, the default, returns the lines newest first. False returns them in file order.",
+                    example = "true")
+            @QueryParam("reverse") @DefaultValue("true") boolean reverse,
+            @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for reading log files.");
         }

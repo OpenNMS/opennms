@@ -44,6 +44,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -59,6 +66,7 @@ import org.opennms.web.category.Category;
 import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.CategoryModel;
 import org.opennms.web.category.NodeList;
+import org.opennms.web.rest.v1.model.AvailabilityDataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +81,19 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("availabilityRestService")
 @Path("availability")
-@Tag(name = "Availability", description = "Availability API")
+@Tag(name = "Availability", description = """
+        Availability API.
+
+        Availability figures come from the RTC (real-time console) rolling window rather than from a fresh
+        query, so they lag behind the outage tables and are recomputed on the RTC's own schedule. All
+        percentages are 0 to 100.
+
+        The category groupings and their thresholds come from `categories.xml`. `last-updated` on a category
+        is serialised as epoch milliseconds, not as the date-time string the derived schema shows.
+
+        Categories are addressed by name in the path. Names commonly contain spaces, so they have to be
+        percent-encoded (`Web%20Servers`); the handler URL-decodes the path segment before looking the
+        category up.""")
 @Transactional
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {
@@ -98,6 +118,64 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @GET
+    @Operation(
+            summary = "Get availability for every category group",
+            description = """
+        Return every category group from `categories.xml` with the categories it contains and their current
+        availability figures. This is the whole RTC view in one response, so it grows with the number of
+        categories and with the number of nodes in each of them: the `nodes` array on a category lists every
+        node id in that category.
+
+        `last-updated` on each category is epoch milliseconds.""",
+            operationId = "getAvailabilityForAllCategories"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category groups with their categories.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = AvailabilityDataResponse.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "section": [
+                        {
+                          "name": "Categories",
+                          "categories": {
+                            "totalCount": 8,
+                            "count": 8,
+                            "offset": 0,
+                            "category": [
+                              {
+                                "name": "Web Servers",
+                                "comment": "This category includes all managed interfaces which are running an HTTP (Web) server on port 80 or other common ports.",
+                                "service-percentage": 100.0,
+                                "service-down-count": 0,
+                                "outage-class": "Normal",
+                                "availability-class": "Warning",
+                                "outage-text": "0 of 254",
+                                "availability-text": "99.927%",
+                                "nodes": [
+                                  1,
+                                  2,
+                                  3
+                                ],
+                                "last-updated": 1787727304745,
+                                "normal-threshold": 99.99,
+                                "warning-threshold": 97.0,
+                                "availability": 99.92666456601779
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = AvailabilityDataResponse.class))
+                    }),
+            @ApiResponse(responseCode = "500", description = "The category data could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Failed to get availability data: <cause>")))
+    })
     public AvailabilityData getNodeAvailability() {
         try {
             return new AvailabilityData(m_categoryList.getCategoryData());
@@ -109,7 +187,56 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @GET
     @Path("/categories/{category}")
-    public Category getCategory(@PathParam("category") final String categoryName) {
+    @Operation(
+            summary = "Get availability for one category",
+            description = """
+        Return the current availability figures for a single category from `categories.xml`, including the
+        list of node ids it covers. `outage-class` and `availability-class` are the RTC's own severity
+        labels, derived from the category's `normal-threshold` and `warning-threshold`. `last-updated` is
+        epoch milliseconds.""",
+            operationId = "getAvailabilityCategory"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The category and its availability figures.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = Category.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "name": "Web Servers",
+                      "comment": "This category includes all managed interfaces which are running an HTTP (Web) server on port 80 or other common ports.",
+                      "service-percentage": 100.0,
+                      "service-down-count": 0,
+                      "outage-class": "Normal",
+                      "availability-class": "Warning",
+                      "outage-text": "0 of 254",
+                      "availability-text": "99.927%",
+                      "nodes": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "last-updated": 1787727424662,
+                      "normal-threshold": 99.99,
+                      "warning-threshold": 97.0,
+                      "availability": 99.92666456601779
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = Category.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No category with that name is defined.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Category Web Serverz was not found."))),
+            @ApiResponse(responseCode = "500", description = "The category data could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Failed to get availability data for category Web Servers : <cause>")))
+    })
+    public Category getCategory(
+            @Parameter(description = "Category name from categories.xml, percent-encoded. Case sensitive.",
+                    required = true, example = "Web Servers")
+            @PathParam("category") final String categoryName) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
@@ -125,7 +252,50 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @GET
     @Path("/categories/{category}/nodes")
-    public NodeList getCategoryNodes(@PathParam("category") final String categoryName) {
+    @Operation(
+            summary = "List the nodes in a category with their availability",
+            description = """
+        Return one entry per node in the category, each with the node's availability and service counts.
+        The `ipinterfaces` array is empty on this operation: interface and service detail is only filled in
+        by the single-node operations.""",
+            operationId = "getAvailabilityCategoryNodes"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Nodes in the category.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = NodeList.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 254,
+                      "count": 254,
+                      "offset": 0,
+                      "node": [
+                        {
+                          "id": 1,
+                          "availability": 99.92797222222222,
+                          "service-count": 1,
+                          "service-down-count": 0,
+                          "ipinterfaces": []
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = NodeList.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No category with that name is defined.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Category Web Serverz was not found."))),
+            @ApiResponse(responseCode = "500", description = "The category data could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Failed to get availability data for category Web Servers : <cause>")))
+    })
+    public NodeList getCategoryNodes(
+            @Parameter(description = "Category name from categories.xml, percent-encoded. Case sensitive.",
+                    required = true, example = "Web Servers")
+            @PathParam("category") final String categoryName) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
@@ -141,7 +311,64 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @GET
     @Path("/categories/{category}/nodes/{nodeId}")
-    public AvailabilityNode getCategoryNode(@PathParam("category") final String categoryName, @PathParam("nodeId") final Long nodeId) {
+    @Operation(
+            summary = "Get availability for one node within a category",
+            description = """
+        Return the node's availability broken down by IP interface and monitored service. The category has
+        to contain the node; membership is checked before the node is loaded.
+
+        The result is the same payload as `GET /availability/nodes/{nodeId}`: the category only acts as a
+        membership check and does not restrict which of the node's services are reported.
+
+        A node id that is not in the category, or that does not exist, is reported as 500 rather than 404,
+        because the handler's catch-all wraps the not-found response.""",
+            operationId = "getAvailabilityCategoryNode"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The node with its interfaces and services.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = AvailabilityNode.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": 1,
+                      "availability": 99.92797222222222,
+                      "service-count": 1,
+                      "service-down-count": 0,
+                      "ipinterfaces": [
+                        {
+                          "id": 1,
+                          "address": "127.0.0.4",
+                          "availability": 99.92797222222222,
+                          "services": [
+                            {
+                              "up": true,
+                              "id": 1022,
+                              "name": "HTTP-8080",
+                              "availability": 99.92797222222222
+                            }
+                          ]
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = AvailabilityNode.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No category with that name is defined.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Category Web Serverz was not found."))),
+            @ApiResponse(responseCode = "500", description = "The node is not in the category, does not exist, or the category data could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Failed to get availability data for category Web Servers : HTTP 404 Not Found")))
+    })
+    public AvailabilityNode getCategoryNode(
+            @Parameter(description = "Category name from categories.xml, percent-encoded. Case sensitive.",
+                    required = true, example = "Web Servers")
+            @PathParam("category") final String categoryName,
+            @Parameter(description = "Database id of the node.", required = true, example = "1")
+            @PathParam("nodeId") final Long nodeId) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
@@ -161,7 +388,54 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @GET
     @Path("/nodes/{nodeId}")
-    public AvailabilityNode getNode(@PathParam("nodeId") final Integer nodeId) {
+    @Operation(
+            summary = "Get availability for one node",
+            description = """
+        Return the node's availability broken down by IP interface and monitored service. `up` on a service
+        reflects the current service status, not the availability figure next to it.
+
+        An unknown node id is reported as 500, not 404: the handler dereferences the node before checking it
+        for null, so the null-pointer failure is what reaches the caller.""",
+            operationId = "getAvailabilityNode"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The node with its interfaces and services.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = AvailabilityNode.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "id": 1,
+                      "availability": 99.92797222222222,
+                      "service-count": 1,
+                      "service-down-count": 0,
+                      "ipinterfaces": [
+                        {
+                          "id": 1,
+                          "address": "127.0.0.4",
+                          "availability": 99.92797222222222,
+                          "services": [
+                            {
+                              "up": true,
+                              "id": 1022,
+                              "name": "HTTP-8080",
+                              "availability": 99.92797222222222
+                            }
+                          ]
+                        }
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = AvailabilityNode.class))
+                    }),
+            @ApiResponse(responseCode = "500", description = "The node does not exist, or its availability data could not be read.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Failed to get availability data for node 999999 : Cannot invoke \"org.opennms.netmgt.model.OnmsNode.getIpInterfaces()\" because \"dbNode\" is null")))
+    })
+    public AvailabilityNode getNode(
+            @Parameter(description = "Database id of the node.", required = true, example = "1")
+            @PathParam("nodeId") final Integer nodeId) {
         try {
             final AvailabilityNode avail = getAvailabilityNode(nodeId);
             if (avail == null) {

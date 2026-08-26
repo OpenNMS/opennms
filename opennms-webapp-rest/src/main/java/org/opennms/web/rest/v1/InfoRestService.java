@@ -37,6 +37,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.time.CentralizedDateTimeFormat;
@@ -66,6 +72,49 @@ public class InfoRestService extends OnmsRestService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get instance information",
+            description = """
+        Report the version and package identity of this OpenNMS instance, the ticketer configuration, the
+        date/time format settings that apply to the calling session, and the run state of the daemons.
+
+        `services` is a map of daemon name to state, gathered from the running instance over the management
+        JMX/RMI connection. If that lookup fails the field comes back as an empty object and the rest of
+        the payload is still returned, so an empty `services` means "could not be determined" rather than
+        "no daemons".
+
+        `datetimeformatConfig.zoneId` comes from the HTTP session when the caller has one and falls back to
+        the server's default zone otherwise, so it can differ between a browser session and a plain
+        API call. `ticketerConfig.plugin` is only populated when ticketing is enabled.""",
+            operationId = "getInfo"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Instance information.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = InfoDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "displayVersion": "36.0.4-SNAPSHOT",
+                      "version": "36.0.4",
+                      "packageName": "opennms",
+                      "packageDescription": "OpenNMS",
+                      "ticketerConfig": {
+                        "plugin": null,
+                        "enabled": false
+                      },
+                      "datetimeformatConfig": {
+                        "zoneId": "America/New_York",
+                        "datetimeformat": "yyyy-MM-dd'T'HH:mm:ssxxx"
+                      },
+                      "services": {
+                        "Eventd": "running",
+                        "Alarmd": "running",
+                        "Pollerd": "running",
+                        "Collectd": "running",
+                        "Trapd": "running"
+                      }
+                    }""")))
+    })
     public Response getInfo(@Context HttpServletRequest httpServletRequest) throws ParseException {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
 
