@@ -20,6 +20,8 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Swagger annotations are compile-time only; Sentinel and Minion do not ship the bundle. -->
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,io.swagger.v3.oas.annotations.*;resolution:=optional,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
