@@ -56,10 +56,16 @@ describe('EventsTable.vue', () => {
   let wrapper: VueWrapper<any>
   let eventStore: ReturnType<typeof useEventStore>
 
-  const mountTable = () =>
-    mount(EventsTable, {
+  // The store action must be mocked BEFORE mounting — the component fetches in
+  // onMounted, and an unmocked action would fire a real network request.
+  const mountTable = () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    eventStore = useEventStore(pinia)
+    eventStore.getEvents = vi.fn().mockResolvedValue(undefined)
+
+    return mount(EventsTable, {
       global: {
-        plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+        plugins: [pinia, PrimeVue],
         directives: {
           date: {
             mounted(_el: Element) {
@@ -76,12 +82,11 @@ describe('EventsTable.vue', () => {
         }
       }
     })
+  }
 
   beforeEach(async () => {
     vi.clearAllMocks()
     wrapper = mountTable()
-    eventStore = useEventStore()
-    eventStore.getEvents = vi.fn().mockResolvedValue(undefined)
     eventStore.events = []
     eventStore.totalCount = 0
     await flushPromises()

@@ -218,6 +218,10 @@
                             <file>${project.build.directory}/assembly/etc/org.ops4j.pax.logging.cfg</file>
                             <regex>false</regex>
                             <replacements>
+                                <replacement>
+                                    <token>log4j2.out.pattern</token>
+                                    <value>log4j2.outPattern</value>
+                                </replacement>
                                 <!-- change default audit logging -->
                                 <replacement>
                                     <token>log4j2.appender.audit.layout.pattern = %m%n</token>

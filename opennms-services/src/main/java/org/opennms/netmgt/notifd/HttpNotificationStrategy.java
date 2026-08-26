@@ -170,8 +170,6 @@ public class HttpNotificationStrategy implements NotificationStrategy {
             return getNotificationValue(NotificationManager.PARAM_HOME_PHONE);
         if (argValue.equals(NotificationManager.PARAM_INTERFACE))
             return getNotificationValue(NotificationManager.PARAM_INTERFACE);
-        if (argValue.equals(NotificationManager.PARAM_MICROBLOG_USERNAME))
-            return getNotificationValue(NotificationManager.PARAM_MICROBLOG_USERNAME);
         if (argValue.equals(NotificationManager.PARAM_MOBILE_PHONE))
             return getNotificationValue(NotificationManager.PARAM_MOBILE_PHONE);
         if (argValue.equals(NotificationManager.PARAM_NODE))

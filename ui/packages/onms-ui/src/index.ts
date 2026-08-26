@@ -61,6 +61,9 @@ export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 
 export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
 
+// Directives — register app-level; core does this in src/theme/primevue-setup.ts
+export { default as OnmsTooltip } from './directives/OnmsTooltip'
+
 export type { OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent, OnmsTagSeverity } from './types'
 export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'
 export type { OnmsToastOptions, OnmsToastSeverity } from './composables/useOnmsToast'

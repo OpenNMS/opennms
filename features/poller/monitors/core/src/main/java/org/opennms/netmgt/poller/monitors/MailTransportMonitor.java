@@ -27,15 +27,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.search.HeaderTerm;
-import javax.mail.search.SearchTerm;
-import javax.mail.search.SubjectTerm;
+import jakarta.mail.Flags.Flag;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.search.HeaderTerm;
+import jakarta.mail.search.SearchTerm;
+import jakarta.mail.search.SubjectTerm;
 
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.javamail.JavaMailer;

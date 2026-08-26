@@ -22,23 +22,24 @@
                     </span>
                   </div>
                   <div class="actions">
-                    <OnmsIcon
+                    <OnmsIconButton
                       v-if="element.isDuplicate"
                       :icon="Warning"
-                      v-tooltip="'File is a duplicate of another file that has been already uploaded.'"
+                      title="Rename or overwrite duplicate file"
+                      tooltip="File is a duplicate of another file that has been already uploaded."
                       class="warning-icon"
                       @click="openFileRenameDialog(index)"
                     />
                     <OnmsIcon
                       v-if="element.isValid && !element.isDuplicate"
                       :icon="CheckCircle"
-                      v-tooltip="'File is valid'"
+                      v-onms-tooltip="'File is valid'"
                       class="success-icon"
                     />
                     <OnmsIcon
                       v-if="!element.isValid"
                       :icon="Error"
-                      v-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
+                      v-onms-tooltip="element.errors.map((error: string) => `${error}. `).join('\n')"
                       class="error-icon"
                     />
                     <OnmsIconButton
@@ -155,12 +156,12 @@ import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
 import { OnmsIcon, OnmsIconButton, OnmsButton } from '@opennms/onms-ui'
-import CheckCircle from '@/components/icons/action/CheckCircle.vue'
-import Delete from '@/components/icons/action/Delete.vue'
-import Text from '@/components/icons/file/Text.vue'
-import Apps from '@/components/icons/navigation/Apps.vue'
-import Error from '@/components/icons/notification/Error.vue'
-import Warning from '@/components/icons/notification/Warning.vue'
+import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
+import Text from '@opennms/onms-ui/icons/file/Text.vue'
+import Apps from '@opennms/onms-ui/icons/navigation/Apps.vue'
+import Error from '@opennms/onms-ui/icons/notification/Error.vue'
+import Warning from '@opennms/onms-ui/icons/notification/Warning.vue'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
@@ -487,6 +488,7 @@ watch(
             margin: 0px;
           }
 
+          // Status indicators: plain icons, so these land on the <svg>.
           .success-icon {
             color: var(--onms-success);
             cursor: pointer;
@@ -501,11 +503,12 @@ watch(
             width: 2em;
           }
 
+          // The duplicate indicator IS actionable (it opens the rename dialog), so
+          // it is an icon button and this lands on the <button>. Colour only: the
+          // glyph inherits it via `fill: currentColor`, and the component sizes it
+          // to match the reorder/remove buttons beside it.
           .warning-icon {
             color: var(--onms-major);
-            cursor: pointer;
-            height: 2em;
-            width: 2em;
           }
         }
       }

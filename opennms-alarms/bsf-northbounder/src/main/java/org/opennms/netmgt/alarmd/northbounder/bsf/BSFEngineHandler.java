@@ -59,15 +59,15 @@ public class BSFEngineHandler implements Destination {
     private String m_filter;
 
     /** The engine language. */
-    @XmlElement(name = "language", required = false, defaultValue = "beanshell")
+    @XmlElement(name = "language", required = false, defaultValue = "groovy")
     private String m_language;
 
     /** The engine class name. */
-    @XmlElement(name = "className", required = false, defaultValue = "bsh.util.BeanShellBSFEngine")
+    @XmlElement(name = "className", required = false, defaultValue = "org.codehaus.groovy.bsf.GroovyEngine")
     private String m_className;
 
     /** The engine file extensions. */
-    @XmlElement(name = "extensions", required = false, defaultValue = "bsh")
+    @XmlElement(name = "extensions", required = false, defaultValue = "groovy,gy")
     private String m_extensions;
 
     /** The on-start content. */
@@ -136,7 +136,7 @@ public class BSFEngineHandler implements Destination {
      * @return the language
      */
     public String getLanguage() {
-        return m_language == null ? "beanshell" : m_language;
+        return m_language == null ? "groovy" : m_language;
     }
 
     /**
@@ -154,7 +154,7 @@ public class BSFEngineHandler implements Destination {
      * @return the class name
      */
     public String getClassName() {
-        return m_className == null ? "bsh.util.BeanShellBSFEngine" : m_className;
+        return m_className == null ? "org.codehaus.groovy.bsf.GroovyEngine" : m_className;
     }
 
     /**
@@ -172,7 +172,7 @@ public class BSFEngineHandler implements Destination {
      * @return the extensions
      */
     public String getExtensions() {
-        return m_extensions == null ? "bsh" : m_extensions;
+        return m_extensions == null ? "groovy,gy" : m_extensions;
     }
 
     /**
