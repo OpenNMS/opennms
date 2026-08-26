@@ -39,6 +39,9 @@ public class BrowserNotificationStrategy implements NotificationStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserNotificationStrategy.class);
 
+    /** Resolved from the parameter map, so absent unless notificationCommands.xml declares it. */
+    private static final String PARAM_NOTICE_ID = "noticeid";
+
     public BrowserNotificationStrategy() {
     }
 
@@ -47,6 +50,7 @@ public class BrowserNotificationStrategy implements NotificationStrategy {
         String user = null;
         String head = null;
         String body = null;
+        String noticeId = null;
 
         for (final Argument argument : arguments) {
             switch (argument.getSwitch()) {
@@ -62,6 +66,10 @@ public class BrowserNotificationStrategy implements NotificationStrategy {
                 case NotificationManager.PARAM_NUM_MSG:
                     body = argument.getValue();
                     break;
+
+                case PARAM_NOTICE_ID:
+                    noticeId = argument.getValue();
+                    break;
             }
         }
 
@@ -69,9 +77,23 @@ public class BrowserNotificationStrategy implements NotificationStrategy {
         message.setId(UUID.randomUUID().toString());
         message.setHead(head);
         message.setBody(body);
+        message.setNoticeId(positiveNoticeIdOrNull(noticeId));
 
         BrowserNotificationDispatcher.getInstance().notify(user, message);
 
         return 0;
+    }
+
+    /** Notifd passes 0 for test triggers and -1 for resolution notices; neither has a notice page. */
+    private static String positiveNoticeIdOrNull(final String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            final String trimmed = value.trim();
+            return Integer.parseInt(trimmed) > 0 ? trimmed : null;
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 }

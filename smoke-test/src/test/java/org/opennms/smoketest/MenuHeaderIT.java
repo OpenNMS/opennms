@@ -81,17 +81,14 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
 
         driver.switchTo().parentFrame();
         frontPage();
 
         // Inventory Menu
-        // Note, some items are below under Vue UI checks
-        clickMenuItem("Inventory", "Nodes (Legacy)");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li[contains(text()[normalize-space()], 'Node List')]")));
-
+        // Note, the Vue "Nodes" item is checked below under Vue UI checks
         clickMenuItem("Inventory", "Assets");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
 
@@ -118,15 +115,24 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Monitoring", "Surveillance View");
         // switchTo() by xpath is much faster than by ID
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
 
         // Metrics Menu
+        // JSP Resource Graphs page
         clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//li[contains(text()[normalize-space()], 'Resources')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Resource Graphs')]")));
+
+        // Vue Resource Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Resource Graphs (Preview)");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'search-field')]//label[contains(text()[normalize-space()], 'Search/Filter Resources')]")));
+
+        // Vue Custom Performance Graphs page
+        clickMenuItem("Metrics (Resource Graphs)", "Custom Performance Graphs (Preview)");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Custom Performance Graphs']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Custom Performance Graphs']")));
 
         // Distributed Monitoring
         clickMenuItem("Distributed Monitoring", "Manage Minions");
@@ -165,7 +171,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
 
         clickMenuItem("User Management", "Manage Groups");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
@@ -234,8 +241,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
-        foundElement = findMenuItemLink("API Documentation", "REST Open API Documentation");
-        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
+        foundElement = findMenuItemLink("API Documentation", "OpenAPI Documentation");
+        assertNotNull("apiDocumentationMenu / OpenAPI Documentation", foundElement);
 
         foundElement = findMenuItemLink("API Documentation", "REST API Reference Documentation");
         assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
@@ -324,7 +331,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='main-content']//button[text()[contains(., 'Nodes')]]")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
-        // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");
+        // clickMenuItem("apiDocumentationMenu", "OpenAPI Documentation");
         // final WebDriverWait longerWait = new WebDriverWait(getDriver(), Duration.ofSeconds(2));
         // longerWait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Endpoints']")));
@@ -406,7 +413,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']//input[@aria-label='Search']");
         searchInput.sendKeys("Configure");
 
         // Get the search result context header

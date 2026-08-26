@@ -108,8 +108,8 @@
 import { computed, onMounted, ref, useId } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
-import MenuIcon from '@/components/icons/navigation/MoreHoriz.vue'
-import ViewDetails from '@/components/icons/action/ViewDetails.vue'
+import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
+import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import { updateDataCollectionProfile } from '@/services/snmpDataCollectionService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useRouter } from 'vue-router'

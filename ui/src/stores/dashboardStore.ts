@@ -21,11 +21,21 @@
 ///
 
 import { defineStore } from 'pinia'
-import { v4 as uuidv4 } from 'uuid'
 import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode, Timeframe } from '@/types/dashboard'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
+
+// Dependency-free RFC-4122 v4 UUID for panel ids. crypto.getRandomValues works
+// in every context, whereas crypto.randomUUID requires a secure context — which
+// an OpenNMS instance served over plain HTTP is not.
+const uuidv4 = (): string => {
+  const bytes = crypto.getRandomValues(new Uint8Array(16))
+  bytes[6] = (bytes[6] & 0x0f) | 0x40
+  bytes[8] = (bytes[8] & 0x3f) | 0x80
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0'))
+  return `${hex.slice(0, 4).join('')}-${hex.slice(4, 6).join('')}-${hex.slice(6, 8).join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10, 16).join('')}`
+}
 
 interface DashboardStoreState {
   layout: DashboardLayout
