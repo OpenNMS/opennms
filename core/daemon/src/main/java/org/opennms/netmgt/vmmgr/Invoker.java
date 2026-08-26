@@ -168,7 +168,10 @@ public class Invoker {
 
         final var output = new StringBuilder();
 
-        for (final var invokerService : getServices()) {
+        // Before setServices() (e.g. blocked at the HA startup gate) there are
+        // no services to report; an empty status file truthfully reads as such.
+        final List<InvokerService> services = getServices() != null ? getServices() : List.of();
+        for (final var invokerService : services) {
             final var serviceName = invokerService.getService().getName();
             for (final var invoke : invokerService.getService().getInvokes()) {
                 if ("status".equals(invoke.getMethod())) {

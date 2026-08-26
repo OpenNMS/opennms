@@ -59,13 +59,14 @@ import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
+import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
 import { getOpenApiV1, getOpenApi } from './helpService'
-import { getResources, getResourceForNode } from './resourceService'
+import { getResources, getResourceForNode, getResourceById } from './resourceService'
 import {
   getKscReports,
   getKscReport,
@@ -82,6 +83,14 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
+} from './groupAdminService'
 
 export default {
   search,
@@ -95,6 +104,8 @@ export default {
   getNodeIfServices,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
+  getSnmpInterfaces,
+  getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
@@ -123,6 +134,7 @@ export default {
   getPreFabGraphs,
   getDefinitionData,
   getResourceForNode,
+  getResourceById,
   getGraphDefinitionsByResourceId,
   getKscReports,
   getKscReport,
@@ -149,5 +161,11 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
-  performLogout
+  performLogout,
+  createManagedGroup,
+  deleteManagedGroup,
+  getGroupMemberCandidates,
+  getManagedGroups,
+  renameManagedGroup,
+  updateManagedGroup
 }

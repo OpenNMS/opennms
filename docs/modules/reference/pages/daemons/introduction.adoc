@@ -33,10 +33,6 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | Handles alarm workflows.
 | `CORE_SERVICE_ALARMD_ENABLED=true`
 
-| AsteriskGateway
-| Communicates with an Asterisk server for VOIP notification.
-| `CORE_SERVICE_ASTERISKGATEWAY_ENABLED=false`
-
 | Bsmd
 | Processes updates of Business Service Monitoring availability.
 | `CORE_SERVICE_BSMD_ENABLED=true`

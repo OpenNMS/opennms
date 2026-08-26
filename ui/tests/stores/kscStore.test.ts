@@ -93,7 +93,7 @@ describe('useKscStore', () => {
     })
 
     it('returns false and surfaces the error on failure without reloading', async () => {
-      vi.mocked(API.createKscReport).mockRejectedValue({ response: { data: 'Bad rule' } })
+      vi.mocked(API.createKscReport).mockRejectedValue({ response: { data: 'Bad rule' }})
 
       const ok = await store.saveReport(report({ id: null }))
 

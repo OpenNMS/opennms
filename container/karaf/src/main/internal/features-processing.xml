@@ -4,6 +4,20 @@
   xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
 >
 
+  <bundleReplacements>
+    <bundle originalUri="mvn:org.jline/jline/[3,4)" replacement="mvn:org.jline/jline/${jlineVersion}" mode="maven"/>
+    <!-- the Karaf framework feature pins the pax-logging version it ships with (see etc/startup.properties) -->
+    <bundle originalUri="mvn:org.ops4j.pax.logging/pax-logging-api/[2,3)"
+            replacement="mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}"
+            mode="maven"/>
+    <bundle originalUri="mvn:org.ops4j.pax.logging/pax-logging-log4j2/[2,3)"
+            replacement="mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}"
+            mode="maven"/>
+    <bundle originalUri="mvn:org.ops4j.pax.logging/pax-logging-logback/[2,3)"
+            replacement="mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}"
+            mode="maven"/>
+  </bundleReplacements>
+
   <featureReplacements>
     <replacement mode="replace">
       <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">

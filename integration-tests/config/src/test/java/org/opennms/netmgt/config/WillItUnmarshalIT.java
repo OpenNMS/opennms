@@ -60,7 +60,6 @@ import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
-import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -203,7 +202,6 @@ public class WillItUnmarshalIT {
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, false, "Invalid content was found starting with element 'bad-element'.");
 
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, false, null);
-        addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, true, null);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, false, null);
         addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, false, null);

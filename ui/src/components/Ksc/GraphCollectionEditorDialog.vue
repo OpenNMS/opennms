@@ -129,8 +129,8 @@ import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputNumber, OnmsInputText,
 
 import FormField from '@/components/Common/FormField.vue'
 import KscGraphEditorDialog from '@/components/Ksc/KscGraphEditorDialog.vue'
-import ArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
-import ArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
+import ArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
+import ArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import { decodeResourceId } from '@/components/Ksc/utils/kscResource'
 import { useKscStore } from '@/stores/kscStore'
 import { KscGraph, KscReport } from '@/types/ksc'
